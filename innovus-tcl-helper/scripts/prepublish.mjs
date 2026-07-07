@@ -10,6 +10,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,9 +44,13 @@ function copyDir(src, dst, filter) {
 function main() {
     console.log('📦 复制命令数据到扩展内 data/ ...');
 
-    // 清空旧数据
+    // 清空旧数据（shell 命令绕过 VS Code 文件锁）
     if (fs.existsSync(DATA_DST)) {
-        fs.rmSync(DATA_DST, { recursive: true, force: true });
+        try {
+            fs.rmSync(DATA_DST, { recursive: true, force: true });
+        } catch {
+            execSync(`rm -rf "${DATA_DST}"`);
+        }
     }
 
     let total = 0;
