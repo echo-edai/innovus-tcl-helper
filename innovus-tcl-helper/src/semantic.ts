@@ -20,7 +20,8 @@ export class InnovusSemanticTokensProvider implements vscode.DocumentSemanticTok
         document: vscode.TextDocument,
         _token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.SemanticTokens> {
-        const builder = new SemanticTokensBuilder();
+        const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
+        const builder = new vscode.SemanticTokensBuilder(legend);
         const text = document.getText();
         const lines = text.split('\n');
 
@@ -67,24 +68,5 @@ export class InnovusSemanticTokensProvider implements vscode.DocumentSemanticTok
 
     getLegend(): vscode.SemanticTokensLegend {
         return new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
-    }
-}
-
-/** 轻量级 SemanticTokensBuilder（避免依赖完整 API） */
-class SemanticTokensBuilder {
-    private data: number[] = [];
-    private prevLine = 0;
-    private prevChar = 0;
-
-    push(line: number, char: number, length: number, tokenType: number, tokenModifiers: number): void {
-        const deltaLine = line - this.prevLine;
-        const deltaChar = (deltaLine === 0) ? char - this.prevChar : char;
-        this.data.push(deltaLine, deltaChar, length, tokenType, tokenModifiers);
-        this.prevLine = line;
-        this.prevChar = char;
-    }
-
-    build(): vscode.SemanticTokens {
-        return new vscode.SemanticTokens(new Uint32Array(this.data), undefined);
     }
 }
