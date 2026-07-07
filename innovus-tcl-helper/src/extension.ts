@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -102,7 +102,9 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     }
 
-    // 4. Definition Provider - F12/Ctrl+Click 打开 Webview 帮助面板
+    // 4. Definition Provider - F12/Ctrl+Click 帮助（Webview 或纯文本）
+    const plainHelpProvider = new InnovusPlainHelpProvider();
+    subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', plainHelpProvider));
     subs.push(vscode.languages.registerDefinitionProvider(
         { language: 'tcl' },
         new InnovusDefinitionProvider(context)
@@ -168,6 +170,18 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
             `Innovus TCL: 已切换为${newLang === 'zh' ? '中文' : 'English'} (${db.getCommandNames().length} 命令)`
         );
+    }));
+
+    // 注册命令：切换帮助显示风格 (Webview ↔ 纯文本)
+    subs.push(vscode.commands.registerCommand('innovus-tcl.toggleHelpStyle', async () => {
+        const cfg = vscode.workspace.getConfiguration('innovus-tcl');
+        const current = cfg.get<string>('helpStyle', 'webview');
+        const next = current === 'webview' ? 'plain' : 'webview';
+        await cfg.update('helpStyle', next, vscode.ConfigurationTarget.Global);
+        const label = next === 'webview'
+            ? (db.getLanguage() === 'zh' ? 'Webview 富文本面板' : 'Webview Rich Panel')
+            : (db.getLanguage() === 'zh' ? '纯文本编辑器' : 'Plain Text Editor');
+        vscode.window.showInformationMessage(`Innovus TCL: 帮助风格 → ${label}`);
     }));
 
     // 清理
