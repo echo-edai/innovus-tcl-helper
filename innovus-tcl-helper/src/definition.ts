@@ -388,15 +388,8 @@ code {
 `;
 
 // ════════════════════════════════════════════════════════════════
-//  Definition Provider — 统一入口
-//
-//  纯文本模式: Location → innovus-tcl-help:// URI → 虚拟文档
-//  Webview 模式: Location → command: URI → 直接执行命令打开 Webview
-//
-//  单一 Provider，无 DocumentLink 冲突，无切换缓存问题，零闪烁。
+//  Definition Provider — 纯文本模式 F12/Ctrl+Click
 // ════════════════════════════════════════════════════════════════
-
-const WEBVIEW_CMD = 'innovus-tcl._showWebviewHelp';
 
 export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
     provideDefinition(
@@ -404,6 +397,8 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
         position: vscode.Position,
         _token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.Definition | vscode.LocationLink[]> {
+        if (getHelpStyle() !== 'plain') { return null; }
+
         const db = getDB();
         const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z_][a-zA-Z0-9_]*/);
         if (!wordRange) { return null; }
@@ -411,27 +406,64 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
         const word = document.getText(wordRange);
         if (!db.isKnown(word)) { return null; }
 
-        const style = getHelpStyle();
-
-        if (style === 'webview') {
-            // command: URI — VS Code 定义导航时直接执行命令，不打开文档
-            const args = encodeURIComponent(JSON.stringify([word]));
-            const cmdUri = vscode.Uri.parse(`command:${WEBVIEW_CMD}?${args}`);
-            return new vscode.Location(cmdUri, new vscode.Position(0, 0));
-        }
-
-        // 纯文本模式 — 虚拟文档
         const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}`);
         return new vscode.Location(uri, new vscode.Position(0, 0));
     }
 }
 
-/** command: URI 点击回调 → 直接打开 Webview */
-export function showWebviewForCommand(context: vscode.ExtensionContext, cmdName: string): void {
+// ════════════════════════════════════════════════════════════════
+//  Document Link Provider — Ctrl+Click 入口（两种模式均生效）
+//
+//  关键: provideDocumentLinks 不做模式判断，始终返回链接。
+//  模式切换时 VS Code 无缓存失效问题。命令回调动态判断行为。
+// ════════════════════════════════════════════════════════════════
+
+const HELP_CMD = 'innovus-tcl._showHelp';
+
+export class InnovusDocumentLinkProvider implements vscode.DocumentLinkProvider {
+    provideDocumentLinks(
+        document: vscode.TextDocument,
+        _token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.DocumentLink[]> {
+        const db = getDB();
+        const links: vscode.DocumentLink[] = [];
+        const text = document.getText();
+        const regex = /\b([a-zA-Z_][a-zA-Z0-9_]{2,})\b/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = regex.exec(text)) !== null) {
+            const word = match[1];
+            if (!db.isKnown(word)) { continue; }
+
+            const startPos = document.positionAt(match.index);
+            const endPos = document.positionAt(match.index + word.length);
+            const range = new vscode.Range(startPos, endPos);
+
+            const args = encodeURIComponent(JSON.stringify([word]));
+            const cmdUri = vscode.Uri.parse(`command:${HELP_CMD}?${args}`);
+            links.push(new vscode.DocumentLink(range, cmdUri));
+        }
+
+        return links;
+    }
+}
+
+/**
+ * Ctrl+Click 命令回调 — 根据当前模式决定行为:
+ *   Webview → 打开 Webview 面板
+ *   纯文本 → 打开虚拟文档
+ */
+export function showHelp(context: vscode.ExtensionContext, cmdName: string): void {
     const db = getDB();
     const info = db.get(cmdName);
     if (!info) { return; }
-    HelpPanelManager.show(context, info);
+
+    if (getHelpStyle() === 'webview') {
+        HelpPanelManager.show(context, info);
+    } else {
+        const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${cmdName}`);
+        vscode.window.showTextDocument(uri, { preview: true, preserveFocus: false });
+    }
 }
 
 // ---- 工具 ----

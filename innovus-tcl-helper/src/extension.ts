@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider, InnovusPlainHelpProvider, showWebviewForCommand } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, showHelp } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -102,9 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     }
 
-    // 4. Definition Provider — 统一入口
-    //    纯文本: Location → innovus-tcl-help:// URI → 虚拟文档
-    //    Webview: Location → command: URI → 直接执行命令，零闪烁
+    // 4a. Definition Provider — 纯文本模式 (F12 → 虚拟文档)
     const plainHelpProvider = new InnovusPlainHelpProvider();
     subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', plainHelpProvider));
     subs.push(vscode.languages.registerDefinitionProvider(
@@ -112,9 +110,15 @@ export function activate(context: vscode.ExtensionContext) {
         new InnovusDefinitionProvider()
     ));
 
-    // 4b. Webview 模式回调命令（command: URI 点击后执行）
-    subs.push(vscode.commands.registerCommand('innovus-tcl._showWebviewHelp', (cmdName: string) => {
-        showWebviewForCommand(context, cmdName);
+    // 4b. Document Link Provider — Ctrl+Click 入口（始终生效，模式在回调中判断）
+    subs.push(vscode.languages.registerDocumentLinkProvider(
+        { language: 'tcl' },
+        new InnovusDocumentLinkProvider()
+    ));
+
+    // 4c. Ctrl+Click 回调命令 — 根据当前模式打开 Webview 或虚拟文档
+    subs.push(vscode.commands.registerCommand('innovus-tcl._showHelp', (cmdName: string) => {
+        showHelp(context, cmdName);
     }));
 
     // 5. Semantic Tokens - Innovus 命令/参数语法高亮
