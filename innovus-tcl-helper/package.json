@@ -1,8 +1,8 @@
 {
-    "name": "innovus-tcl-helper",
-    "displayName": "Innovus TCL Helper",
-    "description": "TCL 语言支持，集成 Cadence Innovus EDA 工具命令的智能提示、悬停文档和静态检查",
-    "version": "0.2.1",
+    "name": "innovus-tcl-enhance",
+    "displayName": "Innovus TCL Enhance",
+    "description": "TCL 语言支持，集成 Cadence Innovus EDA 工具命令的智能提示、悬停文档、静态检查与 Copilot AI 集成",
+    "version": "0.3.0",
     "publisher": "fd-echoro",
     "license": "MIT",
     "repository": {
@@ -10,7 +10,7 @@
         "url": "https://github.com/echo-edai/innovus-tcl-helper"
     },
     "engines": {
-        "vscode": "^1.67.0"
+        "vscode": "^1.90.0"
     },
     "activationEvents": [
         "onLanguage:tcl"
@@ -44,6 +44,22 @@
             {
                 "command": "innovus-tcl.toggleHelpStyle",
                 "title": "Innovus TCL: 切换帮助显示风格 (Webview/纯文本)"
+            },
+            {
+                "command": "innovus-tcl.analyzeScript",
+                "title": "Innovus TCL: AI 分析当前 TCL 脚本"
+            },
+            {
+                "command": "innovus-tcl.listCommands",
+                "title": "Innovus TCL: 列出所有 Innovus 命令"
+            },
+            {
+                "command": "innovus-tcl.switchVersion",
+                "title": "Innovus TCL: 切换 Innovus 版本"
+            },
+            {
+                "command": "innovus-tcl.installMcp",
+                "title": "Innovus TCL: 🤖 一键安装 Copilot MCP 工具"
             }
         ],
         "configuration": {
@@ -77,12 +93,22 @@
                 "innovus-tcl.version": {
                     "type": "string",
                     "default": "",
-                    "description": "Innovus 版本号（如 25.1）。留空使用默认版本。数据目录需对应存在: data_base/help/v{version}/deepseek-chat/"
+                    "description": "Innovus 版本号（如 25.1）。留空使用默认版本。数据目录需对应存在: data/{cn|en}/v{version}/help/"
+                },
+                "innovus-tcl.versions": {
+                    "type": "array",
+                    "default": [],
+                    "description": "可选的 Innovus 版本列表（如 [\"25.1\", \"24.1\"]）。用于快速切换版本。"
+                },
+                "innovus-tcl.enableAITools": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "启用 Copilot AI 工具集成（允许 Copilot 查询 Innovus 命令数据库和解析 TCL 脚本）"
                 },
                 "innovus-tcl.enableDiagnostics": {
                     "type": "boolean",
                     "default": true,
-                    "description": "启用 TCL 语法静态检查"
+                    "description": "启用 TCL 语法静态检查（括号/引号匹配、命令参数校验、相似命令建议）"
                 },
                 "innovus-tcl.enableHover": {
                     "type": "boolean",
@@ -106,6 +132,21 @@
                         "纯文本编辑器标签（类 man page 风格）"
                     ],
                     "description": "F12/Ctrl+Click 帮助文档的显示风格"
+                },
+                "innovus-tcl.diagnosticLevel": {
+                    "type": "string",
+                    "default": "standard",
+                    "enum": [
+                        "basic",
+                        "standard",
+                        "strict"
+                    ],
+                    "enumDescriptions": [
+                        "仅括号和引号匹配",
+                        "基础检查 + 命令参数校验",
+                        "全部检查 + 类型验证 + 相似命令建议"
+                    ],
+                    "description": "静态检查的严格级别"
                 }
             }
         }
@@ -122,7 +163,7 @@
     },
     "devDependencies": {
         "@types/node": "^20.11.0",
-        "@types/vscode": "^1.67.0",
+        "@types/vscode": "^1.90.0",
         "@vscode/vsce": "^3.9.2",
         "typescript": "^5.3.3"
     }

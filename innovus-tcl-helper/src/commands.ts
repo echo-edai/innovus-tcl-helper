@@ -67,12 +67,68 @@ class CommandDB {
     /** 获取当前语言 */
     getLanguage(): Language { return this.language; }
 
-    /** 设置 Innovus 版本（暂未启用，预留给未来多版本支持） */
+    /** 设置 Innovus 版本 */
     setVersion(ver: string): void {
         if (this.version !== ver) {
             this.version = ver;
             this.reload();
         }
+    }
+
+    /** 获取当前版本 */
+    getVersion(): string {
+        return this.version;
+    }
+
+    /** 扫描可用的 Innovus 版本列表 */
+    getAvailableVersions(): { label: string; description: string }[] {
+        const base = this.dataRoot;
+        const lang = this.language;
+        const rootDir = path.join(base, lang);
+
+        // 内置版本: 25.1 (真实数据), test (空数据/关闭高亮)
+        const versions: { label: string; description: string }[] = [
+            { label: '(默认)', description: 'Innovus 25.1 — 2175 个命令' },
+            { label: '25.1', description: 'Innovus 25.1 — 2175 个命令' },
+            { label: 'test', description: '测试模式 — 无命令数据，关闭 Innovus 高亮/提示' }
+        ];
+
+        // 扫描额外的自定义版本目录
+        if (fs.existsSync(rootDir)) {
+            try {
+                const entries = fs.readdirSync(rootDir, { withFileTypes: true });
+                for (const entry of entries) {
+                    if (!entry.isDirectory() || !entry.name.startsWith('v')) { continue; }
+                    const ver = entry.name.substring(1);
+                    // 跳过已内置的
+                    if (ver === '25.1' || ver === 'test') { continue; }
+                    const helpDir = path.join(rootDir, entry.name, 'help');
+                    if (fs.existsSync(helpDir)) {
+                        versions.push({ label: ver, description: `自定义版本: ${ver}` });
+                    }
+                }
+            } catch { /* ignore */ }
+        }
+
+        return versions;
+    }
+
+    /** 获取数据库统计信息 */
+    getStats(): { totalEntries: number; commands: number; variables: number; version: string; language: string } {
+        this.load();
+        let cmdCount = 0;
+        let varCount = 0;
+        for (const info of this.commands.values()) {
+            if (info.is_cmd !== false) { cmdCount++; }
+            else { varCount++; }
+        }
+        return {
+            totalEntries: this.commands.size,
+            commands: cmdCount,
+            variables: varCount,
+            version: this.version || '(默认)',
+            language: this.language
+        };
     }
 
     /** 设置自定义 data_base 根路径 */
@@ -86,26 +142,35 @@ class CommandDB {
     /** 获取数据文件所在目录 */
     private getDataSourceDir(): string {
         const base = this.dataRoot;
-        if (this.language === 'en') {
-            // 英文：优先加载 en/help/ 结构化 JSON，如不存在则解析 en/ori_logs/help_logs/ 原始 .log
-            if (this.version) {
-                const versionHelpDir = path.join(base, 'en', `v${this.version}`, 'help');
-                if (fs.existsSync(versionHelpDir)) { return versionHelpDir; }
-            }
-            const enHelpDir = path.join(base, 'en', 'help');
-            if (fs.existsSync(enHelpDir)) {
-                // 英文结构化 JSON 存在时使用
-                const testFiles = fs.readdirSync(enHelpDir).filter(f => f.endsWith('.json'));
-                if (testFiles.length > 0) { return enHelpDir; }
+        const lang = this.language;
+        const ver = this.version;
+
+        // 特殊版本处理:
+        //   "25.1" → 使用默认 help/ 目录（当前唯一真实数据）
+        //   "test" → vtest/help/ 空目录（关闭所有 Innovus 高亮/提示）
+        //   其他   → v{version}/help/ 自定义版本目录
+
+        const getVersionDir = (): string => {
+            if (!ver) { return path.join(base, lang, 'help'); }
+            if (ver === '25.1') { return path.join(base, lang, 'help'); }
+            // test 或其他自定义版本
+            return path.join(base, lang, `v${ver}`, 'help');
+        };
+
+        if (lang === 'en') {
+            const verDir = getVersionDir();
+            if (fs.existsSync(verDir)) {
+                const testFiles = fs.readdirSync(verDir).filter(f => f.endsWith('.json'));
+                if (testFiles.length > 0) { return verDir; }
             }
             // 回退到原始 .log 解析
-            return path.join(base, 'en', 'ori_logs', 'help_logs');
+            const logDir = path.join(base, 'en', 'ori_logs', 'help_logs');
+            if (fs.existsSync(logDir)) { return logDir; }
+            return verDir; // 返回目录路径（即使为空）
         }
-        // 中文：cn/help/ 结构化 JSON
-        if (this.version) {
-            return path.join(base, 'cn', `v${this.version}`, 'help');
-        }
-        return path.join(base, 'cn', 'help');
+
+        // 中文
+        return getVersionDir();
     }
 
     /** 加载命令数据 */

@@ -62,6 +62,35 @@ function main() {
 
     console.log(`✅ 已复制 ${total} 个 JSON 文件到 data/`);
     console.log('   扩展打包后将包含内置数据，无需外部 data_base/');
+
+    // 3. 确保版本目录存在
+    //    test 版本：空目录（关闭所有 Innovus 提示/高亮）
+    //    25.1 版本：指向默认 help/ 目录（由 getDataSourceDir 代码逻辑处理）
+    ensureDir(path.join(DATA_DST, 'cn', 'vtest', 'help'));
+    ensureDir(path.join(DATA_DST, 'cn', 'v25.1', 'help'));
+    console.log('   ✅ 已创建版本目录: vtest/help, v25.1/help');
+
+    // 清理 macOS 自动生成的 .DS_Store 文件
+    cleanDsStore(DATA_DST);
+}
+
+function ensureDir(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+}
+
+function cleanDsStore(dir) {
+    if (!fs.existsSync(dir)) return;
+    for (const file of fs.readdirSync(dir)) {
+        const fullPath = path.join(dir, file);
+        if (file === '.DS_Store') {
+            fs.unlinkSync(fullPath);
+            console.log(`  🧹 已清理: ${path.relative(ROOT, fullPath)}`);
+        } else if (fs.statSync(fullPath).isDirectory()) {
+            cleanDsStore(fullPath);
+        }
+    }
 }
 
 main();
