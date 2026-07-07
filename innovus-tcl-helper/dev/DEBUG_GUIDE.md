@@ -4,9 +4,6 @@
 
 ### 1. 确认项目结构完整
 
-如何将其在本地调试？你自己终端能否运行一下测试测试。还有一些是变量配置的，比如set check_design_across_hierarchy，这个会修改变量并影响设计
-
-增加自动补全功能，增加自定义跳转，可以将命令跳转到详细的man/help的docs界面。是否支持
 
 ```bash
 cd innovus-tcl-helper

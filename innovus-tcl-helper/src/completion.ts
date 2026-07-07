@@ -21,18 +21,22 @@ export class InnovusCompletionProvider implements vscode.CompletionItemProvider 
         const isCommandPosition = this.isAtCommandStart(linePrefix);
 
         if (isCommandPosition) {
-            // --- 命令名补全 ---
+            // --- 命令名 + 变量名补全 ---
             const allNames = db.getCommandNames();
             const items: vscode.CompletionItem[] = [];
             for (const name of allNames) {
                 const info = db.get(name);
-                const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Function);
-                item.detail = 'Innovus Command';
-                item.documentation = new vscode.MarkdownString(
-                    info ? `**${info.summary}**\n\n${info.description || ''}` : 'Innovus 命令'
+                const isCmd = info?.is_cmd !== false;  // 默认为命令
+                const item = new vscode.CompletionItem(
+                    name,
+                    isCmd ? vscode.CompletionItemKind.Function : vscode.CompletionItemKind.Variable
                 );
-                // 排序：常用命令靠前
-                item.sortText = '0' + name;
+                item.detail = isCmd ? 'Innovus Command' : 'Mode/Variable Setting';
+                item.documentation = new vscode.MarkdownString(
+                    info ? `**${info.summary}**\n\n${info.description || ''}` : 'Innovus 条目'
+                );
+                // 排序：命令在前，变量在后
+                item.sortText = isCmd ? ('0' + name) : ('1' + name);
                 items.push(item);
             }
             return items;

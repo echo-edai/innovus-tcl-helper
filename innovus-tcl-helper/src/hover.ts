@@ -1,5 +1,5 @@
 /**
- * Hover Provider - 鼠标悬浮时显示 Innovus 命令的中文帮助
+ * Hover Provider - 鼠标悬浮时显示 Innovus 命令/变量的帮助
  */
 
 import * as vscode from 'vscode';
@@ -18,22 +18,31 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
         if (!wordRange) { return null; }
 
         const word = document.getText(wordRange);
-
-        // 检查是否是已知的 Innovus 命令
         const cmdInfo = db.get(word);
         if (!cmdInfo) { return null; }
 
-        // 构建 Markdown 悬停内容
         const markdown = new vscode.MarkdownString();
         markdown.isTrusted = true;
         markdown.supportHtml = true;
 
-        // --- 标题 ---
-        markdown.appendMarkdown(`## \`${escapeMd(cmdInfo.command)}\`\n\n`);
+        // --- 标题 + 类型标签 ---
+        if (cmdInfo.is_cmd) {
+            markdown.appendMarkdown(`## \`${escapeMd(cmdInfo.command)}\` \`命令\`\n\n`);
+        } else {
+            markdown.appendMarkdown(`## \`${escapeMd(cmdInfo.command)}\` \`⚙️ 模式/变量\`\n\n`);
+        }
 
         // --- 摘要 ---
         if (cmdInfo.summary) {
             markdown.appendMarkdown(`**${cmdInfo.summary}**\n\n`);
+        }
+
+        // --- 模式变量的使用说明 ---
+        if (!cmdInfo.is_cmd) {
+            markdown.appendMarkdown('---\n\n');
+            markdown.appendMarkdown('> 💡 这是一个**模式设置变量**，通过以下方式使用：\n\n');
+            markdown.appendCodeblock(`set ${cmdInfo.command}  ;# 启用/查看\nset ${cmdInfo.command} <value>  ;# 设置值`, 'tcl');
+            markdown.appendMarkdown('\n');
         }
 
         // --- 语法 ---
@@ -44,7 +53,7 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
         }
 
         // --- 描述 ---
-        if (cmdInfo.description) {
+        if (cmdInfo.description && cmdInfo.description !== cmdInfo.summary) {
             markdown.appendMarkdown('### 说明\n\n');
             markdown.appendMarkdown(cmdInfo.description + '\n\n');
         }

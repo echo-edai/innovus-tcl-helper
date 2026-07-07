@@ -139,7 +139,7 @@ class CommandDB {
                 const filePath = path.join(dataDir, file);
                 const content = fs.readFileSync(filePath, 'utf-8');
                 const info: CmdInfo = JSON.parse(content);
-                if (info.command && info.is_cmd) {
+                if (info.command) {
                     this.commands.set(info.command, info);
                 }
             } catch {
@@ -165,7 +165,7 @@ class CommandDB {
                     const filePath = path.join(dataDir, file);
                     const content = fs.readFileSync(filePath, 'utf-8');
                     const info: CmdInfo = JSON.parse(content);
-                    if (info.command && info.is_cmd) {
+                    if (info.command) {
                         this.commands.set(info.command, info);
                     }
                 } catch {
@@ -230,6 +230,20 @@ class CommandDB {
 
     /** 检查是否为已知命令 */
     isCommand(name: string): boolean {
+        this.load();
+        const info = this.commands.get(name);
+        return info !== undefined && info.is_cmd === true;
+    }
+
+    /** 检查是否为模式/变量设置项（非命令） */
+    isModeVariable(name: string): boolean {
+        this.load();
+        const info = this.commands.get(name);
+        return info !== undefined && info.is_cmd === false;
+    }
+
+    /** 检查是否为已知条目（命令或变量） */
+    isKnown(name: string): boolean {
         this.load();
         return this.commands.has(name);
     }
