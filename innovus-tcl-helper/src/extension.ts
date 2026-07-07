@@ -14,6 +14,7 @@ import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
 import { InnovusDefinitionProvider, InnovusHelpContentProvider } from './definition';
+import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
 
@@ -107,6 +108,14 @@ export function activate(context: vscode.ExtensionContext) {
     subs.push(vscode.languages.registerDefinitionProvider(
         { language: 'tcl' },
         new InnovusDefinitionProvider()
+    ));
+
+    // 5. Semantic Tokens - Innovus 命令/参数语法高亮
+    const semanticProvider = new InnovusSemanticTokensProvider();
+    subs.push(vscode.languages.registerDocumentSemanticTokensProvider(
+        { language: 'tcl' },
+        semanticProvider,
+        semanticProvider.getLegend()
     ));
 
     // 监听配置变更，切换语言时自动重载
