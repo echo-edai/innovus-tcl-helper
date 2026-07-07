@@ -1,0 +1,231 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+trimDesign(25.10)                                            trimDesign(25.10)
+
+Name
+       trimDesign - Allows you to specify the coordinates of a box to create a
+       small portion of the design as an independent design
+
+Syntax
+        trimDesign
+
+       [-help]
+
+       [-coreToBoundary <distance>]
+
+       [-dir <output_dir_to_save_trimmed_design>]
+
+       [-encryptName <proc_name_to_encrypt>]
+
+       [-name <trim_design_name>]
+
+       [-nets <list_of_net_names>]
+
+       [-placeOnly]
+
+       [-area  {<x1 y1 x2 y2>} | -polygon< list_of_points >| -selectedRouteBlk
+       ]
+
+       Allows you to specify the coordinates of a box to create a  small  por-
+       tion  of the design as an independent design. This trimmed down version
+       of the design can be then used for investigation and analysis. When you
+       share the trimmed design for investigation of a localized issue, you do
+       not need to share the whole third-party IP information, thereby  ensur-
+       ing confidentiality of the third-party data.
+
+       While  the  trimmed  design  completely preserves the physical data, it
+       does not preserve the timing and the power domain data.  Working  on  a
+       small  portion  of  the  design  offers  a faster turnaround time and a
+       lesser memory footprint.
+
+       Notes:
+
+              * The trimDesign command retains the attributes  and  properties
+                of  all  the standard cells and macros that are completely in-
+                side the trim box/area. All hard macros that overlap with  the
+                trim  box/area  are  also  preserved.  It does not include any
+                standard cells or macros that are completely outside the spec-
+                ified trim box/area.
+
+              * The trimDesign command preserves all overlapping rows,  sites,
+                and colors.
+
+              *
+
+                The  trimDesign  command flattens all instances and net names.
+                All instances in the trim box/areal lose their original  logic
+                hierarchy  and appear `flat' in the trimmed database. Any nam-
+                ing conflicts arising due to flattening are automatically  re-
+                solved.  For  example, h1/h2/i1 in the full design will appear
+                as i1 in the trimmed design.  Also,  h1/h4/i1  may  appear  as
+                i1_uniquify1, to distinguish it from i1.
+
+                Note:  To  resolve naming conflicts due to the loss of hierar-
+                chy, additional name uniquification  is  done.  A  mapping  of
+                original nets/instances names vs their trimmed design modified
+                names, is written in a map file for book keeping purpose.
+
+              * The trimDesign command maintains the design parameters such as
+                instance  location/orientation,  regular/special  wire and its
+                connectivity relative to the original full design.
+
+              * The trimDesign command retains the attributes  and  properties
+                of  all  the  nets  having  some  instances  inside  the  trim
+                box/area.  It also preserves (pushes down) the nets  that  are
+                not  connected  to any instance in the trim box/area, but have
+                some wires overlapping with trim box/area. Nets having all in-
+                stances and wires outside of trim box/area are discarded.
+
+              * The trimDesign command creates ports for  all  wires  crossing
+                the boundary of the trimmed design.
+
+              * The  trimDesign  command  preserves the tracks, attributes and
+                colors of all  wires  that  are  completely  inside  the  trim
+                box/area.  All  wires  that overlap with the trim box/area are
+                also preserved. It does not include  any  wire  that  is  com-
+                pletely outside the specified trim box/area.
+
+              *
+
+                The  trimDesign  command  preserves  the  Power/Ground/Special
+                wires that overlap with the boundary of the trim box  by  cut-
+                ting them against the boundary. It creates additional PG ports
+                at cross points these wires.
+
+              * The  trimDesign  command discards fences, regions, guides, in-
+                stance groups, and power domains.
+
+              * The trimDesign command saves the .globals files. The  .globals
+                file  has  the  .lef  list  copied from original full design's
+                .globals file.
+
+              * The checkPlace command reports all violations that were  there
+                on  instances  in the box in the actual design. However, since
+                hierarchical fences are not brought back, the  trimmed  design
+                may not have the Region/Fence and Not-of-Fence Violations.
+
+              *
+
+                The  verify_drc command reports all violations that were there
+                on nets in the box of actual design. However, since  only  the
+                net wires crossing box boundary are preserved, the trimmed de-
+                sign may have some extra violations.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each trimDesign parameter. For a detailed description
+              of the command and all of its parameters, use the man command:
+
+              man trimDesign
+
+       -area <box_coordinates>
+              List  of  coordinates to represent a box for getting the trimmed
+              design.
+
+              Note: The specified box is snapped to the instance grid. All in-
+              stances in the box lose their original logic hierarchy  and  ap-
+              pear flat in the new db.
+
+              Data_type: string, required
+
+       -coreToBoundary <distance>
+              Specifies that any instance lying within the distance of coreTo-
+              Boundary (in microns) to the trim box will be discarded.
+
+              Default: 2
+
+              Data_type: string, optional
+
+       -dir <output_dir_to_save_trimmed_design>
+              Specifies the name of the directory in which the data related to
+              the trimmed-design is saved.
+
+              Data_type: string, optional
+
+       -encryptName <proc_name_to_encrypt>
+              Specifies  that  the  names  of instances and nets in the design
+              will be encrypted when the trimmed design is saved.
+
+              Data_type: string, optional
+
+       -name <trim_design_name>
+              Specifies the top-level name of the new trimmed design.
+
+              Data_type: string, optional
+
+       -nets <list_of_net_names>
+              Species the nets that are to be completely enclosed by the spec-
+              ified shape by taking union of shape with net-boxes.
+
+              Data_type: string, optional
+
+       -placeOnly
+              Specifies that only instances will be pushed.
+
+              Data_type: bool, optional
+
+       -polygon< list_of_points>
+              List of coordinates to  represent  a  polygon  for  getting  the
+              trimmed design.
+
+              Data_type: string, optional
+
+       -selectedRouteBlk
+              Specifies  that  the  selected routing blockages will be used to
+              infer the box or polygon for getting the trimmed design.
+
+              Data_type: string, optional
+
+Examples
+              * The following command creates a trimmed design, trim_db,  with
+                the  specified polygon coordinates and save the data in the DB
+                file.
+
+                trimDesign -dir  DB  -name  trim_db  -polygon  {{500.0  700.0}
+                {500.0 900.0} {500.0 900.0} {700.0 900.0} {700.0 900.0} {700.0
+                800.0} {700.0 800.0} {800.0 800.0} {800.0 800.0} {800.0 700.0}
+                {800.0 700.0} {500.0 700.0} }
+
+              *
+
+                The  following  command creates a trimmed design, based on the
+                selected routing blockage:
+
+                trimDesign -dir DB -name trim_db -selectedRouteBlk
+
+              *
+
+                The following command uses a get_new_name procedure to encrypt
+                the names on the instances and  nets  in  the  trimmed  design
+                trim_db:
+
+                trimDesign  -dir  DB  -name  trim_db  -area {300.0 200.0 800.0
+                700.0} -encryptName gen_new_name
+
+                The following is a structure of the encryption procedure file.
+                You can customize this procedure:
+
+                proc gen_new_name {<name>} {
+
+                  global n
+
+                  if {![info exists n]} {
+
+                    set n 0
+
+                  }
+
+                  set new_name en_name__$n
+
+                  incr n
+
+                  return $new_name
+
+                }
+
+Related Information
+              * Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide
+
+                * Trimming the Design
+
+                           Fri Apr 04 01:25:37 2025          trimDesign(25.10)

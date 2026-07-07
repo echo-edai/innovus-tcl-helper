@@ -1,0 +1,291 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_skew_group_delay(25.10)            get_ccopt_skew_group_delay(25.10)
+
+Name
+       get_ccopt_skew_group_delay  -  By  default,  this  command  returns the
+       longest source-to-sink delay for the specified skew group
+
+Syntax
+       get_ccopt_skew_group_delay
+
+       [-help]
+
+       [-check_type {setup | hold}]
+
+       [-delay_corner delay_corner]
+
+       [-delay_type {early | late}]
+
+       [-edge {rise | fall}]
+
+       [-exclude_pin_insertion_delays]
+
+       -skew_group <skew_group_name>
+
+       [-skew | -longest | -shortest ]
+
+       [-path_length      <distance_metric>      |      -summarize_stage_depth
+       <cell_type_list>]
+
+       [-all_active_sinks | -to pin | -from pin | -through pin]
+
+       [-virtual_delays_only | -real_delays_only]
+
+       [-wire_delays_only | -cell_delays_only]
+
+       By  default,  this command returns the longest source-to-sink delay for
+       the specified skew group. Alternatively, you can use -shortest  to  re-
+       turn  the shortest source-to-sink delay, or -skew to return the differ-
+       ence between the shortest and longest source-to-sink delay.
+
+       Optional arguments let you restrict the set of pins considered. For ex-
+       ample, use -to to return the longest delay to the specified  sink  pin,
+       use -delay_type and -delay_corner to specify how delays are calculated,
+       and use -wire_delays_only to specify which delays are considered.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each get_ccopt_skew_group_delay parameter.  For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command:  man get_ccopt_skew_group_delay.
+
+       -all_active_sinks
+              Specifies that the result should be a tcl dict of pairs of  sink
+              and  delay,  describing  delays  for all the active sinks of the
+              skew group. For example, {sink_a latency_a sink_b latency_b  ...
+              sink_n latency_n}.
+
+       -cell_delays_only
+              Specifies that CCOpt only considers cell delays when calculating
+              delays and ignores wire delays.
+
+       -check_type {setup | hold}
+              Specifies  whether to use setup or hold timing as the check type
+              to use for the specified skew group.
+
+              If a check type is specified, but the -delay_type  parameter  is
+              not specified, the software behaves in the following manner:
+
+              * -check_type -setup will mean -delay_type -late
+
+              * -check_type -hold will mean -delay_type -early
+
+              Note: If a check type is not specified, the software will always
+              look  at  what  the views permit, preferring the "setup" view if
+              there is a choice.
+
+       -delay_corner <delay_corner>
+              Specifies the delay corner to use when calculating delays.
+
+              If this parameter is not specified, the software  will  use  the
+              delay  corner  specified  using  the CCOpt property, primary_de-
+              lay_corner. However, if no valid  delay  corner  is  found,  the
+              software will error out.
+
+              Note:  For  detailed  help  on  the  CCOpt property, primary_de-
+              lay_corner, run the following command:
+
+              get_ccopt_property -help primary_delay_corner
+
+       -delay_type {early | late}
+              Specifies whether to use early or late half delays.
+
+       When early is specified, CCOpt uses only early path timing data to cal-
+       culate delay, for the clock edge specified.  When  late  is  specified,
+       CCOpt uses only late path timing data to calculate delay, for the clock
+       edge specified.
+
+              Note:  If  the delay type is not specified but the check type is
+              specified as "setup", the software will consider the delay  type
+              as  "late".  If the check type is "hold", the software will con-
+              sider the delay type as "early".
+
+       -edge {rise | fall}
+              Specifies the edge of the specified pin for which delay informa-
+              tion is to be calculated.
+
+              When fall is specified, CCOpt uses only falling clock edge  tim-
+              ing  data to calculate delay. When rise is specified, CCOpt uses
+              only rising clock edge timing data to calculate delay.
+
+       -exclude_pin_insertion_delays
+              Specifies that the delay should exclude pin insertion delays.
+
+       -from <pin>
+              Specifies the pin to query delays from.  This  means  that  only
+              paths  from  the  given  pin to a sink of the skew group will be
+              considered.
+
+       -longest
+              Specifies that CCOpt  will  return  the  delay  of  the  longest
+              source-to-sink  path  within the skew group. This is the default
+              option.
+
+       -path_length {half_perim pin_to_pin_steiner routed}
+              Specifies that CCOpt will report by the distance from  the  root
+              measured  using the specified distance metric. You can choose to
+              report for any of the following metrics:
+
+              * half_perim: The sum of the Manhattan distances between  termi-
+                nals  on  the path. This is not blockage-aware and is suitable
+                for unbuffered clock trees.
+
+              * pin_to_pin_steiner: The sum of lengths calculated using a pin-
+                to-pin steiner route. This is blockage-aware and  is  suitable
+                for unbuffered clock trees.
+
+              * routed:  The  sum  of  pin-to-pin paths calculated on the full
+                steiner for each net. This is blockage-aware but is not  suit-
+                able for unbuffered clock trees.
+
+              The  routed  metric  is  best post-CTS as it measures the actual
+              clock path. The other metrics are good for pre-CTS although they
+              can also be calculated post CTS.  For  pre-CTS,  the  half_perim
+              metric is fast to calculate while the other metrics are slow.
+
+              Example:
+
+              get_ccopt_skew_group_delay     -skew_group    skew_group:clk/de-
+              fault_constraint_mode -longest -path_length half_perim 1177.8065
+
+              get_ccopt_skew_group_delay    -skew_group     skew_group:clk/de-
+              fault_constraint_mode   -longest   -path_length  half_perim  -to
+              pin:nastyclock/flop001/CK 930.0045
+
+              Note:
+
+              * You can only specify one metric at a time.
+
+              *
+
+                You have to specify a skew group and that the length  reported
+                will  be  from the skew group sources to the skew group sinks.
+                This may not cover  the  entire  clock  tree.  The  calculated
+                length will take account of any cells on the clock path, which
+                may  increase the path length. The behavior is consistent with
+                delay. The -longest, -shortest, and  -skew  options  work  the
+                same.  This  means  that  the software looks at all skew group
+                sinks and finds the one with  the  longest/shortest  distance.
+                This sink will not always be the same with the three metrics.
+
+              * This   parameter   is  mutually  exclusive  with  the  -summa-
+                rize_stage_depth parameter.
+
+       -real_delays_only
+              Specifies that CCOpt only considers real delays in  the  design.
+              It will not include the virtual delays added by trial CTS to re-
+              solve skew constraints.
+
+       -shortest
+              Specifies  that  CCOpt  will  return  the  delay of the shortest
+              source-to-sink path within the skew group.
+
+       -skew  Specifies that CCOpt will  return  the  difference  between  the
+              shortest  and  longest  source-to-sink  delays  within  the skew
+              group.
+
+       -skew_group <skew_group_name>
+              Specifies the name of the skew group for which the delay  infor-
+              mation will be returned. This is a required parameter.
+
+       -summarize_stage_depth <cellTypeList>
+              Specifies  that the command will consider the number of cells of
+              the specified type(s) in the tree, instead of considering delay.
+              Possible values are buffer, inverter,logic, clock_gate, and gen-
+              erator. You can also specify * to include all cell types.
+
+              For example, the following  command  tells  you  the  number  of
+              buffers  and inverters along the specified path type in the skew
+              group, PM_HL_FUNC.
+
+              get_ccopt_skew_group_delay  -summarize_stage_depth  {buffer  in-
+              verter} -skew_group m_dsram_clk/PM_HL_FUNC
+
+              Note:  The  *  setting is not used in combination with any other
+              cell type. For example, the below is not a valid setting.
+
+              -summarize_stage_depth {* buffer}
+
+              Note: This parameter is mutually exclusive with the -path_length
+              parameter.
+
+       -through <pin>
+              Specifies the pin to query delays through. This means that  only
+              paths  from  a source of the given skew group, through this pin,
+              and to a sink of the given skew group, will be considered.
+
+       -to <pin>
+              Specifies the pin to query delays to. This means that only paths
+              from a source of the given skew group to this pin will  be  con-
+              sidered.
+
+       -virtual_delays_only
+              Specifies  that CCOpt will return the skew, shortest path delay,
+              or longest path delay only considering the virtual  path  delays
+              (added by trial balancing) in the design and any user pin inser-
+              tion  delays applied before CTS. It will not include real delays
+              added by clustering buffers and existing cells in the design.
+
+       -wire_delays_only
+              Specifies that CCOpt will return the skew, shortest path  delay,
+              or  longest  path  delay only considering the wire delays in the
+              design. (that is, ignoring cell delays)
+
+Examples
+              *
+                 Use the following command to list  all  skew  groups  in  all
+                clocks:
+
+                get_ccopt_skew_groups *
+
+                m_clk/PM_HL_FUNC m_digit_clk/PM_HL_FUNC m_dsram_clk/PM_HL_FUNC
+                m_ram_clk/PM_HL_FUNC m_rcc_clk/PM_HL_FUNC m_spi_clk/PM_HL_FUNC
+                refclk/PM_HL_FUNC
+
+              *
+
+                Use  the  following command to list the sinks in the specified
+                skew group:
+
+                get_ccopt_property sinks  -skew_group m_clk/PM_HL_FUNC
+
+                TDSP_DS_CS_INST/g395/A1                  ROM_512x16_0_INST/CLK
+                SPI_INST/present_state_reg[0]/CP SPI_INST/dflag_reg/CP S..
+
+              * Use  the  following  command to get the longest source to sink
+                delay  for   the   specified   sink:get_ccopt_skew_group_delay
+                -skew_group m_clk/PM_HL_FUNC -to SPI_INST/dflag_reg/CP
+
+              * Use the following command to get the number of buffers and in-
+                verters  along  the  specified  path  type  in the skew group,
+                PM_HL_FUNC:
+
+                get_ccopt_skew_group_delay -summarize_stage_depth {buffer  in-
+                verter} -skew_group  m_dsram_clk/PM_HL_FUNC
+
+                The software returns the following value:
+
+                4
+
+Related Information
+              * get_ccopt_skew_groups
+
+              * get_ccopt_property
+
+              * get_ccopt_skew_group_path
+
+              * delete_ccopt_skew_groups
+
+              * modify_ccopt_skew_group
+
+              * report_ccopt_skew_groups
+
+              * set_ccopt_property
+
+              * The following topics in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                * Manual Setup and Adjustment of the Clock Tree Specification
+
+                           Fri Apr 04 01:25:37ge2t0_2c5copt_skew_group_delay(25.10)

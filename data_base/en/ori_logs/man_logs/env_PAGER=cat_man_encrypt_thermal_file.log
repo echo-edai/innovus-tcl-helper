@@ -1,0 +1,81 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+encrypt_thermal_file(25.10)                        encrypt_thermal_file(25.10)
+
+Name
+       encrypt_thermal_file  -  Specifies  to  encrypt the file containing the
+       thermal conductivity value for layers, and to protect foundry's thermal
+       conductivity parameters used for power map generation
+
+Syntax
+       encrypt_thermal_file
+
+       -input <ASCII>.txt
+
+       -output $<encrypted_conductivity>.txt
+
+       Specifies to encrypt the file containing the thermal conductivity value
+       for layers, and to protect foundry's  thermal  conductivity  parameters
+       used  for  power  map generation. This encrypted file is then specified
+       with the report_power -thermal_conductivity_inputs parameter for gener-
+       ating a tile-based power map file.
+
+Parameters
+       -input <ASCII>.txt
+              Specifies the name of the ASCII thermal file that  needs  to  be
+              encrypted.  This  file contains the thermal conductivity parame-
+              ters used for power map generation.
+
+              The -input parameter supports both layer  type  and  layer  name
+              based thermal conductivity file.
+
+              The  following  is  a  snippet of the input thermal conductivity
+              file content (layer type based file):
+
+              Metal 430
+
+              Silicon 250
+
+              Dielectric 0.6
+
+       -output<$encrypted_conductivity.txt>
+              Specifies the name of the encrypted output thermal file.
+
+              The following is a snippet of the encrypted thermal conductivity
+              file content:
+
+              Metal $encryption_value
+
+              Silicon $encryption_value
+
+              Dielectric $ecncryption_value
+
+Examples
+              * The following command encrypts the specified input file  (for-
+                mat_1.txt)   to  generate  the  encrypted  output  file  (for-
+                mat_1_encr.txt):
+
+                encrypt_thermal_file -input encrypt/format_1.txt  -output  en-
+                crypt/format_1_encr.txt
+
+                The  encrypted  file (format_1_encr.txt) is then specified for
+                generating a tile-based power map file, as shown below:
+
+                report_power \
+
+                    -outfile                    static.rpt \
+
+                    -thermal_power_map_tile     {5 5}\
+
+                    -thermal_power_map_format   stack \
+
+                    -thermal_power_map_file     powermap_format1_encr_in.txt \
+
+                    -thermal_conductivity_inputs ./encrypt/format_1_encr.txt
+
+Related Information
+              * report_power
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025encrypt_thermal_file(25.10)

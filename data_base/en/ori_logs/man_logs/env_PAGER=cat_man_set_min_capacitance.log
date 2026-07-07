@@ -1,0 +1,156 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_min_capacitance(25.10)                          set_min_capacitance(25.10)
+
+Name
+       set_min_capacitance
+
+Syntax
+       set_min_capacitance
+
+       [-help]
+
+       <capacitance_limit>
+
+       <object_list>
+
+       [-clock_path]
+
+       [-data_path]
+
+       [-fall]
+
+       [-override]
+
+       [-rise]
+
+       Sets  the  minimum  capacitance limit on the specified ports of the top
+       timing module and/or clock waveforms.
+
+       When set on a port, the total capacitance of the net connected to  that
+       port  must be greater than or equal to the specified limit. When set on
+       a module, the limit applies to all the nets of that module.  The  total
+       capacitance of each net of the module must be greater than or equal the
+       specified  limit. The minimum capacitance limit also comes from library
+       objects, which is the default minimum capacitance  limit  of  libraries
+       and  minimum capacitance limit on library cell pins. Pins in the design
+       inherit the limits from libraries. When limits are set on a module  and
+       the  limit  is  inherited  from libraries, the most constraining limit,
+       which is the largest limit, is used.
+
+       Note: The limit set on the top timing  module  applies  to  its  ports.
+       Thus,  if  minimum  capacitance limits are set on the top timing module
+       and its ports, the most constraining limit will apply to the ports.
+
+       Use the report_ports -type port_cap_limit command to view  the  minimum
+       capacitance limits set on ports.
+
+       When  limits  are  set  on  a  clock waveform, you can use -clock_path,
+       -data_path, -rise, and -fall parameters to provide more specifications.
+
+       The set_min_capacitance constraint on clock  objects  will  be  honored
+       only  by  the  report_constraint  command  for DRV violations. The con-
+       straint will not be used in optimizations.
+
+       Note: This command syntax is applicable only when  the  flow-compatible
+       mode is on.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clock_path
+              Specifies  all  pins  that  are  in  the network of the specific
+              clocks in the object list.
+
+       -data_path
+              Specifies all pins that are in the data paths  launched  by  the
+              specific clocks in the object list.
+
+       -fall  Specifies falling capacitance.
+
+       -rise  Specifies rising capacitance for all selected pins.
+
+       <capacitance_limit>
+              Specifies the value for the minimum capacitance limit. The limit
+              must  be  greater than or equal to zero. The limit is in capaci-
+              tance units from the target technology library.
+
+       <object_list>
+              Specifies the list of objects - ports,  instance  pins,  library
+              cell pins, modules, and/or clock waveforms.
+
+       -override
+              Overrides the minimum capacitance limit from other sources, such
+              as, library or constraints.
+
+              This  parameter can be used to force a specific constraint value
+              for a specified list of instance pins/port/library cell  pins  -
+              this overrides the maximum/minimum values set prior to this set-
+              ting.
+
+              To enable this feature, make the following setting:
+
+              set timing_constraint_enable_drv_limit_override true
+
+Examples
+              * The following example sets a minimum capacitance limit of 0.02
+                units  on all the ports of the top timing module and a minimum
+                capacitance limit of 0.05 units on the top timing module:
+
+                set_min_capacitance 0.02 [get_ports *]
+
+                set_min_capacitance 0.05 [current_design]
+
+                The limit used for ports is 0.05, which is the  most  restric-
+                tive  limit  set on the top timing module (0.05) and the limit
+                set on ports (0.02).
+
+              * The following example uses the report_port command to show the
+                minimum capacitance limit set on ports:
+
+                set_min_capacitance 0.02 [get_ports *]
+
+                report_ports -type port_cap_limit -pin [get_ports *]
+
+              * The following command sets the minimum  capacitance  limit  of
+                0.001 units on pins in the all_clocks collection:
+
+                set_min_capacitance 0.001 -data_path [all_clocks]
+
+                Example: Minimum Capacitance Limit Set on Ports Report
+
+                report_ports -type port_cap_limit -pin [get_ports *]
+
+                ----------------------------------------------------
+
+                Pin      Dir    Assertion         Value
+
+                Name
+
+                ----------------------------------------------------
+
+                CLK2    IN      port_cap_limit   ( 0.020 : 0.900 )
+
+                CLK1    IN      port_cap_limit   ( 0.020 : 0.900 )
+
+                in2     IN      port_cap_limit   ( 0.020 : 0.900 )
+
+                in1     IN      port_cap_limit   ( 0.020 : 0.900 )
+
+                out2    OUT     port_cap_limit   ( 0.020 : 0.900 )
+
+                out1    OUT     port_cap_limit   ( 0.020 : 0.900 )
+
+                ----------------------------------------------------
+
+Related Information
+              * report_ports
+
+              * set_max_capacitance
+
+              * set_max_transition
+
+              * set_min_transition
+
+              * report_constraint
+
+                           Fri Apr 04 01:25:37 2025 set_min_capacitance(25.10)

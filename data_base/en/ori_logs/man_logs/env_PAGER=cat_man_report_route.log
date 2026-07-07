@@ -1,0 +1,697 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_route(25.10)                                        report_route(25.10)
+
+Name
+       report_route
+
+Syntax
+       report_route
+
+       [-help]
+
+       [-clock]
+
+       [-em]
+
+       [-fanout <integer>]
+
+       [-fill]
+
+       [-inst <string>]
+
+       [-multi_cut]
+
+       [-ndr]
+
+       [-net <net_name>]
+
+       [-net_length <length>]
+
+       [-patch]
+
+       [-pg_net <string>]
+
+       [-secondary_pg_nets {<cellName1:pinName1>}]
+
+       [-selected]
+
+       [-shield]
+
+       [-summary]
+
+       [-via_pillar]
+
+       [-tap_cells]
+
+       [-track_utilization [-area {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}
+       | -view_window ]
+
+         [-layer <string>] [-include_regular_routes ]]
+
+       Report  all  the  routing  related  information  of the design. The re-
+       port_route command is used for reporting:
+
+              * Congestion
+
+              * Single-cut or multi-cut table for each layer.
+
+              * Via Usage summary
+
+              * DFM via reporting
+
+              * Shield coverage
+
+              * EM coverage
+
+              * Wire length
+
+              * Wire density
+
+              * DRC violations
+
+              * Statistics for selected nets
+
+              * Track utilization
+
+Parameter
+       -area {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}
+              Specifies the coordinates of one or more area  regions  for  re-
+              porting track utilization.
+
+              For  example,  report_route  -track_utilization  -area {299.9015
+              301.332 371.8345 372.4}
+
+              Data_type: box_list, optional
+
+       -clock Reports statistics of clock nets.
+
+              Data_type: bool, optional
+
+       -em    Reports EM statistics of nets.
+
+              Data_type: bool, optional
+
+       -fanout <integer>
+              Specifies the minimum fanout for limit.
+
+              Data_type: int, optional
+
+       -fill  Specifies the patch wire and active fill information.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each report_route parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man report_route
+
+       -include_regular_routes
+              Reports track utilization for tracks blocked by regular wiring.
+
+              Note: By default, the report_route command does not include reg-
+              ular wiring when computing track utilization.
+
+              Data_type: bool, optional
+
+       -inst <string>
+              Specifies the instance name.
+
+              Data_type: string, optional
+
+       -layer <layer | layer:layer>
+              Specifies  the  layer or layer range for which track utilization
+              report is generated.
+
+              For example: report_route -track_utilization -layer 1:4
+
+              Data_type: string, optional
+
+       -multi_cut
+              Prints single-cut and multi-cut table for each  layers.  If  you
+              specify the DFM via list with setNanoRouteMode -dbViaWeight then
+              this option can also provide dfm via ratio
+
+              Data_type: bool, optional
+
+       -ndr   Reports NDR statistics of nets.
+
+              Data_type: bool, optional
+
+       -net <net_name>
+              Specifies the name of the net for which the report is generated.
+
+              Data_type: string, optional
+
+       -net_length length
+              Specifies  the  minimum wire length of the net for reporting the
+              net statistics. All nets whose length is more than the specified
+              value are included in the report.
+
+              Data_type: float, optional
+
+       -patch Adds the patch length information to the report.
+
+              Data_type: bool, optional
+
+       -pg_net <string>
+              Specifies the PG net name.
+
+              Data_type: string, optional
+
+       -secondary_pg_nets {<cellName1>:<pinName1>}
+              Specifies the secondary pg pin information. It reports the rout-
+              ing length of the secondary pg pin from the grid  tap  point  to
+              pin. You can use wildcards with this parameter to report all the
+              secondary pg pins and sort the results in descending order.
+
+              Use model:
+
+              report_route -secondary_pg_nets {ENDCAP:BIASNW}
+
+              Data_type: string, optional
+
+       -selected
+              Reports statistics for selected nets only.
+
+              Data_type: bool, optional
+
+       -shield
+              Reports statistics for shielded nets only.
+
+              Data_type: bool, optional
+
+       -summary
+              Specifies that just the summary table should be displayed in the
+              report. The summary report contains:
+
+              * Number of objects, such as cells, nets, and pins
+
+              * Number  and  percentage of nets with one, two, three, four, or
+                more terminals.
+
+              * Names and numbers of primitives used.
+
+              * Net length and connection length statistics
+
+              * Total wire length and number of vias, per layer.
+
+              Data_type: bool, optional
+
+       -tap_cells
+              Reports tap cell information associated with shielded nets.
+
+              Data_type: bool, optional
+
+       -track_utilization
+              Reports the track utilization.
+
+              Data_type: bool, optional
+
+       -via_pillar
+              Reports stacking via statistics.
+
+              Data_type: bool, optional
+
+       -view_window
+              Report area in ui_view_box.
+
+              Data_type: bool, optional
+
+Example Report
+              * The following command reports the  track  utilization  in  the
+                specified  area  for  layers Metal1-Metal4 and include regular
+                routes.
+
+                report_route  -track_utilization   -area   {299.9015   301.332
+                371.8345 372.4} -layer 1:4 -include_regular_routes
+
+                #Calculating Track Utilization in region ( 299.90150 301.33200
+                371.83450 372.40000 ) for layer range: 1-4 [Metal1-Metal4] ...
+
+                #
+
+                #+--------+---------+-------------+-----------+-------------+-------------+-----------+--------+----------------+
+
+                #|                                      |      BLOCKED      BY
+                |                |
+
+                #+--------+---------+-------------+-----------+-------------+-------------+-----------+--------+----------------+
+
+                #| Layer  | #Tracks | TrackLength | PG Mesh % | Blkg & IO %  |
+                BlockCell % | StdCell % | Nets % | Avail Tracks % |
+
+                #+--------+---------+-------------+-----------+-------------+-------------+-----------+--------+----------------+
+
+                #|  Metal1 |     127 |     9135.55 |      0.00 |        0.00 |
+                0.00 |     15.91 |   4.39 |          79.71 |
+
+                #| Metal2 |     109 |     7746.47 |      0.00 |        0.00  |
+                0.00 |      0.00 |  18.10 |          81.90 |
+
+                #|  Metal3 |     127 |     9135.55 |      0.00 |        0.00 |
+                0.00 |      0.00 |   7.56 |          92.44 |
+
+                #| Metal4 |     109 |     7746.47 |      0.00 |        0.00  |
+                0.00 |      0.00 |   5.39 |          94.61 |
+
+                #+--------+---------+-------------+-----------+-------------+-------------+-----------+--------+----------------+
+
+                #|  TOTAL  |     472 |    33764.04 |      0.00 |        0.00 |
+                0.00 |      4.30 |   8.62 |          87.07 |
+
+                #+--------+---------+-------------+-----------+-------------+-------------+-----------+--------+----------------+
+
+                #Calculating Track Utilization:  cpu:00:00:00,  real:00:00:00,
+                mem:2.7 GB, peak:2.7 GB
+
+              * The following command will report for a summary.
+
+                report_route -summary
+
+                ###############################################################
+
+                Statistics for design dtmf_chip :
+
+                +-------------------+----------+
+
+                |   Design Metric   |   Count  |
+
+                +-------------------+----------+
+
+                |   Instances       |    7923  |
+
+                |   Nets            |    7483  |
+
+                |   Tri-State Nets  |       0  |
+
+                |   Degen nets      |       1  |
+
+                |   Pins            |   25442  |
+
+                |   I/O Terminals   |      57  |
+
+                +-------------------+----------+
+
+                Net Pin Statistics :
+
+                +------------------+----------------+---------------+
+
+                |     Number of    |    Number of   |   Percentage  |
+
+                |  Connected Pins  |      Nets      |    of Nets    |
+
+                +------------------+----------------+---------------+
+
+                |              1   |            1   |       0.013   |
+
+                |              2   |         3862   |      51.610   |
+
+                |              3   |         1894   |      25.311   |
+
+                |              4   |          716   |       9.568   |
+
+                |              5   |          267   |       1.924   |
+
+                |              6   |          144   |       1.924   |
+
+                |              7   |          102   |       1.363   |
+
+                |              8   |           64   |       0.855   |
+
+                |              9   |           44   |       0.588   |
+
+                |           >=10   |          389   |       5.198   |
+
+                +------------------+----------------+---------------+
+
+                Wire Length Statistics :
+
+                +----------------+-----------------+
+
+                |   Layer Name   |   Wire Length   |
+
+                +----------------+-----------------+
+
+                |     Metal1     |    48477.10 um  |
+
+                |     Metal2     |   155479.84 um  |
+
+                |     Metal3     |   163085.25 um  |
+
+                |     Metal4     |   103852.06 um  |
+
+                |     Metal5     |    68574.03 um  |
+
+                |     Metal6     |    11563.78 um  |
+
+                +----------------+-----------------+
+
+                |     Total      |  551032.055 um  |
+
+                +----------------+-----------------+
+
+                Via Count Statistics :
+
+                +----------------+---------+
+
+                |  Via-cut Name  |  Count  |
+
+                +----------------+---------+
+
+                |       -        |      0  |
+
+                | Metal1(Via12)  |  25667  |
+
+                | Metal2(Via23)  |  17648  |
+
+                | Metal3(Via34)  |   3862  |
+
+                | Metal4(Via45)  |   1468  |
+
+                | Metal5(Via56)  |    412  |
+
+                +----------------+---------+
+
+                |     Total      |  49057  |
+
+                +----------------+---------+
+
+                ***   Net   length  and  connection  length  statistics  (cell
+                dtmf_chip) ***
+
+                Total net length = 483699.830 (248971.585 234728.245)
+
+                Avg net length = 64.640 (sigma = 105.236)
+
+                Sqrt of avg square net length = 123.503
+
+                Avg connection length = 26.932 (sigma = 47.753)
+
+                Sqrt of avg square connection length = 54.824
+
+                Net and connection length distribution:
+
+                +-------------------------+------------------+-------------------+
+
+                |                         |  Number of  Nets   |    Number  of
+                Nets  |
+
+                |       Length  Range        |        with       |        with
+                |
+
+                |                          |     Wire  Length    |    Fly-line
+                Length  |
+
+                +-------------------------+------------------+-------------------+
+
+                |        0.00   um   -   13.20   um   |              1630    |
+                2844  |
+
+                |       13.20   um   -   26.40   um   |              1926    |
+                2395  |
+
+                |       26.40   um   -   39.60   um   |              1082    |
+                973  |
+
+                |       39.60   um   -   52.80   um   |               594    |
+                443  |
+
+                |       52.80   um   -   66.00   um   |               391    |
+                224  |
+
+                |       66.00   um   -   79.20   um   |               296    |
+                144  |
+
+                |       79.20   um   -   92.40   um   |               251    |
+                98  |
+
+                |      92.40   um   -   105.60   um   |               192    |
+                62  |
+
+                |     105.60   um   -   118.80   um   |               150    |
+                46  |
+
+                |     118.80   um   -   132.00   um   |               100    |
+                24  |
+
+                |     132.00   um   -   145.20   um   |                91    |
+                19  |
+
+                |     145.20   um   -   158.40   um   |                68    |
+                12  |
+
+                |     158.40   um   -   171.60   um   |                68    |
+                15  |
+
+                |     171.60   um   -   184.80   um   |                46    |
+                16  |
+
+                |     184.80   um   -   198.00   um   |                38    |
+                8  |
+
+                |     198.00   um   -   211.20   um   |                38    |
+                14  |
+
+                |     211.20   um   -   224.40   um   |                31    |
+                7  |
+
+                |     224.40   um   -   237.60   um   |                32    |
+                3  |
+
+                |     237.60   um   -   250.80   um   |                36    |
+                9  |
+
+                |     250.80   um   -   264.00   um   |                27    |
+                6  |
+
+                |     264.00   um   -   277.20   um   |                31    |
+                10  |
+
+                |     277.20   um   -   290.40   um   |                17    |
+                6  |
+
+                |     290.40   um   -   303.60   um   |                27    |
+                5  |
+
+                |     303.60   um   -   316.80   um   |                20    |
+                4  |
+
+                |     316.80   um   -   330.00   um   |                27    |
+                5  |
+
+                |     330.00   um   -   343.20   um   |                24    |
+                5  |
+
+                |     343.20   um   -   356.40   um   |                19    |
+                2  |
+
+                |     356.40   um   -   369.60   um   |                27    |
+                6  |
+
+                |     369.60   um   -   382.80   um   |                25    |
+                1  |
+
+                |     382.80   um   -   396.00   um   |                21    |
+                4  |
+
+                |     396.00   um   -   409.20   um   |                22    |
+                6  |
+
+                |     409.20   um   -   422.40   um   |                12    |
+                3  |
+
+                |     422.40   um   -   435.60   um   |                 8    |
+                7  |
+
+                |     435.60   um   -   448.80   um   |                 9    |
+                6  |
+
+                |     448.80   um   -   462.00   um   |                 8    |
+                3  |
+
+                |     462.00   um   -   475.20   um   |                 7    |
+                3  |
+
+                |     475.20   um   -   488.40   um   |                 2    |
+                2  |
+
+                |     488.40   um   -   501.60   um   |                 5    |
+                1  |
+
+                |     501.60   um   -   514.80   um   |                 3    |
+                2  |
+
+                |     514.80   um   -   528.00   um   |                 7    |
+                2  |
+
+                |     528.00   um   -   541.20   um   |                 5    |
+                2  |
+
+                |     541.20   um   -   554.40   um   |                 4    |
+                2  |
+
+                |     554.40   um   -   567.60   um   |                 4    |
+                2  |
+
+                |     567.60   um   -   580.80   um   |                 6    |
+                3  |
+
+                |     580.80   um   -   594.00   um   |                 3    |
+                2  |
+
+                |     594.00   um   -   607.20   um   |                 3    |
+                2  |
+
+                |     607.20   um   -   620.40   um   |                 4    |
+                1  |
+
+                |     620.40   um   -   633.60   um   |                 2    |
+                0  |
+
+                |     633.60   um   -   646.80   um   |                 1    |
+                1  |
+
+                |     660.00   um   -   673.20   um   |                 3    |
+                2  |
+
+                |     673.20   um   -   686.40   um   |                 2    |
+                1  |
+
+                |     686.40   um   -   699.60   um   |                 2    |
+                1  |
+
+                |     699.60   um   -   712.80   um   |                 3    |
+                2  |
+
+                |     712.80   um   -   726.00   um   |                 4    |
+                3  |
+
+                |     726.00   um   -   739.20   um   |                 2    |
+                1  |
+
+                |     739.20   um   -   752.40   um   |                 1    |
+                1  |
+
+                |     752.40   um   -   765.60   um   |                 1    |
+                1  |
+
+                |     765.60   um   -   778.80   um   |                 3    |
+                1  |
+
+                |     778.80   um   -   792.00   um   |                 1    |
+                1  |
+
+                |     792.00   um   -   805.20   um   |                 1    |
+                0  |
+
+                |     805.20   um   -   818.40   um   |                 2    |
+                0  |
+
+                |     831.60   um   -   844.80   um   |                 2    |
+                1  |
+
+                |     844.80   um   -   858.00   um   |                 1    |
+                0  |
+
+                |     884.40   um   -   897.60   um   |                 1    |
+                1  |
+
+                |     910.80   um   -   924.00   um   |                 2    |
+                2  |
+
+                |     937.20   um   -   950.40   um   |                 1    |
+                1  |
+
+                |    990.00   um   -   1003.20   um   |                 2    |
+                0  |
+
+                |   1003.20   um   -   1016.40   um   |                 1    |
+                0  |
+
+                |   1016.40   um   -   1029.60   um   |                 3    |
+                1  |
+
+                |   1029.60   um   -   1042.80   um   |                 1    |
+                1  |
+
+                |   1042.80   um   -   1056.00   um   |                 1    |
+                1  |
+
+                |   1056.00   um   -   1069.20   um   |                 1    |
+                0  |
+
+                |   1069.20   um   -   1082.40   um   |                 1    |
+                1  |
+
+                |   1254.00   um   -   1267.20   um   |                 1    |
+                0  |
+
+                +-------------------------+------------------+-------------------+
+
+                Total number of long connections = 0
+
+                Io: nrCon=0
+
+              * The  following command will print single-cut and multi-cut ta-
+                ble for each layer and provide dfm via ratio.
+
+                report_route -multi_cut
+
+                +--------------------+--------------------+---------------+----------------+-----------+
+
+                | Via-Cut Layer Name |     single-cut      |    multi-cut    |
+                DFM       |   Total   |
+
+                +--------------------+--------------------+---------------+----------------+-----------+
+
+                |        VIA12         |                 0   |           0   |
+                0   |        0  |
+
+                |       VIA23        |    27975 (100.0%)  |      0  (0.0%)   |
+                18499 (66.1%)  |    27975  |
+
+                |        VIA34         |      27407 (73.7%)  | 9788 (26.3%)  |
+                29894 (80.4%)  |    37195  |
+
+                |       VIA45        |     23998 (62.1%)   |14625  (37.9%)   |
+                30590 (79.2%)  |    38623  |
+
+                |        VIA56         |      18885 (51.6%)  |17717 (48.4%)  |
+                20227 (55.3%)  |    36602  |
+
+                |       VIA67        |     37190 (69.0%)   |16738  (31.0%)   |
+                17670 (32.8%)  |    53928  |
+
+                |        VIA78         |      34278 (70.5%)  |14323 (29.5%)  |
+                15770 (32.4%)  |    48601  |
+
+                |       VIA89        |     19440 (56.8%)   |14806  (43.2%)   |
+                15319 (44.7%)  |    34246  |
+
+                |        VIA910        |      27544 (90.6%)  |  2859 (9.4%)  |
+                3838 (12.6%)  |    30403  |
+
+                |      VIA1011       |      2207 (46.1%)  |  2585  (53.9%)   |
+                2848 (59.4%)  |     4792  |
+
+                |       VIA1112        |       2299 (52.6%)  | 2071 (47.4%)  |
+                2089 (47.8%)  |     4370  |
+
+                |      VIA1213       |       442 (30.9%)  |   990  (69.1%)   |
+                990 (69.1%)  |     1432  |
+
+                |       VIA1314        |        193 (20.4%)  |  751 (79.6%)  |
+                751 (79.6%)  |      944  |
+
+                +--------------------+--------------------+---------------+----------------+-----------+
+
+                |        Total         |     221858  (69.5%)   |97253  (30.5%)
+                |158485 (49.7%)  |   319111  |
+
+Related Information
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025        report_route(25.10)

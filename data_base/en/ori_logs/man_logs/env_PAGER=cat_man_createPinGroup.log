@@ -1,0 +1,165 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPinGroup(25.10)                                    createPinGroup(25.10)
+
+Name
+       createPinGroup  -  Creates  a pin group for a partition or for the top-
+       level
+
+Syntax
+        createPinGroup
+
+       [-help]
+
+       [-cell <string>]
+
+       [-excludePin {allLayer | sameLayer | allLayerInGuidedArea}]
+
+       [-keep_out_spacing <integer>]
+
+       [-spacing <integer>]
+
+       [-width <width>]
+
+       [{[-optimizeOrder ]} | -spreadPin | -compact_area ]
+
+       [{<pinGroupName> [-pin {<pinNameList>}]} ]
+
+       Creates a pin group for a partition or for the top-level. Pin groups in
+       conjunction with pin guides are used to guide pin  placement  when  the
+       assignIoPins  or assignPtnPin command is called. A pin group is a first
+       class data object-delete with the  deletePinGroup command.
+
+Parameters
+       -cell <string>
+              Specifies the name of the module or submodule to which  the  pin
+              group  applies.  This parameter is not required if the pin group
+              being created is for the top level.
+
+              Data_type: string, optional
+
+       -compact_area
+              Specifies that pins in the group are assigned tightly  together.
+              By  default,  pins which are part of a group and associated to a
+              guide can be spread inside the guide based on the area available
+              and alignment to targets. The compact_area  option,  when  used,
+              ignores  the alignment and available area and forces the pins to
+              the minimum area on guide  honoring  the  minimum  spacing  con-
+              straint and overlooking any alignment to targets.
+
+              Data_type: bool, optional
+
+       -excludePin {allLayer | sameLayer | allLayerInGuidedArea }
+              Specifies  that  pins  in  the group exclude foreign pins on all
+              layers, same layer, or on all layers in the guided area.
+
+              * allLayer: Specifies that pins in  the  group  exclude  foreign
+                pins between grouped pins on all layers.
+
+              * sameLayer:  Specifies  that  pins in the group exclude foreign
+                pins between grouped pins on the same layer.
+
+              * allLayerInGuidedArea: Specifies that pins in the group exclude
+                foreign pins in the guide area defined for the group,  on  all
+                layers.
+
+               Note:  If  a  guide is not defined for a pin group, -excludePin
+              allLayerInGuidedArea option is treated  like  -excludePin  {all-
+              Layer}.
+
+              Data_type: enum, optional
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each createPinGroup parameter. For a detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:
+
+               man createPinGroup
+
+       -keep_out_spacing <integer>
+              Specifies the minimum spacing between the pins named in the  pin
+              group and any other pins, in number of tracks.
+
+              Minimum: 0
+
+              Maximum: 65535
+
+              Data_type: int, optional
+
+       -optimizeOrder
+              Specifies that pins in the group are to be reordered to optimize
+              wire length during pin placement. Otherwise the pin order is ex-
+              actly as specified in the pin group.
+
+              Data_type: bool, optional
+
+       -pin {<pinNameList>}
+              Specifies the pins to be added to the pin group. Additional pins
+              can be added subsequently with the addPinToPinGroupcommand.
+
+              Data_type: string, optional
+
+       <pinGroupName>
+              Specifies the name of the pin group.
+
+              Data_type: string, required
+
+       -spacing <integer>
+              Specifies the minimum spacing between the pins of the pin group,
+              in number of tracks.
+
+              Default: Two tracks.
+
+              Data_type: int, optional
+
+       -spreadPin
+              Specifies that pins in the group are distributed evenly.
+
+              Data_type: bool, optional
+
+       -width width
+              Specifies the pin width, in microns.
+
+              Data_type: float, optional
+
+Example
+              * The  following  command  creates a pin group PG_A22 for module
+                SH17 and adds the pins pinA22_1 and pinA22_2 to it.
+
+                createPinGroup PG_A22 -cell SH17 -pin {pinA22_1 pinA22_2}
+
+              * The following command creates a pin group PG_A for module SH17
+                and adds the pins pinA22_1 and pinA22_2 to it.  No other  pins
+                are to be placed between pinA22_1 and pinA22_2 in any layer.
+
+                The pins may be reordered to optimize wire length.
+
+                createPinGroup PG_A22 -cell SH17 -pin {pinA22_1 pinA22_2} -ex-
+                cludePin allLayer -optimizeOrder
+
+              * The following command deletes the pin group PinGroup17 of mod-
+                ule SH17:
+
+                deletePinGroup -cell SH17 -pinGroup PinGroup17
+
+Related Information
+              * assignIoPins
+
+              * assignPtnPin
+
+              * addPinToPinGroup
+
+              * deletePinGroup
+
+              * createPinGuide
+
+              * setPinAssignMode
+
+              * deletePinFromPinGroup
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Setting Pin Constraints
+
+                * Pin Group
+
+                           Fri Apr 04 01:25:37 2025      createPinGroup(25.10)

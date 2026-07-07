@@ -1,0 +1,165 @@
+{
+  "command": "setAddRingMode",
+  "is_cmd": true,
+  "summary": "设置在使用 addRing 命令时，用于生成块环和核心环的全局变量。",
+  "description": "setAddRingMode 命令用于配置在运行 addRing 命令时，影响块环（block rings）和核心环（core rings）生成行为的全局变量。这些设置涵盖了避免短路、扩展搜索距离、跳过特定过孔、设置过孔大小、指定环目标类型等多个方面，为电源规划中的环状布线提供了精细的控制。",
+  "usage": "setAddRingMode [-help] [-avoid_short {true | false}] [-break_core_ring_io_list <io_list>] [-continue_on_no_selection {true | false}] [-detailed_log {true | false}] [-extend_blockring_search_distance <distance>] [-extend_corering_search_distance <float>] [-extend_merge_with_prewires {true | false}] [-extend_over_row {true | false}] [-extend_search_nets {* | {net_names}}] [-extend_stripe_search_distance <float>] [-gap_width_without_io width] [-ignore_rows {true | false}] [-max_via_size {<shape width% height% target_penetration%>}] [-orthogonal_only {true | false}] [-reset] [-ring_target {core_ring | default | first_ring | pad_ring | stripe}] [-skip_crossing_trunks {horizontal | vertical | none}] [-skip_via_on_pin {[Pad] [Block] [Cover] [Standardcell] [Physicalpin]}] [-skip_via_on_wire_shape {blockring | stripe | followpin |  corewire  | blockwire | iowire | padring | ring | fillwire | noshape}] [-spacing_from_block <value>] [-split_long_via     {<threshold_value     step_value     offset_value> <height_value>}] [-stacked_via_bottom_layer <layername>] [-stacked_via_top_layer <layername>] [-via_using_exact_crossover_size {true | false}] [-wire_center_offset {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 setAddRingMode 参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-avoid_short",
+      "description": "指定是否阻止创建会导致短路违规的环或环段。true 表示阻止，false 表示允许。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-break_core_ring_io_list",
+      "description": "为特定实例断开或排除核心环。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-continue_on_no_selection",
+      "description": "如果设计没有电源域或未选择围栏，addRing 将忽略 -around power_domain 选项并生成核心环。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-detailed_log",
+      "description": "设置此选项将使 addRing 和 addStripe 输出扩展日志或详细日志。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extend_blockring_search_distance",
+      "description": "将块环搜索范围从初始目标向外扩展指定距离，以连接多个块环目标。单位为微米。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-extend_corering_search_distance",
+      "description": "指定用于连接线组所有比特（段）的线组搜索距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-extend_merge_with_prewires",
+      "description": "自动将新创建的环线与同网络的预布线合并。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extend_over_row",
+      "description": "指定为 true 时，addRing 命令不将切割行视为障碍，会在切割行上生成环。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extend_search_nets",
+      "description": "指定要附加到线组搜索距离属性的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extend_stripe_search_distance",
+      "description": "指定用于连接线组所有比特（段）的线组搜索距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-gap_width_without_io",
+      "description": "指定 I/O 焊盘之间最大缺失 I/O 焊盘区域的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-ignore_rows",
+      "description": "指定电源规划软件在创建环时是否忽略所有行（切割行和原生行）。true 表示忽略，false 表示不忽略。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_via_size",
+      "description": "指定交叉过孔的最大尺寸，表示为完整过孔尺寸的百分比。需要为每个指定的形状（如 Pad, Ring）指定三个值：最大宽度百分比、最大高度百分比和目标穿透百分比。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-orthogonal_only",
+      "description": "仅为正交线和引脚交叉点创建过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有参数重置为其默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ring_target",
+      "description": "指定环线可以连接的目标类型：core_ring（核心环）、pad_ring（焊盘环）、first_ring（第一个核心环或焊盘环）、stripe（条带线）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_crossing_trunks",
+      "description": "与 addRing -block_rings -around shared_cluster 命令结合使用时，移除环的水平或垂直部分（共享或内部边缘）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_via_on_pin",
+      "description": "阻止在指定类型的引脚上生成过孔。可指定 Pad, Block, Cover, Standardcell, Physicalpin。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_via_on_wire_shape",
+      "description": "阻止在指定形状的连线上生成过孔。可指定 blockring, stripe, followpin, corewire, blockwire, iowire, padring, ring, fillwire, noshape。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spacing_from_block",
+      "description": "与 -break_core_ring_io_list 一起使用，指定与块的间距。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-split_long_via",
+      "description": "将长度超过指定阈值（微米）的过孔拆分为更小的过孔，并指定中心距、端部偏移和高度值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stacked_via_bottom_layer",
+      "description": "指定可以堆叠过孔的最低层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stacked_via_top_layer",
+      "description": "指定可以堆叠过孔的最高层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_using_exact_crossover_size",
+      "description": "指定是否生成精确交叉尺寸的部分过孔。true 允许生成，false 则始终生成全尺寸过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-wire_center_offset",
+      "description": "用于计算偏移。true 时 addRing 使用线中心，false 时使用线边界。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

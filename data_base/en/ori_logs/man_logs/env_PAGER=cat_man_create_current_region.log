@@ -1,0 +1,227 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_current_region(25.10)                      create_current_region(25.10)
+
+Name
+       create_current_region  - Specifies static or dynamic current regions on
+       global power-grids over the placed macro to accurately capture high and
+       low current consuming regions during rail analysis
+
+Syntax
+       create_current_region
+
+       [-help]
+
+       -reset | {-region <x1 y1 x2 y2>
+
+       [-current <value>| -current_pwl_file<filename>]
+
+       [-die_instance_name <dieinstname>]
+
+       [-file <filename>]
+
+       [-label <name>]
+
+       [-layer <layername>]
+
+       [-intrinsic_cap <value>]
+
+       [-loading_cap <value>]
+
+       [-series_resistance<value>]
+
+       [-net<net_name>]
+
+       [-polygon {<x1> <y1> <x2> <y2> <x3> <y3> ..<x1> <y1>}]
+
+       [-pwrnet<net_name>]
+
+       [-gndnet<net_name>]
+
+       }
+
+       Specifies static or dynamic current regions on global power-grids  over
+       the  placed  macro to accurately capture high and low current consuming
+       regions during rail analysis.
+
+       You can use this command prior to rail analysis to specify current  re-
+       gions  or  power  distribution over the top of power-grid on a user-de-
+       fined layer. These current regions are generally specified for a placed
+       macro  for  which  power-grid  view  library  is  not  available,   and
+       power/current  distribution inside this macro could possibly impact IR-
+       drop in neighboring regions. These current regions can also be  defined
+       over  top-level power-grid for an unplaced macro during early stages of
+       power-planning.
+
+Parameters
+       -current <value>
+              In the static mode (set_rail_analysis_mode -method static),  the
+              parameter specifies a single current value in mAmp.
+
+              In the dynamic mode (set_rail_analysis_mode -method dynamic) the
+              parameter  specifies  a PWL current waveform in time (in ns) and
+              current (in mA) format. For example, 0ns 0mA 0.5ns 1mA  1ns  2mA
+              3ns 1mA 4ns 0.
+
+       -current_pwl_file<filename>
+              Specifies a PWL current file. The file has two columns, time (in
+              ns) and current value (in mA), as shown below:
+
+              time1 value1
+
+              time2 value2
+
+              The  -current_pwl_file and  -current parameters are mutually ex-
+              clusive.
+
+       -die_instance_name <dieinstname>
+              Specifies  the name of the die to which you need to apply a cur-
+              rent region. This parameter is only applicable to the  multi-die
+              analysis flow (set_rail_analysis_mode -die_mode multi-die).
+
+              The  parameter  allows you to accurately assign current to power
+              and ground nets in specific  geometric  regions  for  individual
+              dies during rail analysis in 3D-IC designs.
+
+       -file <filename>
+              Specifies  the name of a file containing the list of current re-
+              gions for each die. -file can be used only  with  the   -die_in-
+              stance_name  parameter. The other parameters of the  create_cur-
+              rent_region command can be included within the specified file.
+
+              Example:
+
+              create_current_region   -file   <create_current_region_die0.tcl>
+              -die_instance_name Die0
+
+              create_current_region   -file   <create_current_region_die1.tcl>
+              -die_instance_name Die1
+
+              ###File content in <create_current_region_die0.tcl>
+
+              -net VDD -current  50mA -layer M2 -region "10 10 100 100"
+
+              -net VDD -current  50mA -layer M2 -region "100 100 200 200"
+
+              -net VSS -current  100mA -layer M1 -region "10 10 200 200"
+
+              ###File content in <create_current_region_die1.tcl>
+
+              -net VDD -current  150mA -layer M2 -region "10 10 50 50"
+
+              -net VDD -current  50mA -layer M2 -region "100 100 200 200"
+
+              -net VSS -current  200mA -layer M1 -region "10 10 200 200"
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each create_current_region parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man create_current_region.
+
+       -gndnet<net_name>
+              Specifies a ground net name on which the specified current is to
+              be applied.
+
+       -intrinsic_cap <value>
+              Specifies  the  cell  intrinsic capacitance in pico farads (pf).
+              This  is  required  parameter  when  set  in  the  dynamic  mode
+              (set_rail_analysis_mode -method dynamic). This parameter is dis-
+              abled in static mode.
+
+       -label <name>
+              Specifies a name to a specific current region. The parameter al-
+              lows  to  assign  a user-specific name to the region, instead of
+              using the default name generated by the  tool.  By  assigning  a
+              unique name, you can easily identify and manage the regions. For
+              instance, instead of having generic names like "Region 1," using
+              specific names like "VDD_area1" or "VSS_area2" can provide imme-
+              diate context.
+
+       -layer <layername>
+              Specifies a layer name on which the scaling will be performed.
+
+              Multiple  commands can be issued to scale resistance on multiple
+              layers. This is a required parameter.
+
+       -loading_cap value
+              Specifies the cell loading capacitance in pico farads (pf). This
+              is  required  parameter   when   set   in   the   dynamic   mode
+              (set_rail_analysis_mode -method dynamic). This parameter is dis-
+              abled in static mode.
+
+       -net<net_name>
+              Specifies a net name on which the specified current is to be ap-
+              plied.
+
+       -polygon {<x1> <y1> <x2> <y2> <x3> <y3> ..<x1> <y1>}
+              Specifies a rectilinear current region where the current will be
+              distributed  within. The rectilinear region enables you to spec-
+              ify multiple x,y points to add current regions in the areas that
+              are not rectangular in shape.
+
+              When specified, the last xy coordinate location will be the same
+              as the first xy location. The xy  coordinates  will  be  in  the
+              counterclockwise sequence.
+
+       -pwrnet<net_name>
+              Specifies  a power net name on which the specified current is to
+              be applied.
+
+       -region <x1 y1 x2 y2>
+              Specifies the region on the layer  across  which  the  specified
+              current  and capacitance (in dynamic mode) is distributed by the
+              rail analysis engine. The units of x and y should be in microns.
+
+              This is a required parameter.
+
+       -reset Resets all the previous create_current_region command settings.
+
+       -series_resistance<value>
+              Specifies the series resistance (ESR) value attached to each tap
+              point in the current region definition.
+
+Examples
+              * The following command specifies static current region:
+
+                create_current_region -current 2mA -layer METAL_1 -region "100
+                100 200 200"
+
+              * The following command specifies dynamic current region:
+
+                create_current_region -current {0ns 0mA 0.5ns 1mA 1ns 2mA  3ns
+                1mA  4ns  0} -layer METAL_1 -region "200 200 400 400" -intrin-
+                sic_cap 40 -loading_cap 20
+
+              * The following command resets all create_current_region parame-
+                ters to their default values:
+
+                create_current_region -reset
+
+              * The following command specifies  rectilinear  current  regions
+                for die instance Die1:
+
+                create_current_region  -net  VDD  -current  50mA -layer Metal5
+                -polygon "10 10 100 10  100  100  10  100  10  10  "  -die_in-
+                stance_name Die1
+
+                create_current_region  -net  VDD  -current  50mA -layer Metal5
+                -polygon "100 100 200 100 200 200 100 200  100  100"  -die_in-
+                stance_name Die1
+
+              * The following command specifies the static current region with
+                the region name VDD_area1:
+
+                create_current_region  -label  VDD_area1 -region "0.0 0.0 87.3
+                107.2" -layer M1 -current 1 mA -net VDD
+
+Related Information
+              * scale_what_if_capacitance
+
+              * scale_what_if_resistance
+
+              * scale_what_if_current
+
+              * "What-If Rail Analysis" in the Voltus IC Power Integrity Solu-
+                tion User Guide
+
+                           Fri Apr 04 01:25:37 2025create_current_region(25.10)

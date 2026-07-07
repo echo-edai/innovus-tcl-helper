@@ -1,0 +1,253 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_max_delay(25.10)                                      set_max_delay(25.10)
+
+Name
+       set_max_delay - Specifies a maximum delay for a timing path
+
+Syntax
+       set_max_delay
+
+       value
+
+       [-combinational_from_to | -ignore_clock_latency]
+
+       [{-from |-rise_from | -fall_from} <from_list>]
+
+       [{-through | -rise_through | -fall_through} <through_list>]
+
+       [-no_segment]
+
+       [{-to | -rise_to | -fall_to} <to_list>]
+
+       [-comment <string>]
+
+       [-rise]
+
+       [-fall]
+
+       Specifies  a maximum delay for a timing path. The set_max_delay command
+       takes precedence over other path  exceptions  specified  for  the  same
+       path, except for the set_false_path command.
+
+       Use  either  the  -from, -to, or -through option with the set_max_delay
+       command to identify the paths. Specifying both the -from  and  -to  op-
+       tions identifies a path with specific starting and ending points.
+
+       When  you specify a sequential cell name for starting point of the tim-
+       ing path, the valid path starts from the clk pin. This  means  the  la-
+       tency and delay from clk to output Q is also included in the delay. For
+       path  segmentation,  you can specify the path to start from Q output of
+       the register by adding /Q after the cell name. In this case, path  from
+       clk to Q is not considered in the calculation.
+
+       Use  only  one  -from,  -rise_from,  or  -fall_from,  -to, -rise_to, or
+       -fall_to parameter per command. You can use multiple  -through  parame-
+       ters in the same command.
+
+Parameters
+       -combinational_from_to
+              Defines a path defined by -from/to pins as combinational.
+
+              When this parameter is used, the path between the -from/-to pins
+              is treated as purely combinational,
+
+              that  is,  both  the source/capture clock latencies are excluded
+              from slack computation.
+
+              The presence of -from/-to pins is required for  this  option  to
+              take effect; the -from/-to pins can be
+
+              sequential or combinational start/end pins.
+
+              The -combinational_from_to parameter will be deprecated in a fu-
+              ture  release.  This parameter will continue to work in the cur-
+              rent release, but for compatibility  with  future  releases  you
+              should migrate your scripts to use the -ignore_clock_latency pa-
+              rameter.
+
+              You  can  use the following global variables to match the seman-
+              tics   between   the   -ignore_clock_latency    and    -combina-
+              tional_from_to parameters:
+
+              * timing_constraint_path_delay_exclude_check_delay_from_ig-
+                nore_clock_latency
+
+              * timing_constraint_path_delay_exclude_io_delay_from_ig-
+                nore_clock_latency
+
+       -comment <string>
+              Allows you to insert comments. The comments are read but are ig-
+              nored  with a one-time warning message. They are not used during
+              timing analysis reporting nor are they written out during saving
+              of constraints.
+
+       -fall  Apply the assertion at the falling edge of  the  signal  on  the
+              path endpoints.
+
+       -from |-rise_from |-fall_from <from_list>
+              Specifies  a  list of timing paths start points. The <from_list>
+              argument can contain either object  IDs  or  hierarchical  names
+              relative  to  the current module or clock names. The pins can be
+              on intermediate hierarchical boundaries. The  <from_list>  argu-
+              ment can be a collection.
+
+              The valid start points are:
+
+              * Input port
+
+              * Bidirectional port
+
+              * Clock pin of sequential cell
+
+                Clock pin of sequential cell is one of the following:
+
+              * Structural clock pin that is part of latch or flip-flop.
+
+              * Inferred  clock pin in cells like macro cells. A pin is an in-
+                ferred clock pin if it is associated with one of  the  follow-
+                ing:
+
+              * Reference end of setup check
+
+              * Reference end of hold check
+
+              * Reference end of removal check
+
+              * Reference end of recovery check
+
+              * Minimum period check
+
+              * Minimum pulse width check
+
+              * Pin associated with set_input_delay
+
+              Specify one of the following: -from:
+
+              Applies  the  maximum  delay constraint to all paths originating
+              from the <from_list> list. If a clock is specified as the  -from
+              object,  all  primary inputs and registers clocked by that clock
+              are used as start points.
+
+              By default, the -from option applies the constraint to both  the
+              rising  and  the falling edges.  -rise_from: Applies the maximum
+              delay constraint at the rising edge of the signal  on  the  from
+              pins.   -fall_from:  Applies the maximum delay constraint at the
+              falling edge of the signal on the from pins.
+
+       -ignore_clock_latency
+              When this parameter is specified, the software  does  not  count
+              the launch/capture clock latency delays into the timing path de-
+              lay.
+
+              The -ignore_clock_latency parameter is an industry-standard con-
+              struct  introduced  in SDC 2.1 to control the handling of clock-
+              related timing with respect to  the  set_max_delay/set_min_delay
+              constraints.
+
+       -rise  Applies  the  assertion  at the rising edge of the signal on the
+              path endpoints.
+
+       -through | -rise_through | -fall_through <through_list>
+              Specifies a list of timing paths through points.
+
+              The <through_list> argument can contain either object IDs or hi-
+              erarchical names relative to the current module or clock  names.
+              The  pins  can  be  on intermediate hierarchical boundaries. The
+              <through_list> argument can be a collection.
+
+              Specify one of the following: -through:
+
+              When you use this parameter without using the -from or  -to  op-
+              tions,  all  paths  that  go through the specified pins have the
+              specified delay. When you use it with both the -from and -to op-
+              tions, any path starting at any pin on the -from list and  going
+              through  any  point  on  the  -through pin list and going to any
+              point on the -to list is affected by the constraint.
+
+              By default, the -through option applies the constraint  to  both
+              the  rising  and  the falling edges.  -rise_through: Applies the
+              assertion at the rising edge of the signal on the through  pins.
+              -fall_through:  Applies the assertion at the falling edge of the
+              signal on the through pins.
+
+       -to| -rise_to | -fall_to <to_list>
+              Specifies a list of timing paths end points.
+
+              The <to_list> argument can contain either object IDs or  hierar-
+              chical  names relative to the current module or clock names. The
+              pins  can  be  on  intermediate  hierarchical  boundaries.   The
+              <to_list> argument can be a collection.
+
+              The valid end points are:
+
+              * Output port
+
+              * Bidirectional port
+
+              * Data pin of sequential cell
+
+                Data pin of sequential cell is one of the following:
+
+              * Structural data pin that is part of latch or flip-flop.
+
+              * Inferred  data  pin in cells like macro cells. A pin is an in-
+                ferred data pin if it is associated with one of the following:
+
+              * Signal end of setup check
+
+              * Signal end of hold check
+
+              * Signal end of non-sequential setup check
+
+              * Signal end of non-sequential hold check
+
+              * Signal end of removal check
+
+              * Signal end of recovery check
+
+              * Pin associated with set_external_delay
+
+              * Data pin of clock gating cell
+
+              Select from one of the following: -to: Applies the maximum delay
+              constraint to all paths ending in the -to pin list. If  a  clock
+              is  specified  as the -to object, all primary outputs and regis-
+              ters clocked by that clock are used as endpoint.
+
+              By default, the -to option applies the constraint  to  both  the
+              rising and the falling edges.  -rise_to: Applies the maximum de-
+              lay  constraint at the rising edge of the signal on the to pins.
+              -fall_to: Applies the maximum delay constraint  at  the  falling
+              edge of the signal on the to pins.
+
+       -no_segment
+              Specifies the constraint as non-segmenting.
+
+              When  specified,  the  software allows path delay checks without
+              path segmentation.
+
+       <value>
+              Specifies the maximum delay value.
+
+Example
+              * The following command specifies that all  paths  from  in1  to
+                out1 must have delays less than 10 units:
+
+                set_max_delay 10 -from in1 -to out1
+
+Related Information
+              * create_clock
+
+              * set_false_path
+
+              * set_input_delay
+
+              * set_min_delay
+
+              * set_multicycle_path
+
+              * set_output_delay
+
+              * reset_path_exception
+
+                           Fri Apr 04 01:25:37 2025       set_max_delay(25.10)

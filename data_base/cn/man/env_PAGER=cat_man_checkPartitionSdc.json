@@ -1,0 +1,87 @@
+{
+  "command": "checkPartitionSdc",
+  "is_cmd": true,
+  "summary": "验证使用 deriveTimingBudget 命令为分区生成的时序预算结果",
+  "description": "当使用 deriveTimingBudget 命令为分区生成时序预算时，checkPartitionSdc 命令用于验证其结果。该验证确保分区块的时序数据与芯片的时序数据一致，从而节省芯片和分区块的ECO迭代，减少整体设计周期时间。验证通过独立比较约束数据和时序数据来完成。运行此命令需要芯片和模块的约束数据与时序数据以 Innovus 格式提供。命令执行后，会通过SDC比较直接验证一些简单约束；对于与引脚相关的其他检查，会对比芯片和模块的值；而对于一些复杂的异常约束，则通过检查和比较到达芯片和模块边界引脚的相位来进行独立验证。比较会检查模块和芯片中缺失、额外和不匹配的约束文件，这有助于修复分区块约束以获得准确的预算。",
+  "usage": "checkPartitionSdc [-help] {[-chip <string> -partition_dir <string>] | [-chip <string> -module_model_tag <string> [-add_ons <string>] [-accumulated] [-overwrite_tag]] | [-compare_only]} [-cells <string>] [-master_only] [-no_top] [-out_dir <string>] [-validate_boundary_condition]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 checkPartitionSdc 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-chip",
+      "description": "指定在时序预算之前加载芯片数据库的 TCL 文件。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-partition_dir",
+      "description": "指定包含分区数据库的目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-module_model_tag",
+      "description": "指定要进行 SDC 比较的单元的模块模型标签。这是 iHDB 流程的一部分。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add_ons",
+      "description": "指定可以额外加载到现有模型或设计的补充模型。可与 -module_model_tag 参数一起使用，仅用于集成层次数据库（iHDB）流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-accumulated",
+      "description": "为累积预算模式运行比较。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-overwrite_tag",
+      "description": "为累积预算模式重新生成设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-compare_only",
+      "description": "仅将转储的数据与之前的 checkPartitionSdc 运行进行比较。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cells",
+      "description": "指定要进行 SDC 比较的单元名称列表。默认：所有单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-master_only",
+      "description": "仅为主-克隆设计中的主分区转储和比较约束以进行检查。如果未使用此参数，工具会同时考虑克隆进行转储和比较约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_top",
+      "description": "禁用对 TOP 单元的检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-out_dir",
+      "description": "指定包含验证比较报告和日志文件形式输出的目录。默认：./cps。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-validate_boundary_condition",
+      "description": "比较芯片与模块级别的转换时间值。转换时间值使用 report_timing 命令生成，并在紧邻模块边界的引脚处进行比较。此参数会生成一个 .csv 格式的输出文件。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

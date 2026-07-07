@@ -1,0 +1,69 @@
+{
+  "command": "cutRectilinearInst",
+  "is_cmd": true,
+  "summary": "将分区或黑盒边界切割为适合给定芯片内模块的矩形实例，而不修改现有模块面积",
+  "description": "该命令用于将分区或黑盒的边界切割为矩形形状，使其能适配到指定芯片区域内的模块，同时保持现有模块面积不变。它根据用户指定的条件执行切割，这些条件包括：分层实例名称、参考实例名称、定义切割的角点名称、从特定角点或重叠区域的X和Y偏移值（微米）、以及为保持现有模块面积而需要向外推的边或边缘名称。该命令可在设计流程的任何阶段使用。",
+  "usage": "cutRectilinearInst [-help] -inst <instName> {{-refInst <instName> [-spacingX <xvalue>] [-spacingY <yvalue>]} | {-cutBox  {<x1  y1  x2  y2>}}  |  {-corner <cornerValue> [-x <value> -y <value>]}} [-pushOut <sideEdgeName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。如需命令及其所有参数的详细说明，请使用 man 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "指定分层实例的名称。该实例可以是模块、未提交的分区或黑盒。",
+      "required": true,
+      "type": "(inst|hinst|group)+"
+    },
+    {
+      "name": "-refInst",
+      "description": "指定参考实例的名称。该实例可以是模块、未提交的分区、黑盒或硬宏。",
+      "required": false,
+      "type": "(inst|hinst|group)+"
+    },
+    {
+      "name": "-spacingX",
+      "description": "指定指定模块与参考对象之间重叠区域的X方向偏移值（微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-spacingY",
+      "description": "指定指定模块与参考对象之间重叠区域的Y方向偏移值（微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-cutBox",
+      "description": "指定要切割的矩形框。需要提供左下角(x1, y1)和右上角(x2, y2)坐标。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-corner",
+      "description": "指定定义切割起始点的角点名称。可以是lx, ly, ux, uy坐标，或在矩形角点情况下的边缘编号（从左下角开始顺时针计数，起始为0）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-x",
+      "description": "指定从指定角点的X方向偏移值（微米）。角点编号从左下角开始顺时针计数，起始为0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-y",
+      "description": "指定从指定角点的Y方向偏移值（微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pushOut",
+      "description": "指定为保持现有面积而需要向外推的边或边缘名称。可以是 top, bottom, left, right 或矩形边缘编号。如果未指定，命令默认不会保持现有面积，所有边或边缘都会被修改。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

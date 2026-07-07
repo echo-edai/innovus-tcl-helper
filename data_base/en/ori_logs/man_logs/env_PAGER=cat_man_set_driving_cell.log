@@ -1,0 +1,133 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_driving_cell(25.10)                                set_driving_cell(25.10)
+
+Name
+       set_driving_cell  -  Models  the drive capability of an external driver
+       connected to the input port
+
+Syntax
+       set_driving_cell
+
+       [-library <library_name>]
+
+       -lib_cell <cell_name>
+
+       [-pin <pin_name>]
+
+       [-from_pin <from_pin_name>]
+
+       [-rise]
+
+       [-fall]
+
+       [-min]
+
+       [-max]
+
+       [-multiply_by <factor>]
+
+       [-no_design_rule]
+
+       [-input_transition_rise <rise_slew_value>]
+
+       [-input_transition_fall <fall_slew_value>]
+
+       <port_list>
+
+       Models the drive capability of an external driver connected to the  in-
+       put  port.  Use this command only for timing analysis. The command does
+       not affect the electrical properties of the design,  which  means  that
+       the  capacitance  of the output pin of the driving cell does not add to
+       the total capacitance of the input port.
+
+       To model the drive capability of the external driver, the  timing  ana-
+       lyzer  computes  an offset to the arrival time of an input, and changes
+       the slew time used to compute the delay for the next cell.  The  timing
+       analyzer  computes  the  offset by subtracting the zero load delay from
+       the total delay of the cell. The set_driving_cell command uses the off-
+       set value to identify a cell from the library to  drive  the  specified
+       input port(s).
+
+       This command overrides the set_drive command per port or per net, if it
+       is  the  last command applied. Also, if the set_driving_cell command is
+       set for a port, the set_input_transition command is  ignored  for  that
+       port.  If  you  do not define drive using the set_driving_cell command,
+       the software uses the default value defined in the configuration  file.
+       The default value is 0.1ps.
+
+Parameters
+       -fall  Annotates  only  the  falling drive assertion. The default is to
+              annotate both rise and fall delays.
+
+       -from_pin <from_pin_name>
+              Specifies the name of the input port of the driver cell that has
+              an arc to the output port of the driver cell, which is connected
+              to the input port of the design. This option is required only if
+              there are multiple timing arcs in the driver cell from its input
+              ports to its output ports, and the arcs  from  those  pins  have
+              different drive characteristics.
+
+              If  you  do  not specify the -from_pin option, the default is to
+              use the first timing arc found on the library cell.
+
+       -input_transition_fall <fall_slew_value>
+              Specifies the slew value for the falling signal at the input  of
+              the drive cell.
+
+       -input_transition_rise <rise_slew_value>
+              Specifies  the  slew value for the rising signal at the input of
+              the drive cell.
+
+       -lib_cell <cell_name>
+              Specifies the name of the driver cell. This  parameter  supports
+              wildcard patterns and collections.
+
+       -library <library_name>
+              Specifies  the  name  of  the  library that contains the driving
+              cell.
+
+       -max   Annotates only the late drive assertion. The default is to anno-
+              tate both early and late.
+
+       -min   Annotates only the early drive assertion. The default is to  an-
+              notate both early and late.
+
+       -multiply_by <factor>
+              Specifies a multiplier for the drive.
+
+       -no_design_rule
+              Does not allow transfer of design rules from the driving cell to
+              the port.
+
+              If  you  do  not  specify this option, the design rules (such as
+              max_capacitance) of the library pin are applied to the port.
+
+       -pin <pin_name>
+              Specifies the name of the output port of the  driver  cell  that
+              drives  the  signal at the input port of the design. This option
+              is required if there are multiple output ports on the driver. If
+              there is only one output port on the  driver  cell,  then  using
+              this option is not necessary.
+
+       <port_list>
+              Specifies the list of ports driven by the driver cell.
+
+       -rise  Specifies  only  the rising drive assertion is annotated.The de-
+              fault is to annotate both rise and fall delays.
+
+Examples
+       The following command sets 'AND' cell (arc B -> Y) as the driving  cell
+       for the input port IN1:
+
+       set_driving_cell -lib_cell AND -from_pin B -pin Y IN1
+
+Related Information
+              * all_inputs
+
+              * report_ports
+
+              * set_drive
+
+              * set_input_transition
+
+                           Fri Apr 04 01:25:37 2025    set_driving_cell(25.10)

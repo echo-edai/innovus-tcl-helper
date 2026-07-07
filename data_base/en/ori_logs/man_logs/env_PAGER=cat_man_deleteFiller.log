@@ -1,0 +1,135 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+deleteFiller(25.10)                                        deleteFiller(25.10)
+
+Name
+       deleteFiller  -  Removes physical cell instances, such as filler cells,
+       end-cap cells, and well-tap cells, from standard cell rows
+
+Syntax
+       deleteFiller
+
+       [-cell <fillerCellList>]
+
+       [-area {llx lly urx ury}]
+
+       [-inst <instanceName>]
+
+       [-prefix <prefix>]
+
+       [-keepFixed]
+
+       Removes physical cell instances, such as filler cells,  end-cap  cells,
+       and well-tap cells, from standard cell rows. This command can be called
+       if  there  are  filler cells, end-cap cells, or well-tap cells added in
+       the design.
+
+       Physical cells should not be removed with  the  <Delete>  key.  If  you
+       delete  a  cell  using the <Delete> key, the cell will become unplaced.
+       The cell will not be displayed in the layout, but it will still be part
+       of the design. You should remove a physical cell using the deleteFiller
+       command.
+
+       Some deleteFiller parameters can also be specified with  setFillerMode.
+       However, the parameters you specify with deleteFiller apply to the cur-
+       rent  deleteFiller run only, and supersede parameters set by setFiller-
+       Mode. For more information, see setFillerMode.
+
+Parameters
+       -area {llx lly urx ury}
+              Specifies the bounding box within which  the  filler  cells  are
+              deleted. The argument type is a box, in microns.
+
+              Note:  Only  those  filler  cells  that are completely contained
+              within the area will be deleted. the  command  does  not  delete
+              filler cells that cross the area boundary.
+
+       -cell <fillerCellList>
+              Specifies  a cell name or list of cells to delete. Separate cell
+              names with spaces.
+
+              Note: Cells specified by this parameter  override  the  list  of
+              cells provided by the -core parameter of setFillerMode.
+
+       -keepFixed
+              Controls the command to keep the End-cap and Well-tap cells that
+              are  marked  FIXED.  By  default, those cells will be deleted if
+              this option is not specified.
+
+              Deletes End-cap and Well-tap cells by default, though  they  are
+              marked as FIXED.
+
+              Default: true
+
+       -prefix <prefix>
+              Specifies the prefix of the cell instances to delete.
+
+              For example, to delete all filler cell instances with the prefix
+              FILL, type the following command:
+
+              deleteFiller -prefix FILL
+
+              The  software  will  remove  all  physical  instances whose name
+              starts with FILL, including instances named FILL_1,  FILLTEMP_1,
+              and so on.
+
+              Default: FILLER
+
+       -inst <instanceName>
+              Specifies  the instance of the cell to delete. You can use wild-
+              cards (*?) with this parameter.
+
+              Note: You can specify this parameter with this command  or  with
+              addFiller, and not with setFillerMode.
+
+Examples
+              * The following command deletes all physical-only cells from the
+                design:
+
+                deleteFiller -cell xyz
+
+              * The  following  command  deletes  only the xyz cells whose in-
+                stance names have a wtap_even prefix.  If  well-tap  cells  in
+                even  rows  have  a wtap_even prefix and well-tap cells in odd
+                rows have a different prefix, the cells in rows 2, 4,  6,  and
+                so on are deleted.
+
+                deleteFiller -cell xyz -prefix wtap_even
+
+              * The  following  command  deletes all added cell instances with
+                the prefix instance name FILLER:
+
+                deleteFiller -prefix FILLER
+
+              * The following command deletes all  instances  of  filler  cell
+                FILL2, end-cap ecp17, and well-tap wtp5:
+
+                deleteFiller -cell FILL2 ecp17 wtp5
+
+              * The  following  command  deletes  all  instances  of given the
+                spacer cells from the design:
+
+                deleteFiller -cell FILL64 FILL32 Fill8 FILL16 FILL2 FILL1
+
+              * The following command deletes all well-tap  and  end-cap  cell
+                instances from the design:
+
+                deleteFiller -cell WELLTAP PRECAP POSTCAP
+
+              * The  following  command deletes all physical cells with prefix
+                WELLTAP in the specified bounding box of {0 0 300 300}  except
+                those cells with FIXED status:
+
+                deleteFiller -prefix WELLTAP -area {0 0 300 300} -keepFixed
+
+              * The  following  command deletes all physical cells with prefix
+                WELLTAP in the specified bounding box of {0 0 300 300}, except
+                those cells with FIXED status:
+
+                deleteFiller -prefix WELLTAP -area {0 0 300 300} -keepFixed
+
+Related Information
+              * addFiller
+
+              * setFillerMode
+
+                           Fri Apr 04 01:25:37 2025        deleteFiller(25.10)

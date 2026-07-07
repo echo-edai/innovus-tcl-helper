@@ -1,0 +1,77 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+modifyPipelineNetGroup(25.10)                    modifyPipelineNetGroup(25.10)
+
+Name
+       modifyPipelineNetGroup  - Modifies the existing net group attributes or
+       converts an existing net group added during floorplanning to be of type
+       pipeline
+
+Syntax
+       modifyPipelineNetGroup
+
+       netGroupName
+
+       [{-inst <instNameListOrRegularExp> |
+
+             -startTerm <termList> -endTerm <termList> |
+
+             -net <listOfNetnamesOrRegularExp> }]
+
+       [-startReserve <distInMicrons>] [-endReserve <distInMicrons>]
+
+       Modifies the existing net group attributes or converts an existing  net
+       group  added  during floorplanning to be of type pipeline. This command
+       can be used if there are existing pipe line net groups in the design.
+
+Parameters
+       -endReserve <ReserveDistanceInMicrons>
+              Specifies a distance value from the end points on block boundary
+              to the internal connection inside the block  that  needs  to  be
+              added  to  the last stage distance, to achieve equidistant spac-
+              ing. The unit is in micron.
+
+       -inst <instNameListOrRegularExp>
+              Modifies net group to add all nets connected to  the  given  in-
+              stances.  The  instances  must all be flip-flops or latches. All
+              the nets attached to the D and Q pins are put into the  PFF  net
+              group.
+
+       -net <listOfNetNamesOrRegularExp>
+              Creates net group of all given nets.
+
+       -startReserve <ReserveDistanceInMicrons>
+              Specifies  a  distance  budget  from internal connections inside
+              block to the start point of the PFF net. This value is added  to
+              the  first  stage  distance when calculating equidistant spacing
+              for each stage. The unit is in micron.
+
+       -startTerm <termList>
+              Modifies net group to add all data nets between  the  given  end
+              points.  The  PFF-chain  is traced from the startTerm, through D
+              and Q terminals of PFF(s) until an endTerm is matched.
+
+       -endTerm <termList>
+              Modifies net group to add all data nets between  the  given  end
+              points.  The  PFF-chain  is traced from the startTerm, through D
+              and Q terminals of PFF(s) until an endTerm is matched.
+
+       netGroupName
+              Specifies the name of net group.
+
+Example
+       The following command modifies the existing net group  named  netGroup1
+       between blockA/DATA_OUT*  and blockB/DATA_IN* with a budget distance 10
+       microns  from internal connections inside the blockA to the start point
+       of DATA_OUT* :
+
+       modifyPipelineNetGroup netGroup1 -startTerm  blockA/DATA_OUT*  -endTerm
+       blockB/DATA_IN* -startReserve 10
+
+Related Information
+              * createPipelineNetGroup
+
+              * deletePipelineNetGroup
+
+              * reportPipeline
+
+                           Fri Apr 04 01:25:37 202m5odifyPipelineNetGroup(25.10)

@@ -1,0 +1,227 @@
+Usage: getAddStripeMode [-help] [-allow_jog] [-allow_nonpreferred_dir] [-area]
+                        [-break_at] [-color_balance] [-continue_on_no_selection]
+                        [-detailed_log] [-domain_offset_from_core]
+                        [-extend_to_closest_target] [-extend_to_first_ring]
+                        [-ignore_block_check] [-ignore_blockring_when_breaking]
+                        [-ignore_DRC] [-ignore_nondefault_domains]
+                        [-inside_cell_allow_shift] [-inside_cell_only]
+                        [-keep_pitch_after_snap] [-max_extension_distance]
+                        [-max_via_size] [-merge_with_all_layers] [-mesh_via]
+                        [-offset_from_core] [-optimize_stripe_for_routing_track]
+                        [-orthogonal_offset] [-orthogonal_only]
+                        [-over_row_extension] [-partial_set_thru_domain]
+                        [-recommend_width] [-remove_floating_stapling]
+                        [-remove_floating_stripe_over_block]
+                        [-remove_stripe_under_ring] [-respect_routes]
+                        [-route_over_rows_only] [-rows_without_stripes_only]
+                        [-same_sized_stack_vias] [-skip_via_on_pin]
+                        [-skip_via_on_wire_shape] [-spacing_from_block]
+                        [-spacing_type] [-split_long_via] [-split_vias]
+                        [-split_wire_spacing] [-split_wire_weight]
+                        [-split_wire_width] [-stacked_via_bottom_layer]
+                        [-stacked_via_top_layer]
+                        [-stapling_extend_to_minimum_spacing]
+                        [-stapling_nets_style] [-stapling_shift]
+                        [-stop_at_closest_target] [-stop_at_last_wire_for_area]
+                        [-stripe_min_length] [-stripe_min_width]
+                        [-switch_cellname] [-switch_layer_overlap_length]
+                        [-trim_antenna_back_to_shape]
+                        [-trim_antenna_max_distance] [-trim_stripe]
+                        [-use_exact_spacing] [-use_point2point_router]
+                        [-use_stripe_width] [-via_using_exact_crossover_size]
+                        [-quiet] [-nonDefault]
+
+-help                                      # Prints out the command usage
+-allow_jog                                 # Specifies the allowed jog type.
+                                           # (enums={none padcore_ring block_ring}_list, default=padcore_ring block_ring)
+-allow_nonpreferred_dir                    # Specifies whether to allow
+                                           # non-preferred direction to jog to
+                                           # target
+                                           # (enums={none blockring corering padring stripe}_list, default=padring)
+-area                                      # Specify the rectangular areas or
+                                           # rectilinear areas or a mix of
+                                           # them, the correct value should be
+                                           # {<lx ly ux uy> | <x1 y1 x2 y2 x3
+                                           # y3 ...>} (string, default="")
+-break_at                                  # Specifies the stripe break point.
+                                           # (enums={none block_ring selected_block unassigned_bump overlap_ringpin outer_ring outside_ringmacro blocks_without_same_net}_list, default=none)
+-color_balance                             # same_color would correspond to
+                                           # interlace with groups and
+                                           # alternate_color would correspond
+                                           # to interlace within group
+                                           # (enums={same_color alternate_color none}, default=none)
+-continue_on_no_selection                  # Specifies whether to continue w/o
+                                           # selection (bool, default=false)
+-detailed_log                              # Specifies whether to output
+                                           # detailed log file addStripe.log
+                                           # (bool, default=false)
+-domain_offset_from_core                   # Specifies whether to use global
+                                           # offset for power domain stripes
+                                           # (bool, default=false)
+-extend_to_closest_target                  # Specifies the stripe to specified
+                                           # target
+                                           # (enums={ring stripe same_dir_stripe area_boundary none}_list, default=none)
+-extend_to_first_ring                      # Specifies whether to extend stripe
+                                           # antennas to closest ring
+                                           # (bool, default=false)
+-ignore_block_check                        # Specifies whether to ignore block
+                                           # check (bool, default=false)
+-ignore_blockring_when_breaking            # Specifies whether to break stripe
+                                           # outside block (bool, default=false)
+-ignore_DRC                                # Specifies whether to ignore DRC
+                                           # check during stripe generation, it
+                                           # is always used for prototype flow
+                                           # (bool, default=false)
+-ignore_nondefault_domains                 # Specifies whether to break at
+                                           # non-default domain
+                                           # (bool, default=false)
+-inside_cell_allow_shift                   # Specifies to allow the created
+                                           # pillar inside cell can be shifted
+                                           # when meeting DRC
+                                           # (bool, default=false)
+-inside_cell_only                          # Specifies whether to generate
+                                           # stripes only inside selected or
+                                           # specified cell (bool, default=false)
+-keep_pitch_after_snap                     # (bool, default=false)
+-max_extension_distance                    # Specifies maximum extension
+                                           # distance(default=max integer) when
+                                           # -extend_to_closest_target is
+                                           # specified.
+                                           # (float, default=2147483647)
+-max_via_size                              # the maximum size of a crossover
+                                           # via, the correct value should be
+                                           # {shape width% height%
+                                           # target_penetration%}
+                                           # (string, default="")
+-merge_with_all_layers                     # Specifies whether to merge a
+                                           # stripe on all layers
+                                           # (bool, default=false)
+-mesh_via                                  # use mesh via to reduce memory
+                                           # (bool, default=false)
+-offset_from_core                          # Specifies whether to offset first
+                                           # or last stripe from the core area
+                                           # (bool, default=true)
+-optimize_stripe_for_routing_track         # move stripe location to preserve
+                                           # routing resource
+                                           # (enums={shift none}_list, default=none)
+-orthogonal_offset                         # Specifies the offsets for edges
+                                           # orthogonally, the correct value
+                                           # should be {[{edge1
+                                           # orthogonal_offset1} {edge2 edge3
+                                           # orthogonal_offset2} {edge4 edge5
+                                           # ... orthogonal_offset3} ...] |
+                                           # [all orthogonal_offset]}
+                                           # (string, default={none})
+-orthogonal_only                           # vias connect to orthogonal targets
+                                           # only (bool, default=true)
+-over_row_extension                        # Specifies whether to extend the
+                                           # stripe to cover followpin at the
+                                           # row end (bool, default=false)
+-partial_set_thru_domain                   # Specifies whether to go over power
+                                           # domain if domain contains the
+                                           # specified net (bool, default=false)
+-recommend_width                           # Specify the values of recommended
+                                           # width in the file name
+                                           # (string, default="")
+-remove_floating_stapling                  # remove floating stapling stripe if
+                                           # there is no via connection
+                                           # (bool, default=true)
+-remove_floating_stripe_over_block         # Specifies whether to remove stripe
+                                           # fragments start and end inside
+                                           # same block or ring macro
+                                           # (bool, default=true)
+-remove_stripe_under_ring                  # Specifies whether to remove those
+                                           # segments under rings.
+                                           # (bool, default=false)
+-respect_routes                            # Specifies whether to honor
+                                           # pre-existing routes check during
+                                           # stripe generation
+                                           # (enums={none | fixed | fixed_and_clock | all}, default=fixed_and_clock)
+-route_over_rows_only                      # Specifies whether to  route stripe
+                                           # over rows within the boundary
+                                           # (bool, default=false)
+-rows_without_stripes_only                 # Specifies whether to generate
+                                           # stripes over rows w/o stripes
+                                           # (bool, default=false)
+-same_sized_stack_vias                     # generate same-sized stacked vias
+                                           # (bool, default=false)
+-skip_via_on_pin                           # prevent vias from being generated
+                                           # on the specified type of pins
+                                           # (enums={pad block cover standardcell physicalpin}_list, default=standardcell)
+-skip_via_on_wire_shape                    # prevent vias from being generated
+                                           # on the specified wire shapes
+                                           # (enums={blockring stripe followpin corewire blockwire iowire padring ring fillwire noshape}_list, default=noshape)
+-spacing_from_block                        # Specifies the spacing from block
+                                           # (float, default=0)
+-spacing_type                              # Specify the type of intra spacing
+                                           # for addStripe -spacing
+                                           # (enums={edge_to_edge center_to_center}, default=edge_to_edge)
+-split_long_via                            # Split vias longer than <threshold>
+                                           # into smaller vias with specified
+                                           # <step> and bottom/left end
+                                           # <offset> and vertical/horizontal
+                                           # <length>, the correct value should
+                                           # be {threshold step offset length}
+                                           # (string, default=0 0 -1 -1)
+-split_vias                                # create multiple partial vias
+                                           # (bool, default=false)
+-split_wire_spacing                        # Specifies the spacing between each
+                                           # split wire (float, default=0)
+-split_wire_weight                         # Deletes fewest IO wires to
+                                           # accommodate approximately n of 10
+                                           # split stripe wires (float, default=0)
+-split_wire_width                          # Specifies the width of each split
+                                           # wire (float, default=0)
+-stacked_via_bottom_layer                  # lef layer name
+                                           # (string, default=bottomLayer)
+-stacked_via_top_layer                     # lef layer name
+                                           # (string, default=topLayer)
+-stapling_extend_to_minimum_spacing        # Specified to automatically extend
+                                           # the adjacent stapling as long as
+                                           # enough to satisfy the end-to-end
+                                           # minimum spacing with DRC free
+                                           # (bool, default=false)
+-stapling_nets_style                       # Specify the stapling style if
+                                           # multiple nets are specified
+                                           # (enums={end_to_end side_to_side side_to_side_full_nets}, default=end_to_end)
+-stapling_shift                            # shift stapling stripe to avoid the
+                                           # drc automatically
+                                           # (bool, default=true)
+-stop_at_closest_target                    # Specifies the stripe to specified
+                                           # target when over_pins is enabled.
+                                           # (enums={none block_ring core_ring stripe}_list, default=none)
+-stop_at_last_wire_for_area                # Specifies whether to trim back
+                                           # stripe antennas to the closest
+                                           # wire or pin of the same net
+                                           # (bool, default=false)
+-stripe_min_length                         # Specifies the minimum stripe
+                                           # length (string, default=stripe_width)
+-stripe_min_width                          # Specifies the min width of
+                                           # remaining stripe after being
+                                           # trimmed (float, default=0)
+-switch_cellname                           # Specifies the switch cells to be
+                                           # treated as rings
+                                           # (string, default=none)
+-switch_layer_overlap_length               # Specifies the overlap distance
+                                           # used for the via between a stripe
+                                           # layer and the layer being switched
+                                           # to (float, default=0)
+-trim_antenna_back_to_shape                # Specifies the distance between the
+                                           # end of antenna and blocked target
+                                           # (enums={none block_ring core_ring pad_ring stripe}_list, default=none)
+-trim_antenna_max_distance                 # Specifies the distance between the
+                                           # end of antenna and blocked target
+                                           # (float, default=0)
+-trim_stripe                               # Specifies if stripe is trimmed by
+                                           # the specified shape.
+                                           # (enums={none design_boundary core_boundary}, default=none)
+-use_exact_spacing                         # Specifies whether to use exact
+                                           # spacing (bool, default=false)
+-use_point2point_router                    # Specifies whether to use exact
+                                           # spacing (bool, default=false)
+-use_stripe_width                          # Specifies whether to use stripe
+                                           # width (bool, default=true)
+-via_using_exact_crossover_size            # generate partial vias of the exact
+                                           # crossover size (bool, default=true)
+-quiet                                     # Displays the current settings in Tcl list format only
+-nonDefault                                # Displays the current settings which are not default settings

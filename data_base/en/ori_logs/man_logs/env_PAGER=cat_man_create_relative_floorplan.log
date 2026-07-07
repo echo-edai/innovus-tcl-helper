@@ -1,0 +1,224 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_relative_floorplan(25.10)              create_relative_floorplan(25.10)
+
+Name
+       create_relative_floorplan  - The create_relative_floorplan command cap-
+       tures and defines the placement relationship of floorplan objects inde-
+       pendently from the actual coordinates in a floorplan, and resizes  mod-
+       ules  or  blackboxes based on other floorplan objects, even outside the
+       core boundary
+
+Syntax
+        create_relative_floorplan
+
+       [-help]
+
+       {{{-place   <obj_name_list>   |   -reshape    <obj_name_list>}    [-ref
+       ref_<obj_name_list>]}}
+
+       [-place  <obj_name_list>  {-ref_type  {{object core_boundary die_bound-
+       ary}...}
+
+        -horizontal_edge_separate       {{<ref_edge_horizontal        y_offset
+       obj_edge_horizontal>}...}
+
+        -vertical_edge_separate  {{<ref_edge_vertical x_offset obj_edge_verti-
+       cal>}...}}
+
+       [[-bbox {{none target reference both}...}]
+
+        [-orient {{R0 R90 R180 R270 MX MY MX90 MY90}...}]]]
+
+       [-reshape <obj_name_list> { -dimension {{<width height>}...} }
+
+       [ [-fixed_edges {{<edge1 edge2>}...}] [-density<  >{<value>}]  [-offset
+       {<value>}]]]
+
+       The  create_relative_floorplan  command captures and defines the place-
+       ment relationship of floorplan objects independently  from  the  actual
+       coordinates  in a floorplan, and resizes modules or blackboxes based on
+       other floorplan objects, even outside the core boundary.  You  can  use
+       this command after importing the design.
+
+       Note:  The  create_relative_floorplan  command  accepts an array of ob-
+       jects. You can capture and define the placement relationship of an  ar-
+       ray of floorplan objects using just one command.
+
+       Note: You can use writeFPlanScript -sections relativefplan to save rel-
+       ative floorplan info.
+
+       Note:  The edges are numbered as 0,1,2,3... from the low left corner in
+       the clockwise direction. The left edge closest to the origin  that  has
+       the  smallest  x,y coordinates is taken as the first zero edge. An even
+       edge number donates a vertical edge and an odd edge  number  donates  a
+       horizontal  edge. The following figure shows how to count the edges for
+       a rectangle and rectilinear object.
+
+Parameters
+       -bbox {none target reference both}
+              Specifies whether to use a bounding box instead of the rectilin-
+              ear shape of target or reference object.
+
+              Default: none
+
+              Data_type: enum_list, optional
+
+       -density< value>
+              Specifies the target utilization (TU). By default, reshaping the
+              object will keep the current TU.
+
+              Data_type: string, optional
+
+       -dimension {<width height>}
+              Specifies the width or height of the referenced  object  as  the
+              reference dimension.
+
+              Default: width
+
+              Data_type: enum_list, optional
+
+       -fixed_edges {<edge1 edge2>}
+              Specifies that the reshape object will be stretched while fixing
+              two perpendicular edges.
+
+              Default: {-1 0}
+
+              Data_type: string, optional
+
+       -horizontal_edge_separate {<ref_edge_horizontal y_offset obj_edge_hori-
+       zontal>}
+              Specifies  the  vertical  spacing between the horizontal edge of
+              the target and reference objects.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each create_relative_floorplan parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man create_relative_floorplan
+
+       -offset <value>
+              Specifies  the  offset  value  from  the reference object in the
+              specified dimension.
+
+              Data_type: string, optional
+
+       -orient {R0 R90 R180 R270 MX MY MX90 MY90}
+              Specifies the orientation of the target object.
+
+              Default: R0
+
+              Data_type: enum_list, optional
+
+       -place <obj_name_list>
+              Specifies the target object to place. It  can  be  hInst,  inst,
+              group, power_domain, pin_guide, blockages, or port.
+
+              Data_type: string, optional
+
+       -ref ref_<obj_name_list>
+              Specifies  the  reference  object  name.  It can be hInst, inst,
+              group, power_domain, pin_guide, blockages, port, or pin. It can-
+              not be used with -ref_type core_boundary or -ref_type die_bound-
+              ary.
+
+              Data_type: string, optional
+
+       -ref_type {object core_boundary die_boundary}
+              Specifies the type of reference.
+
+              Default: object
+
+              Data_type: enum_list, optional
+
+       -reshape <obj_name_list>
+              Specifies the target object to reshape. It can  be  hInst,group,
+              power_domain,pin_guide, or blockages.
+
+              Data_type: string, optional
+
+       -vertical_edge_separate {<ref_edge_vertical x_offset obj_edge_verti-
+       cal>}
+              Specifies  the  horizontal  spacing between the vertical edge of
+              the target and reference objects.
+
+              Data_type: string, optional
+
+Examples
+       Placing an Instance According to a Rectilinear Object
+
+              * The following command places an object with respect to a  rec-
+                tilinear object:
+
+                create_relative_floorplan  -place  instA -ref_type object -ref
+                refA -orient MY \
+
+                         -horizontal_edge_separate   {3   -20    1}    -verti-
+                cal_edge_separate {4 40 0}
+
+              *
+
+                The  following  command  places  an object with respect to the
+                bounding box of a rectilinear object:
+
+                create_relative_floorplan -place instA -ref_type  object  -ref
+                refA
+
+                         -horizontal_edge_separate    {1    -20   1}   -verti-
+                cal_edge_separate {2 10 0} -bbox both
+
+       Placing an Instance According to the Core Boundary
+
+              *
+
+                The following command places an object  with  respect  to  the
+                core boundary:
+
+                create_relative_floorplan -place instA -ref_type core_boundary
+                \
+
+                       -horizontal_edge_separate {5 10 5} -vertical_edge_sepa-
+                rate {4 -20 4}
+
+       Reshaping  an  Instance  in a Reference Dimension while Maintaining its
+       Current Area
+
+        The following commands reshape an object based on a  specified  height
+       while maintaining its current area:
+
+              * create_relative_floorplan  -reshape  modA -ref refA -dimension
+                height
+
+              * create_relative_floorplan -reshape modA -ref  refA  -dimension
+                height -offset 10
+
+              * create_relative_floorplan -reshape modA -ref refA -fixed_edges
+                {0 3} -dimension height
+
+       Reshaping an Instance while Maintaining a Target Utilization Value
+
+              * The  following command reshapes an object based on a specified
+                height maintaining a target utilization value:
+
+                create_relative_floorplan -reshape modA -ref refA   -dimension
+                height -density 0.6
+
+       Placing multiple floorplan objects
+
+              * The following command places obj1, obj2, and obj3:
+
+                create_relative_floorplan  -place  {obj1 obj2 obj3} -ref {ref1
+                ref2 ref3} -ref_type {reftype1  reftype2  reftype3}  -horizon-
+                tal_edge_separate   {-1   0   -1,-1  0  -1,-1  0  -1}  -verti-
+                cal_edge_separate {0 -100 2,0 -100 2,0  -100  2}  -bbox  {both
+                target target} -orient {MX90 R90 R90}
+
+Related Information
+              * delete_relative_floorplan
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37c2r0e2a5te_relative_floorplan(25.10)

@@ -1,0 +1,261 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+checkDesign(25.10)                                          checkDesign(25.10)
+
+Name
+       checkDesign  -  Checks  for  missing or inconsistent library and design
+       data at any stage of the design and writes the results to  a  text  and
+       HTML report
+
+Syntax
+       checkDesign
+
+       [-help]
+
+       { -all
+
+          [-danglingNet [highlight]] | [[-io]
+
+          [-netlist [-danglingNet [highlight]]]
+
+          [-physicalLibrary]
+
+          [-timingLibrary]
+
+          [-powerGround]
+
+          [-tieHiLo]
+
+          [-floorplan]
+
+          [-place]
+
+          [-spef][-assigns]] }
+
+       [[-noText] [-outdir directoryName] [-browser]]
+
+       | [-noHtml [-outfile fileName]]
+
+       Checks for missing or inconsistent library and design data at any stage
+       of  the  design  and writes the results to a text and HTML report. This
+       eliminates the need to perform these checks manually. By  default,  the
+       HTML report is saved as <design_name>.main.htm whereas the text version
+       of the report is saved as <design_name>.main.htm.ascii.
+
+       The Innovus Implementation System (Innovus) software checks the follow-
+       ing data:
+
+              * I/Os
+
+              * Netlist
+
+              * Physical library
+
+              * Timing library
+
+              * Power and ground pins
+
+              * Tie-high and tie-low pins
+
+              * Floorplan
+
+              * Placement
+
+       Cadence recommends that you check libraries and data as follows:
+
+              * Perform  I/O  checking at any time. I/O problems might not im-
+                pede any tool, but they might add to design problems.
+
+              * Perform netlist checking at any time after the design has been
+                loaded.
+
+              * Perform physical library checking before floorplanning.
+
+              * Perform timing library checking before any timing-related  op-
+                eration (for example, timing driven placement or routing, tim-
+                ing  optimization,  clock-tree  synthesis,  and  static timing
+                analysis)
+
+              * Perform power/ground checking before routing  and  extraction,
+                and verifying geometry and connectivity.
+
+              * Perform  tie-high  and tie-low checking before routing and ex-
+                traction.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each checkDesign parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man checkDesign.
+
+       -all   Performs all checks.
+
+       -assigns
+              Reports  all assign statements in the netlist, including assigns
+              to 1'b0/1'b1.
+
+       -browser
+              Opens a browser and displays the HTML version of the report.
+
+              Note: This option cannot be used with -noHtml.
+
+       -danglingNet [highlight]
+              Checks the design for nets that have no  instance  or  top-level
+              terminals, and outputs their names into the report file.
+
+              The  -danglingNet  parameter can be used only if the -netlist or
+              -all parameter is specified.
+
+              If you specify highlight, the software also highlights the "dan-
+              gling" nets in the main window, after  the  checkDesign  command
+              finishes.
+
+       -floorplan
+              Checks  the  floorplan, generates error or warning messages, and
+              reports the following information:
+
+              * Off-grid horizontal and vertical tracks
+
+              * Instances not snapped to row site
+
+              * Unplaced I/O pins
+
+              * Off Grid Power/Ground Pre-routes
+
+              * Instances not on the manufacturing grid
+
+              * Preroutes not on the manufacturing grid (error)
+
+              * Regular preroutes not on tracks
+
+       -io    Checks I/O pads, generates warning  messages,  and  reports  the
+              following information:
+
+              * Unplaced I/O cells
+
+              * Floating pins that belongs to I/O pads (warning)
+
+              * I/O pins connected to non-I/O instances (directly connected to
+                core cells)
+
+              * Unplaced I/O pins
+
+              * Floating I/O pins
+
+       -netlist
+              Checks the netlist, generates error or warning messages, and re-
+              ports the following information:
+
+              * Output  pins  tied to power/ground nets (for example, BUFX1 U1
+                (.A(net1),.Y1(1'b0)))
+
+              * Input pins floating (warning)
+
+              * Multiple driver nets (warning)
+
+       -noHtml
+              Generates only a text version of the report.
+
+              Default: The report is generated in both HTML and text format.
+
+       -noText
+              Generates only an HTML version of the report.
+
+              Default: The report is generated in both HTML and text format.
+
+       -outdir <directoryName>
+              Specifies the directory in which the HTML and text  reports  are
+              saved.  If  -noText is specified, saves only the HTML version of
+              the report to the specified directory.
+
+              Note: The -outdir parameter cannot be used with -noHtml.
+
+       -outfile <fileName>
+              Writes the text version of the report to the specified file.
+
+              Note: You can specify this option only if you specify -noHtml.
+
+              Default: If you specify -noHtml but do not specify -outfile, the
+              software writes the text version of the report to a  file  named
+              <design_name>.main.htm.ascii.
+
+       -physicalLibrary
+              Checks the physical libraries and reports whether all cells have
+              LEF views. The software generates error messages for the follow-
+              ing conditions:
+
+              * Cells not defined in LEF
+
+              * Cells with missing dimensions
+
+              * Pins with missing direction
+
+              * Cells pins with missing geometry
+
+              * Cell  dimensions  are not an integer multiple of the core site
+                dimensions
+
+              *
+
+                A macro does not have fully covered obstruction
+
+              *
+
+                Fixed mask block have some pins not colored
+
+       -place Checks the placement, generates error or warning  messages,  and
+              reports the following information:
+
+              * Number of instances with placement violations
+
+              * Instances placed outside of the core area
+
+              * Instances overlapping other instances
+
+              * Instances overlapping placement blockages
+
+       -powerGround
+              Checks power and ground connections, generates warning messages,
+              and reports the following information:
+
+              * Power terminals connected to ground net
+
+              * Ground terminals connected to power net
+
+              * Floating power and ground terminals
+
+              * Power  and  ground terminals connected to non-power and ground
+                nets.
+
+       -spef  Checks spef.
+
+       -tieHiLo
+              Reports unconnected tie-high or tie-low terminals  and  tieHi/Lo
+              pins and P/G pins connected to different nets. The system gener-
+              ates a warning message.
+
+       -timingLibrary
+              Checks whether the cells used in the design have been defined in
+              the  timing library. This option does not check for the presence
+              of timing arcs. All physical cells are excluded from this check.
+
+Examples
+              * The following command checks the design and generates  a  text
+                version of the report called checkDesign.ascii:
+
+                checkDesign -all -noHtml -outfile checkDesign.ascii
+
+                The following is a sample of the resulting text report:
+
+Related Information
+              * Data Preparation chapter of the Innovus User Guide
+
+                     * Checking Designs
+
+              * Placing the Design chapter of the Innovus User Guide
+
+                     * Preparing for Placement
+
+                           Fri Apr 04 01:25:37 2025         checkDesign(25.10)

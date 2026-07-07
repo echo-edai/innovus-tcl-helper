@@ -1,0 +1,96 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setSpecialRouteType(25.10)                          setSpecialRouteType(25.10)
+
+Name
+       setSpecialRouteType  - Sets special routing wires to a particular shape
+       type so that they can be written out into a DEF file  using  the  -spe-
+       cialShape parameter of the defOutBySection command
+
+Syntax
+       setSpecialRouteType
+
+       [-help]
+
+       -stopTypeList <swire_type_list>
+
+       [-stopLayer <Metal_layer>]
+
+       -setType   {BLOCKRING|BLOCKAGEWIRE|BLOCKWIRE|COREWIRE|DRCFILL|FILLWIRE-
+       OPC|FILLWIRE|FOLLOWPIN|IOWIRE|NOTYPE|PADRING|RING|STRIPE}
+
+       {-bumpCell<bumpCellList>       |       -instPin        {{<inst1><pin1>}
+       {<inst2><pin2>}...}}
+
+       Sets  special routing wires to a particular shape type so that they can
+       be written out into a DEF file using the -specialShape parameter of the
+       defOutBySection command. This makes data filtering easier  by  enabling
+       customized  selection  and  output  of special routing shape types. The
+       output data is very specific and can be easily managed as storage  size
+       is small.
+
+       The setSpecialRouteType command works by tracing special wires and vias
+       that  touch  bumps  or instance pins through to a stop-layer or special
+       wire stop type. All the traced special wires and vias are marked with a
+       particular wire type. The defOutBySection -specialShape command is then
+       used to write out the special type routes and vias.
+
+       Note: Use the setSpecialRouteType and defOutBySection commands  in  se-
+       quence.  Save  the design before you modify the shape types so that you
+       can recover the original design with defIn.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each setSpecialRouteType parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setSpecialRouteType
+
+       -bumpCell <bumpCellList>
+              Specifies  the list of bump cells. If this option specified, the
+              tracing starts from any special wires and vias  that  touch  the
+              named bump cells.
+
+              Note: This option cannot be used with -instPin.
+
+       -instPin {{<inst1 pin1>} {<inst2 pin2>}<...>}
+              Specifies  a  list of pairs of instances and their pins. If this
+              option specified, the tracing starts from any special wires  and
+              vias that touch the named instance pin pairs.
+
+              Note: This option cannot be used with -bumpCell.
+
+       -setType {BLOCKRING|BLOCKAGEWIRE|BLOCKWIRE|COREWIRE|DRCFILL|FILLWIRE-
+       OPC|FILLWIRE|FOLLOWPIN|IOWIRE|NOTYPE|PADRING|RING|STRIPE}
+              Sets  the  marked  special  wire to the specified wire type (DEF
+              SPECIAL ROUTE SHAPE type).
+
+              Default: IOWIRE
+
+       -stopLayer <Metal_layer>
+              Specifies the metal layer at which tracing should stop.
+
+       -stopTypeList <swire_type_list>
+              Specifies the special-wire types used in tracing. When a special
+              wire with a shape type that is not included in the list  is  en-
+              countered,  tracing  stops.  The legal list of <swire_type_list>
+              are the DEF SPECIAL ROUTE SHAPE types: BLOCKRING,  BLOCKAGEWIRE,
+              BLOCKWIRE,  COREWIRE, DRCFILL, FILLWIREOPC, FILLWIRE, FOLLOWPIN,
+              IOWIRE, NOTYPE, PADRING, RING, STRIPE.
+
+Example
+              * The following command traces special wires and vias that touch
+                the named bump cells. Tracing stops when  a  special  wire  of
+                type other than IOWIRE is encountered. The marked special wire
+                is set to IOWIRE.
+
+                setSpecialRouteType  -bumpCell  {bc*}  -stopTypeList  {IOWIRE}
+                -setType IOWIRE
+
+Related Information
+              * defIn
+
+              * defOutBySection
+
+                           Fri Apr 04 01:25:37 2025 setSpecialRouteType(25.10)

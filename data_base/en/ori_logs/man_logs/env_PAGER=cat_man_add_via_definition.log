@@ -1,0 +1,380 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_via_definition(25.10)                            add_via_definition(25.10)
+
+Name
+       add_via_definition  - Creates a via definition (master) from the speci-
+       fied parameters or list of shapes
+
+Syntax
+       add_via_definition
+
+       [-help]
+
+       [-bottom_layer_masks <int+>]
+
+       [-cut_masks <int+>]
+
+       [-name <viaName>]
+
+       {{[-via_rule <via_def_rule> | -cut_pattern <viaDef>]
+
+           [[-cut_size {<x y>}][-cut_spacing {<x y>}][-top_enclosure {<x y>}]
+
+            [-bottom_enclosure {<x  y>}][-top_offset  {<x  y>}][-bottom_offset
+       {<x y>}][-row_col {<x y>}]
+
+            [-origin {<x y>}] [-pattern <pattern>]]} |
+
+        {{-cut_layer <layer> -cut_rects {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}
+
+         {[-top_layer  <layer>]  {-top_rects  {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>}
+       ...} |
+
+          -top_polygon {{<x1 y1>}{<x2 y2>}...}}}
+
+         {[-bottom_layer <layer>] {-bottom_rects {{<x1 y1 x2 y2>} {<x3  y3  x4
+       y4>} ...} |
+
+          -bottom_polygon {{<x1 y1>} {<x2 y2>}...}}}}}
+
+       [-top_layer_masks <int+>]
+
+       Creates a via definition (master) from the specified parameters or list
+       of  shapes.  The  via masters created are design (DEF) vias and are for
+       use in DEF SPECIALNETS wiring, unless the modify_ndr command is used to
+       add them the list of valid vias for a NONDEFAULTRULE.
+
+       There are two types of via-master definitions:
+
+              * Parameterized vias that require a -via_rule <name>, and a  set
+                of  row,  column,  spacing and enclosure parameters. These are
+                equivalent to LEF/DEF VIAs defined with  VIARULE  GENERATE  or
+                OpenAccess standardViaDef. Applications normally check the via
+                parameters  for  comparing  and  finding  via-masters. But for
+                LEF/DEF and reporting purposes, the via-master name  is  auto-
+                matically  generated  using  the  -via_rule <name> as a prefix
+                with a "_1", "_2", etc. suffix added to make it unique  so  it
+                will not collide with any existing via-master names. The auto-
+                generated  name  is only valid during the current session, and
+                may be different after save/restore and opening it in  another
+                session.  If a via-master already exists with the same parame-
+                ters, the existing via-master is returned instead of  creating
+                a  redundant  via-master. Hence, this command can also be used
+                to "lookup" any equivalent via-master previously created.
+
+              * Fixed vias that require a -name and a list of  rectangles  and
+                polygons.  These are equivalent to LEF/DEF VIAs using the RECT
+                and POLYGON statements, or OpenAccess customViaDefs.  The  via
+                name  is  the  only  way to lookup the via-master, and must be
+                unique.  The name cannot collide with an existing  via-master.
+                These  types  of  via-masters are normally not recommended for
+                design specific or DEF vias, because other blocks  may  create
+                via-master  names  that  collide. These types of vias are nor-
+                mally only in the library (LEF or OA  techfile)  so  they  are
+                shared with all block of the same chip.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each add_via_definition parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man add_via_definition
+
+       -bottom_enclosure {<x y>}
+              Specifies  the  bottom layer enclosure around the cut array. The
+              enclosure measures the distance from the cut-array-edge  to  the
+              metal-edge that encloses the cut-array.
+
+       Values  are specified in microns. Requires -via_rule option for a para-
+       meterized via.
+
+              Default: Derived from -via_rule.
+
+       -bottom_layer <layer>
+              If not specified, the first layer below the  -cut_layer  is  as-
+              sumed. Requires  -name option for a fixed via.
+
+       -bottom_layer_masks <int+>
+              Specifies  the  masks  for  the  rects on the bottom layer for a
+              via_def. The mask values and  rects must be in  the  same  order
+              and there must be the same number of mask values as  rects.
+
+       -bottom_offset {<x y>}
+              Specifies  the  <x,y>  offset for bottom layer in the via. After
+              the "non-shifted via" is computed, the bottom layer rectangle is
+              offset by adding the x,y to the -origin offset.
+
+              Values are specified in microns. Requires -via_rule option for a
+              parameterized via.
+
+              Default: {0 0}.
+
+       -bottom_polygon {{<x1 y1>} {<x2 y2>}...}
+              Specifies the polygon to create on the bottom layer.
+
+              Values are specified in microns. Requires  -name  option  for  a
+              fixed via.
+
+       -bottom_rects {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}
+              Specifies the list of rectangles to create on the bottom layer.
+
+              Values  are  specified  in microns. Requires - name option for a
+              fixed via.
+
+       -cut_layer <layer>
+              Specifies the name or pointer of the cut layer.  The  top/bottom
+              layers  of the via are derived from the routing layers above/be-
+              low the cut layer.
+
+              Requires -name option for a fixed via.
+
+       -cut_masks <int+>
+              Specifies the masks for  the  rects  on  the  cut  layer  for  a
+              via_def. The mask values and rects must be in the same order and
+              there must be the same number of mask values as rects.
+
+       -cut_pattern <viaDef>
+              Specifies a via cell from which the new via cell's cut rects are
+              parameterized.  You  can  specify an existing via cell name with
+              this parameter. The add_via_definition command  then  recognizes
+              all the cuts from the pattern via cell as a group, and adds this
+              cut  group  based  on  the  cut setting specified in the new via
+              cell. See the example below:
+
+       -cut_rects {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}
+              Specifies the list of rectangles to create  on  the  cut  layer.
+              Values  are  specified  in  microns. Requires -name option for a
+              fixed via.
+
+       -cut_size {<x y>}
+              Specifies the size (x=width, y=height) of the cut rectangles.
+
+              Values are specified in microns and must be greater than 0.  Re-
+              quires -via_rule option for a parameterized via.
+
+              Default: Derived from -via_rule.
+
+       -cut_spacing {<x y>}
+              Specifies  the spacing between the cuts. The spacing is measured
+              from cut-edge to the next cut-edge.
+
+              Values are specified in microns and must be greater than 0.  Re-
+              quires -via_rule option.
+
+              Default: Derived from -via_rule.
+
+       -name <viaName>
+              Specifies the name of via to create. For parameterized via defi-
+              nition  creation,  a  new via name is derived from the -via_rule
+              name unless  -name is specified.
+
+              The name cannot collide with any existing via-master names.
+
+       -origin {x y}
+              Specifies the x,y offset for all shapes in the via.  By  default
+              the 0,0 origin of the via is the center of the cut-array and the
+              center of the enclosing metal rectangles.
+
+              After  the  "non-shifted via" is computed, all the cut and metal
+              rectangles are offset by adding  these  values.  size  (x=width,
+              y=height) of the cut rectangles.
+
+              Values are specified in microns. Requires -via_rule option for a
+              parameterized via.
+
+              Default: {0 0}.
+
+       -pattern <pattern>
+              Specifies the cut pattern encoded as an ASCII string. This para-
+              meter  is  only  required when some of the cuts are missing from
+              the array of cuts.
+
+              Requires -via_rule option for a parameterized via.
+
+       -row_col {<x y>}
+              Specifies the number of cut rows and columns to  create.  Values
+              must  be greater than 0. Requires -via_rule option for a parame-
+              terized via.
+
+              Default: {1 1}.
+
+       -top_enclosure {<x y>}
+              Specifies the top layer enclosure around the cut array. The  en-
+              closure  measures  the  distance  from the cut-array-edge to the
+              metal-edge that encloses the cut-array.
+
+              Values are specified in microns. Requires -via_rule option for a
+              parameterized via.
+
+              Default: Derived from -via_rule.
+
+       -top_layer <layer>
+              If not specified the first layer above  the  -cut_layer  is  as-
+              sumed. Requires  -name option for a fixed via.
+
+       -top_layer_masks <int+>
+              Specifies  the  masks  for  the  rects  on  the  top layer for a
+              via_def. The mask values and  rects must be in  the  same  order
+              and there must be the same number of mask values as  rects.
+
+       -top_offset {x y}
+              The  x,y offset for top layer in the via. After the "non-shifted
+              via" is computed, the top layer rectangle is  offset  by  adding
+              the x,y to the -origin offset.
+
+              Values are specified in microns. Requires -via_rule option for a
+              parameterized via.
+
+              Default: {0 0}.
+
+       -top_polygon {{<x1 y1>}{<x2 y2>}...}
+              Specifies the polygon to create on the top layer.
+
+              Values  are  specified  in  microns. Requires -name option for a
+              fixed via.
+
+       -top_rects {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}
+              Specifies the list of rectangles to create on the top layer.
+
+              Values are specified in microns. Requires  -name  option  for  a
+              fixed via.
+
+       -via_rule <via_def_rule>
+              Specifies  the name or pointer of the via-rule (from LEF VIARULE
+              GENERATE or OpenAccess standardViaDef) to use for the via master
+              being created.
+
+              Layers  and  default  values  are  derived  from  the  specified
+              via_rule.  When  using  -via_rule, a parameterized via master is
+              created.
+
+Examples
+              *
+
+                The following command creates a pattern via cell:
+
+                add_via_definition \
+
+                -name pattern_via \
+
+                -top_layer Metal3 -top_rects {0 0 3 3} \
+
+                -bottom_layer Metal2 -bottom_rects {0 0 3 3} \
+
+                -cut_layer via23 -cut_size {0.4 0.4} \-cut_spacing  {0.4  0.4}
+                -row_col {3 3}
+
+                Following is the output of this command:
+
+              * The  following  command  creates a via cell based on a pattern
+                via cell:
+
+                add_via_definition \
+
+                -name new_via \
+
+                -top_enclosure {0.2 0.2} \
+
+                -bottom_ enclosure {0.2 0.2} \
+
+                -cut_spacing {1.2 1.2} \
+
+                -cut_pattern pattern_via \
+
+                -row_col {2 2}
+
+                Following is the output of this command:
+
+              * The following command creates a 1x2 cut via with default para-
+                meters:
+
+                set myvia [add_via_definition -via_rule via1_rule -row_col  {1
+                2}]
+
+                dbGet $myvia.name #returns the via-master name
+
+                The following parameterized via-master describes a non-shifted
+                via with two rows and three columns of via cuts.
+
+                In  this  example,  all the size, spacing, and enclosure rules
+                are given explicitly. In typical  usage,  they  would  not  be
+                specified and would use the default values in the via-rule.
+
+                add_via_definition   -via_rule   via1_rule   -row_col   {2  3}
+                -cut_size {20 20} \
+
+                 -cut_spacing {30 30} -bottom_enclosure {20 50} -top_enclosure
+                {50 20}
+
+                Following is the output of this command:
+
+                The same via rule with the -origin shifts all of the metal and
+                cut rectangles by 10 in the x direction, and by -10 in  the  y
+                direction.
+
+                add_via_definition   -via_rule   via1_rule   -row_col   {2  3}
+                -cut_size {20 20} \
+
+                 -cut_spacing {30 30} -bottom_enclosure {20 50} -top_enclosure
+                {50 20} \
+
+                 -origin (10 -10)
+
+                Following is the output of this command:
+
+                If the same via contains the following -origin and -top_offset
+                parameters, all of the rectangles shift by 10, -10.
+
+                In addition, the top layer metal rectangle shifts by 20,  -20,
+                which means that the top metal shifts by a total of 30, -30.
+
+                add_via_definition   -via_rule   via1_rule   -row_col   {2  3}
+                -cut_size {20 20} \
+
+                 -cut_spacing {30 30} -bottom_enclosure {20 50} -top_enclosure
+                {50 20} \
+
+                 -origin (10 -10) -top_offset {20 -20}
+
+                Following is the output of this command:
+
+              * The following command adds a 3x2 fixed via to  the  cut  layer
+                mask pattern {1 2 1 2 1 2}:
+
+                add_via_definition  -name my_fixed_via -cut_layer VIA23 \
+
+                -bottom_rects {{-10 -14 10 14}} \
+
+                -cut_rects  {{-6 -10 -2 -6} {-6 -2 -2 2} {-6 6 -2 10} {2 -10 6
+                -6} {2 -2 6 2} {2 6 6 10}} \
+
+                -top_rects {{-12 -12 12 12}} \
+
+                -cut_masks {1 2 1 2 1 2}
+
+                Following is the output of this command:
+
+              * The following command adds a 2x2 fixed via to the  bottom  and
+                top layer mask pattern {1 2} and cut layer mask pattern {1 2 1
+                2}:
+
+                add_via_definition -name my_fixed_via2 -cut_layer VIA23 \
+
+                -bottom_rects {{-10 -14 -2 14} {2 -14 10 14}} \
+
+                -cut_rects{{-8  -10  -4  -6}  {-8 6 -4 10} {4 -10 8 -6} {4 6 8
+                10}} \
+
+                -top_rects {{-12 -12 12 -4} {-12 4 12 12}} \
+
+                -bottom_layer_masks {1 2} \
+
+                -top_layer_masks {1 2} \
+
+                -cut_masks {1 2 1 2}
+
+                Following is the output of this command:
+
+                           Fri Apr 04 01:25:37 2025  add_via_definition(25.10)

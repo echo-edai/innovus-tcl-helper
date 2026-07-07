@@ -1,0 +1,171 @@
+{
+  "command": "verifyPowerVia",
+  "is_cmd": true,
+  "summary": "提供多种电源轨重叠检查，用于查找缺失的电源网格过孔",
+  "description": "该命令提供多种电源轨重叠检查，用于查找缺失的电源网格过孔。默认情况下，它会检查相邻布线层上的正交电源布线在每次交叉处是否都有过孔连接。例如，Metal3电源条与Metal2电源条重叠的点应有过孔。默认情况下，仅检查水平布线与垂直布线的重叠。如果电源形状是多边形，则多边形会被分割成矩形，并使用矩形来决定方向。支持检查非相邻布线层之间的堆叠过孔是可选的。违规会在版图窗口中高亮显示，并生成包含缺失过孔位置的文本报告。默认情况下，此命令检查芯片区域内的电源过孔。要检查芯片区域外的电源过孔，请使用 -area 参数指定外部坐标。",
+  "usage": "verifyPowerVia [-help] [-append] [-area {<x1> <y1> <x2> <y2>}] [-checkWirePinOverlap] [-edgeToEdge] [-error <integer>] [-exclude_region_file <check_file>] [-fill] [-hookup_pitch <pitch_value>] [-ignore_objects {drc_fill | io_wire}] [-ignore_partial_overlap {true | false | <value>}] [-layerRange {<bottomLayer> <topLayer>}] [-layer_rail <layer_name>] [-layer_stripe <layer_list>] [-net {<netNames>} | -selected] [-nonOrthogonalCheck [-distance {x y}]] [-pitch <pitch_value>] [-report <file>] [-search_range {x y}] [-shielding] [-stackedVia] [-stripe_rule <value>] [-viaUtil <value>] [-what_if_report <filename>] [-widthRange<string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 verifyPowerVia 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-append",
+      "description": "指定保留所有先前的 verifyPowerVia 设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定要检查的芯片区域内部/外部的坐标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-checkWirePinOverlap",
+      "description": "指定也应检查引脚形状的线重叠。默认仅检查线与线的重叠。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-edgeToEdge",
+      "description": "检查层内边到边的非正交距离。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-error",
+      "description": "指定要报告的最大错误数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-exclude_region_file",
+      "description": "忽略指定检查文件区域内（用于单元扩展区域）的缺失过孔检查。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fill",
+      "description": "指定也应检查连接至电源/地的金属填充。浮空填充仍被忽略。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hookup_pitch",
+      "description": "指定填充单元实例上两个过孔之间的距离，该距离大于或等于给定值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-ignore_objects",
+      "description": "跳过检查指定线类型的电源过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignore_partial_overlap",
+      "description": "指定是否需要检查部分重叠金属层的缺失过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerRange",
+      "description": "检查底层和顶层之间缺失的堆叠过孔。同时检查所有相邻中间层之间的缺失过孔，但不检查中间层之间的堆叠过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_rail",
+      "description": "指定用于缺失过孔检查的单个电源轨层（仅检查电源轨上方的过孔）。检查取决于 -stripe_rule 选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_stripe",
+      "description": "指定要检查的电源条层，以验证从电源轨到电源条的有效连接路径。检查取决于 -search_range 选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要检查的电源网络名称。可以指定单个网络或用花括号({})或引号(\"\")括起来的网络列表。支持通配符(*和?)。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-selected",
+      "description": "检查所选电源网络线与其他相交的已选/未选电源网络线之间的缺失过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonOrthogonalCheck",
+      "description": "检查相邻层以及非相邻层中非正交交叉线（例如，方向相同的线）的重叠区域。检查两条或多条平行线之间缺失的过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-distance",
+      "description": "指定在指定窗口内查找缺失过孔的距离，用于非正交检查。必须与 -nonOrthogonalCheck 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitch",
+      "description": "指定不在填充单元实例上的两个过孔之间的距离，该距离大于或等于给定值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-report",
+      "description": "指定报告的输出文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-search_range",
+      "description": "指定一个XY矩形区域。在该区域内，应存在从电源轨到电源条的一条有效连接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shielding",
+      "description": "指定也应检查屏蔽线。默认不检查屏蔽线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stackedVia",
+      "description": "检查所有非相邻层以及相邻层之间缺失的过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stripe_rule",
+      "description": "以微米为单位指定电源过孔的距离。仅检查电源轨上方的电源过孔。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-viaUtil",
+      "description": "检查金属交叉区域中的切割面积是否足够。viaUtil = 总切割面积 / 金属交叉面积。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-what_if_report",
+      "description": "将 verifyPowerVia 违规数据写入一个ECO文件，该文件可直接用作whatIf轨分析工具的输入。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-widthRange",
+      "description": "指定要考虑的金属宽度。verifyPowerVia 使用指定的宽度范围来过滤线。仅检查落在该范围内的底层和顶层的线。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

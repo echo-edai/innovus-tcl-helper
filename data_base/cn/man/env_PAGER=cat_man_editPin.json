@@ -1,0 +1,213 @@
+{
+  "command": "editPin",
+  "is_cmd": true,
+  "summary": "修改引脚属性，如引脚展开、位置、宽度和深度、间距、对齐位置和状态",
+  "description": "editPin命令用于修改引脚的各种属性，包括引脚展开、引脚位置、引脚宽度和深度、间距、对齐位置以及状态。该命令提供了与引脚编辑器表单等效的功能。它支持在矩形和直线形分区上操作，并遵守最小面积规则。命令在克隆上下文中是感知的，会考虑主单元和克隆单元上的布线障碍。注意：该命令不支持通配符，且其参数值不会在多次运行间保留。",
+  "usage": "editPin [-help] [-cell <cellName> | {-hinst <hinstName >[-refMaster]}] [-end {<x y>}] [-fixedPin] [-global_location] [-include_rectilinear_edge] [-masterCloneAware] [-offsetEnd <value>] [-offsetStart <value>] -pin {<pinName> | <pinNameList>} [-pinDepth <pinDepthValue>] [-pinWidth <pinWidthValue>] [-quiet] [-skipWrappingPins] [-snap {TRACK | USERGRID | MGRID}] [-spreadDirection {clockwise | counterclockwise | both}] [-start {<x y>}] [-use { SIGNAL | CLOCK | ANALOG }] [{-layer {<layerId> | <layerIdListName>} | {[-layerH <layerId>] [-layerV <layerId>]}} [-layer_priority] [-assign {<x y>} | -spreadType {START | CENTER | SIDE | EDGE | RANGE} | -pattern  {fill_track | fill_layer | fill_optimised | fill_diagonal | fill_sinusoidal | fill_checkerboard}]] [-side <sideName> | -edge <edgeNumber>] [-fixOverlap {0|1} [-honorConstraint {0|1}]] [-pattern {fill_track | fill_layer | fill_optimised | fill_diagonal  | fill_sinusoidal | fill_checkerboard} [-reverse_alternate]] [-spacing <spacingValue> [-unit {MICRON | TRACK}]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个editPin参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定模块的名称。如果未指定单元名，命令将在顶层单元上运行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hinst",
+      "description": "指定hinst名称，包括黑盒、已提交的分区或顶层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-refMaster",
+      "description": "指定克隆的边缘、展开方向和偏移量是相对于主单元的。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-end",
+      "description": "对于沿范围展开引脚，指定引脚应结束的坐标。此参数与-spreadType RANGE参数一起使用。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-fixedPin",
+      "description": "选中时，引脚状态设置为固定。这意味着引脚被锁定在其位置，不会移动。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-global_location",
+      "description": "指定命令应考虑全局位置。默认情况下，editPin命令考虑的所有位置都是相对于分区左下角的坐标。如果指定此选项，-start、-end和-assign参数接受相对于设计左下角的坐标。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-include_rectilinear_edge",
+      "description": "指定应包含进入解决方案空间的所有边缘。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-masterCloneAware",
+      "description": "为可行性检查启用主克隆上下文感知。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-offsetEnd",
+      "description": "设置从边缘末端开始的偏移量（以微米为单位），作为放置引脚的终点。注意：-offsetStart和-offsetEnd选项只能与-edge选项一起使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-offsetStart",
+      "description": "设置从边缘起点开始的偏移量（以微米为单位），作为放置引脚的起点。注意：-offsetStart和-offsetEnd参数只能与-edge参数一起使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pin",
+      "description": "指定命令将运行的指定模块的引脚或引脚列表。注意：识别单个端口的命名约定基于端口在数据库中的存储顺序。第一、第二和第三个端口将分别命名为<pinName>，后缀为port0、port1、port2。例如：VDD.port0, VDD.port1, VDD.port2。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-pinDepth",
+      "description": "设置引脚的深度（以微米为单位）。默认值：如果未指定此参数，则使用指定图层的默认深度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pinWidth",
+      "description": "设置引脚的宽度（以微米为单位）。默认值：如果未指定此参数，则使用指定图层的默认宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-quiet",
+      "description": "指定应抑制消息输出。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipWrappingPins",
+      "description": "跳过在相邻边缘或另一侧的同一边缘上的引脚环绕。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snap",
+      "description": "指定引脚将如何对齐。* TRACK：对齐到图层轨道。* USERGRID：对齐到用户定义的网格。* MGRID：对齐到制造网格。默认值：TRACK。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-spreadDirection",
+      "description": "指定引脚展开的方向。可以指定：* clockwise：顺时针方向设置引脚。* counterclockwise：逆时针方向设置引脚。* both：通过寻找最接近期望位置的两个方向上的合法位置来设置引脚。默认值：clockwise。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-start",
+      "description": "对于沿范围展开引脚，指定引脚应开始的坐标。此参数与-spreadType RANGE和-spreadType START参数一起使用。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-use",
+      "description": "指定分区引脚的+USE属性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定将分配引脚的图层。可以使用LEF图层名称或图层ID号指定图层。注意：此参数是可选的，但仅当未指定-spreadType时。注意：对于具有背面金属层的设计，接受背面和正面图层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerH",
+      "description": "指定将分配引脚的优选水平图层。注意：对于具有背面金属层的设计，接受背面和正面图层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerV",
+      "description": "指定将分配引脚的优选垂直图层。注意：对于具有背面金属层的设计，接受背面和正面图层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_priority",
+      "description": "指定输入图层是基于其优先级给出的。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-assign",
+      "description": "在指定位置预分配引脚。可以与其他参数如-snap、-fixOverlap、-side等一起使用。注意：-assign {x y}考虑来自围栏边界框的局部坐标。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-spreadType",
+      "description": "指定如何沿块的边缘展开引脚。* START：使用-pin参数指定的第一个引脚坐标作为展开一组引脚的起点（锚点）。即使使用-pin参数指定单个引脚，也可以使用此值。* CENTER：如果使用-pin参数指定单个引脚，则该引脚将放置在指定边缘/侧的中心。如果指定多个引脚，引脚编辑器会自动计算起点和终点，使得组的中心引脚放置在指定边缘或侧的中心。* SIDE：如果使用-side参数指定一侧并指定-spreadType SIDE参数，则引脚沿着属于指定侧的所有边缘均匀展开。引脚从左到右、从下到上展开。* EDGE：如果使用-edge参数指定边缘并指定-spreadType EDGE参数，则引脚沿着整个指定边缘均匀展开，使用边缘的极限作为起点和终点。* RANGE：在您使用-start {x y}和-end {x y}参数指定的点之间沿块边缘均匀展开引脚。结束坐标成为引脚组中最后一个引脚的坐标。引脚编辑器确定适当的间距。注意：对于直线形分区，如果起点和/或终点不在指定侧，则起点和/或终点将对齐到指定侧上最近的正确位置。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-pattern",
+      "description": "指定所选引脚集必须遵循的多层展开模式。选项包括：fill_track, fill_layer, fill_optimised, fill_diagonal, fill_sinusoidal, fill_checkerboard。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-side",
+      "description": "对于矩形分区，指定将放置引脚的一侧。sideName的值可以是：TOP, BOTTOM, LEFT, RIGHT, 或 INSIDE。注意：值INSIDE只能与-assign参数一起指定。对于直线形分区，也可以使用-edge参数指定边缘。注意：setPinAssignMode -pinEditInBatch参数不支持内部引脚（其中侧为INSIDE）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-edge",
+      "description": "对于直线形分区，指定将放置引脚的边缘。边缘编号是一个整数。边缘编号从分区的左下角开始顺时针。边缘0是具有最小y值的边缘。要在同一侧的多个直线形边缘上展开引脚，请使用-side参数。对于矩形分区，可以使用-side参数指定一侧。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-fixOverlap",
+      "description": "启用此参数后，editPin命令尝试解决引脚与其他/附近对象的重叠问题。引脚被移动到最近的可用位置，使得引脚不重叠。默认值：1（解决引脚重叠功能开启）。注意：此参数仅当引脚对齐到图层轨道时适用。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-honorConstraint",
+      "description": "指定是否应遵守用户定义的引脚约束。当此参数设置为开启时，遵守以下约束：* 引脚间距 * 引脚尺寸 * 引脚到角落距离 * 分区允许的引脚图层。默认值：0（不遵守用户定义的引脚约束）。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-reverse_alternate",
+      "description": "指定所选引脚集必须遵循多层展开模式的反向。例如，fill_track -reverse_alternate。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-spacing",
+      "description": "显示多引脚编辑时引脚之间的边缘轨道到边缘轨道间距。间距以微米或图层轨道为单位，由-unit参数指定。1轨道的间距意味着引脚应放置在每个轨道上，轨道之间没有空轨道。默认值：间距自动设置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-unit",
+      "description": "指定单位是微米还是轨道。此参数仅适用于-spacing参数的单位。默认值：Micron。",
+      "required": false,
+      "type": "enum"
+    }
+  ]
+}

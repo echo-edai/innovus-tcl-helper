@@ -1,0 +1,729 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+optDesign(25.10)                                              optDesign(25.10)
+
+Name
+       optDesign - Performs timing optimization before or after the clock tree
+       is built, or after routing and generates timing reports
+
+Syntax
+       optDesign
+
+       [-help]
+
+       [-drv]
+
+       [-excludeNets <fileName>]
+
+       [-expandedViews]
+
+       [-hold [-holdVioData <fileName>]]
+
+       [-idealClock]
+
+       [-incr]
+
+       [-noEcoRoute]
+
+       [-outDir <directoryName>]
+
+       [-preCTS | -postCTS | -postRoute]
+
+       [-prefix <fileNamePrefix>]
+
+       [-selectedNets <fileName>]
+
+       [-selectedTerms <fileName>]
+
+       [-setup]
+
+       [-targeted]
+
+       [-timingDebugReport]
+
+       [-useTransitionFiles]
+
+       Performs  timing  optimization before or after the clock tree is built,
+       or after routing and generates timing reports. You can optimize with or
+       without useful skew.
+
+       In multi-mode, multi-corner  mode,  optDesign  optimizes  all  analysis
+       views concurrently.
+
+       Performs the following optimizations:
+
+              * Corrects design rule violations.
+
+              * Reduces total negative slack.
+
+              * During  the  initial  pass, optimizes setup time by working on
+                the design's worst paths until the slack cannot be further im-
+                proved, then, if the worst slack is not on a  register-to-reg-
+                ister  path,  optimizes  the register-to-register paths on the
+                second pass.
+
+              * Corrects hold time violations (optional).
+
+              * Optimizes useful skew (optional).
+
+              * Reclaims area (optional).
+
+              * Optimizes leakage and or/dynamic power (optional).
+
+              * Merges flops to multi-bit FFs, or split the multi-bit FFs (op-
+                tional).
+
+       Uses some or all of the following techniques, depending on  the  design
+       stage  (that  is, before or after CTS, or after routing) and the speci-
+       fied parameters:
+
+              * Adds buffers.
+
+              * Resizes gates.
+
+              * Restructures the netlist.
+
+              * Remaps logic.
+
+              * Swaps pins.
+
+              * Deletes buffers.
+
+              * Moves instances.
+
+              * Applies useful skew.
+
+              * Applies layer promotion and/or NDR assertions.
+
+              * Applies flip-flop merge and split.
+
+       Sets the minimum recommended and appropriate set of parameters for  the
+       following modes:
+
+              * setAnalysisMode
+
+              * setRouteMode
+
+              * setOptMode
+
+              * setExtractRCMode
+
+       Tip: You can set additional parameters by specifying parameters for the
+       appropriate set*Mode command before using optDesign.
+
+       Before running optDesign, complete the following steps:
+
+              * Generate  the default and detailed extraction scale factors by
+                using the following command:
+
+                * generateRCFactor
+
+              * Set input transitions for the high fanout nets for delay  cal-
+                culation to use on high fanout networks.
+
+       Note: The simplifyNetlist parameter is allowed to remove unnecessary or
+       redundant level shifter/isolation instances although those would be in-
+       ternally set as dont_touch by optDesign.
+
+Parameters
+       Note:  The  "optDesign Parameter Matrix" section shows which parameters
+       can be used together.
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each optDesign parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand: man optDesign
+
+       -drv   When  specified,  corrects  max_cap  and max_tran violations. To
+              correct    fanout_load    violations,     specify     setOptMode
+              -opt_fix_fanout_load  before  you  specify optDesign. You cannot
+              use this parameter if you specify -incr.
+
+              When this parameter is specified, optDesign will  fix  only  the
+              DRVs and not the setup/hold timing violations.
+
+       -excludeNets <fileName>
+              Specifies the file that contains the hierarchical names of nets.
+              Timing  optimization excludes nets specified in the -excludeNets
+              file. If a net appears in both -excludeNets  and  -selectedNets,
+              it is excluded.
+
+              Note:  Excluded  nets, especially those with large fanout, might
+              still  be  buffered  to  fix  Setup  timing  problems.  Use  the
+              dont_touch  option in the SDC constraints file to prevent optDe-
+              sign from modifying selected nets. For  Hold  Optimization  how-
+              ever,  the  nets  specified will be excluded when optimizing the
+              Hold Timing.
+
+       -expandedViews
+              When specified, detailed view-specific timing reports are gener-
+              ated on all active views at the end of optimization.
+
+              A separate directory is created for each view. For example, if a
+              design has two analysis views, view1 and view2, then the  output
+              reports are generated in the ./timingReports/view1 and ./ timin-
+              gReports/view2  directories. If the views were pruned during op-
+              timization, they will be restored at the end by using this para-
+              meter and a view-specific summary and data will be  reported  on
+              all the active views in the design.
+
+       -hold  When  specified,  corrects  the  hold violations. This parameter
+              cannot be used if you specify the-preCTS parameter. You can  use
+              this parameter with the -selectedNets or -selectedTerms options.
+
+              This parameter creates a summary file in the output directory of
+              the design. The file is named prefix_hold.summary. Use the -pre-
+              fix parameter to specify the prefix.
+
+              To report detailed debugging information, specify the setOptMode
+              -opt_verbose  true  parameter. For more information, see setOpt-
+              Mode.
+
+              Note: Even though the hold-timing violation fixing algorithm  is
+              setup-timing aware, some setup timing degradation may appear due
+              to  different  route  topology during the postCTS stage. In most
+              cases, this can be overlooked because  the  violations  will  be
+              easily fixed during the optDesign -postRoute flow step.
+
+              Note:  You need to use the setFillerMode command to identify the
+              filler cells. The optDesign command  will  remove  filler  cells
+              that  have been identified with the setFillerMode command at the
+              beginning of optimization and add them back at the end of  opti-
+              mization.
+
+       -holdVioData <fileName>
+              Generates the following report files for the violation data that
+              remains after hold fixing:
+
+              * fileName.txt:   provides  a  list of the top 50 hold violation
+                paths (text format)
+
+              * <fileName.csv>: provides a list of the top 50  hold  violation
+                paths (csv format)
+
+              * <fileNameDetailed.txt>:  provides detailed information for the
+                top 50 hold violation paths
+
+              This parameter is used with the -hold parameter.
+
+              Example:
+
+              optDesign -postRoute -hold -holdVioData <fileName>
+
+       -idealClock
+              Performs timing optimization in postCTS or postRoute modes using
+              ideal clocks instead of propagated clocks.  Using  ideal  clocks
+              enables  you  to  optimize  timing without building a clock tree
+              first, or ignore the existing clock tree, to close ideal timing.
+              If this parameter is not specified,  the  software  assumes  the
+              clock  tree has been built, and optimizes timing based on propa-
+              gated clocks.
+
+       -incr  Performs setup optimization incrementally on the violated  paths
+              until  they  cannot be optimized any more. Both, WNS and TNS are
+              optimized. When -postCTS is specified, both high-effort and low-
+              effort path groups are optimized. When -postRoute is  specified,
+              only  high-effort  path  groups  are optimized. Area reclaim may
+              also take place if -postRoute is not specified. A setup recovery
+              is called depending on the timing bump after the re-route.
+
+              This parameter has the following limitations:
+
+              * You cannot use it if you also specify -drv or -hold.
+
+              * You must have already run optDesign on all path groups  before
+                running it with -incr.
+
+              * When specified, this option disables power optimizations.
+
+       -noEcoRoute
+              Prohibits  the Innovus software from performing ECO routing with
+              the NanoRoute(R) router during postRoute optimization.
+
+       -outDir <directoryName>
+              Specifies the directory where the software writes timing reports
+              generated when this command runs.
+
+              Default: timingReports
+
+       -postCTS
+              Performs timing optimization on a design whose  clock  tree  has
+              been  created.  By  default, -postCTS repairs design rule viola-
+              tions and setup violations. If the worst negative slack does not
+              occur on a register-to-register path,  -postCTS performs an  ad-
+              ditional  optimization pass on the register-to-register critical
+              paths when clock domains are not set. It does not repair maximum
+              fanout design rule violations unless you first specify   setOpt-
+              Mode -opt_fix_fanout_load.
+
+       -postRoute
+              Performs  timing  optimization on a design whose routing is com-
+              plete. By default, -postRoute repairs  design  rule  violations,
+              glitch  violations  and  setup violations on Base & SI Delay. If
+              the worst negative slack does not occur on a  register-to-regis-
+              ter path, -postRoute performs an additional optimization pass on
+              the  register-to-register  critical paths when clock domains are
+              not set. Maximum fanout design rule violations are not  repaired
+              by    default.    To   do   this,   first   specify   setOptMode
+              -opt_fix_fanout_load.
+
+              The optDesign -postRoute command provides accurate results  when
+              Innovus  runs  using  the footprintless flow methodology. By de-
+              fault, Innovus creates an internal footprint structure based  on
+              cell  functionality.  This  methodology  does not require you to
+              specify a footprint file. For library database (LDB) conversion,
+              this is the recommended methodology since all  of  it  is  auto-
+              mated.
+
+              For  more  information,  see  the "Using the Footprintless Flow"
+              section in the Innovus User Guide.
+
+              Note: The  clock  DRV  fixing  performed  by  running  optDesign
+              -postRoute  and  by the ccopt_pro command do not work when "sig-
+              noff" effort level for extraction is specified using  setExtrac-
+              tRCMode -effortLevel signoff. The "signoff" effort level for ex-
+              traction should be used only for ECO flows, after post-route op-
+              timization.
+
+              To  use "signoff" effort level inside optDesign -postRoute with-
+              out fixing clock DRV's, you can turn off CCOpt  PRO  by  setting
+              the  -opt_post_route_fix_clock_drv  parameter  of the setOptMode
+              command to false.
+
+       -preCTS
+              Performs timing optimization on the placed  design,  before  the
+              clock tree is built. By default, -preCTS repairs design rule vi-
+              olations  and setup violations. If the worst negative slack does
+              not occur on a register-to-register path,  -preCTS  performs  an
+              additional  optimization pass on the register-to-register criti-
+              cal paths when clock domains are not set. Maximum fanout  design
+              rule  violations  are not repaired by default. To do this, first
+              specify setOptMode -opt_fix_fanout_load.
+
+              Note: Before optimizing a design in preCTS mode, you must  break
+              all  timing  loops  by disabling arcs in the constraint file. If
+              you do not disable the arcs, the software cannot  make  a  valid
+              comparison  of WNS between two different runs since it might not
+              break the loops at the same point  each  time.  To  disable  the
+              arcs, use the set_disable_timing command.
+
+       -prefix <fileNamePrefix>
+              Specifies a prefix for optDesign report file names.
+
+              Default:   <DesignName_DesignStage>,   where   <DesignStage>  is
+              preCTS, postCTS, or postRoute.
+
+       -selectedNets <fileName>
+              Specifies the file that contains the hierarchical names of  nets
+              to consider for design-rule violation repair or hold-timing vio-
+              lations  fixing. Timing optimization excludes all other nets. If
+              a net appears in both -excludeNets and -selectedNets, it is  ex-
+              cluded.  This  option is only accepted when either -drv or -hold
+              is selected.
+
+              The file format is as follows:
+
+              Net1
+
+              Net2
+
+              Net3
+
+              Note: The -selectedNets parameter forces optDesign  to  work  on
+              all the selected nets, except the ones set using dont_touch.
+
+       -selectedTerms <fileName>
+              Specifies  the  file that contains the hierarchical names of in-
+              stance terminals to consider for timing optimization. Only  nets
+              connected  to those terminals are optimized; for example, during
+              hold fixing, delay cells are added only on the nets driving  the
+              terminals specified in the file.
+
+       -setup Corrects  setup  violations for the postRoute optimization flow.
+              When specified along with the -hold parameter, a combined  setup
+              and hold optimization is performed. For example,
+
+              optDesign -postRoute -setup -hold
+
+              Note:  This  parameter is only applicable to the postRoute opti-
+              mization flow and should be used along with the -hold parameter.
+
+       -targeted
+              This parameter is used only along with the -postRoute parameter.
+              Specifying  this  parameter  invokes  target-based  optimization
+              (TBOpt), which is a fine grain local optimization functionality.
+              This will target critical nodes at the postRoute stage and opti-
+              mize  these  by  giving worst negative slack (WNS), area, power,
+              max transition, and signal integrity  (SI)  glitch  improvements
+              with  minimum  disturbance  to  NanoRoute. This parameter can be
+              used   optionally   along   with   the   setOptMode    -opt_tar-
+              get_based_opt_file    <filename>    and   setOptMode   -opt_tar-
+              get_based_opt_file_only parameters.
+
+              Note: Area, power, max transition, and SI glitch  targeting  can
+              only be done using the above settings.
+
+              For  more  information on the syntax of a sample TBOpt file, see
+              the setOptMode -opt_target_based_opt_file documentation. Target-
+              based optimization is best used after postRoute optimization  is
+              already  completed  and  there are still some violating paths or
+              nodes that might need further improvement.
+
+       -timingDebugReport
+              When specified, generates a machine-readable timing debug report
+              after completing optimization. This report is used for debugging
+              timing results using the timing debug feature in Innovus.
+
+              Note: You can select the number of paths that should be reported
+              per path group in the final summary reports  by  specifying  the
+              setOptMode  -opt_time_design_num_paths  parameter.  The  default
+              number of paths is 50.
+
+       -useTransitionFiles
+              Uses the transition file  specified  by  the  readTransitionFile
+              command  for transition violation fixing during postRoute SI op-
+              timization.
+
+optDesign Parameter Matrix
+       The table below shows the compatibility of optDesign parameters.
+
+       Examples
+PreCTS Optimization
+              * To optimize timing for first time, use the following command:
+
+                optDesign -preCTS
+
+              * To repair design rule violations only, use the following  com-
+                mand:
+
+                optDesign -preCTS -drv
+
+              * To  run incremental setup-only optimization, use the following
+                command:
+
+                optDesign -preCTS -incr
+
+                The optDesign command performs gate resizing and global buffer
+                insertion, but does not perform netlist restructuring  or  de-
+                sign rule violation repair.
+
+              * To  run  optimization with useful skew, use the following com-
+                mands:
+
+                setOptMode -opt_skew true -opt_skew_pre_cts true
+
+                optDesign -preCTS
+
+              * To run optimization on specific path groups, use the following
+                commands:
+
+                group_path -name path_group_name -from from_list  -to  to_list
+                -through through_list
+
+                setPathGroupOptions  ..
+
+                optDesign -preCTS
+
+                Or you can use:
+
+                createBasicPathGroups
+
+                setPathGroupOptions ..
+
+                optDesign -preCTS
+
+                For  example,  to run optimization on reg2reg & reg2gate paths
+                only, use the following commands:
+
+                createBasicPathGroups -expanded
+
+                setPathGroupOptions reg2out -targetSlack -1000.0
+
+                setPathGroupOptions in2reg -targetSlack -1000.0
+
+                setPathGroupOptions in2out -targetSlack -1000.0
+
+                optDesign -preCTS
+
+                Note: If you specify a path  group,  optDesign  preserves  the
+                path  group  setting. In the previous example, subsequent com-
+                mands may affect the reg2reg & reg2cgate path groups only.  To
+                set new groups, specify reset_path_group -all, followed by the
+                definition of the groups you want to use.For example, to reset
+                the path group to a specific group of paths, use the following
+                commands after you run optDesign:
+
+                reset_path_group -all
+
+                 group_path  -name  pathgroup1  -through  an1/Z -through an2/Z
+                -through an3/Z
+
+                To just specify all path groups again, use the following  com-
+                mand:
+
+                reset_path_group -all
+
+              * To  reclaim  area  during optimization, use the following com-
+                mands:
+
+                setOptMode -opt_area_recovery true
+
+                optDesign -preCTS
+
+              * To run incremental optimization with useful skew, use the fol-
+                lowing commands:
+
+                setOptMode -opt_skew true
+
+                optDesign -preCTS -incr
+
+              * To run an incremental optimization including reclaiming  area,
+                use the following commands:
+
+                optDesign -preCTS
+
+                setOptMode -opt_area_recovery true
+
+                optDesign -preCTS -incr
+
+PostCTS Optimization
+              * To optimize timing after the clock tree is built, use the fol-
+                lowing commands:
+
+                optDesign -postCTS
+
+                The  optDesign  command  corrects design rule violations, then
+                setup violations.
+
+                Note: The software  does  not  correct  fanout  violations  in
+                -postCTS  and  -postRoute  modes. To repair fanout violations,
+                specify the following parameter before you  run  optDesign:se-
+                tOptMode -opt_fix_fanout_load true
+
+              * To  repair  setup  and hold violations, use the following com-
+                mands:
+
+                optDesign -postCTS
+
+                optDesign -postCTS -hold
+
+              * To repair design rule violations only, use the following  com-
+                mand:
+
+                optDesign -postCTS -drv
+
+              * To repair hold violations only, use the following command:
+
+                optDesign -postCTS -hold
+
+              * To run optimization on specific path groups, use the following
+                commands:
+
+                group_path  -name  path_group_name -from from_list -to to_list
+                -through through_list
+
+                setPathGroupOptions  ..
+
+                optDesign -postCTS
+
+                Or you can use:
+
+                createBasicPathGroups
+
+                setPathGroupOptions ..
+
+                optDesign -postCTSFor example, to run optimization on  reg2reg
+                & reg2gate paths only, use the following commands:
+
+                createBasicPathGroups -expanded
+
+                setPathGroupOptions reg2out -targetSlack -1000.0
+
+                setPathGroupOptions in2reg -targetSlack -1000.0
+
+                setPathGroupOptions in2out -targetSlack -1000.0
+
+                optDesign -postCTS
+
+              * To  reclaim  area  during optimization, use the following com-
+                mands:
+
+                setOptMode -opt_area_recovery true
+
+                optDesign -postCTS
+
+              * To take advantage of useful skew  when  optimizing  timing  in
+                postCTS mode, use the following commands:
+
+                setOptMode -opt_skew true
+
+                optDesign -postCTS
+
+                If  you  specify  -noECORoute,  the software uses early global
+                routing to estimate clock delays.
+
+              * To run postCTS optimization if your design has a  clock  mesh,
+                use the following commands:
+
+                setOptMode -opt_skew false
+
+                optDesign -postCTS
+
+              * To  run  incremental optimization on specific path groups, use
+                the following commands:
+
+                group_path -name path_group_name -from from_list  -to  to_list
+                -through through_list
+
+                setPathGroupOptions  ..
+
+                optDesign -postCTS -incr
+
+                For   example,  to  run  incremental  optimization  reg2reg  &
+                reg2gate paths only, use the following commands:
+
+                createBasicPathGroups -expanded
+
+                setPathGroupOptions reg2out -targetSlack -1000.0
+
+                setPathGroupOptions in2reg -targetSlack -1000.0
+
+                setPathGroupOptions in2out -targetSlack -1000.0
+
+                optDesign -postCTS -incr
+
+              * To optimize setup time incrementally and reduce area, use  the
+                following commands:
+
+                setOptMode -opt_area_recovery true
+
+                optDesign -postCTS -incr
+
+              * To take advantage of useful skew when optimizing timing in in-
+                cremental postCTS mode, use the following commands:
+
+                setOptMode -opt_skew true
+
+                optDesign -postCTS -incr
+
+              * To  run  incremental postCTS optimization if your design has a
+                clock mesh, use the following commands:
+
+                setOptMode -opt_skew false
+
+                optDesign -postCTS -incr
+
+PostRoute Optimization
+              * To optimize base and SI timing after detailed routing  (repair
+                setup violations), use the following command:
+
+                optDesign -postRoute
+
+              *
+
+                To  optimize  only the base timing after detailed routing, use
+                the following commands:
+
+                setDelayCalMode -SIAware false
+
+                optDesign -postRoute
+
+              *
+
+                Note: The software  does  not  correct  fanout  violations  in
+                -postCTS  and  -postRoute  modes. To repair fanout violations,
+                specify the following command before you run optDesign:setOpt-
+                Mode -opt_fix_fanout_load true
+
+              * To correct hold base and SI  timing  violations,  specify  the
+                following commands:
+
+                optDesign -postRoute -hold
+
+              * To  correct  setup and hold (both base and SI) violations, use
+                the following commands:
+
+                optDesign -postRoute
+
+                optDesign -postRoute -hold
+
+                The software repairs a hold violation only if it does not make
+                setup slack worse than the setup target slack on  a  path.  An
+                alternative  way  is  to  run setup and hold fixing within one
+                command, and this may reduce the number of ecoRoute(s):
+
+                optDesign -postRoute -setup -hold
+
+              * To take clock path pessimism removal (CPPR) into consideration
+                when running timing optimization, use the setAnalysisMode com-
+                mand before you run optDesign. For example:
+
+                setTimingDerate -max -clock -early 0.8 -late 1.2
+
+                setTimingDerate -min -clock -early 0.8 -late 1.2
+
+                setAnalysisMode -analysisType onChipVariation -cppr both
+
+                optDesign -postRoute
+
+              *
+
+                To perform a  fine  grain  target-based  optimization  at  the
+                postRoute  stage,  use  the  following command to identify the
+                timing bottleneck nodes automatically and optimize them:
+
+                optDesign -postRoute -targeted
+
+              *
+
+                To perform a fine  grain  target  based  optimization  at  the
+                postRoute  stage  on  the  nodes  provided  by the TBOpt file,
+                tb_opt.txt as well as any other timing  nodes  that  the  code
+                identifies as being critical, use the following ocmmands:
+
+                setOptMode -opt_target_based_opt_file tb_opt.txt
+
+                optDesign -postRoute -targeted
+
+              *
+
+                To  perform  a  fine  grain  target-based  optimization at the
+                postRoute stage on the  nodes  provided  by  the  TBOpt  file,
+                tb_opt.txt only, use the following commands:
+
+                setOptMode   -opt_target_based_opt_file  tb_opt.txt  -opt_tar-
+                get_based_opt_file_only true
+
+                optDesign -postRoute -targeted
+
+Related Information
+              * createBasicPathGroups
+
+              * createInterfaceLogic
+
+              * readTransitionFile
+
+              * setAnalysisMode
+
+              * setDelayCalMode
+
+              * set_disable_timing
+
+              * setExtractRCMode
+
+              * setNanoRouteMode
+
+              * setOptMode
+
+              * setRouteMode
+
+              * setSIMode
+
+              * setUsefulSkewMode
+
+              * timeDesign
+
+              * The following chapter in the Innovus User Guide
+
+                * Optimizing Timing
+
+                           Fri Apr 04 01:25:37 2025           optDesign(25.10)

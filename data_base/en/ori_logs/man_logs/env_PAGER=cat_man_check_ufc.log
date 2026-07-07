@@ -1,0 +1,244 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+check_ufc(25.10)                                              check_ufc(25.10)
+
+Name
+       check_ufc  - Checks the floorplan based on the user specified UFC rules
+       defined in the UFC file and reports violations
+
+Syntax
+        check_ufc
+
+       [-help]
+
+       <fileName>
+
+       [-include_all_rules]
+
+       [-report_file <string>]
+
+       [-report_unplaced_block]
+
+       [-selected_rules <string>]
+
+       Checks the floorplan based on the user specified UFC rules  defined  in
+       the  UFC  file  and reports violations. These violations can be seen in
+       the Violation Browser.
+
+       Note: The Unified Floorplan Constraints (UFC) methodology is a   power-
+       ful  Innovus  capability that can define several rules on floorplan ob-
+       jects, check specified rules, and report the violations with rule  name
+       as  well  as  severity.  The  violations  can be shown in the violation
+       browser. UFC also provides the ability to  automatically  fix  specific
+       violations.  It  can add routing blockages, snap macro location, adjust
+       core shape to fix corresponding violations. In addition, UFC also  pro-
+       vides the ability to exclude rules from checking for specified objects.
+
+       Usage Model:
+
+              * Load the Design.
+
+              * Create a UFC file with floorplan rules.
+
+              * Run UFC checking. (check_ufc)
+
+              * Fix reported violations. (fix_floorplan)
+
+       Note: The check_ufc command honors the setFPlanMode -no_cut_row parame-
+       ter  that  specifies  if  rows are not required to be cut before opera-
+       tions. With  setFPlanMode  -no_cut_row  false  or  not  specified,  the
+       check_ufc  command  will  work based on the current row shape. If there
+       are rules for rows in the UFC file and the rows  are  not  cut  before,
+       there  will  be many wrong violations reported out. So the rows for ob-
+       jects like insts, place blockages are expected to cut out before  using
+       the check_ufc command. If rows are not cut before the check_ufc command
+       is  run,  with  setFPlanMode  -no_cut_row true, the tool identifies the
+       rows have not been cut before. It calls the cutRow command to get a cut
+       row shape during the check_ufc command. The  cutRow  command  cuts  the
+       rows  for  insts,  hinsts,  place blockages, route blockages, power do-
+       mains, groups, or bumps by default. The check_ufc  command   will  work
+       based  on  the cut row shape. The actual row shape is not changed after
+       these operations. You can still get the expected check result for row's
+       rule without  running the cutRow before.
+
+Parameters
+       <fileName>
+              Specifies the name of file containing the rules or constraints.
+
+              Data_type: string, required
+
+       -help  Prints a brief description that includes type and default infor-
+              mation for each check_ufc parameter. For a detailed  description
+              of the command and all of its parameters, use the man command:
+
+              man check_ufc
+
+       -include_all_rules
+              Enables  the  tool  to  report the summary of violations for all
+              rules.
+
+              Data_type: bool, optional
+
+       -report_file <string>
+              Specifies the name of the file that saves the report summary.
+
+              Data_type: string, optional
+
+       -report_unplaced_block
+              Enables the tool to show the number of unplaced macros  in  sum-
+              mary.
+
+              Data_type: bool, optional
+
+       -selected_rules <string>
+              Specifies that only the selected rules will be checked.
+
+              Note: The -selected_rules parameter supports the variable format
+              for specifying the rule list.
+
+              For  example, you can define a rule in the UFC file and then use
+              the check_ufc command to check the rule.
+
+              set sanity_rules `A C'
+
+              check_ufc file.ufc -selected_rules $sanity_rules
+
+              Here, rule A and C will be checked
+
+              Data_type: string, optional
+
+Example
+              * The following  command  checks  the  floorplan  based  on  the
+                DMTB_ENC.ufc file that contains the user specified UFC rules:
+
+                check_ufc DMTB_ENC.ufc
+
+                The input UFC file is like this:
+
+                set_area_rule  -name  CORE.A.1 -obj [available_sites] {.area <
+                500} \
+
+                  -description {The area of available sites should  be  lesser
+                than 500}
+
+                set_width_rule  -name  CORE.W.1 -obj [available_sites] -direc-
+                tion horizontal -type simple {.width > 200} \
+
+                  -description {The horizontal simple width of available sites
+                must be larger than 200}
+
+                set_width_rule -name CORE.W.2 -obj  [available_sites]  -direc-
+                tion vertical -type simple {.width > 100} \
+
+                  -description  {The  vertical simple width of available sites
+                must be larger than 100}
+
+                set_spacing_rule -name CORE.S.1 -obj  [base_cells  -if  {.name
+                ==ram_256x16A}]  -ref  [base_cells -if {.name == rom_512x16A}]
+                -direction vertical {on_grid (.spacing-0.1,0.2)} \
+
+                  -description {The vertical spacing between macro ram_256x16A
+                and rom_512x16A must be 0.2*n + 0.1}
+
+                set_spacing_rule -name CORE.S.2 -obj  [base_cells  -if  {.name
+                ==rom_512x16A}]  -ref  [base_cells -if {.name == ram_128x16A}]
+                -direction vertical {.spacing > 10} \
+
+                  -description {The vertical spacing between macro rom_512x16A
+                and ram_128x16A must larger than 10}
+
+                Following is an example of report summary of UFC checking  af-
+                ter  running the check_ufc command. The violations can be seen
+                in the Violation Browser.
+
+                --------------------------Summary     of     UFC      Checking
+                ---------------------------------------
+
+                RuleName                   Count                   Description
+                ViolatedObjects
+
+                CORE.A.1   1    The area of available sites should  be  lesser
+                than 500                               available_sites
+
+                CORE.S.1   1    The vertical spacing between macro ram_256x16A
+                and      rom_512x16A      must      be     0.2*n     +     0.1
+                DTMF_INST/RAM_256x16_TEST_INST/RAM_256x16_INST
+
+                CORE.W.1   4    The horizontal simple width of available sites
+                must be larger than 200               available_sites
+
+                CORE.W.2   3    The vertical simple width of  available  sites
+                must be larger than 100                 available_sites
+
+                The violations can be seen in the Violation Browser.
+
+              * The  following  command  checks  the  floorplan  based  on the
+                DMTB_ENC.ufc file and includes all the rules:
+
+                check_ufc DMTB_ENC.ufc -include_all_rules
+
+                Following is an example of report summary:
+
+                --------------------------Summary     of     UFC      Checking
+                ---------------------------------------
+
+                RuleName                   Count                   Description
+                ViolatedObjects
+
+                CORE.A.1   1    The area of available sites should  be  lesser
+                than 500                               available_sites
+
+                CORE.S.1   1    The vertical spacing between macro ram_256x16A
+                and      rom_512x16A      must      be     0.2*n     +     0.1
+                DTMF_INST/RAM_256x16_TEST_INST/RAM_256x16_INST
+
+                CORE.W.1   4    The horizontal simple width of available sites
+                must be larger than 200               available_sites
+
+                CORE.W.2   3    The vertical simple width of  available  sites
+                must be larger than 100                 available_sites
+
+                CORE.S.2   0    The vertical spacing between macro rom_512x16A
+                and ram_128x16A must be larger then 10
+
+              * The  following  command  checks  the  floorplan  based  on the
+                DMTB_ENC.ufc file and includes all the rules:
+
+                check_ufc    DMTB_ENC.ufc    -include_all_rules    -report_un-
+                placed_block
+
+                Following is an example of report summary:
+
+                --------------------------Summary      of     UFC     Checking
+                ---------------------------------------
+
+                RuleName                  Count                    Description
+                ViolatedObjects
+
+                CORE.A.1    1     The area of available sites should be lesser
+                than 500                               available_sites
+
+                CORE.S.1   1    The vertical spacing between macro ram_256x16A
+                and     rom_512x16A     must     be      0.2*n      +      0.1
+                DTMF_INST/RAM_256x16_TEST_INST/RAM_256x16_INST
+
+                CORE.W.1   4    The horizontal simple width of available sites
+                must be larger than 200               available_sites
+
+                CORE.W.2    3     The vertical simple width of available sites
+                must be larger than 100                 available_sites
+
+                CORE.S.2   0    The vertical spacing between macro rom_512x16A
+                and ram_128x16A must be larger then 10
+
+                **WARN: (IMPFP -  10100):  There  are  1  unplaced  blocks.  {
+                DTMF_INST/PLLCLK_INST}.  Tool doesn't check and fix violations
+                for these blocks.
+
+Related Information
+              * fix_floorplan
+
+              * Unified Floorplan Constraints in the Innovus User Guide
+
+              * Supported UFC Commands in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025           check_ufc(25.10)

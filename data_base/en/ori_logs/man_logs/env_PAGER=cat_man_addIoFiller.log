@@ -1,0 +1,181 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addIoFiller(25.10)                                          addIoFiller(25.10)
+
+Name
+       addIoFiller - Adds I/O instances in the I/O box
+
+Syntax
+        addIoFiller
+
+       [-help]
+
+       -cell {<name_list>}
+
+       [-fillAnyGap]
+
+       [-fillerOrient R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90]
+
+       [-from <coord>]
+
+       [-prefix <prefix>]
+
+       [-side {top | bottom | left | right}]
+
+       [-to <coord>]
+
+       [-row <rowNumber>]
+
+       [-useSmallIoHeight]
+
+       [-logic [-deriveConnectivity]]
+
+       Adds  I/O instances in the I/O box. The I/O instances are added between
+       the gap of existing I/O pad instances where the gap is large enough for
+       the I/O instance. Use this command during or after floorplanning.
+
+       Note: Before using addIoFiller, run  the  globalNetConnect  command  to
+       provide  global-net-connection  rules  for  supply  pins  of  the added
+       fillers. Without these rules, the built-in design-rule  checks  of  ad-
+       dIoFiller will not be accurate.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each addIoFiller parameter. For a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:
+
+              man addIoFiller
+
+       -cell {<name_list>}
+              Specifies the name list of the I/O filler cells to be added.
+
+              Data_type: list, required
+
+       -deriveConnectivity
+              Derives connectivity for I/O fillers.
+
+              Data_type: bool, optional
+
+       -fillAnyGap
+              Forces the I/O filler instance into a gap even  though  the  gap
+              (clearance) is not large enough.
+
+              Default: If you do not specify this parameter, it does not force
+              a filler instance.
+
+              Data_type: bool, optional
+
+       -fillerOrient R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90
+              Specifies the orientation value of the filler cell. The orienta-
+              tion value can be R0, R90, R180, R270, MX, MX90, MY, or MY90.
+
+              Default: R0
+
+              Data_type: string, optional
+
+       -from <coord>
+              Specifies  the starting offset from the edge for adding fillers.
+              The values are in micrometers.
+
+              Note: The -from and -to parameters are intended to be used  with
+              the -side parameter to indicate a range. This command is applic-
+              able  to  peripheral  I/O only; therefore, it is only one dimen-
+              sional.
+
+              Data_type: float, optional
+
+       -logic Enables the creation of I/O filler  instances  for  non-physical
+              I/O  cells. The added IO fillers are not marked as physical only
+              cells. They are saved in netlist if user does saveNetlist.
+
+              Data_type: bool, optional
+
+       -prefix <prefix>
+              Specifies the prefix name for the new I/O filler instances.
+
+              Default: FILLER
+
+              Data_type: string, optional
+
+       -row <rowNumber>
+              Specifies the row number for inserting fillers in a multiple I/O
+              row design.
+
+              Minimum: 0
+
+              Maximum: 1
+
+              Data_type: int, optional
+
+       -side {top | bottom | left | right}
+              Specifies the side as top side,  bottom  side,  left  side,  and
+              right side of the I/O box.
+
+              Default:  If  you  do  not specify this parameter, all sides are
+              specified.
+
+              Data_type: string, optional
+
+       -to <coord>
+              Specifies the ending offset from the edge  for  adding  fillers.
+              The values are in micrometers.
+
+              Note:  The -from and -to parameters are intended to be used with
+              the -side parameter to indicate a range. This command is applic-
+              able to peripheral I/O only; therefore, it is  only  one  dimen-
+              sional.
+
+              Data_type: float, optional
+
+       -useSmallIoHeight
+              Specifies  that  the  filler cell should be inserted between I/O
+              pads only when the smallest I/O pad has the same height  as  the
+              height  of the filler cell. For example, consider that there are
+              I/O pads A, B, C, D, and E. Out of these, A, B, and  E  are  the
+              same  height, and C and D have a height double that of A, B, and
+              E. Assume that you want to insert an I/O filler  cell  F,  which
+              has the same height as A, B, and E.
+
+              If  you do not specify the -useSmallIoHeight parameter, the cell
+              F will be inserted between A and B, B and C, C and D, and D  and
+              E.  However, if you specify the -useSmallIoHeight parameter, the
+              cell F will be inserted between A and B, B and C, and D  and  E.
+              The  cell  will  not be inserted between C and D, because both C
+              and D have a height different from F.
+
+              Data_type: bool, optional
+
+Examples
+              * The following command adds I/O instances to the I/O  pad  area
+                on  all  sides  wherever  there  is space between existing I/O
+                pads. The added I/O pad filler instance names  have  a  prefix
+                PAD8.
+
+                addIoFiller -cell PAD8 -prefix PAD8
+
+              * The  following  command adds I/O instances to the I/O pad area
+                on the top side from 200 micrometers. The added I/O pad filler
+                instance names have a prefix PAD8.
+
+                addIoFiller -cell PAD8 -prefix PAD8 -side top -from 200
+
+              * The following command adds I/O instances to the I/O  pad  area
+                on  the left side to 300 micrometers. The added I/O pad filler
+                instance names have a prefix PAD8.
+
+                addIoFiller -cell PAD8 -prefix PAD8 -side left -to 300
+
+Related Information
+              * deleteIoFiller
+
+              * addAIoFiller
+
+              * addAIORow
+
+              * addIoInstance
+
+              * globalNetConnect
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025         addIoFiller(25.10)

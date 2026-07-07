@@ -1,0 +1,63 @@
+{
+  "command": "deriveTimingBudget",
+  "is_cmd": true,
+  "summary": "为独立实现的分区生成时序预算",
+  "description": "为独立实现的分区生成时序预算。该命令也可以基于实例（而非分区）生成时序预算。生成的时序约束文件允许进行独立的模块实现。在基于分区的预算生成中，它还会生成时序模型，以便进行独立的顶层芯片组装。该命令还会将摘要文件输出到默认的预算合理性目录。注意：必须释放时序图才能使用具有不同选项的多个deriveTimingBudget命令。Innovus在多模式多场景（MMMC）模式下运行，并自动为分区实现和顶层芯片组装生成视图文件。注意：如果时序图已存在，deriveTimingBudget命令不会生成新的时序图。此外，用户必须提供一个未使用deriveTimingBudget生成的时序图，并且必须将setBudgetingMode -virtualOptEngine参数的值设置为与生成该时序图时使用的命令相同。运行deriveTimingBudget命令时，所有具有非默认值的公共setBudgetingMode参数会在命令预期输出之前，以信息消息的形式显示。",
+  "usage": "deriveTimingBudget [-help] [-parameterized] [-cycleRatio | -stageBased] [-allIlmHinsts | -inst <instanceName >| -ptn <partitionName>] [-verbose] [-views <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个deriveTimingBudget参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-parameterized",
+      "description": "生成作为时钟周期函数的约束。设置此参数后，软件会在顶层和模块级SDC中生成作为时钟周期函数的时序约束，例如set_input_delay和set_output_delay约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cycleRatio",
+      "description": "遵循setCycleBudgetRatio约束并启用基于时钟周期的预算生成。如果未应用setCycleBudgetRatio约束，则顶层和模块的默认比率分别为时钟的20%和80%。起点和终点的分区将模块比率各分配50%。等效的默认约束如文档所示。注意：不要将此参数与setFixedBudget命令一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stageBased",
+      "description": "创建一个用于时序预算的快速基于阶段的时序图。基于阶段时序图的时序预算用于设计的早期阶段，在进行优化之前快速生成预算。此方法比基于周期的时序预算更准确。使用此参数时，设计中的任何现有时序图都会被生成的特殊的快速基于阶段时序图覆盖。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allIlmHinsts",
+      "description": "仅为所有基于ILM的分区推导时序预算。使用此参数时，软件会自动推导ILM实例列表并为其生成预算。注意：-allIlmHinsts参数在内部调用基于-inst的预算生成。因此，只能通过saveTimingBudget命令保存预算。因此，必须在deriveTimingBudget -allIlmHinsts之后运行saveTimingBudget，否则savePartition将不会保存ILM实例的预算信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "为指定的层次化实例执行预算生成。此实例可以是黑盒。您可以在同一次运行中为黑盒和其他实例推导时序预算。除了-inst参数外，指定setBudgetingMode -mergeClones参数，可为指定实例集中的每个主/克隆集中的指定实例获取基于最坏情况每引脚数据的最坏情况预算。如果指定来自多个主/克隆集的实例，工具会为每个集中的指定实例分别推导最坏情况时序预算。默认：如果不指定此参数，软件会为所有分区推导预算。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-ptn",
+      "description": "为指定的分区执行预算生成。除了-ptn参数外，指定setBudgetingMode -mergeClones参数，可为包含该分区的主/克隆集中的所有分区获取基于最坏情况每引脚数据的最坏情况预算。如果使用-inst，则不能指定-ptn。默认：对所有分区执行预算生成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verbose",
+      "description": "启用各种详细控制。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-views",
+      "description": "为多个视图并行推导预算以减少运行时间。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

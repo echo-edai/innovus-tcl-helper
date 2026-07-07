@@ -1,0 +1,291 @@
+{
+  "command": "setIntegRouteConstraint",
+  "is_cmd": true,
+  "summary": "为设计中的网络应用特殊布线约束",
+  "description": "此命令在数据库中为设计中的网络应用特殊布线约束。它允许创建差分对、匹配对、屏蔽网络以及使用非默认规则（NDR）的网络。该命令设置的约束可通过 deleteIntegRouteConstraint 命令从数据库中删除。这些集成约束用于在混合信号设计中传递设计意图，并在数字和定制环境之间具有完全的互操作性。",
+  "usage": "setIntegRouteConstraint [-help] [[-file <string>] | [[-accessStyle {none | straight | clustered}] [-bottomLayer <layerNum>] [-bus_bit_order] [-busGroupWidth <integer>] [-connectSupply {<float> anyPoint}] [-cornerStyle {none | crossover | river}] [-crossTieShieldInterval <string>] [-crossTieShieldLayerLimit <string>] [-crossTieShieldedLayers <string>] [-groupToOutsideSpacing {<layer1 spacing1> <layer2>[:<layerN>] <spacing2>...}] [-hard] [-hierarchicalScope {local local_below local_above local_above_below}] [-intergroupGap {<layer1 spacing1> <layer2>[:<layerN>] <spacing2>...}] [-layerGap {<layer1 gap1> <layer2>[:<layerN>] <gap2>...}] [-layerMatch] [-matchGap {<layer1 gap1> <layer2>[:<layerN>] <gap2>...}] [-matchStyle {accordion | trombone | coil}] [-matchType {length resistance maxResistance}] [-maxLength <value>] [-maxRes <value>] [-minBusBit <integer>] [-minLength <value>] [-minRes <value>] [-name <string>] [-noshareshield] [-rule <NDR_name>] [-shieldGap {<layer1 gap1> <layer2>[:<layerN>] <gap2> ...}] [-shieldNet {<net1 net2>}] [-shieldTolerance {<net1 value1 net2 value2> ...}] [-shieldType {unspecified side bottom bottomSide top topSide topBottom coaxial tandemSplit interleaved crosstie tandemSplitFull tandemSplitFullCoaxial tandemSplitNearBy tandemSplitSpecial none}] [-shieldWidth {<layer1 width1> <layer2>[:<layerN>] <width2>...}] [-tandemAggressorAdjacentLayerSeparation {<number_of_tracks>}] [-tandemAggressorSameLayerTrackDistance {<layer1 n1> <layer2>[:<layerN>] <n2>...}] [-tandemCapWidth {<layer1 width1> <layer2>[:<layerN>] <width2>...}] [-tandemNearbyNonAggressorExceptByName {<nameString>}] [-tandemNearbyNonAggressorNets {<nameString>}] [-tandemNearbyNonAggressorType {<typeNameString>}] [-tandemOverhang {<layer1 width1> <layer2>[:<layerN>] <width2>...}] [-tandemSideOverhang {<layer1 width1> <layer2>[:<layerN>] <width2>...}] [-tandemWidth {<layer1 width1> <layer2>[:<layerN>] <width2>...}] [-tolerance <tolerance>] [-topLayer <layerNum>]]] {-net {<net1 net2 ...>} | -busSinkGroups <busSinkGroupNameList> | -file <string>} -type {bus diffPair match NDR netClass shield simpleNet additional}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "显示命令帮助信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-file",
+      "description": "指定包含网络最大电阻目标值的附加约束文件的路径。不能与 -net 或 -busSinkGroups 同时使用，且必须与 -type additional 一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-accessStyle",
+      "description": "指定连接到总线引脚后路由总线的首选样式。仅适用于 -type bus。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-bottomLayer",
+      "description": "指定要使用的底层布线层。",
+      "required": false,
+      "type": "layerNum"
+    },
+    {
+      "name": "-bus_bit_order",
+      "description": "按照总线约束中 -net 选项指定的顺序路由网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-busGroupWidth",
+      "description": "指定路由器将总线拆分成的总线组的宽度。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-connectSupply",
+      "description": "指示屏蔽线将如何连接到电源线。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-cornerStyle",
+      "description": "指定差分对路由或总线在改变方向时应遵循的拐角样式类型。仅适用于 -type bus 和 -type diffPair。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-crossTieShieldInterval",
+      "description": "指定机会同轴屏蔽中交叉连接线之间的轨道数。仅当 -shieldType 指定为 crosstie 时适用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-crossTieShieldLayerLimit",
+      "description": "指定可用于创建交叉连接屏蔽的层范围。仅当 -shieldType 指定为 crosstie 时适用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-crossTieShieldedLayers",
+      "description": "指定将被上下交叉连接屏蔽的层范围。仅当 -shieldType 指定为 crosstie 时适用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-groupToOutsideSpacing",
+      "description": "指示此网络组中的网络与设计中其他网络之间的每层间距（以微米为单位）。仅适用于总线网络（-type bus）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hard",
+      "description": "指示创建的顶层或底层布线约束应为硬类型。默认情况下，Innovus 将顶层/底层布线层约束作为软布线约束放置在生成的 OpenAccess 数据库中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hierarchicalScope",
+      "description": "指定特定约束是局部的，和/或是否可以跨层次结构上拉（above）或下推（below）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-intergroupGap",
+      "description": "指定当指定 -busGroupWidth 时，拆分总线组之间应保持的间隙。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerGap",
+      "description": "指示作为 diffPair 路由的网络的层名和间隙间距值。对于未列出的任何层，使用该层的最小合法间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerMatch",
+      "description": "指定对于 matchLength 网络，应匹配每个单独的层。默认情况下，仅匹配总长度。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-matchGap",
+      "description": "指示手风琴结构两个上升沿之间的间距。仅当 -type 为 matchLength 且 -matchStyle 为 accordion 时适用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-matchStyle",
+      "description": "指示用于匹配作为 matchLength 路由的网络的布线拓扑。可以是 accordion、trombone 或 coil。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-matchType",
+      "description": "指示用于匹配作为 -type match 路由的网络的拓扑。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-maxLength",
+      "description": "指示路由器应路由网络的最大长度。仅适用于 -type matchLength 和 -type simpleNet。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-maxRes",
+      "description": "指示要用于正在路由的特定网络或具有 matchLength 约束的网络（如果 -type 为 matchLength）的最大电阻。仅适用于 -type matchLength。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-minBusBit",
+      "description": "指示路由器拆分总线所允许的最小位数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minLength",
+      "description": "指示路由器应路由网络的最小长度。仅适用于 -type matchLength 和 -type simpleNet。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-minRes",
+      "description": "指示要用于正在路由的特定网络或具有 matchLength 约束的网络（如果 -type 为 matchLength）的最小电阻。仅适用于 -type matchLength。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-name",
+      "description": "指定正在创建的约束组的名称，更改 Innovus 赋予约束的默认名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要路由的网络名称列表。对于类型为 bus 和 matchLength 的约束，也支持单个网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-noshareshield",
+      "description": "指定总线网络之间应有单独的屏蔽，而不是公共屏蔽。此选项仅适用于类型为 bus 的约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rule",
+      "description": "指定用于路由特定类型网络的布线规则的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shieldGap",
+      "description": "指定屏蔽线和屏蔽网络之间的间距（以微米为单位）。对于未列出的任何层，使用该层的最小合法间距。对 -matchType length 无效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shieldNet",
+      "description": "指示网络组应由指定的网络屏蔽。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-shieldTolerance",
+      "description": "指示网络中可以保持未屏蔽的长度百分比。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shieldType",
+      "description": "指定正在路由的网络（们）的屏蔽类型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-shieldWidth",
+      "description": "指示每层屏蔽线的宽度（以微米为单位）。这仅适用于侧屏蔽。对 -matchType length 无效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemAggressorAdjacentLayerSeparation",
+      "description": "指定给定信号层与包含干扰源的上下层之间的最小距离。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-tandemAggressorSameLayerTrackDistance",
+      "description": "指定给定信号网络与同一层上任何干扰源之间的最小间距轨道（距离）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemCapWidth",
+      "description": "指定串联电容屏蔽超出被屏蔽路由边缘的线宽（以微米为单位）。对于未列出的任何层，使用该层的最小合法宽度。此参数仅适用于 tandemSplitSpecial 屏蔽类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemNearbyNonAggressorExceptByName",
+      "description": "指定只有按名称提及的网络是干扰源；其余的不被视为屏蔽的干扰源。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemNearbyNonAggressorNets",
+      "description": "指定不被视为屏蔽干扰源的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemNearbyNonAggressorType",
+      "description": "指定不被视为干扰源信号类型的信号类型。即使它们存在于一定范围内，信号网络也不需要被屏蔽保护。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemOverhang",
+      "description": "指定串联屏蔽的悬垂值（以微米为单位）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemSideOverhang",
+      "description": "指定串联侧屏蔽的悬垂值（以微米为单位）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tandemWidth",
+      "description": "指定顶部和底部屏蔽超出被屏蔽路由边缘的宽度（以微米为单位）。对于未列出的任何层，使用该层的最小合法宽度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tolerance",
+      "description": "指示当将网络路由为 matchLength 和 diffPair 时允许的长度百分比差异。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-topLayer",
+      "description": "指定要用于路由的顶层布线层。",
+      "required": false,
+      "type": "layerNum"
+    },
+    {
+      "name": "-type",
+      "description": "指定要创建的布线约束类型：bus, diffPair, match, NDR, netClass, shield, simpleNet, additional。",
+      "required": true,
+      "type": "enum"
+    },
+    {
+      "name": "-busSinkGroups",
+      "description": "指定 busSinkGroups 的名称列表。它为 busSinkGroup 接收器的网络设置高频/混合信号约束。它支持 BUS 类型的所有约束。这些约束由 NanoRoute 高频路由器遵守。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

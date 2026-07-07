@@ -1,0 +1,258 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setCheckMode(25.10)                                        setCheckMode(25.10)
+
+Name
+       setCheckMode - Sets the data checks that the software performs
+
+Syntax
+       setCheckMode
+
+       [-help]
+
+       [-reset]
+
+       [-all {true | false}]
+
+       [-checkIlm {true | false}]
+
+       [-extraction {true | false}]
+
+       [-floorplan {true | false}]
+
+       [-globalNet {true | false}]
+
+       [-integrity {true | false}]
+
+       [-io {true | false}]
+
+       [-library {true | false}]
+
+       [-mgrid {true | false}]
+
+       [-netlist {true | false}]
+
+       [-placement {true | false}]
+
+       [-route {true | false}]
+
+       [-sroute {true | false}]
+
+       [-tapeOut {true | false}]
+
+       [-timingGraph {true | false}]
+
+       [-vcellnetlist {true | false}]
+
+       Sets the data checks that the software performs.
+
+       If the software finds missing or incorrect data during the check, it
+
+              * Does not proceed with the functionality that would be affected
+                by the incomplete or incorrect data
+
+              * Generates an error message in the Innovus console
+
+       Use the
+           getCheckMode
+          command  to  display  the current settings for the setCheckMode com-
+       mand.
+
+       Use the setCheckMode command immediately before importing  the  design,
+       or before performing a functionality.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setCheckMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setCheckMode.
+
+       -all {true | false}
+              Performs all data checks.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -checkIlm {true | false}
+              Checks if no instances are inserted inside an  ILM  and  whether
+              the  ILM  boundary nets are consistent between flattened and un-
+              flattened states.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -extraction {true | false}
+              Checks that all data required for extraction are correct.
+
+              Note: Although this parameter instructs the Innovus software  to
+              check  that  routing  is complete, this parameter does not check
+              wiring for DRC violations.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -floorplan {true | false}
+              Checks the floorplan.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -globalNet {true | false}
+              Checks instance pin and power/ground pin net connections.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -integrity {true | false}
+              Checks integrity.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -io {true | false}
+              Checks the I/O pads.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -library {true | false}
+              Checks the physical (LEF) and timing libraries.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -mgrid {true | false}
+              Checks that geometries are on the manufacturing grid.
+
+              Note: The software does not stop this check, even if  there  are
+              problems  in  the DEF file. The software generates an error mes-
+              sage if it finds any problems in the DEF file.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -netlist {true | false}
+              Checks the netlist.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -placement {true | false}
+              Checks the placement of the design.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software resets all setCheckMode parameters to their
+              default values. If you  specify  parameters  after  -reset,  the
+              software resets only those parameters to their default values.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+              Data_type: bool, optional
+
+       -route {true | false}
+              Checks whether power and ground pins are connected to power  and
+              ground  nets  before  power  routing.  The  software also checks
+              whether all tie high and tie low pins are  connected  to  global
+              power and ground nets before detailed routing.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -sroute {true | false}
+              Checks special routes.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -tapeOut {true | false}
+              Runs the software in tapeout mode instead of in protyping mode.
+
+              In tapeout mode, the software stops running if it detects errors
+              that would seriously affect the overall integrity of results. In
+              prototyping  mode, the software does not stop if it detects such
+              errors.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -timingGraph {true | false}
+              Checks library cells for timing information.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -vcellnetlist {true | false}
+              Checks for tie-high and tie-low output  pins  when  reading  the
+              Verilog netlist.
+
+              The  software  stops the flow if tie-high or tie-low output pins
+              are found because connecting an output signal pin to a power  or
+              ground creates a potential short circuit. If all of the tie-high
+              or tie-low output pins are actually the driver pins for power or
+              ground  nets,  specify -vcellnetlist false, so that the flow can
+              continue.
+
+              Note: To turn off the checking, you must set this parameter  be-
+              fore initializing the design.
+
+              Default: true
+
+              Data_type: bool, optional
+
+Examples
+              * The  following command turns on all data-checking modes except
+                the pre-power-routing data checking:
+
+                setCheckMode -all true -route false
+
+              * The following command checks a DEF file for objects  that  are
+                off the manufacturing grid.
+
+                setCheckMode -mgrid true
+
+                The software generates error messages such as the following:
+
+                **ERROR:  Line 56: OffMGrid: Track start value (566) is not on
+                Manufacturing Grid.
+
+                **ERROR: Line 446:  OffMGrid:  Via  (-10000,  -10000)  (10006,
+                10006) named via3Array_1 is not on Manufacturing Grid.
+
+                **ERROR:  Line  902:  OffMGrid:  Component  location  (130686,
+                171366) of inst iblockN20/iregNS/yi_reg_1 is not  on  Manufac-
+                turing Grid.
+
+              * The  following  command resets the -mgrid parameter to its de-
+                fault value:
+
+                setCheckMode -reset -mgrid
+
+              * The following command resets all  setCheckMode  parameters  to
+                their default values:
+
+                setCheckMode -reset
+
+Related Information
+              * getCheckMode
+
+                           Fri Apr 04 01:25:37 2025        setCheckMode(25.10)

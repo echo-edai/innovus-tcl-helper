@@ -1,0 +1,51 @@
+{
+  "command": "analyze_paths_by_bottleneck",
+  "is_cmd": true,
+  "summary": "根据关键路径的瓶颈分析创建路径类别，并依据瓶颈信息修复违规",
+  "description": "该命令通过对设计中的关键路径进行瓶颈分析来创建路径类别，并利用瓶颈信息来修复时序违规。瓶颈分析能够识别设计中频繁出现在关键路径上的实例。这些实例的时序变化会影响设计中的多条关键路径。因此，可以利用此信息围绕这些实例来修改设计（如布局规划、布局、约束等）。瓶颈分析会计算一个实例在时序调试窗口中显示的路径中出现的次数，并提供以下输出：* 根据出现次数为最常使用的实例着色。* 为出现次数最高的实例创建指定数量的路径类别。用户还可以基于增量延迟对关键路径进行瓶颈分析。类别将基于最差的指定数量路径创建，这些路径具有：* 最大的最差增量延迟贡献 * 最大的总增量延迟贡献。该命令可在加载机器可读时序报告的任何地方使用。要删除此命令创建的路径类别，请使用 delete_path_category 命令。注意：analyze_paths_by_bottleneck 创建的类别无法使用 save_path_categories 命令保存，相关的子类别也不会被保存。",
+  "usage": "analyze_paths_by_bottleneck [-help] {-category <n> | -incr_delay {worst|total}} [-path_num <m>] [-max_slack <float>] [-min_slack <float>] [-master <master_category_name>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-category",
+      "description": "指定要为出现次数最多的实例创建的类别数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-incr_delay",
+      "description": "指定类别是基于最差增量延迟贡献还是总增量延迟贡献来创建。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-path_num",
+      "description": "指定在执行基于增量延迟的瓶颈分析时要分析的关键路径数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_slack",
+      "description": "指定用于基于增量延迟的瓶颈分析的关键路径的最大裕量值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-min_slack",
+      "description": "指定用于基于增量延迟的瓶颈分析的关键路径的最小裕量值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-master",
+      "description": "指定分析应仅针对指定的主类别执行。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

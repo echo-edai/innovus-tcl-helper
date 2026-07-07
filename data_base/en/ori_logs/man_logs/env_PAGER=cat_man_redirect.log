@@ -1,0 +1,154 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+redirect(25.10)                                                redirect(25.10)
+
+Name
+       redirect - Redirects the output to a file or variable
+
+Syntax
+       redirect
+
+       [-help]
+
+       [<file_or_var_name>]
+
+       [<command>]
+
+       [-tee]
+
+       [-stdin | -append]
+
+       [-stdin | -variable]
+
+       [-variable]
+
+       [-stderr | -stdin]
+
+       Redirects  the  output to a file or variable. You can also directly use
+       redirect characters without explicit use of the  redirect  command  for
+       Innovus commands.
+
+       Any Tcl return value from command is returned by redirect.  If redirect
+       is  used  at the prompt, any echoing of the Tcl return at the prompt is
+       not redirected.
+
+       You can also use the redirect command to write the contents directly to
+       a gzip compressed file by ending the file name with .gz.
+
+       Note: If you use redirect /dev/null while sourcing a script,  the  tool
+       will suppress the messages from the script.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each redirect parameter.
+
+       <file_or_var_name>
+              File or variable name for output to go.
+
+              Data_type: string, optional
+
+       <command>
+              Command to be executed.
+
+              Data_type: string, optional
+
+       -append
+              Appends stdout/stderr to file or variable.
+
+              Data_type: bool, optional
+
+       -stderr
+              Redirects stderr.
+
+              Data_type: bool, optional
+
+       -stdin Redirects stdin.
+
+              Data_type: bool, optional
+
+       -tee   Redirects output to both screen and file or variable.
+
+              Data_type: bool, optional
+
+       -variable
+              Redirects to a Tcl variable.
+
+              Data_type: bool, optional
+
+       It  is  also possible to use redirect characters similar to Unix usage,
+       for Innovus commands, but not for built-in  Tcl  commands.  This  usage
+       works for any Innovus command that does not explicitly register > or >>
+       as  options (if > or >> are visible in the man page or -help output for
+       the command, it is explicitly registered). Note that the "source"  com-
+       mand  is overlaid by Innovus to add various verbose options, so it also
+       supports these characters.
+
+       The table below shows the usage of redirect characters, and how to  use
+       & to indicate a Tcl var name.
+
+              > <name>" Redirects stdout to the file <name>
+
+              >> <name>" Redirects stdout and appends to the file <name>
+
+              > &<name>" Redirects stdout to the Tcl var <name>
+
+              >> &<name>" Redirects stdout and appends to the Tcl var <name>
+
+Examples
+              * Redirects the output to a new file timing.txt.
+
+                redirect timing.txt "timeDesign -postRoute"
+
+              * Appends  the output to the file test.out.gz in compressed gzip
+                format.
+
+                redirect test.out.gz "source test.tcl" -append
+
+              * Redirects the output to both screen and a file.
+
+                redirect timing.txt "timeDesign -postRoute" -append -tee
+
+              * Redirects to the file a.log in compressed gzip format
+
+                source test.out > a.log.gz
+
+              * Redirects and appends to the file a.log
+
+                report_area >> a.log
+
+              * Redirects to the Tcl var a
+
+                report_area > &a
+
+              * Redirects and appends to the Tcl var a
+
+                report_area >> &a
+
+              *
+
+                The dbGet and get_property commands  return  their  values  as
+                TCL_RESULTS.  To  redirect the output to any file, you can use
+                any of the following methods:
+
+              *
+
+                *
+
+                  You can redirect output of dbGet and get_property using  the
+                  following commands:
+
+                  redirect {puts "[dbGet top.insts.name]"} > inst_name.rpt
+
+                  redirect  {puts  "[get_property [get_lib_cells F1] area]"} >
+                  property.rpt
+
+                *
+
+                  You can get the value of output stored in a  variable  using
+                  the following commands:
+
+                  redirect a {puts "[dbGet top.insts.name]"} -variable
+
+                  redirect  b  {puts "[get_property [get_lib_cells F1] area]"}
+                  -variable
+
+                           Fri Apr 04 01:25:37 2025            redirect(25.10)

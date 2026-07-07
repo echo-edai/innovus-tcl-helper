@@ -1,0 +1,101 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verifyIsolatedCut(25.10)                              verifyIsolatedCut(25.10)
+
+Name
+       verifyIsolatedCut  - Checks cuts in all or specified cut layers against
+       the spacing rules set by setIsolatedCutRule
+
+Syntax
+       verifyIsolatedCut
+
+       [-help]
+
+       [-area {<x1 y1 x2 y2>}]
+
+       [-error <integer>]
+
+       [-layer {<cutLayer_list>}]
+
+       [-maxXY]
+
+       [-report <filename>]
+
+       Checks cuts in all or specified cut layers against  the  spacing  rules
+       set  by setIsolatedCutRule. If you use the -area parameter, checks cuts
+       within the specified area. Reports violations in the log  file  and  in
+       verify.isoVia.rpt or the specified report file.
+
+       Note: Violations can be viewed in the Violation Browser.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each verifyIsolatedCut parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man verifyIsolatedCut
+
+       -area {<x1 y1 x2 y2>}
+              Specifies  the  coordinates of the area to verify. If you do not
+              specify this parameter, the command checks the whole design. For
+              example, verifyIsolatedCut -area {0 0 100 100}.
+
+              Default: Entire area
+
+       -error <integer>
+              Specifies the maximum number of errors to report.
+
+              Default: 1000
+
+       -layer {<cutLayer_List>}
+              Specifies the cut layers to be checked. If you specify only  one
+              layer  name, you do not need the braces around the name. For ex-
+              ample, verifyIsolatedCut -layer {Via1 Via2}.
+
+              Default: All cut layers
+
+       -maxXY Specifies that the Square metric should  be  used  for  checking
+              isolated cuts. By this metric, another cut should exist within a
+              square  window from a certain cut. The size of the square window
+              depends on the spacing rules set by setIsolatedCutRule.
+
+              Note: If this parameter is not specified, the  Euclidean  metric
+              is used for checking isolated cuts.
+
+       -report <filename>
+              Specifies  the report file for the isolated cut violation infor-
+              mation.
+
+              Default: verify.isoVia.rpt
+
+Examples
+              * The following command checks isolated cuts on all  layers  and
+                generates a report file named test.isoCut.rpt:
+
+                verifyIsolatedCut -report test.isoCut.rpt
+
+              * The  following  command  checks  for isolated cuts in the area
+                specified and generates a report named verify_isoVia.rpt:
+
+                verifyIsolatedCut -area {0 0 1600 1600}
+
+              *
+
+                The following set of commands check for isolated cuts  on  all
+                layers using the Square metric. Any cut that does not have an-
+                other  cut  within  a  25um x 25um square window is reported:>
+                setIsolatedCutRule -spacing 25> verifyIsolatedCut -maxXY
+
+                In the following pattern, no isolated  cut  violation  is  re-
+                ported  as  each cut has one or more cuts within a 25um x 25um
+                square window.
+
+                In contrast, the following pattern  is  not  okay  because  no
+                other cut exists within a 25um x 25um square window:
+
+Related Information
+       "Verifying  Isolated  Cuts"  in  the Identifying and Viewing Violations
+       chapter of User Guide.
+
+                           Fri Apr 04 01:25:37 2025   verifyIsolatedCut(25.10)

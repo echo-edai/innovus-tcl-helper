@@ -1,0 +1,93 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setFixedBudget(25.10)                                    setFixedBudget(25.10)
+
+Name
+       setFixedBudget  -  This  command fixes the budget for a particular path
+       segment between partitions and start/end points and helps  in  reducing
+       the distribution budget delay in the path segments
+
+Syntax
+       setFixedBudget
+
+       [-help]
+
+       {[{[{-from {list_of_pins} | -fromFlopsOf {hinst}} {-to {list_of_pins} |
+       -toFlopsOf  {hinst}}]  | [-through {list_of_hinst}]} {-slack | -delay }
+       [-add ] <value>] | [-reset ]}
+
+       This command fixes the budget for a  particular  path  segment  between
+       partitions  and start/end points and helps in reducing the distribution
+       budget delay in the path segments.
+
+       Note: Do not use this command with cycle-based timing budgeting.
+
+       This command is valid only for the following segments:
+
+              * Chip In -> Partition In
+
+              * Start Point -> Partition In
+
+              * Partition In -> Partition Out
+
+              * Partition In -> End Point (FF D Pin) inside same partition
+
+              * Start Point (FF Q Pin) inside same partition -> Partition Out
+
+              * Partition Out -> Chip Out
+
+              * Partition Out -> End Point
+
+Parameters
+       -add   Adds the slack/delay to previous value (Boolean, Optional)
+
+       -help  Prints out the command usage
+
+       <value>
+              Presents delay or slack values (Float)
+
+       -delay Specifies the delay value (Boolean, Optional)
+
+       -from {list_of_pins}
+              Presents the 'from pins' to be analyzed (String)
+
+       -fromFlopsOf {hinst}
+              Specifies the from hierarchical inst for which start pins to  be
+              analyzed (String)
+
+       -reset Resets all previously declared fixed budgets (Boolean, Optional)
+
+       -slack Specifies the slack value (Boolean, Optional)
+
+       -through {list_of_hinst}
+              Specifies the hierarchical instances to be analyzed (String)
+
+       -to {list_of_pins}
+              Specifies the 'to pins' to be analyzed (String)
+
+       -toFlopsOf {hinst}
+              Specifies the to hierarchical inst for which end pins to be ana-
+              lyzed (String)
+
+Examples
+       The  following  command  fixes  the budget of the hierarchical instance
+       feed-through paths to the existing delay:
+
+       setFixedBudget -through P5 -slack 0
+
+       The following command gives a fixed clack of 1 to the paths  from  port
+       'in'  to hierarchical instance input pin 'p4/in'; budgets will distrib-
+       ute rest of the slack to other segments of the paths:
+
+       setFixedBudget -from in -to P4/in -slack 1
+
+       The following command fixes the delay of this segment to 0.5  from  the
+       hierarchical  instance  input  pin  'p4/in' to the endpoint 'P4/FF1/D';
+       budgets will be calculated for the whole path considering the path  de-
+       lay of this segment as 0.5:
+
+       setFixedBudget -from P4/in -to P4/FF1/D -delay 0.5
+
+Related Information
+       The Timing Budgeting chapter of the User Guide document.
+
+                           Fri Apr 04 01:25:37 2025      setFixedBudget(25.10)

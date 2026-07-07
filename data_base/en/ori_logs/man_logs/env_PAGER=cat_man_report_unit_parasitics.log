@@ -1,0 +1,190 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_unit_parasitics(25.10)                    report_unit_parasitics(25.10)
+
+Name
+       report_unit_parasitics  -  Reports unit parasitics for individual metal
+       layers and vias
+
+Syntax
+       report_unit_parasitics
+
+       [-help]
+
+        -layer <metal_layer_name>
+
+        -rc_corner <rc_corner_name>
+
+        [-space <wire_space_in_um>]
+
+       [-via_res <via_resistance>]
+
+        [-width <wire_width_in_um>]
+
+       Reports unit parasitics for individual metal layers and vias.  The  re-
+       port  prints  the per unit resistance and capacitance for the specified
+       layer. The resistance values are reported in ohms per  micron  for  min
+       width and min spacing of the layer. The capacitance values are reported
+       in  femtofarad  (fF)  per  micron  for min width and min spacing of the
+       layer.
+
+       Via parasitics are printed considering the layer mentioned in the  com-
+       mand  as  the  lower layer of the via. The default via specified in the
+       LEF file will be considered in this case.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each report_unit_parasitics parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man report_unit_parasitics
+
+       -layer <metal_layer_name>
+              Specifies the name of the metal layer for which the  unit  para-
+              sitics are to be reported.
+
+       -rc_corner <rc_corner_name>
+              Specifies  the  name  of  the RC corner for which the unit para-
+              sitics are to be reported.
+
+       -space <wire_space_in_um>
+              Specifies the wiring space in microns.
+
+              Default: minimum spacing
+
+       -via_res
+              When this parameter is specified, the resistances of  all  vias,
+              whose  upper  layer is specified using the -layer parameter, are
+              reported.
+
+       -width <wire_width_in_um>
+              Specifies the wiring width in microns.
+
+              Default: minimum width
+
+Examples
+              * The following command reports the unit  parasitics  for  metal
+                layer, Metal5, for the specified RC corner, rc_worst:
+
+                report_unit_parasitics -layer Metal5 -rc_corner rc_worst
+
+                The software gives the following information:
+
+       Unit parasitics for layer Metal5 (in fF,ohm)
+
+           RC-Corner = rc_worst
+
+             Cap = 0.213204
+
+             Res = 0.900873
+
+        Parasitics for default Via "VIA5_0_VH"
+
+             Via Cap = 0.017901
+
+             Via Res = 8.859576
+
+              * The  following commands reports the unit parasitics for Metal5
+                with spacing two times the minimum spacing:
+
+                report_unit_parasitics  -layer  Metal5   -rc_corner   rc_worst
+                -space  [expr  2  *  [dbGet  [dbGet head.layers.extName Metal5
+                -p].minSpacing]]
+
+                The software gives the following information:
+
+       Unit parasitics for layer Metal5 (in fF,ohm)
+
+           RC-Corner = rc_worst
+
+              Cap = 0.188657
+
+              Res = 0.900873
+
+       Parasitics for default Via "VIA5_0_VH"
+
+              Via Cap = 0.017901
+
+              Via Res = 8.859576
+
+              * The following commands reports the unit parasitics for  Metal5
+                with width two times the minimum width:
+
+                report_unit_parasitics   -layer   Metal5  -rc_corner  rc_worst
+                -width [expr 2  *  [dbGet  [dbGet  head.layers.extName  Metal5
+                -p].minWidth]]
+
+                The software gives the following information:
+
+       Unit parasitics for layer Metal5 (in fF,ohm)
+
+          RC-Corner = rc_worst
+
+             Cap = 0.198657
+
+             Res = 0.555333
+
+       Parasitics for default Via "VIA5_0_VH"
+
+             Via Cap = 0.017901
+
+             Via Res = 8.859576
+
+              * The  following  commands  reports the unit parasitics for vias
+                with top layer of Metal5:
+
+                report_unit_parasitics  -layer  Metal5   -rc_corner   rc_worst
+                -via_res
+
+                The software gives the following information:
+
+       Unit parasitics for layer Metal5 (in fF,ohm)
+
+          RC-Corner = rc_worst
+
+            Cap = 0.213204
+
+            Res = 0.900873
+
+       Parasitics for default Via "VIA5_0_VH"
+
+       Via Cap = 0.017901
+
+        Via Res = 8.859576
+
+        Other Via res
+
+        VIA45_1C 8.859576
+
+        VIA45_1C_H 8.859576
+
+        VIA45_1C_V 8.859576
+
+        VIA45_1ST_N 8.859576
+
+        VIA45_1ST_S 8.859576
+
+        VIA45_2C_E 4.429788
+
+        VIA45_2C_W 4.429788
+
+        VIA45_2C_N 4.429788
+
+        VIA45_2C_S 4.429788
+
+        VIA45_2ST_N 4.429788
+
+        VIA45_2ST_S 4.429788
+
+        VIA45_4C 2.214894
+
+Related Information
+              * extractRC
+
+              * setExtractRCMode
+
+              * The following chapter in the Innovus User Guide
+
+                * RC Extraction
+
+                           Fri Apr 04 01:25:37 202r5eport_unit_parasitics(25.10)

@@ -1,0 +1,183 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_route_type(25.10)                              create_route_type(25.10)
+
+Name
+       create_route_type - Creates a new route type and sets the routing prop-
+       erties for the nets
+
+Syntax
+       create_route_type
+
+       [-help]
+
+       [-em_ndr_dist <float>]
+
+       [-em_ndr_rule <rule_name>]
+
+       [-min_stack_layer <layer>]
+
+       -name <string>
+
+       [-one_side_spacing_range <bottomLayerNum:topLayerNum>]
+
+       [-prefer_multi_cut_via]
+
+       [-shield_side {one_side | both_side}]
+
+       [-shield_tap_instance_insertion_effort {none | standard | high}]
+
+       [-stack_distance <float>]
+
+       [[-non_default_rule   <ndr_name>]   [-shield_net   <net_name>]   [-bot-
+       tom_shield_layer <layer>] [-top_preferred_layer <layer>]  [-bottom_pre-
+       ferred_layer  <layer>] [-preferred_routing_layer_effort {low | medium |
+       high}]]
+
+       [-mask <mask_number> [-layer_mask_range <bottomLayerNum:topLayerNum>]]
+
+       Creates a new route type and sets the routing properties for the  nets.
+       This  command  lets  you  create the standard route_type that defines a
+       collection of routing attributes such as non-default rule (NDR), shield
+       net, preferred layers and so on that can then be applied to either  all
+       leaf  or  all  trunk  nets  for  a  particular  clock tree. The type of
+       route_type object created depends on the parameters  you  specify  with
+       this  command.  A  standard route_type object is created if you specify
+       the  -non_default_rule,  -shield_net,  -top_preferred_layer  or   -pre-
+       ferred_routing_layer_effort parameters.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each create_route_type parameter. For  a  detailed
+              description  of  the  command and all of its parameters, use the
+              man command: man  create_route_type
+
+       -bottom_preferred_layer <layer>
+              Specifies the preferred lowest routing layer. This attribute  is
+              a soft limit, which means, NanoRoute might use a layer below the
+              specified layer if necessary to complete routing.
+
+              A  layer  name can be any real layer name, for example, from LEF
+              or OpenAccess. Routing layer names can also be abbreviated as  1
+              or metal1 for the first routing layer,  2 or metal2 for the sec-
+              ond  routing layer, and so on. Note, the software will check for
+              real layer names first. So, if metal1 matches a real layer  name
+              it might not be the first routing layer.
+
+              If  not specified, the router will freely route the net starting
+              on the first routing layer, with no preference for  higher  lay-
+              ers.
+
+       -bottom_shield_layer <layer>
+              Allows  shielding  to the specified shield layer. This parameter
+              enables additional flexibility for shielding the clock nets.
+
+       -em_ndr_dist <float>
+              Specifies  the  distance  related  to  the  output   pin,   when
+              em_ndr_rule  is  applied  to  the net. When routing outside this
+              distance range, the router either uses regular wire  or  regular
+              non-default routing (NDR), if the regular NDR setting is enabled
+              in this net.
+
+               Note:  When  the  -em_ndr_rule option is used with the command,
+              the -em_ndr_rule option becomes mandatory.
+
+       -em_ndr_rule <rule_name>
+              Specifies the EM NDR rule to associate  with  this  route  type.
+              When routing within the distance specified in -em_dist from out-
+              put pin, router will use this ndr rule to route.
+
+              Default: No EM NDR rule
+
+       -layer_mask_range <bottomLayerNum:topLayerNum>
+              Specifies  the layer range that the mask constrain should be ap-
+              plied on. For example, 3:4 means that the  constrain  should  be
+              applied on metal3 and metal4.
+
+       -mask mask_number
+              Specifies the mask number in allowed range (min=0, max=3).
+
+       -min_stack_layer <layer>
+              Specifies  that the output pins of the net use stacked vias from
+              the pin to the given <layer> and the  rest  of  the  connections
+              start from the mentioned <layer>.
+
+       -name <string>
+              Specifies the name of the route type object. This is required.
+
+       -non_default_rule <ndr_name>
+              Specifies  the  non-default routing (NDR) rule to associate with
+              this route_type.
+
+              Default is no NDR rule.
+
+       -one_side_spacing_range <bottomLayerNum:topLayerNum>
+              Specifies the layer range that one side spacing constrain should
+              be applied on. By default, NDR spacing is applied to both  sides
+              of  an  NDR  net  or  wire. Use this option to specify the layer
+              range for wires that have only one neighboring wire with minimum
+              spacing, which means only one side needs to  follow  larger  NDR
+              spacing.
+
+       -prefer_multi_cut_via
+              Specifies  whether  or not to use the multi-cut vias for connec-
+              tions at the net driver pins.
+
+       -preferred_routing_layer_effort {low | medium | high}
+              Specifies whether the preferred routing  layer  effort  will  be
+              low,  medium or high. This parameter determines how flexible the
+              NanoRoute router is when setting layer limits for routing speci-
+              fied nets. Use this parameter with the -top_preferred_layer  and
+              -bottom_preferred_layer parameters. Specify medium or high rout-
+              ing  layer  effort level to make NanoRoute less flexible in set-
+              ting layer limits for routing  specified  nets.  NanoRoute  will
+              obey  the  preferred  routing layer range more strictly. Specify
+              low to make NanoRoute more flexible in setting layer limits  for
+              routing specified nets.
+
+              Default: high
+
+       -shield_net <net_name>
+              Specifies  a  special  net  to use as a shield for a critical or
+              high-speed net. Typically, a shielded net is routed before rout-
+              ing other net. You can specify only one shield net. However, you
+              cannot control which side is used by the  special  net  that  is
+              routed  on the same layer as the signal routing. The shield ter-
+              minates near the pin.
+
+              If not specified, the net is not shielded.
+
+       -shield_side {one_side | both_side}
+              Specifies whether to perform one sided or  two  sided  shielding
+              for the route type specified.
+
+       -shield_tap_instance_insertion_effort {none | standard | high}
+              Specifies  the  clock route type for clock shielding of the high
+              and low frequencies through the high and standard values respec-
+              tively. The main difference between these values is  related  to
+              the ground that the tie cell instance/via uses to achieve shield
+              segments of the electrical connection.
+
+       -stack_distance <float>
+              Specifies  that  the  cut distance of cuts on adjacent layers in
+              the stacked vias are defined in -min_stack_layer.
+
+       -top_preferred_layer <layer>
+              Specifies the top-preferred layer for the route type.
+
+Example
+       For  example,  use  the  following  commands  to  create  the  standard
+       route_types  that  specify  the routing attributes we want to assign to
+       particular nets:
+
+       create_route_type -name RT1 -non_default_rule NDR1
+
+        create_route_type -name RT2 -non_default_rule NDR2
+
+       create_route_type -name RT3 -non_default_rule NDR3 -top_preferred_layer
+       M4 -bottom_preferred_layer M3
+
+       create_route_type -name  RT4  -non_default_rule  NDR4  -preferred_rout-
+       ing_layer_effort  high  -top_preferred_layer M4 -bottom_preferred_layer
+       M3
+
+                           Fri Apr 04 01:25:37 2025   create_route_type(25.10)

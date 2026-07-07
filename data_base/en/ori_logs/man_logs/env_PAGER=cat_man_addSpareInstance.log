@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addSpareInstance(25.10)                                addSpareInstance(25.10)
+
+Name
+       addSpareInstance  -  Specifies  a file that lists spare cells to add to
+       the netlist
+
+Syntax
+       addSpareInstance
+
+       [-help]
+
+       [-async <netName:terminalList> [<netName:terminalList> ... ]
+
+       [-clock <netName>]
+
+       -file <fileName>[-fix_placed_insts {TRUE|FALSE}]
+
+       [-hier <moduleName> | -powerDomain <domainName> [-submodule <submodule-
+       Name>]]
+
+       [-prefix <prefix>]
+
+       [-tie {0 | 1}]
+
+       Specifies a file that lists spare cells to add to the netlist. You  can
+       use this command before or after standard cell placement.
+
+              * If  you  use  this  command before placement, the place_design
+                command distributes and places the added instances without in-
+                cluding them in spare modules. It adds the  instances  to  the
+                top level of the design by default.
+
+              * If  you  use this command after placement, the software places
+                the added instances without creating spare modules or disturb-
+                ing the existing placement. The distribution of the  cells  is
+                dependent upon the number of instantiations of each cell type.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each addSpareInstance parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man addSpareInstance.
+
+       -async <netName:terminalList>
+              Specifies which net(s) to tie off the async pin(s).
+
+              Default: async pins will be tied to the logical zero net.
+
+       -clock <netName>
+              Specifies the clock net that is tied to the clock pins.
+
+       -file <fileName>
+              Specifies a text file that lists the spare cells, and the number
+              of each, to add to the netlist. The file has the following  for-
+              mat:
+
+              "<cellName number>"
+
+              Begin each line of a comment with a number sign (#).
+
+       -fix_placed_insts {TRUE|FALSE}
+              Specifies  not to move the existing placed instances to find lo-
+              cation for newly added spare instances.
+
+       -hier <moduleName>
+              Specifies the name of the module to which spares will be added.
+
+       -powerDomain <domainName>
+              Specifies the name of the power domain to which spares  will  be
+              added.
+
+       -prefix <prefix>
+              Specifies a prefix for the names of the newly added cells.
+
+              Default: FE_spare
+
+       -submodule <submoduleName>
+              Specifies the name of the module created for spares.
+
+       -tie {0 | 1}
+              Specifies the logical net to which the cells are connected.
+
+              Default: 1
+
+Example
+       The  following  command  adds  instances  of  the  cells  specified  in
+       spare_file and ties them to logical net 0. It ties the  clock  pins  to
+       sysclk:
+
+       addSpareInstance -file spare_file -tie 0 -clock sysclk
+
+       spare_file contains the following:
+
+       DFFNSRX2T1T10   1
+
+       INVX4T1T10      2
+
+       NOR2X2T1T10     2
+
+       The  following  command  adds  instances  of  the  cells  specified  in
+       spare.txt.It ties the async pin RN to net VDD:
+
+       addSpareInstance -file spare.txt -async VDD:RN
+
+       spare.txt contains the following:
+
+       SDFFRHQXL 5
+
+                           Fri Apr 04 01:25:37 2025    addSpareInstance(25.10)

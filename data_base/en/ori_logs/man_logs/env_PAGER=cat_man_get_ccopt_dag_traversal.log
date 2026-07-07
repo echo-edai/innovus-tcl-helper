@@ -1,0 +1,106 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_dag_traversal(25.10)                  get_ccopt_dag_traversal(25.10)
+
+Name
+       get_ccopt_dag_traversal - This command traverses the clock tree network
+       DAG,  starting  at  the specified pins and traversing to their fanin or
+       fanout, returning a list of the resulting pins
+
+Syntax
+        get_ccopt_dag_traversal
+
+       [-help]
+
+       [-fanin]
+
+       [-fanout]
+
+       [-of_insts instances]
+
+       [-of_pins pins]
+
+       [-skew_group skew_group_name]
+
+       [-skip buffers inverters drivers clock_gates logics  generators  gener-
+       ated_roots all]
+
+       [-transitive]
+
+       This  command  traverses  the  clock  tree network DAG, starting at the
+       specified pins and traversing to their fanin  or  fanout,  returning  a
+       list of the resulting pins. Instance types can be skipped over, and can
+       be  restricted  to  a  specified skew group.  The clock tree network is
+       modeled as a DAG (Directed Acyclic Graph) to accommodate re-convergence
+       and overlap among clock trees and skew groups.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each get_ccopt_dag_traversal parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command: man get_ccopt_dag_traversal.
+
+       -fanin Returns the output clock network pins of the fanin of the speci-
+              fied pins.
+
+       -fanout
+              Returns the input clock network pins of the fanout of the speci-
+              fied pins.
+
+       -of_pins
+              Specifies a list of pins to start traversing from.
+
+       -of_insts
+              Specifies a list of  instances  to  start  traversing  from.  If
+              -fanin  is  specifed,  will start from the input pins of the in-
+              stances. If -fanout is specifed,  will  start  from  the  output
+              pins.
+
+       -skew_group skew_group_name
+              If  specified,  restricts  traversal  to  instances  in the skew
+              group.
+
+       -skip <types>
+              Specifies the types of nodes that  should  be  skipped  past  to
+              their  fanin/fanout during the traversal. You can specify one or
+              more of the following:
+
+              * buffers
+
+              * inverters
+
+              * drivers (equivalent to buffers and inverters)
+
+              * clock_gates
+
+              * logics
+
+              * generators
+
+              * generated_roots
+
+              * all (equivalent to listing all the above, and also  equivalent
+                to -transitive)
+
+       -transitive
+              Skip  all  types  and  get sinks (if -fanout) or clock roots (if
+              -fanin). This is equivalent to the -skip all option.
+
+Examples
+       get_ccopt_dag_traversal -fanout -of_insts CTS_ccd_BUF_clock_G0_L1_1
+
+       get_ccopt_dag_traversal     -fanout     -skip     buffers     -of_insts
+       CTS_ccd_BUF_clock_G0_L1_1
+
+       get_ccopt_dag_traversal   -fanin   -skip  {buffers  generators  logics}
+       -of_pins {CTS_ccd_BUF_clock_G0_L1_1/A CTS_cdb_BUF_clock_G0_L1_2/A}
+
+       set pins [get_ccopt_dag_traversal  -transitive  -skew_group  skewgroup1
+       -fanin -of_pins d1111a/CK]
+
+       foreach pin $pins  {
+
+         Puts "Got pin $pin"
+
+        }
+
+                           Fri Apr 04 01:25:37 20g2e5t_ccopt_dag_traversal(25.10)

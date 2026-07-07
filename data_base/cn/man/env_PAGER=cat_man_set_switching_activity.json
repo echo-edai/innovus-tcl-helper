@@ -1,0 +1,135 @@
+{
+  "command": "set_switching_activity",
+  "is_cmd": true,
+  "summary": "为网络、引脚和端口指定开关活动率",
+  "description": "此命令用于在特定引脚、网络或端口上指定用户定义的活动率（如开关因子或转换密度）。必须在执行 report_power 命令之前使用此命令。该命令可以接受通过 get_pins、get_ports 或 get_nets 命令生成的网络/引脚/端口列表，支持使用通配符模式进行灵活筛选，并适用于静态和动态分析引擎。",
+  "usage": "set_switching_activity [-reset] [-activity <factor> | -density transition_density ] [-clock clock_name] [-duty <value>] [-inst <instance_name>] [-net <net_name>| -port <port_name>| -pin <pin_name>| -input_port <port_name>|-output_port <port_name>| -bidir_port <port_name>] [-period <value>] [-unclocked] [-icg_ratio <num>] [-comb_clockgate_ratio <num>] [-hier <hierarchy_name>] [-scale_factor <value>] [-cell <cell_name>] [-force] [-quiet]",
+  "options": [
+    {
+      "name": "-reset",
+      "description": "将所有指定选项重置为默认值。此选项应首先指定，否则之前设置的所有选项将被重置。可以针对特定引脚/端口/网络列表进行选择性重置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-activity",
+      "description": "为网络、引脚或顶层端口指定活动因子。活动因子表示每个时钟周期内网络、引脚或端口切换的次数。可以是任何正数。无默认值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-density",
+      "description": "为特定网络、引脚或顶层端口指定转换密度。转换密度表示每秒的转换次数。可以是任何正数。无默认值。注意：与 -period 参数同时指定时，软件会发出警告并忽略 -period 参数。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-clock",
+      "description": "为指定时钟域中的所有网络分配全局活动因子，前提是该时钟是域集中最快的时钟。使用此选项时，必须与 -activity 一起使用，且不能与其他选项共用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-duty",
+      "description": "指定信号为逻辑1的概率（占空比）。必须与 -period 参数一起指定。如果未指定，命令将从外部TWF或SDC通过公共时序引擎（CTE）获取该值。默认值：如果未指定，则使用 set_default_switching_activity 命令指定的占空比。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-inst",
+      "description": "为特定实例指定活动率。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-net",
+      "description": "指定网络的名称。支持通配符 (*)。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-port",
+      "description": "指定顶层端口的名称。端口名称格式为：<top>-<level>-<port>。支持通配符 (*)。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定引脚的名称。引脚名称格式为：<instance-name> + <default-hierarchy-><separator> + <pin>。支持通配符 (*)。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-input_port",
+      "description": "指定输入端口的名称。端口名称格式为：<input>-<port>。支持通配符 (*)。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_port",
+      "description": "指定输出端口的名称。端口名称格式为：<output>-<port>。支持通配符 (*)。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bidir_port",
+      "description": "指定双向端口的名称。端口名称格式为：bidirectional-<port>。支持通配符 (*)。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-period",
+      "description": "指定活动率所参考的周期。如果未指定，则使用默认频率。如果指定负数，静态功耗计算引擎将恢复为默认频率。单位：秒(s)、毫秒(ms)、微秒(us)、纳秒(ns)或皮秒(ps)。注意：与 -density 参数同时指定时，软件会发出警告并忽略 -period 参数。默认值：时间单位由设计导入期间读取的第一个.lib文件定义。如果未定义时间单位，则使用 set_default_switching_activity 命令中指定的周期。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-unclocked",
+      "description": "将活动率（参考指定周期）应用于所有没有时钟域的网络。使用此选项时，必须与 -activity 和 -period 一起使用，且不能与其他选项共用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-icg_ratio",
+      "description": "设置集成时钟门控（ICG）单元输出的传播比率。此参数将把所有已识别的ICG实例的输出引脚活动率设置为其实例时钟输入上最快转换密度的指定倍数。可为网络、引脚、端口或时钟指定此比率。不能与 -hier 参数同时使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-comb_clockgate_ratio",
+      "description": "设置组合时钟门控单元输出的传播比率。此参数将把所有被识别为组合时钟门控单元的实例的输出活动率设置为其实例时钟输入上最快转换密度的指定倍数。可为网络、引脚、端口或时钟指定此比率。不能与 -hier 参数同时使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-hier",
+      "description": "指定要分配活动率的层次结构名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scale_factor",
+      "description": "缩放指定时钟域的频率。此参数允许您按指定的比例因子缩放与时钟域关联的所有实例的转换密度，以计算内部功耗和开关功耗。必须与 -clock 参数一起指定。仅适用于静态功耗和无向量动态功耗分析。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-cell",
+      "description": "为指定单元的所有实例的所有输出引脚指定活动率。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "强制为特定网络、引脚和端口应用用户定义的活动率，而无需使用 set_top_module 命令加载Verilog网表。当未指定 set_top_module 命令时，set_switching_activity 命令不支持 -cell 参数以及使用 get_pins/get_ports/get_nets 命令的网络/引脚/端口列表。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-quiet",
+      "description": "抑制运行 set_switching_activity 命令时生成的所有错误和警告消息。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

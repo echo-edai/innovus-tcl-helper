@@ -1,0 +1,110 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setIlmType(25.10)                                            setIlmType(25.10)
+
+Name
+       setIlmType - Controls the behavior of commands in the presence of ILMs
+
+Syntax
+        setIlmType
+
+       [-help]
+
+       [-model {timing | si}]
+
+       Controls the behavior of commands in the presence of ILMs.
+
+       ILM models can be an SI model or a non-SI model. In the flow, sometimes
+       an  explicit flattenIlm needs to be performed to perform the underlying
+       operation. Based on the nature of operation, an appropriate model could
+       be invoked/switched with the above command.
+
+       Use the getIlmType command to display  the  current  settings  for  the
+       setIlmType command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setIlmType parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setIlmType.
+
+       -model {timing | si}
+              Specifies the ILM model that is to be  used  by  the  flattenIlm
+              command.  All  the timing-related commands require data to be in
+              the  flattened  state  (physical  command  require   unflattened
+              state).
+
+              Design  commands  such as optDesign and timeDesign automatically
+              set this parameter before flattening ILMs. However, the CTE com-
+              mands and some clock commands, which can be run in the flattened
+              mode require manual settings.
+
+              * Use the si model for flattening the SI ILM model.
+
+              * Use the timing model for flattening the non-SI related  timing
+                commands.
+
+              Note:  In  case  of  non-merged models, use the cts model before
+              running flattenIlm followed by the command which directly  deals
+              with the clocks.
+
+              Default: timing
+
+Examples
+              * The  following  command  is  used  to report clock tree in the
+                presence of ILMs:
+
+                flattenIlm
+
+                reportClockTree
+
+                unflattenIlm
+
+                The unflattenIlm command resets -model to  its  default  value
+                timing since the next command is not a clock command.
+
+              * The  following  command can be used to get timing reports con-
+                taining the SI push-out delays on nets using the  -setIlmType-
+                model command:
+
+                setIlmType -model si
+
+                # Flattens to SI model
+
+                flattenIlm
+
+                # Turns on SI aware delay calculation
+
+                setDelayCalMode -SIAware true
+
+                # Adds incremental delay column (for SI push-out delays)
+
+                #  in timing output:
+
+                set_global_report_timing_format {instance arc cell fanout load
+                slew delay incr_delay arrival}
+
+                # Minimizes the width of the report such that it easily
+
+                # fits into the screen without wrapping
+
+                set_table_style -name report_timing -no_frame -indent 0
+
+                report_timing
+
+       Note:  You  can  also invoke the Global Timing Debugger (Timing - Debug
+       Timing - Generate)
+
+Related Information
+              * flattenIlm
+
+              * getIlmType
+
+              * optDesign
+
+              * timeDesign
+
+              * Top-level Timing Closure Methodologies chapter of Innovus User
+                Guide.
+
+                           Fri Apr 04 01:25:37 2025          setIlmType(25.10)

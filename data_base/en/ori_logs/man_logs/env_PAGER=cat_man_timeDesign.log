@@ -1,0 +1,537 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+timeDesign(25.10)                                            timeDesign(25.10)
+
+Name
+       timeDesign  - Runs Early Global Route, extraction, and timing analysis,
+       and generates detailed timing reports
+
+Syntax
+       timeDesign
+
+       [-help]
+
+       [-drvReports]
+
+       [-expandReg2Reg]
+
+       [-expandedViews]
+
+       [-hold]
+
+       [-idealClock]
+
+       [-numPaths <integer>]
+
+       [-outDir <string>]
+
+       [-pathreports]
+
+       [-prefix <string>]
+
+       [-proto]
+
+       [-reportOnly]
+
+       [-slackReports]
+
+       [-timingDebugReport]
+
+       [-useTransitionFiles]
+
+       [-prePlace | -preCTS | -postCTS | -postRoute]
+
+       Runs Early Global Route, extraction, and timing analysis, and generates
+       detailed timing reports. The generated  timing  reports  are  saved  in
+       ./timingReports  directory  or the directory that you specify using the
+       -outDir parameter.
+
+       The following timing reports are generated:
+
+              * Setup and hold time for the following path groups:
+
+                     * Register-to-register  (reg2reg)  -  (<TopCellName>_<De-
+                       signStage>_reg2reg.tarpt)
+
+                     * Input-to-register  (in2reg) - This report also includes
+                       the clock source paths (if applicable to  the  design).
+                       The  clock  source paths are included even if the clock
+                       source is an internal pin.
+
+                     * Register-to-output (reg2out)
+
+                     * Input-to-output (in2out)
+
+              *
+
+                * All  paths  ending  in  clock  gate  (<TopCellName>_<Design-
+                  Stage>_reg2cgate.tarpt)
+
+                * If the path groups, input-to-register (in2reg), register-to-
+                  output  (reg2out),  and input-to-output (in2out) are not de-
+                  fined, they  will  be  merged  into  a  default  group  (de-
+                  fault.tarpt)
+
+       The different path groups are described as follows:
+
+              *
+
+                * reg2reg (register-to-register) path group
+
+                  From: all_registers where is_integrated_clock_gating_cell !=
+                  true
+
+                  To:  all_registers  where is_integrated_clock_gating_cell !=
+                  true
+
+                * reg2cgate (register-to-clock-gate) path group
+
+                  From: all_registers where is_integrated_clock_gating_cell !=
+                  true
+
+                  To: all_registers where  is_integrated_clock_gating_cell  ==
+                  true and all_clock_gate
+
+                  Note:  If  you create path groups using the createBasicPath-
+                  Groups  -expanded  parameter,   in2reg   (input-to-regular),
+                  in2out  (input-to-output),  and reg2out (register-to-output)
+                  group paths are created.
+
+                * in2reg (input-to-regular) path group
+
+                  From: all_inputs and clock sources
+
+                  To: all_registers
+
+                * in2out (input-to-output) path group
+
+                  From: all_inputs and clock sources
+
+                  To: all_outputs
+
+                * reg2out (regular-to-output) path group
+
+                  From: all_registers
+
+                  To: all_outputs
+
+                * default path group
+
+                  If the path group is not defined, timeDesign  creates  basic
+                  path groups, reg2reg and reg2cgate.
+
+              * Setup and hold time without using path groups:
+
+                     * Setup analysis (<TopCellName_DesignStage>_all.tarpt)
+
+                     * Hold           analysis           (<TopCellName_Design-
+                       Stage>_all_hold.tarpt)
+
+              * Density
+
+                Note: The density value reported  by  the  timeDesign  command
+                might  differ from the effective utilization value reported by
+                the checkPlace command because timeDesign  does  not  consider
+                padding when calculating density, but checkPlace does consider
+                it when calculating effective utilization.
+
+              * Maximum  transition  time violation (<TopC> <ellName>_<Design-
+                Stage>.tran): The maximum transition  value  reported  is  the
+                maximum  value from set_max_transition command from SDC or the
+                max_transition value specified in the library.
+
+              * Maximum    capacitance    violation    (<TopCellName>_<Design-
+                Stage>.cap):  The  maximum  capacitance  value reported is the
+                maximum value from the set_max_capacitance command from SDC or
+                or max_capacitance value specified in the library.
+
+              * Maximum   fanout    violation    (<TopCel>    <lName>_<Design-
+                Stage>.fanout)
+
+              * Glitch  violations  in the <outDir>/<prefix_hold>/setup direc-
+                tory.
+
+              * Summary (<TopCel> <lName>_<DesignStage>.summary and <TopCellN>
+                <ame>_<DesignStage>_hold.summary)
+
+                Note: The ID number displayed in the Summary report refers  to
+                long path group names.
+
+       The overall total negative slack (TNS) and number of violating paths of
+       a design might not be equal to the total of the TNS and violating paths
+       of  the  individual  path groups. This is because the TNS and number of
+       violating paths are based on end-point of the path  and  are  not  path
+       based.
+
+       For  example,  the  following figure has a register with two paths, one
+       from a primary input with a slack of -0.6ns and other from another reg-
+       ister with a slack of -0.3ns.
+
+       In that case the overall TNS will be -0.6ns with 1 violating path  (end
+       point-based). But the individual reg2reg TNS will be -0.3ns with 1 vio-
+       lating  path  and  in2reg  with  a TNS of -0.6ns with 1 violating path.
+       Therefore, the sum total of individual path group TNS is not  the  same
+       as overall TNS.
+
+       Similarly,  when you run the timeDesign command while performing multi-
+       mode multi-corner analysis, overall TNS is not the sum of TNS  of  each
+       view  considered  separately.  The command sums the worst-case slack at
+       each endpoint across all views. Therefore,  each  endpoint  contributes
+       only in overall worst-slack in the calculation of TNS.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each timeDesign parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand:  man timeDesign.
+
+       -drvReports
+              Generate design rule violation (DRV) reports only.
+
+              Default: Generates DRV and path reports.
+
+       -expandedViews
+              Generates  detailed  view-specific timing reports when the soft-
+              ware is in multi-mode multi-corner analysis mode.
+
+              For multi-mode multi-corner analysis,  the  software  creates  a
+              separate  directory  for  each view. For example, if your design
+              has two analysis views, view1 and view2, the output reports  are
+              generated in the ./timingReports/view1 and ./timingReports/view2
+              directories.
+
+              If  some of the active views have been pruned by auto view prun-
+              ing then this command will restore those and give  view-specific
+              reports for all of the active views in the design.
+
+       -expandReg2Reg
+              Specifies  that the register to register path groups are divided
+              into the following detailed path groups for generating reports:
+
+              * Flop to flop
+
+              * Macro to flop
+
+              * Flop to macro
+
+              * Macro to macro
+
+       -hold  Reports hold violations only. Before ending the timeDesign  run,
+              the  software reverts back to the initial analysis mode that was
+              set by the setAnalysisMode command (either setup or hold).
+
+              Default: Reports only setup violations
+
+       -idealClock
+              Performs ideal clock analysis irrespective of the design stage.
+
+              Default: The software performs propagated  clock  analysis  with
+              the  -postCTS  and  -postRoute parameters. The software performs
+              ideal clock analysis with the -prePlace and -preCTS parameters.
+
+              Note: This parameter is not honored when used with -reportOnly.
+
+       -numPaths <integer>
+              Specifies the number of paths to report in the detailed path vi-
+              olations.
+
+              Default: 50
+
+       -outDir <out_dir>
+              Specifies the name of the output directory that contains all the
+              generated reports.
+
+              Default: timingReports
+
+       -pathReports
+              Generate path reports only.
+
+              Default: Generates DRV and path reports.
+
+       -postCTS
+              Generates timing reports for a design whose clock tree has  been
+              created. By default, in this mode the software runs early global
+              route, native default extraction, and timing analysis for gener-
+              ating  timing  reports. The -postCTS parameter sets setAnalysis-
+              Mode to -clkSrcPath true and -clockPropagation sdcControl.
+
+       -postRoute
+              Generates timing reports for a design whose routing is complete.
+              By default, in this mode the software runs native  detailed  ex-
+              traction, and timing analysis for generating timing reports. The
+              -postRoute  parameter  sets  setAnalysisMode to -clkSrcPath true
+              and -clockPropagation sdcControl.
+
+              Note: Early Global Route is not  run  in  timeDesign  -postRoute
+              mode.
+
+       -preCTS
+              Generates  timing reports before the clock tree is built. By de-
+              fault, in this mode the software runs early global route, native
+              default extraction, and timing analysis  for  generating  timing
+              reports.  The -preCTS parameter sets setAnalysisMode to -clkSrc-
+              Path false and -clockPropagation forcedIdeal.
+
+       -prePlace
+              Generates timing reports before the design is  placed.  In  this
+              mode,  the software ignores the net load while building the tim-
+              ing graph and runs timing analysis  for  generating  timing  re-
+              ports.  The DRV report files are not generated in this mode, and
+              the DRV numbers are not reported in the summary for this parame-
+              ter. The -prePlace parameter sets setAnalysisMode to -clkSrcPath
+              false and -clockPropagation forcedIdeal.
+
+              Note: The -reportOnly parameter is not honored  when  used  with
+              this parameter.
+
+       -prefix <file_name_prefix>
+              Specifies a prefix for the timing report file names.
+
+              Default: <DesignName_DesignStage>
+
+       -proto Supports flex models.
+
+              Notes:
+
+              * The  -proto  parameter supports set_proto_mode -timing_net_de-
+                lay_model parameter.
+
+              * The -proto parameter honors the -postCTS parameter.
+
+              * For iHDB-based 3DIC designs, the -proto parameter can be  used
+                to  check  timing after 3D placement. Use timeDesign -proto in
+                the top design cell.
+
+       -reportOnly
+              Specifies the use of existing  extraction  and  timing  analysis
+              data  to  generate  timing reports. When you use this parameter,
+              the software does not run extraction; instead it uses data  that
+              is already in memory.
+
+              * -reportOnly is not honored when used with -prePlace.
+
+              * -idealClock is not honored when used with -reportOnly.
+
+              Note: The -preCts, -postCts, or -postRoutewith -reportOnly.
+
+              Note:  If  you restore a Innovus database (saved with saveDesign
+              -rc before the timeDesign -reportOnly command is  specified),  a
+              full  extraction  will  still be performed if the database is in
+              the pre-route stage. This is  because  the  preRoute  extraction
+              RCDB cannot be saved into an Innovus database.
+
+       -slackReports
+              Generate slack reports only.
+
+              Default: Generates DRV and path reports.
+
+       -timingDebugReport
+              Generates  a  compressed  (.gz) detailed timing report in binary
+              format. This report is used for debugging timing  results  using
+              the timing debug feature in Innovus.
+
+              For  more information on debugging timing results, see Debugging
+              Timing Results in Innovus User Guide.
+
+       -useTransitionFiles
+              Reports the maximum transition violations  when  using  external
+              transition files specified by the readTransitionFile command.
+
+Command Order
+       Use this command after loading the design.
+
+Examples
+              *
+
+                The  following command runs early global route, preRoute para-
+                sitic extraction, and timing analysis to generate  timing  re-
+                ports before clock tree synthesis:
+
+                timeDesign -preCTS
+
+              * The  following  example  shows  a  summary report generated by
+                timeDesign:
+
+                -----------------------------------
+
+                 timeDesign Summary
+
+                -----------------------------------
+
+                Setup views included:
+
+                 Setup_SSG_m40c_0p81v_RCworst_ccworst_func
+
+                 Setup_SSG_m40c_0p81v_Cworst_ccworst_func
+
+                +--------------------+---------+---------+---------+------+
+
+                | Setup mode      | all     | reg2reg |reg2cgate| default |
+
+                +--------------------+---------+---------+---------+------+
+
+                | WNS (ns):       | -0.678  | -0.174  | -0.206  | -0.678  |
+
+                | TNS (ns):       | -1385.9 |-453.593 | -4.445  | -1056.4 |
+
+                | Violating Paths:| 7006    | 4948    | 60      | 3581    |
+
+                | All Paths:      | 45995   | 43625   | 740     | 5404    |
+
+                +--------------------+---------+---------+---------+------+
+
+                +----------------+-------------------------------+---------------+
+
+                |                  |             Real           |      Total |
+
+                |                                                         DRVs
+                +------------------+------------+-------------------------|
+
+                |                    |   Nr  nets(terms)  |  Worst  Vio  |  Nr
+                nets(terms) |
+
+                +----------------+------------------+------------+---------------+
+
+                | max_cap          | 0 (0)          | 0.000      |  284  (284)
+                |
+
+                |  max_tran          |  0  (0)           |  0.000      | 0 (0)
+                |
+
+                | max_fanout       |  0  (0)           |  0          |  0  (0)
+                |
+
+                |  max_length        |  0  (0)           |  0          | 0 (0)
+                |
+
+                +----------------+------------------+------------+---------------+
+
+                Density: 58.995%
+
+                Routing Overflow: 0.21% H and 0.14% V
+
+                ------------------------------------------------------------
+
+              * The following command ignores the net load while building  the
+                timing  graph  and  runs timing analysis for generating timing
+                reports before the design is placed:
+
+                timeDesign -prePlace
+
+              * The following commands run a  postRoute  parasitic  extraction
+                (TQuantus  by default), and timing analysis to generate timing
+                reports for both setup and hold violations  after  the  design
+                has been routed:
+
+                timeDesign -postRoute
+
+                timeDesign -hold -reportOnly
+
+              *
+
+                The  following  command generates timing reports in multi-mode
+                multi-corner timing analysis view, where test1 is  the  speci-
+                fied analysis view:
+
+                set_analysis_view   -setup   {setup_view1  setup_view2}  -hold
+                {hold_view1}
+
+                timeDesign -postRoute -expandedViews -outDir sample
+
+                The following summary report is generated:
+
+                ------------------------------------------------------------
+
+                 timeDesign Summary
+
+                ------------------------------------------------------------
+
+                Setup views included:
+
+                 setup_view1 setup_view2
+
+                +--------------------+---------+---------+---------+-------+
+
+                | Setup mode        | all    | reg2reg |reg2cgate| default |
+
+                +--------------------+---------+---------+---------+-------+
+
+                | WNS (ns):         | -0.112 | -0.112  | 0.048   | 0.000   |
+
+                | TNS (ns):         | -6.266 | -6.266  | 0.000   | 0.000   |
+
+                | Violating Paths:  | 131    | 131     | 0       | 0       |
+
+                | All Paths:        | 36920  | 35656   | 1264    | 0       |
+
+                +--------------------+---------+---------+---------+-------+
+
+                |setup_view1        | -0.112 | -0.112  | 0.048   | 0.000   |
+
+                |                   | -6.266 | -6.266  | 0.000   | 0.000   |
+
+                |                   | 131    | 131     | 0       | 0       |
+
+                |                   | 35210  | 33946   | 1264    | 0       |
+
+                +--------------------+---------+---------+---------+-------+
+
+                |setup_view2        | -0.070 | -0.070  | 0.079   | 0.000   |
+
+                |                   | -1.113 | -1.113  | 0.000   | 0.000   |
+
+                |                   | 36     | 36      | 0       | 0       |
+
+                |                   | 35210  | 33946   | 1264    | 0       |
+
+                +--------------------+---------+---------+---------+-------------+
+
+                +----------------+-------------------------------+---------------+
+
+                |                   |   Real                         |   Total
+                |
+
+                |                                                         DRVs
+                +----------------+-----------+----------------|
+
+                |                   |  Nr  nets(terms)  |  Worst  Vio   |   Nr
+                nets(terms) |
+
+                +----------------+------------------+-----------+----------------+
+
+                |  max_cap           |  0  (0)           |  0.000      | 0 (0)
+                |
+
+                | max_tran         |  0  (0)           |  0.000      |  0  (0)
+                |
+
+                |  max_fanout        |  0  (0)           |  0          | 0 (0)
+                |
+
+                | max_length       |  0  (0)           |  0          |  0  (0)
+                |
+
+                +----------------+------------------+------------+---------------+
+
+                Density: 31.688%
+
+                Total number of glitch violations: 0
+
+                ------------------------------------------------------------
+
+Related Information
+              * checkPlace
+
+              * set_analysis_view
+
+              * set_table_style
+
+              * set_max_capacitance
+
+              * set_max_transition
+
+              * report_timing_format
+
+              * Accelerating the Design Process By Using Multiple-CPU Process-
+                ing chapter of the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025          timeDesign(25.10)

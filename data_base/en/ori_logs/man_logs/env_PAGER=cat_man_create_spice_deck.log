@@ -1,0 +1,1037 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_spice_deck(25.10)                              create_spice_deck(25.10)
+
+Name
+       create_spice_deck - Generates the SPICE trace for a path
+
+Syntax
+       create_spice_deck
+
+       [-help]
+
+       [-add_driver_for_constraint_check {true | false}]
+
+       [-add_side_load_measurement {true | false}]
+
+       [-add_voltage_for_missing_sensitization]
+
+       [-bbox_cells <string>]
+
+       [-constraint_check {true | false}]
+
+       [-depth <integer>]
+
+       [-enable_arrival_measurements {true | false}]
+
+       [-enable_fast_simulation {true | false}]
+
+       [-enable_mis {tied_input | independent_input | none}]
+
+       [-enable_spectre_x {true | false}]
+
+       [-exclude_side_load_cells <string>]
+
+       [-exclude_side_load_cells_for_missing_subckt {true | false}]
+
+       [-force_delete_output_dir]
+
+       [-file_prefix <string>]
+
+       [-format <string>]
+
+       [-from <string>]
+
+       [-from_fall <string>]
+
+       [-from_rise <string>]
+
+       [-glitch_simulation_mode {input_output | output}]
+
+       [-ground <string>]
+
+       [-include_cell_variation {true | false}]
+
+       [-lsf_job_string <string>]
+
+       [-measure_point {all | path | stage}]
+
+       [-merge_spice_deck {true | false}]
+
+       [-mc_simulation_init_args <string>]
+
+       [-mc_simulation_tran_args <string>]
+
+       [-model_file <string>]
+
+       [-no_hard_stop_at_to_pins {true | false}]
+
+       [-outdir <string>]
+
+       [-power <string>]
+
+       [-receiver_pin <string>]
+
+       [-report_noise <string>]
+
+       [-report_timing <string>]
+
+       [-run_simulation]
+
+       [-segment  {data_path  | launch_path | launch_clock_path | capture_path
+       all}]
+
+       [-segment_end <string>]
+
+       [-segment_start <string>]
+
+       [-side_path_level <integer>]
+
+       [-spectre <string>]
+
+       [-spectre_analysis_options <string>]
+
+       [-spectre_cmd_options <string>]
+
+       [-spectre_lang_escape_chars <string>]
+
+       [-spice_include <string>]
+
+       [-stimuli_file <string>]
+
+       [-subckt_file <string>]
+
+       [-supply_voltage_file <string>]
+
+       [-sweep_range <float>]
+
+       [-sweep_steps <integer>]
+
+       [-sweep_victim {true | false}]
+
+       [-temperature <float>]
+
+       [-through <string>]
+
+       [-to <string>]
+
+       [-use_control_param {true | false}]
+
+       [-use_distributed_load_for_side_receivers {true | false}]
+
+       [-user_defined_measure_statements {append | overwrite}]
+
+       [-user_defined_measure_statements_file <string>]
+
+       [-use_ndw_for_constraint_check {true | false}]
+
+       [-waveform_aware_pulse_width_checks {true | false}]
+
+       [-view <string>]
+
+       [-xtalk {delay | vl_glitch | vh_glitch | vlu_glitch | vho_glitch}]
+
+       [[ > | >> ]]
+
+       Generates the SPICE trace for a path.
+
+       While generating a Spice Deck, the create_spice_deck command looks  for
+       library cells required to run Spice and adds all cells as ".include" in
+       the generated Spice netlist.
+
+       The output SPICE deck includes:
+
+              * Active  and  passive  devices such as field-effect transistors
+                (FETs), capacitors, and resistors.
+
+              * Initial conditions and voltage sources
+
+              * Actual names of the gates, nets,  and  cell  instances,  which
+                helps  the  simulator  interpret this information effectively.
+                For example, consider the following excerpt,  which  shows  an
+                entry for a gate named U0 in the SPICE deck:
+
+                *Gate U0
+
+                *--------------------
+
+                *Cell ports in order : x a VSS VDD
+
+                *--------------------
+
+                XU0 U0/x U0/a 0 U0/VDD inv_ahvt_64
+
+                *--------------------
+
+       Note:  In  order  to output a Spice deck that generates the same report
+       output as the report_timing command, you must run the create_spice_deck
+       command with the -report_timing, -segment_start, and -segment_end para-
+       meters.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -add_driver_for_constraint_check {true | false}
+              Enables constraint check deck generation with pre-driver.
+
+       -add_side_load_measurement {true | false}
+              Adds the side load measurement in clock mesh Spice deck.
+
+              By default, Innovus only measures  the  latencies,  delays,  and
+              slews  of  arcs  that are part of clock mesh specified using the
+              -from/-to parameters.
+
+              When set to true, the software additionally measures the  laten-
+              cies and slews of the side receivers at each stage.
+
+              Default: false
+
+       -add_voltage_for_missing_sensitization
+              Adds the voltage for missing sensitization.
+
+       -bbox_cells <string>
+              Specifies  the list of cells to be considered as black boxes for
+              SPICE simulations.
+
+              This parameter enables you to continue with the simulations even
+              if subckts are missing for one or more cells. All the instantia-
+              tions of these cells will be replaced by pin caps to replace the
+              input pins connectivity of black-boxes, and  the  software  com-
+              puted PWL waveforms applied at the output pins of black boxes.
+
+              The SPICE delays/slews reported for these blackboxes will be the
+              software computed values.
+
+       -constraint_check {true | false}
+              Enables constraint check deck generation.
+
+       -depth <integer>
+              Creates a clock mesh Spice deck of the specified stage depth.
+
+              Innovus  only  traces  the  clock  mesh up to the user-specified
+              depth, starting from the specified -from pin.
+
+              If both the -depth and -to parameters are  specified,  then  In-
+              novus  generates the deck till the depth which is minimum of the
+              -to pin depth and the user-specified depth.
+
+       -enable_arrival_measurements {true | false}
+              Allows adding arrival measurements.
+
+       -enable_fast_simulation {true | false}
+              When set to true, the software enables the fast simulation mode.
+              In this mode, additional clock cycles are not required  to  ini-
+              tialize  sequential  cells  in  the  Spice deck - this speeds up
+              Spice simulations. All the sequential cells are initialized  us-
+              ing  the  initial conditions and only a single clock edge is ap-
+              plied as input.
+
+              By default, this parameter is set to false. In  this  mode,  two
+              clock  cycles  are  applied as input to the clock network, where
+              the first triggering edge is used for initialization of  sequen-
+              tial cells, and the second edge is used for delay measurement.
+
+              Note:   For better performance with sequential cell simulations,
+              you can set the -enable_fast_simulation parameter to true during
+              constraint check generation.
+
+       -enable_mis {tied_input | independent_input | none}
+              Enables advanced multi-input switching (aMIS) during Spice  deck
+              creation. You can specify one of the following options:
+
+              * tied_input:  Multiple  inputs  of an instance will be tied to-
+                gether in a netlist. You can set the setAnalysisMode-multi_in-
+                put_switching_mode parameter to 1 to enable this behavior.
+
+              * independent_input: Allows the Spice deck to  write  out  input
+                stimulus  for side inputs for multi-input gates. The switching
+                times of each input depends on the timing windows. This option
+                can be  used  when  the  setAnalysisMode  -multi_input_switch-
+                ing_mode parameter is set to 2.
+
+              * none: Disables AMIS during the Spice deck creation.
+
+              Default: none
+
+       -enable_spectre_x {true | false}
+              Enables the spectreX license checkout when launching Spectre.
+
+       -exclude_side_load_cells <string>
+              Specifies  a list of cells for which the pin capacitance will be
+              used for side loads instead of instantiating them.
+
+       -exclude_side_load_cells_for_missing_subckt {true | false}
+              When set to true, the software will add side  load  pin  capaci-
+              tance for missing Spice subckt cell instead of instantiating it.
+
+       -file_prefix <string>
+              Adds the specified prefix to the generated Spice deck files.
+
+              If  this  parameter  is  not  used, one of the following default
+              names of the generated Spice decks will be used:
+
+              * path_<index>_setup.sp: for setup paths
+
+              * path_<index>_hold.sp: for hold paths
+
+              * path_<index>_vl_glitch.sp: for VL glitch
+
+              * path_<index>_vh_glitch.sp: for VH glitch
+
+              The <index> in the above file names is controlled based  on  the
+              number  of  decks that are generated using the create_spice_deck
+              command.
+
+              A user-specified string (specified using this parameter) is used
+              as a prefix to the above mentioned file names.
+
+       -force_delete_output_dir
+              Removes the directory specified by the user  using  the  -outdir
+              parameter.
+
+       -format <string>
+              Allows  you  to make changes to the run path simulation internal
+              reporting format.
+
+              The format columns should be  compatible  with  the  report_tim-
+              ing_format settings.
+
+       -from <string>
+              Creates the Spice deck with mesh net starting from the specified
+              pin.
+
+       -from_fall <string>
+              Creates  the  Spice deck with mesh net starting from the falling
+              transition of the specified from pin.
+
+       -from_rise <string>
+              Creates the Spice deck with mesh net starting  from  the  rising
+              transition of the specified from pin.
+
+       -generate_output_only {true | false}
+              Generates the report output only, without triggering any simula-
+              tions.
+
+              Default: false
+
+       -glitch_simulation_mode {input_output | output}
+              Specifies the glitch simulation mode.
+
+              When set to input_output, the software uses both the RIP and ROP
+              for  Spice calculations. When output is specified, the Spice ROP
+              will be computed using the RIP.
+
+       -ground <string>
+              Specifies a list of ground nodes.
+
+       -include_cell_variation {true | false}
+              Writes out the Spice deck required to run simulations.
+
+              When set to true, the software runs Monte-Carlo simulations from
+              within the Tempus software.
+
+              Default: false
+
+       -lsf_job_string <string>
+              Specifies a handle to the farm job for launching the simulation.
+
+       -mc_simulation_init_args <string>
+              Passes necessary Monte Carlo parameters that are required to run
+              MC simulations. The Monte Carlo analysis refers  to  "statistics
+              blocks",  where  statistical  distributions  and correlations of
+              netlist parameters are  specified.  This  parameter  initializes
+              these parameters under the statistics block.
+
+              Note: This parameter can be used when -include_cell_variation is
+              set to true.
+
+       -mc_simulation_tran_args <string>
+              Initializes full transient time of simulation and transient time
+              step.
+
+       -measure_point {all | path | stage}
+              Specifies whether to add all, path, or stage measurements.
+
+              Default: all
+
+       -merge_spice_deck {true | false}
+              Allows you to enable merged Spice deck.
+
+       -model_file <string>
+              Specifies  the  path  of SPICE model files, which contains spice
+              model information. This information is necessary to get accurate
+              Spice information.
+
+              If sub-circuit and model files are not  provided  and  cdBs  are
+              available, spice information is dumped using cdB.
+
+       -no_hard_stop_at_to_pins {true | false}
+              When  set  to  false (default mode), the Spice deck is generated
+              only for traced paths starting from the -from pin and ending  at
+              the  -to  pin.  It does not traverse through the fanout branches
+              that do not lead to the -to specified pin.
+
+              When set to true, traversal occurs through the whole fanout cone
+              of the -from pin till it hits a clock pin of a flop, or any stop
+              point specified with the -to  parameter,  or  passes  through  a
+              depth specified with the -depth parameter.
+
+       -outdir <string>
+              Specifies the name of the output directory that will contain the
+              generated delay and/or glitch spice decks.
+
+              If  simulation is also performed using the -run_simulation para-
+              meter, the Spice simulations output will also be saved  in  this
+              directory.
+
+       -power <string>
+              Specifies the list of global names for the power nets.
+
+              If  the  -power  and  -ground  parameters are not specified, the
+              software obtains this information from the power/ground supplies
+              set via other  ways  in  the  design,  such  as,  from  the  li-
+              braries/cdb, and so on.
+
+              If  the  information is not available, the software uses the de-
+              fault list of power node names (VDD and  VCC)  and  ground  node
+              names (GND and VSS).
+
+       -receiver_pin <string>
+              Specifies the list of receiver pins for which glitch Spice decks
+              need to be generated.
+
+              When  used  with  the  -run_simulation  parameter,  the software
+              writes out a comparison report comparing various glitch  parame-
+              ters  between Innovus and Spice, such as RIP, input glitch area,
+              and ROP (only if ROP node name is available in the noise models)
+              for the given receiver pins.
+
+       -report_noise <string>
+              Specifies the report_noise command parameters as a list of argu-
+              ments within brackets.
+
+              When specified, the Spice deck will be generated for all the re-
+              ceiver pins that are reported by the  report_noise  command  for
+              the specified options.
+
+              When  specified with the -run_simulation parameter, the software
+              writes out a comparison report comparing various glitch  parame-
+              ters between Innovus and Spice, such as, RIP, input glitch area,
+              and  ROP  (only  if ROP node name is available in the noise mod-
+              els).
+
+       -report_timing <string>
+              Specifies the report_timing command options as a list  of  argu-
+              ments within curly brackets.
+
+              You  can use this option to define the paths for which to gener-
+              ate a Spice trace. To select the paths for generating the  Spice
+              trace, specify the report_timing command options, as shown:
+
+              create_spice_deck   -report_timing  {-clock_from  CLK  -clock_to
+              CPU_CLK -nworst 2}
+
+              When the -report_timing option is not used, the software  gener-
+              ates  a  Spice  trace  for  the worst path identified by the re-
+              port_timing command.
+
+              If the -path_type {full_clock} is used, then the clock path will
+              also be processed.
+
+              See the report_timing command for a  complete  list  of  options
+              that can be used as arguments with the -report_timing option.
+
+              Note: The end and summary values of the -path_type option of re-
+              port_timing are not supported.
+
+       -run_simulation
+              Enables path simulation in addition to generating Spice Deck.
+
+       -segment {data_path | launch_path launch_clock_path | capture_path all}
+              Creates the Spice deck of a segment out of the path spice deck.
+
+              The  following command/global variable settings have the follow-
+              ing impact on the -segment parameter options:
+
+              * -path_type full_clock is defined under the  create_spice_deck-
+                report_timing  parameter,  then  the -segment default value is
+                launch_path.
+
+              * -path_type full_clock is not specified, then default value  is
+                data_path.
+
+              * timing_disable_retime_clock_path_slew_propagation global vari-
+                able  is set to false, the default value is launch_path (irre-
+                spective of -path_type settings).
+
+              * timing_disable_retime_clock_path_slew_propagation global vari-
+                able is set to true (default), then launch_clock_path and cap-
+                ture_path options are  supported  only  when  the  -path_type-
+                full_clock option of the create_spice_deck-report_timing para-
+                meter is used.
+
+       -segment_end <string>
+              Specifies the name of the segment end term.
+
+       -segment_start <string>
+              Specifies the name of the segment start term.
+
+       -side_path_level <integer>
+              Specifies  the  number  of  levels of side path stages to be in-
+              cluded in the Spice trace. The maximum number of levels that can
+              be specified is 4.
+
+              Default: 1
+
+       -spectre <string>
+              Specifies the location of the Spectre  version  that  should  be
+              used  for simulation. If the path is not specified with this op-
+              tion, the software will check if you have the  Spectre  location
+              defined in your path.
+
+       -spectre_analysis_options <string>
+              Adds  Spectre  analysis  options to the run. When specified, the
+              software provides instructions to Spectre, e.g., run  a  session
+              with extra accuracy.
+
+       -spectre_cmd_options <string>
+              Specifies the command line options for Spectre.
+
+       -spectre_lang_escape_chars <string>
+              Specifies a list of escape characters in Spectre.
+
+       -spice_include <string>
+              Specifies  the  user-defined lines that should be written to the
+              Spice deck.
+
+              For example,
+
+              create_spice_deck -spice_include {.include extra_cmds.sp}
+
+              where extra_cmds.sp includes additional SPICE commands that  are
+              required  for  the  run  and are not included in the SPICE model
+              file loaded with the -models parameter.
+
+       -stimuli_file <string>
+              Allows you to specify the file path  containing  stimuli  to  be
+              used  for  the specified library cells. The cells' sensitization
+              coming from the user-specified  stimuli  file  takes  precedence
+              over the software inferred sensitization.
+
+              Syntax for delay Spice decks is given below:
+
+              lib_cell  <string> <from | from_rise | from_fall> <string> <to |
+              to_rise | to_fall> <string> input_vector <string>  num_clk_pulse
+              <integer>
+
+              Syntax for glitch Spice decks is given below:
+
+              lib_cell  <string> glitch_type <VL | VH> output_pin <string> in-
+              put_vector <string> num_clk_pulse <integer> # For victim  driver
+              sensitization
+
+              lib_cell  <cell_name>  glitch_type  <VL | VH> input_pin <string>
+              input_vector <string> num_clk_pulse <integer> # For  victim  re-
+              ceiver sensitization
+
+              The  num_clock_pulse <integer> holds significance in case of se-
+              quential arcs, and specifies where to align the data pin transi-
+              tion with respect to the clock transition.
+
+              For example, a value of `1' (default setting) specifies that the
+              data pin transition needs to be aligned before  the  last  clock
+              transition  where  delay measurement is intended. This value can
+              be used in case of regular flip-flops.
+
+              The value `2' specifies that data pin  transition  needs  to  be
+              aligned  with  respect to the second-last triggering clock edge.
+              This value can be used for cascaded 2-bit flip flops.
+
+              Additionally for sequential arcs, the first  pin  in  the  user-
+              specified  input  vector needs to be the data pin, the signal of
+              which will be latched in the sequential cell.
+
+              Here are some examples of stimuli file:
+
+              * The following example shows the stimuli file containing sensi-
+                tizations for CP(rise)->Q(fall) and  CP(rise)->Q(rise)  timing
+                arcs of library cell FF1:
+
+                lib_cell    FF1    from_rise   CP   to_fall   Q   input_vector
+                !D&CDN&!SE&!SI num_clk_pulse 2
+
+                lib_cell FF1 from_rise CP to_rise Q input_vector D&CDN&!SE&!SI
+                num_clk_pulse 2
+
+              * The following example shows the stimuli file containing sensi-
+                tizations for the victim driver cell AOI for both  VL  and  VH
+                glitches:
+
+                lib_cell AOI glitch_type VL output_pin Z input_vector !A&!B&!C
+
+                lib_cell AOI glitch_type VH output_pin Z input_vector A&!B&C
+
+       -subckt_file <string>
+              Specifies  the path of Spice sub-circuit file which contains the
+              Spice information. This information is necessary to get accurate
+              Spice information.
+
+              If subcircuit and model files are  not  provided  and  cdBs  are
+              available, then Spice information in dumped using cdB.
+
+       -sweep_range <float>
+              Specifies the range to sweep the victim.
+
+       -sweep_steps <integer>
+              Specifies the number of steps by which the victim is swept.
+
+       -sweep_victim {true | false}
+              Enables victim sweep.
+
+       -supply_voltage_file <string>
+              Specifies  the file containing user-specified power/ground volt-
+              ages to be used for SPICE simulations. By  default,  the  design
+              operating voltages will be used.
+
+              The format of the supply voltage file is as follows:
+
+              GLOBAL POWER #Specifies the global supply for all power pins
+
+              GLOBAL GROUND #Specifies the global supply for all ground pins
+
+              GLOBAL  #Specifies  the  voltage to be used for given pg pin for
+              all instances
+
+              POWER #Specifies the VDD to be used for specified I/O port PWLs
+
+              GROUND #Specifies the VSS to be used for specified I/O port PWLs
+
+              POWER / #Specifies the VDD used  for  specified  instanceAC/AEU-
+              RAtms signal pin PWL or sensitization
+
+              GROUND  /  #Specifies the VSS used for specified instanceAC/AEU-
+              RAtms signal pin PWL or sensitization
+
+              / #Specifies the voltage used for specified  instanceAC/AEURAtms
+              pg pin
+
+       -temperature <float>
+              Specifies a user-defined temperature to be used in SPICE simula-
+              tions.
+
+              Unit: Celsius
+
+       -through <string>
+              Creates the Spice deck with mesh net going by -through points.
+
+       -to <string>
+              Creates  the Spice deck with mesh net ending at the specified to
+              pins.
+
+       -use_control_param {true | false}
+              Allows you to control the power/ground  voltage  levels  in  the
+              created Spice deck through user-specified parameters.
+
+              When  set  to true, an additional file with the same name as the
+              deck, and extension .control is created that contains the  para-
+              meterized  design voltage levels of the PG pins of all the cells
+              instantiated in the deck. Your can modify the *.control file  as
+              per the requirement without modifying the original deck.
+
+       -use_distributed_load_for_side_receivers {true | false}
+              Allows you to control whether to use the receiver output load as
+              distributed or lumped load.
+
+              Default: false
+
+       -user_defined_measure_statements {append | overwrite}
+              Specifies  whether  to  overwrite the default measurement state-
+              ments in the Spice deck by user-defined  measurements  specified
+              using  the  -user_defined_measure_statements_file  parameter, or
+              append it with default measure statements.
+
+              Default: append
+
+       -user_defined_measure_statements_file <string>
+              Allows you to add the delay/slew measurement statements for  any
+              given segement of the path for which Spice deck is generated.
+
+              The format of the file is given below:
+
+              <MEASURE_TAG_NAME TRIGGER_PIN_NAME TARGET_PIN_NAME>
+
+              Multiple  such  lines  with  unique tags can be specified in the
+              file.
+
+              The measure statement is written in the  Spice  deck  for  delay
+              measurement  between  TRIGGER_PIN  and TARGET_PIN, and slew mea-
+              surement at TARGET_PIN.
+
+       -use_ndw_for_constraint_check  {true | false}
+              Enables constraint check deck generation with NDW waveforms.
+
+       -view <string>
+              Specifies the view name - if a glitch Spice deck is created  for
+              a view other than the default view.
+
+       -waveform_aware_pulse_width_checks {true | false}
+              Generates the Spice deck for waveform-aware pulse width checks.
+
+       -xtalk {delay | vl_glitch | vh_glitch | vlu_glitch | vho_glitch}
+              Generates  the  SI  Spice deck for the stage specified using the
+              report_timing parameter.
+
+              * A stage can start with victim driver input to victim  receiver
+                input.
+
+              * A  stage can start with victim driver input to victim receiver
+                output.
+
+              The stage will be specified in the report_timing  command  using
+              the -point_to_point parameter.
+
+              You can specify one of the following options:
+
+              * delay: Allows to dump the SI delay Spice deck.
+
+              * vl_glitch | vh_glitch: Specifies the type of glitch (VL or VH)
+                the  Spice deck will be used for. This option must be used for
+                glitch Spice deck generation.
+
+              * vlu_glitch  |  vho_glitch:  Supports  simulation  of   vlu/vho
+                glitches.
+
+       Examples
+              * The following set of commands generate a SPICE deck for a path
+                and output it in the path1_spice directory:
+
+                set  rpt_tim_opt  [  list  -clock_from  CLK  -clock_to CPU_CLK
+                -nworst 2 ]
+
+                 create_spice_deck    -outdir    path1_spice    -report_timing
+                $rpt_tim_opt
+
+                -subckt_file  /path/subckt.sp  -model_file /path/models.sp
+
+              * The  following  command  creates a SPICE deck and simulates it
+                using the Spectre simulator:
+
+                 create_spice_deck -run_simulation -spectre /tools/spectre
+
+                -subckt_file  /path/subckt.sp  -model_file /path/models.sp
+
+              * The following command creates a SPICE deck in mydir and  keeps
+                the  instances  up to three levels for each side path attached
+                with the main path:
+
+                 create_spice_deck -side_path_level 3 -outdir mydir
+
+                -subckt_file  /path/subckt.sp  -model_file /path/models.sp
+
+              * The following command creates a SPICE deck for the best path:
+
+                 create_spice_deck -report_timing { -early }
+
+                -subckt_file  /path/subckt.sp  -model_file /path/models.sp
+
+              * The following command creates a Crosstalk Spice Deck  for  the
+                specified Stage:
+
+                 create_spice_deck  -xtalk  delay  -model_file /path/models.sp
+                -subckt_file /path/subckt.sp  -report_timing  {-point_to_point
+                -from  <victim_driver_input>  -to <victim_receiver_driver_out-
+                put>} -output spice_output
+
+              *
+
+                The following command dumps the VL  spice  deck  report_timing
+                command  options  so  that  the  transition at receiver pin is
+                failing:
+
+                 create_spice_deck -xtalk glitch -report_timing <  -from  dri-
+                ver/input  -to_fall  receiver/input  -point_to_point > -outdir
+                <output dir> -model_file  <model  file>  -subckt_file  <subckt
+                file>
+
+              *
+
+                The  following  command  dumps the VH spice deck report_timing
+                command options so that the transition at receiver pin is ris-
+                ing:
+
+                 create_spice_deck -xtalk glitch -report_timing <  -from  dri-
+                ver/input  -to_rise  receiver/input  -point_to_point > -outdir
+                <output dir> -model_file  <model  file>  -subckt_file  <subckt
+                file>
+
+              * The following command run simulations and then generates a re-
+                port:
+
+                create_spice_deck   -report_timing   "-net   -from   clk   -to
+                ca53/as_12/ff/D -path_type  full_clock"  -run_simulation  -in-
+                clude_cell_variation true > spice.socv.rpt
+
+              * The  following command generates a report (if simulations have
+                already been run):
+
+                create_spice_deck  -generate_output_only  true  -report_timing
+                "-net  -from  clk  -to  ca53/as_12/ff/D -path_type full_clock"
+                -run_simulation -include_cell_variation_true -format  {arrival
+                spice_arrival  spice_arrival_detail arrival_error_detail hpin}
+                > spice.socv.rpt
+
+              *
+
+                The following section in SPICE deck specifies global  supplies
+                and transient analysis window time.
+
+                *--------------------
+
+                *Command and Options
+
+                *--------------------
+
+                V0Xvdd  vdd 0 1.0
+
+                V0Xvbbnw vbbnw 0 1.0
+
+                V0Xvss vss 0 0
+
+                V0Xvbbpw vbbpw 0 0
+
+                *--------------------
+
+              * The  following  section  shows an example of a net and its in-
+                stance connections.
+
+                *------------------------
+
+                *Net Instances
+
+                *------------------------
+
+                *Net module1/inst_1/net
+
+                *------------------------
+
+                Xmodule1/inst_1/net module1/inst_1/q
+
+                + module1/inst_2/a wc:module1/inst_1/q
+
+                *------------------------
+
+              * The following section shows an example of a gate instance  and
+                its port connections.
+
+                *----------------------------------------
+
+                *Gate Instances
+
+                *----------------------------------------
+
+                *Gate module1/inst_2
+
+                *----------------------------------------
+
+                *Cell ports in order : a y vss vdd vbbpw vbbnw
+
+                *----------------------------------------
+
+                Xmodule1/inst_2/a module1/inst_2/y
+
+                + 0 module1/inst_2/vdd 0 module1/inst_2/vbbnw
+
+                + inv1
+
+                *----------------------------------------
+
+              * The following section shows the measurement statements for de-
+                lay and slew.
+
+                *---------------------
+
+                *Measurement statements
+
+                *---------------------
+
+                module1/inst_1/q
+                ---------clk to q delay
+
+                +  TRIG V(module1/inst_1/clk) VAL=0.5 TD=167.9p RISE=1      of
+                module1/inst_1
+
+                + TARG V(module1/inst_1/q) VAL=0.5 TD=167.9p RISE=1
+
+                + TRIG V(module1/inst_1/q) VAL=0.30 TD=167.9p RISE=1
+
+                +   TARG   V(module1/inst_1/q)   VAL=0.70   TD=167.9p   RISE=1
+                ---------Slew at
+
+                module1/inst_2/a
+
+                +    TRIG   V(module1/inst_1/q)   VAL=0.5   TD=167.9p   RISE=1
+                ---------Interconnect Delay
+
+                + TARG V(module1/inst_2/a) VAL=0.5 TD=167.9p RISE=1        and
+                Input Slew
+
+                +   TRIG   V(module1/inst_2/a)   VAL=0.30   TD=167.9p   RISE=1
+                ---------Interconnect Delay
+
+                + TARG V(module1/inst_2/a) VAL=0.70 TD=167.9p RISE=1       and
+                Input Slew
+
+       Note:  The  DELAY  and SLEW keywords in the MEASURE statements indicate
+       that these are the measurement statements for delay  and  slew  respec-
+       tively.
+
+       Also,  Stage  numbers (Stage_0001 and Stage_0002) in the MEASURE state-
+       ment indicate the respective stages; first and  second  stage,  in  the
+       timing path, which makes it easier for correlation with the report_tim-
+       ing report.
+
+              * The  following  shows  an  example  for generating a VL glitch
+                SPICE deck:
+
+                 create_spice_deck  -xtalk  vl_glitch  -receiver_pin   x1/x2/I
+                -outdir   SPICE/net1_vl  -model_file  ./all_cells.model  -sub-
+                ckt_file ./all_cells.sp
+
+              * The following shows an example  for  generating  a  VH  glitch
+                SPICE deck:
+
+                 create_spice_deck   -xtalk  vh_glitch  -receiver_pin  x1/x2/I
+                -outdir  SPICE/net1_vh  -model_file  ./all_cells.model   -sub-
+                ckt_file ./all_cells.sp
+
+              *
+
+                The  following  command sets the simulation time stop criteria
+                to be 13.40 ns and step time to be 1ps:
+
+                create_spice_deck   -mc_simulation_init_args    "stop=1.34e-08
+                step=1p"
+
+              *
+
+                The following command writes out statistics block in a deck to
+                run Monte Carlo simulations:
+
+                create_spice_deck    -mc_simulation_init_args    "numruns=3000
+                seed=1234 distribute=fork  numprocesses=8  variations=mismatch
+                scalarfile=MCDataSetLoad.txt dut=[%s]"
+
+                simulator lang = spectre
+
+                mc1    montecarlo   numruns=3000   seed=1234   distribute=fork
+                numprocesses=8    variations=mismatch    scalarfile=MCDataSet-
+                Load.txt           dut=[          XStage2.XCTS_ccl_a_inv_01730
+                XStage3.XCTS_ccl_inv_01726          XStage4.XCTS_ccl_inv_01718
+                XStage5.XCTS_ccl_a_inv_01712 \
+
+                XStage6.XCTS_cpc_sk_inv_03405    XStage7.XCTS_cpc_sk_inv_03406
+                XStage8.XCTS_cdb_inv_03303 XStage9.XCTS_cdb_inv_02837 \
+
+                XStage10.XCTS_ccl_inv_01669      XStage11.XCTS_ccl_a_inv_01540
+                XStage12.XCTS_cpc_sk_inv_03860  XStage13.XCTS_cpc_sk_inv_03859
+                \
+
+                XStage14.Xugenq_uaesflushu1_aes_flush_u1_reg
+                XStage15.XPLACEOPTFE_RC_149_0 XStage16.XPLACEOPTFE_RC_150_0 \
+
+                XStage17.XU22704       XStage18.XU22707       XStage19.XU22857
+                XStage20.XPLACEOPTFE_OFC2135_n30081 XStage21.XU23049 \
+
+                XStage22.XU140015      XStage23.XU132065     XStage24.XU132066
+                XStage25.XU132710 XStage26.XU132716 XStage27.XU133277 \
+
+                XStage28.XU133278 XStage29.XU133279 XStage30.XU133285 ]
+
+                {
+
+                tran1 tran stop=2.88312e-08 step=1p
+
+                }
+
+                simulator lang = spice
+
+              * The following commands shows constraint checks applied  during
+                setup and hold mode:
+
+                Setup:  create_spice_deck -model_file $model_file -subckt_file
+                $subckt_file -out_dir  output  -spectre  $spectre_path  -spec-
+                tre_cmd_options $spectre_opt -run_simulation -enable_fast_sim-
+                ulation true -constraint_check true -report_timing {-late -re-
+                time path_slew_propagation -to EP1}
+
+                Hold:  create_spice_deck  -model_file $model_file -subckt_file
+                $subckt_file -out_dir  output  -spectre  $spectre_path  -spec-
+                tre_cmd_options $spectre_opt -run_simulation -enable_fast_sim-
+                ulation  true  -constraint_check  true  -report_timing {-early
+                -retime path_slew_propagation -to EP1}
+
+              * A sample constraint check report is given below:
+
+                Path 1: SPICE based Setup Check
+
+                Clock:       dff2/CK (^)
+
+                Data:        dff2/D (^)
+
+                Deck:        path_1_setup_iter11.sp-----> Final Deck
+
+                Slew:        1e-09(Data), 1e-09(Clock)  ---------->  Data  and
+                Clock Pin Transitions
+
+                Setup:          1.59911e-10    (Spice),    1.57721e-10   (Tem-
+                pus)--------> Setup Time
+
+                -------------------------------------------------------
+
+                Iter   Offset(D-CK) Pass/Fail  Deck
+
+                       (ps)
+
+                -------------------------------------------------------
+
+                0      -2500.000    Pass      path_1_setup_iter0.sp  |
+
+                1      1249.999     Fail      path_1_setup_iter1.sp  |
+
+                2      -625.000     Pass      path_1_setup_iter2.sp  |
+
+                3      312.500      Fail      path_1_setup_iter3.sp  |
+
+                4      -156.250     Fail      path_1_setup_iter4.sp  |
+
+                5      -390.624     Pass      path_1_setup_iter5.sp   |------>
+                PASS/FAIL Iterations
+
+                6      -273.438     Pass      path_1_setup_iter6.sp  |
+
+                7      -214.843     Pass      path_1_setup_iter7.sp  |
+
+                8      -185.548     Pass      path_1_setup_iter8.sp  |
+
+                9      -170.900     Pass      path_1_setup_iter9.sp  |
+
+                10     -163.574     Pass      path_1_setup_iter10.sp |
+
+                11      -159.911      Pass       path_1_setup_iter11.sp ----->
+                Final Deck
+
+                ------------------------------------------------------
+
+Related Information
+              *
+
+                report_timing
+
+              *
+
+                report_timing_format
+
+              *
+
+                report_noise
+
+                           Fri Apr 04 01:25:37 2025   create_spice_deck(25.10)

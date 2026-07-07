@@ -1,0 +1,227 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+violationBrowser(25.10)                                violationBrowser(25.10)
+
+Name
+       violationBrowser - Displays a list of violations in the design database
+
+Syntax
+       violationBrowser
+
+       [-help]
+
+       [-aclimit]
+
+       [-all]
+
+       [-append]
+
+       [-area {<x1 y1 x2 y2>}]
+
+       [-connectivity]
+
+       [-density]
+
+       [-displayByLayer]
+
+       [-geometry]
+
+       [-max_error_per_type <value>]
+
+       [-no_display_false]
+
+       [-overlap]
+
+       [-process_antenna]
+
+        [-search_desc]
+
+       [-short]
+
+       [-filter_query <LO_formula> | {-filter <filterString> -filter_mode {AND
+       | OR | NOT}}]
+
+       Displays a list of violations in the design database. The software gen-
+       erates  markers  for the violations after you use one or more verifica-
+       tion commands.
+
+Geometry or Metal Density Violations
+       Updates geometry and metal density violation markers incrementally dur-
+       ing an Innovus session--that is, it displays the markers generated  the
+       first  time  you  run  the verify_drc or verifyMetalDensity command and
+       adds new markers, or deletes markers, on  subsequent  runs  during  the
+       same  session. If the software finds violations during a subsequent run
+       that were already  found  previously,  the  browser  display  does  not
+       change, as there is no incremental update.
+
+       The  browser  can make incremental changes because verify_drc and veri-
+       fyMetalDensity can check a small area of  the  design  and  update  the
+       database.  As a result of this behavior, the Innovus software saves the
+       information from the first verification run.
+
+Connectivity, Process Antennas, or AC Limit Violations
+       Overwrites connectivity, process antenna, and AC limit violation  mark-
+       ers  if  the  verifyConnectivity or verifyACLimit commands are run more
+       than once during an Innovus session. These commands are net-based,  not
+       area-based,  so the browser does not make incremental updates for them.
+       As a result of this behavior, the Innovus software does  not  keep  the
+       information from the first verification run.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each violationBrowser parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man violationBrowser
+
+       -aclimit
+              Displays AC limit violations.
+
+       -all   Displays all the violations that are present in the design. This
+              is the default behavior.
+
+       -append
+              Appends  accumulated filtered markers to the existing markers in
+              violation browser.
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the coordinates of the area whose violations  to  dis-
+              play. For example, violationBrowser -area {0 0 100 100}.
+
+       -connectivity
+              Displays connectivity violations.
+
+       -density
+              Displays metal density violations.
+
+       -displayByLayer
+              Displays  the  list  of violations by the layer instead of route
+              type.
+
+       -filter <filterString>
+              Specifies a text string  in  the  violation  message.  Violation
+              Browser searches the message of each violation and displays only
+              the violations whose messages match the search conditions.
+
+              To specify a list of strings, separate each string with a space.
+
+              To specify a literal string with space in it, enclose the string
+              in double quotation marks.
+
+              For example, you can specify strings such as the following:
+
+              * METAL5
+
+              * {"(600, 500)"}
+
+              * {METAL3 "(700, 400)"}
+
+              * "Pin of Net"
+
+       -filter_mode {AND | OR | NOT}
+              Specifies  the  condition  for searching multiple strings in the
+              violation browser. You cannot filter complex expressions because
+              the AND, OR, and NOT parameters are mutually exclusive.
+
+              * The AND and OR conditions work on single strings  or  multiple
+                strings.
+
+              * The NOT condition works only on a single string.
+
+       -filter_query <LO_formula>
+              Specifies a complex logical expression for filtering violations.
+              This  option  cannot be used along with -filter or -filter_mode.
+              You can specify the AND, OR, and NOT conditions  in  the  search
+              expression. Use:
+
+              * && between strings in the expression to specify the AND condi-
+                tion.
+
+              * ||  between strings in the expression to specify the OR condi-
+                tion.
+
+              * ! before a string to specify the NOT condition. Note that ! is
+                an one's complement operator. So for  example,  !{object(net1)
+                && layer(m2)} is not allowed.
+
+              The  -filter_query  parameter  supports  searches in the object,
+              layer, and description areas. The area can  be  specified  using
+              the object, layer, and desc keywords. For example:
+
+              object(net1) || layer(m2) && desc(xxx)
+
+              You can also use the wildcards * and ? in the search expression.
+              For example:
+
+              !object(clk*) && layer(m?)
+
+              To specify a literal string with space in it, enclose the string
+              in double quotation marks. For example:
+
+              !object(clk*) && desc("prl spacing")
+
+       -geometry
+              Displays geometry violations.
+
+       -max_error_per_type <value>
+              Specifies  a  limit for the number of violations parsed for each
+              violation  type.  For  example,  if  you  set   violationBrowser
+              -max_error_per_type  500,  the Violation Browser parses and dis-
+              plays only 500 markers per error type. Use this parameter if you
+              are loading a large DRC file with millions of violations to pre-
+              vent the databse from becoming slow while loading the  file  and
+              to limit the number of violations you review in the browser.
+
+              By default, the Violation Browser displays all markers.
+
+       -no_display_false
+              Prevents the Innovus software from displaying false violations.
+
+       -overlap
+              Displays overlaps in the design.
+
+       -process_antenna
+              Displays process antenna violations.
+
+       -search_desc
+              Searches for text in the violation message and the violation de-
+              scription.
+
+       -short Displays short violations.
+
+Examples
+              * The following command displays all violations whose marker ti-
+                tle contains METAL3:
+
+       violationBrowser -all -filter METAL3 -filter_mode OR
+
+              * The  following  command  displays  geometry  violations  whose
+                marker title contains METAL3 and tdsp:
+
+       violationBrowser -geometry -filter {METAL3 tdsp} -filter_mode AND
+
+              * The  following  command  displays  geometry  violations  whose
+                marker title or marker description field contains Min and 0.24
+                and METAL3:
+
+       violationBrowser  -geometry  -filter {Min 0.24 METAL3} -filter_mode AND
+       -search_desc
+
+              * The following command displays violations occuring  on  Metal4
+                or Metal5 layers but excludes short violations:
+
+       violationBrowser -filter_query {!Short && (metal4 || metal5)}
+
+Related Information
+              * The  following  section  in the Identifying and Viewing Viola-
+                tions chapter of User Guide.
+
+                     * Viewing Violations With the Violation Browser
+
+                     * Clearing Violations
+
+              * "Evaluating Violations" in  the  Using  the  NanoRoute  Router
+                chapter of User Guide.
+
+                           Fri Apr 04 01:25:37 2025    violationBrowser(25.10)

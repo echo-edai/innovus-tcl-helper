@@ -1,0 +1,183 @@
+{
+  "command": "fcroute",
+  "is_cmd": true,
+  "summary": "指定电源和信号布线识别倒装芯片设计中的凸点",
+  "description": "该命令用于在倒装芯片设计中，使电源布线和信号布线能够识别并连接到指定的凸点（bump）。它支持所有LEF 5.7语法来确定I/O驱动单元上的电源/地引脚形状应连接到哪个凸点。该命令支持区域I/O（AIO）和外围I/O（PIO）模式的混合设计。默认情况下，该命令读取前端（FE）数据库以获取所有信息，这要求将变量 `set rda_global (srouteUseFEDB)` 设置为1。若要从LEF文件读取信息，则需要将该变量设置为0。此命令应在导入设计后使用。",
+  "usage": "fcroute [-help] [-type {power | signal}] [-area {<x1 y1 x2 y2>}] [-connectInsideArea] [-connectTsvToBump] | [-connectTsvToPad] | [-connectTsvToRingStripe] [-constraintFile <filename>] [-deleteExistingRoutes] [-designStyle {aio | pio}] [-doubleBendRoute] [-eco | -incremental] [-extraConfig <fileName>] [-globalOnly] [-jogControl  {preferWithChanges  |  preferSameLayer | preferDifferent-Layer}] [-keepDRC] [-layerChangeBotLayer <layerName>] [-layerChangeTopLayer <layerName>] [-minEscapeDistance <unit>] [-msgRate <int>] [-nets {<net_name_list>| <filename | ~<filename}<|>-selected_bump] [-overflowMap] [-route_pg_style {none finger mesh}] [-routeWidth <real>] [-spreadWiresFactor <value>] [-straightConnections [[straightWithDrcClean] [straightWithChanges]] [-subclass <subclass_string>] [-verbose]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个fcroute参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-type",
+      "description": "指定是要布线电源凸点还是信号凸点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-area",
+      "description": "指定区域I/O布线的坐标。坐标必须用花括号括起来，并用空格分隔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connectInsideArea",
+      "description": "指定指定区域内所有源的连接只能连接到也在该区域内的目标。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connectTsvToBump",
+      "description": "将TSV连接到信号凸点。与 `-type signal` 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connectTsvToPad",
+      "description": "将TSV连接到IO焊盘。与 `-type signal` 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connectTsvToRingStripe",
+      "description": "将带有电源网络的TSV连接到电源网格。与 `-type power` 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-constraintFile",
+      "description": "指定包含倒装芯片布线约束的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-deleteExistingRoutes",
+      "description": "指定当多次使用fcroute命令时，软件应移除现有的连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-designStyle",
+      "description": "在区域I/O和外围I/O布线样式之间选择。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-doubleBendRoute",
+      "description": "允许在凸点引脚和焊盘引脚之间的线段上进行双弯曲布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-eco",
+      "description": "启用ECO模式倒装芯片布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-incremental",
+      "description": "当设计中已存在预布线时，以增量方式运行PIO模式，而不删除或重新布线预布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extraConfig",
+      "description": "指定额外配置文件的名称，该文件包含提供对凸点布线更多控制的附加fcroute命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-globalOnly",
+      "description": "仅执行全局布线器以提供可布线性统计信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-jogControl",
+      "description": "指定在布线期间允许拐弯以避免DRC违规。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keepDRC",
+      "description": "如果指定，则在执行fcroute命令时不会隐式运行clearDrc命令，从而保留DRC违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layerChangeBotLayer",
+      "description": "指定软件在布线凸点时可以使用的最底层金属层编号/LEF层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerChangeTopLayer",
+      "description": "指定软件在布线凸点时可以使用的最顶层金属层编号/LEF层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-minEscapeDistance",
+      "description": "指定从引脚边缘到线段的边缘的最小距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-msgRate",
+      "description": "指定生成进度消息的间隔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要连接或排除连接的网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-overflowMap",
+      "description": "使用额外配置文件中指定的宽度和间距参数显示热图。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-route_pg_style",
+      "description": "指定倒装芯片电源布线的布线模式：none（普通PG布线）、finger（指状布线）或mesh（网格布线）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-routeWidth",
+      "description": "仅使用指定的宽度将导线连接到凸点，而不管凸点的大小或凸点连接的源。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-spreadWiresFactor",
+      "description": "指定在凸点布线期间自动展开导线以防止任何SI违规。该值作为所需最小间距的倍数应用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-straightConnections",
+      "description": "指定仅在目标之间进行直线连接，并且在布线期间不允许拐弯。此选项仅适用于 `fcroute -type power`。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-subclass",
+      "description": "将指定的字符串分配为所创建导线和通孔的子类名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verbose",
+      "description": "指定每个进度消息都出现在日志文件和控制台中。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

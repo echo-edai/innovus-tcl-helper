@@ -1,0 +1,126 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+parse_proc_arguments(25.10)                        parse_proc_arguments(25.10)
+
+Name
+       parse_proc_arguments - Supports argument validation within a Tcl proce-
+       dure  and enables the use of the -help option to view the help informa-
+       tion associated with the procedure
+
+Syntax
+       parse_proc_arguments
+
+       [-help]
+
+       <result_array>
+
+       [<forced_proc>]
+
+       -args <string>
+
+       Supports argument validation within a Tcl procedure and enables the use
+       of the -help option to view the help information  associated  with  the
+       procedure.
+
+       Procedures using the parse_proc_arguments command will validate the ar-
+       guments.  If the required arguments are missing or have invalid values,
+       the parse_proc_arguments command generates a Tcl error and the  calling
+       procedure terminates.
+
+       The  parse_proc_arguments  command  must be the first command called in
+       the procedure. This command cannot be used outside of a procedure.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -args <string>
+              Specifies the list of arguments passed to the Tcl procedure.
+
+              Data_type: string, required
+
+       <result_array>
+              Specifies the result array into which the parsed  arguments  are
+              to be stored.
+
+              Data_type: string, required
+
+       <forced_proc>
+              Specifies the name of the invoking procedure.
+
+              Data_type: string, optional
+
+Examples
+       The  following  Tcl procedure uses the parse_proc_arguments command for
+       argument validation.
+
+       proc cmdProc {args} {
+
+        parse_proc_arguments -args $args results
+
+        foreach argname [array names results] {
+
+        puts "$argname = $results($argname)"
+
+        }
+
+       }
+
+       define_proc_arguments cmdProc -info "Command Description" \
+
+        -define_args \
+
+        {{-string "String help" "string_val" string optional}
+
+        {-integer "Int help" "int_value" int optional}
+
+        {-list "List help" "list_value" list {optional bind_option -Bool}}
+
+        {-boolean_a "BoolA help" "" boolean  {optional  mutual_exclusive_group
+       g0}}
+
+        {-boolean_b  "BoolB  help" "" boolean {optional mutual_exclusive_group
+       g0}}
+
+        {-float_num "Float help" "float_value" float}
+
+        {-oosa "One of StringA  help"  "one_of_str_value"  one_of_string  {op-
+       tional value_help {values {v1 v2}}}}
+
+        {-oosb  "One  of  StringB  help" "one_of_str_value" one_of_string {op-
+       tional {values {v4 v5}}}}
+
+       }
+
+       Now, if the cmdProc procedure is invoked using the following command at
+       the command prompt, argument validation takes place and  the  following
+       errors are reported.
+
+       innovus> cmdProc -boolean_a -boolean_b
+
+       **ERROR:  Options  '-boolean_a  -boolean_b'  are mutually exclusive for
+       'cmdProc'.
+
+       Usage:  cmdProc  [-string  string_val]  [-integer   int_value]   [-list
+       list_value] [-boolean_a ]
+
+       [-boolean_b  ]  [-float_num float_value] [-oosa one_of_str_value {v1 v2
+       }] [-oosb one_of_str_value]]
+
+       **ERROR: Errors in 'cmdProc'.
+
+       The following command to invoke the cmdProc procedure will also  return
+       the errors shown below.
+
+       innovus> cmdProc -oosa v5
+
+       **ERROR:   The arguments specified (v5) in cmdProc -oosa are not valid.
+       Refer to the documentation for valid arguments.
+
+       Usage:  cmdProc  [-string  string_val]  [-integer   int_value]   [-list
+       list_value] [-boolean_a ]
+
+       [-boolean_b  ]  [-float_num float_value] [-oosa one_of_str_value {v1 v2
+       }] [-oosb one_of_str_value]]
+
+       **ERROR: Errors in 'cmdProc'.
+
+                           Fri Apr 04 01:25:37 2025parse_proc_arguments(25.10)

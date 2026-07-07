@@ -1,0 +1,236 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_aocv_derate(25.10)                            report_aocv_derate(25.10)
+
+Name
+       report_aocv_derate  -  Reports  the  AOCV derating tables from AOCV li-
+       braries
+
+Syntax
+       report_aocv_derate
+
+       [-help]
+
+       [-check_global_derating]
+
+       [-clock]
+
+       [-data]
+
+       -file <<string>>
+
+       [-list_cell_not_annotated]
+
+       [-mesh]
+
+       [-voltage <<float>>]
+
+       [-design | -cell <<string>> ]
+
+       [{-delay_corner <<string>> [-power_domain <<string>>] } | -max | -min ]
+
+       [-early | -late]
+
+       [-rise | -fall]
+
+       Reports the AOCV derating tables from AOCV libraries. The command  gen-
+       erates the output report in AOCV library format.
+
+Parameters
+       -help  Prints out command usage.
+
+       -cell <string>
+              Reports  the  table for the specified library cell name. You can
+              specify a  regular  expression  corresponding  to  library  cell
+              names.
+
+       -check_global_derating
+              Reports the list of cells for which derating table or global de-
+              rating table was not specified.
+
+       -clock Reports derate tables read for clock paths.
+
+       -delay_corner <string>
+              Reports the derating tables from the specified delay corner.
+
+              For  a MMMC design, if a delay corner specific table is read us-
+              ing the create_library_set -aocv command, that derating table is
+              reported. Otherwise the default table is reported.
+
+              For a non-MMMC design, no details are reported.
+
+              The -delay_corner and -min/-max parameters are  mutually  exclu-
+              sive.
+
+       -data  Reports derate tables read for data paths.
+
+       -design
+              Reports the default cell or net derating tables.
+
+       -early | -late
+              Reports the early/late derating table.
+
+       -file <string>
+              Reports all the derating tables. This parameter is mandatory.
+
+       -list_cell_not_annotated
+              Reports the list of cells for which derating table is not speci-
+              fied.
+
+              This  parameter  reports  an error when specified with -voltage,
+              -design, or -cell parameters.
+
+       -max   Reports derate tables from max AOCV libraries.
+
+       -mesh  Reports derate tables read for mesh.
+
+       -min   Reports derate tables from min AOCV libraries.
+
+       -power_domain <string>
+              Reports derate tables from the specified power domain.
+
+              This option should always be specified with delay corner.
+
+       -rise | -fall
+              Reports the rise/fall table for specified transition.
+
+       -voltage <float>
+              Reports derating tables for the specified voltage value.
+
+Examples
+       Here are some examples.
+
+              * The following command reports derating tables for  the  speci-
+                fied cells:
+
+                 report_aocv_derate  -cell  "BUF"  -delay_corner  default_emu-
+                late_delay_corner -file report.lib
+
+                #content of file "report.lib" :
+
+                Cell BUF
+
+                LATE-DATA-RISE
+
+                Stage 1.000000 2.000000 3.000000  4.000000  5.000000  8.000000
+                9.000000 18.000000 19.000000
+
+                1.180000 1.160000 1.140000 1.120000 1.100000 1.080000 1.060000
+                1.040000 1.020000
+
+                Cell BUF
+
+                LATE-DATA-FALL
+
+                Stage  1.000000  2.000000  3.000000 4.000000 5.000000 8.000000
+                9.000000 18.000000 19.000000
+
+                1.180000 1.160000 1.140000 1.120000 1.100000 1.080000 1.060000
+                1.040000 1.020000
+
+                Cell BUF
+
+                LATE-CLOCK-RISE
+
+                Stage 1.000000 2.000000 3.000000  4.000000  5.000000  8.000000
+                9.000000 18.000000 19.000000
+
+                1.180000 1.160000 1.140000 1.120000 1.100000 1.080000 1.060000
+                1.040000 1.020000
+
+                Cell BUF
+
+                LATE-CLOCK-FALL
+
+                Stage  1.000000  2.000000  3.000000 4.000000 5.000000 8.000000
+                9.000000 18.000000 19.000000
+
+                1.180000 1.160000 1.140000 1.120000 1.100000 1.080000 1.060000
+                1.040000 1.020000
+
+              *
+
+                The following command reports derating tables for the cells:
+
+                 report_aocv_derate -clock -file aocv_clock_derate.rpt
+
+                Cell AN2D1
+
+                EARLY-CLOCK-RISE
+
+                Stage 1.000000 2.000000 3.000000  4.000000  5.000000  6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.70000  0.850000 0.880000 0.890000 0.900000 0.910000 0.920000
+                0.9200000 0.930000 0.935000
+
+                Cell AN2D1
+
+                EARLY-CLOCK-FALL
+
+                Stage 1.000000 2.000000 3.000000  4.000000  5.000000  6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.760090 0.830010 0.860060 0.880300 0.890200 0.901000 0.902000
+                0.910000 0.920000 0.9202594
+
+                Cell BUFF
+
+                EARLY-CLOCK-RISE
+
+                Stage  1.000000  2.000000  3.000000 4.000000 5.000000 6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.842000 0.888258 0.908854 0.921954 0.929953 0.935137 0.940946
+                0.944305 0.942031 0.959500
+
+                Cell BUFF
+
+                EARLY-CLOCK-FALL
+
+                Stage 1.000000 2.000000 3.000000  4.000000  5.000000  6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.739532 0.810305 0.840208 0.861346 0.880605 0.899462 0.903028
+                0.900408 0.912154 0.916708
+
+                *  The following command reports derating tables for the cells
+                in delay corner in mesh
+
+                report_aocv_derate -mesh -delay_corner  dc_125c_rcworst  -file
+                aocv_clock_delay_corner_dc_125c_rcworst.rpt
+
+                Cell AN2D1
+
+                EARLY-MESH-RISE
+
+                Cell AN2D1
+
+                EARLY-MESH-FALL
+
+                Stage  1.000000  2.000000  3.000000 4.000000 5.000000 6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.739532 0.810305 0.840208 0.861346 0.880605 0.899462 0.903028
+                0.900408 0.912154 0.916708
+
+                Cell AN2D1
+
+                LATE-MESH-RISE
+
+                Stage 1.000000 2.000000 3.000000  4.000000  5.000000  6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.842000 0.888258 0.908854 0.921954 0.929953 0.935137 0.940946
+                0.944305 0.942031 0.959500
+
+                Cell AN2D1
+
+                LATE-MESH-FALL
+
+                Stage  1.000000  2.000000  3.000000 4.000000 5.000000 6.000000
+                7.000000 8.000000 9.000000 10.000000
+
+                0.842000 0.888258 0.908854 0.921954 0.929953 0.935137 0.940946
+                0.944305 0.942031 0.959500
+
+                           Fri Apr 04 01:25:37 2025  report_aocv_derate(25.10)

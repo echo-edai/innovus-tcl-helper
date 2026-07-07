@@ -1,0 +1,57 @@
+{
+  "command": "set_voltage_regulator_module",
+  "is_cmd": true,
+  "summary": "设置电压调节器模块，用于启用Vreg流程并分析电压调节器效应",
+  "description": "该命令用于配置电压调节器模块（VRM），以支持电压调节器效应分析。在使用analyze_rail命令前必须指定此命令。它允许用户定义VRM的SPICE网表、子电路名称、电源/地引脚映射以及相关的DEF组件列表。",
+  "usage": "set_voltage_regulator_module -component_list {<VRM_DEF_component_list>} -ground_pin_mapping {{<spice_pin_name>[<DEF_net_name>]}+} -input_pwr_pin_mapping {{<spice_pin_name>[<DEF_net_name>]}+} -name <vrm_name> -netlist <vrm_spice_netlist_file_name> -output_pwr_pin_mapping {{<spice_pin_name>[<DEF_net_name>]}+} -reset -subckt_name <vrm_subckt_name>",
+  "options": [
+    {
+      "name": "-component_list",
+      "description": "指定组成VRM的DEF实例名称列表。如果未指定，则假定VRM在芯片上表示为单个宏。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ground_pin_mapping",
+      "description": "指定SPICE网表中地引脚名称与对应DEF网络名称之间的映射。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-input_pwr_pin_mapping",
+      "description": "指定SPICE网表中输入电源引脚名称与对应DEF网络名称之间的映射。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-name",
+      "description": "指定分配给电压调节器的VRM名称，设计中的每个电压调节器都需要此参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-netlist",
+      "description": "指定VRM的SPICE格式网表文件，该文件应封装在单个子电路中，并包括每个电压调节器的SPICE模型和测试平台。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-output_pwr_pin_mapping",
+      "description": "指定SPICE网表中输出电源引脚名称与对应DEF网络名称之间的映射。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有指定参数重置为默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-subckt_name",
+      "description": "指定与VRM对应的子电路名称。当SPICE网表有多个子电路定义时使用此参数；如果未指定，则使用网表文件中的第一个子电路。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

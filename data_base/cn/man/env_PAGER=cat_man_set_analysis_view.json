@@ -1,0 +1,57 @@
+{
+  "command": "set_analysis_view",
+  "is_cmd": true,
+  "summary": "定义用于建立时间和保持时间分析及优化的分析视图",
+  "description": "此命令用于定义在建立时间（setup）和保持时间（hold）分析及优化过程中使用的分析视图。用户必须至少定义一个建立时间视图和一个保持时间视图。这些“活动”视图代表了将被分析的不同设计变体，可以在整个流程中更改以利用不同的视图子集。系统会加载支持所选活动视图集所需的库和数据。执行此命令将引发完整的时间重置，导致所有互连寄生参数、延迟和时间裕量被重新计算。指定视图的顺序很重要，默认情况下，-setup和-hold列表中定义的第一个视图是默认视图。默认视图有两个用途：1) 提供设计初始化过程中使用的库数据；2) 向不支持多模式多角（MMMC）的应用程序部分指示在特定分析步骤中使用哪个视图的信息（通常默认视图是第一个建立时间或保持时间视图）。使用set_default_view命令可以将默认视图更改为任何当前活动的视图，而不会引发时间重置。每次调用此命令都必须包含分析所需的所有活动视图的完整规范，它不会以增量方式工作。",
+  "usage": "set_analysis_view [-help] [-drv <string>] [-dynamic <string>] -hold <list_of_views> [-inactive <string>] [-leakage <string>] -setup <list_of_views> [-update_timing]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drv",
+      "description": "为DRV（设计规则检查）分析选择特定视图，例如最大转换时间和最大电容检查。指定此参数可为DRV分析指定额外的分析视图，使计时系统能高效计算这些检查所需的数据。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dynamic",
+      "description": "将视图设置为动态视图。需要延迟计算来提供转换时间，但如果延迟角仅用于动态功耗，则延迟计算不应执行信号完整性分析。计时器不需要传播所需时间或执行裕量计算。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hold",
+      "description": "设置用于保持时间分析的活动视图。",
+      "required": true,
+      "type": "list_of_views"
+    },
+    {
+      "name": "-inactive",
+      "description": "将视图设置为不参与时序分析的非活动视图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leakage",
+      "description": "将视图设置为泄漏视图。如果尚未使用，必须加载时序库。需要计时器常量传播，但不需要延迟计算。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-setup",
+      "description": "设置用于建立时间分析的活动视图。",
+      "required": true,
+      "type": "list_of_views"
+    },
+    {
+      "name": "-update_timing",
+      "description": "重新加载由MMMC视图和模式对象描述的配置。当全局变量 timing_defer_mmmc_object_updates 设置为 true 时，需要此参数来更新MMMC时序环境。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

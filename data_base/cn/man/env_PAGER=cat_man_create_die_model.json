@@ -1,0 +1,159 @@
+{
+  "command": "create_die_model",
+  "is_cmd": true,
+  "summary": "生成一个简化的n端口裸片模型，用于系统级分析。",
+  "description": "该命令用于生成一个简化的n端口裸片模型，其形式为等效的裸片寄生参数和经过电源轨分析后的电流曲线。该模型可与提取的封装和电路板模型一起进行系统级分析（如谐振和电磁干扰分析），适用于Allegro Package Design和Sigrity等封装设计软件。执行此命令需要VTS-XL许可证。",
+  "usage": "create_die_model [-accuracy {xd | hd }] [-output_directory <directory_name>] -state_directory <directory_name> [-rail_analysis_domain <domain_name> | -net <net_name>] [-repeat <time>] [-probing_node_file <file_name>] [-use_sigrity_repeat] [-max_ports_per_net <integer>] [-enable_reference_node] [-enable_package_pin_map { true|false }] [-disable_isrc_node_zero { true|false }] [-disable_global_node_zero { true|false }] [-multi_die {true | false}] [-port_grouping_by_ploc_files { true|false }] [-port_grouping_file<filename>] [-temp_directory_name <directory>] [-effective_rc] [-probing_region_file<filename>] [-effective_rc_deck] [-port_grouping_tiles_file  <filename>] [-enable_xp {true | false}] [-ignore_port_grouping_conflict] [-generate_sipi_port_definition_file {true | false}] [-grid_reduction_cut_layer <layer_name>]",
+  "options": [
+    {
+      "name": "-accuracy",
+      "description": "指定裸片模型生成的精度模式。xd为加速定义模式，速度更快但RC精度略有降低；hd为高精度模式，精度最高。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_directory",
+      "description": "指定保存裸片模型文件的目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-state_directory",
+      "description": "指定由静态或动态IR压降分析生成的顶级状态目录。此目录包含与电源域相关的所有网络的分析结果。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-rail_analysis_domain",
+      "description": "指定要为其生成裸片模型的电源域名称。指定后，将生成包含该域所有电源和地网络的耦合裸片模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要为其生成裸片模型的网络名称。指定后，将为该网络生成解耦裸片模型。使用前需用set_pg_nets命令指定电源网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-repeat",
+      "description": "指定重复时间（单位：纳秒）。与-use_sigrity_repeat一起使用时，该值表示重复波形的起始点。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-probing_node_file",
+      "description": "指定包含裸片上探测点的探测节点文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_sigrity_repeat",
+      "description": "与-repeat参数一起使用时，强制以Sigrity特定格式写出重复波形。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max_ports_per_net",
+      "description": "指定生成裸片模型中每个网络允许的最大端口数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-enable_reference_node",
+      "description": "指定在生成的裸片模型中用参考端口替换全局零节点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enable_package_pin_map",
+      "description": "指定支持6列MCP格式，以将封装引脚映射到电路端口。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-disable_isrc_node_zero",
+      "description": "指定在生成的裸片模型中禁用电流源（isrc）的零节点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-disable_global_node_zero",
+      "description": "指定在生成的裸片模型中禁用全局零节点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-multi_die",
+      "description": "指定为TSV/SiP设计生成完整的裸片模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-port_grouping_by_ploc_files",
+      "description": "指定从用户定义的PLOC文件中读取PLOC组信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-port_grouping_file",
+      "description": "指定包含用户定义的引脚分组详细信息的文本文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-temp_directory_name",
+      "description": "指定用于保存裸片模型生成临时文件的目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-effective_rc",
+      "description": "生成包含有效电阻和电容信息的额外报告文件（.txt）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-probing_region_file",
+      "description": "指定探测节点区域文件，用于定义探测区域并将区域内所有点用作裸片上的探测接触点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-effective_rc_deck",
+      "description": "指定在Spice（.sp）格式的裸片模型频域仿真设置中包含Rdie/Cdie（有效电阻/电容）计算。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port_grouping_tiles_file",
+      "description": "指定按用户定义的瓦片阵列对电源地端口进行分组。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_xp",
+      "description": "指定以广泛并行（XP）模式生成裸片模型，处理分布在大量机器上。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignore_port_grouping_conflict",
+      "description": "指定当用户定义的端口分组与默认端口组（映射到同一封装端子的电压源）冲突时不生成错误消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_sipi_port_definition_file",
+      "description": "在裸片模型创建过程中生成端口定义文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-grid_reduction_cut_layer",
+      "description": "指定一个切割通孔层，该层以下的所有层将被简化。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

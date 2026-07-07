@@ -1,0 +1,107 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_fanin(25.10)                                        report_fanin(25.10)
+
+Name
+       report_fanin  -  Allows a cone traversal that is not tied to the timing
+       graph, that is, not blocked by set_disable_timing and case analysis
+
+Syntax
+       report_fanin
+
+       -to <pin_port_net_list>
+
+       [-trace_through {case_disable | user_disable | all}]
+
+       [-pin_levels <numOfPinLevels>]
+
+       [-view <viewName>]
+
+       [-nosplit]
+
+       [{> | >> } <filename>]
+
+       Allows a cone traversal that is not tied to the timing graph, that  is,
+       not  blocked  by  set_disable_timing and case analysis. By default, the
+       trace matches the timing view  and  the  reports  generated  using  the
+       all_fanin  and  all_fanout  commands. The reports indicate whether dis-
+       abled or case analysis arcs were traversed.
+
+Parameters
+       > | >> <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+       -nosplit
+              Specifies  that  reports  with long names will not be split into
+              multiple lines.
+
+              Note: You should use the -nosplit parameter after specifying the
+              set_table_style -no_frame_fix_width parameter.
+
+       -pin_levels <numOfPinLevels>
+              Specifies the desired depth of the output.
+
+       -trace_through {case_disable | user_disable | all}
+              Allows traversal through disabled arcs. You can specify  one  of
+              the following options:
+
+              * case_disable:    Arcs    which   are   disabled   because   of
+                set_case_analysis  are  traversed  but  because  of   set_dis-
+                able_timing are not traversed
+
+              * user_disable:  Arcs disabled because of set_disable_timing are
+                traversed but because of set_case_analysis are not traversed
+
+              * all: Trace through all arcs
+
+       -to <pin_port_net_list>
+              Specifies a list or collection of pins, ports, or nets. A  mixed
+              list or heterogeneous collection is also allowed.
+
+       -view <viewName>
+              Specifies disabled arcs in the specified view.
+
+Examples
+              *
+
+                * The  report_fanin  -to h0/A command shows the following out-
+                  put:
+
+                  Fanin Network for Pin: h0/A
+
+                  -----------------------------------------------------------------------------
+
+                  Source Pin    Sink Pin     Cell Type    Timing  Sense    Arc
+                  Case
+
+                                                                         Dis-
+                  abled     Analysis
+
+                  -----------------------------------------------------------------------------
+
+       u1/Y          h0/A         (net)         -                -         -
+
+       --------------------------------------------------------------------------
+
+       u1/A          u1/Y          BUFX2        positive_unate    -        -
+
+       --------------------------------------------------------------------------
+
+       in            u1/A          (net)         -                -        -
+
+       --------------------------------------------------------------------------
+
+Related Information
+              * set_disable_timing
+
+              * set_case_analysis
+
+              * all_fanin
+
+              * all_fanout
+
+                           Fri Apr 04 01:25:37 2025        report_fanin(25.10)

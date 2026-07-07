@@ -1,0 +1,57 @@
+{
+  "command": "analyze_ir_paths",
+  "is_cmd": true,
+  "summary": "为Tempus PI分析生成物理感知的多周期开关活动文件",
+  "description": "生成一个物理感知的多周期开关活动文件，其中包含设计中电压敏感路径和时序关键路径的翻转信息，用于Tempus Power Integrity分析。该命令在运行目录中生成 `swsrc.txt` 文件，随后可通过 read_activity_file 命令反馈给软件使用。",
+  "usage": "analyze_ir_paths [-help] -clock_period <float> [-hierarchical_activity_file <string>] [-max_slack <float>] [-pre_simulation_period <float>] -seq_activity <float> -simulation_period <float> [-user_defined_critical_paths <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock_period",
+      "description": "指定设计中主时钟的周期（以库时间单位表示）。Tempus PI参考此指定的周期来生成多周期活动。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-hierarchical_activity_file",
+      "description": "为设计中的多个分区提供不同的时序活动机制。需要遵循特定格式：<分层实例名> <活动值>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_slack",
+      "description": "指定最大裕量限制（以库时间单位表示），超过此限制的时序路径将不被考虑用于活动生成。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pre_simulation_period",
+      "description": "指定预仿真持续时间，Tempus PI将使用该时间进行活动生成。当使用set_package命令读入封装模型信息时，此参数有助于让封装振荡稳定下来。注意：指定的值必须与set_rail_analysis_mode -record_results_start_time设置中指定的值匹配。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-seq_activity",
+      "description": "指定设计中时序端点的活动值。此值将用于控制每个周期中IR敏感路径及其扇出锥的翻转数量。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-simulation_period",
+      "description": "指定Tempus PI动态功耗分析将使用的仿真周期（以库时间单位表示）。仿真周期越长，分析中覆盖的路径就越多。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-user_defined_critical_paths",
+      "description": "指定一个时序路径集合，这些路径在生成Tempus PI活动时将被优先考虑进行翻转。当设计者事先知道某些可能同时翻转并可能导致IR引起的STA违规的时序路径时，此功能非常有用。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

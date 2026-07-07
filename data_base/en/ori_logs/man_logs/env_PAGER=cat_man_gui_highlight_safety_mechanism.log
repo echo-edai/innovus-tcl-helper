@@ -1,0 +1,246 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+gui_highlight_safety_mechanism(25.10)    gui_highlight_safety_mechanism(25.10)
+
+Name
+       gui_highlight_safety_mechanism  -  Highlights  safety-related instances
+       and groups based on the specified parameters
+
+Syntax
+       gui_highlight_safety_mechanism
+
+       [-help]
+
+       {[-dcls {insts nets_internal nets_interface nets_common nets_top}
+
+         | -tmr {parents clones voters}
+
+         | -ser {insts}]}
+
+       [-color <string> | -auto_color ]
+
+       [-group <group_name>
+
+         [-exclusive_groups ]]
+
+       [-dcls {insts nets_internal nets_interface nets_common nets_top}
+
+         [-group <group_name>]]
+
+       [-tmr {parents clones voters}
+
+         [-inst <inst_name>]]
+
+       Highlights safety-related instances and groups based on  the  specified
+       parameters.  One,  and  only  one,  of the following parameters must be
+       specified with the command, depending on whether you want to  highlight
+       the  safety  features  of Dual Core Lock Step (DCLS) groups, Soft Error
+       Resilience (SER) instances, or  Triple  Modular  Redundancy  (TMR)  in-
+       stances:
+
+              * -dcls
+
+              * -ser
+
+              * -tmr
+
+       The gui_highlight_safety_mechanism command can be used only after a USF
+       file  has been loaded. If this command is run before the safety flow is
+       enabled, the tool gives the following error:
+
+       **ERROR: (IMPGUI-3009): The safety flow is not enabled
+
+Parameters
+       -help  Prints a brief description of the gui_highlight_safety_mechanism
+              command.
+
+              For a detailed description of the command, use the man  command:
+              man gui_highlight_safety_mechanism.
+
+       -auto_color
+              Specifies  that  the highlight colors should be picked automati-
+              cally.
+
+              If -auto_color is specified with -dcls, the tool:
+
+              * Highlights the instances, internal nets, and interface nets of
+                a single group in the same color.
+
+              * Uses a different color for every group and for  top-level  and
+                common nets.
+
+              If -auto_color is specified with -tmr, the tool:
+
+              * Highlights all parents in the same color.
+
+              * Highlights all clones in a second color.
+
+              * Highlights all voters in a third color.
+
+              If neither -auto_color nor -color is specified, the tool behaves
+              as if -auto_color is specified.
+
+              Data_type: bool, optional
+
+       -color <color_name>
+              Specifies  the  color  to be used for highlighting the specified
+              safety mechanisms.
+
+              If -color is not specified, the tool picks a  random  color  for
+              highlighting.
+
+              Data_type: string, optional
+
+       -dcls {insts nets_internal nets_interface nets_common nets_top}
+              Highlights  the instances and nets of DCLS groups, as specified.
+              You can specify one or more  of  the  following  arguments  with
+              -dcls:
+
+              * insts  - Highlights the group region in the Floorplan view and
+                its instances in the Physical view:
+
+                * If -group is not specified, highlights all the  DCLS  groups
+                  in the design.
+
+                * If  -group  is  specified,  highlights  only  that specified
+                  group.
+
+              * nets_internal - Highlights the internal nets:
+
+                * If -group is not specified, highlights the internal nets  of
+                  all the DCLS groups in the design.
+
+                * If -group is specified, highlights the internal nets of only
+                  that specified group.
+
+              * nets_interface - Highlights the interface nets:
+
+                * If -group is not specified, highlights the interface nets of
+                  all the DCLS groups in the design.
+
+                * If  -group  is  specified, highlights the interface  nets of
+                  only that specified group.
+
+              * nets_common - Highlights the common nets:
+
+                * If -group is not specified, highlights the  common  nets  of
+                  all the DCLS groups in the design.
+
+                * If  -group  is specified, highlights the common nets of only
+                  that specified group.
+
+              * nets_top - Highlights all the top nets:
+
+                * This argument is valid only if -group is not specified.
+
+              The -tmr and -ser parameters are mutually exclusive with -dcls.
+
+              Data_type: enum_list, required
+
+       -exclusive_groups
+              Highlights the safety features of the exclusive  groups  of  the
+              DCLS  group  specified with -group. The same safety features are
+              highlighted for both the group specified with -group and for its
+              exclusive groups. For example, if -dcls {insts nets_internal} is
+              specified with -group group_A1,  the  tool  highlights  the  in-
+              stances and internal nets of group_A1 and its exclusive groups.
+
+              This option is valid only if -dcls and -group are specified.
+
+              Data_type: bool, optional
+
+       -group <group_name>
+              Highlights the safety features of only the specified DCLS group.
+
+              This  option  is  valid  only if -dcls is specified. If -dcls is
+              specified without -group, the tool highlights  the  features  of
+              all the DCLS groups in the design.
+
+              Data_type: string, optional
+
+       -inst <inst_name>
+              Highlights  the  safety  features  of only the specified TMR in-
+              stance.
+
+              This option is valid only if -tmr is specified. If -tmr is spec-
+              ified without -inst, the tool highlights the features of all the
+              TMR instances.
+
+              Data_type: string, optional
+
+       -ser {insts}
+              Highlights all SER instances.
+
+              Data_type: enum, required
+
+       -tmr {parents clones voters}
+              Highlights TMR parents, clones, or voters,  as  specified.   You
+              can specify one or more of the following arguments with -tmr:
+
+              * parents - Highlights TMR parents:
+
+                * If -inst is not specified, highlights all the TMR parents.
+
+                * If  -inst is specified, highlights only the TMR parent asso-
+                  ciated with the specified instance.
+
+              * clones - Highlights TMR clones:
+
+                * If -inst is not specified, highlights all the TMR clones.
+
+                * If -inst is specified, highlights only the TMR clones  asso-
+                  ciated with the specified instance.
+
+              * voters - Highlights TMR voters:
+
+                * If -inst is not specified, highlights all the TMR voters.
+
+                * If  -inst is specified, highlights only the TMR voters asso-
+                  ciated with the specified instance.
+
+              Data_type: enum_list, required
+
+Examples
+              * The following command highlights all DCLS groups in red:
+
+                gui_highlight_safety_mechanism -dcls {insts} -color red
+
+              * The following command highlights the internal nets of  group_A
+                in blue:
+
+                gui_highlight_safety_mechanism  -group group_A -dcls {nets_in-
+                ternal} -color blue
+
+              * The following command highlights the instances and routing  of
+                group_A and that of its exclusive group, group_B, in different
+                colors:
+
+                gui_highlight_safety_mechanism  -group  group_A  -dcls  {insts
+                nets_internal nets_interface} -exclusive_groups -auto_color
+
+              * The following command highlights all TMR parent flops  in  the
+                design in red:
+
+                gui_highlight_safety_mechanism -tmr {parents} -color red
+
+              * The  following command highlights all TMR parents, clones, and
+                voting logic in the design in different colors:
+
+                gui_highlight_safety_mechanism -tmr  {parents  clones  voters}
+                -auto_color
+
+              * The  following  command  highlights all clones of the tmr_inst
+                instance in blue:
+
+                gui_highlight_safety_mechanism -inst  tmr_inst  -tmr  {clones}
+                -color blue
+
+Related Information
+              * check_safety_mechanism
+
+              * gui_clear_highlight_safety_mechanism
+
+              * read_usf
+
+              * Implementing Safety Mechanisms with Innovus
+
+                           Fri Apr 04 01:2g5u:i3_7hi2g0h2l5ight_safety_mechanism(25.10)

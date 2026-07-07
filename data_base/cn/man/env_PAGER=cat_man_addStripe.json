@@ -1,0 +1,297 @@
+{
+  "command": "addStripe",
+  "is_cmd": true,
+  "summary": "在指定区域内创建电源条带",
+  "description": "该命令用于在指定的设计区域内创建电源条带。如果布线器遇到障碍物，条带会连接到同一网络上的最后一个条带。否则，条带会在核心行边界处停止。此命令应在创建初始布局规划后使用。支持多线程模式生成条带，但某些选项会内部禁用多线程。",
+  "usage": "addStripe [-help] [-all_blocks {0 | 1}] [-area {{<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}] [-area_blockage {{<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}] [-between_bumps {0 | 1}] [-block_ring_bottom_layer_limit <layer>] [-block_ring_top_layer_limit <layer>] [-create_pins {0 | 1}] [-direction {horizontal | vertical}] [-extend_to {design_boundary | first_padring | last_padring | all_domains}] [-insts <instance_name>] [-layer <layer>] [-master <master_cell>] [-max_same_layer_jog_length <real_value>] [-merge_stripes_value {auto | value}] [-narrow_channel {0 | 1}] [-nets {list_of_nets}] [-number_of_sets <integer_value>] [-over_bumps {0 | 1}] [-over_physical_pins {0 | 1}] [-over_pins {0 | 1}] [-over_power_domain {0 | 1}] [-padcore_ring_bottom_layer_limit <layer>] [-padcore_ring_top_layer_limit <layer>] [-pin_layer <layer>] [-pin_offset <real_value>] [-pin_width {<min_value max_value>}] [-power_domains <domain_name>] [-report_cut_stripe <filename>] [-same_layer_target_only {0 | 1}] [-set_to_set_distance <real_value>] [-snap_wire_center_to_grid {None | Grid | Mask1_Grid | Mask2_Grid | Half_Grid | Either} [-allow_snapping_override_custom_spacing {0 | 1}]] [-spacing <name_or_value>] [-start <real_value>] [-stapling {length | auto {offset layer1_pitch:n | reference_layer1 [reference_layer2]}}] [-start_from {left | right | bottom | top}] [-start_offset <real_value>] [-stop <real_value>] [-stop_offset <real_value>] [-switch_layer_over_obs {0 | 1}] [-uda <subclass_string>] [-use_interleaving_wire_group {0 | 1}] [-use_wire_group {-1 | 0 | 1}] [-use_wire_group_bits <integer_value>] [-via_rows <integer>] [-via_columns <integer>] [-width <name_or_value>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 addStripe 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-all_blocks",
+      "description": "指定是否在所有模块上生成条带。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-area",
+      "description": "指定必须创建条带的设计区域坐标。支持矩形和多边形（直线）区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-area_blockage",
+      "description": "指定限制添加任何条带的阻塞区域坐标。支持矩形和直线区域阻塞。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-between_bumps",
+      "description": "指定是否在凸块之间生成条带。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-block_ring_bottom_layer_limit",
+      "description": "指定条带在遇到模块环时可以切换到的最高层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_ring_top_layer_limit",
+      "description": "指定条带在遇到模块环时可以切换到的最高层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_pins",
+      "description": "如果设置为1，则为每个条带创建IO引脚。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-direction",
+      "description": "设置条带的方向（水平或垂直）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extend_to",
+      "description": "指定条带的边界：设计边界、第一个焊盘环、最后一个焊盘环或所有电源域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-insts",
+      "description": "指定用于生成电源条带的实例名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定要在其中创建条带的层名称。一次只能在一个层上创建条带。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-master",
+      "description": "指定应在其上生成条带的标准单元（或模块）主单元的实例。支持正则表达式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_same_layer_jog_length",
+      "description": "指定条带在同一层上可以绕行的最大长度（微米），超过此长度将切换到相邻层。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-merge_stripes_value",
+      "description": "如果条带与附近模块环之间的阈值间距小于指定值（微米），则合并条带。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-narrow_channel",
+      "description": "在狭窄通道区域生成条带，以向该通道中的标准单元供电。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要为其创建条带的网络名称列表。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-number_of_sets",
+      "description": "指定要创建的条带集的数量。必须指定此参数或 -set_to_set_distance 参数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-over_bumps",
+      "description": "指定是否在凸块上生成条带。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-over_physical_pins",
+      "description": "在物理引脚上添加条带以检测物理电源/地端子并继续添加条带。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-over_pins",
+      "description": "指定是否在标准单元或模块的电源/地引脚上生成条带。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-over_power_domain",
+      "description": "如果设置为1，仅在电源域边界或软模块围栏内添加条带。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-padcore_ring_bottom_layer_limit",
+      "description": "指定条带在遇到焊盘或核心环时可以切换到的最高层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padcore_ring_top_layer_limit",
+      "description": "指定条带在遇到焊盘或核心环时可以切换到的最高层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_layer",
+      "description": "指定生成条带的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_offset",
+      "description": "将条带从引脚边缘偏移指定距离以连接阱接触单元。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-pin_width",
+      "description": "为 -over_pins 或 -over_physical_pins 指定最小和最大引脚宽度的范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_domains",
+      "description": "指定用于生成电源条带的电源域名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report_cut_stripe",
+      "description": "将有关切割条带的信息保存在DRC文件中，以识别因用户设置而被移除/切割的电源条带。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-same_layer_target_only",
+      "description": "指定仅连接到同一层上的重叠目标。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-set_to_set_distance",
+      "description": "指定从一个集的参考条带到下一个集的参考条带的距离（间距）。必须指定此参数或 -number_of_sets 参数。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-snap_wire_center_to_grid",
+      "description": "控制条带中心的捕捉。选项包括：无、网格、Mask1_Grid、Mask2_Grid、Half_Grid 或 Either。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-allow_snapping_override_custom_spacing",
+      "description": "当设置为1时，允许条带捕捉覆盖指定的间距到最近的轨道。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定每个集中条带之间的间隙宽度。可以为每对条带指定不同的间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-start",
+      "description": "添加条带的起始坐标。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-stapling",
+      "description": "启用钉扎条带生成功能并控制钉扎模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-start_from",
+      "description": "指定条带生成的起始方向：底部、顶部、左侧或右侧。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-start_offset",
+      "description": "指定从条带生成区域的适当边界到第一条条带最近边缘的起始偏移值。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-stop",
+      "description": "添加条带的区域的停止坐标。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-stop_offset",
+      "description": "指定从条带生成区域的适当边界的停止偏移值。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-switch_layer_over_obs",
+      "description": "指定切换层是否放置在障碍物上。控制条带是否切换层、在模块上布线，然后继续在原始层上。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-uda",
+      "description": "显示附加到每个创建的条带段的用户定义属性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_interleaving_wire_group",
+      "description": "如果设置为1，即使被不同网络的导线分隔，也会将同一网络的多个导线连接在一起。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group",
+      "description": "如果设置为1，将同一网络的导线连接在一起。如果设置为-1，则不会更新或创建导线组属性。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group_bits",
+      "description": "指定要包含在导线组中的网络数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_rows",
+      "description": "指定电源通孔（堆叠和非堆叠）中的行切割数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_columns",
+      "description": "指定电源通孔（堆叠和非堆叠）中的列切割数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-width",
+      "description": "指定条带的宽度。可以为集中的每个网络指定不同的宽度。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

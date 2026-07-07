@@ -1,0 +1,433 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+definePartition(25.10)                                  definePartition(25.10)
+
+Name
+       definePartition - Defines a new partition corresponding to a hierarchi-
+       cal instance
+
+Syntax
+          definePartition
+
+       [-help]
+
+       [-coreSpacing {left right top bottom}]
+
+       [-minPitchBottom <x>]
+
+       [-minPitchLeft <x>]
+
+       [-minPitchRight <x>]
+
+       [-minPitchTop <x>]
+
+       [-pinLayerBottom {<list_of_layers>}]
+
+       [-pinLayerLeft {<list_of_layers>}]
+
+       [-pinLayerRight {l<list_of_layers>}]
+
+       [-pinLayerTop {l<list_of_layers>}]
+
+       [-placementHalo {<left right top bottom> }]
+
+       [-railwidth <railWidth>]
+
+       [-reservedLayer {<list_of_layers>}]
+
+       [-routingHalo <floatValue>]
+
+       [-routingHaloBottomLayer <integerValue>]
+
+       [-routingHaloTopLayer <integerValue>]
+
+       [-stdCellHeight <x>]
+
+       {-hinst <string> | -proto {master_hinst_name_list} | -cell <cellName>}
+
+       [-checkCloneAlignment ]
+
+       [-hinst <hInstName> [-copyFrom <refPtnName>]]
+
+       [-cell <cellName> [-copyFrom <refPtnName>]]
+
+       Defines  a  new partition corresponding to a hierarchical instance. The
+       definePartition command supports nested partitions and can be  used  to
+       specify partitions inside a partition. While specifying partitions, you
+       can specify the definition in any order. You can use this command after
+       importing the design.
+
+       Note:  The  definePartition command does not check for fence constraint
+       on clones and does not align them to the partition with respect to  the
+       master.  If  the  clones  do not have fence constraint, definePartition
+       makes fences for clone modules.
+
+       Note: For designs that have backside metal layers,  both  the  backside
+       and  frontside  layers are accepted. However, the automatic pin assign-
+       ment flow is not impacted with the support for backside  metal  layers.
+       It assigns pins on front layers only.
+
+Parameters
+       -cell <cellName>
+              Specifies  the  name of the cell for defining a new partition at
+              an instance that has R0 orientation.
+
+              Note: For  black-boxes, an instance with non-R0  orientation  is
+              chosen if an instance with R0 orientation is not found.
+
+              Data_type: string, optional
+
+       -checkCloneAlignment
+              When  specified,  the  definePartition  command  only checks the
+              alignment of the clone with the master partition and  reports  a
+              mismatch.
+
+              Note: The definePartition command does not move the clones.
+
+              Data_type: bool, optional
+
+       -copyFrom <refPtnName>
+              Specifies the name of the reference partition from which to copy
+              their properties. While copying the constraints, the shape, ori-
+              entation, and location are considered:
+
+              * Orientation: The orientation of the partition being defined is
+                copied  from the reference partition (refPtnName). If the ref-
+                erence partition has clones, then the orientation of the  mas-
+                ter is considered.
+
+              * Shape: The shape of the partition being defined is copied from
+                the reference partition (refPtnName).
+
+              *
+
+                Location:  The fence location of the partition hinst being de-
+                fined takes priority. In case the target partition hinst  does
+                not  have a fence constraint (location), the location informa-
+                tion is copied from the reference partition master hinst. This
+                will result in overlapping fences.
+
+                Note: If the -copyFrom parameter is being used with the  -cell
+                parameter  that  has multiple Hinsts, then the location of the
+                hinst that has a fence (location) constraint is considered  as
+                the master of the partition being defined.
+
+              Data_type: string, optional
+
+       -coreSpacing {left right top bottom}
+              Specifies the space, in micrometers, between the design boundary
+              and  the  design core area of the partitioned block on the left,
+              right, top, and bottom sides  respectively  after  doing  commit
+              partition  only  if no power domain was defined on the partition
+              hinst.
+
+              Note: The values of the modifyPowerDomainAttr command are always
+              considered during commit partition. However, for cases where the
+              power domain is not defined on the hinst, the -coreSpacing {left
+              right top bottom}values  are considered by the partition command
+              to create spacing between the design  boundary  and  the  design
+              core area of the committed partition block (db).
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each definePartition parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man definePartition
+
+       -hinst <hInstName>
+              Specifies the name of the hierarchical instance.
+
+              Note: None of its ancestors or descendants in the  netlist  tree
+              can be a partition.
+
+              Data_type: string, optional
+
+       -minPitchBottom <x>
+              Specifies the pin pitch dimension for the bottom partition side.
+              The  default  is  2,  which  places  one pin for every two metal
+              tracks. The actual pin pitch depends on the pin's metal layer.
+
+              The Partition Pin Guide floorplan object will supersede this en-
+              try and use the Min. Space entry in the object's Attribute  Edi-
+              tor.
+
+              Data_type: int, optional
+
+       -minPitchLeft <x>
+              Specifies  the  pin pitch dimension for the left partition side.
+              The default is 2, which places  one  pin  for  every  two  metal
+              tracks. The actual pin pitch depends on the pin's metal layer.
+
+              The Partition Pin Guide floorplan object will supersede this en-
+              try  and use the Min. Space entry in the object's Attribute Edi-
+              tor.
+
+              Data_type: int, optional
+
+       -minPitchRight <x>
+              Specifies the pin pitch dimension for the right partition  side.
+              The  default  is  2,  which  places  one pin for every two metal
+              tracks. The actual pin pitch depends on the pin's metal layer.
+
+              The Partition Pin Guide floorplan object will supersede this en-
+              try and use the Min. Space entry in the object's Attribute  Edi-
+              tor.
+
+              Data_type: int, optional
+
+        -minPitchTop <x>
+              Specifies  the  pin  pitch dimension for the top partition side.
+              The default is 2, which places  one  pin  for  every  two  metal
+              tracks. The actual pin pitch depends on the pin's metal layer.
+
+              The Partition Pin Guide floorplan object will supersede this en-
+              try  and use the Min. Space entry in the object's Attribute Edi-
+              tor.
+
+              Data_type: int, optional
+
+       -pinLayerBottom {<list_of_layers>}
+              Specifies the metal layers to use for the partition.  The  metal
+              layers  correspond to the sides of the partition, where the ver-
+              tical metal layers (for example, Metal2, Metal4, and so on)  are
+              for  the  Top and Bottom sides, and horizontal metal layers (for
+              example, Metal3, Metal5, and so on) are for the Left  and  Right
+              sides  of the partition. Specify this value in integers, for ex-
+              ample -pinLayerBottom {2 4}
+
+              Note: Only layers in their preferred routing direction  are  ac-
+              cepted.
+
+              Note:  If  these  option  is not supplied, all allowed layers in
+              preferred routing direction will be assumed for that side.
+
+              Note: This pin layer option does not support backside metal lay-
+              ers, it only supports frontside layers.
+
+              Default: All allowed layers in preferred direction.
+
+              Data_type: string, optional
+
+       -pinLayerLeft {<list_of_layers>}
+              Specifies the metal layers to use for the partition.  The  metal
+              layers  correspond to the sides of the partition, where the ver-
+              tical metal layers (for example, Metal2, Metal4, and so on)  are
+              for  the  Top and Bottom sides, and horizontal metal layers (for
+              example, Metal3, Metal5, and so on) are for the Left  and  Right
+              sides  of the partition. Specify this value in integers, for ex-
+              ample -pinLayerLeft {3 5}
+
+              Note: Only layers in their preferred routing direction  are  ac-
+              cepted.
+
+              Note:  If  these  option  is not supplied, all allowed layers in
+              preferred routing direction will be assumed for that side.
+
+              Note: This pin layer option does not support backside metal lay-
+              ers, it only supports frontside layers.
+
+              Default: All allowed layers in preferred direction.
+
+              Data_type: string, optional
+
+       -pinLayerRight {<list_of_layers>}
+              Specifies the metal layers to use for the partition.  The  metal
+              layers  correspond to the sides of the partition, where the ver-
+              tical metal layers (for example, Metal2, Metal4, and so on)  are
+              for  the  Top and Bottom sides, and horizontal metal layers (for
+              example, Metal3, Metal5, and so on) are for the Left  and  Right
+              sides  of the partition. Specify this value in integers, for ex-
+              ample -pinLayerRight {3 5}
+
+              Note: Only layers in their preferred routing direction  are  ac-
+              cepted.
+
+              Note:  If  these  option  is not supplied, all allowed layers in
+              preferred routing direction will be assumed for that side.
+
+              Note: This pin layer option does not support backside metal lay-
+              ers, it only supports frontside layers.
+
+              Default: All allowed layers in preferred direction.
+
+              Data_type: string, optional
+
+       -pinLayerTop {<list_of_layers>}
+              Specifies the metal layers to use for the partition.  The  metal
+              layers  correspond to the sides of the partition, where the ver-
+              tical metal layers (for example, Metal2, Metal4, and so on)  are
+              for  the  Top and Bottom sides, and horizontal metal layers (for
+              example, Metal3, Metal5, and so on) are for the Left  and  Right
+              sides  of the partition. Specify this value in integers, for ex-
+              ample -pinLayerTop {2 4}
+
+              Note: Only layers in their preferred routing direction  are  ac-
+              cepted.
+
+              Note:  If  these  option  is not supplied, all allowed layers in
+              preferred routing direction will be assumed for that side.
+
+              Note: This pin layer option does not support backside metal lay-
+              ers, it only supports frontside layers.
+
+              Default: All allowed layers in preferred direction.
+
+              Data_type: string, optional
+
+       -placementHalo {<left right top bottom>}
+              Specifies values, in micrometers (around the left, bottom, right
+              and top sides respectively) of the partition to create placement
+              halos on the committed partition block during commit  partition.
+              These  values  are  used only if  no power domain was defined on
+              the partition hinst.
+
+              Note: The values of the modifyPowerDomainAttr command are always
+              considered during commit partition. However, for cases where the
+              power domain is not defined on  the  hinst,  the  -placementHalo
+              {<left  right top bottom>}values are considered by the partition
+              command to create placement halos  on  the  committed  partition
+              block (LEF) at committed top-level.
+
+              Data_type: string, optional
+
+       -proto {<master_hinst_name_list>}
+              Specifies  the master hierarchical instances list for the proto-
+              typing flow. It defines new partitions for the specified hierar-
+              chical instances with  guide  constraints.  It  is  used  before
+              proto_design,  which  will  convert the physical constraint from
+              guide to fence finally.
+
+              Data_type: string, optional
+
+       -railwidth <railWidth>
+              Specifies the standard cell power rail width, in micrometers. If
+              partition pins are not allowed above power or ground rail width,
+              specify the dimension of the power rail width. If a value of 0.0
+              is entered (the default), the width  from  the  Technology  file
+              will be used.
+
+              Data_type: float, optional
+
+       -reservedLayer {<list_of_layers>}
+              Specifies the metal layers that are used for routing in the par-
+              tition  and generating partition pins. Any metal layers that are
+              not specified, usually the top-most metal layers, are allowed to
+              route over the partition. A normal six-metal layer specification
+              is Metal1, Metal2, Metal3,  Metal4  and  Metal5  specified,  and
+              Metal6 unspecified. When saving the partition, the LEF generated
+              for  this  partition will have routing blockages on their layers
+              so that the top-level router is aware of which metal layers  are
+              being used in the partition.
+
+              Note:  For  designs  that  have  backside metal layers, both the
+              backside and frontside layers are accepted.
+
+              Data_type: string, optional
+
+       -routingHalo <floatValue>
+              Specifies routing spacing, in micrometers, around the  sides  of
+              the  partition.  A  routing  halo  is honored only by the signal
+              router. The signal router treats routing on the specific routing
+              layers in the routing halo area as very high cost routing.  How-
+              ever,  perpendicular routing or straight connections to pins are
+              acceptable. The special router does not honor routing halos.  To
+              block special routing, use routing blockages instead.
+
+              You  can  specify a positive or a negative value for the routing
+              halo. A positive value means that the halo will be  outside  the
+              partition. A negative value means that the halo will be applica-
+              ble  during  block  implementation, inside of the partition. The
+              same value is used for all sides of the partition.
+
+              Note: For instance blocks - blackboxes, hard  macros  or  block-
+              level designs - specify the routing halo through the Floorplan -
+              Edit  Floorplan  - Edit Halos form in the GUI or through the ad-
+              dRoutingHalo command.
+
+              Also, for bottom- up hierarchical flow, specify routing halo for
+              a block at the top-level design or  at  the  block-level  design
+              through  the Floorplan - Edit Floorplan - Edit Halos form in the
+              GUI or through the addRoutingHalo command.
+
+              Data_type: float, optional
+
+       -routingHaloTopLayer <integerValue>
+              Specifies the top partition layer for which routing halo will be
+              created.
+
+              Default: By default, the top layer reserved for the partition is
+              used.
+
+              Data_type: int, optional
+
+       -routingHaloBottomLayer <integerValue>
+              Specifies the bottom partition layer for which routing halo will
+              be created.
+
+              Default: By default, the bottom layer reserved for the partition
+              is used.
+
+              Data_type: int, optional
+
+       -stdCellHeight x
+              Specifies the standard cell height for the partition.
+
+              Default: The default value is derived from the default  technol-
+              ogy site and row height.
+
+              Data_type: float, optional
+
+Example
+              * The following example defines a new partition:
+
+                definePartition -hinst ctr_inst
+
+                -coreSpacing 0.56 0.56 0.0 0.0
+
+                -railWidth 0.0
+
+                -minPitchLeft 2 -minPitchRight 2
+
+                -minPitchTop 2 -minPitchBottom 2
+
+                -reservedLayer {1 2 3 4}
+
+                -pinLayerTop  {2  4}  -pinLayerLeft  {3} -pinLayerBottom {2 4}
+                -pinLayerRight {3}
+
+                -placementHalo 10.0 0.0 0.0 0.0 -routingHalo 10.0
+
+                -routingHaloTopLayer 7 -routingHaloBottomLayer 1
+
+              *
+
+                The following commands define a nest partition where PTN1 is a
+                parent partition and PTN2 is a child:
+
+                definePartition -hinst PTN1
+
+                definePartition -hinst PTN2
+
+                or
+
+                definePartition -hinst PTN2
+
+                definePartition -hinst PTN1
+
+Related Information
+              * partition
+
+              * deletePartition
+
+              * savePartition
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Defining Partitions
+
+                * Working with Nested Partitions
+
+                           Fri Apr 04 01:25:37 2025     definePartition(25.10)

@@ -1,0 +1,75 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_power_include_file(25.10)                    set_power_include_file(25.10)
+
+Name
+       set_power_include_file - Specifies a PowerMeter include file
+
+Syntax
+       set_power_include_file
+
+       <file>
+
+       [-block <master_cell_name>]
+
+       [-reset]
+
+       Specifies  a  PowerMeter  include  file.  You can use the set_power_in-
+       clude_file command to specify certain commands of  the  dynamic  engine
+       which  do  not  have  an Voltus equivalent. For more information on the
+       PowerMeter commands, refer to the "Advanced PowerMeter Options" chapter
+       of the Voltus Text Command Reference.
+
+       Note: The set_power_include_file command is used to pass PowerMeter and
+       report_power command options only in the dynamic mode (vectorbased  and
+       vectorless).   If   set_power_analysis_mode   is  set  to  static,  the
+       set_power_include_file command is ignored.
+
+Parameters
+       file   Name of the include file. This is used when translating PowerMe-
+              ter commands to Voltus IC  Power  Integrity  Solution  commands.
+              This  file  will include all PowerMeter commands that can not be
+              translated to Voltus commands. In addition, you can also include
+              the report_power command options to generate different power re-
+              ports.
+
+       -block <master_cell_name>
+              Specifies the master cell name to which the  powermeter  options
+              are  to  be  applied.  The parameter allows you to apply certain
+              commands of the dynamic engine only to a specific  block  parti-
+              tion.  This parameter allows you to apply the include options to
+              a specific block  instead  of  applying  them  globally  to  all
+              blocks.
+
+              The  -block parameter is applicable only to the block-based dis-
+              tributed power flow.
+
+       -reset Resets all options back to default values.
+
+Examples
+              * The following  command  specifies  a  power  include  file  of
+                power.inc:
+
+                set_power_include_file power.inc
+
+              * The  following  example  shows  the  contents of the power.inc
+                file.
+
+                # power.inc file must use the pre-defined design and power ob-
+                jects as "design" # and "ChipPwr" respectively. The power out-
+                put object is not supported.
+
+                design calCellsToIgnore BUFX1
+
+                 ChipPwr calRailVoltage VDD 1.2
+
+                 report_power -net -outfile Net.rep
+
+                 report_power -cell {INV*} -outfile Invpower.rep
+
+Related Information
+              * set_power_analysis_mode
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 202s5et_power_include_file(25.10)

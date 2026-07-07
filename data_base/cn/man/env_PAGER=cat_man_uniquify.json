@@ -1,0 +1,39 @@
+{
+  "command": "uniquify",
+  "is_cmd": true,
+  "summary": "支持对非唯一模块内的主-克隆分区进行重组",
+  "description": "该命令通过为每个层次实例（hinst）克隆创建唯一的模块（必要时），来唯一化或重组主模块/克隆（一个被两个或更多hinst克隆使用的主模块）。在所有情况下，新的模块名称是通过在原模块名称后顺序添加“_数字”后缀（例如_1、_2）来生成的，以创建唯一的模块名。",
+  "usage": "uniquify [-help] {[<design> | <module>] | -new_master <hinsts>} [-exclude <modules>] [-verbose]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个uniquify参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<design> | <module>",
+      "description": "重组指定<design>或<module>及其递归层次内的主模块/克隆。这确保其中的所有hinst都将拥有自己唯一的模块，除非使用-exclude参数指定的模块。如果多个hinst引用指定的模块，它们将保持为克隆。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-new_master",
+      "description": "将主模块的hinst克隆拆分为一个新主模块的克隆。新主模块也会被重组，除非使用-exclude参数指定的模块。也可能强制其中一个这样的hinst克隆拥有一个新的主模块。如果hinst不是同一模块的克隆，则会显示错误消息。",
+      "required": false,
+      "type": "hinsts"
+    },
+    {
+      "name": "-exclude",
+      "description": "将指定的模块排除在唯一化或重组之外。如果特定的子模块是一个分区，并且只被实现和共享一次，请使用此参数。",
+      "required": false,
+      "type": "modules"
+    },
+    {
+      "name": "-verbose",
+      "description": "报告被重组的hinst克隆（如果有的话）。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

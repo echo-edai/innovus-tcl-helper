@@ -1,0 +1,111 @@
+{
+  "command": "globalNetConnect",
+  "is_cmd": true,
+  "summary": "将PG引脚或逻辑高/低引脚连接到指定的全局电源或地网络",
+  "description": "globalNetConnect命令用于将电源/地（PG）引脚或逻辑高（1'b1）/低（1'b0）引脚连接到指定的全局网络，该网络通常是电源或地网络。该命令适用于多种场景，包括连接单个实例的引脚、连接多个实例的引脚，以及将网络上的连接移动到设计层次结构中更高级别的指定全局网络。",
+  "usage": "globalNetConnect [-help] <globalNetName> {{-type pgpin -pin <pinNamePattern> | -type tiehi [-pin <pinNamePattern> ] | -type tielo [-pin <pinNamePattern> ]} {{-singleInstance | -singleInst | -sinst} <instName> | [{-instanceBasename | -instBasename} <instBasenamePattern> ] [{-hierarchicalInstance | -hierInst | -module} <hierInstName> | -region <llx> <lly> <urx> <ury> | -powerDomain powerDomainName | -all]} | -type net -net <netBasenamePattern> [{-hierarchicalInstance | -hierInst | -module} <hierInstName> | -powerDomain powerDomainName | -all]} [-override] [-verbose] [-autoTie] [-disconnect] [-netlistOverride] [-nonHierarchical]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<globalNetName>",
+      "description": "指定要连接到的全局网络的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定要连接到全局网络的连接类型。可选值：net（将连接到指定网络的引脚移动到全局网络）、pgpin（连接指定的电源/地引脚）、tiehi（连接逻辑高引脚）、tielo（连接逻辑低引脚）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定要连接到全局网络的引脚名称模式（可使用通配符*）。与 -type pgpin 一起使用，或可选地与 -type tiehi/tielo 一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-singleInstance",
+      "description": "将单个实例的引脚连接到全局网络。参数为实例的完整层次化名称（无通配符）。也可使用 -sinst 或 -singleInst。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instanceBasename",
+      "description": "指定要连接其引脚的叶子实例的名称模式（可使用通配符*，不能包含/）。与 -type pgpin、tiehi 或 tielo 一起使用。也可使用 -instBasename。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hierarchicalInstance",
+      "description": "将全局网络连接应用于指定层次化实例下的实例。也可使用 -hierInst 或 -module。与 -region 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-region",
+      "description": "将全局网络连接应用于指定区域内的实例。区域由左下角和右上角的坐标（llx, lly, urx, ury）定义。与 -module 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-powerDomain",
+      "description": "将全局网络连接应用于指定电源域内的实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-all",
+      "description": "将全局网络连接应用于设计中的所有实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定要连接到全局网络的网络名称模式（可使用通配符*，不能包含/）。与 -type net 一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-override",
+      "description": "指定使用此命令设置的值将覆盖先前设置的全局网络连接值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "指定在控制台中显示连接统计信息和警告消息，有助于故障排除。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoTie",
+      "description": "支持电源/地敏感性。在PG引脚连接命令中，此选项只能与 -type pgpin 一起指定。除了将电源引脚连接到全局网络外，还会自动将相关的高电平/低电平引脚连接到对应的全局网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-disconnect",
+      "description": "断开电源/地网络连接。此选项仅与 -sinst、-type pgpin 和 -pin 选项一起使用。注意：此选项与 globalNetName 参数互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-netlistOverride",
+      "description": "覆盖先前的全局网络连接。与 -override 类似，但此外还会覆盖网表指定的P/G引脚连接（如果适用）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonHierarchical",
+      "description": "仅对指定层次化实例中的实例进行连接，而不包括其子层次化实例中的实例。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

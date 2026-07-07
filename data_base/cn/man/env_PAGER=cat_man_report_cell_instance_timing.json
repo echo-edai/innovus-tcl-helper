@@ -1,0 +1,57 @@
+{
+  "command": "report_cell_instance_timing",
+  "is_cmd": true,
+  "summary": "报告指定单元实例的时序上下文信息",
+  "description": "报告指定单元实例所有管脚和延迟弧的时序上下文信息，包括到达时间、要求时间、时序裕量（Slack）和延迟。该命令会报告实例边界内的内部管脚。使用此命令前必须先运行 report_timing 命令进行时序分析。报告包含三个表格：实例管脚信息表、通过实例的弧信息表以及针对时序单元的时序检查表（如果存在）。在多模式多端角（MMMC）时序分析模式下，会为每个激活的分析视图报告时序上下文信息，视图名称会列在 Phase 列中。",
+  "usage": "report_cell_instance_timing [-help] <list_of_cell_instances> [-early | -late] [-clock_timing] [-tcl_list] [-view <view_name>] [{> | >>} <filename>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法说明",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<list_of_cell_instances>",
+      "description": "指定一个扁平（非层次化）的单元实例或实例列表。使用花括号({})包围列表，并用空格分隔实例名称。",
+      "required": true,
+      "type": "inst+"
+    },
+    {
+      "name": "-early",
+      "description": "报告早期（最大）路径（数据保持/时钟建立）的信息。使用前需先运行 setAnalysisMode -checkType hold 和 report_timing 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-late",
+      "description": "报告晚期（最小）路径（数据建立/时钟保持）的信息。使用前需先运行 setAnalysisMode -checkType setup 和 report_timing 命令。如果未指定 -early 或 -late，则默认使用此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock_timing",
+      "description": "指定报告时钟类检查的时序裕量（Slack）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "以 Tcl 列表格式而非表格格式生成报告，便于与自定义 Tcl 函数集成或定制报告生成。与 <filename> 参数互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "指定用于查询对象属性的分析视图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "{> | >>} <filename>",
+      "description": "将报告写入指定文件。使用 > 会覆盖已存在文件，使用 >> 会将报告追加到文件末尾。文件名参数必须是列表中的最后一个参数。与 -tcl_list 参数互斥。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

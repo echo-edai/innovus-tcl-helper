@@ -1,0 +1,124 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+refinePlace(25.10)                                          refinePlace(25.10)
+
+Name
+       refinePlace - Corrects flawed cell locations and reports corrections or
+       instance overlap problems
+
+Syntax
+       refinePlace
+
+       [-help]
+
+       [-area {lx ly ux uy}]
+
+       [-eco {true|false}]
+
+       [-inst <list_of_instances>]
+
+       [-wire_length_reclaim {true|false}]
+
+       Corrects  flawed  cell  locations  and  reports corrections or instance
+       overlap problems. You do not need a fully placed design to run  refine-
+       Place.  The  refinePlace command only makes changes if the placement is
+       not legal, such as for instance overlap,  incorrect  orientation,  con-
+       straint  violations, and placement/routing blockage violations. You can
+       use the checkPlace command to highlight placement violations in the de-
+       sign. The refinePlace command is called automatically  at  the  end  of
+       each  major  super  command  such  as  place_opt_design, optDesign, and
+       ccopt_design to ensure that the final placement is  violation-free.  If
+       any  instances  are  moved manually, refinePlace can be run to legalize
+       any cell placements that may have resulted in violations  due  to  this
+       manual movement.
+
+       To place unplaced instances, use the ecoPlace command.
+
+       refinePlace  only  operates on the cells which have the 'placed' place-
+       ment status.
+
+       Note: You can also use setPlaceMode to specify parameters for this com-
+       mand. If you use setPlaceMode, the parameters apply every time you  run
+       refinePlace  in the current session, unless they are overwritten by the
+       refinePlace settings.
+
+       Note: refinePlace and other commands using refinePlace  API  honor  in-
+       stance  padding  constraint  as  a hard rule if setPlaceMode -place_de-
+       tail_honor_inst_pad is set to true.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each refinePlace parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man refinePlace
+
+       -area {llx lly urx ury}
+              Specifies refinePlace area.
+
+              * llx: Specifies the area's lower left x coordinate.
+
+              * lly: Specifies the area's lower left y coordinate.
+
+              * urx: Specifies the area's upper right x coordinate.
+
+              * ury: Specifies the area's upper right y coordinate.
+
+              Note: The coordinates for the -area option should be provided in
+              brackets, else the tool will report an error.
+
+       -eco {true|false}
+              Activates ECO mode for the post-route design.
+
+              Default: false
+
+              Note:  This  option  is  controlled  by  setPlaceMode -place_de-
+              tail_eco_max_distance.
+
+       -inst <list_of_instances>
+              Legalizes the list of instances provided by the user. All  other
+              instances are treated as fixed.
+
+              Note:  This  option  is  controlled  by  setPlaceMode -place_de-
+              tail_eco_max_distance.
+
+       -wire_length_reclaim {true|false}
+              Activates the wire length reclaim mode.
+
+Command Order
+       Use this command after finding an error with the checkPlace command.
+
+Example
+              * The following command refines the placement in  the  specified
+                area:
+
+                refinePlace -area {7.925 29.762 11.702 27.531}
+
+                *** Starting refinePlace (0:04:48 mem=991.9M) ***
+
+                Move  report:  Detail placement moves 0 insts, mean move: 0.00
+                um, max move: 0.00 um
+
+                        Runtime: CPU: 0:00:00.0 REAL: 0:00:00.0 MEM: 991.9MB
+
+                Summary Report:
+
+                Instances move: 0 (out of 6 movable)
+
+                Mean displacement: 0.00 um
+
+                Max displacement: 0.00 um
+
+                Runtime: CPU: 0:00:00.0 REAL: 0:00:00.0 MEM: 991.9MB
+
+                *** Finished refinePlace (0:04:48 mem=991.9M) ***
+
+Related Information
+              * checkPlace
+
+              * ecoPlace
+
+              * setPlaceMode
+
+                           Fri Apr 04 01:25:37 2025         refinePlace(25.10)

@@ -1,0 +1,201 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_self_heat_analysis_mode(25.10)          set_self_heat_analysis_mode(25.10)
+
+Name
+       set_self_heat_analysis_mode  -  Specifies  the  number of tiles, layer-
+       based <alpha> coefficients, <beta> coefficients, and list of cells with
+       cell thermal resistances
+
+Syntax
+       set_self_heat_analysis_mode
+
+       [-help]
+
+       [-alpha_parameters {{<layer_name> < <alpha>overlapping > <  <alpha>con-
+       necting >}+}]
+
+       [-beta_parameters {C1 C2 C3}]
+
+       [-cell_thermal_resistance_file <filename]>
+
+       [-detail_delta_temperature_file <filename]>
+
+       [-detail_delta_temperature_region {<x1 y1 x2 y2>}]
+
+       [-die_instance_input_signal_em <filename>]
+
+       [-die_instance_name <dieinstname>]
+
+       [-instance_delta_temperature_file <filename>]
+
+       [-instance_power_file <filename>]
+
+       [-report_conn_pin_wire <filename>]
+
+       [-scale_rms_limit <value>]
+
+       [-tile_delta_temperature_file <filename>]
+
+       [-tiles {<n_tile_in_x> <m_tile_in_y>}]
+
+       Specifies the number of tiles, layer-based <alpha> coefficients, <beta>
+       coefficients,  and  list  of  cells with cell thermal resistances. This
+       command will use the static power data to compute delta T FEOL for  all
+       instances in the design. This command:
+
+              * computes the RMS currents on signal wires
+
+              * computes the RMS currents on power network wires
+
+              * generates  Detail Delta Temperature File (ddt), Instance Delta
+                Temperature File (idt), and Tile Delta Temperature File (tdt)
+
+       The command supports both single-die and multi-die flows.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each set_self_heat_analysis_mode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man set_self_heat_analysis_mode.
+
+       -alpha_parameters {{<layer_name> < <alpha>overlapping > < <alpha>con-
+       necting >}+}
+              Specifies  the  alpha parameters for all layers. It is the metal
+              layer effect.
+
+       -beta_parameters {C1 C2 C3}
+              Specifies the thermal coupling effect coefficient Value.
+
+       -cell_thermal_resistance_file <filename>
+              Specifies the name of the cell's equivalent  thermal  resistance
+              file.  The  specified  file contains the list of cells and their
+              corresponding thermal resistance value. The unit of thermal  re-
+              sistance  is  in  <degree>C/W (temperature rise per unit rate of
+              heat dissipation).
+
+              The format of the file is:
+
+              <cell_name> <thermal_resistance_in_C/W>
+
+              To get instance deltaT, use half of the  instance  power  multi-
+              plied by the cell thermal resistance.
+
+       -detail_delta_temperature_file <filename>
+              Specifies the name of the generated BEOL detailed delta-tempera-
+              ture file.
+
+       -detail_delta_temperature_region {<x1 y1 x2 y2>}
+              Specifies  the  region coordinates for generating detailed delta
+              temperature file.
+
+       -die_instance_input_signal_em <filename>
+              Specifies the setup Tcl script for each die instance.
+
+       -die_instance_name <dieinstname>
+              Specifies the die instance name for multi-die analysis. This op-
+              tion is only available in  multi-die  analysis  (set_rail_analy-
+              sis_mode -die_mode multi-die).
+
+       -instance_delta_temperature_file <filename>
+              Specifies  the  name of the generated FEOL instance-based delta-
+              temperature file.
+
+       -instance_power_file <filename>
+              Specifies a file for instances and  their  corresponding  static
+              power.  It is a two column format of <<instance_name>> and <<to-
+              tal_power>>.
+
+       -report_conn_pin_wire <filename>
+              Reports results on wires connecting to cell pins.
+
+       -scale_rms_limit <value>
+              Specifies the scale factor for the root-mean-square (rms)  limit
+              relaxation  factor  during Electromigration current limit analy-
+              sis.
+
+       -tile_delta_temperature_file <filename>
+              Specifies the name of the generated FEOL/BEOL tile-based  delta-
+              temperature file.
+
+       -tiles <{n_tile_in_x m_tile_in_y}>
+              Specifies  the  number of tiles in the x and y directions in the
+              tile-based delta temperature file.
+
+Examples
+              * The following command is an  example  of  set_self_heat_analy-
+                sis_mode command:
+
+                set_self_heat_analysis_mode \
+
+                -die_instance_name die0 \
+
+                -alpha_parameters  {{M1  0.74  0.85}  {M2  0.62 0.85} {M3 0.53
+                0.85} {M4 0.42 0.85} {M5 0.32 0.85} {M6 0.26  0.85}  {M7  0.26
+                0.85}  {M8 0.26 0.85} {M9 0.26 0.85} {M10 0.26 0.85} {M11 0.26
+                0.85} {M12 0.26 0.85}} \
+
+                -beta_parameters {0.00423 -0.00045 0.81534}\
+
+                -instance_power_file ./dynamic_power.rpt \
+
+                -cell_thermal_resistance_file TRF.txt \
+
+                -instance_delta_temperature_file sh_itm.txt \
+
+                -tile_delta_temperature_file sh_ttm.txt \
+
+                -tiles {10 10} \
+
+                -detail_delta_temperature_file power_detail_die0.rpt
+
+                set_self_heat_analysis_mode \
+
+                -die_instance_name die1 \
+
+                -alpha_parameters {{M1 0.74 0.85}  {M2  0.62  0.85}  {M3  0.53
+                0.85}  {M4  0.42  0.85} {M5 0.32 0.85} {M6 0.26 0.85} {M7 0.26
+                0.85} {M8 0.26 0.85} {M9 0.26 0.85} {M10 0.26 0.85} {M11  0.26
+                0.85} {M12 0.26 0.85}} \
+
+                -beta_parameters {0.00423 -0.00045 0.81534}\
+
+                -instance_power_file ./dynamic_power.rpt \
+
+                -cell_thermal_resistance_file TRF.txt \
+
+                -instance_delta_temperature_file sh_itm.txt \
+
+                -tile_delta_temperature_file sh_ttm.txt \
+
+                -tiles {10 10} \
+
+                -detail_delta_temperature_file power_detail_die1.rpt
+
+                set_self_heat_analysis_mode \
+
+                -die_instance_name die2 \
+
+                -alpha_parameters  {{M1  0.74  0.85}  {M2  0.62 0.85} {M3 0.53
+                0.85} {M4 0.42 0.85} {M5 0.32 0.85} {M6 0.26  0.85}  {M7  0.26
+                0.85}  {M8 0.26 0.85} {M9 0.26 0.85} {M10 0.26 0.85} {M11 0.26
+                0.85} {M12 0.26 0.85}} \
+
+                -beta_parameters {0.00423 -0.00045 0.81534}\
+
+                -instance_power_file ./dynamic_power.rpt \
+
+                -cell_thermal_resistance_file TRF.txt \
+
+                -instance_delta_temperature_file sh_itm.txt \
+
+                -tile_delta_temperature_file sh_ttm.txt \
+
+                -tiles {10 10} \
+
+                -detail_delta_temperature_file power_detail_die2.rpt
+
+Related Information
+              * "Self-Heating Effect Analysis" in the Voltus User Guide
+
+                           Fri Apr 04 01:25:3s7et2_0s2e5lf_heat_analysis_mode(25.10)

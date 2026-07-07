@@ -1,0 +1,119 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+partitionPushSpecialWires(25.10)              partitionPushSpecialWires(25.10)
+
+Name
+       partitionPushSpecialWires - Creates Verilog ports (connections) in par-
+       titions  for  nets whose special wires overlap a partition, so that the
+       special wire of the net gets pushed down when the partition command  is
+       used
+
+Syntax
+       partitionPushSpecialWires
+
+       [-help]
+
+       [-checkOnly]
+
+       [-keepNetName]
+
+       {-nets <list_of_net_names> | -overlappingPartitions <ptn_names>}
+
+       Creates  Verilog  ports (connections) in partitions for nets whose spe-
+       cial wires overlap a partition, so that the special  wire  of  the  net
+       gets pushed down when the partition command is used.
+
+       Note:  For pushdown of special wires in master and clone partitions, it
+       checks for the symmetry of the special  wire  shapes.  For  symmetrical
+       shapes  only, the partitionPushSpecialWires command creates one port in
+       the Verilog module and establishes a logical connection between the new
+       port and the net of special wire  over  all  master  and  clone  hinsts
+       (reuse of logical port in master and clones).
+
+       Note: If the original net was connected to a partition port of type in-
+       out,  then  an  inout  port is created inside the overlapping partition
+       else only an input port is created.
+
+Parameters
+       -checkOnly
+              When specified, the tool checks if the  selected  nets  special-
+              wires  are  symmetric over all hints of overlapping master clone
+              cells or not. In master and clone partitions, it checks for  the
+              symmetry of nets and reports asymmetrical nets.
+
+              When  the  -checkOnly parameter is not specified, the tool check
+              the nets specified and creates logical ports only on valid nets.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each partitionPushSpecialWires parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man partitionPushSpecialWires
+
+       -keepNetName
+              When  specified,  it  helps  to avoid net name conflicts between
+              overlapping partitions by preserving the original net name  dur-
+              ing the  partitionPushSpecialWires command. It ensures that non-
+              bus  nets  and  nets without a matching name in the block retain
+              their names in the partition.
+
+              Note: The partitionPushSpecialWires command creates a  partition
+              port  name using the net_base_name without adding a suffix. If a
+              conflict occurs, a  warning is displayed, and the name is  modi-
+              fied with a suffix as per the default behavior.
+
+              Data_type: bool, optional
+
+       -nets <list_of_net_names>
+              Specifies  the  list  of  nets (Verilog nets) which have special
+              wires that need to be pushed into blocks during the partitioning
+              process, ensuring proper connectivity for these nets within  the
+              design.
+
+              Data_type: string, optional
+
+       -overlappingPartitions <ptn_names>
+              Specifies  the  list  of partitions and automatically identifies
+              nets with special-wire routes  overlapping  with  the  specified
+              partitions.  It  ensures that these special nets are pushed into
+              the appropriate partitions during the partitioning process.
+
+              Data_type: string, optional
+
+Example
+              * The following command checks the special  wires  of  specified
+                Verilog nets n1 and creates ports on valid nets.
+
+                partitionPushSpecialWires -nets {n1}
+
+              * The following command checks if the special-wires of the spec-
+                ified  nets are symmetric over all hints of overlapping master
+                clone cells or not.
+
+                partitionPushSpecialWires -nets {n1 n2} -checkOnly
+
+                Report: C (mim-1) net n1 box missing in C mim-2
+
+                Report: C (mim-1) net n1 box missing in C mim-3
+
+                Report: C (mim-2) net n2 box missing in C mim-1
+
+                Report: C (mim-2) net n2 box missing in C mim-3
+
+                For pushdown, you must fix the wire asymmetry.
+
+                After the symmetry is fixed, the following command pushes down
+                symmetrical nets:
+
+                partitionPushSpecialWires -nets {n1 n2}
+
+                Report: user Net n1, n2 and derived nets n3 pushdown, with one
+                logical port
+
+Related Information
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37p2a0r2t5itionPushSpecialWires(25.10)

@@ -1,0 +1,230 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportWire(25.10)                                            reportWire(25.10)
+
+Name
+       reportWire  -  Creates  a report file that contains wire statistics for
+       signal nets with a real wire length or  minimum  wire  length  that  is
+       greater than the specified threshold ratio
+
+Syntax
+       reportWire
+
+       [-help]
+
+       [<fileName>]
+
+       [<threshold>]
+
+       [-detail]
+
+       [-maxFanout<integer>]
+
+       [-minWireLength <float>]
+
+       [-sort {ratio wire_length half_perimeter}]
+
+       [-summary]
+
+       Creates  a  report  file  that contains wire statistics for signal nets
+       with a real wire length or minimum wire length that is greater than the
+       specified threshold ratio. The wire statistics for signal nets can also
+       be based on the fanout or wire length of the net.
+
+       Ratio (r) is calculated as r = (total  net  routing  length)  /  (half-
+       perimeter of net bounding box).
+
+       The  wire  information  reported includes the net name, the wire ratio,
+       the real and minimum wire lengths, the number of vias, and  the  number
+       of  fanins  and  fanouts  on  the net. Use the reportWire command after
+       routing with any of the routing commands in the Innovus software.
+
+       Note: Use the reportRoutecommand to generate a layer-by-layer wire sta-
+       tistics report. Use the reportSpecialRoute command to generate a report
+       for special nets.
+
+Parameters
+       -detail
+              Includes detailed information in the report. This  includes  the
+              wire  length and number of vias for each layer, and a summary of
+              the total wire length and via number for the design.
+
+              Data_type: bool, optional
+
+       <fileName>
+              Creates a report file using the specified name.
+
+              Default: Creates a report file named <topcell>.wirerpt
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each reportWire parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+              man reportWire.
+
+       -maxFanout <fanout>
+              Specifies the maximum number of net's fanout.
+
+              Data_type: int, optional
+
+       -minWireLength <length>
+              Specifies the minimum wire length of the net.
+
+              Data_type: float, optional
+
+       -sort {ratio wire_length half_perimeter}
+              Specifies  the  order in which the nets are sorted in the output
+              report. The nets can be sorted as per the ratio, wire length, or
+              half perimeter length.
+
+              Data_type: enum, optional
+
+       -summary
+              Specifies that just the summary table should be displayed in the
+              report.
+
+              Data_type: bool, optional
+
+       <threshold>
+              Reports wire statistics for wires with lengths greater than  the
+              specified threshold ratio. If you do not specify a threshold ra-
+              tio,  the  reportWire  command  calculates  wire information for
+              wires with a ratio greater than 1.0.
+
+              Default: 1.0
+
+              Note: There are many situations in which the threshold ratio can
+              be less than 1.0. To ensure that the software creates  a  report
+              on all nets, specify a ratio value of 0.
+
+              Data_type: float, optional
+
+Examples
+              * The  following command writes the wire statistics for all nets
+                with wire lengths greater than the 1.0 threshold ratio:
+
+                reportWire 1.0
+
+                The following example shows a section of the wire  information
+                reported:
+
+                ratio       wire_length   half_perimeter   vias fan_in fan_out
+                net_name
+
+                                              length
+
+                -------------------------------------------------------------------------
+
+                1.08 Total   177.090      164.16  Total      4      1        1
+                dOut2[1]
+
+                1.12  Total     79.185       70.94  Total      3     1       1
+                dOut2[0]
+
+                1.04 Total   179.960      173.46  Total      7      1        4
+                dOut2[1]
+
+                1.00  Total    178.680      178.02  Total      8     1       4
+                dOut2[0]
+
+                1.02 Total   203.420      199.76  Total     10      1        4
+                dOut2[1]
+
+                1.25  Total    222.420      178.30  Total     12     1       4
+                dOut2[0]
+
+                1.18 Total   185.645      157.32  Total     11      1        4
+                s2[1]
+
+                1.09  Total    456.740      155.76  Total     10     1       4
+                s2[0]
+
+              * The following command writes the detailed wire statistics  for
+                all  nets  with wire lengths greater than the 1.0 ratio to the
+                detail.wirerpt file. This report includes the wire length  and
+                number of vias for each layer, and a summary of the total wire
+                length and via number for the design:
+
+                reportWire -detail detail.wirerpt 1.0
+
+                The  following example shows a section of the wire information
+                and the summary from the end of the report:
+
+                ratio       wire_length        half_perimeter    vias   fan_in
+                fan_out net_name
+
+                                              length
+
+                -------------------------------------------------------------------------
+
+                1.08  Total   177.090         164.16 Total     4     1       1
+                dOut2[1]
+
+                     Metal1        7.650               Via01      0
+
+                     Metal2      103.440               Via12      2
+
+                     Metal3       66.000               Via23      2
+
+                     Metal4        0.000               Via34      0
+
+                     Metal5        0.000               Via45      0
+
+                     Metal6        0.000               Via56      0
+
+                1.12 Total    79.185          70.94 Total     3     1        1
+                dOut2[0]
+
+                     Metal1        8.245               Via01      0
+
+                     Metal2       61.040               Via12      1
+
+                     Metal3        9.900               Via23      2
+
+                     Metal4        0.000               Via34      0
+
+                     Metal5        0.000               Via45      0
+
+                ### Summary Report ###
+
+                Total Metal1 Wire Length = 33.99
+
+                Total Metal2 Wire Length = 1869.13
+
+                Total Metal3 Wire Length = 1885.62
+
+                Total Metal4 Wire Length = 67.76
+
+                Total Metal5 Wire Length = 0.00
+
+                Total Metal6 Wire Length = 0.00
+
+                ---------------------------------
+
+                Total Wire Length = 3856.51
+
+                Total Via01 Number = 0
+
+                Total Via12 Number = 272
+
+                Total Via23 Number = 242
+
+                Total Via34 Number = 3
+
+                Total Via45 Number = 0
+
+                Total Via56 Number = 0
+
+                ---------------------------------
+
+Related Information
+              * reportRoute
+
+              * reportSpecialRoute
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025          reportWire(25.10)

@@ -1,0 +1,165 @@
+{
+  "command": "rechainPowerSwitch",
+  "is_cmd": true,
+  "summary": "启用电源开关插入后灵活的使能链连接与断开功能",
+  "description": "该命令用于在电源开关插入后，提供灵活的使能信号链式连接与断开功能。它允许用户通过多种参数控制链式连接的方向、顺序、样式和距离等，支持按实例、按行或按列进行连接，并可生成连接报告。建议将此命令用于PSO（电源开关）的使能链连接。",
+  "usage": "rechainPowerSwitch [-help] [-backToBackChain] [-cascade] [-cellEnablePin] [-chainByInstances] [-chainByRow] [-chainDirectionX <LtoR>|<RtoL>] [-chainDirectionY <BtoT>|<TtoB>] [-chainStyle {min_length_tree single_output_chain}] [-chainXbeforeY] [-chainYbeforeX] [-enableNetIn] [-enableNetOut] [-enablePinIn] [-enablePinOut] [-maxDistanceX <um>] [-maxDistanceY <um>] [-mergeDistanceX <um>] [-mergeDistanceY <um>] [-parallelEnable] [-reportFile] [-reverseOrder] [-selected] [-start_location <coordinates>] [-switchInstances] [-unchainByInstances]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。如需详细描述，请使用 man 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-backToBackChain",
+      "description": "将一列顶部的enableNetOut连接到下一列顶部的enableNetIn，并将一列底部的enableNetOut连接到下一列底部的enableNetIn。链从左到右或从右到左进行。默认情况下，enableNetIn连接到每列的底部，enableNetOut从每列的顶部引出，呈并行连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cascade",
+      "description": "以级联方式连接电源开关。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cellEnablePin",
+      "description": "当电源开关单元的引脚名称与指定实例的单元不同时，提供电源开关单元的引脚名称。此选项在所有实例的使能引脚未通过提供引脚映射的方式连接时也很有用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-chainByInstances",
+      "description": "对实例进行链式连接。此选项用于连接由-selected定义的实例或-switchInstances中给出的实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-chainByRow",
+      "description": "如果需要启用水平信号链（例如，按行），则提供额外控制。默认情况下，信号链从底部到顶部启用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-chainDirectionX",
+      "description": "定义沿X轴的链方向。可选值为LtoR或RtoL。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-chainDirectionY",
+      "description": "定义沿Y轴的链方向。可选值为BtoT或TtoB。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-chainStyle",
+      "description": "指定用于启用电源开关和建立使能链连接的链样式。指定的链样式有助于优化较长使能链的线长，并避免阻塞。可选值为min_length_tree（最小长度树，具有多个分支输出）或single_output_chain（单输出链，具有单个分支输出）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-chainXbeforeY",
+      "description": "定义行链优先于列链。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-chainYbeforeX",
+      "description": "定义列链优先于行链。这是默认选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enableNetIn",
+      "description": "指定软件连接到使能输入引脚的输入网络列表。指定这些网络的顺序决定了网络分配给引脚的顺序。如果使能网络和引脚位于层次结构的同一级别，它们会自动连接。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-enableNetOut",
+      "description": "指定软件连接到使能输出引脚的使能输出网络。指定这些网络的顺序决定了网络分配给引脚的顺序。如果使能网络和引脚位于层次结构的同一级别，它们会自动连接。对于环中的最后一个开关，-enablePinOut将连接到-enableNetOut。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-enablePinIn",
+      "description": "指定开关单元内部缓冲器的使能输入引脚列表。指定这些网络的顺序决定了网络分配给引脚的顺序。如果使能网络和引脚位于层次结构的同一级别，它们会自动连接。软件将第一个开关单元的-enablePinOut连接到同一环中下一个开关单元的-enablePinIn：同一列中所有开关单元的使能引脚都串联在一起。对于环中的第一个开关，-enablePinIn连接到-enableNetIn。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-enablePinOut",
+      "description": "指定开关单元内部缓冲器的使能输出引脚列表。指定这些引脚的顺序很重要，因为网络是按顺序分配给引脚的。软件将第一个开关单元的-enablePinOut连接到同一列中下一个开关单元的-enablePinIn：同一列中所有开关单元的使能引脚都串联在一起。对于列中的最后一个开关，-enablePinOut连接到-enableNetOut。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-maxDistanceX",
+      "description": "开关可以驱动的最大X距离（单位：微米）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-maxDistanceY",
+      "description": "开关可以驱动的最大Y距离（单位：微米）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-mergeDistanceX",
+      "description": "将在此距离内的开关视为在同一列中（单位：微米）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-mergeDistanceY",
+      "description": "将在此距离内的开关视为在同一行中（单位：微米）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-parallelEnable",
+      "description": "以并行连接方式将使能输入网络连接到所有开关。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reportFile",
+      "description": "将开关实例及其对应的输入/输出使能信号引脚/网络连接写入指定的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reverseOrder",
+      "description": "对-switchInstances指定的实例列表进行反向排序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "选择要进行链式连接或断开的开关。注意：此选项必须与-chainByInstances和-unchainByInstances一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-start_location",
+      "description": "指定启用单输出链的起始点坐标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-switchInstances",
+      "description": "指定要进行链式连接/断开的实例列表。当请求连接时，最终链的顺序取自提供的列表中的实例名称顺序。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-unchainByInstances",
+      "description": "对实例进行断开链式连接。此选项用于断开由-selected定义的实例或-switchInstances中给出的实例的连接。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

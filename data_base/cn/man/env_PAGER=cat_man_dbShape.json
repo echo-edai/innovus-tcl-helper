@@ -1,0 +1,39 @@
+{
+  "command": "dbShape",
+  "is_cmd": true,
+  "summary": "对形状（多边形、矩形或其列表）执行几何（如尺寸调整和边界框计算）和逻辑（如与、与非）操作。",
+  "description": "dbShape 命令用于处理形状数据，支持对多边形、矩形或它们的列表进行多种操作。几何操作包括调整大小（SIZE, SIZEX, SIZEY）、移动（MOVE）、缩放（SCALE）、计算边界框（BBOX）以及生成圆形（BBOX_CIRCLE）或八边形（BBOX_OCTAGON）等。逻辑操作包括求交集（AND）、差集（ANDNOT）、并集（OR）、异或（XOR），以及判断形状关系（INSIDE, OUTSIDE, ENCLOSE, STRADDLE）。此外，还可以提取形状中的孔洞（HOLES）或填充孔洞后的形状（NOHOLES）。命令可以指定输出格式（如多边形、矩形、水平矩形或面积）和单位（数据库单位或用户定义的微米单位）。处理的所有形状必须具有非零面积，零面积形状会在操作中被丢弃。",
+  "usage": "dbShape [-help] [-d] [-step step] [-output polygon|rect|hrect|area] shapeList [AND shapeList | ANDNOT shapeList | OR shapeList | XOR shapeList | INSIDE shapeList | OUTSIDE shapeList | ENCLOSE shapeList | STRADDLE <shapeList> | BBOX | HOLES | NOHOLES | BBOX_CIRCLE | BBOX_OCTAGON | MOVE {<dx dy>| SIZE <value> | SIZEX <value> | SIZEY <value>} | SCALE <scale_factor>] ...",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个 dbShape 参数类型和默认信息的简要描述。要获取命令及其所有参数的详细描述，请使用 man 命令：man dbShape。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "指定使用数据库单位（整数）作为输入值。所有 shapeList 值以及 MOVE、SIZE 和 step 的值都应使用与 -d 设置一致的单位。输出单位与输入单位相同。默认：使用用户定义的微米单位。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-step",
+      "description": "指定输出格式为矩形时的步长，用于将非正交形状转换为一系列矩形。默认：第一个布线层的最小宽度值。类型：坐标，可选。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-output",
+      "description": "指定输出格式。可选值：polygon（多边形形状）、rect（垂直矩形，仅适用于正交形状）、hrect（水平矩形，仅适用于正交形状）、area（最终形状的总面积）。默认：rect（字符串）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "shapeList",
+      "description": "指定一个多边形、一个矩形，或一个多边形和矩形的列表。在执行几何或逻辑操作之前，同一个 shapeList 中的多边形或矩形如果相交，将会被合并。格式：多边形：{{x y} {x y} ...}；矩形：{x1 y1 x2 y2}。类型：列表。",
+      "required": true,
+      "type": "list"
+    }
+  ]
+}

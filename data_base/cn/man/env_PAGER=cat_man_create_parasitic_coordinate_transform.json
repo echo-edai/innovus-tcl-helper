@@ -1,0 +1,63 @@
+{
+  "command": "create_parasitic_coordinate_transform",
+  "is_cmd": true,
+  "summary": "在读取SPEF时为节点确定精确的物理位置信息",
+  "description": "该命令用于在读取标准寄生交换格式（SPEF）文件时，确定设计中节点（引脚/网络）的精确物理位置信息。在层次化设计中，当进行顶层静态时序分析（STA）时，需要将各个模块的SPEF与顶层拼接以进行平坦化STA分析。这对于不需要模块引脚位置的分析（如常规STA）是可行的。然而，在进行先进片上变异（AOCV）分析并启用空间分析时，需要所有节点的精确位置来计算准确的降额因子。该命令通过根据模块的物理位置转换SPEF中的坐标来实现这一目标。它适用于所有可能的SPEF和RCDB输入组合。如果未指定此命令，spefIn命令会尝试自动查找层次化SPEF模块的方向和原点，并应用相应的变换。此命令的设置对所有后续的spefIn和read_parasitics命令生效，直到使用-reset选项重置。",
+  "usage": "create_parasitic_coordinate_transform [-help] {-inst <inst_name> [-x_block_origin <value>] [-x_offset <value>] [-y_block_origin <value>] [-y_offset <value>] [-orient {R0 R90 R180 R270 MY MX90 MX MY90}] [-relative_to_parent]} | {-reset}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。如需详细描述，请使用man命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "指定正在读取其SPEF的实例的层次化名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-x_offset",
+      "description": "指定实例在物理版图中实际存在的x坐标（微米）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-y_offset",
+      "description": "指定实例在物理版图中实际存在的y坐标（微米）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-orient",
+      "description": "指定实例的方向变化。有效值为：R0, R90, R180, R270, MX, MX90, MY, MY90。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-x_block_origin",
+      "description": "指定非原点模块的偏移x坐标（微米）。当模块原点非零时需要。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-y_block_origin",
+      "description": "指定非原点模块的偏移y坐标（微米）。当模块原点非零时需要。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_to_parent",
+      "description": "指定此参数时，软件将指定实例的块偏移视为相对于其直接父级。默认情况下，偏移值相对于顶层实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "重置所有SPEF变换值。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

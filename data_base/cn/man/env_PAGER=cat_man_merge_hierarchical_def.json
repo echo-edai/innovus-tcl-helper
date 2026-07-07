@@ -1,0 +1,147 @@
+{
+  "command": "merge_hierarchical_def",
+  "is_cmd": true,
+  "summary": "将来自不同模块的DEF数据合并到单个芯片数据库中",
+  "description": "merge_hierarchical_def命令用于将顶层DEF文件和一组模块DEF文件合并到一个单一的芯片数据库中。该命令支持以下特性：\n* 接受顶层DEF文件和一组模块DEF文件，并将它们合并。\n* 需要预先加载每个模块和顶层的Verilog文件。\n* 模块和顶层的Verilog文件（或其DEF文件）可以按任意顺序指定。但是，如果某些父级Verilog文件中存在模块的空Verilog模块占位符，请确保父级Verilog文件在子级Verilog文件之前指定。\n* 无需指定模块的LEF文件。\n* 在此命令执行过程中，顶层行将在模块边界处被切割，所有模块行将按原样带回。\n* 根据模块DEF中的DIE AREA语句，为每个组装的模块创建分区定义。\n* 模块边界的连线将与顶层电气连接网络的连线进行缝合。\n* 支持所有模块方向进行组装。也支持重复模块。还支持非R0主单元。",
+  "usage": "merge_hierarchical_def [-help] <defFiles <...>> [-add_blockage] [-delete_blockages_over_partition_macro] [-ignore_drcfill] [-incremental_ilm_def] [-preserve_shape] [-rdl_def <string>] [-rdl_orientation <orientation>] [-rdl_placement {<x y>}] [-secondary {{<suffix> <def_file_list>}...}] [-skipNets] [-skip_filler] [-skip_pg] [-skip_routing {[pg|signal] [regular|special] [high_layer_routing]}] [-to_layer <routing_layer_name>] [-top_scope] [-topcell_orientation <orientation>] [-topcell_placement {x y}] [-transform_file <string>] [-use_top_def_die_area] [-modules <vCell>+ | -hInsts <hInst>+]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个merge_hierarchical_def参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<defFiles <...>>",
+      "description": "指定要合并的DEF文件。",
+      "required": true,
+      "type": "list"
+    },
+    {
+      "name": "-add_blockage",
+      "description": "指定网表是简化的，并将未定义的实例转换为障碍物。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delete_blockages_over_partition_macro",
+      "description": "删除与分区重叠的顶层设计布局和布线障碍物。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_drcfill",
+      "description": "忽略具有DRCFILL形状属性的特殊布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-incremental_ilm_def",
+      "description": "增量地展平ILM DEF。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-preserve_shape",
+      "description": "当来自不同模块的DEF数据合并到单个芯片数据库时，保留形状和几何图形。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rdl_def",
+      "description": "指定RDL DEF文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rdl_orientation",
+      "description": "指定RDL DEF的方向。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-rdl_placement",
+      "description": "指定RDL DEF的偏移量。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-secondary",
+      "description": "指定要加载的次要DEF文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skipNets",
+      "description": "跳过合并信号网络部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_filler",
+      "description": "跳过合并填充单元和去耦电容单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_pg",
+      "description": "跳过合并电源地网络上的布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_routing",
+      "description": "根据指定的设置跳过合并布线。此设置可以是以下集合中三个可选关键字的任意组合：\n* [pg|signal]: 指定要跳过布线的网络类型。pg - 电源地网络，signal - 信号网络，如果未指定则为两者。\n* [regular|special]: 指定要跳过的布线类型。regular - 常规布线，special - 特殊布线，如果未指定则为两者。\n* [high_layer_routing]: 指定仅跳过高层布线，其中层是自动计算的。如果未指定，则跳过所有层的布线。可以使用-to_layer选项指定层。在这种情况下，跳过从顶层到指定层的布线。\n注意：如果为-skip_routing指定了high_layer_routing，则必须显式指定-to_layer参数。否则，high_layer_routing无效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to_layer",
+      "description": "当为-skip_routing参数指定high_layer_routing选项时，跳过从顶层到指定层（包含）的布线。",
+      "required": false,
+      "type": "layer"
+    },
+    {
+      "name": "-top_scope",
+      "description": "仅合并顶层范围网络上的布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-topcell_orientation",
+      "description": "指定顶层单元的方向。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-topcell_placement",
+      "description": "指定顶层单元的布局位置。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-transform_file",
+      "description": "指定转换文件的名称，该文件包含每个被DEF替换的LEF块在顶层中的最终x和y偏移、方向以及块的起点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_top_def_die_area",
+      "description": "启用使用顶层DEF DIE AREA。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-modules",
+      "description": "指定需要加载物理数据的模块列表。然后工具仅从与指定模块关联的def文件读取数据。",
+      "required": false,
+      "type": "vCell+"
+    },
+    {
+      "name": "-hInsts",
+      "description": "指定需要加载物理数据的层次化实例列表。然后工具从与指定hInstance关联的def文件读取数据。",
+      "required": false,
+      "type": "hInst+"
+    }
+  ]
+}

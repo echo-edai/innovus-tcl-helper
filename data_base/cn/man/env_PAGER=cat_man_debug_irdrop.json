@@ -1,0 +1,105 @@
+{
+  "command": "debug_irdrop",
+  "is_cmd": true,
+  "summary": "自动识别最差IR压降和EM违规区域，并提供必要信息以确定和修复根本原因",
+  "description": "该命令用于自动识别设计中具有最差IR压降和电迁移（EM）违规的区域，并提供详细的分析信息以帮助确定和修复问题的根本原因。它通过整合每个区域的分析报告来定位问题根源，例如分析热点区域的坐标、时序库、电源网格视图、电源网格完整性、IR压降构成等。使用此命令前必须先运行analyze_rail命令，并且需要VTS-XL许可证。",
+  "usage": "debug_irdrop [-help] [-nworst_instances <value>] [-output_directory <dir>] -state_directory <dir> [-net <netname> | -domain <domainname>] [-region {x1 y1 x2 y2 }| -nregion <value>] [-eco_report] [-net_threshold <value> | -domain_threshold <value>] [-summary_only] [-tile_row_col {<X> <Y>}] [-tile_size {<X> <Y>}] [-non_violating_instslimit <value>] [-enable_xp {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出debug_irdrop命令各参数的简要描述，包括类型和默认值信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nworst_instances",
+      "description": "指定要报告的最差实例数量。默认值为5",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-output_directory",
+      "description": "指定输出目录，IR压降和EM违规结果将保存在此目录中",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-state_directory",
+      "description": "指定由动态IR压降分析生成的顶级状态目录。该目录包含与电源域相关的所有网络的分析结果，是analyze_rail命令的输出目录（例如，core_25C_dynamic_1）",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要分析的电源或地网络的名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-domain",
+      "description": "指定要分析的电源域的名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-region",
+      "description": "指定包含最差实例的区域坐标（x1 y1 x2 y2）。默认单位为数据库单位",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nregion",
+      "description": "指定要分析的区域数量。默认值为3",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-eco_report",
+      "description": "指定生成一个包含IR压降信息的文件，可供Tempus ECO用于修复设计中所有实例的IR电压降。报告（eco.ird）生成在指定的输出目录中",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net_threshold",
+      "description": "指定被分析电源网络的最小允许电压。该值必须为绝对值。此参数行为与set_pg_nets -threshold参数相同",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-domain_threshold",
+      "description": "指定被分析电源域的最小允许电压。该值为百分比。此参数行为与set_rail_analysis_domain -threshold参数相同",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-summary_only",
+      "description": "指定生成违规摘要报告，显示所有单元IR压降违规分布的摘要，以及标准单元的IR压降违规分布摘要。如果指定此参数，则不会生成详细的IR报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tile_row_col",
+      "description": "指定X和Y方向上的瓦片数量。与-tile_size参数一起启用热点区域的基于瓦片的分析。默认值为100um^2（10x10瓦片）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tile_size",
+      "description": "指定X和Y方向上瓦片的尺寸。与-tile_row_col参数一起启用热点区域的基于瓦片的分析",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-non_violating_instslimit",
+      "description": "报告热点区域（违规瓦片）内接近阈值但未违规的实例。此参数允许定义一个限制（子阈值），用于报告接近阈值的非违规实例",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-enable_xp",
+      "description": "指定在广泛并行（XP）模式下识别最差IR压降和EM违规区域，其中处理分布在大量机器上。默认值为false",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

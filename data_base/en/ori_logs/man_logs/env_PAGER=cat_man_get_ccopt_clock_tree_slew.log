@@ -1,0 +1,133 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_clock_tree_slew(25.10)              get_ccopt_clock_tree_slew(25.10)
+
+Name
+       get_ccopt_clock_tree_slew  -  This command returns the slew information
+       for the user-specified pin
+
+Syntax
+       get_ccopt_clock_tree_slew
+
+       [-help]
+
+        pin
+
+       [-delay_corner corner]
+
+       [-delay_type {early | late}]
+
+       [-edge {rise | fall | both}]
+
+       This command returns the slew information for the  user-specified  pin.
+       The  command  is usually used to collect slew data on a clock tree, for
+       example, to create custom histograms.
+
+       Note:  A  clock  tree  specification   is   required   before   running
+       get_ccopt_clock_tree_slew.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each get_ccopt_clock_tree_slew  parameter.  For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command: man get_ccopt_clock_tree_slew.
+
+       -delay_corner <corner>
+              Specifies the delay corner of the specified pin  to  be  queried
+              for  slew information. By default, if delay corner is not speci-
+              fied, CCOpt uses the CTS primary corner  as  configured  by  the
+              set_ccopt_property primary_delay_corner <corner>command. If this
+              is  not set, it will use the default setup analysis view as con-
+              figured by the set_default_view -setup <view>command.
+
+       -delay_type {early | late}]
+              Specifies whether to use early or late half delays.
+
+              When early is specified, CCOpt uses only early path timing  data
+              to  calculate  slew,  for the clock edge specified. When late is
+              specified, CCOpt uses only late path timing  data  to  calculate
+              slew, for the clock edge specified.
+
+              By  default,  if neither early or late are specified, CCOpt will
+              use late half delays to calculate slew information.
+
+       -edge { rise | fall | both }
+              Specifies the edge of the specified pin for which slew  informa-
+              tion is to be calculated.
+
+              When  fall is specified, CCOpt uses only falling clock edge tim-
+              ing data to calculate slew. When rise is specified,  CCOpt  uses
+              only  rising  clock  edge  timing data to calculate slew. By de-
+              fault, if neither rise or fall are specified,  CCOpt  uses  both
+              rising and falling clock edge timing data to calculate slew.
+
+       <pin>  Specifies  the  pin  for which the slew information is provided.
+              This is a required parameter.
+
+Examples
+              * Use the following command to get a list of clock tree cells:
+
+                get_ccopt_clock_tree_cells *
+
+                PLLCLK_INST     TEST_CONTROL_INST/CPF_LS_101_clk     TEST_CON-
+                TROL_INST/g145         TEST_CONTROL_INST/g144        TEST_CON-
+                TROL_INST/g136...
+
+              *
+
+                Use the following command to get the list of pins in the spec-
+                ified clock tree:
+
+                get_pins TEST_CONTROL_INST/g145/*
+
+                TEST_CONTROL_INST/g145/ZN TEST_CONTROL_INST/g145/A2  TEST_CON-
+                TROL_INST/g145/A1
+
+                0x5d5
+
+              *
+
+                Use the following command to get the slew value for the speci-
+                fied pin:
+
+                get_ccopt_clock_tree_slew Inst1/A
+
+                The  software returns the following value for the slew for the
+                pin A:
+
+                0.2228
+
+                Note: To confirm that the instance is part of the  clock  net-
+                work, use get_ccopt_clock_tree_cells <<inst>>
+
+              *
+
+                Use the following command to get the slew value for the speci-
+                fied pin in the specified clock tree:
+
+                get_ccopt_clock_tree_slew TEST_CONTROL_INST/g145/ZN
+
+                The  software returns the following value for the slew for the
+                pin ZN:
+
+                0.2228
+
+Related Information
+              * create_ccopt_clock_tree
+
+              * delete_ccopt_clock_trees
+
+              * get_ccopt_clock_tree_cells
+
+              * get_pins
+
+              * reportDelayCalculation
+
+              * set_ccopt_property
+
+              * set_default_view
+
+              * The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:25:37g2e0t2_5ccopt_clock_tree_slew(25.10)

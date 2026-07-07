@@ -1,0 +1,708 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setIntegRouteConstraint(25.10)                  setIntegRouteConstraint(25.10)
+
+Name
+       setIntegRouteConstraint  - Applies specialty routing constraints in the
+       database for nets in the designs
+
+Syntax
+       setIntegRouteConstraint
+
+       [-help]
+
+       [[-file <string>]
+
+        | [[-accessStyle {none | straight | clustered}]
+
+           [-bottomLayer <layerNum>]
+
+           [-bus_bit_order]
+
+           [-busGroupWidth <integer>]
+
+           [-connectSupply {<float> anyPoint}]
+
+           [-cornerStyle {none | crossover | river}]
+
+           [-crossTieShieldInterval <string>]
+
+           [-crossTieShieldLayerLimit <string>]
+
+           [-crossTieShieldedLayers <string>]
+
+           [-groupToOutsideSpacing  {<layer1   spacing1>   <layer2>[<:layerN>]
+       <spacing2>...}]
+
+           [-hard]
+
+           [-hierarchicalScope  {local local_below local_above local_above_be-
+       low}]
+
+           [-intergroupGap  {<layer1>  <spacing1>   <layer2>[:layerN]   <spac-
+       ing2>...}]
+
+           [-layerGap {<layer1> <gap1> <layer2>[:layerN] <gap2>...}]
+
+           [-layerMatch]
+
+           [-matchGap {<layer1> <gap1> <layer2>[:layerN] <gap2>...}]
+
+           [-matchStyle {accordion | trombone | coil}]
+
+           [-matchType {length resistance maxResistance}]
+
+           [-maxLength <value>]
+
+           [-maxRes <value>]
+
+           [-minBusBit <integer>]
+
+           [-minLength <value>]
+
+           [-minRes <value>]
+
+           [-name <string>]
+
+            [-noshareshield]
+
+           [-rule <NDR_name>]
+
+           [-shieldGap {<layer1> <gap1> <layer2>[:layerN] <gap2> ...}]
+
+           [-shieldNet {<net1 net2>}]
+
+           [-shieldTolerance {<net1 value1 net2 value2> ...}]
+
+           [-shieldType  {unspecified  side bottom bottomSide top topSide top-
+       Bottom
+
+                         coaxial tandemSplit interleaved crosstie tandemSplit-
+       Full
+
+                         tandemSplitFullCoaxial tandemSplitNearBy tandemSplit-
+       Special none}]
+
+           [-shieldWidth {<layer1> <width1> <layer2>[:layerN] <width2>...}]
+
+           [-tandemAggressorAdjacentLayerSeparation {<number_of_tracks>}]
+
+           [-tandemAggressorSameLayerTrackDistance        {<layer1         n1>
+       <layer2>[:<layerN>] <n2>...}]
+
+           [-tandemCapWidth {<layer1 width1> <layer2>[:<layerN>] <width2>...}]
+
+           [-tandemNearbyNonAggressorExceptByName {<nameString>}]
+
+           [-tandemNearbyNonAggressorNets {<nameString>}]
+
+           [-tandemNearbyNonAggressorType {<typeNameString>}]
+
+           [-tandemOverhang {<layer1 width1> <layer2>[:<layerN>] <width2>...}]
+
+           [-tandemSideOverhang     {<layer1    width1>    <layer2>[:<layerN>]
+       <width2>...}]
+
+           [-tandemWidth {<layer1> <width1> <layer2>[:layerN] <width2>...}]
+
+           [-tolerance <tolerance>]
+
+           [-topLayer <layerNum>]]]
+
+       {-net {<net1 net2  ...>}  |  -busSinkGroups  <busSinkGroupNameList>   |
+       -file <string>}
+
+       -type {bus diffPair matchNDR netClass shield simpleNet additional}
+
+       Applies  specialty  routing constraints in the database for nets in the
+       designs. It allows creation of differential pair,  match  pair,  shield
+       nets, and nets with non-default rules.
+
+       If required, all routing constraints set by this command can be deleted
+       from the database using the deleteIntegRouteConstraint command.
+
+       Also see, getIntegRouteConstraint.
+
+       Notes
+
+              * Integration  constraints  are used to convey the design intent
+                in a mixed signal design. These constraints are fully interop-
+                erable between the digital and custom environments.
+
+              *
+
+                If the design has a complex netClass constraint that  has  net
+                members  with  different  constraints, setIntegRouteConstraint
+                will throw the an error. If you still wish to change the inte-
+                gration constraints in the design, check whether the  netClass
+                constraints  under the Complex NetClass tab in the Integration
+                Constraint Editor can be removed. If yes, use the  deleteInte-
+                gRouteConstraint  or the GUI to first delete such constraints,
+                and then repeat the setIntegRouteConstraint command.
+
+              * The rule name DefaultRule is obsolete. It still works in  this
+                release and is automatically converted to the correct name de-
+                fault. Update your scripts to use default so that it work cor-
+                rectly in future releases.
+
+Parameters
+       Outputs a brief description that includes the type and default informa-
+       tion for each setIntegRouteConstraint parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+              man setIntegRouteConstraint.
+
+       -accessStyle {none | straight | clustered}
+              Specifies the preferred style for routing the bus after connect-
+              ing to the bus pins. This parameter is applicable only for -type
+              bus.
+
+              Default: clustered
+
+       -bottomLayer <layerNum>
+              Specifies the bottom routing layer that is to be used.
+
+       -bus_bit_order
+              Routes the nets in the same order as specified with the -net op-
+              tion in the bus constraint.
+
+       -busGroupWidth <integer>
+              Specifies  the  width  for  the bus groups into which the router
+              splits a bus. The width is specified as an  integer  value.  For
+              example,  if  a bus is 16 bits, you can specify -busGroupWidth 4
+              to indicate that the router can route the bus as four bus groups
+              of 4 bits each.
+
+              Default: 1
+
+       -busSinkGroups <busSinkGroupNameList>
+              Specifies the list of names of the busSinkGroups. It sets  high-
+              frequency/mixed   signal   constraints   for  the  nets  of  the
+              busSinkGroup sinks. It supports all  constraints  of  type  BUS.
+              These  constraints  are  honored by the NanoRoute high-frequency
+              router.
+
+       -connectSupply {<float> anyPoint}
+              Indicates how the shield wires will be connected to  the  supply
+              line.  The default option, anyPoint, tells the router to connect
+              the wire to supply, anywhere along  the  length  of  the  shield
+              wire.
+
+              Default: anyPoint
+
+       -cornerStyle {none | crossover | river}
+              Specifies  the  type  of corner style that the differential pair
+              route or bus should follow when changing directions. This  para-
+              meter is applicable only for -type bus and -type diffPair.
+
+              Default: crossover
+
+       -crossTieShieldInterval <string>
+              Specifies  the  number of tracks between the cross-tie wires for
+              opportunistic coaxial shielding. The <string> value should  have
+              the following format:
+
+              {integer   |   {<layer  interval1>  <layer2>[:<layerN>]  <inter-
+              val2>...}}
+
+              The integer value specifies the interval in the form of the num-
+              ber of tracks between cross-ties created on a given  layer.  For
+              example,  a  value  of  0 means that there are no tracks between
+              cross-ties, which means there is a  cross-tie  on  every  track.
+              Similarly,  a  value  of 1 means that there is one track between
+              cross-tie wires, which results in a cross  tie  on  every  other
+              track. A value of 2 means two tracks between the cross-tie wires
+              and so on.
+
+              Note: This parameter is applicable only if -shieldType is speci-
+              fied as crosstie.
+
+              Default: 0
+
+       -crossTieShieldLayerLimit <string>
+              Specifies  the  layer range that can be used to create cross-tie
+              shields. Use the -crossTieShieldLayerLimit parameter if you want
+              to use only specific layers to create cross-ties  and  keep  the
+              remaining layers free for other purposes.
+
+              The <string> value should have the following format:
+
+              {layer_number:layer_number}
+
+              For  example,  if  the layer range specified is {METAL2:METAL7},
+              cross-tie shields can be  created  on  METAL2,  METAL3,  METAL4,
+              METAL5, METAL6, and METAL7 but not on METAL8 or the layers above
+              it.
+
+              Note: This parameter is applicable only if -shieldType is speci-
+              fied as crosstie.
+
+       -crossTieShieldedLayers <string>
+              Specifies  the  layer  range that will be shield with cross-ties
+              from above and below. Use the -crossTieShieldedLayers  parameter
+              if  you  want  to minimize congestion by shielding only specific
+              routing layers with cross-ties.
+
+              The <string> value should have the following format:
+
+              {layer:layer}
+
+              For example, if the layer range  specified  is  {METAL3:METAL6},
+              cross-tie shields will be built for routes on the net on METAL3,
+              METAL4, METAL5, and METAL6.
+
+              Note: This parameter is applicable only if -shieldType is speci-
+              fied as crosstie.
+
+       -file <string>
+              Specifies the path for an additional constraint file, which con-
+              tains the maximum resistance target values for nets.
+
+              * -file cannot be used with either -net or -busSinkGroups.
+
+              * -file must be used only with -type additional.
+
+       -groupToOutsideSpacing <layer1 spacing1> <layer2>[:<layerN>] <spac-
+       ing2>...
+              Indicates the spacing per layer (in microns) between the nets in
+              this net group, and the other nets in the design.
+
+              This parameter is applicable only for bus nets. That is, -group-
+              ToOutsideSpacing  should  be  specified  only  for  routing con-
+              straints with -type bus.
+
+              While reading in an OpenAccess database  for  which  constraints
+              have  been created elsewhere, Innovus checks for any non-bus net
+              that has constraints with -groupToOutsideSpacing specified.  In-
+              novus  treats  such  constraints as complex constraints and sets
+              the isMixedSignal flag on the corresponding nets.
+
+       -hard  Indicates that the top or bottom layer routing  constraint  cre-
+              ated  should  be  of  hard  type. By default, Innovus places the
+              top/bottom routing layer constraints as soft routing constraints
+              in the resulting OpenAccess database.
+
+       -hierarchicalScope {local local_above local_below local_above_below}
+              Specifies whether the particular constraint is local, and/or can
+              be pulled (above) or pushed (below) across the  hierarchy.  Set-
+              ting  this  option to all possible values enables pull and push.
+              If set to local, it is not saved to the database.
+
+       -intergroupGap {<layer1 spacing1 layer2>[:<layerN>] <spacing2>...}
+              Specifies the gap to be kept between the split bus  groups  when
+              -busGroupWidth is specified. Default is min spacing.
+
+       -layerGap {<layer1 gap1 layer2>[:<layerN>] <gap2>...}
+              Indicates  the  layer  names  and the gap-spacing values for the
+              nets routed as diffPair. For any layer not listed,  the  minimum
+              legal spacing for that layer is used.
+
+              For example:
+
+              -layerGap {<layer_1 gap_1 layer_2 gap_2>...}
+
+       -layerMatch
+              Specifies  that each separate layer should be matched for match-
+              Length nets. By default, only the total length is matched
+
+              -matchGap {<layer1 gap1 layer2>[:<layerN>] <gap2>...}" Indicates
+              the spacing between two rises of the accordion. This setting  is
+              applicable only when -type is matchLength and -matchStyle is ac-
+              cordion.
+
+              You may want to control the spacing between two rises of the ac-
+              cordion if routing resources are restricted.
+
+       -matchStyle {accordion | trombone | coil}
+              Indicates  the routing topology to be used for matching the nets
+              routed as matchLength. It can be accordion, trombone, or coil.
+
+              In accordion, pulse structures are used to match length while in
+              trombone we use loops.
+
+              Default: accordion
+
+       -matchType {length resistance maxResistance}
+              Indicates the topology to be used for matching the  nets  routed
+              as -type match. You can specify one of the following values with
+              this parameter:
+
+              *
+
+                length  -  Use  this option for length-based routing, as shown
+                below:
+
+                setIntegRouteConstraint -type match -matchType length -net {<a
+                b>..} - minLength <float>- maxLength <float>
+
+                If you specify -matchType as length, the NRHF router will  op-
+                timize  the nets to route between the specified minimum and/or
+                maximum lengths. The length  values  should  be  specified  in
+                <mu>m.  If  the length values are not specified, the tool will
+                try to optimize the shorter net length  with  the  longer  net
+                lengths.
+
+                Do  not  specify -minRes and/or -maxRes values with -matchType
+                length. If you do, NRHF will display a warning  and  will  not
+                route the nets.
+
+              * resistance  -  Use  this  option  for resistance-based routing
+                within the specified range, as shown below:
+
+                setIntegRouteConstraint -type match -matchType resistance -net
+                {<a b>} -minRes <float>-maxRes <float>
+
+                If you specify -matchType as resistance, the NRHF router  will
+                optimize  the  nets  to  route  between  the specified minimum
+                and/or maximum resistance. The  resistance  values  should  be
+                specified in ohms. If the resistance values are not specified,
+                the  tool  will try to optimize the the routing to balance the
+                resistance for each net.
+
+              *
+
+                maxResistance - Use this option for  resistance-based  routing
+                with maximum resistance, as shown below:
+
+                setIntegRouteConstraint  -type  match -matchType maxResistance
+                -net {a b } ...
+
+                If you specify -matchType as maxResistance,  the  NRHF  router
+                will  launch the maximum resistance flow to optimize the given
+                nets or pin/pin pairs for user-defined  resistance  values  as
+                specified in the additional file.
+
+                Do  not  specify -minRes and/or -maxRes values with -matchType
+                maxResistance. If you do, NRHF will display a warning and will
+                not route the nets.
+
+                If the following additional file setting is  not  found,  NRHF
+                throws  an  ERROR  mentioning that the nets with the maxResis-
+                tance constraint would not be routed.
+
+                setIntegRouteConstraint -type additional -file <fileName>
+
+                If multiple additional files are specified in the  flow  after
+                setting  the  maxResistance  syntax,  the last additional file
+                specified at the time when the database  was  saved  is  taken
+                into  account.  For  example, in the OpenAccess flow, the last
+                additional file will be saved in the l/c/v.
+
+              Note that -shieldWidth and  -shieldGap  can  be  specified  with
+              -matchType  resistance and -matchType maxResistance, but are not
+              valid for -matchType length.
+
+       -maxLength <value>
+              Indicates the maximum length the router should route a net.  The
+              maximum  length is specified as a float value. This parameter is
+              applicable only for -type matchLength and  -type simpleNet.
+
+       -maxRes <value>
+              Indicates the maximum resistance to be used for the specific net
+              being routed or for the nets with a  matchLength  constraint  if
+              -type  is matchLength. The maximum resistance  is specified as a
+              float value. This parameter is applicable only for -type  match-
+              Length.
+
+       -minBusBit <integer>
+              Indicates  the  minimum  bits  allowed for the router to split a
+              bus. As channels get narrower, it becomes challenging to  accom-
+              modate  all  the bus bits in the same channel. By default, -min-
+              BusBit value is undefined, not  0. If  you  specify  an  integer
+              value for  -minBusBit, the router splits a bundle with a minimum
+              of  this  value.  For example, if you set - minBusBit to  4, the
+              router splits the bus such that each part has at least  4 bits.
+
+       -minLength <value>
+              Indicates the the minimum length the router should route a  net.
+              The minimum length is specified as a float value. This parameter
+              is applicable only for -type matchLength and  -type simpleNet.
+
+       -minRes <value>
+              Indicates the minimum resistance to be used for the specific net
+              being  routed  or  for the nets with a matchLength constraint if
+              -type is matchLength. The minimum resistance is specified  as  a
+              float  value. This parameter is applicable only for -type match-
+              Length.
+
+       -name <string>
+              Specifies the name of the constraint group being created, chang-
+              ing the default name given to the constraint by Innovus.
+
+       -net {<net1 net2 ...>}
+              Specifies the list of net names to be routed. For constraints of
+              type bus and  matchLength, a single net is also supported.
+
+       -noshareshield
+              Specifies that there should be individual shields, instead of  a
+              common  shield,  between the bus nets. This option is applicable
+              only for constraints of type bus.
+
+       -rule <NDR_name>
+              Specifies the name of the routing rule that is used for  routing
+              a particular type of net(s).
+
+              Default: "default"
+
+       -shieldGap {<layer1 gap1 layer2>[:<layerN>] <gap2> ...}
+              Specifies  the  spacing between the shielded wire and the shield
+              net in microns. For any layer  not  listed,  the  minimum  legal
+              spacing for that layer is used.
+
+              -shieldGap is not valid for -matchType length.
+
+       -shieldNet {<net1 net2>}
+              Indicates that the net group should be shielded by the specified
+              nets.  Valid  net names that you can use with -shieldNet are all
+              power and ground net names in the design. You can  specify  dif-
+              ferent  shield  nets  for different sides of a wire. The routers
+              then determine which shield net should be used on which side  of
+              the wire.
+
+              Note: You can specify a maximum of two net names with this para-
+              meter.  In  addition,  you can specify two shield net names only
+              for the following shield types:
+
+              * side
+
+              * topSide
+
+              * bottomSide
+
+              * coaxial
+
+              * tandemSplit
+
+              For the top, bottom, or topBottom shield types, you can  specify
+              only one shield net.
+
+              Default: The first ground net name in the list of ground nets.
+
+       -shieldTolerance {<net1 value1 net2 value2> ...}
+              Indicates  the  percentage  of length of the net that can remain
+              unshielded. You can set the same tolerance  value  or  different
+              tolerance values on a group of nets.
+
+              The examples below depict different use models:
+
+              * In the following example, the same constraint shield tolerance
+                is put on every member of the shield constraint group:
+
+                setIntegRouteConstraint -type shield -shieldNet {VSS} -shield-
+                Type  side  -shieldTolerance 25.0 -connectSupply anyPoint -net
+                {scan_in_2, abc, xyz}
+
+              * In the example below, different groups of nets  get  different
+                shieldTolerance values:
+
+                setIntegRouteConstraint -type shield -shieldNet {VSS} -shield-
+                Type  side  -shieldTolerance 25.0 -connectSupply anyPoint -net
+                {scan_in_2, abc, xyz} -shieldTolerance {net1 30 net2  30  net3
+                30}
+
+              * In  the following example, the nets scan_in_2, abc and xyz are
+                already nets with the shield constraint, but without tolerance
+                values. The command below adds the tolerance value to the  ex-
+                isting  shielding  constraint  of  the  nets. Note that adding
+                shield tolerance changes the net to a complex  shield  as  op-
+                posed to a simple shield:
+
+                setIntegRouteConstraint  -type shield -shieldTolerance 25 -net
+                {scan_in_2 abc xyz}
+
+              Note:
+
+              * The shield tolerance value can be set only on  nets  that  are
+                not  intended  to be routed by NanoRoute. This means that set-
+                ting the shield tolerance on any net will make that net a com-
+                plex shield.
+
+              * If you use the  setIntegRouteConstraint  command  to  set  the
+                shield tolerance on a net or a group of nets, those nets auto-
+                matically get the MS bit in the DB and show up in the GUI as a
+                complex shield.
+
+              * Percentage  tolerance  is  considered  by  VSR  as a soft con-
+                straint.
+
+              * PVS-cv is the only tool in the flow that checks the percentage
+                tolerance against the geometries created by VSR, and flags any
+                such violations.
+
+              Default: 20.0
+
+       -shieldType {unspecified side bottom bottomSide top topSide topBottom
+       coaxial tandemSplit interleaved crosstie  tandemSplitFull tandemSplit-
+       FullCoaxial  tandemSplitNearBy tandemSplitSpecial none}
+              Specifies the shielding type for the net(s) being routed.
+
+              For complex coaxial shields, shield type can be specified as ex-
+              plained below:
+
+              * tandemSplitFull - Specifies that  one-layer  tandem  shielding
+                with  overhang  should be added. The overhang can be specified
+                using the new -tandemOverhang and -tandemSideOverhang  parame-
+                ters.
+
+              * tandemSplitFullCoaxial  -  Similar  to  tandemSplitFull except
+                that the top and bottom shield over the the signal net is  not
+                split, as shown below.
+
+              * tandemSplitNearBy  -  Specifies that shielding should be added
+                only where required.
+
+              * tandemSplitSpecial - Specifies that two-layer tandem shielding
+                should be added for complete shielding from  other  nets.  Use
+                the  new -tandemCapWidth parameter to specify the width of the
+                tandem cap shield (second layer shield).
+
+              Default: unspecified for diffPair, matchLength,  and  bus;  side
+              for NDR, simpleNet, and netClass
+
+       -shieldWidth {<layer1 width1 layer2>[:<layerN>] <width2>...}
+              Indicates  the  width  of  the shield wire in microns per layer.
+              This only applies to side shields.
+
+              -shieldWidth is not valid for -matchType length.
+
+       -tandemAggressorAdjacentLayerSeparation {<number_of_tracks>}
+              Specifies the minimum distance between the  given  signal  layer
+              and the above/below layers containing the aggressors.
+
+       -tandemAggressorSameLayerTrackDistance {<layer1 n1> <layer2>[:<layerN>]
+       <n2>...}
+              Specifies  the minimum pitch tracks (distance) between the given
+              signal net and any aggressors on the same layer.
+
+       -tandemCapWidth {<layer1 width1> <layer2>[:<layerN>] <width2>...}
+              Specifies the wire width (in microns) of the tandem  cap  shield
+              beyond  the  edge of the route being shielded. For any layer not
+              listed, the minimum legal width for that layer is used. This pa-
+              rameter is needed only for the tandemSplitSpecial shield type.
+
+       -tandemNearbyNonAggressorExceptByName {<nameString>}
+              Specifies that only the nets mentioned by name  are  aggressors;
+              the rest are not considered as aggressors for shielding.
+
+       -tandemNearbyNonAggressorNets {<nameString>}
+              Specifies  the  net  names that are not considered as aggressors
+              for shielding.
+
+       -tandemNearbyNonAggressorType {<typeNameString>}
+              Specifies those signal types that are not considered  as  signal
+              types  of aggressors. Even if they exist within a certain range,
+              the signal net does not need to be protected by shielding.
+
+       -tandemOverhang {<layer1 width1> <layer2>[:<layerN>] <width2>...}
+              Specifies the overhang value (in microns) for the tandem shield.
+
+       -tandemSideOverhang {<layer1 width1> <layer2>[:<layerN>] <width2>...}
+              Specifies the overhang value (in microns) for  the  tandem  side
+              shield.
+
+       -tandemWidth {<layer1 width1 layer2>[:<layerN>] <width2>...}
+              Specifies  the width (in microns) of the top and bottom shields,
+              beyond the edge of the route being shielded. For any  layer  not
+              listed, the minimum legal width for that layer is used.
+
+       -tolerance <tolerance>
+              Indicates  the  percentage  difference in length that is allowed
+              when routing nets as matchLength and diffPair.
+
+              Default: 20%
+
+       -topLayer layerNum
+              Specifies the top routing layer that is to be used for routing.
+
+       -type {bus diffPair match NDR netClass shield simpleNet additional}
+              Specifies the type of routing constraints to be created:
+
+              * bus - Specifies constraints for bus nets.
+
+              * diffPair - Specifies constraints for differential pair nets.
+
+              * match - Specifies constraints for matched nets.
+
+              * NDR - Specifies constraints for a net with a non-default rule.
+
+              * netClass - Specifies constraints  for  shielding  a  group  of
+                nets.  It  can  also be used for a group of nets that have the
+                same NDR.
+
+              * shield - Specifies constraints for shielding a single net.
+
+              * simpleNet - Specifies constraints for a simple net.
+
+              *
+
+                additional - Specifies  the  maximum  resistance  target  con-
+                straints  for nets. The NanoRoute High Frequency (NRHF) router
+                routes to match the targets by wire widening.  A  prerequisite
+                for  the maximum resistance flow is that NDRs should be prede-
+                fined for the used layers.
+
+                -type additional can be used only if -file is specified.
+
+Examples
+              * The following command sets the layer 1 gap as  0.4,   layer  2
+                gap as 0.39, and layer 3 gap as 0.38:
+
+                setIntegRouteConstraint  -type  diffpair  -net {n_7862 n_7875}
+                -layerGap {1 0.4 2 0.39 3 0.38}
+
+              * The following command specifies a shield  constraint  for  the
+                analogS41 net:
+
+                setIntegRouteConstraint  -type  shield -shieldNet VSS -shield-
+                Type side -connectSupply anyPoint -rule NDR4 -net analogS4I
+
+              * The following command specifies a shield  constraint  for  the
+                net group comprising nets analogW1I, analogW2I, analogW3I, and
+                analogW4I:
+
+                setIntegRouteConstraint -type netClass -shieldNet VSS -shield-
+                Type  side  -connectSupply  anyPoint -net {analogW1I analogW2I
+                analogW3I analogW4I}
+
+              * The following command specifies  minimum  and  maximum  length
+                constraints for the xyz net:
+
+                setIntegRouteConstraint  -type  simpleNet  -net xyz -minLength
+                2.0 -maxLength 3.0
+
+              * The following command specifies that individual shields should
+                be used between the nets in the bus constraint:
+
+                setIntegRouteConstraint -type bus  -net  {nets_1  nets_2  ...}
+                -shieldNet VSS -noshareshield ...
+
+              * The following command specifies maximum resistance constraints
+                for nets as specified in the target file, 1.txt:
+
+                setIntegRouteConstraint -type additional -file 1.txt
+
+              * The following command specifies that individual shields should
+                be  used  between  the nets in the bus constraint and that the
+                bus bits should be routed in the same order as specified  with
+                the -net option:
+
+                setIntegRouteConstraint   -type  bus  -net  {nets_100  nets_25
+                net_68   net_312   ...}    -bus_bit_order    -shieldNet    VSS
+                -noshareshield ...
+
+Related Information
+              * deleteIntegRouteConstraint
+
+              * getIntegRouteConstraint
+
+              * writeIntegRouteConstraint
+
+              * Routing  Constraint Interoperability chapter in the Mixed Sig-
+                nal Interoperability Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Mixed Signal -> Integration Constraint Editor
+
+                           Fri Apr 04 01:25:37 20s2e5tIntegRouteConstraint(25.10)

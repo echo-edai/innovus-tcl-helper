@@ -1,0 +1,134 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addEndCap(25.10)                                              addEndCap(25.10)
+
+Name
+       addEndCap  -  Adds  physical-only end cap cells at the ends of the site
+       rows
+
+Syntax
+       addEndCap
+
+       [-help]
+
+       [-area llx lly urx ury]
+
+       [-coreBoundaryOnly]
+
+       [-powerDomain <powerDomainName>]
+
+       [-prefix <prefixName>]
+
+       Adds physical-only end cap cells at the ends of the site rows.  A  sin-
+       gle-height cap cell is required at the end of each row. For deep N-well
+       technology,  the  command  can be used to insert row-caps to isolate p-
+       well from top and bottom. Use  setEndCapMode  to  specify  the  row-cap
+       cells. For deep N-well technology, addEndCap also gets the end cap list
+       from  LEF  if  the  end  cap cell is specified with the following MACRO
+       CLASS, but user definition has higher priority than LEF specification.
+
+       [CLASS ENDCAP {
+
+        | TOPEDGE | BOTTOMEDGE | LEFTEDGE | RIGHTEDGE
+
+        | LEFTTOPEDGE | RIGHTTOPEDGE
+
+        | LEFTBOTTOMEDGE | RIGHTBOTTOMEDGE
+
+        | LEFTTOPCORNER | RIGHTTOPCORNER
+
+        | LEFTBOTTOMCORNER | RIGHTBOTTOMCORNER}
+
+        } ]
+
+       Note: addEndCap is always called after floorplan is done and before ad-
+       dWellTap.
+
+       Note: End cap insertion honors core boundary,  power  domain  boundary,
+       placement blockage, fixed macro, and fixed macro halo
+
+       To delete the end cap cells, use the deleteFiller command.
+
+Parameters
+       -area llx lly urx ury
+              Specifies  the  coordinates  of the bounding box, in microns. By
+              default, the core box that encloses all core rows is used.
+
+       -coreBoundaryOnly
+              Specifies that end-cap cells are placed  only  within  the  core
+              boundary.  This  ensures that end-cap cells do not get placed at
+              locations where site rows are obstructed by blockages.
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each addEndCap parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man addEndCap.
+
+       -powerDomain <powerDomainName>
+              Specifies  the  power  domain in which the end-cap cells are in-
+              serted. This identifies the area  where  to  place  the  end-cap
+              cells and connect to the correct power and ground nets.
+
+       -prefix <prefixName>
+              Specifies  the  prefix  for  the placed instances. The generated
+              name for the instance uses this prefix as prefix_<uniqueString>.
+
+              Prefix Default: ENDCAP
+
+              Do not use an underscore at the end of the prefix name.
+
+       Note: If the given leftEdge cell is the same as the rightEdge cell, and
+       the cell and site symmetries allow it, the postCap  instances  will  be
+       flipped in the Y direction.
+
+Examples
+              * The  following  command preplaces cell abc at the beginning of
+                each site row of the design, and cell xyz at the end  of  each
+                site  row of the design in R0 orientation, and adds the prefix
+                PwrCap for the placed instances.
+
+                setEndCapMode -leftEdge abc -rightEdge xyz; addEndCap  -prefix
+                PwrCap
+
+              * The following command deletes all physical-only cells with the
+                prefix  PwrCap. As a result, all cells created in the previous
+                example are deleted from the design.
+
+                deleteFiller -prefix PwrCap
+
+              * The following command preplaces cell abc at the beginning  and
+                end  of  each site row of the design and, if site symmetry al-
+                lows, flips the post-cap cell in Y direction. Thus, for N-ori-
+                ented rows, placed pre-cap cell is in N orientation, and post-
+                cap cell is in FN orientation.
+
+                setEndCapMode -leftEdge abc -rightEdge abc; addEndCap  -prefix
+                PwrCap
+
+              * The  following  command, in which the pre-cap cell is the same
+                as the post-cap cell, places pre-cap cells in  FN  orientation
+                and  post-cap  cells  in  N orientation in N-oriented rows, if
+                site symmetry allows:
+
+                setEndCapMode -leftEdge abc -rightEdge abc  -flipY;  addEndCap
+                -prefix PwrCap
+
+              * The following command flips both the pre-cap and post-cap cell
+                in  Y  direction.  This preplaces both cells abc and xyz in FN
+                orientation in N-oriented rows:
+
+                setEndCapMode -leftEdge abc -rightEdge xyz  -flipY;  addEndCap
+                -prefix PwrCap
+
+Related Information
+              * Placing the Design chapter in the Innovus User Guide
+
+                     * "Adding End-Cap Cells"
+
+              * addWellTap
+
+              * deleteFiller
+
+              * setEndCapMode
+
+                           Fri Apr 04 01:25:37 2025           addEndCap(25.10)

@@ -1,0 +1,101 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+identify_proto_model(25.10)                        identify_proto_model(25.10)
+
+Name
+       identify_proto_model  -  Identifies the modules or instance groups of a
+       design that will become FlexModels
+
+Syntax
+       identify_proto_model
+
+       [-help]
+
+       [-skip_report]
+
+       Identifies the modules or instance groups of a design that will  become
+       FlexModels.  This  command  supports  either  module-based  or instance
+       group-based FlexModels. If a design netlist has no  logical  hierarchy,
+       the  command  will automatically create instance groups based on place-
+       ment clustering algorithm and identify them as FlexModels.
+
+       The identify_proto_model command uses the parameters of  set_proto_mode
+       that have -identify as the prefix.
+
+       set_proto_mode -identify_min_inst <number>
+
+       set_proto_mode -identify_max_inst <number>
+
+       set_proto_mode -identify_exclude_module <moduleName>
+
+       set_proto_mode -identify_exclude_module_tree <moduleTree>
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each identify_proto_model parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man identify_proto_model.
+
+       -skip_report
+              Skips reporting the list of identified flexModels at the end  of
+              the command.
+
+              Data_type: bool, optional
+
+Examples
+              * Consider  the  following  design hierarchy that has 130000 in-
+                stances at the top level. MOD1 has 60000 instances,  MOD2  has
+                40000 instances and MOD3 has 30000 instances.
+
+                TOP (130000)
+
+                          MOD1 (60000)
+
+                                MOD1a (20000)
+
+                                MOD1b (10000)
+
+                                MOD1c (30000)
+
+                          MOD2 (40000)
+
+                                MOD2a (20000)
+
+                                MOD2b (20000)
+
+                          MOD3 (30000)
+
+                                MOD3a (20000)
+
+              * The following commands identify the modules with minimum 20000
+                instances  and  maximum 50000 instances, and also excludes the
+                module MOD3 from being selected as flex_module.
+
+                set_proto_mode  -identify_min_inst  20000   -identify_max_inst
+                50000
+
+                set_proto_mode -identify_exclude_module {MOD3}
+
+                identify_proto_model
+
+                get_proto_model -type flex_module -tcl -name
+
+                MOD1c MOD2 MOD3a
+
+                In  this  example,  MOD1a,  MOD1c,  MOD2,  and MOD3a are being
+                marked as flexModels. Here, MOD1 does  not  get  marked  as  a
+                flexModel because it is more than the maximum instance thresh-
+                old.  MOD1b  is  less than minimum instance threshold so it is
+                also not marked as a flexModel. MOD3 is  excluded  because  we
+                want  to exclude it as mentioned above. However its sub-module
+                MOD3a is marked as a flexModel because it satisfies the  mini-
+                mum instance threshold.
+
+Related Information
+              * set_proto_mode
+
+              *
+
+                Prototyping Methodologies chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025identify_proto_model(25.10)

@@ -1,0 +1,147 @@
+{
+  "command": "analyze_resistance",
+  "is_cmd": true,
+  "summary": "执行有效电阻分析",
+  "description": "该命令用于执行电源网络的有效电阻分析。它可以计算电源网格上两个节点之间、从一个节点到设计中所有电压源、或从一个实例到所有电压源的有效电阻。该命令可以在不进行功耗计算和IR-drop分析的情况下运行，但需要先加载设计、设置电源网络和电源焊盘，并运行电阻分析。该命令使工具能够考虑整个电源结构，包括IO单元内的嵌入式环形结构（如果存在）。注意：在全芯片分析中，支持与set_rail_analysis_mode -enable_rlrp_analysis命令结合使用，在DP模式下同时执行最小电阻路径分析（RLRP）和有效电阻分析（REFF）。但在XP模式下，RLRP和REFF分析应分开进行。在XP模式下对电源/信号网络执行点对点有效电阻分析时，应禁用RLRP分析。",
+  "usage": "analyze_resistance [-help] [-cell <master_cell_name>] [-die_mode {3dic}] [-force_reextraction {true | false}] [-instance_list {<instance1> <pin1> <instance2> <pin2>...}] [-instance_list_file <filename>] [-instance_pair_list {<instance1instance2pin1  pin2> ...}] [-instance_pair_list_file <filename>] -net <netName> | -domain <domainName> [-node_list {<node1> <node2>.....  <METAL_LAYER> <LABEL>}] [-node_list_file <filename>] [-node_pair_list  {<node1X>  <node1Y>  <METAL_LAYER1> <node2X> <node2Y> <METAL_LAYER2>...<LABEL>}] [-node_pair_list_file <filename>] [-output <filename>] [-output_dir <directory_name>] [-region {<x1> <y1> <x2> <y2> <layer> <number_of_nodes> <region_name>}] [-report_limit <value>] [-threshold <value>] [-print_cell_name] [-domain_threshold<value>] [-net_threshold<value>] [-exclude_list_file <filename>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个analyze_resistance参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "报告指定主单元名称的所有实例的有效电阻。通过仅指定要分析的实例的单元名称，提高了有效电阻计算的可用性。可以同时指定多个单元以分析多个单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-die_mode",
+      "description": "指定执行多芯片有效电阻分析。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-force_reextraction",
+      "description": "指定强制重新提取电阻。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-instance_list",
+      "description": "指定要计算有效电阻的实例列表。pin是可选参数。默认情况下，工具将使用与被分析网络关联的实例引脚。在实例的两个不同引脚连接到同一网络的特殊情况下，可以使用pin参数。注意：该参数与-instance_pair_list和-instance_pair_list_file参数互斥。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-instance_list_file",
+      "description": "指定实例列表文件的名称。该文件包含与-instance_list参数格式相同的实例列表。允许指定大量实例。与-instance_list互斥。注意：该参数与-instance_pair_list和-instance_pair_list_file参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance_pair_list",
+      "description": "指定实例对列表，以启用设计中两个实例之间的有效电阻计算。<pin1>和<pin2>分别是<instance1>和<instance2>的引脚。注意：该参数与-instance_list和-instance_list_file参数互斥。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-instance_pair_list_file",
+      "description": "指定实例对列表文件的名称。该文件包含与-instance_pair_list参数格式相同的实例对列表。允许指定大量实例对。与-instance_pair_list互斥。注意：该参数与-instance_list和-instance_list_file参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要分析的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-domain",
+      "description": "指定要分析的域名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-node_list",
+      "description": "指定用户定义节点列表，用于计算指定用户定义节点与所有电压源之间的有效电阻。可以根据给定层上的区域添加节点列表。LABEL是您为标识列表中节点条目选择的任何名称，可选但有助于调试。注意：该参数与-node_pair_list和-node_pair_list_file参数互斥。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-node_list_file",
+      "description": "指定节点列表文件的名称。该文件包含与-node_list参数格式相同的用户定义节点列表。允许指定大量节点。注意：该参数与-node_pair_list和-node_pair_list_file参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-node_pair_list",
+      "description": "指定节点对列表，用于计算电源网格上两个节点之间的有效电阻。可以根据给定层上的区域添加节点列表。LABEL是您为标识列表中节点条目选择的任何名称，可选但有助于调试。注意：该参数与-node_list和-node_list_file参数互斥。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-node_pair_list_file",
+      "description": "指定节点对列表文件的名称。该文件包含与-node_pair_list参数格式相同的节点对列表。允许指定大量节点对。注意：该参数与-node_list和-node_list_file参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output",
+      "description": "指定输出报告文件的名称，该文件包含报告标题和电阻值的排序列表。注意：在XP流程中不应指定此参数，因为XP报告默认在状态目录下合并。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_dir",
+      "description": "指定保存输出报告文件的目录名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-region",
+      "description": "分析指定区域内的电阻。可以在特定层上绘制一个框，并指定要选择的节点数（最多100个节点）。此参数允许计算芯片上给定层的有效电阻，并确定设计中从顶层到底层的电阻变化情况。可以为区域分配名称。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-report_limit",
+      "description": "指定报告中打印的实例数量以节省磁盘空间。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-threshold",
+      "description": "指定显示电阻值高于此阈值的节点/节点对/实例/实例对的最小允许有效电阻。如果指定非零阈值，则电阻值高于该阈值的实例将被标记为FAIL，其余标记为PASS。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-print_cell_name",
+      "description": "指定在有效电阻报告中打印单元名称。此参数允许按单元名称对电阻值进行排序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-domain_threshold",
+      "description": "指定实例的最小允许有效电阻（每个网络的有效电阻总和）。对于特定实例列表分析，低于阈值的实例将报告为\"PASS\"，高于阈值的实例将报告为\"FAIL\"。对于全芯片分析，低于阈值的实例将不会在域报告中报告。默认值为0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-net_threshold",
+      "description": "允许为不同的网络指定不同的阈值。对于未使用-net_threshold参数指定值的所有剩余网络，将应用-threshold参数指定的值。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-exclude_list_file",
+      "description": "指定包含在电阻分析流程中不会处理的单元或实例列表的文件名。指定的单元/实例将从报告生成中忽略。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

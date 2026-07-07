@@ -1,0 +1,291 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_hier_view(25.10)                                create_hier_view(25.10)
+
+Name
+       create_hier_view
+
+Syntax
+       create_hier_view
+
+       [-help]
+
+       -library_name <name>
+
+       [-output_dir <dir>]
+
+       [-block_lef <lef_file>|-block_gds <gds_file>]
+
+       [-block_lef <lef_file> | -gds_port_file <gds_port_file>]
+
+       [-libgen_command_file <file>]
+
+       [-max_viacluster_mode {true | false}]
+
+       [-extraction_mode {fast | accurate}]
+
+       [-cell_name <name>]
+
+       [-def <list_of_DEF_files>]
+
+       [-oaRef <OA_reference_libs>]
+
+       [-powergrid_view_libraries <primitive_cells.cl>]
+
+       [-ground_nets {<pin1><pin2> ...<pinN>}]
+
+       [-power_nets {<pin1><value1><pin2><value2> ...<pinN><valueN>}]
+
+       [-extraction_work_directory <path_to_extraction_work_directory>]
+
+       [-compress_powergrid_database {true | false}]
+
+       [-parasitic_extractor_command_file <filename>]
+
+       [-cluster_via1_ports {true | false}]
+
+        [-cluster_via_rule { {<via_layer1> <number_of_equidistant_vias>}...}]
+
+        [-cluster_via_size <value>]
+
+       [-ignore_fillers {true | false}]
+
+       [-ignore_decaps {true | false}]
+
+       [-ignore_shorts {true | false}]
+
+       [-force_library_merging{true | false}]
+
+       Creates a hierarchical power-grid view. The hierarchical PGV generation
+       of a block is part of the top-level Hierarchical Rail Analysis.
+
+Parameters
+       -block_lef <lef_file>
+              Specifies  the  name  of the block LEF file. The <lef_file> must
+              have all power pin port geometries defined for the  hierarchical
+              block.
+
+       -block_gds <gds_file>
+              In  absence of block LEF, you can specify block GDS and port la-
+              bel file to generate hierarchical power-grid view.
+
+       -cell_name <name>
+              Specifies the block cell name as  specified  in  the  block  DEF
+              file.
+
+       -cluster_via1_ports {true | false}
+              Designs  with  follow-pin routing on M1 and M2 layers have stan-
+              dard cells library LEF with M1, M2, and VIA1 ports. This parame-
+              ter specifies to cluster VIA1 ports for such cells in  order  to
+              improve overall extraction and rail analysis performance.
+
+              Default: true
+
+              This  parameter  is  set to true by default to improve VIA1 port
+              handling in designs with M1 and M2 follow-pin routing. This  pa-
+              rameter  gives  significantly  better  performance by clustering
+              equidistant VIA1 ports defined in cell LEF  without  significant
+              loss of accuracy. However, if you specify a clustering rule, the
+              user specification takes precedence over automated VIA1 cluster-
+              ing.
+
+       -cluster_via_rule { {<via_layer1> <number_of_equidistant_vias>}...}
+              Controls the number of vias to cluster on a layer basis. The VIA
+              clustering rule specified using this parameter will override the
+              default clustering rule for a given accuracy mode.
+
+              The  following  command  will cluster 100 equidistant VIA1 cuts,
+              200 equidistant VIA2 cuts, and 300 equidistant VIA7 cuts:
+
+              create_hier_view -cluster_via_rule  {  {VIA1  100}}  {VIA2  200}
+              {VIA7 300}}
+
+              The  rest  of the VIAs will be clustered using the default clus-
+              tering rule depending upon the rail analysis accuracy mode.
+
+       -cluster_via_size <value>
+              Specifies the size of the via array to cluster  all  via  layers
+              except VIA1 (layer between Metal1 and Metal2).
+
+              The  default value is 625 (25x25 via array), except when running
+              static analysis using HD mode. The default for static HD mode is
+              16 (4x4), primarily to preserve more accuracy for EM analysis.
+
+              Default: 625
+
+       -compress_powergrid_database {true | false}
+              Specifies to compress the output files generated  by  extraction
+              and  rail  analysis to save disk space usage. This parameter re-
+              duces disk space requirement from the extraction and rail analy-
+              sis stages at approximately 5-10% performance penalty.
+
+              Default: false
+
+       -def <list_of_DEF_files>
+              Specifies a list of block DEF files for hierarchical analysis.
+
+       -extraction_mode {fast | accurate}
+              Determines what power-grid views will be created,  dependent  on
+              whether  fast  or accurate extraction is to be done. By default,
+              hierarchical PGV generates both detailed and reduced views.
+
+       -extraction_work_directory <path_to_extraction_work_directory>
+              Specifies to re-use the extracted power-grid database to  gener-
+              ate  HPGV.  This parameter is only supported to generate hierar-
+              chical extraction view of a block in the design.
+
+              The specified extraction work directory  must  contain  the  ex-
+              tracted data for all the nets for which the hierarchical extrac-
+              tion view needs to be generated.
+
+              This parameter is mutually exclusive with the -state_directories
+              and -def parameters of the create_hier_view command.
+
+       -force_library_merging{true | false}
+              Specifies  to  force  merge  PGVs with different resistivity and
+              layers. It uses the technology information of the first library.
+              If multiple tech-only PGVs are specified, it will take the first
+              tech-only PGV definition and the first cell definition.  If  you
+              are  merging  a  tech-only PGV with other PGVs, it will keep the
+              tech-only technology definition and the first cell definition.
+
+       -gds_port_file <gds_port_file>
+              In absence of block LEF, you can specify block GDS and port  la-
+              bel file to generate hierarchical power-grid view.
+
+       -ground_nets {<pin1><pin2><...pinN>}
+              Specifies a list of ground nets of the block.
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each create_hier_view parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man create_hier_view.
+
+       -ignore_decaps {true | false}
+              Ignores decap cells during rail analysis. It ignores cells  that
+              are tagged as DECAP cells during library characterization or set
+              as decap cells using the set_rail_analysis_mode -decap_cell_list
+              command  parameter.  If decaps are used to preserve connectivity
+              on the follow-pin routing, you must set this parameter to false.
+              Ignoring decaps during dynamic analysis is not recommended.
+
+              Default: true for static, false for dynamic
+
+       -ignore_fillers {true | false}
+              Ignores filler cells during rail analysis if the list of  filler
+              cells are defined in PGV generation, or specified as fillers us-
+              ing the set_rail_analysis_mode -filler_cell_list command parame-
+              ter.  During rail analysis, ignore library cells that are tagged
+              as FILLER cells and have no capacitance associated with the  in-
+              terface  nodes.  If fillers are used to preserve connectivity on
+              the follow-pin routing, you must set this parameter to  false.
+
+              Default: true
+
+       -ignore_shorts {true | false}
+              Ignores shorts that are found during  extraction  and  continues
+              hierarchical  PGV  generation. However, -ignore_shorts cannot be
+              applied if the design contains GDS.
+
+              Default: false
+
+       -libgen_command_file <file>
+              Specifies the file name of a power-grid library generation (lib-
+              gen) command file. When specified, it will be  included  in  the
+              auto-generated  libgen.cmd  file  at  the end as include <file>.
+              This parameter allows you to provide a file that  includes  spe-
+              cific library generation options.
+
+       -library_name <name>
+              Specifies the name of the library that the block power-grid view
+              will  be  placed in. A .cl extension will automatically be added
+              to the name.
+
+       -max_viacluster_mode {true | false}
+              Specifies the extractor to cluster vias automatically to  reduce
+              the  RC elements by clustering vias into one node, therefore re-
+              ducing the IR drop analysis runtime in dynamic mode. It is based
+              on the notion that current evenly distributes through  all  vias
+              of an array via.
+
+              Default: true
+
+       -oaRef <OA_Reference_libs>
+              Reads OpenAccess reference libraries.
+
+       -output_dir <dir>
+              Specifies the output directory that the results will be save in.
+
+       -parasitic_extractor_command_file <filename>
+              Specifies the name of the file input to the extractor invoked by
+              the  Library  Generation  engine. This file contains information
+              about the cells in the design and is used for resistance and ca-
+              pacitance extraction. For variables and functions  that  can  be
+              placed  in  this  command  file, see Extractor Options in Voltus
+              Text Command Reference. In general, this parameter is  used  for
+              debugging purposes.
+
+       -powergrid_view_libraries <primitive_cells.cl>
+              Specifies  a  list  of primitive cell libraries for hierarchical
+              PGV generation.
+
+       -power_nets {<pin1><value1><pin2><value2 ...pinN><valueN>}
+              Specifies a list of power nets and the nominal voltage of  those
+              nets.
+
+Examples
+              * The following command generates a hierarchical power-grid view
+                for  the  hierarchical block using LEF and extraction directo-
+                ries for VDD and VSS nets:
+
+                create_hier_view -block_lef blockA.lef -extraction_work_direc-
+                tory  work  -library_name   blockA   -powergrid_view_libraries
+                ./pgv/stdcells.cl   -power_nets  {vdd  1.2} -ground_nets {gnd}
+                -cell_name blockA
+
+                The design.lef must have all power pin port geometries defined
+                for the hierarchical block. The generated hierarchical PGV li-
+                brary is blockA.cl. The library is in  binary  format  and  it
+                stores  the block's connectivity to the top-level based on the
+                provided LEF data. It stores the extracted power-grid  network
+                and current distribution from the provided directories.
+
+              * The  following command specifies to force merge PGVs with dif-
+                ferent resistivity and layers:
+
+                create_hier_view  \
+
+                  -force_library_merging true \
+
+                  -library_name lib1  \
+
+                  -view hier_extraction_view \
+
+                  -powergrid_view_libraries {../accurate_stdcells_A.cl  ../ac-
+                curate_stdcells_A.cl ... ../accurate_stdcells_AN.cl } \
+
+                  -def {../design.def.gz} \
+
+                  -cell_name  CELLA \
+
+                  -power_nets {VDD 1.32} \
+
+                  -ground_nets {VSS} \
+
+                  -block_lef {./design.lef}  \
+
+                  -extraction_mode accurate \
+
+                generate_pg_library -output pgv
+
+Related Information
+              * set_rail_analysis_mode
+
+              * set_dynamic_rail_simulation
+
+              * analyze_rail
+
+              * "Hierarchical  Rail Analysis" in the Voltus IC Power Integrity
+                Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025    create_hier_view(25.10)

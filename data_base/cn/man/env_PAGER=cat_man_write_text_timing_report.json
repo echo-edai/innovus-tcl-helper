@@ -1,0 +1,51 @@
+{
+  "command": "write_text_timing_report",
+  "is_cmd": true,
+  "summary": "将已加载的时序调试报告（.mtarpt文件）中的路径信息写入文本文件",
+  "description": "该命令用于生成一个包含时序路径信息的文本报告。这些路径信息来源于已加载的.mtarpt文件（可通过load_timing_debug_report命令或GUI中的Display/Generate Timing Report表单加载）。路径的选择逻辑如下：如果仅加载了一个.mtarpt文件且未指定其他参数，则工具会写入该文件中的所有路径；如果加载了多个.mtarpt文件，则必须通过参数指定要处理的.mtarpt文件（除非指定了类别）。生成的报告可用于时序分析。注意：生成的文本报告无法被读回时序调试环境。",
+  "usage": "write_text_timing_report [-help] [-mtarpt file.mtarpt | -category category_name] [-format{{<column1 width1>} {<column2 width2>} ...}] [-path_specification <path_specification>] [-summary] -report <file.tarpt>",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出write_text_timing_report命令各参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mtarpt",
+      "description": "指定要读取并转换为文本文件的.mtarpt文件的名称。如果指定了此参数，则不能同时指定-category参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-category",
+      "description": "指定要写入文本文件的路径类别。如果指定了此参数，则不能同时指定-mtarpt参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "根据指定的列名和宽度格式化报告。列宽对指定报告中要显示的列及其宽度。可以指定多个列名。默认格式为：{{name 35} {arc 10} {cell 10} {delay 10} {slew 10} {load 10} {arrival 10} {required 10}}。可用列名包括：name, arc, cell, delay, slew, load, arrival, required, stolen, fanout, fedge, tedge, incr_delay, type, fpin_loc, tpin_loc, loc, pin, sum, status, ir_drop, wire_len。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-path_specification",
+      "description": "写入单个路径编号或由空格分隔的路径范围（例如“1-50”）。仅当指定或加载了单个.mtarpt文件时才能使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report",
+      "description": "指定输出的文本文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-summary",
+      "description": "仅写入每个路径文件的头部信息（端点名称和裕量）。如果不需要详细的表格，可使用此参数。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

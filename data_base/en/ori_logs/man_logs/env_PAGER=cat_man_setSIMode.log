@@ -1,0 +1,817 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setSIMode(25.10)                                              setSIMode(25.10)
+
+Name
+       setSIMode  -  Sets  signal  integrity configuration parameters used for
+       crosstalk analysis and repair
+
+Syntax
+       setSIMode
+
+       [-help]
+
+       [-reset]
+
+       [-accumulated_small_attacker_factor <double>]
+
+       [-accumulated_small_attacker_mode {cap | current | zero_mean}]
+
+       [-accumulated_small_attacker_threshold <double>]
+
+       [-attacker_alignment {path | path_overlap  |  timing_aware_edge  |  in-
+       put_arrival}]
+
+       [-clock_delta_delay_threshold <double>]
+
+       [-clocks {asynchronous|synchronous}]
+
+       [-constrained_input_threshold_failure_point {input | both}]
+
+       [-delta_delay_annotation_mode {lumpedOnNet | arc}]
+
+       [-delta_delay_threshold <double>]
+
+       [-double_switching {none | clock | data_sequential | all}]
+
+       [-enable_bus_attacker_correlation {true | false}]
+
+       [-enable_delay_report {true | false}]
+
+       [-enable_drv_with_delta_slew {true | false}]
+
+       [-enable_dynamic_receiver_peak_limits {true | false}]
+
+       [-enable_double_clocking_check {true | false}]
+
+       [-enable_glitch_propagation  {true | false}]
+
+       [-enable_glitch_propagation_spice_deck {true | false}]
+
+       [-enable_glitch_report {true | false}]
+
+       [-enable_logical_correlation {true | false}]
+
+       [-enable_overshoot_undershoot_glitch {true | false}]
+
+       [-enable_two_stage_driver_weakening {true | false}]
+
+       [-enable_user_defined_bus_merging {true | false}]
+
+       [-enable_virtual_attacker_constituent_report {true | false}]
+
+       [-glitch_accuracy_level <int>]
+
+       [-glitch_analysis_type {source | full_propagation}]
+
+       [-hold_slack <double>]
+
+       [-individual_attacker_clock_threshold <float>]
+
+       [-individual_attacker_simulation_filtering {true | false}]
+
+       [-individual_attacker_threshold <double>]
+
+       [-input_glitch_full_propagation_threshold <double>]
+
+       [-input_glitch_full_propagation_vh_threshold <double>]
+
+       [-input_glitch_full_propagation_vl_threshold <double>]
+
+       [-input_glitch_threshold <double>]
+
+       [-input_glitch_vh_threshold <double>]
+
+       [-input_glitch_vl_threshold <double>]
+
+       [-nonlinear_attacker_slew {true | false}]
+
+       [-num_si_iteration <int>]
+
+       [-pessimistic_mode  {advanced | advanced_node | reduced_pessimism | in-
+       creased_pessimism | high_pessimism}]
+
+       [-receiver_clk_peak_limit <double>]
+
+       [-receiver_latch_peak_limit <double>]
+
+       [-receiver_peak_limit <double>]
+
+       [-report_max_virtual_attacker_constituents <int>]
+
+       [-report_si_slew_max_transition {true | false}]
+
+       [-secondary_attacker_decoupling_factor <double>]
+
+       [-separate_delta_delay_on_data {true | false}]
+
+       [-setup_slack <double>]
+
+       [-si_reselection {delta_delay | slack}]
+
+       [-si_reselection_delay_threshold <double>]
+
+       [-skip_noise_model_check <pins>]
+
+       [-skip_tw <nets>]
+
+       [-switch_prob <double>]
+
+       [-unconstrained_net_use_inf_tw {true | false}]
+
+       [-use_infinite_TW {true | false}]
+
+       Sets signal  integrity  configuration  parameters  used  for  crosstalk
+       analysis and repair.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setSIMode parameter. For a detailed  descrip-
+              tion  of the command and all of its parameters, use the man com-
+              mand:  man setSIMode
+
+       -reset Resets all or specified options to their default value.
+
+              Note: Any values that do not already match the default value and
+              are reset will be reported.
+
+       -accumulated_small_attacker_factor <double>
+              Specifies the multiplication factor that controls the effect  of
+              the  cap  mode  accumulated small attacker. An accumulated small
+              attacker is an imaginary attacker that represents the sum of all
+              the weak attackers on a specified net. To reduce  the  pessimism
+              of  using  the  accumulated small attacker, adjust this value to
+              anything between 0 and 1. A value of 0 means that the  cap  mode
+              accumulated small attacker will not be used.
+
+              Default:1
+
+              Note:  This  option  does not work with the current mode accumu-
+              lated small attacker, which is default for  process  sizes  45nm
+              and below.
+
+       -accumulated_small_attacker_mode {cap | current | zero_mean}
+              Specifies  whether  to use the current-matching based method for
+              accumulated small attackers.
+
+              cap: Uses the accumulated small attacker method,  which  matches
+              the total coupling capacitance of an attacker with the small at-
+              tackers that are being virtualized. This is the default mode for
+              all process nodes above 45nm.
+
+              current:  Uses the current-matching based method for accumulated
+              small attackers. With this method, the  transitions  on  virtual
+              attackers  are  modeled using Piece Wise Linear (PWL) waveforms.
+              The PWL waveforms are generated in a way that  the  current  in-
+              duced by the transition matches the total current induced by all
+              accumulated small attacker components.
+
+              zero_mean:  A  new accumulation method where series of small at-
+              tackers, that is, attackers less than  the  individual  attacker
+              threshold  value,  are  assumed to transition in opposing direc-
+              tions and thus cancel one another in aggregate.
+
+              Default: current - for 45nm and below process nodes.
+
+       -accumulated_small_attacker_threshold <double>
+              Changes the accumulated small attacker glitch threshold. If  the
+              virtual  attacker  produces  a  glitch  whose peak is below this
+              threshold, the component coupling capacitors of the  accumulated
+              small attacker are split into two ground capacitors and there is
+              no accumulated small attacker for the victim. The value is spec-
+              ified as a ratio of VDD.
+
+              To disable the accumulated small attacker, set the value greater
+              than or equal to 1.
+
+              Default: 10.01
+
+              By default, this option is disabled.
+
+       -attacker_alignment {path | path_overlap | timing_aware_edge | in-
+       put_arrival}
+              Specifies  the attacker alignment. You can use the following op-
+              tions:
+
+              * path: The victim worst arrival edge is used while  determining
+                the  attackers.  Crosstalk impact is computed according to the
+                latest/earliest arrival edge of victim for max/min analysis.
+
+              * path_overlap: The full timing window of victim  is  considered
+                while  determining  the  attackers. Crosstalk impact is calcu-
+                lated according the victim edge, lying anywhere in timing win-
+                dow, which may experience maximum impact.
+
+              * timing_aware_edge: Realistic analysis  similar  to  path-based
+                analysis  is performed. Each attacker's impact is annotated on
+                victim transition where attacker  timing  window  edge  aligns
+                with  the  victim. However, to ensure GBA bounds PBA analysis,
+                the timing-aware edge mode handles some nets  based  on  their
+                timing properties in GBA analysis.
+
+              * input_arrival:  The  attackers  use  timing  windows formed by
+                2-sigma arrivals regardless of the analysis sigma  multiplier.
+                The  victim driver input arrivals will be used for SI computa-
+                tion. Also, the mean victim timing window  and  edge  will  be
+                used for SI computation in GBA and PBA modes, respectively.
+
+                This  behavior  allows  pessimism reduction in GBA SI analysis
+                with narrower timing windows. Also, this provides a more accu-
+                rate PBA SI analysis, with no dependency of  driver  cell  GBA
+                delays.
+
+              Default: path
+
+       -clock_delta_delay_threshold <double>
+              Specifies  the value above which the clock delta delay should be
+              calculated.
+
+              <Default>: -1
+
+              The -clock_delta_delay_threshold parameter  provides  a  way  to
+              specify different delta delay thresholds for clock nets only.
+
+       -clocks {asynchronous | synchronous}
+              Treats  the  clocks  either  synchronous or asynchronous to each
+              other.
+
+              Default: synchronous
+
+       -constrained_input_threshold_failure_point {input | both}
+              Allows you to control the glitch failure criteria  when  a  user
+              specifies an object-specific RIP threshold.
+
+              When  set to input, the software skips ROP analysis and performs
+              RIP-based failure check on the receiver pins for cases where ob-
+              ject-specific RIP threshold is set using the  set_glitch_thresh-
+              old -failure_point input -net (or -pin) command.
+
+              When set to both, the software performs both RIP and ROP failure
+              checks,  wherever possible. If user-specified RIP failure crite-
+              ria is violated, then it will be flagged as a RIP violation.  If
+              RIP  criteria  passes  and receiver noise models exist, then the
+              ROP is computed and checked against the  ROP  failure  threshold
+              for failure determination.
+
+              For the following cases where the object-specific RIP thresholds
+              are not specified, the command behavior remains unchanged:
+
+              * For receiver pins with noise models present, ROP-based failure
+                check  is  performed.  The  RIP-based  failure criteria is not
+                checked at all.
+
+              * For receiver pins with noise  models  missing,  the  RIP-based
+                failure criteria is checked for violations.
+
+              Default: input
+
+       -delta_delay_annotation_mode {lumpedOnNet | arc}]
+              Calculates  the  delay  for each arc (cell arc and net arc) in a
+              path. By default, AAE calculates the  delay,  including  SI  for
+              each  arc  and  if  the  user chooses to view the SI delay sepa-
+              rately, it would show annotated to each arc.
+
+              Alternatively, you can choose to annotate the SI delay solely to
+              the net. In this case, the worst-case arc is used to  calculated
+              the SI delay and it is annotated solely to the net.
+
+              lumpedOnNet:  Lumps  the  delta  delay all onto the net if it is
+              broken out.
+
+              arc: Separates the delta delay onto each cell arc and net arc as
+              calculated
+
+              Default: arc
+
+       -delta_delay_threshold <double>
+              Specifies a  threshold  value  for  a  design  below  which  the
+              crosstalk  impact will be removed on a given net. Using this pa-
+              rameter, the software removes the SI impact on a  stage  if  the
+              impact is less than the specified threshold. The threshold value
+              is specified in seconds.
+
+              Default: -1
+
+              By  default,  the  software uses the -delta_delay_threshold set-
+              tings. If you set  the  -clock_delta_delay_threshold  parameter,
+              then it will be used for the clock nets.
+
+              When  a threshold value using the -delta_delay_threshold parame-
+              ter is specified (and  the  default  value  of  -clock_delta_de-
+              lay_threshold  parameter  is  used),  then  Tempus  will use the
+              -delta_delay_threshold value for both data and clock.
+
+              If  you  define  values  for  both  -delta_delay_threshold   and
+              -clock_delta_delay_threshold  parameters,  then  Tempus will use
+              the user-defined settings for data and clock, respectively.
+
+       -double_switching {none | clock | data_sequential | all}
+              Specifies the type of data (clock, data sequential, or all)  for
+              which double switching analysis will be performed.
+
+              Default: none
+
+       -enable_bus_attacker_correlation {true | false}
+              Enables  the software to treat bits of bus as correlated attack-
+              ers.
+
+              When set to true, the bits of bus type nets are grouped together
+              based on their cumulative weight.
+
+              The bus bits that act as attackers  to  a  specific  victim  are
+              treated as a group. All the attackers are grouped into different
+              bundles where normal (non-bus) attackers form one group and bits
+              of  the same bus form multiple other groups. In case of a victim
+              that has a number of small couplings to bits of a bus, the  com-
+              bined  effect of a full bus can be used to decide whether an at-
+              tacker is significant.
+
+              Default: false
+
+       -enable_double_clocking_check {true | false}
+              Enables double clocking check in AAE.
+
+              This option enables double  clocking  analysis  and  report_dou-
+              ble_clocking command can be run to print a report.
+
+              Default: false
+
+       -enable_delay_report {true | false}
+              Enables SI delay reports.
+
+              For generating SI delay report, use the following:
+
+              setSIMode -enable_delay_report true;
+
+              report_noise -delay max -txtfile max_delay.txt;
+
+              report_noise -delay min -txtfile min_delay.txt
+
+              To run report_noise -delay, you need to set this parameter prior
+              to update_timing.
+
+              Default: false
+
+       -enable_drv_with_delta_slew {true | false}
+              When  set  to  true,  the max_transition violations are reported
+              based on the SI slews. Also, this parameter is mandatory to  al-
+              low SI slew reporting/fixing by the signoffOptDesign command and
+              should be applied prior running the signoffTimeDesign command.
+
+              Default: false
+
+       -enable_dynamic_receiver_peak_limits {true | false}
+              Enables  automatic  computation  of  ROP threshold value of two-
+              stage cells, using the CCS-noise data on timing arcs.
+
+              When set to true, the software computes the noise  threshold  of
+              the last stage from the table of DC currents.
+
+              Default: false
+
+       -enable_logical_correlation {true | false}
+              Enables  the  AAE-SI  logical  correlation.  Logical correlation
+              refers to correlation of logic between  (aggressor)  nets  which
+              are  connected  to  each other. A simple case would be input and
+              output nets of an invertor never switch in the  same  direction,
+              so cannot be attackers to the same net simultaneously.
+
+              Default: false
+
+              Note: You can use this parameter for Glitch Analysis also.
+
+       -enable_two_stage_driver_weakening {true | false}
+              Enables the two-stage driver weakening mode.
+
+              A  non-failing  significant  glitch  at the input of a two-stage
+              driver can propagate through the first stage and weaken the sec-
+              ond stage. This might cause the crosstalk-induced glitch to  am-
+              plify  at the next stage receiver (though it may not be signifi-
+              cant enough to propagate). When two-stage  driver  weakening  is
+              enabled,  the software considers weakened holding resistance for
+              the two-stage driver for glitch analysis.
+
+              The following diagram illustrates two-stage driver weakening:
+
+              The dual stage driver weakening honors  the  glitch  propagation
+              threshold criteria.
+
+              Note: This feature is supported with CCS-N models only.
+
+              Default: true
+
+       -enable_user_defined_bus_merging {true | false}
+              Enables  bus  merging  feature - if a net is in two groups, then
+              the groups are merged.
+
+              Default: false
+
+       -enable_virtual_attacker_constituent_report {true | false}
+              Enables virtual attacker constituent reporting.
+
+              The virtual attacker constituent reporting feature is useful for
+              identifying significant buses and their bits - this  information
+              can be used for glitch fixing.
+
+              This  feature  is  enabled  when  the  setSIMode -enable_bus_at-
+              tacker_correlation parameter is set to true.
+
+              Default: false
+
+       -enable_glitch_propagation {true | false}
+              Enables glitch propagation through single stage cells and driver
+              weakening through single stage and dual stage cells.  When  this
+              attribute  is  set  to  true,  the  software does not delete the
+              glitch waveform saved on instance input pins.  The  waveform  is
+              later  used  by spice deck to propagate glitch at the next stage
+              receiver pin.
+
+              Default: false
+
+       -enable_glitch_propagation_spice_deck {true | false}
+              Enables the driver input glitch waveform to be  printed  in  the
+              SPICE  deck such that SPICE can also perform single stage glitch
+              propagation. When this option is set to true, the software  does
+              not delete the glitch waveform saved on instance input pins. The
+              waveform  is later used by spice deck to propagate glitch at the
+              next stage receiver pin.
+
+              Default: false
+
+       -enable_glitch_report {true | false}
+              Enables the storage of glitch information for further debug  us-
+              ing the report_noise command.
+
+              When  set  to false, the timeDesign/optDesign command will still
+              report glitches in the timingReports/*.SI_Glitches.rpt file  but
+              the report_noise command will not be available for use.
+
+              When  set  to  true,  the  report_noise  command may be used and
+              glitch information will be more aligned to Tempus  signoff  val-
+              ues.
+
+              For  generating  a  report_noise  glitch report, you can use the
+              following commands:
+
+              setSIMode -enable_glitch_report true;
+
+              report_noise -txtfile glitch.txt
+
+              Default: false
+
+              Note: For SI glitch fixing, you must set the  -enable_glitch_re-
+              port  parameter  to true. For a false setting, the software will
+              display a warning during glitch fixing.
+
+       -enable_overshoot_undershoot_glitch {true | false}
+              Enables overshoot/undershoot analysis and reporting.
+
+              The life span of transistors can be described by  the  overshoot
+              and  undershoot  values. If a transistor is consistently exposed
+              to a certain percentage of  overshoot/undershoot,  then  it  may
+              suffer a reduced life span.
+
+              Default: false
+
+       -glitch_accuracy_level <<int>>
+              Specifies the accuracy levels for glitch analysis.
+
+              Default: 0
+
+       -glitch_analysis_type {source | full_propagation}
+              Specifies the glitch analysis type - source or full_propagation.
+
+              * full_propogation:  Propagates  glitch noise through single and
+                2-stage cells with CCSN (for example, inv or buf),  and  stops
+                glitch  propagation at any sequential cell, or 3 or more stage
+                cell input.
+
+              * source: Propagates glitch through 1-stage cells only, and per-
+                forms driver weakening through 2-stage cells with CCSN.
+
+              Default: source
+
+       -hold_slack <double>
+              Specifies the slack reselection threshold for hold.
+
+              Default:-1e-12 seconds
+
+       -individual_attacker_clock_threshold <float>
+              Sets the glitch tolerance for individual attacker nets on victim
+              clock nets. The software estimates the noise contributed  by  an
+              individual  attacker  on  the  clock victim. If the peak of this
+              noise exceeds the value of  individual_attacker_clock_threshold,
+              the  attacker is significant and is individually reported in the
+              constituents section of the report.  Otherwise,  this  aggressor
+              becomes  eligible  for  the virtual attacker. If the virtual at-
+              tacker peak does not exceed the value  of  accumulated_small_at-
+              tacker_threshold, the aggressor nets in the virtual attacker are
+              grounded  and  there  is  no virtual attacker. If individual_at-
+              tacker_clock_threshold is not specified, then  clock  nets  will
+              use the individual_attacker_threshold value instead.
+
+              Note:  The minimum allowed individual attacker for clock nets to
+              be kept is 0.1% of vdd, which is equivalent to an individual_at-
+              tacker_clock_threshold of 0.001.
+
+              Default: 1.5% or 0.015
+
+       -individual_attacker_threshold <double>
+              Sets the glitch tolerance for individual attacker  nets  on  the
+              victim  net.  The software estimates the noise contributed by an
+              individual attacker on the victim. If the peak of this noise ex-
+              ceeds the value of individual_attacker_threshold,  the  attacker
+              is  significant and is individually reported in the constituents
+              section of the report. Otherwise, this aggressor becomes  eligi-
+              ble  for the virtual attacker. If the virtual attacker peak does
+              not exceed the  value  of  accumulated_small_attacker_threshold,
+              the  aggressor  nets  in  the  virtual attacker are grounded and
+              there is no virtual attacker.
+
+              Note: Minimum allowed individual attacker to be kept is 0.1%  of
+              vdd,  which is equivalent to an individual_attacker_threshold of
+              0.001.
+
+              Default: 1.5% or 0.015
+
+       -input_glitch_full_propagation_threshold <double>
+              Specifies the receiver input glitch threshold beyond which  Tem-
+              pus  will not propagate the glitch in full-propagation mode, and
+              an RIP violation will be flagged.
+
+       -input_glitch_full_propagation_vh_threshold <double>
+              Specifies the receiver VH input glitch  threshold  beyond  which
+              Tempus  will  not propagate the glitch in full-propagation mode,
+              and an RIP violation will be flagged.
+
+              This parameter takes precedence over -input_glitch_full_propaga-
+              tion_threshold.
+
+       -input_glitch_full_propagation_vl_threshold <double>
+              Specifies the receiver VL input glitch  threshold  beyond  which
+              Tempus  will  not propagate the glitch in full-propagation mode,
+              and an RIP violation will be flagged.
+
+              This option takes  precedence  over  -input_glitch_full_propaga-
+              tion_threshold.  Note -glitch_analysis_type full_propagation pa-
+              rameter.
+
+       -individual_attacker_simulation_filtering
+
+              {true  |  false}" Uses electrical filtering  to reduce pessimism
+              due to small attackers  being  preserved  when  their  simulated
+              value is under the individual attacker threshold value.
+
+              Default: true
+
+              Note:  This  option  can only be used when the accumulated small
+              attacker is turned off (-accumulated_small_attacker_threshold is
+              1.00 or larger).
+
+       -input_glitch_threshold <double>
+              Specifies the input glitch failure threshold  value  during  AAE
+              analysis.
+
+              Default: 0.4
+
+       -input_glitch_vh_threshold <double>
+              Specifies the input glitch vh failure threshold value during AAE
+              analysis.
+
+              Default: 0.4
+
+       -input_glitch_vl_threshold <double>
+              Specifies the input glitch vl failure threshold value during AAE
+              analysis.
+
+              Default: 0.4
+
+       -nonlinear_attacker_slew {true | false}
+              Uses  a  non-linear  attacker. If set to false, it uses a linear
+              attacker.
+
+              Default: true
+
+       -num_si_iteration <value>
+              Specifies the maximum number of timing  window  iterations  that
+              should  be  performed during SI delay analysis. Performing delay
+              analysis results in changes to the timing windows, which can po-
+              tentially change the victim/attacker  net  combinations.  Timing
+              window  iterations enable the software to reach to a point where
+              the delay changes are negligible.
+
+              Default: 2
+
+              Note: The minimum allowed timing window iterations is 2 for per-
+              forming SI analysis.
+
+       -pessimistic_mode {advanced | advanced_node | reduced_pessimism | in-
+       creased_pessimism | high_pessimism}
+              Specifies the pessimistic mode setting for adjusting delay  cal-
+              culation results. You can specify one of the following options:
+
+              * advanced:  This is the default mode. This option may give good
+                results at 28nm, but for newer nodes other values may be  more
+                optimal.
+
+              * advanced_node:  This  option works for newer technology nodes,
+                such as 7nm onwards. This mode can help improve  alignment  to
+                external  signoff analysis tool by adjusting pin capacitances,
+                which may help with slew alignment,  whilst  maintaining  high
+                pessimism for delay calculation.
+
+              * reduced_pessimism:  In  cases where Innovus is too pessimistic
+                when correlating to external signoff analysis tool, this  mode
+                can help reduce pessimism for a better match. This mode may be
+                useful at technology nodes, such as 16nm.
+
+              * high_pessimism:  In cases where Innovus is too optimistic when
+                correlating to external signoff analysis tool, this  mode  can
+                help increase pessimism for a better match. This mode is simi-
+                lar  to advanced_node, but without the pin capacitance adjust-
+                ments.
+
+              * increased_pessimism: In cases where Innovus is too  optimistic
+                when  correlating to external signoff analysis tool, this mode
+                can help increase pessimism for a better  match.  This  is  an
+                older  option, high_pessimism or advanced_node option may give
+                better results at newer nodes, such as 7nm.
+
+              Note: This parameter impacts delay  calculation  only  when  the
+              setDesignMode  -pessimisticMode  true  command is specified. The
+              advanced_node, high_pessimism, and  increased_pessimism  options
+              should  give  results  that are on the pessimistic side, and ad-
+              vanced_node can be more optimal for newer nodes.
+
+       -receiver_clk_peak_limit <double>
+              Defines the glitch check limit for clock inputs in receiver peak
+              mode. This parameter is specified as the percentage of power net
+              voltage.
+
+              Default : 0.05 (5 percent of VDD)
+
+       -receiver_latch_peak_limit <double>
+              Defines the glitch check limit for latch inputs in receiver peak
+              mode. This parameter is specified as a ratio of vdd.
+
+              Default : 0.1 (10 percent of VDD)
+
+       -receiver_peak_limit <double>
+              Defines the receiver peak/glitch peak limit at  all  nodes.  The
+              value specified for this parameter is a ratio of vdd.
+
+              Default: 0.15
+
+       -report_max_virtual_attacker_constituents <int>
+              Specifies the maximum number of virtual attacker constituents to
+              report.
+
+              This  feature  works  only when bus virtual attacker constituent
+              reporting is enabled  using  the  setSIMode  -enable_virtual_at-
+              tacker_constituent_report true setting.
+
+              Default: 5
+
+       -report_si_slew_max_transition {true  |   false}
+              Enables reporting of SI slews for DRV maximum transition report-
+              ing  only. The delay calculation will continue to use base slews
+              for timing analysis commands, such as  reportTranViolation,  re-
+              port_constraint,  reportDelayCalculation, and report_timing. The
+              DRV violations will be reported by timeDesign under the ./timin-
+              gReports/<design name>.tran file only and the number of  maximum
+              transition  violations  due  to  SI  slews will be listed in the
+              timeDesign summary report.
+
+              Note: The setSIMode -report_si_slew_max_transition true does not
+              enable fixing of SI slews, this command only  enables  reporting
+              of  them for timeDesign DRV reporting. To enable SI slew fixing,
+              use setOptMode -opt_post_route_fix_si_transitions true.
+
+              Default: false
+
+       -secondary_attacker_decoupling_factor <double>
+              Specifies decoupling factor for secondary aggressors.
+
+              Default: 1
+
+       -separate_delta_delay_on_data {true | false}
+              Separates the delta delay on data (delta delay is  always  sepa-
+              rated for clock).
+
+              Works with
+
+              -delta_delay_annotation_mode  to  determine  where the separated
+              delay shows in the timing reports. Default is the  delta  delay,
+              which is not separated out.
+
+              Using this parameter, you can increase runtime/memory.
+
+              Default: false
+
+       -setup_slack <double>
+              Specifies the slack reselection threshold for setup.
+
+              Default:-1e-12 seconds
+
+       -si_reselection {delta_delay | slack}
+              Specifies the SI reselection criteria during timing window iter-
+              ations.
+
+              delta_delay:  Reselects a net for calculation if the delta delay
+              on the net is greater than the delay value.
+
+              slack: Re-selects nets that have failing  slacks  during  timing
+              window iterations.
+
+              Default: slack
+
+       -si_reselection_delay_threshold <double>
+              Allows you to change the delay reselection criteria.
+
+              You can specify
+
+              -si_reselection_delay_threshold  with the -delta_delay parameter
+              only.
+
+              Default: 1e-11
+
+              Units in seconds
+
+       -skip_noise_model_check <pins>
+              Specifies a list of pins for which noise model  check  will  not
+              take place.
+
+              Default= " "
+
+       -skip_tw <nets>
+              Specifies  the  list  of  nets  for which timing window is to be
+              skipped. The timing window becomes infinite for the net when  it
+              is both a victim and aggressor.
+
+              When specified, only the last setting is retained. The setSiMode
+              -skip_tw  command  settings,  prior to the previous setting, are
+              ignored.
+
+              Default: " "
+
+       -switch_prob <double>
+              Sets the attacker switching probability. If you specify a  value
+              less than 0.0 or more than 1.0, the switching probability is au-
+              tomatically set to the default value of 0.3.
+
+              Default: 0.3
+
+       -use_infinite_TW {true | false}
+              Uses infinite timing windows in a single SI run.
+
+              Default: false
+
+       -unconstrained_net_use_inf_tw {true | false}
+              Specifies  that  unconstrained nets will have an infinite timing
+              window. To turn this off and use a  constrained  timing  window,
+              set this to false.
+
+              Default: true
+
+Examples
+              * The  following command runs AAE keeping all individual attack-
+                ers larger than 0.01*VDD and not using any  accumulated  small
+                attackers:
+
+                setSIMode    -individual_attacker_threshold    0.01   -accumu-
+                lated_small_attacker_threshold 10.01
+
+              * The following command sets the glitch peak limit at 0.5*vdd at
+                data nodes, 0.1*vdd at  clock  nodes,  and  0.2*vdd  at  latch
+                nodes.
+
+                setSIMode -receiver_peak_limit  0.5 -receiver_latch_peak_limit
+                0.2 -receiver_clk_peak_limit 0.1
+
+              * To  keep all attackers less than the setSIMode -individual_at-
+                tacker_threshold whose accumulated glitch bump exceeds  1%  of
+                VDD, you can use the following command
+
+                setSIMode -accumulated_small_attacker_threshold 0.01
+
+Related Information
+              *
+
+                getSIMode
+
+              *
+
+                report_timing
+
+              *
+
+                report_noise
+
+              *
+
+                update_glitch
+
+              *
+
+                reportDelayCalculation
+
+                           Fri Apr 04 01:25:37 2025           setSIMode(25.10)

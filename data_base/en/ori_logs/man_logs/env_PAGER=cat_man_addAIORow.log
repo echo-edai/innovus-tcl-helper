@@ -1,0 +1,247 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addAIORow(25.10)                                              addAIORow(25.10)
+
+Name
+       addAIORow - Adds area I/O rows
+
+Syntax
+       addAIORow
+
+       [-help]
+
+       -site <site_name>
+
+       {-bump <bumpId> | -loc <llx><lly>}
+
+       [-dx <x_dist>] [-dy <y_dist>]
+
+       [-orient {R0|R90|R180|R270|MX|MX90|MY|MY90}]
+
+       [-H | -V]
+
+       [-esd <esites_no>...]
+
+       [-shoulder <site_no>...]
+
+       [-cluster_halo <space>]
+
+       [-num <num>]
+
+       [-abutRow]
+
+       [-rowName <name>]
+
+       [-noSnap]
+
+       [-soft]
+
+       [{-ptnArrX  <elem1>  |  -ptnArrY  <elem2>}  {-pitchX  <dist>  | -pitchY
+       <dist>}]
+
+       Adds area I/O rows. Use this command during or after floorplanning.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each addAIORow parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand:
+
+              man addAIORow
+
+       -abutRow
+              When  creating  two  I/O  rows that abut each other, this option
+              specifies that one of them will be in a flip orientation to  the
+              other.
+
+              Data_type: bool, optional
+
+       -bump <bumpId>
+              Specifies the bump ID that is used to specify the start point of
+              the  row area. The -bump parameter creates IO rows from the cen-
+              ter point of the specified bump.
+
+              For example, when you specify -bump 17_1_1, the row will be cre-
+              ated from the center point of this bump. The length  of  row  is
+              controlled by other options.
+
+              Data_type: string, required
+
+       -cluster_halo <space>
+              Specifies the distance, in microns, around the boundary of a row
+              cluster to prevent other cells from being placed near it.
+
+              Data_type: float, optional
+
+       -dx <x_dist>
+              Offsets the reference point, in microns, to the first I/O row on
+              the x axis.
+
+              Data_type: float, optional
+
+       -dy <y_dist>
+              Offsets the reference point, in microns, to the first I/O row on
+              the y axis.
+
+              Data_type: float, optional
+
+       -esd <esites_no>...
+              Reserves  the  sites in the row as electrostatic discharge cells
+              (ESD). For example: -esd 2,7
+
+              Notes:
+
+              * Use only when you create cluster rows with multiple sites.
+
+              * Do not use the -soft option with this option.
+
+              Data_type: string, optional
+
+       -H | -V
+              Specifies the either a Horizontal or a Vertical row.
+
+              Data_type: bool, optional
+
+       -loc <llx><lly>
+              Specifies the lower left x and y coordinate reference points, in
+              microns, of the new I/O row.
+
+              Data_type: point, required
+
+       -noSnap
+              Adds the area IO row at the exact location specified by the  ad-
+              dAIORow  -loc  coordinates  rather  than snapping the row to the
+              standard cell placement grid.
+
+              Data_type: bool, optional
+
+       -num <num>
+              Specifies the number of sites.
+
+              Data_type: int, optional
+
+       -orient {R0|R90|R180|R270|MX|MX90|MY|MY90}
+              Specifies the orientation for the row. See Orientation Key below
+              for more information.
+
+              Default: R0
+
+              Data_type: enum, optional
+
+       -ptnArrX <elem1>
+              Specifies the x dimensions of the row cluster array size.
+
+              For example, to create a 5 x 8 row array,
+
+              -ptnArrX 5 -ptnArrY 8
+
+              Data_type: int, optional
+
+       -ptnArrY <elem2>
+              Specifies the y dimensions of the row cluster array size.
+
+              For example, to create a 4 x 6 row array,
+
+              -ptnArrX 4 -ptnArrY 6
+
+              Data_type: int, optional
+
+       -pitchX <dist>
+              Specifies the distance between bump centers, in microns, in  the
+              x direction.
+
+              Data_type: float, optional
+
+       -pitchY <dist>
+              Specifies  the distance between bump centers, in microns, in the
+              y direction.
+
+              Data_type: float, optional
+
+       -rowName <name>
+              Specifies a user-defined instance name for an added IO Row or  a
+              prefix  for  multiple  rows,  as in a matrix. If only one row is
+              added, the name is used exactly as specified. If  multiple  rows
+              are added, a number prefix is appended to the name.
+
+              Data_type: string, optional
+
+       -site <siteName>
+              Specifies the site name for the area I/O row.
+
+              Data_type: string, required
+
+       -shoulder <site_no>...
+              Reserves  the  sites  in  a  row as shoulder cells. For example:
+              -shoulder 1,10
+
+              Notes:
+
+              * Use only when you create cluster rows with multiple sites.
+
+              * Do not use -soft option with this option.
+
+              Data_type: string, optional
+
+       -soft  Creates a reef or cluster that can be collapsed if no I/O  cells
+              are  placed  in the available spaces within the reef or cluster.
+              Use this parameter if the cluster site is not  fully  placed  so
+              that  standard  cells can be placed in these spaces if I/O cells
+              are not placed there.
+
+              Note: Do not use the -esd or -shoulder options with this option.
+
+              Data_type: bool, optional
+
+Orientation Key
+       The following table is a key to row orientation:
+
+       Value  Definition
+
+       R0     No rotation
+
+       MX     Mirror through X axis
+
+       MY     Mirror through Y axis
+
+       R180   Rotate counter-clockwise 180 degrees
+
+       MX90   Mirror through X axis and rotate counter-clockwise 90 degrees
+
+       R90    Rotate counter-clockwise 90 degrees
+
+       R270   Rotate counter-clockwise 270 degrees
+
+       MY90   Mirror through Y axis and rotate counter-clockwise 90 degrees
+
+Examples
+              * The following command creates an I/O row with site name IO1 at
+                the location related to the center of the bump selected in the
+                design window. There is a 5 x 7 row array and each element  in
+                the  array is separated by 100 <mu>m in both the x and y axes.
+                Each row has 8 sites.
+
+                addAIORow -site IO1 -bump 0x33457a -H -num 8 -ptnArrX  5  -pt-
+                nArrY 7 -pitchX 100 -pitchY 100
+
+              * The  following  command  creates a soft I/O row cluster with a
+                15.0 micron halo around it:
+
+                addAIORow -site IO3 -loc 0.0 0.0 -dx 230 -dy 58.8 -num 7 -ori-
+                ent R0 -V -soft -abutRow -cluster_halo 15.0
+
+              * The following command creates an IO Row  with  a  user-defined
+                name:
+
+                addAIORow  -site IO1 -rowName newrow -loc 0 0 -dx 0 -orient R0
+                -V -num 1
+
+Related Information
+              * addAIoFiller
+
+              * addIoFiller
+
+              * addIoInstance
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025           addAIORow(25.10)

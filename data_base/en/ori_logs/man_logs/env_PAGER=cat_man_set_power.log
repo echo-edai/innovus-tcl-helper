@@ -1,0 +1,724 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_power(25.10)                                              set_power(25.10)
+
+Name
+       set_power - Specifies the amount of power for all or part of the design
+
+Syntax
+       set_power
+
+       [<value>]
+
+       [-cap <value>]
+
+       [-fanout_limit <value>]
+
+       [-reset]
+
+       [-leakage <value>]
+
+       [-pg_pin {<pg_pin>}]
+
+       [-pg_net <railname>]
+
+       [-pwl]
+
+       [-sticky]
+
+       [-dynamic_async_mode { <mode_name> }]
+
+       [-dynamic_switch_pattern <pattern>]
+
+       [-dynamic_switch_event { switching_<events> }]
+
+       [-scale_factor <value>]
+
+       [-include_ddv_modes {<pattern_list>}]
+
+       [-internal]
+
+       [-switching <value>]
+
+       [-clock {all|<clock_name>}]
+
+       [-exclude_clock]
+
+       [-exclude_ddv_modes {<pattern_list>}]
+
+       [-cell <cell_name><value>]
+
+       [-instance <inst_list><value>]
+
+       [-pin <pin_name> <pin_power>]
+
+       [-force]
+
+       [-custom_macro_pwl <filename>]
+
+       [-repeat]
+
+       [-ascii_power_file<filename>]
+
+       [-trigger_time_adjustment <time>]
+
+       [-no_propagation]
+
+       [-static_mode { <custom_label_name> | <mode_name> }]
+
+       [-slew <value>]
+
+       [-signal_net <netname>]
+
+       [-default_dynamic_pgv_mode { <mode_name> }]
+
+       Specifies  the amount of power for all or part of the design. This com-
+       mand is used to define user-specified power on cells and instances. You
+       must specify this command before report_power.
+
+       The set_power  command  can  accept  a  cell/instance  list  using  the
+       get_cells/get_lib_cells commands. You can use the get* commands to cre-
+       ate  a  collection  of  cells/instances whose name matches the supplied
+       pattern list. Therefore, providing you with the flexibility in  provid-
+       ing  lists through use of regular filter patterns. This feature is sup-
+       ported in both static and dynamic analysis engines.
+
+Parameters
+       -ascii_power_file<filename>
+              Specifies the name of an instance list file. This file  contains
+              the list of instances in the following format:
+
+       <instance_name> <power_value> <<pin_name>>
+
+              Here,
+
+              * <instance_name>  is  the instance name to which power is to be
+                distributed.
+
+              * <power_value>is the power value for the instance in watts.
+
+              * <pin_name> is an optional argument to specify  the  pin  name.
+                When specified, allows you to assign power to the specific pin
+                of the instance.
+
+              * The  three  fields  should  be  in one line, and each instance
+                should be in a new line.
+
+       -cap <value>
+              Specifies the capacitance value to all instances with nets  more
+              than or equal to the fanout limit (-fanout_limit).
+
+       -cell <cell_name><value>
+              Specifies  the  cell  name.  If the cell or instance name is not
+              specified, the power will be distributed to all rails.
+
+              If you want to specify power for a group of cells/instances, use
+              the get_cells/get_lib_cells commands. The  -cell  parameter  can
+              accept  these commands to create a collection of cells/instances
+              whose name matches  the  supplied  pattern  list.  For  example,
+              -cell[get_lib_cells NAND*] 2mw
+
+       -clock {all|<clock_name>}
+              Specifies  the  power  value for clock networks. You can specify
+              the power value for a specific clock network or the  clock  net-
+              work power value for the whole design.
+
+              Note:  This  parameter  cannot be used with the -cell, -instance
+              and -pg_net parameters.
+
+       -custom_macro_pwl <filename>
+              Specifies to use a custom trigger file to apply instance or cell
+              PWL waveforms. Given one master cell PWL waveform, the  software
+              can  automatically  generate  scaled  PWL waveforms of the other
+              companion cells defined in the trigger file proportional to  the
+              cell internal power.
+
+              Note:   This   parameter   must  be  used  with  set_power  -dy-
+              namic_switch_pattern in the vectorless flow.
+
+              For more information on the trigger  file  format,  see  Trigger
+              File Format.
+
+       -default_dynamic_pgv_mode { <mode_name> }
+              Specifies  the  current  characterization mode to be used during
+              dynamic power and jitter analyses. This parameter can be  speci-
+              fied when using a PGV with multiple functional modes.
+
+       When  this  parameter  is  specified, the Power Calculation engine uses
+       this preferred mode in scheduling the switching events  for  the  macro
+       blocks, and saves these events in the trigger file.
+
+              The use model of this parameter is:
+
+              set_power   -cell  {} | -instance {} -default_dynamic_pgv_mode {
+              <mode_name> }
+
+              This parameter is mutually exclusive to the -dynamic_switch_pat-
+              tern parameter.  If  a  cell  or  instance  has  both  the  -dy-
+              namic_switch_pattern  and  -default_dynamic_pgv_mode  parameters
+              defined in the same Tcl  script,  -dynamic_switch_pattern  takes
+              higher priority.
+
+       -dynamic_async_mode { <mode_name> }
+              Specifies  to trigger asynchronous macros based on the length of
+              the PWL waveform to create a single  continuous  waveform.  This
+              parameter allows you to specify the asynchronous mode for an in-
+              stance  or a cell. The start and end of the PWL saved in the PGV
+              must have similar current value in order to avoid sudden jump in
+              the current.
+
+              Use model:
+
+              set_power -dynamic_async_mode  {<mode>}  [-instance  {<name>}  |
+              -cell {<name>}]
+
+              Example:
+
+              set_power -cell pll -dynamic_asynchronous_mode {READ_C}
+
+              Here,  power analysis will trigger the READ_C mode and automati-
+              cally splice the waveform based on its length.
+
+       -dynamic_switch_event { switching_<events> }
+              Specifies the switching events for cells,  instances,  and  pins
+              along  with  their  rise and fall time.  switching_<events> is a
+              string of toggle time followed by "r" or "f", where "r"  is  for
+              rise   toggle   and   "f"   is   for   fall   toggle.  The  -dy-
+              namic_switch_event parameter should not be  specified  with  the
+              -repeat parameter.
+
+       -dynamic_switch_pattern <pattern>
+              Specifies  stimulus pattern on the pins of an instance and cell.
+              Specify this parameter only in the dynamic mode for the type in-
+              stance and cell.
+
+              The <pattern> is applied to all pins (input and output)  on  the
+              instance/cell. It is a string.
+
+              <pattern> specifies the switching pattern. If there is more than
+              one  clock domain with timing windows on a pin, only the windows
+              on the fastest clock will be used, and the pattern will  be  ap-
+              plied  to  that  clock  period. It is a string of 0, 1, r, and f
+              values. 0 for cycles not to switch and 1 for cycles to switch. r
+              is for rise only and f for fall only.
+
+              The pattern string should include enough digits to cover all  of
+              the  clock  cycles  in  the  simulation period. If there are not
+              enough digits, the pattern will be padded with 0 values  at  the
+              end. If there are too many, the pattern will be truncated to the
+              number  of  applicable  cycles. Transitions will be scheduled in
+              the center of each applicable timing window.
+
+              Notes
+
+              * 0 and 1 is supported only in the probability-based  vectorless
+                flow.  It is not supported in the state-propagation-based vec-
+                torless flow and the vector-based flow.
+
+              * In case of macros, you can specify the mode  names,  that  is,
+                which  mode switches in which clock cycle -dynamic_switch_pat-
+                tern { mode1 - mode2 - }.
+
+              * The dynamic switch pattern (DSP) events can  be  state  propa-
+                gated. Instance power is reported for instances directly anno-
+                tated  using  DSP  or  those  receiving activity through state
+                propagation.
+
+              * The dynamic switch pattern does not apply to clock network in-
+                stances.
+
+              You can specify "-" to indicate that instances will  not  switch
+              in  a  particular  clock cycle. If "-" is the first value in the
+              string of values specified within {}, you must  insert  a  space
+              before "-", as shown below:
+
+              * no switching: -dynamic_switch_pattern { - - }
+
+              * no  switching in the 1st clock period: -dynamic_switch_pattern
+                { - r }
+
+              Examples:
+
+              In the following example, instance will not switch  in  the  4th
+              clock cycle:
+
+              set_power -dynamic_switch_pattern { f r f - r }
+
+              In  the following example, the mode write will switch in the 1st
+              clock cycle, the mode read will switch in the 2nd and 4th  clock
+              cycle, and none of the modes will switch in the 3rd clock cycle:
+
+              set_power -dynamic_switch_pattern { write read - read }
+
+              Note:  Wildcards  are supported only for -dynamic_switch_pattern
+              with -pin. When -dynamic_switch_pattern is applied for -instance
+              or -cell without the -pin  parameter,  wildcards  are  not  sup-
+              ported.
+
+       -exclude_clock
+              Excludes  clock networks when specifying a scale factor or power
+              specification for the whole design.
+
+              This parameter cannot be used  with  the  -cell,  -instance  and
+              -pg_net parameters.
+
+       -exclude_ddv_modes {<pattern_list>}
+              Excludes the current characterization (or Dynamic Detailed View)
+              modes that match with the specified patterns. This parameter al-
+              lows you to control the modes to be switched, instead of switch-
+              ing all the current characterization modes defined in the power-
+              grid view.
+
+              Use Model
+
+              set_power   -instance|-cell   <name>  -exclude_ddv_modes  {<pat-
+              tern_list>}
+
+              Here:
+
+              * pattern_list is a list of mode names, separated  by  space  or
+                comma
+
+              * the  instance,  cell,  and  pattern names can contain wildcard
+                characters
+
+       -fanout_limit <value>
+              Specifies the fanout limit for nets. If  an  instance  has  nets
+              more  than  or  equal  to the fanout limit, its switching/inter-
+              nal/leakage power is taken to be zero. When  this  parameter  is
+              specified,  the  user-defined  power value is applied to all the
+              driver instances that have nets more than or equal to the fanout
+              limit.
+
+       -force Specifies to apply the set_power command even if there are  Ver-
+              ilog  mismatches. For dynamic or DEF-based static analysis, this
+              parameter allows you to apply  set_power to  the  DEF  instances
+              that do not exist in Verilog.
+
+       -help  Outputs the command usage.
+
+       -include_ddv_modes {<pattern_list>}
+              Includes  only  the current characterization (or DDV) modes that
+              match with the specified patterns. This parameter allows you  to
+              control  the  modes to be switched, instead of switching all the
+              current characterization modes defined in the power-grid view.
+
+              Use Model
+
+              set_power  -instance|-cell  <name>   -include_ddv_modes   {<pat-
+              tern_list>}
+
+              Here:
+
+              * pattern_list  is  a  list of mode names, separated by space or
+                comma
+
+              * the instance, cell, and pattern  names  can  contain  wildcard
+                characters
+
+       -internal
+              Specifies  the target internal power of the design, cell, or in-
+              stance. To specify internal power for cells and  instances,  you
+              can use the -internal parameter in conjunction with the -cell or
+              -instance parameter.
+
+       -instance <inst_list><value>
+              Specifies the instance name. If the cell or instance name is not
+              specified, the power will be distributed to all rails.
+
+       -leakage
+              Specifies  the  target  leakage  power  of the design, cell, in-
+              stance, or power net.
+
+              To specify leakage power for cells and  instances  you  can  use
+              -leakage option in conjunction with -cell or -instance option.
+
+              To  specify  leakage  power of a certain power net in the design
+              you can use -pg_net option along with -leakage option.
+
+       -no_propagation
+              Specifies that the user-defined switch pattern is  applied  only
+              after  state-propagation  is complete. The use model of the com-
+              mand parameter is:
+
+              set_power -dynamic_switch_pattern {<pattern>} -no_propagation
+
+              The -no_propagation parameter must be specified  with  the  -dy-
+              namic_switch_pattern parameter. When the -no_propagation parame-
+              ter is specified, the dynamic power engine performs state-propa-
+              gation  first,  and then overrides the single instance switching
+              event by the user-defined dynamic  switch  pattern  without  any
+              further propagation.
+
+       -pg_net <railname>
+              Optional.  The  specified power or pwl for the cell, instance or
+              design is applied to the specified rail. When not specified, the
+              power or pwl is applied to all the rails associated with the in-
+              stance. This option is generally used for MSMV cells.
+
+              When this option is not specified the behavior is different  for
+              pwl  and  power  options. When not specified and power option is
+              used, the power is applied for the whole design,  cell,  or  in-
+              stance.  When  not  specified and pwl option is used, the pwl is
+              applied to every rail of the cell or instance.
+
+       -pg_pin {<pg_pin>}
+              Specifies the switch pattern for a specific PG  pin  of  an  in-
+              stance.   This   parameter  must  be  specified  with  the  -dy-
+              namic_switch_pattern parameter.
+
+       -pin <pin_name> <pin_power>
+              Specifies pin-wise power numbers for a specific  instance.  This
+              parameter  allows  you  to  control  the power assigned to power
+              ground pins of an instance. Following is the use model  of  this
+              parameter:
+
+       set_power -instance <<inst_name>> -pin <<VDDA>> <<pin_power>>
+
+       set_power -instance <<inst_name>> -pin <<VDDB>> <<pin_power>>
+
+       -pwl   Specifies that power argument (power | pwl) is a waveform rather
+              than a power number.
+
+       -repeat
+              Repeats  dynamic  switch  pattern of all the clock cycles in the
+              simulation period.
+
+       -reset This parameter causes all previous set_power commands to be  ig-
+              nored.
+
+              Note:  You  can  selectively  reset the instance/cell specifica-
+              tions. In addition, you can also selectively reset the cell  and
+              instance  specifications  of  a  list  of  objects  through  the
+              get_cells and   get_lib_cells commands.
+
+       -scale_factor <value>
+              Scales the power value by the specified scale factor. This para-
+              meter allows you to set a user-defined scale factor in the trig-
+              ger file to scale the dynamic current of the PGV.
+
+              To modify the scale factor, use the -reset  parameter  with  the
+              -scale_factor parameter.
+
+              Example:
+
+              set_power -leakage -reset  -scale_factor 5 -instance A
+
+              You  can  use the following power scaling commands in the power-
+              driven optimization flow when running Voltus within the  Innovus
+              platform:
+
+              * set_power  -scale_factor <<value>> -leakage => scale the leak-
+                age power value by the specified scale factor
+
+              * set_power -scale_factor <<value>> -internal => scale  the  in-
+                ternal power value by the specified scale factor
+
+              * set_power  -scale_factor  <<value>>  -switching  =>  scale the
+                switching power value by the specified scale factor
+
+              * set_power -scale_factor <<value>> => scale the leakage, inter-
+                nal, and switching power values by the specified scale factor
+
+              When specifying these commands in  the  optimization  flow,  you
+              must not specify any other parameter of the set_power command.
+
+              Optimization Flow Example:
+
+              setOptMode -opt_power_effort high
+
+              setOptMode -opt_leakage_to_dynamic_ratio 0.5
+
+              set_power -scale_factor 15 -internal
+
+              set_power -scale_factor 20 -switching
+
+              report_power
+
+       -signal_net <netname>
+              Specifies  the  signal  net name for power assignment. When this
+              parameter is specified, the driver instances  connected  to  the
+              signal net will be assigned the user-defined power value.
+
+       -slew <value>
+              Specifies the slew value to all instances with nets more than or
+              equal to the fanout limit (-fanout_limit).
+
+       -static_mode { <custom_label_name> | <mode_name> }
+              Specifies the mode name or the custom label name associated with
+              a  cell or instance for computing instance current from PGV with
+              static multi-voltage multi-frequency (MvMf) modes. This  current
+              is  used  to  compute  the  instance's  internal  power, and its
+              switching and leakage power components would be set to zero.
+
+              The use model of this parameter is given below:
+
+              set_power -instance -static_mode READ
+
+              If you specify custom label of  a  static  MvMf  mode,  currents
+              would  be  taken  from  it directly. Alternatively, if only mode
+              name is specified for a cell/instance, the software snaps to the
+              nearest custom label defined within this mode, based on the  in-
+              stance's voltage and frequency to get the currents.
+
+              If you specify a dynamic mode with set_power -static_mode, aver-
+              age current from the mode will be used in the static MvMf flow.
+
+       -sticky
+              Applies  the  simulation based PWL waveform as is, to the speci-
+              fied cell/instance for dynamic power analysis.
+
+              Use this option only if you have specified -pwl.
+
+       -switching <value>
+              Specifies the target switching power of the design, cell, or in-
+              stance. To specify switching power for cells and instances,  you
+              can  use  the -switching parameter in conjunction with the -cell
+              or -instance parameter.
+
+       -trigger_time_adjustment <time>
+              Specifies to adjust the trigger time of  the  current  waveforms
+              for the various functional modes (read/write/idle) of the custom
+              macros.  This  parameter allows you to start the waveform before
+              the trigger time (negative time support), as shown below:
+
+              The specified time will be applied to the computed trigger  time
+              for  each mode in the trigger files generated by power analysis.
+              For example, if the trigger time (from timing window/vector)  is
+              computed  as  1ns,  2ns,  and  3ns, and if you specify set_power
+              -trigger_time_adjustment -100ps, the software  will  adjust  the
+              trigger time to .9ns, 1.9ns, and 2.9ns.
+
+       <value>
+              Specifies power in milliwatts during static power calculation or
+              piecewise  linear  (-pwl) current waveform, during dynamic power
+              calculation for cell or instance. The  command  accepts  a  unit
+              specification (e.g. 10w).
+
+              The format of the PWL waveform is:
+
+              {<time1> <current1> <time2> <current2> ...<time_n> <current_n>}
+
+              Time is in ns and current in mA.
+
+              Example:
+
+              set_power  -pwl  -pg_net {} -cell BUFX2MTL {0 0 10 0 10.1 5 10.5
+              0}
+
+              Here, at 0ns its value is 0mA, at 10ns  its  value  is  0mA,  at
+              10.1ns its value is 5mA, and so on.
+
+Examples
+              * The  following  command  sets  power for vdd rail to 10 milli-
+                watts:
+
+                set_power -pg_net vdd 10mw
+
+              * The following command sets a power value of .005 milliwatts on
+                power net vdd for instance clkin_neg_L14_I1:
+
+                set_power -pg_net vdd -instance Top/A/clkin_neg_L14_I1 .005
+
+              * The following command sets a power value  of  .005  milliwatts
+                for any cell named INVX2 in the design:
+
+                set_power -cell INVX2 .005mw
+
+              * The  following  command defines a piecewise linear waveform of
+                {0 0 10 0 10.1 5 10.5 0} for the cell of type BUFX2MTL for all
+                power rails.
+
+                set_power -pwl -pg_net {} -cell BUFX2MTL {0 0 10 0 10.1 5 10.5
+                0}
+
+              * The following command specifies the leakage power for the cell
+                DFFRX1.
+
+                set_power -leakage -cell DFFRX1 10mw
+
+              * The following commands specify the target  leakage  power  for
+                power nets VDD1 and VDD2.
+
+                set_power -leakage -pg_net VDD1 100mw
+
+                 set_power -leakage -pg_net VDD2 200mw
+
+              * The following command specifies the PWL description of current
+                for  the  instance  SEHD130_1024X32X1CM8.  The  -sticky option
+                tells the software to use the specified PWL  simulation  based
+                waveforms as is.
+
+                set_power -pwl -instance SEHD130_1024X32X1CM8 -sticky {0 0 1 1
+                2 2 7 0}
+
+              * The  following  command scales the total power of the instance
+                i_1 by a scale factor of 2:
+
+                set_power -scale_factor 2 -instance i_1
+
+              * The following command sets the total power of  the  design  to
+                20mw while keeping the clock network power the same:
+
+                set_power 20mw -exclude_clock {all}
+
+              * The  following command assigns a switching power of 3mw to all
+                instances of the cell AND1:
+
+                set_power -cell AND1 -switching 3mw
+
+              * The following command assigns 2mw  power  to  all  cells  that
+                match the specified pattern:
+
+                set_power -cell[get_lib_cells NAND*] 2mw
+
+              * The  following  command  specifies  that mode1 switches in the
+                first cycle, mode2 switches in the third cycle and no  switch-
+                ing in others:
+
+                set_power -dynamic_switch_pattern { mode1 0 mode2 0 }
+
+              * The following command resets power of all cells that match the
+                specified pattern:
+
+                set_power -reset -cell[get_cells A/*]
+
+              * The following command is an example of cell-based switching:
+
+                set_power -cell HS65_LS_* -dynamic_switch_pattern {1101}
+
+              * The  following  command  specifies  that the switching pattern
+                value 1010 will be applied to all the instance names  starting
+                with m_inst:
+
+                set_power -instance m_inst* -dynamic_switch_pattern {1010}
+
+              * The following command does not schedule DDV mode scan*:
+
+                set_power -cell { * } -exclude_ddv_modes { scan* }
+
+              * The following command does not schedule DDV mode scan* for in-
+                stance "A1":
+
+                set_power -instance { A1 } -exclude_ddv_modes { scan* }
+
+              * The  following  command only schedules DDV mode names with the
+                *read* and *write* pattern:
+
+                set_power -cell { * } -include_ddv_modes { *read*, *write* }
+
+              *
+
+                The following commands specify the toggle  time  for  the  pin
+                names Q7 and Q6:
+
+                set_power  -dynamic_switch_event { 1.1ns r 5.5ns f } -instance
+                clk_b_i2 -pin Q7
+
+                set_power -dynamic_switch_event { 2.2ns r 6.6ns f }  -instance
+                clk_b_i2 -pin Q6
+
+Trigger File Format
+       For   specifying  a  custom  trigger  file,  you  must  use  the  -cus-
+       tom_macro_pwl parameter. The format of the trigger file is:
+
+       #Cell names
+
+       MASTER CELL <<cellname1>>
+              Name of the reference cell.
+
+       COMPANION_CELLS <<cellname1> <cellname2 > ... >
+              Name of the cells that will use scaled PWL from the master cell.
+
+       #Mode and conditional details for trigger
+
+       MODE_NAME <<mode1>>
+
+              CONDITIONAL_INPUT <conditional input statement  for  cellname1>"
+              Mode  name  and conditional input statement for the cell. Condi-
+              tional input of current for the given mode.
+
+       CONDITIONAL_PIN <pin_name> (rise|fall|both)
+              Conditional pin statement for the cell. Signal pin for which the
+              tool should rise or fall.
+
+       CONDITIONAL_STIMULUS_FILE <usim1.txt>
+              Simulation vector detail in the given mode.
+
+       USER_PWL_FILE <pwl1.txt>
+              User-specified PWL file that contains information about the  PWL
+              waveforms (power/ground currents).
+
+              For an example of a PWL file, see PWL Format Example.
+
+       END_MODE
+              End mode section
+
+       #End cell section
+
+       END    End cell section
+
+       Example of a Custom Macro Power Trigger File
+
+       MASTER_CELL        SRAM_A1
+
+       COMPANION_CELLS    { SRAM_A2, SRAM_A3, SRAM_A4, SRAM_A5 }
+
+             MODE_NAME WRITE
+
+                      CONDITIONAL_INPUT = ( !SD & !SLP & !CEB & !WEB )
+
+                      CONDITIONAL_PIN = CLK { RISE }
+
+                      USER_PWL_FILE write_rise.txt
+
+              END_MODE
+
+             MODE_NAME READ
+
+                      CONDITIONAL_INPUT = ( !SD & !SLP & !CEB & WEB )
+
+                      CONDITIONAL_PIN = CLK { RISE }
+
+                      USER_PWL_FILE read_rise.txt
+
+              END_MODE
+
+             ...
+
+       END
+
+       Example of "USER_PWL_FILE" (Multiple regions)
+
+       UNIT CURRENT mA
+
+       UNIT TIME ns
+
+              NET VSS
+
+        REGION  { 0 0 0.1 -1 0.2 -2 0.3 -3 0.4 -10 0.5 -50 0.6 -40 0.7 -30 0.8
+       -20 1 0 2 0 3 0 3.9 0 4 -0.1 4.5 -0.2 5 -4 5.5 -3 6 -2 7 0 }
+
+              NET VDD
+
+        REGION { 0 0 0.1 1 0.2 2 0.3 3 0.4 10 0.5 50 0.6 40 0.7 30 0.8 20 1  0
+       2
+        0 3 0 3.9 0 4 0.1 4.5 0.2 5 4 5.5 3 6 2 7 0 }
+
+              NET VDDM
+
+        REGION  { 0 0 0.1 1 0.2 2 0.3 3 0.4 10 0.5 50 0.6 40 0.7 30 0.8 20 1 0
+       2
+        0 3 0 3.9 0 4 0.1 4.5 0.2 5 4 5.5 3 6 2 7 0 }
+
+Related Information
+              * set_power_analysis_mode
+
+              * report_power
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025           set_power(25.10)

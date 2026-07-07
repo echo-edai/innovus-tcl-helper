@@ -1,0 +1,117 @@
+{
+  "command": "setEcoMode",
+  "is_cmd": true,
+  "summary": "控制 ecoAddRepeater、ecoChangeCell 和 ecoDeleteRepeater 等 ECO 命令的特定行为模式。",
+  "description": "setEcoMode 命令用于配置和管理工程变更指令（ECO）的执行方式，特别是针对 ecoAddRepeater、ecoChangeCell 和 ecoDeleteRepeater 命令。它允许用户控制诸如是否在操作后优化布局、是否遵守设计中设置的“禁止触碰”或“禁止使用”属性、是否更新时序、是否在批处理模式下运行以提升性能等行为。用户可以使用 getEcoMode 命令来查询当前的设置状态。",
+  "usage": "setEcoMode [-help] [-addPortAsNeeded {true|false}] [-batchMode {true|false}] [-reset] [-honorDontTouch {true|false}] [-honorDontUse {true|false}] [-honorFixedNetWire {true|false}] [-honorFixedStatus {true|false}] [-honorPowerIntent {true|false}] [-inheritNetAttr {true|false}] [-LEQCheck {true|false}] [-modifyOnlyLayers <bottom_layer>:<top_layer>] [-prefixName <prefix>] [-preserveModuleFunction {true|false}] [-refinePlace {true|false}] [-spreadInverter {true|false}] [-updateTiming {true|false}] [-delayCalcEffort <effort_level>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个 setEcoMode 参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addPortAsNeeded",
+      "description": "控制交互式 ECO 是否向设计的底层层次结构添加端口。仅适用于交互式 ECO，并会覆盖 setOptMode -addPortAsNeeded 对于 ECO 命令的设置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-batchMode",
+      "description": "在用户执行大量交互式 ECO 操作时加速运行。设置为 true 时，多个 ECO 操作将批量执行，且每次 ECO 调用不执行初始化步骤。时序更新也仅在所有 ECO 操作完成后执行一次。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "将参数重置为其默认值。此参数必须首先指定。单独使用时重置所有参数；后跟其他参数名时，仅重置指定的参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-honorDontTouch",
+      "description": "检查网络和实例上的“禁止触碰”属性。ecoAddRepeater 命令遵守禁止触碰的网络，ecoDeleteRepeater 和 ecoChangeCell 命令遵守禁止触碰的实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honorDontUse",
+      "description": "检查单元上的“禁止使用”属性。ecoAddRepeater、ecoDeleteRepeater 和 ecoChangeCell 命令均遵守禁止使用的单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honorFixedNetWire",
+      "description": "检查固定的网络连线。限制在固定网络上的添加或删除操作，以保持连线的固定状态不被改变。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honorFixedStatus",
+      "description": "不允许对预放置的、固定的实例进行尺寸调整。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honorPowerIntent",
+      "description": "在 ECO 期间执行多电源电压（MSV）检查。设置为 true 时，会阻止可能导致 MSV 违规的单元调整、缓冲器插入或删除操作。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inheritNetAttr",
+      "description": "继承网络属性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-LEQCheck",
+      "description": "启用交换单元时的功能等效性检查。软件可以交换逻辑上等效的单元。影响反相器对的添加/删除以及非等效单元的更换。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-modifyOnlyLayers",
+      "description": "仅修改指定金属层范围内的布线（包含边界层）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefixName",
+      "description": "为插入的单元添加前缀名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preserveModuleFunction",
+      "description": "确定是否在层次模块端口处保留逻辑功能。仅适用于手动 ECO 命令，并会覆盖 setOptMode -opt_preserve_hpin_function 的设置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-refinePlace",
+      "description": "在使用 ecoAddRepeater 或 ecoChangeCell 后是否进行布局合法化。如果为 false，则需要在 ECO 后手动运行 refinePlace 命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spreadInverter",
+      "description": "将反相器对均匀分布在驱动端和接收端之间。仅适用于只有一个驱动和一个接收的缓冲网络，且设计必须已完成布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-updateTiming",
+      "description": "控制 eco* 命令是否重新计算时序。如果为 false，命令不计算时序，用户可稍后使用 report_timing 命令重新计算。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delayCalcEffort",
+      "description": "指定时序更新中使用的延迟计算努力级别 { low | medium | high }。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

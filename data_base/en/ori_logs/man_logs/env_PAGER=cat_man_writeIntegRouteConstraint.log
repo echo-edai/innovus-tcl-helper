@@ -1,0 +1,272 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+writeIntegRouteConstraint(25.10)              writeIntegRouteConstraint(25.10)
+
+Name
+       writeIntegRouteConstraint - Writes the constraints to an output file in
+       the following order: diffPair, matchLength, bus, netClass, NDR, shield,
+       and additional
+
+Syntax
+       writeIntegRouteConstraint
+
+       [-help]
+
+       -file <output_file>
+
+       [-net <net_name> | -name <string>  | -additional]
+
+       Writes  the constraints to an output file in the following order: diff-
+       Pair, matchLength, bus, netClass, NDR, shield, and additional.
+
+       Notes
+
+              * Integration constraints are used to convey the  design  intent
+                in a mixed-signal design. These constraints are fully interop-
+                erable between the digital and custom environments.
+
+              *
+
+                If  the  design  contains  one  or  more complex netClass con-
+                straints with net members  that  have  different  constraints,
+                writeIntegRouteConstraint reports the following warning:
+
+                **WARN:  (IMPOAX-2124):  This  design contains unknown complex
+                constraint on complexNetClass '<contraint_name'>. This is  not
+                an interoperable routing constraint for Innovus. When sourcing
+                the resulting file from this command in Innovus, these complex
+                constraints  will be lost. You can see the complex constraints
+                in the design in the integration constraint form.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each writeIntegRouteConstraint parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man writeIntegRouteConstraint
+
+       -additional
+              Writes  the  path  to the additional constraint file, which con-
+              tains the maximum resistance target values for nets.
+
+       -file output_file
+              Specifies the output file name that is to be written out.
+
+       -name <string>
+              Writes information for the specified constraint by name. Use the
+              getIntegRouteConstraint command to get  the  name  of  any  con-
+              straint  in  the  design.   You  can specify multiple constraint
+              names, enclosed in braces.
+
+       -net <net_name>
+              Writes the constraint defined on specified net. If  the  net  is
+              part of a netClass, writes constraints for the netClass. You can
+              specify multiple net names, enclosed in braces.
+
+Examples
+              * The  following  command  writes  the constraints in the output
+                file called myfile.rpt:
+
+                writeIntegRouteConstraint -file myfile.rpt
+
+                The file myfile.rpt  could  have  the  following  sample  con-
+                straints that are written out:
+
+                * For a diffPair constraint
+
+                  setIntegRouteConstraint    -type    diffPair    -name   Con-
+                  str_3__analogNL__DTMF_INST/analogNL_INST -tolerance 20 \
+
+                  -rule default \
+
+                  -net { \
+
+                  DTMF_INST/digsyncc \
+
+                  DTMF_INST/digsyncd \
+
+                  }
+
+                * For a matchLength constraint
+
+                  setIntegRouteConstraint   -type   matchLength   -name   Con-
+                  str_4__analogNL__DTMF_INST/analogNL_INST -tolerance 20
+
+                  -matchStyle accordion \
+
+                   -rule default \
+
+                   -net { \
+
+                   DTMF_INST/digsync3 \
+
+                   DTMF_INST/digsync4 \
+
+                   }
+
+                * For a netClass constraint
+
+                  setIntegRouteConstraint    -type    netClass    -name   Con-
+                  str_11__analogSW__DTMF_INST/analogSW_INST \
+
+                   -shieldNet VSS -shieldType side -connectSupply anyPoint \
+
+                   -rule NDR8 \
+
+                   -net { \
+
+                   analogW2I \
+
+                   }
+
+                * For a shield constraint
+
+                  setIntegRouteConstraint  -type   shield   -shieldNet   {VSS}
+                  -shieldType side \
+
+                  -shieldTolerance  30  -net  {tdigit[0]  tdigit[1]  tdigit[2]
+                  tdigit[3] tdigit[4] tdigit[5] \
+
+                  tdigit[6]tdigit[7]}
+
+                * For an additional constraint
+
+                  setIntegRouteConstraint -type additional -file 1.txt
+
+              * The  following  command  writes  a  constraint   file   called
+                test.const      for      the     constraint     named     Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST:
+
+                writeIntegRouteConstraint   -file   test.const   -name    Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST
+
+                The output is as follows:
+
+                setIntegRouteConstraint     -type    diffPair    -name    Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST -tolerance 20 \
+
+                 -rule default \
+
+                 -net { \
+
+                 DTMF_INST/cntrlxo[3] \
+
+                 DTMF_INST/cntrlxo[2] \
+
+                 }
+
+              * The following command  writes  a  constraint  file  with  name
+                temp.const for the constraint defined on net analogW1I:
+
+                writeIntegRouteConstraint -file temp.const -net analogW1I
+
+                The output is as follows:
+
+                setIntegRouteConstraint     -type    netClass    -name    Con-
+                str_10__analogSW__DTMF_INST/analogSW_INST \
+
+                 -shieldNet VSS -shieldType side -connectSupply anyPoint \
+
+                 -rule NDR8 \
+
+                 -net { \
+
+                 analogW1I \
+
+                 }
+
+              *
+
+                The  following  command  writes  a   constraint   file   named
+                test1.const for the specified constraint names:
+
+                writeIntegRouteConstraint              -name             {Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST                  Con-
+                str_1__analogNW__DTMF_INST/analogNW_INST} -file test1.const
+
+                The output is as follows:
+
+                #Integration  constraints ascii out for { ADTMF4 dtmf_chip No-
+                Const_10_18 }
+
+                setIntegRouteConstraint    -type    diffPair    -name     Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST -tolerance 20 \
+
+                 -rule default \
+
+                 -net { \
+
+                 DTMF_INST/cntrlxo[3] \
+
+                 DTMF_INST/cntrlxo[2] \
+
+                 }
+
+                setIntegRouteConstraint     -type    diffPair    -name    Con-
+                str_1__analogNW__DTMF_INST/analogNW_INST -tolerance 5 \
+
+                 -rule default \
+
+                 -net { \
+
+                 DTMF_INST/cntrlxo[0] \
+
+                 DTMF_INST/cntrlxo[1] \
+
+                 }
+
+              *
+
+                The  following  command  writes  a   constraint   file   named
+                test2.const for the specified net names:
+
+                writeIntegRouteConstraint      -net      {DTMF_INST/cntrlxo[3]
+                DTMF_INST/cntrlxo[0]} -file test2.const
+
+                The output is as follows:
+
+                #Integration constraints ascii out for { ADTMF4 dtmf_chip  No-
+                Const_10_18 }
+
+                setIntegRouteConstraint     -type    diffPair    -name    Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST -tolerance 20 \
+
+                 -rule default \
+
+                 -net { \
+
+                 DTMF_INST/cntrlxo[3] \
+
+                 DTMF_INST/cntrlxo[2] \
+
+                 }
+
+                setIntegRouteConstraint    -type    diffPair    -name     Con-
+                str_1__analogNW__DTMF_INST/analogNW_INST -tolerance 5 \
+
+                 -rule default \
+
+                 -net { \
+
+                 DTMF_INST/cntrlxo[0] \
+
+                 DTMF_INST/cntrlxo[1] \
+
+                 }
+
+Related Information
+              * deleteIntegRouteConstraint
+
+              * getIntegRouteConstraint
+
+              * setIntegRouteConstraint
+
+              * Routing  Constraint Interoperability chapter in the Mixed Sig-
+                nal Interoperability Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Mixed Signal -> Integration Constraint Editor
+
+                           Fri Apr 04 01:25:37w2r0i2t5eIntegRouteConstraint(25.10)

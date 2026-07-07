@@ -1,0 +1,335 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_path_exception(25.10)                        reset_path_exception(25.10)
+
+Name
+       reset_path_exception  -  Removes any previously set path exceptions (or
+       path exception of the specified type) for the given paths
+
+Syntax
+       reset_path_exception
+
+       [-exact]
+
+       [-type {false_path | multicycle | path_delay}]
+
+       [-rise]
+
+       [-fall]
+
+       [{-from | -rise_from | -fall_from} <from_list>]
+
+       [{-through | -rise_through | -fall_through} <through_list>]
+
+       [{-to | -rise_to | -fall_to} <to_list>]
+
+       [-setup | -hold]
+
+       [-all]
+
+       Removes any previously set path exceptions (or path  exception  of  the
+       specified type) for the given paths. To remove all path exceptions, use
+       the -all option with the reset_path_exception command.
+
+Parameters
+       -all   Removes all path exceptions. This option cannot be used with the
+              -from, -through and -to options.
+
+       -exact Forces exact matching of the constraints. When this parameter is
+              specified,  the  reset  settings (-from/-through/-to) match with
+              the original constrained path settings.
+
+       -fall  Applies the assertion at the falling edge of the signal  on  the
+              path endpoints.
+
+       {-from | -rise_from | -fall_from} <from_list>
+              Specifies  pins  at the start of the path exceptions that are to
+              be reset.
+
+       -rise  Applies the assertion at the rising edge of the  signal  on  the
+              path endpoints.
+
+       {-through | -rise_through | -fall_through} <through_list>
+              Specifies the pins that the path to be reset goes through.
+
+       {-to | -rise_to | -fall_to} <to_list>
+              Specifies  pins at the end of the path exceptions that are to be
+              reset.
+
+       -setup | -hold
+              Resets only the setup (or hold) paths.
+
+              The -setup/-hold parameters should be used to reset  maximum  or
+              minimum   delay   that   is  set  using  the  set_max_delay  and
+              set_min_delay commands.
+
+              Default: Both -setup and -hold are reset.
+
+       -type {false_path | multicycle | path_delay}
+              Removes only path exceptions of the specified type.
+
+              Default: All path exception assertions are reset.
+
+Examples
+              * In the example below the rising path from R1 to R2  has  three
+                different  path exceptions asserted on it - they are listed in
+                priority from lowest to highest. As shown in the  reports  be-
+                low,  the  false path is the highest precedence and so no path
+                is reported.
+
+                set_multicycle_path -from R1/CK -rise_to R2/D 2
+
+                set_max_delay 3 -from R1/CK -rise_to R2/D
+
+                set_false_path -from R1/CK -rise_to R2/D
+
+                report_timing -from R1/CK -rise_to R2/D
+
+                The following information is displayed:
+
+                No constrained timing paths with given description found.
+
+                Paths may be unconstrained (try  '-unconstrained'  option)  or
+                may not exist.
+
+                report_path_exceptions
+
+                The following report is displayed:
+
+                --------------------------------------
+
+                From      To        Early        Late
+
+                ---------------------------------------
+
+                R1/CK     ^ R2/D    false        false
+
+                ---------------------------------------
+
+                To  report  ignored path exceptions, you can use the following
+                command:
+
+                report_path_exception -ignored
+
+                --------------------------------------------
+
+                From     To       Early      Late
+
+                --------------------------------------------
+
+                R1/CK   ^ R2/D               delay 3 ignored
+
+                R1/CK   ^ R2/D    add 0 ignored
+
+                R1/CK   ^ R2/D               add 1 ignored
+
+                --------------------------------------------
+
+              * In this example, the false path exception is removed from  the
+                path.  This  causes the max path delay assertion to become ac-
+                tive - as it is the next highest precedence.
+
+                reset_path_exception   -from   R1/CK   -rise_to   R2/D   -type
+                false_path
+
+                report_path_exceptions
+
+                -------------------------------------
+
+                From      To       Early     Late
+
+                -------------------------------------
+
+                R1/CK    ^ R2/D             delay 3
+
+                R1/CK    ^ R2/D    add 0
+
+                -------------------------------------
+
+                report_timing -from R1/CK -rise_to R2/D
+
+                Path 1: MET Setup Check with Pin R2/CK
+
+                Endpoint: R2/D (^) checked with leading edge of 'CLK_W_1'
+
+                Beginpoint: R1/Q (^) triggered by leading edge of 'CLK_W_1'
+
+                Path Groups: {CLK_W_1}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.097
+
+                + Path Delay 3.000
+
+                = Required Time 2.903
+
+                - Arrival Time 0.243
+
+                = Slack Time 2.660
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                ----------------------------------------------------------------
+
+                Load    Slew    Delay    Arrival    Cell    Arc           Pin
+
+                                         Time
+
+                -----------------------------------------------------------------
+
+                0.026       0.003                0.000                 CK    ^
+                R1/CK ->
+
+                0.011   0.063   0.187    0.187      DFF     CK ^ -> Q ^   R1/Q
+
+                0.003   0.042   0.056    0.243      BUF     A ^ -> Y ^    B1/Y
+
+                0.003   0.042   0.000    0.243      DFF     D ^           R2/D
+                ->
+
+                ------------------------------------------------------------------
+
+              * In this example, the set_max_delay exception is removed, leav-
+                ing only the set_multicycle_path exception as active.
+
+                reset_path_exception -from R1/CK -rise_to R2/D -type  path_de-
+                lay
+
+                report_timing -from R1/CK -rise_to R2/D
+
+                Path 1: MET Setup Check with Pin R2/CK
+
+                Endpoint: R2/D (^) checked with leading edge of 'CLK_W_1'
+
+                Beginpoint: R1/Q (^) triggered by leading edge of 'CLK_W_1'
+
+                Path Groups: {CLK_W_1}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.097
+
+                + Phase Shift 20.000
+
+                + Cycle Adjustment 20.000 <----- Multi-Cycle timing
+
+                = Required Time 39.903
+
+                - Arrival Time 0.243
+
+                = Slack Time 39.660
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                -----------------------------------------------------------------
+
+                Load    Slew     Delay    Arrival    Cell   Arc           Pin
+
+                                          Time
+
+                -------------------------------------------------------------------
+
+                0.026       0.003                 0.000                CK    ^
+                R1/CK ->
+
+                0.011   0.063    0.187    0.187      DFF    CK ^ -> Q ^   R1/Q
+
+                0.003   0.042    0.056    0.243      BUF    A ^ -> Y ^    B1/Y
+
+                0.003   0.042    0.000    0.243      DFF    D ^           R2/D
+                ->
+
+                -------------------------------------------------------------------
+
+              * In this example, the multi-cycle path  assertion  is  removed,
+                and the analysis reverts back to single-cycle timing
+
+                reset_path_exception -rise_to R2/D -type multicycle
+
+                report_path_exceptions
+
+                # None reported
+
+                report_timing -from R1 -rise_to R2/D
+
+                # The following report is displayed:
+
+                Path 1: MET Setup Check with Pin R2/CK
+
+                Endpoint: R2/D (^) checked with leading edge of 'CLK_W_1'
+
+                Beginpoint: R1/Q (^) triggered by leading edge of 'CLK_W_1'
+
+                Path Groups: {CLK_W_1}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.097
+
+                + Phase Shift 20.000 <--- Single-cycle timing
+
+                = Required Time 19.903
+
+                - Arrival Time 0.243
+
+                = Slack Time 19.660
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                ----------------------------------------------------------------
+
+                Load    Slew    Delay    Arrival    Cell    Arc           Pin
+
+                                         Time
+
+                -------------------------------------------------------------------
+
+                0.026       0.003       0.000                          CK    ^
+                R1/CK ->
+
+                0.011   0.063   0.187   0.187       DFF     CK ^ -> Q ^   R1/Q
+
+                0.003   0.042   0.056   0.243       BUF     A ^ -> Y ^    B1/Y
+
+                0.003   0.042   0.000   0.243       DFF     D ^           R2/D
+                ->
+
+                --------------------------------------------------------------------
+
+              * Consider the following set_false_path constraint:
+
+                set_false_path -from {u1/Y u2/Y} -to {u3/Y}
+
+                When you specify  reset_path_exception  -from  {u1/Y}  command
+                without  the -exact parameter, the command outputs the follow-
+                ing:
+
+                set_false_path -from {u2/Y} -to {u3/Y}
+
+                The command reset_path_exception -from {u1/Y}  -exact  outputs
+                the following:
+
+                set_false_path -from {u1/Y u2/Y} -to {u3/Y}
+
+                In  this case (when -exact parameter is used), the path excep-
+                tion is not reset because differential  matching  is  not  al-
+                lowed.
+
+Related Information
+              * set_false_path
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025reset_path_exception(25.10)

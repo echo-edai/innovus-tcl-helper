@@ -1,0 +1,63 @@
+{
+  "command": "ccopt_pro",
+  "is_cmd": true,
+  "summary": "修复时钟树设计规则违例和偏差",
+  "description": "修复在布线步骤后时钟树中出现的时钟树设计规则违例（DRV）和偏差。可以通过调整现有时钟单元的尺寸或添加缓冲器来修复DRV和偏差。此命令用于启用或禁用平均插入延迟减少、全局单元尺寸缩减、设计精细化布局、ECO布线、布局合法化共享以及时序更新步骤。该命令可在以下阶段运行：* 在ccopt_design之后 - 仅时钟布线完成时 * 在routeDesign之后，但在optDesign-postRoute之前 - 当时钟和数据路径均已布线时。默认情况下，在ccopt_design之后调用此命令将通过调整实例尺寸来修复DRV和偏差违例。它还将通过添加缓冲器来修复持续的DRV。然而，在routeDesign之后调用时，此命令默认破坏性较小，仅执行尺寸调整以修复DRV。ccopt_pro日志将报告一份“活动优化”列表，以阐明将执行哪些步骤。默认情况下，该命令将修改时钟以减少违例，然后调用refinePlace和ecoRoute来修补修改后的布线。可以禁用refinePlace和ecoRoute部分以减少用户实验的运行时间。但最终仍需要调用它们，可以通过最终调用ccopt_pro或手动调用。如果没有它们，时序测量将不准确。注意：* 此命令集成在ccopt_design命令中，并在时钟布线后运行。可以在ccopt_design日志中通过搜索“PostConditioning....”来识别。* 此命令集成在optDesign -postRoute命令中。可以在optDesign日志中通过搜索“PRO...”来识别。* 如果在运行ccopt_design（仅时钟布线时）后调用此命令，它还将对数据路径网络调用earlyGlobalRoute。* 当使用setExtractRCMode -effortLevel signoff指定签核级提取工作级别时，ccopt_pro命令和通过运行optDesign -postRoute执行的时钟DRV修复将不起作用。签核级提取工作级别应仅用于后布线优化后的ECO流程。",
+  "usage": "ccopt_pro [-help] [-enable_average_id_reduction {true | false}] [-enable_downsizing_pass {true | false}] [-enable_drv_fixing {true | false}] [-enable_drv_fixing_by_rebuffering {true | false}] [-enable_refine_place {true | false}] [-enable_routing_eco {true | false}] [-enable_skew_fixing {true | false}] [-enable_skew_fixing_by_rebuffering {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个ccopt_pro参数类型和默认信息的简要描述。有关命令及其所有参数的详细描述，请使用man命令：man ccopt_pro。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enable_average_id_reduction",
+      "description": "启用或禁用平均插入延迟减少。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_downsizing_pass",
+      "description": "启用或禁用全局单元尺寸缩减步骤。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_drv_fixing",
+      "description": "启用或禁用DRV修复。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_drv_fixing_by_rebuffering",
+      "description": "启用或禁用通过添加缓冲器进行DRV修复。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_refine_place",
+      "description": "启用或禁用设计的精细化布局。禁用此选项可能导致实例重叠。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_routing_eco",
+      "description": "启用或禁用ECO布线步骤，该步骤会校正新实例位置的布线。禁用此选项将保留不准确的布线并导致时序不准确。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_skew_fixing",
+      "description": "启用或禁用时钟树偏差的修复。注意：* 当-enable_skew_fixing设置为false时，无论-enable_skew_fixing_by_rebuffering参数指定为true还是false，ccopt_pro期间都不会进行偏差修复。* 当-enable_skew_fixing设置为true，而-enable_skew_fixing_by_rebuffering参数设置为false时，软件会调整单元尺寸以修复偏差。* 当-enable_skew_fixing设置为true，而-enable_skew_fixing_by_rebuffering参数设置为true时，软件不仅调整单元尺寸，还会进行重新缓冲以修复偏差。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_skew_fixing_by_rebuffering",
+      "description": "启用或禁用通过添加缓冲器修复时钟树偏差。这仅有助于延长短路径。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

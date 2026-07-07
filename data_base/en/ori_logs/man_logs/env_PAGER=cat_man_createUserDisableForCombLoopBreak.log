@@ -1,0 +1,74 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createUserDis...rCombLoopBreak(25.10)    createUserDis...rCombLoopBreak(25.10)
+
+Name
+       createUserDisableForCombLoopBreak  - Generates SDC file containing con-
+       straints for combinational loop breaking
+
+Syntax
+       createUserDisableForCombLoopBreak
+
+       -input_file <fileName>
+
+       -outfile <fileName>
+
+       Generates SDC file containing constraints for combinational loop break-
+       ing. The command selects the disable arc (s) with flag set  to  1  from
+       the report file, and generates the equivalent SDC commands in an output
+       file.
+
+       Note:  You  need to set set_interactive_constraint_modes command before
+       sourcing the SDC file.
+
+Parameters
+       -input_file <fileName>
+              Specifies the disabled time arcs report that  you  generate.  To
+              generate the report, use the following command:
+
+              report_disbale_timing -nosplit > pt_disable_arcs.rpt
+
+       -outfile <fileName>
+              Specifies the name of the output SDC file.
+
+Command Order
+       Use this command after generating the disable arcs report.
+
+Example
+       The  following  command generates an encCombLoopBreak.sdc file when the
+       input is a pt_disable_arcs.rpt file:
+
+       createUserDisableForCombLoopBreak -input_file pt_disable_arcs.rpt
+
+                   -outfile encCombLoopBreak.sdc
+
+       The contents of pt_disable_arcs.rpt file are as follows:
+
+       Cell or Port
+              From
+
+              To
+
+              Sense
+
+              Flag Reason
+
+       ------------------------------------------------------------------
+
+       uchip_core/u_s5_power
+              oLpcSd_4_
+
+              orig_oSmAcpiSd_4_
+
+              *
+
+              1
+
+       The contents of output file encCombLoopBreak.sdc are as follows:
+
+       :
+
+       set_disable_timing -from {oLpcSd_4_} -to {orig_oSmAcpiSd_4_}
+
+                       [get_cells {uchip_core/u_s5_power}]:
+
+                           Fri Apr 04 01:2c5r:e3a7te2U0s2e5rDis...rCombLoopBreak(25.10)

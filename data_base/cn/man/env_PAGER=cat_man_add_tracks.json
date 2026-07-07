@@ -1,0 +1,87 @@
+{
+  "command": "add_tracks",
+  "is_cmd": true,
+  "summary": "删除现有布线轨道并根据工艺数据或用户指定值生成新的布线轨道",
+  "description": "该命令用于删除现有的布线轨道，并根据技术文件（LEF/OA）中的定义或用户指定的参数（如偏移量、间距、宽度模式等）生成新的布线轨道。如果调用时未指定任何参数，命令将基于LEF层的偏移和间距值，并可能根据LEF宽度和间距规则、通孔规则或标准单元的高度和宽度进行调整，以创建优化的布线轨道。用户可以使用 -offsets、-pitches、-pitch_pattern 或 -width_pitch_pattern 等参数来覆盖自动生成的默认值。该命令通常在需要覆盖默认轨道定义（例如导入DEF文件后）或为特定非默认布线规则（NDR）创建额外轨道时使用。",
+  "usage": "add_tracks [-help] [-backside] [-honor_pitch] [-keep_default_width] [-mask_pattern {{<layer1>  <mask> [<mask ...>]} [<layer2 ...>] }] [-mode {replace append}] [-offsets {<layer1> horiz|vert  [die_box]  <offset>}  [{<layer2  ...>}] ...}] [-pitch_pattern  {<layer1>  offset <offset> pitch <pitch> [pitch<pitch> ...]} [{<layer2> ...}]...}] [-pitches {<layer1> horiz|vert <pitch>} [{<layer2> horiz|vert <pitch>}] ...}] [-rect_only_pattern {{layer1 [<pattern> ...]} {layer2 [<pattern>  ...]} .. }] [-route_rule <route_rule_name>] [-snap_m1_track_to_cell_pins] [-width_pitch_pattern  {{<layer1>  offset  <offset>  width <width>pitch <pitch> [width <width>pitch <pitch>]...} [{<layer2> ...}]...}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-backside",
+      "description": "在芯片背面（backside）层生成布线轨道。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-honor_pitch",
+      "description": "强制使用LEF或OA技术文件中指定的层间距值，而不进行自动优化调整。不能与直接设置间距值的参数（-pitches, -pitch_pattern, -width_pitch_pattern）同时使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_default_width",
+      "description": "保留用户指定的布线轨道之间的默认宽度。用于实现与Virtuoso工具的互操作性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mask_pattern",
+      "description": "为支持多掩模（mask）的指定层定义掩模图案。掩模值应用于首选方向的轨道并重复。对于非首选方向的轨道没有颜色定义。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mode",
+      "description": "指定轨道的增量操作模式：'replace'（删除指定层的所有轨道后重新生成）或 'append'（在现有轨道基础上追加新轨道）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-offsets",
+      "description": "为指定层定义水平或垂直方向的轨道偏移量。偏移量相对于与标准单元行对齐的core_box左下角（或指定die_box时相对于die_box）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitch_pattern",
+      "description": "为首选布线方向指定非均匀间距的轨道偏移量和间距模式。这会覆盖该层在首选方向上的 -pitches 或 -offsets 值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitches",
+      "description": "为指定层定义水平或垂直方向的均匀轨道间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rect_only_pattern",
+      "description": "指定哪些轨道子集仅允许矩形形状（rect_only）。使用0（否）或1（是）来定义模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-route_rule",
+      "description": "指定非默认布线规则（NDR）的名称。使用此参数时，不会删除现有轨道，而是在其上为此规则创建额外的轨道集。所有相关设置必须在同一条命令中完成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-snap_m1_track_to_cell_pins",
+      "description": "扫描库中所有标准单元，提取可能的矩形引脚形状和掩模号，为首个布线层（Metal1）创建对准引脚中心的轨道。目前主要针对某些10nm工艺。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-width_pitch_pattern",
+      "description": "为首选布线方向指定包含宽度值的轨道偏移量、宽度和间距模式，适用于需要为每条轨道附加宽度值的工艺。这会覆盖该层在首选方向上的 -pitches、-offsets 或 -pitch_pattern 值。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

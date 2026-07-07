@@ -1,0 +1,105 @@
+{
+  "command": "routeDesign",
+  "is_cmd": true,
+  "summary": "运行布线或布线后通孔及连线优化",
+  "description": "routeDesign 命令使用 NanoRoute 路由器执行布线或布线后的通孔及连线优化。如果不带任何参数运行，它将执行全局布线和详细布线。该命令支持多 CPU 处理，检查选项设置冲突，并遵循所有无冲突的 setNanoRouteMode 设置。它是一个超级命令，默认运行 SMART 布线（时序驱动和信号完整性驱动模式）。在时序驱动模式下，所有网络详细布线完成后会自动更新时序文件。运行前会进行布局检查，并可更改时钟网络状态以便在布线中修改。建议在运行 routeDesign 前使用 check_design -type route 命令检测潜在问题。",
+  "usage": "routeDesign [-help] [-backside] [-bump] [-fill_area {<x1 y1 x2 y2>}] [-highFrequency] [-selected] [-viaPillarOpt] [[[-clockEco ] [-globalDetail ] [-placementCheck | -noPlacementCheck ] [[ -trackOpt ] [-idealClock ]] [-viaOpt ] [-wireOpt ]] | [-passiveFill ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个 routeDesign 参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-backside",
+      "description": "仅布线背面层。NanoRoute 路由器支持对 LEF 和单元库引脚中定义为“BACKSIDE”的层进行背面布线。启用此参数后，路由器仅连接背面层中的引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bump",
+      "description": "启用中介层布线，以使用总线布线模式连接宏凸点。启用前必须使用 setNanoRouteMode 命令的 -route_interposer* 参数指定布线设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fill_area",
+      "description": "允许控制执行被动填充的区域。例如：routeDesign -passiveFill -fill_area \"x1 y1 x2 y2\"。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-highFrequency",
+      "description": "运行高频布线。它布线高频数字信号以实现关键性能。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "仅布线选定的网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-viaPillarOpt",
+      "description": "执行机会性通孔柱插入。布线或布线后优化后，NanoRoute 路由器在实例引脚周围寻找可用轨道以添加新通孔柱或将原始较小的通孔柱升级为更多指状的通孔柱。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clockEco",
+      "description": "仅对时钟网络运行工程变更顺序（ECO）布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-globalDetail",
+      "description": "运行时序驱动和信号完整性驱动的全局和详细布线。这是此命令的默认值。指定时，它会解除固定时钟网络，然后布线所有网络，包括仍需布线的时钟网络。它不会在其他信号之前对时钟网络进行 ECO 布线，因此时钟网络不会像 routeDesign 那样被优先处理。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-placementCheck",
+      "description": "布线前检查布局违规。如果布局不干净，routeDesign 会显示警告消息。要绕过此检查，请使用 routeDesign -noPlacementCheck。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noPlacementCheck",
+      "description": "关闭布局检查。默认情况下，routeDesign 在布线前运行布局检查，如果布局不干净则显示警告消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-trackOpt",
+      "description": "在轨道分配后执行时序优化。指定此选项可确保在 timeDesign 和 optDesign -postRoute 阶段使用 TQuantus 模型文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-idealClock",
+      "description": "使用理想时钟而非传播时钟执行时序优化。使用理想时钟可以在不先构建时钟树的情况下优化时序，或者忽略现有时钟树以关闭理想时序。如果未指定此参数，软件假定时钟树已构建，并基于传播时钟优化时序。注意：使用此参数时必须指定 -trackOpt 参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-viaOpt",
+      "description": "布线后优化通孔。警告：使用此参数需谨慎，因为路由器可能在布线后通孔优化期间产生违规。如果发生违规，优化后会运行搜索和修复步骤。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-wireOpt",
+      "description": "布线后优化连线。指定此参数后，在详细布线完成后会加宽和缩小连线。使用以下 setNanoRouteMode 选项指定的设置会影响此参数的行为。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-passiveFill",
+      "description": "执行被动填充。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

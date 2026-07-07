@@ -1,0 +1,473 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setAnalysisMode(25.10)                                  setAnalysisMode(25.10)
+
+Name
+       setAnalysisMode - Sets global analysis modes for timing analysis
+
+Syntax
+       setAnalysisMode
+
+       [-help]
+
+       [-reset]
+
+       [-analysisType {single | bcwc | onChipVariation}]
+
+       [-asyncChecks {async | noAsync | asyncOnly}]
+
+       [-caseAnalysis {true | false}]
+
+       [-checkType {setup | hold}]
+
+       [-clkNetsMarking {beforeConstProp | afterConstProp}]
+
+       [-clkSrcPath {true | false}]
+
+       [-clockGatingCheck {true | false}]
+
+       [-clockPropagation {sdcControl | forcedIdeal | autoDetectClockTree}]
+
+       [-aocv {true | false}]
+
+       [-cppr {none | both | setup | hold}]
+
+       [-honorActiveLogicView {true | false}]
+
+       [-log {true | false}]
+
+       [-multi_input_switching_mode {0 | 1 | 2}]
+
+       [-propSlew {true | false}]
+
+       [-sequentialConstProp {true | false}]
+
+       [-skew {true | false}]
+
+       [-socv {true | false}]
+
+       [-timeBorrowing {true | false}]
+
+       [-timingEngine {statistical | static}]
+
+       [-timingSelfLoopsNoSkew {true | false}]
+
+       [-usefulSkew {true | false}]
+
+       [-useOutputPinCap {true | false}]
+
+       [-warn {true | false}]
+
+       Sets global analysis modes for timing analysis. The software uses these
+       modes  for  all  timing  analysis  commands unless you specify specific
+       modes in the reporting commands. The modes that you specify in the  re-
+       porting commands override these modes.
+
+       When you use the setAnalysisMode command, the software sets the follow-
+       ing defaults:
+
+              * Sets  the constants to be propagated while building the timing
+                graph. The software reads the constants from the  timing  con-
+                straints file or the netlist.
+
+              * Sets  the analysis mode to accept the module-level timing con-
+                straints of the  internally  specified  <set_input_delay>  and
+                <set_output_delay>  variables  for  the I/Os of the module for
+                running timing analysis and timing optimization.
+
+                The software  applies  the  set_input_delay  command  and  the
+                set_output_delay command on internal pins during timing analy-
+                sis.
+
+              * Treats the latches as latches.
+
+              * Reports the end points as many times as the number clocks that
+                control that end point.
+
+       Running  "timeDesign  -postRoute  -si  [-hold]"  with  "setAnalysisMode
+       -analysisType bcwc" might lead to incorrect  timing  analysis  results.
+       This  is because the SI delay push-outs (or pull-ins for -hold mode) on
+       the clock nets get annotated to both the launch and the  capture  clock
+       paths  resulting  in  optimistic slacks to be reported. To get accurate
+       timing analysis results, use "setAnalysisMode -analysisType onChipVari-
+       ation", which requires the design to be run either in multi-mode multi-
+       corner (MMMC) or single-mode single-corner (SMSC) mode. For more infor-
+       mation, see the Specifying the MMMC Environment section in the Optimiz-
+       ing Timing chapter of the Innovus User Guide.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -analysisType {single | bcwc | onChipVariation}
+              Sets the timing analysis type to single, best case  worst  case,
+              or on-chip variation.
+
+              Default:  If you read in one library and do not specify any tim-
+              ing analysis type, the software uses single by default.  If  you
+              read  in  two  libraries  and do not specify any timing analysis
+              type, the software uses bcwc by default.
+
+              Scales the delay values based on one  operating  condition.  For
+              more  information, see "Single Timing Analysis Mode," in the In-
+              novus User Guide.
+
+              Checks the design for  two  extreme  operating  conditions.  The
+              software  uses  the  maximum  delays  for all paths during setup
+              checks and minimum delays for all paths during hold checks.  For
+              more  information,  see  "Best-Case  Worst-Case  (BC-WC)  Timing
+              Analysis Mode," in the Innovus User Guide.
+
+              onChipVariation
+
+              Calculates the delay for one path  based  on  maximum  operating
+              condition  while calculating the delay for another path based on
+              minimum operating condition for setup or hold checks.  For  more
+              information, see "On-Chip Variation (OCV) Timing Analysis Mode,"
+              in the Innovus User Guide.
+
+       -aocv {true | false}
+              Sets  the  analysis  mode  to  advanced on-chip variation (AOCV)
+              analysis.
+
+       -asyncChecks {async | noAsync | asyncOnly}
+              Reports timing violations for asynchronous  timing  checks,  in-
+              cluding  recovery  and removal, and other checks on pins defined
+              as preset or clear in the Liberty file.
+
+              Default: async
+
+              Reports timing checks on pins that  are  defined  as  preset  or
+              clear in the Liberty file.
+
+              Reports  timing  violations  while ignoring the two time arc at-
+              tributes.
+
+              Reports only recovery and removal checks.
+
+       -caseAnalysis {true | false}
+              Determines whether constants supplied from the  constraint  file
+              and netlist should be applied to the analysis.
+
+              Specifying  -caseAnalysis false parameter blocks the application
+              of constants from the timing  constraints  file.  However,  con-
+              stants  that  are  introduced through the netlist and timing li-
+              brary are still applied and propagated.
+
+              Default: true
+
+       -checkType {setup | hold}
+              Checks the design for setup or hold violations  in  the  current
+              analysis.
+
+              Default: setup
+
+              Note: When simultaneous setup/hold mode analysis is on, this pa-
+              rameter  does not have any impact. You can use the report_timing
+              -late/-early parameter to report setup/hold timing reports.
+
+       -clkNetsMarking {beforeConstProp | afterConstProp}
+              Note: This parameter is not available  in  CTE  timing  analysis
+              mode.
+
+              Marks clock nets before or after propagating the constants.
+
+              Default: markClkNetsBeforeConstProp
+
+       -clkSrcpath {true | false}
+              Reports  combinational paths from the clock source to the timing
+              checks on data pins.
+
+              Note: If -clkSrcPath false is specified and the clock portion of
+              the path is considered as ideal (due to the SDC  constraints  or
+              the  -clockPropagation forcedIdeal parameter setting), the delay
+              calculation software treats the clock nets as  ideal  nets  when
+              calculating the delays and slews along the data path.
+
+              For   all   pre-clock   tree  synthesis  (CTS),  optDesign,  and
+              timeDesign steps, the software uses -clkSrcPath false in  combi-
+              nation  with  -clockPropagation forcedIdeal to calculate the de-
+              lays and slews along the data path.
+
+              For all post-CTS flow steps, the software uses the default -clk-
+              SrcPath true in combination with -clockPropagation sdcControl to
+              calculate the delays and slews along the data path.
+
+              Default: true
+
+       -clockGatingCheck {true | false}
+              Reports the gating checks.
+
+              Default: true
+
+       -clockPropagation {sdcControl | forcedIdeal | autoDetectClockTree}
+              Specifies how to determine whether clock end points  are  inter-
+              preted as having either ideal or propagated clock timing.
+
+              Default: sdcControl
+
+              Reports the timing violations considering clock tree and enables
+              propagating  clocks  to  report  clock latency. You must set the
+              set_propagated_clock constraint to propagate the clocks.
+
+              Note: By default, CTS will instruct the timer to make all of the
+              clock roots propagated. In this case, you do not need to set the
+              set_propagated_clock constraint.
+
+              Does not report the  timing  violations  considering  the  clock
+              tree.
+
+              autoDetectClockTree
+
+              Note:  The autoDetectClockTree parameter is obsolete. The timing
+              system will revert to sdcControl, if this  parameter  is  speci-
+              fied.
+
+       -cppr {none | both | setup | hold}
+              Removes  pessimism  from  clock paths that have a portion of the
+              clock network in common between the clock source and clock  des-
+              tination paths.
+
+              The  pessimism  is introduced when the timing analysis tools as-
+              sume that the common path has different  delay  values  for  two
+              different  paths in case of on-chip variation. The pessimism can
+              also be because of clock reconvergence in the clock network. The
+              pessimism effects all  analysis  modes  including  single,  best
+              case-worst case (bcwc), and on-chip variation.
+
+              For  more  information,  see  "Clock  Path Pessimism Removal" in
+              "Timing Analysis", chapter in the Innovus User Guide.
+
+              Note: If you use the -cppr parameter to do optimization, the run
+              time might increase slightly.
+
+              Disables removal of clock reconvergence pessimism.
+
+              Default: none
+
+              Enables removal of clock reconvergence pessimism for both  setup
+              and hold modes.
+
+              When setAnalysisMode -cppr is specified (without any arguments),
+              the value is set to both.
+
+              Enables  removal  of clock reconvergence pessimism in setup mode
+              only.
+
+              Enables removal of clock reconvergence pessimism  in  hold  mode
+              only.
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setAnalysisMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setAnalysisMode.
+
+       -honorActiveLogicView {true | false}
+              Sets the timing analysis mode to honor Active Logic View (previ-
+              ously referred to as CDTV and Virtual Partition). Instead of an-
+              alyzing the whole chip, the software analyzes only the nets  re-
+              lated to interface paths between the partitions.
+
+              The  createActiveLogicView command sets -honorActiveLogicView by
+              default, so there is no need to specify  setAnalysisMode  -hono-
+              rActiveLogicView true explicitly after specifying createActiveL-
+              ogicView.
+
+              Note: This parameter applies to pre-CTS mode only.
+
+              Default: false
+
+       -honorClockDomains {true | false}
+              Controls  whether the software uses clock domains or path groups
+              for timing optimization.
+
+              When set to true, optDesign  uses  standard  and  user-specified
+              clock  domains  during  timing optimization. The following clock
+              domain related commands are enabled: setClockDomains,clearClock-
+              Domains, and reportClockDomains. This setting is  backward  com-
+              patible with the behavior of releases prior to 7.1.
+
+              When  set to false, optDesign uses path groups during timing op-
+              timization. Clock domain related commands are disabled, and  any
+              active clock domains are cleared. Path groups can be created and
+              modified    using   the   following   commands:group_path,   re-
+              set_path_group,createBasicPathGroups,setPathGroupOptions,reset-
+              PathGroupOptions,reportPathGroupOptions. If no path  groups  are
+              explicitly  created,  the software acts as though the basic path
+              groups were created. However, as soon as  you  create  one  path
+              group, the basic groups are then cleared.
+
+              Note:  Path groups and clock domains are mutually exclusive: en-
+              abling one methodology disables the other.
+
+              Default: false
+
+              Note: The -honorClockDomains parameter is now obsolete - support
+              for this flow will be discontinued in a future  release  of  the
+              software.  You  should update your scripts to be compatible with
+              the path group based flow.
+
+       -log {true | false}
+              Writes warning messages to the log file.
+
+              Default: true
+
+       -multi_input_switching_mode {0 | 1 | 2}
+              Sets the multiple input switching (MIS) mode.  You  can  specify
+              one of the following options. When set to:
+
+              * 0: Simultaneous input switching is not considered.
+
+              * 1: MIS analysis considers cells for which multiple inputs of a
+                cell are tied together (tied-inputs).
+
+              * 2:  MIS  analysis considers both the tied-inputs and inputs of
+                cells switching independent to each other.
+
+              Default: 0
+
+       -propSlew {true | false}
+              Controls whether slews in early path delay calculation  are  de-
+              graded  as  they pass across the interconnect from driver to re-
+              ceiver. You can specify a value of false to turn  off  intercon-
+              nect  slew degradation for early paths and have the driver slews
+              copied to the receivers. Early path  delay  calculation  affects
+              all  Hold  paths  in best-case/worst-case analysis mode, capture
+              clock paths in  on-chip  variation  Setup  analysis,  and  clock
+              launch and data paths in on-chip variation Hold analysis.
+
+              Default: true
+
+       -reset Resets  parameters to their default values. The -reset parameter
+              must be the first parameter specified. If you specify -reset  by
+              itself,  the  software  resets all setAnalysisMode parameters to
+              their default values. If you specify  parameters  after  -reset,
+              the  software resets only those parameters to their default val-
+              ues.
+
+              Note: Any values that do not already match the default value and
+              are reset will be reported.
+
+       -sequentialConstProp {true | false}
+              Propagates constants through sequential elements. If you specify
+              -sequentialConstProp false, constants will  stop  at  sequential
+              elements.
+
+              Default: false
+
+       -skew {true | false}
+              Reports clock skew. The -skew false setting treats all clock la-
+              tency as 0.
+
+              Default: true
+
+              With  the -skew true setting, you can specify the -clockPropaga-
+              tion parameter.
+
+              * Using the default -skew true -clockPropagationsdcControl  set-
+                ting accounts for the clock latency during timing analysis and
+                proceeds as follows:
+
+                     * If the set_propagated_clock command is specified in the
+                       timing  constraint  file, the clock latency is computed
+                       from the netlist (propagated mode).
+
+                     * If the set_clock_latency command is  specified  in  the
+                       timing  constraint file, the clock latency specified in
+                       the constraint is used.
+
+              Otherwise, no latency is reported (ideal mode).
+
+       -socv {true | false}
+              Enables SOCV analysis.
+
+              Default: false
+
+       -timeBorrowing {true | false}
+              Considers time borrowing during timing analysis. Time  borrowing
+              is the amount of time borrowed by a previous logic.
+
+              Default: true
+
+       -timingEngine {statistical | static}
+              Specifies the type of timing analysis to perform.
+
+              * statistical:  Sets  analysis  mode to SSTA (statistical static
+                timing analysis).
+
+              * static: Performs static timing analysis.
+
+              Default: static
+
+              Note: This parameter is obsolete. This still works in  this  re-
+              lease, and will be removed in a future release.
+
+       -timingSelfLoopsNoSkew {true | false}
+              Eliminates clock skew due to clock uncertainty for a path start-
+              ing  and  ending  at the same register. If the clock skew is not
+              eliminated, the timing for such paths is pessimistic.
+
+              Note: Use this parameter before building the timing graph.
+
+              Default: false
+
+       -usefulSkew {true | false}
+              Considers the latency file  (<latency_file>.sdc)  during  timing
+              analysis.  The  latency file is generated when you run the skew-
+              Clock command.
+
+              Default: false
+
+       -useOutputPinCap {true | false}
+              Includes the output pin capacitance when calculating delay  val-
+              ues.  When  you specify -useOutputPinCap false, the software ex-
+              cludes only the pin capacitance of the driver for which you  are
+              calculating the delay.
+
+              Default: true
+
+       -warn {true | false}
+              Displays  warning  messages  as  the  timing constraints file is
+              read.
+
+              Default: true
+
+Examples
+              * The following command sets timing  analysis  to  report  clock
+                skew, suppresses warning messages, and check for setup timing:
+
+                setAnalysisMode -checkType setup -skew true -warn false
+
+              * The  following  commands  set  the mode for timing analysis to
+                consider latency files, and generate a timing report based  on
+                timing with latencies from pre-CTS useful skew:
+
+                setAnalysisMode -usefulSkew true
+
+                restoreDesign mydesign
+
+                report_timing
+
+              * The  following  commands  sets the mode for timing analysis to
+                ignore latency files, and generate a timing  report  based  on
+                timing without latencies from pre-CTS useful skew:
+
+                setAnalysisMode -usefulSkew false
+
+                report_timing
+
+              * The  following  command  reset the -checkType parameter to its
+                default value:
+
+                setAnalysisMode -reset -checkType
+
+              * The following command resets all of the setAnalysisMode  para-
+                meters to their default values:
+
+                setAnalysisMode -reset
+
+Related Information
+              * getAnalysisMode
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025     setAnalysisMode(25.10)

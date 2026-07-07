@@ -1,0 +1,301 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbShape(25.10)                                                  dbShape(25.10)
+
+Name
+       dbShape  - Performs geometric (such as SIZE and BBOX) and logical (such
+       as AND and ANDNOT) operations on shapes (a polygon, a rectangle,  or  a
+       list of rectangles and polygons)
+
+Syntax
+       dbShape
+
+       [-help]
+
+       [-d]
+
+       [-step step]
+
+       [-output polygon|rect|hrect|area]
+
+       shapeList  [AND  shapeList  |  ANDNOT  shapeList  |  OR shapeList | XOR
+       shapeList
+
+       | INSIDE shapeList | OUTSIDE shapeList | ENCLOSE shapeList  |  STRADDLE
+       <shapeList>
+
+       |  BBOX | HOLES | NOHOLES | BBOX_CIRCLE | BBOX_OCTAGON | MOVE {<dx dy>|
+       SIZE <value> | SIZEX <value> | SIZEY <value>} |  SCALE  <scale_factor>]
+       ...
+
+       Performs geometric (such as SIZE and BBOX) and logical (such as AND and
+       ANDNOT) operations on shapes (a polygon, a rectangle, or a list of rec-
+       tangles and polygons).
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information of each dbShape parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+               man dbShape
+
+       -d     Specifies  values  in database units, specified in integers. All
+              shapeList values as well as values  for  MOVE,  SIZE,  and  step
+              should use units consistent with the -d setting.
+
+              The output units are the same with the input units.
+
+              Default: Specifies values in user-defined units, in microns.
+
+       -step  Specifies  the step size if output format is rectangle, required
+              to convert non-orthogonal shapes into a series of rectangles.
+
+              Default: The minwidth value of the first routing layer.
+
+              Type: coord, optional
+
+       -output <polygon>|<rect>|<hrect>|<area>
+              Specifies the output format.
+
+              * polygon: Polygon shape
+
+              * rect: Vertical rectangles
+
+                Note: This value works only for the orthogonal shapes.
+
+              * hrect: Horizontal rectangles
+
+                Note: This value works only for the orthogonal shapes.
+
+              * area: Total area of final shape
+
+              Default: rect (string)
+
+       shapeList
+              Specifies a polygon or a rectangle, or a list  of  polygons  and
+              rectangles.  The  shape  of  the  polygon  or  rectangle  in one
+              shapeList will merge if they intersect with  each  other  before
+              performing geometric or logical operation.
+
+              * polygon: {{x y} {x y} {x y} ... };
+
+              * rect: {x1 y1 x2 y2}
+
+              Type: list
+
+       AND <shapeList>
+              Is a binary operator that is the intersection of shapeLists.
+
+       ANDNOT <shapeList>
+              Is  a  binary  operator defining the initial shapeList minus the
+              final shapeList.
+
+       OR <shapelist>
+              Is a binary operator defining the union of shapelists.
+
+       XOR<shapeList>
+              Is a binary operator of the shapeList: OR minus  AND.  It  is  a
+              string and is optional.
+
+       INSIDE <shapeList>
+              Is a binary operator for the initial shapes that are inside (in-
+              cluding touching) one of the shapes from the second list.
+
+       OUTSIDE <shapeList>
+              Is  a  binary  operator  for the initial shapes that are outside
+              (including touching) of one of the shapes from the second list.
+
+       ENCLOSE <shapeList>
+              Is a binary operator for the initial shapes that completely  en-
+              close at least one shape from the second list.
+
+       STRADDLE <shapeList>
+              Is  a  binary operator for the initial shapes that are partially
+              inside and partially outside at least one shape from the  second
+              list.
+
+       MOVE {<dx> <dy>}
+              Is a unary operator that moves the shape.
+
+       BBOX   Is  a  unary  operator  that  computes  the  bounding box of the
+              shapeList. This is a string and optional.
+
+       BBOX_CIRCLE
+              Is a unary operator that creates a circle  shape.  For  example,
+              the  following command creates a circle within the specified co-
+              ordinates:
+
+              dbShape {0 0 10 10} BBOX_CIRCLE -output {polygon}
+
+              Following is the output of the above command:
+
+       BBOX_OCTAGON
+              Is a unary operator that creates an octagon shape. For  example,
+              the  following  command  creates an octagon within the specified
+              coordinates:
+
+       dbShape {0 0 10 10} BBOX_OCTAGON -output {polygon}
+
+              Following is the output of the above command:
+
+       HOLES  Is a unary operator that gives the list of the new  shapes  that
+              fill holes in the original shapeList.
+
+       NOHOLES
+              Is  a  unary operator that gives the list of the new shapes that
+              include the filled holes in the original shapeList.
+
+              This is same as dbShape <shapeList> HOLES OR <shapeList>
+
+       SCALE <scale_factor>
+              Is an operator for scaling the shape by the scale_factor  speci-
+              fied. For example, for upscaling the shape by 2%, the scale_fac-
+              tor  should be 1.02. Similarly, for downscaling the shape by 2%,
+              the scale_factor should be 0.98.
+
+              The scale_factor should always be a positive number.
+
+       SIZE <value>
+              Is a unary operator that increases the size of the shapeList  by
+              "value".
+
+       SIZEX <value>
+              Is a unary operator that increases the size of the shapes in the
+              list  in  the  X-direction by <value>. This parameter works only
+              for the orthogonal shapes. To increase the size in the  X-direc-
+              tion  of a non-orthogonal shape, use it with the -step parameter
+              to convert the shape into series of rectangles first.
+
+       SIZEY <value>
+              Is a unary operator that increases the size of the shapes in the
+              list in the Y-direction by <value>. This  parameter  works  only
+              for  the orthogonal shapes. To increase the size in the Y-direc-
+              tion of a non-orthogonal shape, use it with the -step  parameter
+              to convert the shape into series of rectangles first.
+
+       Note: All the shapes processed by dbShape must have non-zero area. If a
+       shapeList  contains  a list of rectangles and one of them is zero-area,
+       it will be dropped.
+
+       Also, during negative sizing or other operations, if a zero-area  shape
+       is  created,  it  will  be dropped from the output (or intermediate re-
+       sults).
+
+       For example, a rectangle that is 4x4 or smaller will disappear when us-
+       ing dbShape $rect SIZE -2 SIZE 2, while shapes larger than 4x4 will  be
+       returned to their original state.
+
+       The same is true for protrusions with width less than 4.
+
+Examples
+              * INSIDE, OUTSIDE and SRTADDLE:
+
+                set  shapeList1 {{600.0 600.0 1000.0 700.0} {700.0 450.0 900.0
+                550.0} {500.0 300.0 600.0 400.0} {1100.0 450.0  1200.0  550.0}
+                {700.0  750.0 1000.0 850.0} {500.0 900.0 1100.0 1000.0} {800.0
+                1050.0 1100.0 1150.0} {700.0 1200.0 900.0 1300.0}}
+
+                set shapeList2 {600.0 400.0 1000.0 1200.0}
+
+                Shape:
+
+              * INSIDE:
+
+                dbShape $shapeList1 INSIDE $shapeList2
+
+                {700 450 900 550} {600 600 1000 700} {700 750 1000 850}
+
+                Shape:
+
+              *
+
+                OUTSIDE:
+
+                dbShape $shapeList1 OUTSIDE $shapeList2{500 300 600 400}  {700
+                1200 900 1300} {1100 450 1200 550}
+
+                Shape:
+
+              *
+
+                STRADDLE:
+
+                dbShape  $shapeList1  STRADDLE  $shapeList2{500 900 1100 1000}
+                {800 1050 1100 1150}
+
+                Shape:
+
+              * ENCLOSED:
+
+                set shapeList1 {{400.0 400.0 600.0 600.0} {400.0  650.0  600.0
+                850.0} {400.0 900.0 600.0 1100.0}}
+
+                set  shapeList2  {{450.0 450.0 550.0 550.0} {500.0 700.0 600.0
+                800.0} {550.0 950.0 650.0 1050.0}}
+
+                dbShape $shapeList1 ENCLOSE $shapeList2
+
+                {400 400 600 600} {400 650 600 850}
+
+                Shape:
+
+              * HOLES and NOHOLES:
+
+                set shapeList { {100.0 500.0 500.0 600.0} {400.0  300.0  600.0
+                500.0}  {0.0  300.0  200.0 500.0} {0.0 200.0 600.0 300.0} {0.0
+                100.0 100.0 200.0} {200.0 100.0 500.0 200.0}  {0.0  0.0  600.0
+                100.0}}
+
+                Shape:
+
+              *
+
+                HOLES:
+
+                dbShape $shapeList HOLES{100 100 200 200} {200 300 400 500}
+
+                Shape:
+
+              *
+
+                NOHOLES:
+
+                dbShape $shapeList NOHOLES -output polygon{{600 500} {500 500}
+                {500  600} {100 600} {100 500} {0 500} {0 0} {600 0} {600 100}
+                {500 100} {500 200} {600 200}}
+
+                Shape:
+
+              * Unary:
+
+              * Binary:
+
+              * Combination:
+
+              * The following command returns the intersection (as a  list  of
+                rectangles)  between  the  shapes  in  the  $shapes1  and  the
+                $shapes2 lists:
+
+                dbShape $shapes1 AND $shapes2
+
+              * The following command returns the area of the intersection be-
+                tween the shapes in the $shapes1 and the $shapes2 lists:
+
+                dbShape -output area $shapes1 AND $shapes2
+
+              * The following commands return the merged polygon  of  shapes1.
+                The rectangle shapes in shapes1 will merge firstly before per-
+                forming  the  STRADDLE  operation, if they intersect with each
+                other.
+
+                set shapes1 [list {0.1 0.1 0.4 0.4} {0.2 0.2 0.6 0.6}]
+
+                set shapes2 {0.1 0.1 0.5 0.5}
+
+                dbShape -output polygon $shapes1 STRADDLE $shapes2
+
+                {{0.6 0.6} {0.2 0.6} {0.2 0.4} {0.1 0.4} {0.1 0.1}  {0.4  0.1}
+                {0.4 0.2} {0.6 0.2}}
+
+                           Fri Apr 04 01:25:37 2025             dbShape(25.10)

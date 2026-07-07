@@ -1,0 +1,202 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+modifyPowerDomainAttr(25.10)                      modifyPowerDomainAttr(25.10)
+
+Name
+       modifyPowerDomainAttr - Renames a power domain or changes its structure
+
+Syntax
+       modifyPowerDomainAttr
+
+       [-help]
+
+       [-addBlockBox <string>]
+
+       [-core2Left <valueInMicron>]
+
+       [-core2Right <valueInMicron>]
+
+       [-core2Top <valueInMicron>]
+
+       [-core2Bot <valueInMicron>]
+
+       [-defaultTechSite <string>]
+
+       [-disjointHInstBoxList <string>]
+
+       [-extraRowPattern {<rowPatternSiteName>...}]
+
+       [-firstRowSiteIndex <integer>]
+
+       [-lastRowSiteIndex <integer>]
+
+       [-minGaps {values}|-gapEdges {values}]
+
+       <powerDomainName>
+
+       [-rowFlip {first second noflip auto}]
+
+       [-rowPatternSite <site_name>]
+
+       [-rowSpaceType {0 1 2}]
+
+       [-rowSpacing <float>]
+
+       [-rsExts {values}|-extEdges {values}]
+
+       Renames a power domain or changes its structure.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each modifyPowerDomainAttr parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man modifyPowerDomainAttr.
+
+       -addBlockBox <string>
+              Adds  a  hard  block  to the disjoint power domain. -addBlockBox
+              supports both rectangular and rectilinear macros.
+
+       -core2Left <valueInMicron>
+              Specifies the row margin from left boundary.
+
+       -core2Right <valueInMicron>
+              Specifies the row margin from right boundary.
+
+       -core2Top <valueInMicron>
+              Specifies the row margin from top boundary.
+
+       -core2Bot <valueInMicron>
+              Specifies the row margin from bottom boundary.
+
+       -defaultTechSite <string>
+              Allows selection of one of the tech sites to be  not  picked  by
+              the  software,  in case there are two smallest tech sites of the
+              same size in a power domain.
+
+              Note: The specified -defaultTechSite size value must be same  as
+              the current default tech site in the power domain.
+
+       -disjointHInstBoxList
+              Specifies  a  region for an Hinst. It is defined as an Hinst and
+              Region pair.
+
+              -firstRowSiteIndex <integer>" Specifies the first row site index
+              value.
+
+       -extEdges {values}
+              Specifies the maximum search distance for power  extension  con-
+              nections by domain edge in microns.
+
+              You  can specify the value per edge in clockwise order, starting
+              with the vertical edge at the lower-left corner (smallest Y, and
+              then smallest X).
+
+       -extraRowPattern {<rowPatternSiteName>...}
+              Specifies the ROWPATTERN site name for the specified  power  do-
+              main.  You can also specify a list of ROWPATTERN sites with this
+              parameter.
+
+              * The initCoreRow command creates rows for the specified ROWPAT-
+                TERN sites within the domain fence, if specified.  These  rows
+                are  created  from the domain fence bottom edge as per the de-
+                fined order and orientation of all sites.
+
+              * The ROWPATTERN site needs to be defined in the LEF file.
+
+              Default: ""
+
+       -gapEdges {values}
+              Specifies the minimum space value to other domain by  power  do-
+              main edge in microns.
+
+              You can specify the value per edge  in clockwise order, starting
+              with the vertical edge at the lower-left corner (smallest Y, and
+              then smallest X).
+
+              -lastRowSiteIndex  <integer>"  Specifies the last row site index
+              value.
+
+       -minGaps <T B L R>
+              Defines the distance, in microns, that must be reserved from the
+              power domain boundary edges for power routing. You  can  specify
+              four values, one for each edge.
+
+       <powerDomainName>
+              Specifies  the  current name of the power domain to be modified.
+              This is a positional parameter, and you must specify this  value
+              immediately after the command name.
+
+       -rowFlip {first | second | noFlip | auto}
+              Flips  the  orientation  of either the first or second row, then
+              follows the flipped and abutted row pattern.
+
+              first
+
+              (from bottom to top). MX -> R0 -> MX -> R0 - > ...
+
+              second
+
+              (from bottom to top). R0 -> MX -> R0 - > MX -> ...
+
+              noFlip
+
+              (from bottom to top). R0 -> R0 -> R0 - > R0 -> ...
+
+              The noFlip option preserves the  R0  orientation  for  all  rows
+              (above).
+
+              auto
+
+              Detects  orientation  of  row outside of power domain and aligns
+              with power domain bottom. Orientation is applied  to  the  first
+              row at the bottom of power domain.
+
+              So  if  row  on  left is R0, the pattern will be (from bottom to
+              top). R0 -> MX -> R0 - > MX -> ...
+
+              If row on left is MX, the pattern will be (from bottom to  top).
+              MX -> R0 -> MX -> R0 - > ...
+
+              The  auto option resets the software for this automatic behavior
+              if you have previously specified first, second, or noFlip.
+
+              Default: auto
+
+              Note: saveRowImage resets the option -rowFlip to auto.  In  this
+              case, try moving the power domain and check the row changes.
+
+       -rowPatternSite <site_name>
+              Specifies the site name for the row pattern.
+
+       -rowSpacing <value>
+              Specifies  the  row spacing between each row (1) or each pair of
+              rows (2) as specified in -rowSpaceType.
+
+       -rowSpaceType {1|2}
+              Determines whether the row spacing value  applies  between  each
+              row (1) or each pair of rows (2).
+
+       -rsExts <T B L R>
+              Specifies the boundary for legal targets to be used by the power
+              planning and routing commands, in conjunction with the power do-
+              main boundary. You can specify four values, one for each edge.
+
+Examples
+              * The  following command changes the route search extension val-
+                ues of PowerDomain1 to 15 <mu>m on each side:
+
+                modifyPowerDomainAttr PowerDomain1 -rsExts 15 15 15 15
+
+              * The following command defines a disjoint  power  domain  named
+                PowerDomain2 using the -disjointHInstBoxList parameter:
+
+                modifyPowerDomainAttr    PowerDomain2    -disjointHInstBoxList
+                {{disjoint_hinst1 {llx lly urx ury}}  {disjoint_hinst2  {  llx
+                lly urx ury}}.....}
+
+Related Information
+       Low Power Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025modifyPowerDomainAttr(25.10)

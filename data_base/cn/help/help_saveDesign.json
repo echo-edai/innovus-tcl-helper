@@ -1,0 +1,159 @@
+{
+  "command": "saveDesign",
+  "is_cmd": true,
+  "summary": "保存当前设计数据到文件或OpenAccess视图",
+  "description": "该命令用于将当前的设计状态保存到磁盘。可以保存为Innovus的恢复脚本文件（.dat目录），也可以保存到OpenAccess（OA）数据库的特定单元视图（cellview）中。它提供了多种选项来控制保存的内容和格式，例如是否包含时序图数据、填充图形、寄生参数数据，以及是否生成额外的DEF或Verilog文件。",
+  "usage": "saveDesign [-help] [-current_top_cell_only] [-noFill] [-no_pvs_fill] [-skip_file {metric cmd}] {{fileName } | {{{-cellview <string> | -view <string>} [ -saveRestoreFile <string>] [-oaUsedLibsOnly | -oaLibs ]} }} [-timingGraph [-noConstraint ]] [[-user_path [-keep_input_path ]] ] [-tcon ] [-rc ] [-libs ] [-lib2ldb ] [-def ] [-verilog ] [-tgz ] [-no_wait <string> ] [-addTiming | -mmmc2 ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-current_top_cell_only",
+      "description": "仅将当前设计模块及其子模块写入网表。默认情况下，输入网表中的所有模块都会被保存，即使它们不属于当前设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noFill",
+      "description": "不保存任何填充图形",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_pvs_fill",
+      "description": "工具不保存pvs填充数据文件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_file",
+      "description": "移除包含用户信息的数据库文件",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "<fileName>",
+      "description": "将恢复脚本保存到此文件。保存的目录将是<filename>.dat",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cellview",
+      "description": "保存到此OA单元视图 {<libname> <cellname> <viewname>}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "将OA数据保存到此OA视图名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-saveRestoreFile",
+      "description": "指定可用于读取回OpenAccess设计的源文件名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-oaUsedLibsOnly",
+      "description": "仅保存通过按需处理引用的、列在init_oa_tech_lib、init_oa_ref_lib和init_oa_search_lib中的库。指定此参数后，将创建一个仅包含指定库的新cds.lib文件。库保存在libname/cellname/viewname/libs/oa/目录下。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-oaLibs",
+      "description": "保存cds.lib下目录libname/cellname/viewname/libs/oa/中指定的所有OA库。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-timingGraph",
+      "description": "保存时序图数据",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noConstraint",
+      "description": "保存的时序图数据不包含SDC约束数据",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-user_path",
+      "description": "默认情况下，所有外部文件引用（例如库文件）都存储为绝对路径，不使用任何符号链接，因此数据库目录可在同一网络上的任何位置移植。此选项意味着外部文件引用将完全按照用户输入的方式存储（例如，完整路径如/x/y，或相对路径如../x/y，./x/y），并且路径名中使用的任何符号链接也将被保留。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_input_path",
+      "description": "保存的路径与输入文件中的路径相同。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tcon",
+      "description": "即使未更改，也保存时序约束文件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rc",
+      "description": "保存RC寄生参数数据",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-libs",
+      "description": "解析时序库文件和辅助文件的符号链接",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lib2ldb",
+      "description": "将.lib转换为.ldb以获得更好的恢复性能",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-def",
+      "description": "同时保存一个DEF文件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog",
+      "description": "同时保存ASCII Verilog文件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tgz",
+      "description": "将设计数据打包成tar包",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_wait",
+      "description": "根据setMultiCpuUsage设置，在单独的进程中保存设计，因此用户可以在保存设计的同时继续执行新命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-addTiming",
+      "description": "在仅物理模式下加载时复制旧的时序数据",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mmmc2",
+      "description": "以MMMC2格式保存完整的设计数据库",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

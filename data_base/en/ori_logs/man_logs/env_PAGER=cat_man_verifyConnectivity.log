@@ -1,0 +1,326 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verifyConnectivity(25.10)                            verifyConnectivity(25.10)
+
+Name
+       verifyConnectivity  -  Detects  conditions  such  as opens, unconnected
+       wires (geometric antennas), unconnected pins, loops,  partial  routing,
+       and  unrouted  nets;  generates violation markers in the design window;
+       reports violations
+
+Syntax
+       verifyConnectivity
+
+       [-help]
+
+       [-allPGPinPort]
+
+       [-append]
+
+       [-centerLineConnect]
+
+       [-connLoop | -geomLoop]
+
+       [-dividePowerNet]
+
+       [-error <integer>]
+
+       [-ignorePGPin <cell_name>:<pin_name>]
+
+       [-markerOnHighestLayer]
+
+       [-net <netNames> | -selected]
+
+       [-noAntenna]
+
+       [-noFill]
+
+       [-noFloatingMetal]
+
+       [-noOpen]
+
+       [-noSoftPGConnect]
+
+       [-noUnConnPin]
+
+       [-noUnroutedNet]
+
+       [-noWeakConnect]
+
+       [-preferredTopLayer <integer>| -honorGroundLayerRange]
+
+       [-rawViolsMark]
+
+       [-removeOldOpenVio]
+
+       [-report <filename>]
+
+       [-tsv <abstractdiefilenames>]
+
+       [-type {all | special | regular}]
+
+       [-useNewOpenVio]
+
+       [-useVirtualConnection]
+
+       [-warning <value>]
+
+       Detects conditions such as opens, unconnected wires  (geometric  anten-
+       nas), unconnected pins, loops, partial routing, and unrouted nets; gen-
+       erates violation markers in the design window; reports violations. Run-
+       ning  this command does not impact database unless you save the design,
+       which also saves the violation markers.
+
+       The Verify Connectivity feature  can  use  setMultiCpuUsage  and  other
+       multi-CPU commands for multi-threading.
+
+       For  more information, see the Multiple-CPU Processing Commands chapter
+       in the Innovus  Text Command Reference document.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information of each verifyConnectivity parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man verifyConnectivity
+
+       -allPGPinPort
+              Verifies all PG ports connection.
+
+       -append
+              Displays incremental results in the Violation  Browser.  By  de-
+              fault,  violation markers are over-written with new results dur-
+              ing each verifyConnectivity run. When you specify  this  parame-
+              ter,  violation  markers  are  appended to the violations of the
+              previous verifyConnectivity run.
+
+       -centerLineConnect
+              Uses a center-line model instead of  the  geometrical  model  to
+              check regular nets.
+
+       -connLoop
+              Checks for connectivity loops in regular wires.
+
+              Detects connectivity loops based on the end points of the center
+              line of a regular wire segment or the center of a via.
+
+       -dividePowerNet
+              Divides power nets into four subareas for connectivity verifica-
+              tion.  Use this parameter to decrease memory usage in 32-bit ma-
+              chines with limited memory. This parameter might increase or de-
+              crease the run time, depending on the design.
+
+       -error <integer>
+              Specifies the maximum number of errors to  report.  The  command
+              stops when the maximum value is reached.
+
+              Default: 1000
+
+       -honorGroundLayerRange
+              Checks  the  connection  of  ground  nets on the specified layer
+              range. The out of range metal layer is regarded as  non-existent
+              during  the layer range check. When this parameter is not speci-
+              fied, the software checks the full layer  connection  of  ground
+              nets.
+
+       -ignorePGPin <cell_name>:<pin_name>
+              Specifies  the  cell  containing  the PG pin that can be ignored
+              during connectivity check.
+
+       -markerOnHighestLayer
+              Reports the opening on the highest layer of the pin,  which  has
+              more one shape.
+
+       -geomLoop
+              Checks  for  loop violations of regular nets using a geometrical
+              model. The nets do not have to overlap on the center line.  When
+              you  specify  this parameter, the Innovus software does not per-
+              form any other connectivity checks.
+
+              Use this parameter if you use a third-party router that does not
+              route using the centerline connection routing technique. In this
+              case, the -connLoop parameter might not detect connectivity loop
+              violations.
+
+       -net <netNames>
+              Specifies that connectivity should  be  verified  for  specified
+              nets  only.  If  you specify more than one net, separate the net
+              names with space and surround the list of net names with  braces
+              or  quotes. You can use wildcards (* and ?) when you specify net
+              names.
+
+              Note: The -net and -selected parameters are mutually exclusive.
+
+              Default: If you do not specify either the -net or the  -selected
+              parameter, verifyConnectivity verifies all nets.
+
+       -noAntenna
+              Ignores violations due to unconnected wires (also called geomet-
+              rical  antennas  or dangling wires). A wire is called an antenna
+              when the wire end to nearest via edge distance is more than  1/2
+              of the wire width as shown in the picture below:
+
+              In  this  picture, the blue rectangle is the wire and the yellow
+              squares are the vias.
+
+       -noFill
+              Ignores the metal fill.
+
+       -noFloatingMetal
+              Ignores floating metals. A wire is called floating methal,  when
+              both  ends  of the wire are not connected to pin shapes as shown
+              in the picture below.
+
+              In this picture, the blue rectangle is the wire  and  the  green
+              squares are pin shapes.
+
+       -noOpen
+              Ignores  open  violations. A wire is said to be open when one of
+              its ends is connected to a pin shape but the other  end  is  not
+              connected to any pin as shown in the picture below.
+
+              In  this  picture,  the blue rectangle is the wire and the green
+              squares are pin shapes.
+
+              Note: This parameter automatically turns on the -noUnConnPin pa-
+              rameter, because open and unconnected pin verification are  per-
+              formed  together.  A pin shape that is not connected to any wire
+              is called an unconnected pin (unConnPin).
+
+       -noUnConnPin
+              Ignores violations due to pins that are  not  connected  to  any
+              other  objects. In the picture below, the pin on the right is an
+              unconnected pin (unConnPin) as it is not connected to any wire.
+
+              Note: This parameter is specified automatically when you specify
+              the -noOpen parameter.
+
+       -noUnroutedNet
+              Ignores nets that are not routed.
+
+       -noWeakConnect
+              Disables checking for routing to  more  than  one  port  of  the
+              weakly connected pin ports.
+
+       -noSoftPGConnect
+              Disables  checking  of  soft  Power/Ground connects. By default,
+              verifyConnectivity checks the connectivity on  masterslice  lay-
+              ers.  If  -noSoftPGConnect  option is specified, connectivity on
+              these layers is ignored.
+
+       -preferredTopLayer <integer>
+              Specifies the preferred top metal layer. When this parameter  is
+              used,  verifyConnectivity does not check the specified top layer
+              and above layers.
+
+       -rawViolsMark
+              Displays violation markers for opens as the bounding box of  the
+              island. By default, violation markers for opens are displayed as
+              polygons  that include all wires, pins, and vias that connect to
+              the island.
+
+       -removeOldOpenVio
+              Removes old open violations.
+
+       -report <filename>
+              Specifies the report file for connectivity violation data.
+
+       -selected
+              Specifies that connectivity should be checked for selected  nets
+              or the nets connected to the pins of selected instances/macros.
+
+              Note: The -net and -selected parameters are mutually exclusive.
+
+              Default:  If you do not specify either the -net or the -selected
+              parameter, verifyConnectivity verifies all nets in the design.
+
+       -tsv <abstractdiefilenames>
+              Specifies the TSV abstract die files to be  used  to  check  the
+              uBumps between the current die and the adjacent dies. Here, <ab-
+              stractdiefilenames>  specifies  the  names of abstract die files
+              created using the command writeDieAbstract.
+
+       -type {all | regular | special}
+              Specifies the type of wires  to  verify.  verifyConnectivity  is
+              only  concerned  with  the  type of the wire and via (special or
+              regular), but not the type of the pin. Irrespective of the  type
+              specified,  all  unconnected terminals (special and regular) are
+              always reported unless -noUnConnPin is on.
+
+              Default: all
+
+              Note: To check connectivity for whole nets, you do not  need  to
+              specify the type.
+
+              Note:  A  pin-open  violation is listed under VC DRC type "Prob-
+              lem(s) (ENCVFC-92): Pieces of the  net  are  not  connected  to-
+              gether".  Such  a  violation means the isolated open island only
+              includes some pins' shapes that come from at least two different
+              ports or pins.
+
+              Choose one of the following:
+
+              all: Checks all wires, including those that have been previously
+              verified.
+
+              regular: Reports all unconnected pins and open islands  that  do
+              not  include any special wire and via. Does not check a net with
+              no regular objects (wire, via, pin).
+
+              special: Reports all unconnected pins and open islands  that  do
+              not  include  any regular wire and via. Does not report isolated
+              open islands that have any regular wire and via.
+
+       -useNewOpenVio
+              Uses an open violation marker to show unconnected objects.
+
+       -useVirtualConnection
+              Implies a virtual connection for all bumps and external I/O pins
+              of the same net. Set this parameter to override default behavior
+              of verifyConnectivity, in which bumps and external I/O  pins  of
+              the same net are not considered to be interconnected. It is use-
+              ful  in  flip  chip designs, where the power bumps are connected
+              outside the chip.
+
+       -warning <value>
+              Specifies the maximum number of warnings to report.
+
+              Default: 50
+
+              Range:  [0, 1000000]
+
+              Type: Integer
+
+Examples
+              * The following command verifies connectivity for all  nets  and
+                generates a maximum of 50 errors and 50 warning messages:
+
+                verifyConnectivity -type all -error 50 -warning 50
+
+              * The  following  command  reports  special unconnected pins and
+                open islands that do not include any regular wire and via
+
+                verifyConnectivity -type special -noAntenna -error 1000 -warn-
+                ing 50
+
+              * The following command reports the open only from 1 to 4  metal
+                layers,  and  ignores  all  the open on 5 and the metal layers
+                above 5:
+
+                verifyConnectivity -preferredTopLayer 5
+
+              * The following command ignores the VDD1 pin in the NAND*  cell,
+                and the VSS1 pin in the NOR* cell during connectivity check:
+
+                verifyConnectivity -ignorePGPin {NAND*:VDD1 NOR*:VSS1}
+
+Related Information
+       The  following sections in the Identifying and Viewing Violations chap-
+       ter of User Guide:
+
+              * Verifying Connectivity
+
+              * Viewing Violations With the Violation Browser
+
+                           Fri Apr 04 01:25:37 2025  verifyConnectivity(25.10)

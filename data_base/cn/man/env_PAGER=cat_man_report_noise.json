@@ -1,0 +1,201 @@
+{
+  "command": "report_noise",
+  "is_cmd": true,
+  "summary": "生成基于文本的噪声报告",
+  "description": "该命令用于生成基于文本的噪声（毛刺）报告和噪声延迟报告。在使用前，需要确保通过 setSIMode 命令启用了毛刺报告或详细延迟报告功能。该命令支持多种参数来控制报告的内容、格式、排序和输出方式。",
+  "usage": "report_noise [-help] [-bumpy_waveform] [-cell_type {bbox | clock | data | latch}] [-delay {min | max}] [-double_clocking] [-double_switching] [-exclude_failures] [-expand_virtual_attacker_bus] [-failure] [-gui_victim_nets_file] [-format <string>] [-histogram] [-level {vl | vh | vlu | vho}] [-max_threshold <float>] [-merge_dir <string>] [-nets <string>] [-output_format string] [-output_file <string>] [-overshoot_undershoot] [-pins <string>] [-precision <integer>] [-quiet_nets] [-remove_status_row <string>] [-report_virtual_attacker_constituents] [-reverse_voltage_change_threshold <float>] [-slack <float>] [-skip_nets_or_pins_in_header] [-sort_by <string>] [-style {default | extended}] [-threshold <float>] [-txtfile <filename[.gz]>] [-view]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bumpy_waveform",
+      "description": "标记接收端具有颠簸波形的网络。注意：此参数始终显示最大延迟颠簸报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell_type",
+      "description": "为用户指定的单元类型生成毛刺报告。可选值包括：bbox（黑盒接收器）、clock（时钟引脚接收器）、data（数据引脚接收器）、latch（锁存器引脚接收器）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delay",
+      "description": "报告延迟不确定性而非噪声值。合法值为 min（最小路径延迟分析）或 max（最大路径延迟分析）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-double_clocking",
+      "description": "启用双时钟报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-double_switching",
+      "description": "在噪声报告中报告双开关分析数据。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_failures",
+      "description": "从毛刺报告中排除所有失败的网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-expand_virtual_attacker_bus",
+      "description": "在噪声报告中报告虚拟攻击者组件并展开总线位。仅在通过 setSIMode 启用虚拟攻击者功能时有效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-failure",
+      "description": "报告接收器峰值故障和直流容限故障网络。仅用于毛刺噪声故障报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-gui_victim_nets_file",
+      "description": "生成GUI格式的毛刺报告和增量延迟报告文件，用于“显示噪声网络”表单。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-format",
+      "description": "指定输出报告格式字段。可用的字段列表详见描述。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-histogram",
+      "description": "生成噪声直方图。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-level",
+      "description": "指定需要生成单级报告的级别。可选值包括：vl, vh, vlu, vho。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_threshold",
+      "description": "指定要报告的最大峰值噪声或接收器峰值阈值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-merge_dir",
+      "description": "接受一个目录名并生成软件兼容的数据库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "在噪声报告中报告指定的网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_format",
+      "description": "指定输出格式应为单行还是多行。可选值：single_line, multiple_line。默认：multiple_line。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_file",
+      "description": "指定输出文件名的前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-overshoot_undershoot",
+      "description": "报告过冲（VHO）和下冲（VLU）毛刺。需要先启用 setSIMode -enable_overshoot_undershoot_glitch true。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pins",
+      "description": "指定要报告的引脚名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-precision",
+      "description": "指定毛刺数据打印的精度值。允许值：0, 1, 2, 3。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-quiet_nets",
+      "description": "生成所有安静攻击者的报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-remove_status_row",
+      "description": "仅显示活动攻击者，并从毛刺报告中过滤掉 Sb、UF 和 LC。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report_virtual_attacker_constituents",
+      "description": "指定颠簸网络的最大松弛值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reverse_voltage_change_threshold",
+      "description": "报告反向摆幅大于用户指定阈值（VDD的比率）的时钟网络。默认阈值：0.1。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-slack",
+      "description": "基于松弛值生成颠簸网络的报告。单位：秒。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-skip_nets_or_pins_in_header",
+      "description": "生成不带网络或引脚列表在报告头部的毛刺报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sort_by",
+      "description": "请求对条目进行排序。可按以下字段排序：noise, receiver_peak, slack, cell_type。默认：receiver_peak。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-style",
+      "description": "以指定样式生成报告。可选值：default（默认报告，类似于使用 -text 参数生成的文本报告），extended（扩展报告，包含受害者和攻击者时序窗口、被丢弃的攻击者转换时间及原因、驱动引脚和驱动库引脚）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-threshold",
+      "description": "指定要报告的最小峰值噪声、绝对延迟不确定性、相对延迟不确定性和接收器峰值阈值。默认值：毛刺报告为 0.10 * vdd；详细延迟报告为 10 ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-txtfile",
+      "description": "指定文本报告文件的名称。如果指定了 .gz 扩展名，则文件会被压缩。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "指定视图名称。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

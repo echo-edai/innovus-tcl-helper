@@ -1,0 +1,756 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+check_timing(25.10)                                        check_timing(25.10)
+
+Name
+       check_timing  -  Performs  a  variety  of  consistency and completeness
+       checks on the timing constraints specified for a design
+
+Syntax
+       check_timing
+
+       [-type <type_list>]
+
+       [-verbose]
+
+       [-check_only <warning_list>]
+
+       [-clock_crossing_output_format {summary | csv}]
+
+       [-include_warning <warning_list>]
+
+       [-exclude_warning <warning_list>]
+
+       [-view <analysis_view_name>]
+
+       [<port_or_pin_list>]
+
+       [-tcl_list]
+
+       [{> | >> } <file_name>[.gz]]
+
+       Performs a variety of consistency and completeness checks on the timing
+       constraints specified for a design.
+
+       The checks include arrival time and external delay (or  required  time)
+       for  each  clock in a multiple clock system. In addition, clock connec-
+       tivity and data connectivity are checked to make sure the clock or data
+       is propagated as expected. Clock gating points are also reported.
+
+       Use this command on generic or mapped netlists. The  check_timing  com-
+       mand considers constants applied to a pin while reporting warnings.
+
+       Use  the  check_timing  command  before  using  any commands for timing
+       analysis.  Warnings  are  displayed  when  problems  occur.  Refer   to
+       check_timing warnings. For best results, rerun the check_timing command
+       after  resolving  each warning. Redirecting the output to a file is the
+       quickest run method.
+
+Parameters
+       -check_only  <warning_list>
+              Allows you to specify warning types. For example, the  following
+              command lists the specified warnings only:
+
+              check_timing -check_only {uncons_endpoint clock_crossing}
+
+              This  list  can also include warnings that are not listed by de-
+              fault.
+
+              Valid entries in warning_list are:
+
+              clock_clipping_freq,    clock_clipping_gate,     clock_crossing,
+              clock_expected,           clock_gating_controlling_edge_unknown,
+              clock_gating_no_data,        clock_missing_at_sequential_output,
+              clock_not_propagated, clocks_masked_by_another_clock, const_col-
+              lision, data_check_multiple_reference_signal, data_check_no_ref-
+              erence_signal,  ideal_clock_waveform, invalid_pll_configuration,
+              loop, master_clk_edge_not_reaching, missing_clock_groups,  miss-
+              ing_drive, multiple_clock, no_drive, no_gen_clock_source, no_in-
+              put_delay,   partial_input_delay,   pulse_non-pulse_clock_merge,
+              signal_level,            uncons_endpoint,            uncons_end-
+              points_due_to_case_analysis
+
+       -clock_crossing_output_format {summary | csv}
+              Specifies  the  format of the clock crossing report to be gener-
+              ated - as a summary or in csv format.
+
+       {> | >>}  <file_name>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  <filename> parameter must be the last argument in the list.
+              The <filename>and -tcl_list parameters are  mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -exclude_warning  <warning_list>
+              Excludes the specified warning types when generating the report.
+              Use this parameter to exclude any of the  warnings  included  in
+              the report by default.
+
+              By  default, the software includes the following warnings in the
+              report:   clock_expected,   loop,   ideal_clock_waveform,   mas-
+              ter_clk_edge_not_reaching,  partial_input_delay, no_input_delay,
+              no_drive,    no_gen_clock_source,    uncons_endpoint,uncons_end-
+              points_due_to_case_analysis.
+
+              The complete list of warnings and their descriptions is given in
+              check_timing warnings.
+
+       -include_warning  <warning_list>
+              Includes the specified warning types when generating the report.
+              Use  this  parameter  to add any of the warnings not included in
+              the report by default.
+
+              By default, the software reports all warnings except the follow-
+              ing:    clock_clipping_gate,    const_collision,    clock_cross-
+              ing,clock_not_propagated,     missing_drive,     multiple_clock,
+              data_check_multiple_reference_signal,       data_check_no_refer-
+              ence_signal,     clock_gating_no_data,     clock_gating_control-
+              ling_edge_unknown,   clock_missing_at_sequential_output,    sig-
+              nal_level, clocks_masked_by_another_clock.
+
+              The complete list of warnings and their descriptions is given in
+              check_timing warnings.
+
+       <port_or_pin_list>
+              Lists pins or ports. For example:
+
+              check_timing -verbose [get_ports in*]
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -type  <type_list>
+              Limits the checks  to  the  specified  type.  Valid  types  are:
+              clocks,   endpoints,   inputs,   nets,   loops,  clock_clipping,
+              clock_gating_inferred, and constant_collision.
+
+              Default: All types. Only check violations will be reported.
+
+              To report all the checks you can use the timing_check_timing_re-
+              port_all_checksglobal variable. When set to true,  the  software
+              reports  all  the  checks performed by the check_timing command,
+              even if there are no violations. By default, this  global  vari-
+              able is set to false.  clocks: Reports the following clock warn-
+              ings:
+
+              * clock_crossing
+
+              * clock_expected
+
+              * clock_not_propagated
+
+              * ideal_clock_waveform
+
+              * master_clk_edge_not_reaching
+
+              * no_gen_clock_source
+
+       endpoints: For output ports, warns if no output delay constraint is ap-
+       plied  to the port or if a specific (min/max rise/fall) output delay is
+       missing. It also warns if an output delay constraint is applied with no
+       clock information.
+
+              For all endpoints (output ports  and  register  data  pins),  it
+              warns if any incoming signal is unconstrained.
+
+              Also warns if a clock arrives where clock is not expected, or if
+              multiple  signals  arrive  at  an endpoint.  inputs: Reports the
+              following input delay, arrival time assertion, and drive  asser-
+              tion warnings:
+
+              * partial_input_delay
+
+              * missing_drive
+
+              * no_input_delay
+
+              * no_drive
+
+       nets:  loops:  Warns when a combinational loop is detected. Reports the
+       loop and the arc used to break the loop. The -pin option is ignored  in
+       this case.
+
+              Also  reports loops caused by generated clocks.  clock_clipping:
+              Warns when there is a problem with clock gating that can  result
+              in clock clipping.
+
+              Reports the following warnings:
+
+              * clock_clipping_freq
+
+              * clock_clipping_gate
+
+       clock_gating_inferred:  Warns when inferred clock gating checks are not
+       analyzed by the software, even if a clock signal reaches  and  is  used
+       downstream the clock tree.
+
+              Reports the following warnings.
+
+              * clock_gating_controlling_edge_unknown
+
+              * clock_gating_no_data
+
+       constant_collision:  Warns  when there is a constant collision on a net
+       connected to the pin or if there is a contradiction on a pin.
+
+              Constant collision occurs when a net is driven simultaneously by
+              conflicting values and a constant contradiction  occurs  when  a
+              constant constraint on a pin conflicts with the driven value.
+
+       -verbose
+              Gives  detailed  information about the warnings. When specified,
+              warnings are grouped and sorted by warning type.
+
+              Default: Gives a summary of how many warnings of each  type  ex-
+              ists.
+
+       -view  Reports warning(s) that belong to the specified analysis view.
+
+Command Order
+       Use  this command after setting all the constraints but before optimiz-
+       ing your design or generating any timing reports.
+
+Warning Messages
+       The following table shows the check_timing warning messages.
+
+         check_timing Warning Messages
+
+       Warning
+              Description
+
+         clock_clipping_gate
+              Warning: Clock clipping possible due to wrong gate type or wrong
+              trigger for data input.
+
+         clock_clipping_freq
+              Warning: Clock clipping possible due to incompatible clock  sig-
+              nal and data signal frequencies.
+
+         clock_crossing
+              Warning: Clock domains interact.
+
+              Comments:  Checks  clock interactions between multiple clock do-
+              mains in the design.
+
+              When you specify  this  parameter,  the  Timing  Check  Crossing
+              Clocks  report shows the interaction of clocks in the design and
+              indicates whether the paths between the clocks are False or Par-
+              tial False.
+
+              If a clock launches one or more paths,  which  are  captured  by
+              other clocks, the report lists all pairs of crossing clocks.
+
+              * This  includes  inferred clock gating with different reference
+                and signal clock.
+
+              * If a path has been disabled using the set_disable_timing  com-
+                mand, crossing clocks on that path are not reported.
+
+              If  all the paths between two clocks are false paths or they are
+              exclusive/asynchronous clocks, the path is marked as False.  The
+              false path can be defined on clocks, for example, set_false_path
+              -clock_to  CLK or on pins or ports, such as, -through buf1/Y.
+
+              If  only part of paths are set as false paths or exclusive/asyn-
+              chronous clocks, the path is marked as Partial False.
+
+              * If a false path is defined  only  for  one  check  type  (say,
+                setup), the crossing clocks are marked as Partial False if the
+                simultaneous setup hold mode is set to on. The crossing clocks
+                are  marked False if the analysis type is setup and the simul-
+                taneous setup hold mode is set to off.
+
+              * If only one edge (rise/fall) of a particular  clock  pair  has
+                false  paths (say, using -clock_fall), then the path is marked
+                as a Partial False.
+
+         clock_expected
+              Warning: Clock not found where clock is expected.
+
+              Comments: Indicates that no clock signal is defined at the clock
+              pin.
+
+              See create_clock.
+
+         clock_gating_controlling_edge_unknown
+              Warning: Unknown controlling edge to perform clock gating check.
+
+              Comments: Reports library cells with complex functions  (MUX  or
+              AOI  )  where controlling edge of signal to perform clock gating
+              check cannot be determined automatically.
+
+              You need to specify correct edge by -high/-low option using  the
+              set_clock_gating_check command to resolve such warning.
+
+              Note: The software does not report this warning when either:
+
+              * set_disable_clock_gating_check  command  is  applied  on  such
+                pins, or
+
+              * global settings to disable clock gating checks are on.
+
+         clock_gating_no_data
+              Warning: No data signal reaching clock gating enable pin
+
+              Comments: Reports clock gating enable pins where no  valid  data
+              signal arrives.
+
+              You need to do either of the following:
+
+              * specify  valid data signal to reach enable pin of clock gating
+                cells, or
+
+              * remove any path exceptions  or  disabled  checks  that  blocks
+                valid data signal to reach enable pin
+
+              Note: The software does not report this warning when either
+
+              * set_disable_clock_gating_check is applied on such pins, or
+
+              * global settings to disable clock gating checks are on.
+
+       clocks_masked_by_another_clock
+              Warning: Clock(s) in fanin cone are dropped due to another clock
+
+              Comments: Reported timing pins on which creation of a regular or
+              a  generated  clock  causes clock(s) in fanins of such pins have
+              been blocked or masked from propagating further.
+
+              However, for pins having  only  master  clock  waveform  on  the
+              fanin, this warning is not reported.
+
+              You  can use the detailed mode (-verbose option) to report names
+              of all the incoming clock waveforms that have been blocked.
+
+       clock_missing_at_sequential_output
+              Warning: Found latency phase at sequential output on clock  tree
+              instead of clock phase
+
+              Comments: Reports output pins of sequential elements that lie on
+              source  clock  tree  for the generated clocks created downstream
+              and do not have any valid clock phase. This  indicates  possible
+              missing  clock related checks (e.g., clock gating) on downstream
+              clock tree.
+
+              You can add clocks on this pin or downstream clock tree only  if
+              no  valid clock exists until downstream generated clock creation
+              point.
+
+         clock_not_propagated
+              Warning: Clock not propagated
+
+              Comments: Reports ideal clocks reaching the reference pin  of  a
+              timing check.
+
+         const_collision
+              Warning: Constant collision
+
+              Comments: See set_case_analysis.
+
+       data_check_multiple_reference_signal
+              Warning: Multiple clocked signals are reaching data check refer-
+              ence pin
+
+              Comments:  Reports  on  reference pins for non sequential timing
+              check (data check) where more than one reference data arrives.
+
+       data_check_no_reference_signal
+              Warning: No clocked signal is reaching data check reference pin
+
+              Comments: Reports reference  pins  for  non-  sequential  timing
+              check  (data check) where no valid reference signal (data phase)
+              arrives.
+
+              You can do one of the following to resolve such warnings:
+
+              * add valid reference signals to reach at such reference pins
+
+              * remove path exceptions or disabled arcs that are blocking such
+                reference signals
+
+         ideal_clock_waveform
+              Warning: Clock waveform is ideal.
+
+              Comments: Reports clocks that are ideal and are not  propagated.
+              This  warning type is reported by default (unless -exclude_warn-
+              ing or -check_only parameter is specified).
+
+              You can use the set_propagated_clock command to avoid this warn-
+              ing.
+
+                            invalid_pll_configuration" Warning: No valid  path
+              exists from output pin to feedback pin of PLL.
+
+              Comments:  Shows  PLL  (phase locked loop) check warnings. These
+              checks allow you to identify and fix issues in the PLL flow.
+
+       latch_fanout_clock_connectivity
+              Warning: Latch and its fanout latch work on same clock.
+
+              Comments: Checks for a latch and its fanout latch(es) that works
+              on the same clock.
+
+         loop Warning: Timing loop found in the design.
+
+              Comments: Indicates that there are timing loops in  the  design.
+              It also includes loops caused by generated clocks.
+
+       master_clk_edge_not_reaching
+              Warning:  Master  clock  edge does not reach the generated clock
+              target.
+
+              Comments: This warning means that rise/fall latency edge is  not
+              reaching  to  create generated clock root from the master clock.
+              You can verify if the path that is
+
+              seeing this warning is actually broken,  or  edge  is  somewhere
+              disabled  earlier  on  this  path.  There is a global timing_en-
+              able_genclk_edge_based_source_latency  that  controls  how   the
+              software  chooses  generated clock source latency paths. Details
+              of this global can be found at Tempus text command reference.
+
+       missing_clock_groups
+              Warning: Set clock group related checking.
+
+              Comments: Reports any potential issues with  the  defined  clock
+              grouping data.
+
+         partial_input_delay
+              Warning:  Indicates that a rise or fall input delay assertion is
+              not applied.
+
+         missing_drive
+              Warning: Missing specific (rise/fall) drive constraint
+
+              Comments: Either a rise or fall drive constraint is applied  and
+              the other one is missing.
+
+       multiple_clock
+              Warning: Multiple clocks are reaching clock reference pin.
+
+              Comments: Reports clock pins of sequential or clock gating cells
+              where more than one clock waveform arrives.
+
+              This  warning  is for information only and the software performs
+              timing analysis with respect to all such clocks.
+
+         no_input_delay
+              Warning: No input delay assertion with or without -clock  option
+              specified.
+
+              Comments: See set_input_delay.
+
+         no_drive
+              Warning: No drive constraint
+
+              Comments: See set_driving_celland set_drive.
+
+         no_gen_clock_source
+              Warning: No clock source found for generated clock.
+
+              Comments:  Indicates  that the source pin of the clock generated
+              by the create_clock command is not driven by a clock source.
+
+       pulse_non-pulse_clock_merge
+              Warning: Merge of pulse and non-pulse clock paths.
+
+              Comments: Reports points where a pulse  clock  and  a  non-pulse
+              clock merges.
+
+         signal_level
+              Warning:  Driver  pin  voltage  value do not match with sink pin
+              voltage level
+
+              Comments: Reports net driver/receiver pin pairs  for  which  the
+              pin voltage does not match.
+
+         uncons_endpoint
+              Warning: No constrained signal reaching pin.
+
+              Comments:  For output ports: Primary output port has no implicit
+              timing   check.   Use   set_output_delay,   set_max_delay,    or
+              set_min_delay to create a valid constraint.
+
+              For  register data pins: There is no valid clock reaching the CK
+              pin of the register data pin. Check for missing create_clock for
+              the clock network.
+
+              The endpoints are reported as unconstrained in both in early and
+              late timing. This does not cover all  the  cases  and  scenarios
+              because of which endpoint can become unconstrained. To cover all
+              possible  cases, you can use the  report_analysis_coverage  com-
+              mand.
+
+        uncons_endpoints_due_to_case_analysis
+              Warning: Unconstrained signal arriving at end point due to  case
+              analysis
+
+              Comments: Reports unconstrained endpoints due to case analysis.
+
+              To   enable   this   warning,   you   must  set  the  timing_re-
+              port_check_timing_unconstrained_endpoints_due_to_constants
+              global variable to true.
+
+Examples
+              * Consider the following example:
+
+                in---------|>-----------|>---------out
+
+                buf1 buf2
+
+                The Timing Check Crossing  Clocks  reports  False  or  Partial
+                False in some of the scenarios given below:
+
+                a)  set_input_delay  with  respect  to CLK1 on in and set_out-
+                put_delay with respect to CLK2 on out:
+
+                From Clock         Crossing Clocks
+
+                ------------------------------------------
+
+                CLK1               CLK2
+
+                b) set_input_delay with respect to CLK1 on in,  set_output_de-
+                lay  with  respect to CLK2 on out, and set_false_path -to CLK2
+                (clock-based false path):
+
+                From Clock         Crossing Clocks
+
+                -------------------------------------------
+
+                CLK1               CLK2  (False)
+
+                c) If the set_false_path becomes set_false_path -rise_to CLK2,
+                the following is reported:
+
+                From Clock         Crossing Clocks
+
+                -------------------------------------------
+
+                CLK1               CLK2  (Partial False)
+
+                The following command displays the default summary report:
+
+                check_timing
+
+                -------------------------------------------------------------------------------
+
+                                              TIMING CHECK SUMMARY
+
+                ----------------------------------------------------------------------------------------------
+
+                Warning                             Warning        Description
+                Number of
+
+                                                                                              Warn-
+                ings
+
+                ----------------------------------------------------------------------------------------------
+
+                ideal_clock_waveform             Clock   waveform   is   ideal
+                1
+
+                clock_expected                Clock not found where  clock  is
+                expected                      3
+
+                master_clk_edge_not_reaching  Master clock edge does not reach
+                the generated clock target  2
+
+                no_drive                           No      drive     assertion
+                8
+
+                no_input_delay                No input  delay  assertion  with
+                respect to clock               4
+
+                uncons_endpoint               Unconstrained signal arriving at
+                end point                   5
+
+                ----------------------------------------------------------------------------------------------
+
+              *
+
+                The following command displays a specified type of warning us-
+                ing the -type option if a timing loop is found in the design:
+
+                check_timing -type loops
+
+                -------------------------------------------------------
+
+                                  TIMING CHECK SUMMARY
+
+                -------------------------------------------------------
+
+                Warning      Warning Description              Number of
+
+                                                              Warnings
+
+                -------------------------------------------------------
+
+                loop         Timing loop found in the design  0
+
+                -------------------------------------------------------
+
+              * The following command provides more information about problems
+                and prints a summary using the -verbose option:
+
+                check_timing -verbose
+
+                -------------------------------------------------------------------------------
+
+                                            TIMING CHECK SUMMARY
+
+                ------------------------------------------------------------------------------------------------
+
+                Warning                              Warning       Description
+                Number of
+
+                                                                                                      Warn-
+                ings
+
+                --------------------------------------------------------------------------------------------------
+
+                ideal_clock_waveform            Clock   waveform   is    ideal
+                1
+
+                clock_expected                 Clock  not found where clock is
+                expected                     3
+
+                master_clk_edge_not_reaching  Master clock edge does not reach
+                the generated clock target 2
+
+                no_drive                          No      drive      assertion
+                8
+
+                no_input_delay                 No  input  delay assertion with
+                respect to clock              4
+
+                uncons_endpoint               Unconstrained signal arriving at
+                end point                  5
+
+                ----------------------------------------------------------------------------------------------
+
+                ------------------------------------------
+
+                TIMING CHECK DETAIL
+
+                ------------------------------------------
+
+                Pin         Warning
+
+                ----------------------------------------------------------------
+
+                u99/CK      Clock not found where clock is expected
+
+                u5/CK       Clock not found where clock is expected
+
+                u8/CK       Clock not found where clock is expected
+
+                u8/Q        Master clock edge does not reach  the  target  for
+                generated clock GCLK4
+
+                CLK1        No drive assertion
+
+                in1         No drive assertion
+
+                in1         No input delay assertion with respect to clock
+
+                out1        Unconstrained signal arriving at end point
+
+                -----------------------------------------------------------------
+
+                -------------------------
+
+                TIMING CHECK IDEAL CLOCKS
+
+                -------------------------
+
+                Clock  Waveform
+
+                ------------------------
+
+                CLK1
+
+                ------------------------
+
+              * When             timing_report_check_timing_unconstrained_end-
+                points_due_to_constants global variable is enabled,  the  case
+                analysis warnings are reported as shown below:
+
+                > check_timing
+
+                ----------------------------------------------------------------------------------
+
+                                                TIMING CHECK SUMMARY
+
+                ----------------------------------------------------------------------------------
+
+                Warning                         Warning            Description
+                Number of
+
+                                                                                      Warn-
+                ings
+
+                ----------------------------------------------------------------------------------
+
+                clock_expected       Clock not found where clock  is  expected
+                4202
+
+                no_drive                     No         drive        assertion
+                241
+
+                no_input_delay       No input delay assertion with respect  to
+                clock     160
+
+                uncons_endpoint       Unconstrained  signal  arriving  at  end
+                point         145259
+
+                uncons_endpoints_due_to_case_analysis
+
+                                 >>>>Unconstrained  signal  arriving  at   end
+                point due to case analysis
+
+                                                                                        5969437
+
+                ----------------------------------------------------------------------------------
+
+Related Information
+              * report_timing
+
+              * set_input_delay
+
+              * create_clock
+
+              * set_case_analysis
+
+              * set_output_delay
+
+              * set_max_delay
+
+              * set_min_delay
+
+              * set_drive
+
+              * set_driving_cell
+
+              * set_false_path
+
+              * set_clock_gating_check
+
+              * set_disable_clock_gating_check
+
+                           Fri Apr 04 01:25:37 2025        check_timing(25.10)

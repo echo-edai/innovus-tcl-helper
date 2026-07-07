@@ -1,0 +1,39 @@
+{
+  "command": "uniquify",
+  "is_cmd": true,
+  "summary": "对设计或模块进行唯一化处理，使其内部及递归下层的所有实例拥有自己唯一的模块定义，排除指定的模块。",
+  "description": "该命令用于对指定的顶层设计或模块进行唯一化操作。它会递归处理该设计或模块内部及下层的所有层次实例（hinsts），使它们拥有自己唯一的模块定义（除非使用-exclude选项排除的模块）。如果多个实例引用同一个模块，且该模块本身已经是克隆关系，则这些实例将保持为克隆状态。使用-new_master选项可以将一个主模块的多个实例克隆拆分到一个新的主模块中，该新主模块也会被唯一化（排除-exclude的模块）。如果上层实例被强制要求拥有新的主模块，也可能发生这种情况。如果指定的任何实例不是同一模块的克隆，则会报错。",
+  "usage": "uniquify [-help] [-exclude <module>+] [-verbose] { <design|module> | -new_master <hinst>+ }",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<design|module>",
+      "description": "指定要进行唯一化操作的设计或模块。将对该设计或模块内部及递归下层进行唯一化，使所有实例拥有自己唯一的模块（排除-exclude指定的模块）。如果多个实例引用该模块本身且该模块已经是克隆关系，则这些实例将保持为克隆状态。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-exclude",
+      "description": "指定要从唯一化中排除的模块列表。这些模块将不会被唯一化，适用于已知特定子模块是分区且只实现一次并被共享的情况。",
+      "required": false,
+      "type": "module+"
+    },
+    {
+      "name": "-new_master",
+      "description": "将一个主模块的多个实例克隆拆分到一个新的主模块中。新主模块也会被唯一化（排除-exclude的模块）。上层实例也可能被强制要求拥有新的主模块。如果任何指定的实例不是同一模块的克隆，则会报错。",
+      "required": false,
+      "type": "hinst+"
+    },
+    {
+      "name": "-verbose",
+      "description": "报告任何被唯一化的实例克隆。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+specifyNetWeight(25.10)                                specifyNetWeight(25.10)
+
+Name
+       specifyNetWeight - Specifies the priority weighting of a net
+
+Syntax
+        specifyNetWeight
+
+       [-help]
+
+       netName ... netWeightValue
+
+       Specifies the priority weighting of a net. You can use this command af-
+       ter importing the design.
+
+       Note:  Partition pin assignment honors specifyNetWeight. Pins that con-
+       nect to a net that has a higher net weight are assigned before the pins
+       that connect to a net with a lower net weight.
+
+       Note: The setPlaceMode -place_global_clock_gate_aware option has higher
+       priority over specifyNetWeight and hence, if it is set then  tool  will
+       not  honor  the  weights  on  the clock net during the placement run as
+       specified using the specifyNetWeight command.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each
+
+              specifyNetWeight  parameter.  For  a detailed description of the
+              command and all
+
+              of its parameters, use the man command:
+
+              man specifyNetWeight
+
+       <netName..>
+              Specifies the name(s) of an individual net. You  can  use  wild-
+              cards (*?) with this parameter.
+
+              Data_type: string, required
+
+       <netWeightValue>
+              Specifies  the  weighting  priority of the net name, with values
+              512 (highest) through 1 (lowest), or 0 (don't care).
+
+              Default: If you do not specify this parameter,  the  weight  for
+              nets is 2.
+
+              The placer will try to shorten nets with higher weight, and give
+              less  priority  to  lower weights (ignoring nets with weight 0).
+              The placer has a limit of 10 for the highest  weight,  and  will
+              treat  any  value  above  10 as 10. The router will route higher
+              weighted nets before lower weighted nets.
+
+              Data_type: string, required
+
+Examples
+              * The following commands set the priority net weighting for nets
+                STRW to first, WE2N to second, and IOWIN to third:
+
+                specifyNetWeight WE2N 9
+
+                specifyNetWeight STRW 10
+
+                specifyNetWeight IOWIN 8
+
+              * specifyNetWeight does not accept a Tcl list. You can list mul-
+                tiple nets by omitting the curly brackets:
+
+                specifyNetWeight n1 n2 10
+
+                specifyNetWeight n5 scan* 1
+
+                You can also surround it with a foreach loop:
+
+                foreach net [dbGet top.nets.name  n*]  {specifyNetWeight  $net
+                10}
+
+Related Information
+              * setPlaceMode
+
+              * getNetWeight
+
+              * deleteNetWeight
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025    specifyNetWeight(25.10)

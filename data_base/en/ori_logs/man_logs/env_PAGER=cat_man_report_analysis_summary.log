@@ -1,0 +1,151 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_analysis_summary(25.10)                  report_analysis_summary(25.10)
+
+Name
+       report_analysis_summary  -  Generates  timing slack summary reports for
+       specified analysis view(s)
+
+Syntax
+       report_analysis_summary
+
+       [-help]
+
+       [-csv <string>]
+
+       [-merged_views]
+
+       [-retime {path_slew_propagation | aocv_path_slew_propagation}]
+
+       [-retime_mode {exhaustive}]
+
+       [-view <viewName>]
+
+       [> <filename[.gz]>]
+
+       [>> <filename[.gz]>]
+
+       [-early | -late ]
+
+       [-expanded_summary_clocks | -merged_groups]
+
+       Generates timing slack summary reports for specified analysis  view(s).
+       This command categorizes the slack summary in terms of groups - In2reg,
+       Reg2reg, Reg2Out, and In2Out. A column "ALL" is displayed that regroups
+       in2reg, in2out, reg2reg, and reg2out details.
+
+       By  default,  the slack is categorized in terms of worst negative slack
+       (WNS), total negative slack (TNS), and the total number  of  violations
+       in group-based mode.
+
+       The report_analysis_summary command is supported in path-based analysis
+       (PBA) mode.
+
+Parameters
+       -help  Prints out the command usage.
+
+       {> | >>} <filename>
+              When  specified  with >, writes the report to the specified file
+              name. If the file already exists, the software overwrites it.
+
+              When specified with >>, writes the report to the specified  file
+              name.  If the file already exists, the software concatenates the
+              report to the end of the file.
+
+              Note: To write a compressed report, add the .gzextension to  the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -csv <string>
+              Specifies the name of the CSV output file.
+
+       -early Generates report for hold analysis mode for early paths.
+
+       -expanded_summary_clocks
+              Generates report in terms of each  possible  clock  domain  pair
+              separately.
+
+       -late  Generates report for setup analysis mode for late paths.
+
+       -merged_groups
+              Merges all the clock groups for a consolidated timing summary.
+
+       -merged_views
+              Generates merged reports across all the views.
+
+       -retime {path_slew_propagation | aocv_path_slew_propagation}
+              Reanalyzes the defined set of paths using the specified method.
+
+              By default, the timing report shows a maximum of 2 million paths
+              for retime PBA analysis.
+
+       -retime_mode {exhaustive}
+              Reanalyzes the specified set of paths using the specified retime
+              mode.
+
+       -view <viewName>
+              Generates  report  for the specified analysis views only. By de-
+              fault, all the active views are analyzed.
+
+Example
+              * The report_analysis_summary command shows the following report
+                output:
+
+                REPORT ANALYSIS SUMMARY (View:default_emulate_view) (EL:Setup)
+
+                ===============================================================
+
+                REPORT ANALYSIS SUMMARY (View:default_emulate_view) (EL:Hold)
+
+                ===============================================================
+
+                GroupType:ClockGate
+
+                ==============================================================
+
+                All                IN2REG            IN2OUT            REG2REG
+                REG2OUT
+
+                -------------------------------------------------------------------------------------------
+
+                WNS:TNS:#VIO     WNS:TNS:#VIO     WNS:TNS:#VIO    WNS:TNS:#VIO
+                WNS:TNS:#VIO   FromClk->ToClk
+
+                --------------------------------------------------------------------------------------------
+
+                -5.614:-5.614:1  0.000:0.000:0  0.000:0.000:0  -5.614:-5.614:1
+                0.000:0.000:0  *->*
+
+                --------------------------------------------------------------------------------------------
+
+                GroupType:Standard
+
+                ============================================================================================
+
+                All               IN2REG             IN2OUT            REG2REG
+                REG2OUT
+
+                ----------------------------------------------------------------------------------------
+
+                WNS:TNS:#VIO      WNS:TNS:#VIO     WNS:TNS:#VIO   WNS:TNS:#VIO
+                WNS:TNS:#VIO   FromClk->ToClk
+
+                ----------------------------------------------------------------------------------------
+
+                -8.897:-8.897:1          0.000:0.000:0           0.000:0.000:0
+                -8.897:-8.897:1 0.000:0.000:0  *->CLK_W_1
+
+                --------------------------------------------------------------------------------------------
+
+                -0.571:-0.571:1  -0.571:-0.571:1 0.000:0.000:0   0.000:0.000:0
+                0.000:0.000:0  *->CLK_W_2
+
+                --------------------------------------------------------------------------------------------
+
+Related Information
+              * set_default_view
+
+              * set_analysis_view
+
+                           Fri Apr 04 01:25:37 20r2e5port_analysis_summary(25.10)

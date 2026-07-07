@@ -1,0 +1,414 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_tracks(25.10)                                            add_tracks(25.10)
+
+Name
+       add_tracks  - Deletes existing routing tracks and generates new routing
+       tracks based on the technology data or user specific values
+
+Syntax
+       add_tracks
+
+       [-help]
+
+       [-backside]
+
+       [-honor_pitch]
+
+       [-keep_default_width]
+
+       [-mask_pattern {{<layer1>  <mask> [<mask ...>]} [<layer2 ...>] }]
+
+       [-mode {replace append}]
+
+       [-offsets {<layer1> horiz|vert  [die_box]  <offset>}  [{<layer2  ...>}]
+       ...}]
+
+       [-pitch_pattern  {<layer1>  offset <offset> pitch <pitch> [pitch<pitch>
+       ...]} [{<layer2> ...}]...}]
+
+       [-pitches {<layer1> horiz|vert <pitch>} [{<layer2> horiz|vert <pitch>}]
+       ...}]
+
+       [-rect_only_pattern {{layer1 [<pattern> ...]} {layer2 [<pattern>  ...]}
+       .. }]
+
+       [-route_rule <route_rule_name>]
+
+       [-snap_m1_track_to_cell_pins]
+
+       [-width_pitch_pattern  {{<layer1>  offset  <offset>  width <width>pitch
+       <pitch> [width <width>pitch <pitch>]...} [{<layer2> ...}]...}]
+
+       Deletes existing routing tracks and generates new routing tracks  based
+       on  the  technology  data or user specific values. If no parameters are
+       given to the command, it examines the LEF layer offset and  pitch  val-
+       ues, but may adjust them based on the LEF width and spacing rules, via-
+       rules,  or  the width and height of the standard cells to create tracks
+       optimized for routing. If you want to override the automatically gener-
+       ated pitch and offset values, you should use the parameters below:
+
+              * Use -offsets and -pitches to create uniform track patterns.
+
+              * Use -pitch_pattern  or  -width_pitch_pattern  for  non-uniform
+                track patterns.
+
+       The   Innovus   software  generates  tracks  automatically.  You do not
+       have to run this command unless you want to override the defaults or if
+       you have imported a DEF file using the defIn command and you wanted  to
+       overwrite the track definitions in the DEF file. To overwrite the track
+       definitions,  run this command after running the defIn command. Various
+       warning messages are generated if any values  given  will  likely  give
+       poor  routing  results (For example, A pitch less than minimum wire-to-
+       via spacing, or a bottom routing layer tracks that do not align to  the
+       standard-cell heights.)
+
+              * Non-preferred  routing  tracks  of each layer are aligned with
+                the preferred routing tracks of the next lower layer.
+
+              * Non-preferred routing tracks of the first  layer  are  aligned
+                with the tracks of the next upper layer.
+
+       If  the LEF FIRSTLASTPITCH property (or OA equivalent) is defined for a
+       layer, then non-uniform tracks will be created with the first and  last
+       pitch  of the tracks set to align to the standard cell rows. This makes
+       the tracks aligned with the standard-cell power rails having  a  wider-
+       pitch  on  both  sides to allow a wider power-route with min-spacing to
+       the next routing track.
+
+Parameters
+       -backside
+              Generates routing tracks on backside layers.
+
+              Data_type: bool, optional
+
+       -help  Prints a brief description that includes the  type  and  default
+              information for each add_tracks parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man add_tracks.
+
+       -honor_pitch
+              Honors  the  pitch  specified  in  the LEF file. By default, the
+              add_tracks command adjust the pitch to what it  considers  best.
+              The  -honor_pitch  parameter  forces add_tracks to use the layer
+              pitch value specified in the LEF or OA technology file.  If  the
+              layer  pitch specified in the LEF file is smaller than the mini-
+              mum line-to-via pitch, the pitch is reset to the  minimum  line-
+              to-via pitch and a warning message is displayed in the log file.
+
+               Note: The -honor_pitch parameter cannot be used with any of the
+              options setting pitch values directly (-pitches, -pitch_pattern,
+              -width_pitch_pattern).
+
+              Data_type: bool, optional
+
+       -keep_default_width
+              Keeps user specified default width between routing tracks.
+
+              Note:  This  enables  the interoperability of width spacing pat-
+              terns with Virtuoso.
+
+              Data_type: bool, optional
+
+       -mask_pattern {{layer1 [mask ...]} {layer2 [mask ...]} .. }
+              Specifies the mask pattern for the specified  layers  that  have
+              multiple masks. The mask values are applied to the preferred di-
+              rection  tracks, and then repeat. There is no color for non-pre-
+              ferred direction tracks. If -pitch_pattern, or -width_pitch_pat-
+              tern is given, the number  of  elements  in  -mask_pattern  must
+              match for each layer or an error occurs.
+
+              * <layer>: You can use LEF layer names or built-in routing-layer
+                names (Metal1 for the first routing layer, Metal2 for the sec-
+                ond layer) for the <layer> name.
+
+              * <mask>:Specify  1,  2,  or 3. The layer must be defined to use
+                the specified number of masks.
+
+              For example,
+
+              -mask_pattern {metal1 1 2 3 1 2  metal2 1 2 1 2 1}
+
+              Data_type: string, optional
+
+       -mode {replace append}
+              Enables incremental replace/append operations for tracks and re-
+              generates tracks for specified layers only. In  the  incremental
+              mode,  you can replace or append any specific tracks one-by-one.
+              You do not need to specify a long list of track definitions any-
+              more.
+
+              * replace: Enables the add_tracks  command  to  remove  all  the
+                tracks  in  the  specified  layers  and then only generate/add
+                specified tracks from the command line.
+
+              * append: When specified, the add_tracks commanddoes not  remove
+                any  tracks.  It  will  append  specified tracks into existing
+                tracks.
+
+              Data_type: enum, optional
+
+       -offsets {<layer1> horiz|vert [die_box] <offset>} [{<layer2 ...>}] ...}
+              Specifies the horizontal offset or vertical offset for the spec-
+              ified layers.
+
+              * <layer>: You can use LEF layer names or built-in routing-layer
+                names (Metal1 for the first routing layer, Metal2 for the sec-
+                ond layer) for the <layer> name.
+
+              * <offset>: Specifies the offsets (in microns) for the specified
+                layer.
+
+              Note: The value of <offset>is relative to the lower-left  corner
+              of  the  core_box that is aligned to the standard cell rows, and
+              can be a negative number. If die_box is given, the  <offset>  is
+              relative to the lower-left corner of the die_box rather than the
+              core_box.
+
+              Note:  die_box should not be used for the first two routing lay-
+              ers that need to align with the standard cells pins, but it  can
+              be  used  to align some of the upper routing layer tracks with a
+              power-route grid structure.
+
+              For example,
+
+              -offsets {metal1 horiz 0.1 metal2 vert 0.0 metal4  vert  die_box
+              0.3}
+
+              Data_type: string, optional
+
+       -pitch_pattern {<layer1> offset <offset> pitch <pitch> [pitch<pitch>
+       ...]} [{<layer2> ...}] ...}
+              Specifies  an  offset,  and  pitch pattern for the tracks in the
+              preferred routing direction when non-uniform spacing is  needed.
+              These  values  override any -pitches or -offsets values for this
+              layer in the preferred direction.
+
+              * <layer>: You can use LEF layer names or built-in routing-layer
+                names (Metal1 for the first routing layer, Metal2 for the sec-
+                ond layer) for the <layer> name.
+
+              * <offset>: Specifies the offsets (in microns) for the specified
+                layer.
+
+              * <pitch>: Specifies the pitch value. You can  repeat  the  last
+                pitch  value  using repeat <num>. It is best to add {} to make
+                it clear which pitch value is repeated.
+
+                For example,  -pitch_pattern  {metal1  offset  0.2  pitch  0.2
+                {pitch  0.1  repeat  9}  pitch 0.2 metal2 offset 0.1 pitch 0.2
+                {pitch 0.1 repeat 8} }
+
+              Note: {} are ignored but allowed to make it easier to  read  the
+              command.
+
+              For  example, in the following command the first track is placed
+              at 44.00, the next 0.55 away and then 66.00 away and then repeat
+              0.55.and 0.66.
+
+              add_tracks -pitch_pattern { metal15  offset  44.00   pitch  0.55
+              pitch 66.00}
+
+              Data_type: string, optional
+
+       -pitches {<layer1> horiz|vert <pitch>} [{<layer2> horiz|vert <pitch>}]
+       ...}
+              Specifies  the horizontal pitch or vertical pitch for the speci-
+              fied layers. This is only used  for  layers  that  have  uniform
+              track spacing.
+
+              * <layer>: You can use LEF layer names or built-in routing-layer
+                names (Metal1 for the first routing layer, Metal2 for the sec-
+                ond layer) for the <layer> name.
+
+              * <pitch>: Specifies the pitch value (in microns).
+
+              Note:  {}  are ignored but allowed to make it easier to read the
+              command.
+
+              For example,
+
+              -pitches {metal1 vert 0.1 metal2 horiz 0.1 metal4 horiz 0.3}
+
+              Data_type: string, optional
+
+       -rect_only_pattern {{layer1 [<pattern> ...]} {layer2 [<pattern> ...]}
+       .. }
+              Enables you to specify which subset of tracks would  only  allow
+              rectangular shapes (rect_only).
+
+              Note: In the GUI, 'rect_only' is added behind the width to indi-
+              cate  that  the track has the "RECTONLY PARTIALTRACKS" LEF prop-
+              erty assigned to it. The presence of the   rect_only  tag  indi-
+              cates  that  the track has the 'rectangular shape only' restric-
+              tion and should be honored in routing.
+
+              * <layer>: The layer must be defined to use the rect_only  rout-
+                ing pattern.
+
+              * <pattern>:Use 0 or 1 to specify the rect_only routing pattern.
+
+                * 0: Indicates no rect_only in generated tracks.
+
+                * 1: Indicates rect_only in generated tracks.
+
+              For example,
+
+              add_tracks -rect_only_pattern {m2 0 0 1 1 1}
+
+              Data_type: string, optional
+
+       -route_rule <route_rule_name>
+              Specifies  the name of a non-default route rule. When specified,
+              the existing tracks are not deleted. Instead, an additional  set
+              of  tracks  are created for use by this <route_rule_name> on top
+              of the existing tracks.
+
+              Note: When the -route_rule parameter is used, you  must  specify
+              everything  for  this specific <route_rule_name> in one command,
+              irrespective of what -mode option you specify.
+
+              Example:
+
+              In the following command, M6 and M8 NDR tracks are added in  one
+              command. These should NOT be done in the two commands.
+
+              set addTrack_pitch_pattern_2w "{\
+
+              {m6 offset 0.490 width 0.076 pitch 0.076 width 0.076 pitch 0.076
+              width  0.076  pitch  0.076  width  0.076 pitch 0.076 width 0.076
+              pitch 0.076 width 0.076 pitch 0.304} \
+
+              {m8 offset 0.490 width 0.076 pitch 0.076 width 0.076 pitch 0.076
+              width 0.076 pitch 0.076 width  0.076  pitch  0.076  width  0.076
+              pitch 0.076 width 0.076 pitch 0.304}}"
+
+              add_tracks -width_pitch_pattern $addTrack_pitch_pattern_2w -mode
+              append -route_rule {TrunkNDR_2W}
+
+              Note:  To  later  modify/append  NDR tracks, you must delete all
+              tracks (including default and NDR tracks) using the  deleteTrack
+              command and then regenerate all of them.
+
+              Data_type: string, optional
+
+       -snap_m1_track_to_cell_pins
+              Extracts  pins  to  generate tracks for the first routing layer.
+              When specified, it scans all standard cells in the  library  and
+              tries  to  extract  all  possible rectangle pins shapes and mask
+              numbers. Tracks are created to hit the center of these pins. All
+              tracks are assigned a mask based on the pin mask value, if spec-
+              ified. This is currently only intended for some  10nm  technolo-
+              gies.
+
+              Data_type: bool, optional
+
+       -width_pitch_pattern { {<layer1> offset <offset> width <width>pitch
+       <pitch> [width <width>pitch <pitch>]...} [{<layer2> ...}] ...}
+              Specifies  track width patterns for the preferred direction. Use
+              { } to specify track width pattern for more than one layer.
+
+              Specifies the width and pitch pattern for the tracks in the pre-
+              ferred routing direction, for technologies  that  need  a  width
+              value attached to each track. These values override any -pitches
+              or -offsets values for this layer in the preferred direction. If
+              -pitch_pattern is given for any of the layers, -width_pitch_pat-
+              tern will override the -pitch_pattern values.
+
+              * <layer>: You can use LEF layer names or built-in routing-layer
+                names (Metal1 for the first routing layer, Metal2 for the sec-
+                ond layer) for the <layer> name.
+
+              * <width>: Specifies the width value.
+
+              * <pitch>: Specifies the pitch value (in microns).
+
+              Note: You can repeat the last width and pitch value using repeat
+              <num>. It is best to add {} to make it clear which value are re-
+              peated.
+
+              For example,
+
+              -width_pitch_pattern
+
+              {metal1  offset 0.2 width 0.2 pitch 0.2 {width 0.1 pitch 0.1 re-
+              peat 8} width 0.1 pitch 0.2
+
+               metal2 offset 0.1 width 0.2 pitch 0.2 {width 0.1 pitch 0.1  re-
+              peat 8} width 0.1 pitch 0.2 }
+
+              Data_type: string, optional
+
+Examples
+              * The  following command deletes any existing tracks, and gener-
+                ates new routing tracks based on the LEF or  OA  layer  offset
+                and pitch settings, and the standard-cell pins.
+
+                add_tracks
+
+              * The  following  command  generates  uniform vertical tracks on
+                metal1 with a horizontal offset of 0.1 from  the  core_box,  a
+                horizontal  pitch of 0.2, and horizontal tracks on metal2 with
+                a vertical offset of 0.2 from the  core_box,  and  a  vertical
+                pitch  of  0.3. Other layers will use the LEF or OA layer set-
+                tings.
+
+                add_tracks  -offsets  {metal1  horiz  0.1  Metal2  vert   0.2}
+                -pitches {metal1 horiz 0.2 Metal2 vert 0.3}
+
+              * The  following  command  generates  a  non-uniform  pattern of
+                tracks for the preferred routing direction, using  the  values
+                given. Extra {} are added to make it more readable.
+
+                add_tracks  -pitch_pattern {metal1 offset 0.1 pitch 0.2 {pitch
+                0.1 repeat 8} metal2 offset 0.2 pitch 0.2 {pitch 0.1 repeat 8}
+                }
+
+              * The following  command  generates  a  non-uniform  pattern  of
+                tracks  with width values for the preferred routing direction,
+                using the values given settings.
+
+                add_tracks -width_pitch_pattern \
+
+                {{metal1 offset 0.1 width 0.2 pitch 0.2 {width 0.1  pitch  0.1
+                repeat 8} width 0.1 pitch 0.2} \
+
+                {metal2 offset 0.2 width pitch 0.2 {pitch 0.1 repeat 8}} }
+
+Pitch Rule Examples
+       Example 1
+
+       The  following example shows how routing_tracks are created for a layer
+       with FIRSTLASTPITCH.
+
+       Suppose the LEF has this statement for the Metal1 layer.
+
+       PROPERTY LEF58_PITCH STRING "
+
+               PITCH 0.1 FIRSTLASTPITCH 0.14 ; ";
+
+       Then the horizontal metal1 tracks will be created as shown below by de-
+       fault, with no extra parameters passed to add_tracks.
+
+       Example 2
+
+       In this example, the cell height is 1.08. The  dotted  line  represents
+       the  routing  tracks.  The first and last tracks are 0.14 from the cell
+       row boundary while the intermediate tracks are 0.1  apart  making  2  *
+       0.14  +  8 * 0.1 = 1.08. The routing track definition would be repeated
+       based on the cell rows.
+
+Related Information
+              * report_tracks
+
+              * check_tracks
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                * Adding Tracks
+
+                * Running the NanoRoute Router with Innovus Text Commands
+
+                           Fri Apr 04 01:25:37 2025          add_tracks(25.10)

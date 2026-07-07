@@ -1,0 +1,213 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+update_clock_t...ec_annotations(25.10)  update_clock_t...ec_annotations(25.10)
+
+Name
+       update_clock_tree_spec_annotations - Updates all ideal nets, transition
+       and  delay  annotations  to match active timing constraints and removes
+       all prior annotations from the clock tree specification
+
+Syntax
+       update_clock_tree_spec_annotations
+
+       [-help]
+
+       [-file <file_name>]
+
+       Updates all ideal nets, transition and delay annotations to  match  ac-
+       tive  timing  constraints  and  removes  all prior annotations from the
+       clock tree specification. When this command is specified, all prior an-
+       notations are removed from the clock tree specification and the set_an-
+       notated_transition and set_annotated_delay values are mapped to the an-
+       notated_transition and annotated_delay_to property  settings.  The  up-
+       dated  settings can be written to a file using the -file option or they
+       can be applied immediately.
+
+       The following properties are provided to model  the  data  captured  by
+       set_ideal_network,    set_annotated_delay,    set_annotated_transition,
+       set_ideal_latency and set_ideal_transition:
+
+              *
+
+ideal_net
+       If set the clock tree timing engine will consider this net as ideal.
+
+       Default: false
+
+       Required argument: net
+
+       *
+
+annotated_delay_to
+       Overrides any clock tree timing engine-computed cell arc or net arc de-
+       lays to the specified pin, in a manner similar to that of SDC set_anno-
+       tated_delay command.
+
+       For cell arcs: The format is dict where the keys are pins and the  val-
+       ues are a rise fall delay pair. For example:
+
+       "<from  pin  1>  {<from rise delay 1> <from fall delay 1>} <from pin 2>
+       {<from rise delay 1> <from fall delay 2>}"
+
+       For net arcs: The format is dict where the keys are pins and the values
+       are the delay. For example:
+
+       "<from pin 1> <delay 1> <from pin 2> <delay 2>}"
+
+       For convenience, set the property using a single value that will  apply
+       to  all  available delays from pins and rise/fall from edges. For exam-
+       ple, "0.100".
+
+       Default: ""
+
+       Applicable arguments: "-delay_corner <name>", "-pin <name>",  "-early",
+       "-late", "-rise" and "-fall". Required: "-pin <name>".
+
+       *
+
+annotated_transition
+       Overrides any clock tree timing engine-computed transition at the spec-
+       ified  pin, in a manner similar to that of SDC set_annotated_transition
+       command.
+
+       Default: auto
+
+       Applicable arguments: "-delay_corner <name>", "-pin <name>",  "-early",
+       "-late", "-rise" and "-fall". Required: "-pin <name>".
+
+Parameters
+       -help  Outputs  a brief description of the update_clock_tree_spec_anno-
+              tations command. For a detailed description of the command,  use
+              the man command: man update_clock_tree_spec_annotations.
+
+       -file <file_name>
+              Writes  commands  to  the specified file instead of applying the
+              changes in memory.
+
+Example
+       Use the set of commands listed below to define a transition  annotation
+       at  pin  b1/I,  delay annotation at net_b1, update the annotations from
+       CTE to clock tree timing engine (CTTE), and verify that the  annotation
+       is corrected applied at  clock tree timing engine (CTTE).
+
+       set_interactive_constraint_modes [all_constraint_modes]
+
+       set_propagated_clock [all_clocks]
+
+       create_ccopt_clock_tree -name clk -source clk -no_skew_group
+
+       create_ccopt_skew_group  -name clk/default_constraint_mode -sources clk
+       -auto_sinks
+
+       Annotate transition at b1/I pin using the below command:
+
+       set_annotated_transition 1.234 [get_pins {b1/I}]
+
+       Annotate delay at net_b1 net using the below command:
+
+       set_annotated_delay 2.345 -net -from [get_pins  {b1/Z}]  -to  [get_pins
+       {b2_2/I}]
+
+       Update the annotations from CTE to CTTE using the below command:
+
+       update_clock_tree_spec_annotations
+
+       The log shows the following information:
+
+       <CMD> update_clock_tree_spec_annotations
+
+       Ignoring AAE DB Resetting ...
+
+       Updating timing graph...
+
+        Leaving CCOpt scope - BuildTimeGraph...
+
+       AAE DB initialization (MEM=1059.9 CPU=0:00:00.2 REAL=0:00:00.0)
+
+       #################################################################################
+
+       # Design Stage: PreRoute
+
+       # Design Name: top
+
+       # Design Mode: 90nm
+
+       # Analysis Mode: MMMC Non-OCV
+
+       # Parasitics Mode: No SPEF/RCDB
+
+       # Signoff Settings: SI Off
+
+       #################################################################################
+
+       Calculate delays in Single mode...
+
+       Start delay calculation (fullDC) (1 T). (MEM=1067.43)
+
+       siFlow : Timing analysis mode is single, using late cdB files
+
+       Total number of fetched objects 8
+
+       AAE_INFO: Total number of nets for which stage creation was skipped for
+       all views 0
+
+       End delay calculation. (MEM=1141.94 CPU=0:00:00.0 REAL=0:00:00.0)
+
+       End    delay    calculation    (fullDC).    (MEM=1130.4   CPU=0:00:00.4
+       REAL=0:00:01.0)
+
+        Leaving  CCOpt  scope  -  BuildTimeGraph  done.  (took   cpu=0:00:00.7
+       real=0:00:00.9)
+
+       Updating timing graph done.
+
+       Updating latch analysis...
+
+        Leaving CCOpt scope - Updating latch analysis...
+
+        Leaving   CCOpt   scope   -   Updating   latch  analysis  done.  (took
+       cpu=0:00:00.0 real=0:00:00.0)
+
+       Updating latch analysis done.
+
+       Clock tree spec update: Transition and delay annotations  were  updated
+       to match active timing constraints.
+
+       Verify  that the annotations are correctly updated using the below com-
+       mands:
+
+       get_ccopt_clock_tree_slew b1/I
+
+       <CMD> get_ccopt_clock_tree_slew b1/I
+
+       Clock tree timing engine global  stage  delay  update  for  default_de-
+       lay_corner_max:setup.late...
+
+       Clock  tree  timing  engine  global  stage delay update for default_de-
+       lay_corner_max:setup.late done. (took
+
+       cpu=0:00:00.2 real=0:00:00.2)
+
+       1.234
+
+Related Information
+              * get_ccopt_clock_tree_slew
+
+              * create_ccopt_clock_tree
+
+              * create_ccopt_skew_group
+
+              * get_pins
+
+              * set_annotated_delay
+
+              * set_annotated_transition
+
+              * set_interactive_constraint_modes
+
+              * set_propagated_clock
+
+              * The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:u2p5d:a3t7e_2c0l2o5ck_t...ec_annotations(25.10)

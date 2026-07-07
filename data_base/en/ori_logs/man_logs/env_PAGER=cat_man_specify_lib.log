@@ -1,0 +1,61 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+specify_lib(25.10)                                          specify_lib(25.10)
+
+Name
+       specify_lib  -  Specify  the name of the timing library file(s) for dy-
+       namic power analysis
+
+Syntax
+       specify_lib
+
+       [-help] [<<in_file> <<file1>[<file2>] ...>>] [-reset]
+
+       Specify the name of the timing library file(s) for dynamic power analy-
+       sis. This command allows you to run the  dynamic  power  analysis  flow
+       without reading a dotlib into design database to reduce background mem-
+       ory consumption. You must have an external TWF file to run this flow as
+       the  timing  engine  will not be invoked from within the software. This
+       flow is recommended for large designs  where  front-end  processing  of
+       timing  libraries is high. Some of the database query commands will not
+       work if specify_lib is used.
+
+       This command works in conjunction with the specify_def and specify_spef
+       commands.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each specify_lib parameter.
+
+       <in_file> <<file1>[<file2>] ...
+              List of timing library files.
+
+       -reset Resets all specified options back to default values.
+
+Examples
+              * The  following Tcl shows the use model of the specify_lib com-
+                mand that works  in  conjunction  with  the  specify_def/spec-
+                ify_spef flow to perform dynamic power analysis:
+
+                read_lib -lef tech1.lef tech2.lef
+
+                specify_lib /../library1.lib /../library2.lib
+
+                specify_def adder_routed.def
+
+                specify_spef {test.spef }
+
+                read_twf test.twf2
+
+                read_verilog test2.v
+
+                set_top_module test
+
+                set_default_switching_activity -comb_clockgate_ratio 1 -period
+                2.01ns -input_activity 0.2 -icg_ratio 1
+
+                set_power_analysis_mode   -default_supply   1.1   -method  dy-
+                namic_vectorless
+
+                report_power
+
+                           Fri Apr 04 01:25:37 2025         specify_lib(25.10)

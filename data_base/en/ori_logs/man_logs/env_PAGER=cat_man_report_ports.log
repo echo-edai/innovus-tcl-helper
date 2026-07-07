@@ -1,0 +1,347 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_ports(25.10)                                        report_ports(25.10)
+
+Name
+       report_ports - Reports timing constraints on ports
+
+Syntax
+       report_ports
+
+       [-type {[input] | [source_insertion] | [insertion] | [clock_root]
+
+       | [uncertainty] | [arrival] | [required] | [external] | [clk_arrival]
+
+       | [port_cap] | [fanout_load] | [fanout_load_limit] | [drive_resistance]
+
+       | [drive_cell] | [slew_time] | [slew_limit] | [constant] | external_de-
+       tail
+
+       | drive_resistance_detail}]
+
+       [-include_pins]
+
+       [-pins <port_name_list>]
+
+       [-view <viewName>]
+
+       [> <filename> | -tcl_list]
+
+       Reports  timing  constraints  on ports. By default, the command reports
+       all timing constraints on all ports of the current module.
+
+       The direction (DIR) column of the generated report can contain  one  of
+       the following abbreviations:
+
+              * IN indicates that the pin is an input pin.
+
+              * OUT indicates that the pin is an output pin.
+
+              * INTL  indicates  that the pin is an internal pin (a pin inside
+                the instance boundary).
+
+       The Clock Name column of the report can contain the following symbols:
+
+              * D indicates it is a data signal in the clock domain.
+
+              * C indicates it is a clock signal in the clock domain.
+
+              * P indicates it is a positive phase.
+
+              * N indicates it is a negative phase.
+
+              * Asterisk (*) indicates there is a timing exception  associated
+                with the signal.
+
+                Note:  Currently, it is not possible to expand the asterisk to
+                determine which exception is associated with the reported tim-
+                ing phase.
+
+Parameters
+       >  <filename>
+              Writes the report to the specified file name. If  the  file  al-
+              ready exists, the software overwrites it.
+
+              The  <filename> parameter must be the last argument in the list.
+              The <filename> and -tcl_list parameters are mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -include_pins
+              Reports timing constraints on  instance  pins,  as  well  as  on
+              ports.
+
+              Default: Reports timing constraints on ports only.
+
+       -pins <port_name_list>
+              Specifies  the  pins or ports to be reported. Pins can be speci-
+              fied by name, or by object ID in a Tcl list.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The -tcl_list and <filename> parameters are mutually  exclusive;
+              you cannot specify them together.
+
+       -type {<assertion_type> |  <assertion_type_list>}
+              Specifies the constraints to be reported.
+
+              Default:  All  constraints are reported. The following are valid
+              assertion_type values:
+
+              * arrival: Reports arrival time constraints as  set  by  set_in-
+                put_delaycommand.
+
+              * clk_arrival:  Reports clock arrival time constraints as set by
+                the set_clock_latencycommand.
+
+              * clock_root: Reports the clock root as set by the create_clock-
+                command.
+
+              * constant:  Reports  constant  constraints  as   set   by   the
+                set_case_analysis command.
+
+              * drive_cell:  Reports  drive  cell  constraints  as  set by the
+                set_driving_cell command.
+
+              * drive_resistance: Reports drive resistance constraints as  set
+                by the set_drive command.
+
+              * drive_resistance_detail:  Reports detail about the input ports
+                with drive resistance constraints.
+
+              * external: Reports external delay constraints  as  set  by  the
+                set_output_delay command.
+
+              * external_detail:  Reports  detail  about the output ports with
+                external delay constraints.
+
+              * fanout_load: Reports fanout load constraints  as  set  by  the
+                set_fanout_load command.
+
+              * fanout_load_limit:  Reports  fanout  load limit constraints as
+                set by the set_max_fanout command.
+
+              * input: Reports the input  delay  constraints  as  set  by  the
+                set_input_delay command.
+
+              * insertion:  Reports  the network insertion delay as set by the
+                set_clock_latency command.
+
+              * port_cap: Reports port capacitance constraints as set  by  the
+                set_load command.
+
+              * required:  Reports  required  time  constraints  as set by the
+                set_output_delay command.
+
+              * slew_limit: Reports slew time limit constraints as set by  the
+                set_max_transition command.
+
+              * slew_time: Reports slew time constraints as set by the set_in-
+                put_transition command.
+
+              * source_insertion: Reports the source insertion delay as set by
+                the set_clock_latency-source command.
+
+              * uncertainty:  Reports  the  clock  uncertainty  as  set by the
+                set_clock_uncertainty command.
+
+       -view <viewName>
+              Specifies the view name.
+
+Examples
+              * The following command shows a port report,  as  shown  in  the
+                following example:
+
+                report_ports
+
+                -------------------------------------------------------------------
+
+                 Early Late
+
+                 -------------------------------------------------------------------
+
+                 Pin       Dir       Assertion            Clock  Name     Rise
+                Fall    Rise   Fall
+
+                 Name
+
+                 -------------------------------------------------------------------
+
+                 CLK1   IN       clock_root          CK2(C)(P)
+
+                 CLK2   IN       clock_root          CLK2(C)(P)
+
+                 CLK3   IN       clock_root          CLK3(C)(P)
+
+                 IN1     IN        drive_resistance      *(D)(P)         2.000
+                2.000   2.000   2.000
+
+                 IN2      IN         drive_resistance     *(D)(P)        2.000
+                2.000   2.000   2.000
+
+                 IN3    IN       drive_cell          *(D)(P)       INV     INV
+                INV     INV
+
+                 OUT1    OUT       external              GCLK1(C)(P)     1.000
+                1.000   1.000   1.000
+
+                 OUT2   OUT
+
+                 OUT3   OUT derived_clock GCLK4(C)(P)
+
+                 ------------------------------------------------------------------------------
+
+                 Pin   Dir    Assertion                Value
+
+                 Name
+
+                 ----------------------------------------------------------
+
+                 CLK3   IN   slew_limit              ( 0.900 : )
+
+                 CLK3   IN   port_cap_limit          ( 0.020 : 0.900 )
+
+                 CLK3   IN   fanout_load_limit       5.000
+
+                 CLK2   IN   slew_limit              ( 0.900 : )
+
+                 CLK2   IN   port_cap_limit          ( 0.020 : 0.900 )
+
+                 CLK2   IN   fanout_load_limit       5.000
+
+                 CLK1   IN   slew_limit              ( 0.900 : )
+
+                 CLK1   IN   port_cap_limit          ( 0.020 : 0.900 )
+
+                 CLK1   IN   fanout_load_limit       5.000
+
+                 IN3    IN   slew_limit              ( 0.900 : )
+
+                 IN3    IN   port_cap                ( 1.500 : : 2.600 )
+
+                 IN3    IN   port_wire_cap           ( 1.200 : : 3.000 )
+
+                 IN3    IN   port_cap_limit          ( 0.020 : 0.900 )
+
+                 IN3    IN   fanout_load_limit       5.000
+
+                IN2    IN   slew_limit              ( 0.900 : )
+
+                 IN2    IN   port_cap                ( 1.500 : : 2.600 )
+
+                 IN2    IN   port_wire_cap           ( 1.200 : : 3.000 )
+
+                 IN2    IN   port_cap_limit          ( 0.020 : 0.900 )
+
+                 IN2    IN   fanout_load_limit       5.000
+
+                 IN1    IN   slew_limit              ( 0.900 : )
+
+                 IN1    IN   port_cap                ( 1.500 : : 2.600 )
+
+                 IN1    IN   port_wire_cap           ( 1.200 : : 3.000 )
+
+                 IN1    IN   port_cap_limit          ( 0.020 : 0.900 )
+
+                 IN1    IN   fanout_load_limit       5.000
+
+                 OUT3   OUT  slew_limit              ( 0.900 : )
+
+                 OUT3   OUT  port_cap_limit          ( 0.020 : 0.900 )
+
+                 OUT2   OUT  slew_limit              ( 0.900 : )
+
+                 OUT2   OUT  port_cap_limit          ( 0.020 : 0.900 )
+
+                 OUT1   OUT  slew_limit              ( 0.900 : )
+
+                 OUT1   OUT  port_cap_limit          ( 0.020 : 0.900 )
+
+              * The  following  command shows source_insertion and uncertainty
+                assertion type options as shown in the following example:
+
+                report_ports -type clock_root source_insertion input -pin  clk
+                in
+
+                > report_ports -type {uncertainty source_insertion} -pin CLK1
+
+                 -------------------------------------------------------------------
+
+                 Early Late
+
+                 -------------------------------------------------------------------
+
+                 Pin       Dir   Assertion       Clock  Rise     Fall     Rise
+                Fall
+
+                 Name                           Name
+
+                 --------------------------------------------------------------------
+
+                 CLK1    IN  source_insertion *(C)(P)  -0.500  -0.500   -0.500
+                -0.500
+
+                 -------------------------------------------------------------------
+
+                 Pin    Dir     Assertion    Value
+
+                 Name
+
+                 -------------------------------------------------------------------
+
+                 CLK1   IN        uncertainty   0.400(T)   0.400(T)   0.400(T)
+                0.400(T)
+
+                 -------------------------------------------------------------------
+
+              * The  following command shows clock_root and uncertainty asser-
+                tion type options as shown in the following example:
+
+                > report_ports -type {input uncertainty clock_root}
+
+                 --------------------------------------------------------------------
+
+                 Early Late
+
+                 ---------------------------------------------------------------------
+
+                 Pin       Dir    Assertion      Clock  Name      Rise    Fall
+                Rise   Fall
+
+                 Name
+
+                 -----------------------------------------------------------------------
+
+                 CLK1     IN    clock_root    CLK_W_1(C)(P)
+
+                 in1       IN     input          @(D)(P)         1.000   1.000
+                1.000  1.000
+
+                 -----------------------------------------------------------------------
+
+                 Pin    Dir    Assertion     Value
+
+                 Name
+
+                 --------------------------------------------------------------
+
+                 CLK1   IN      uncertainty     0.400(T)   0.400(T)   0.400(T)
+                0.400(T)
+
+                 --------------------------------------------------------------
+
+Related Information
+              * report_clocks
+
+              * report_net
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025        report_ports(25.10)

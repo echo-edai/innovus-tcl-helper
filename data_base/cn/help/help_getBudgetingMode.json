@@ -1,0 +1,285 @@
+{
+  "command": "getBudgetingMode",
+  "is_cmd": true,
+  "summary": "获取或设置预算模式",
+  "description": "该命令用于获取或设置EDA工具中的预算模式。预算模式涉及在芯片设计的分区（partition）或层次化设计中，为各个模块分配时序预算（timing budget）的行为和配置。通过此命令及其众多选项，用户可以控制预算生成、验证和约束写入的各个方面，例如是否考虑相邻分区、如何处理边界条件、使用何种延迟模型、是否生成验证脚本以及如何调整驱动和负载等。",
+  "usage": "getBudgetingMode [-help] [-abutted] [-accumulated] [-boundaryConditionTemplatePath] [-bufferDelayLibCell] [-bufferDelaySelectionEffort] [-ccd] [-constantModel] [-distributeMMMC] [-dontWriteWireLoad] [-driveConstraint] [-fixTopLevelPaths] [-handleComplexSDC] [-honorPortBoundaryCondition] [-honorPortDelays] [-honorReportTimingFormat] [-ignoreDontTouch] [-includeLatency] [-includeWireLoadsInLib] [-inputLoad] [-justify] [-justifyBudgetDir] [-keepPinListsForBlockPorts] [-latencyOnClocks] [-localLatency] [-localUncertainty] [-makeNegativeInputDelayZero] [-makeReducedTimingGraph] [-masterClone] [-noFalsePathsForUnCstrPorts] [-noHoldView] [-noSetupView] [-reportOrModifyBudget] [-rptNegSlackOnPorts] [-sdcContents] [-stageBasedFanoutDrivingFactor] [-stageBasedPartitionMultiplier] [-stageBasedWeight] [-useBoundaryCondition] [-virtualClock] [-virtualOptEngine] [-writeConstraintsForClkOutputPorts] [-writeFPForHold] [-writeLatencyPerClock] [-quiet] [-nonDefault]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-abutted",
+      "description": "假设所有分区都是相邻的",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-accumulated",
+      "description": "为嵌套分区写入接口和扁平约束",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-boundaryConditionTemplatePath",
+      "description": "包含模型文件的目录路径，用于 useBoundaryCondition 模板选项",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bufferDelayLibCell",
+      "description": "用户定义的缓冲器单元，用于虚拟缓冲器调整",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bufferDelaySelectionEffort",
+      "description": "控制工具内部计算缓冲器延迟调整的工作量",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-ccd",
+      "description": "生成脚本，用于使用CCD验证时序预算顶层和模块约束与预算前芯片约束的一致性",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-constantModel",
+      "description": "指定创建的时序模型类型",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-distributeMMMC",
+      "description": "在多个会话中分布多个分析视图",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-dontWriteWireLoad",
+      "description": "写入包含 -wire_load 信息的 set_load 命令",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-driveConstraint",
+      "description": "要写入到模块输入端口上的驱动边界约束",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-fixTopLevelPaths",
+      "description": "指定一个裕量值，超过此值的顶层时序预算将被固定，剩余预算仅按比例分配给分区",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-handleComplexSDC",
+      "description": "处理包含复杂结构和正则表达式的SDC文件（在推入下层时）",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-honorPortBoundaryCondition",
+      "description": "将芯片IO约束推入到直接连接到芯片IO的模块边界引脚",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-honorPortDelays",
+      "description": "如果模块IO与芯片IO直接连接且相邻，则将芯片IO的SID/SOD值推入到模块IO",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-honorReportTimingFormat",
+      "description": "在合理性报告中遵循 set_global report_timing_format 的设置",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignoreDontTouch",
+      "description": "指定如何处理“禁止触碰”对象",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-includeLatency",
+      "description": "指定是否在 set_input_delay 和 set_output_delay 约束中包含时钟延迟",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-includeWireLoadsInLib",
+      "description": "在库模型引脚电容中包含线负载",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-inputLoad",
+      "description": "为输入引脚写入 set_load 约束",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-justify",
+      "description": "控制合理性验证的类型",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-justifyBudgetDir",
+      "description": "当与 deriveTimingBudget 一起使用 -justify 选项时，指定合理性报告的备用目录名",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keepPinListsForBlockPorts",
+      "description": "保留所有扇入和扇出列表",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-latencyOnClocks",
+      "description": "在时钟上写入 set_clock_latency 约束",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-localLatency",
+      "description": "在分区约束文件中写入通过 setPtnUserCnsFile 命令提供的用户特定 set_clock_latency 约束",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-localUncertainty",
+      "description": "对分区使用通过 setPtnUserCnsFile 命令指定的局部不确定性",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-makeNegativeInputDelayZero",
+      "description": "为了向后兼容，将负的 set_input_delay 值设为零",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-makeReducedTimingGraph",
+      "description": "在预算前启用运行ART",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-masterClone",
+      "description": "控制工具对主克隆的处理行为",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-noFalsePathsForUnCstrPorts",
+      "description": "不为未约束的端口创建虚假路径",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-noHoldView",
+      "description": "禁用保持视图的预算",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-noSetupView",
+      "description": "禁用建立视图的预算",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-reportOrModifyBudget",
+      "description": "启用数据收集以使用 reportBudget 和 modifyBudget 命令",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-rptNegSlackOnPorts",
+      "description": "保存裕量小于指定值的端口的警告信息",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-sdcContents",
+      "description": "控制SDC文件内容的选项",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-stageBasedFanoutDrivingFactor",
+      "description": "引脚扇出计数的阈值，超过此值将在时序图中添加缓冲器级数",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-stageBasedPartitionMultiplier",
+      "description": "分区层次实例及其对应乘法因子的列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stageBasedWeight",
+      "description": "为{时序单元 组合单元 缓冲器}单元指定的权重列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useBoundaryCondition",
+      "description": "用于查找作为驱动/负载的缓冲器的机制",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-virtualClock",
+      "description": "为预算创建额外的虚拟时钟",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-virtualOptEngine",
+      "description": "指定要使用的虚拟优化引擎",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-writeConstraintsForClkOutputPorts",
+      "description": "为时钟输出端口写入约束",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-writeFPForHold",
+      "description": "在建立预算中为所有I/O写入虚假路径 -hold 约束",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-writeLatencyPerClock",
+      "description": "按每个时钟写入延迟，而不是按每个端口",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-quiet",
+      "description": "仅以Tcl列表格式显示当前设置",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonDefault",
+      "description": "仅显示非默认的当前设置",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

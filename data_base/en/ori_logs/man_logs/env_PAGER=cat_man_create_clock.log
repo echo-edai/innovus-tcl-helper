@@ -1,0 +1,127 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_clock(25.10)                                        create_clock(25.10)
+
+Name
+       create_clock  -  Creates a clock object and defines its waveform in the
+       current design
+
+Syntax
+        create_clock
+
+       -period <period_value>
+
+       [-name <clock_name>]
+
+       [-waveform <edge_list>]
+
+       [-add]
+
+       [-comment <string>]
+
+       [<sources>]
+
+       Creates a clock object and defines its waveform in the current  design.
+       If  you  do  not  specify  any  sources,  but  you  specify  the  -name
+       <clock_name> argument, a virtual clock is created. The new clock has an
+       ideal clock latency, and the software does not assume  any  propagation
+       delay through the clock network.
+
+       The  clock  that  you create using the create_clock command cannot have
+       multiple pulses per period. You can specify multiple constraints on the
+       same pin using the -add parameter.
+
+       If one of the sources is already the source of a clock, the  source  is
+       removed  from that clock. If you need to specify multiple clocks on the
+       same source for simultaneous analysis, you must specify the -add  para-
+       meter, to add this clock to the existing clock.
+
+       For  example,  if  you  specify the following command sequence, the PH2
+       clock waveform overwrites the PH1 waveform.:
+
+       create_clock -name PH1 ... [get_ports sysclk]
+
+       create_clock -name PH2 ... [get_ports sysclk]
+
+       To have both clocks applied, you must specify the following command se-
+       quence:
+
+       create_clock -name PH1 ... [get_ports sysclk]
+
+       create_clock -name PH2 -add ... [get_ports sysclk]
+
+       You can create a collection of clocks, which is a group of objects ref-
+       erenced by a string identifier using the get_clocks command.
+
+Parameters
+       -add   Specifies multiple clocks on the same  source  for  simultaneous
+              analysis  with  different  clock waveforms. You must specify the
+              -name parameter with this parameter.
+
+       -comment <string>
+              Allows you to insert comments. The comments are read but are ig-
+              nored with a one-time warning message. They are not used  during
+              timing analysis reporting nor are they written out during saving
+              of constraints.
+
+       -name <clock_name>
+              Specifies  the  string name of the ideal clock being created. If
+              you do not specify this option, the clock gets the same name  as
+              the  first  clock source that you specify using the -sources op-
+              tion. If you do not specify any sources, you  must  specify  the
+              -name <clock_name> option, which creates a virtual clock not as-
+              sociated with a port or pin.
+
+       -period <period_value>
+              Specifies the value of the ideal clock in library time units.
+
+       <sources>
+              Specifies  the  list  of  pins or ports associated with an ideal
+              clock waveform of the clock. If you do not specify this  option,
+              you  must specify the -name <clock_name> option, which creates a
+              virtual clock not associated with a port or pin. If you  specify
+              a  clock  on  a  pin that already has a clock, the new clock re-
+              places the old one.
+
+       -waveform <edge_list>
+              Specifies the rise and fall edge times of the clock waveforms in
+              library time units over an entire clock period. The first  value
+              in  the  edge  list is the time at which the first transition on
+              the clock occurs, which is the  first  rising  transition  after
+              time  zero,  and edges are monotonically increasing. The numbers
+              should represent one full clock period. If you  do  not  specify
+              the -waveform <edge_list> option, a default waveform is assumed,
+              and  the  leading  edge  is placed at 0 and the trailing edge is
+              placed at the midpoint of the  period,  such  that  a  symmetric
+              clock is generated.
+
+Examples
+              * The following command creates an ideal_clk1 clock on port clkA
+                with  a  period  of  5,  a  rise at 0, and a fall at 2.5: cre-
+                ate_clock [get_ports {clkA}] -name ideal_clk1 -period 5 -wave-
+                form {0 2.5}
+
+              * The following command creates an ideal_clk2 clock on port clkB
+                with a period of 10, a rise at  1,  and  a  fall  at  9:  cre-
+                ate_clock  [get_ports  {clkB}]  -name  ideal_clk2  -period  10
+                -waveform {1 9}
+
+Related Information
+              * all_clocks
+
+              * get_clocks
+
+              * get_pins
+
+              * get_ports
+
+              * set_clock_latency
+
+              * report_clocks
+
+              * set_clock_uncertainty
+
+              * set_input_delay
+
+              * set_output_delay
+
+                           Fri Apr 04 01:25:37 2025        create_clock(25.10)

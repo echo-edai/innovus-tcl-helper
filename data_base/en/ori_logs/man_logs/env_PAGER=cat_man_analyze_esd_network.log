@@ -1,0 +1,148 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+analyze_esd_network(25.10)                          analyze_esd_network(25.10)
+
+Name
+       analyze_esd_network  - Performs different types of effective resistance
+       checks, such as bump to clamp, bump to bump, and clamp  to  clamp,  and
+       current density analysis during an ESD zap event
+
+Syntax
+       analyze_esd_network
+
+       [-help]
+
+       <<run_name>>
+
+       [-clamp_lowest_layer_taps {true | false}]
+
+       [-clamp_pin_short_file <pin_shorting_file>]
+
+       -config_file <rule_filename>
+
+       [-output <directory>]
+
+       [-remove_layers_below <layer_name>]
+
+       [-ta | -task_assistant]
+
+       -type {net | domain}
+
+       [-use_power_pad {true | false}]
+
+       Performs  different  types of effective resistance checks, such as bump
+       to clamp, bump to bump, and clamp to clamp, and current density  analy-
+       sis during an ESD zap event. This command checks whether every power or
+       ground  bump  has an ESD device, and the device is placed in such a way
+       that it does not violate the effective resistance  or  current  density
+       limit.
+
+       The  objective  of  ESD  Checker  is  to easily identify the violations
+       caused by high effective resistance or the current  density  above  the
+       specified threshold value.
+
+Parameters
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       <<run_name>>
+              Mandatory  parameter.  Specifies the domain or net name. The re-
+              sult directory is prefixed with <<run_name>>.
+
+       -clamp_lowest_layer_taps {true | false}
+              Specifies to keep only the lowest layer of clamp taps for effec-
+              tive resistance analysis. The default value is false.
+
+              * When set to true, the ESD pin nodes on the  lowest  layer  are
+                shorted,  and effective resistance checks are performed to the
+                shorted node on the lowest layer.
+
+              * When set to false,  the  ESD  pin  nodes  on  all  layers  are
+                shorted,  and effective resistance checks are performed to the
+                shorted pin nodes of clamps on different layers.
+
+       -clamp_pin_short_file <pin_shorting_file>
+              Specifies the list of pin layers to be shorted for bump-to-clamp
+              and clamp-to-clamp resistance checks. If multiple layers for the
+              same pin are specified, then these layers are shorted with  each
+              other.
+
+              The format of the file is:
+
+              #Cell specification
+
+              CELL <cell name> <pin> <layer>
+
+              #Instance specification
+
+              INST <instance name> <pin> <layer>
+
+              In  this file, multiple layers for the same cell or instance can
+              be specified by adding multiple rows for the same  cell  or  in-
+              stance name corresponding to each layer.
+
+              If  the  -clamp_pin_short_file  parameter  is not specified, the
+              software shorts all pin nodes of the lowest ESD cell pin  layer,
+              and  performs effective resistance checks to the shorted node on
+              the lowest layer.
+
+              Note: If the -clamp_pin_short_file parameter is used in conjunc-
+              tion with  -clamp_lowest_layer_taps,  the  -clamp_pin_short_file
+              parameter    will   override   the   settings   of   -clamp_low-
+              est_layer_taps.
+
+       -config_file <rule_filename>
+              Mandatory parameter.  Specifies the name of the rule  file  that
+              includes  all  the ESD checks to be performed as a set of rules.
+              It also specifies the effective resistance threshold limit.  For
+              more information, refer to the ESD Rule Specification section in
+              the "ESD Analysis" chapter of Voltus User Guide.
+
+       -output <directory>
+              Specifies  the  name  of  the  output directory in which the ESD
+              analysis results are saved.
+
+       -remove_layers_below <layer_name>
+              Specifies the layer name below which all layers are dropped from
+              analysis. This parameter can be used in scenarios where the  ESD
+              cells  connect  to the PG grid at high layers, and therefore the
+              impact of the lower PG layers is very small on effective  resis-
+              tance calculation and current density checks.
+
+       -ta | -task_assistant
+              Opens ESD Analysis Task Assistant, a task-based quick help func-
+              tionality for the ESD analysis flow. The information in the Task
+              Assistant  is  organized  by topics relevant to the task you are
+              performing. It answers frequently asked questions, such as  for-
+              mat of the rule file, use model of the command, or supported ESD
+              checks.
+
+       -type {net | domain}
+              Mandatory  parameter.  Specifies whether to run rail analysis on
+              a domain or a net.
+
+       -use_power_pad {true | false}
+              Specifies that the x,y locations of the bump cells are to be ob-
+              tained from the power pad file. This parameter can  be  used  to
+              support  designs  for which bump cells are not visible.  The de-
+              fault value is false.
+
+Examples
+              * The following commands specify to run ESD analysis on the  do-
+                main top:
+
+                set_rail_analysis_mode    -method    static    -accuracy    hd
+                -power_grid_library        ./techonly.cl        -ict_em_models
+                ./Data/ESD_em.ict
+
+                analyze_esd_network  top -config_file ./esd_new_rule.txt -type
+                domain -output ESD_analysis -use_power_pad true
+
+Related Information
+              * set_rail_analysis_mode
+
+              * analyze_esd_voltage
+
+              * "ESD Analysis" in the Voltus IC Power Integrity Solution  User
+                Guide
+
+                           Fri Apr 04 01:25:37 2025 analyze_esd_network(25.10)

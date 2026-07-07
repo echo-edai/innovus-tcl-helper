@@ -1,0 +1,171 @@
+{
+  "command": "read_power_rail_results",
+  "is_cmd": true,
+  "summary": "将电源/压降分析结果加载到GUI中",
+  "description": "该命令用于将电源分析、压降（IR）分析、电迁移（EM）分析、静电放电（ESD）分析以及热分析等结果数据加载到Cadence Innovus（Voltus）的图形用户界面（GUI）中，以便进行可视化和交互式分析。它可以加载状态目录、功率数据库、热文件、自定义实例电压文件等多种数据源，并支持通过参数选择性地加载特定网络、实例、分析类型或结果窗口，从而优化加载时间和内存使用。",
+  "usage": "read_power_rail_results [-help] [-detail_delta_temperature_file <file>] [-effective_resistance_file <file>] [-instance_delta_temperature_file <file>] [-power_db <file>] [-rail_directory <dir>] [-tile_delta_temperature_file <file>] [-cell_library { <library1>.cl}] [-reset] [-custom_value_inst_file_1 <file>] [-nets <net_names>] [-instance_voltage_method { best | worst | avg | worstavg }] [-instance_voltage_window { timing | whole }] [-instances <instancenames>] [-enable_plots <plot_names>] [-sem_db <file>] [-short_file <file>] [-esd_directory <dir>] [-thermal_file <filename>.txt] [-esd_rj <dir>] [-die_instance_name <dieinstname>] [-data_type {rail | all}] [-physical_db <dir_name>] [-profiling_power_file <file>] [-top_cell_name <topcell_name>] [-tile_thermal_config_file <filename>] [-power_directory <power_output_directory>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出read_power_rail_results命令各参数的简要说明，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-detail_delta_temperature_file",
+      "description": "指定来自自热分析的详细线网级温差文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-effective_resistance_file",
+      "description": "指定来自有效电阻分析的结果文件（仅支持基于实例的结果）。当选择effr压降分析图类型并指定此文件时，版图将显示每个实例的有效电阻分析结果。注意：目前此功能一次仅支持加载一个网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance_delta_temperature_file",
+      "description": "指定来自自热分析的基于实例的温差文件。这是器件实例温度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_db",
+      "description": "指定功率数据库文件。该文件由set_power_analysis_mode命令的-create_binary_db选项创建。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rail_directory",
+      "description": "指定压降分析目录。可以选择输出目录下自动生成的分析目录（<domain>_<temp>_<dynamic/avg>_#）加载所有域结果，或进入下一级选择网络目录加载单个网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tile_delta_temperature_file",
+      "description": "指定自热分析的基于Tile的温差文件。这是一个Tile中所有线网段的最坏实例温度，也是基于层的。FEOL或单元层用于显示器件实例温度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_library",
+      "description": "指定加载状态目录所需的单个单元库。指定的单元库必须包含加载状态目录所需的技术层信息，因此无需加载分析期间使用的所有单元库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "从内存中释放已加载的分析状态目录或功率数据库。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-custom_value_inst_file_1",
+      "description": "指定自定义值实例文件（CVIF）的名称。该文件可用于在GUI中显示用户指定的实例电压文件。文件格式为：<value1> <instancename1>。可以使用set_power_rail_display -plot命令的cvil参数在GUI中查看EIV图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "仅将基于域的状态目录中指定的网络加载到GUI。如果未与-rail_directory参数一起指定，则将加载所有网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-instance_voltage_method",
+      "description": "为指定的EIV计算方法加载实例电压数据。如果未指定此参数（默认），则加载所有四种方法的实例电压结果。可选值：best（最佳）、worst（最差）、avg（平均）、worstavg（最差平均）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance_voltage_window",
+      "description": "为选定的EIV窗口加载实例电压数据。如果未指定此参数（默认），则加载时序窗口、开关窗口以及整个压降仿真的实例电压结果。可选值：timing（时序）、whole（整个仿真）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instances",
+      "description": "指定要加载到GUI中的实例列表。此参数仅加载包含指定实例的分区，允许分析部分设计，从而减少加载时间和内存占用。仅适用于Voltus-XP流程。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-enable_plots",
+      "description": "指定要加载的功率或压降图名称列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sem_db",
+      "description": "指定从verifyACLimit -report_db命令参数生成的数据库文件中读取信号电迁移数据。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-short_file",
+      "description": "指定短路违规报告文件（voltus_short.report）的路径。该文件使用set_rail_analysis_mode -report_shorts true命令参数生成，位于工作目录中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_directory",
+      "description": "指定ESD分析目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_file",
+      "description": "指定加载由Sigrity Celsius生成的基于Tile的温度映射文件，用于功率计算和IR压降分析。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_rj",
+      "description": "指定存放先前ESD分析运行生成的电流密度/EM结果的目录名称。如果ESD目录下有多个ESD EM结果目录，此参数允许您选择性地加载所需的EM结果目录。必须在运行此命令前加载压降目录（-rail_directory），或使用-esd_rj参数指定压降目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-die_instance_name",
+      "description": "指定需要查看结果的芯片实例名称。此参数仅适用于多芯片分析流程（set_rail_analysis_mode -die_mode multi-die）。必须与-rail_directory参数（多芯片压降目录）一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-data_type",
+      "description": "控制要加载到GUI中的数据类型。可选参数：rail（仅加载压降分析结果）、all（加载功率和压降分析结果，此为默认值）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-physical_db",
+      "description": "指定要加载到GUI中与压降分析结果一起的分层设计目录名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-profiling_power_file",
+      "description": "指定显示由向量分析流程生成的基于Tile的功率密度结果。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_cell_name",
+      "description": "指定要加载的顶层模块或顶层单元名称。必须与-physical_db参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tile_thermal_config_file",
+      "description": "指定加载包含层次级别与Celsius（系统级热分析工具）生成的基于层的温度映射文件之间映射关系的配置文件。指定后，可以查看芯片每层的基于Tile的温度分布。这是加载分层温度映射时tile_thermal图的必需参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_directory",
+      "description": "指定加载功率分析结果并显示功率图，而无需加载压降分析结果。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

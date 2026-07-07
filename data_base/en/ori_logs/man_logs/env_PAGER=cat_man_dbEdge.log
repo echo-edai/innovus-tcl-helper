@@ -1,0 +1,102 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbEdge(25.10)                                                    dbEdge(25.10)
+
+Name
+       dbEdge  -  Returns the edges of a polygon of a shape along with the di-
+       rection list (N, S, E, W and NE, NW, SE, SW)
+
+Syntax
+       dbEdge
+
+       [-clockwise | -counterclockwise]
+
+       [{<shapelist>} [-direction <direction>] [-d]]
+
+       [-index <index_number>]
+
+       Returns the edges of a polygon of a shape along with the direction list
+       (N, S, E, W and NE, NW, SE, SW). This helps you identify not  only  all
+       the  edges but also the direction in which the edges are pointing. At a
+       time you can observe one polygon with 'n' number of points.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each dbedge parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man dbEdge
+
+       -clockwise
+              Sorts the returned list of edges clockwise.
+
+       -counterclockwise
+              Sorts the returned list of edges counterclockwise.
+
+       -direction {N S E W NE NW SE SW}
+              Returns the edges of a polygon of a shape along with the  direc-
+              tion  list  (N,  S,  E,  W and NE, NW, SE, SW). It can also be a
+              list. For example:
+
+              dbEdge -direction {N S NW NE} {10 20 30 40}
+
+              If the -direction parameter is not used, all the  directions  in
+              the shape will be returned.
+
+       -d     Returns user-specified values in database units.
+
+              Default: All values are in user units, in microns.
+
+       -index <index_number>
+              Specifies the index number of the edge to be returned. The index
+              number  starts  with  0 as the first edge specified in the shape
+              list, and increases gradually along with the  shape  list.  This
+              number may range from  0 to ' <number_of_edges> - 1'.
+
+       {shapelist}
+              Can be a rectangle like {llx lly urx ury} or a polygon like
+
+              {{x1  y1}{x2  y2}{x3 y3}.....}. Only one rectangle or polygon is
+              accepted. This is a mandatory parameter.
+
+              Examples
+
+              Using a simple L-shape polygon
+
+              set shape_list {{0 0} {2 0} {2 1} {1 1} {1 2} {0 2}}
+
+              * All edges
+
+                dbEdge $shape_list
+
+                {{S{0 0}{2 0}} {E{2 0}{2 1}} {N{2 1}{1 1}} {E{1 1}{1 2}}  {N{1
+                2}{0 2}} {W{0 2}{0 0}}}
+
+              * Only E facing edges
+
+                dbEdge -direction E $shape_list
+
+                {{E{2 0} {2 1}} {E{1 1} {1 2}}}
+
+              The format of the output is
+
+              {{<direction> <edge_vertex_1> <edge_vertex_2 }....}
+
+              Note:  The polygon must be rectilinear. Otherwise, the following
+              error occurs:
+
+              set bad_shape_list {{0 0} {2 0} {2 1} {1 1} {1 2}}
+
+              dbEdge $bad_shape_list
+
+              **ERROR: (IMPDBTCL-621): The slope of the edge { {1 2} {0  0}  }
+              does  not  match any of the standard directions {N | S | E | W |
+              NE | NW | SE | SW}.
+
+Related Information
+              * db_rect
+
+              * dbShape
+
+                           Fri Apr 04 01:25:37 2025              dbEdge(25.10)

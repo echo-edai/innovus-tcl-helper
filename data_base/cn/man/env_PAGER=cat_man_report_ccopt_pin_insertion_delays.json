@@ -1,0 +1,69 @@
+{
+  "command": "report_ccopt_pin_insertion_delays",
+  "is_cmd": true,
+  "summary": "报告时钟树末端（sink）的引脚插入延迟",
+  "description": "该命令用于报告时钟树末端（sink）的引脚插入延迟。默认情况下，报告会检查所有时钟树末端，并统计每个末端的引脚插入延迟值，生成关于这些延迟值分布的统计数据。报告提供了引脚插入延迟分布和性质的快速概览，可用于识别问题区域，例如过大的偏移、异常多的偏移或大量的小偏移等。通过参数可以限制报告的范围（如指定时钟树或偏移组），选择延迟角（delay corner）、检查类型（setup/hold）和延迟类型（early/late）。",
+  "usage": "report_ccopt_pin_insertion_delays [-help] [-bin_size <string>] [-check_type {setup | hold}] [-clock_trees {string1 string2 ...}] [-delay_corner <delay_corner_name>] [-delay_type {early | late}] [-file <file_name>] [-skew_groups {string1 string2 ...} | -include_reporting_only_skew_groups] [-sources {string1 string2 ...}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bin_size",
+      "description": "指定报告直方图的箱（桶）大小。默认使用CCOpt属性pin_insertion_delay_histogram_bin_size指定的值。此参数用于覆盖默认值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_type",
+      "description": "指定要报告的偏移组的检查类型，可以是setup或hold。如果指定了检查类型但未指定-delay_type，软件行为如下：-check_type -setup 意味着 -delay_type -late；-check_type -hold 意味着 -delay_type -early。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_trees",
+      "description": "将报告限制在指定的时钟树。这意味着仅选择位于指定时钟树下的末端进行报告。默认：所有已定义的时钟树。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delay_corner",
+      "description": "在指定的延迟角（delay corner）中报告。默认使用CCOpt属性primary_delay_corner设置的主半延迟角。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delay_type",
+      "description": "在指定的延迟类型（early或late）中报告。指定late时，仅报告延迟角的晚半部分；指定early时，仅报告延迟角的早半部分。默认：late。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-file",
+      "description": "指定将报告内容副本保存到指定的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skew_groups",
+      "description": "将报告限制在指定的偏移组。这意味着仅选择位于指定偏移组下的末端进行报告。注意：此参数与-include_reporting_only_skew_groups互斥。默认：所有已定义的偏移组。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_reporting_only_skew_groups",
+      "description": "指定时，报告额外包含仅用于报告的偏移组。仅用于报告的偏移组是其约束属性设置为none的偏移组，此类偏移组不施加时钟平衡约束，且不会被CTS考虑。默认情况下，报告不包含仅用于报告的偏移组。注意：此参数与-skew_groups互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sources",
+      "description": "将报告限制在具有来自所列源之一的引脚插入延迟值的偏移组末端引脚。此源类别列表接受通配符值，这些值会扩展为匹配的类别。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

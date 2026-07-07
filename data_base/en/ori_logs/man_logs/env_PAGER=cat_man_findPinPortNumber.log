@@ -1,0 +1,218 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+findPinPortNumber(25.10)                              findPinPortNumber(25.10)
+
+Name
+       findPinPortNumber - Determines suitable ports available for a bump
+
+Syntax
+        findPinPortNumber
+
+       [-help]
+
+       [-area <x1 y1 x2 y2>]
+
+       [-bumps <bump_list>]
+
+       [-geometry_height {<min> [<max>]}]
+
+       [-geometry_width {<min> [<max>]}]
+
+       [-layer <string>]
+
+        [-selected]
+
+        [-cellName  <cell_name>  | -instName  <instance_name> ]
+
+        {-pinName  <pin_name>  | -netName  <net_name> }
+
+       Determines  suitable  ports  available  for a bump. The command has the
+       following functions:
+
+              * Check if the IO pad has a standard LEF definition.
+
+              * Suggest suitable ports for flip chip routing on the  specified
+                instance based on the pin name or nets in a specified area.
+
+              * Filter ports by layer, geometry size, and area. Only the ports
+                that match the specified filter rules are returned by findPin-
+                PortNumber.
+
+              * Consider  routing between bumps and ports to return the combi-
+                nations of {bump:inst:pin:port} if the bumps for  which  ports
+                are to be found are specified.
+
+       findPinPortNumber  returns  a  port number string list. You can use set
+       result  [findPinPortNumber] or catch {findPinPortNumber} result to  get
+       the result.
+
+       The  following commands provide additional support for the port number-
+       ing feature. Use these commands to add, edit, and delete  bump  proper-
+       ties easily:
+
+              * addBumpConnectTargetConstraint
+
+              * deleteBumpConnectTargetConstraint
+
+              * editBumpConnectTargetConstraint
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each findPinPortNumber parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man findPinPortNumber
+
+       -area <x1 y1 x2 y2>
+              Specifies  the  area in which the command will be used. findPIn-
+              PortNumber returns port numbers overlapping with  the  specified
+              area.
+
+       -bumps <bump_list>
+              Finds suitable ports for the specified bumps based on the small-
+              est distance.
+
+              This  option  supports only 1:1 pairing between ports and bumps.
+              Therefore, if the number of ports is different from  the  number
+              of bumps, pairing is based on the smaller number.
+
+              findPinPortNumber  allows  empty  bumps or bumps assigned to the
+              same net as the pin. If the assigned net is different  from  the
+              net with which the pin is connected, findPinPortNumber issues an
+              error message and quits.
+
+       -cellName <cell_name>
+              Finds the pin port number of the instance of the specified cell.
+              Wild cards are supported in <cell_name>.
+
+       -geometry_height {<min> [<max>]}
+              Specifies  the  minimum and maximum values for the height of the
+              target port's geometry. If  you  specify  only  one  value,  the
+              height is taken as equal to the specified value. Only ports that
+              match  the  specified  height criterion are returned by findPin-
+              PortNumber.
+
+       -geometry_width {<min> [<max>]}
+              Specifies the minimum and maximum values of  the  width  of  the
+              target port's geometry. If you specify only one value, the width
+              is  taken as equal to the specified value. Only ports that match
+              the specified width criterion are returned   by  findPinPortNum-
+              ber.
+
+       -instName <instance_name>
+              Finds  pin port number of the specified instance. Wild cards are
+              supported in <instance_name>.
+
+       -layer <string>
+              Filters target ports by layer. If you  specify  this  parameter,
+              only  ports on the specified layer are returned. You can specify
+              either layer name or layer ID, such as M8.
+
+       -pinName <pin_name> | -netName <net_name>
+              Finds the port number on the specified pin or on  the  pin  con-
+              nected to the specified net.
+
+       -selected
+              Finds suitable ports for the selected instance and bumps:
+
+              * If  only bumps are selected, findPinPortNumber first finds the
+                ports satisfying the specified filtering rules and  then  con-
+                siders the routing between these ports and the selected bumps.
+
+              * If only IO instances are selected:
+
+                * If only one IO instance is selected, findPinPortNumber finds
+                  the ports satisfying the specified filtering rules.
+
+                * If  more than one IO instance is selected, findPinPortNumber
+                  issues an error message stating that only a  single  IO  in-
+                  stance is supported for this option and then quit.
+
+              * If both IO instances and bumps are selected:
+
+                * If only one IO instance is selected, findPinPortNumber first
+                  finds the ports satisfying the specified filtering rules and
+                  then  considers  the routing between these ports and the se-
+                  lected bumps.
+
+                * If more than one IO instance is selected,  findPinPortNumber
+                  issues  an  error  message stating that only a single IO in-
+                  stance is supported for this option and then quit.
+
+Example
+              * The following command suggests port numbers on instances named
+                IOPADS_INST/esd* for the pins connected to net VDD.
+
+                findPinPortNumber -instName IOPADS_INST/esd* -netName VDD
+
+                The tool returns a list of suitable port numbers as follows:
+
+                IOPADS_INST/esd:VDD:1 IOPADS_INST/esd1:VDD:1
+
+              * The diagram below depicts an IO  instance  padring/inst1  with
+                three  ports  for  PIN  PADVDDE on the same layer and with the
+                same size. The bumps Bump_1, Bump_2, Bump_3,  and  Bump_4  are
+                empty.
+
+                * The  following command finds ports of the pin PADVDDE on the
+                  instance padring/inst1 that meet  the  specified  area  con-
+                  straint:
+
+                  findPinPortNumber  -instName  padring/inst1 -pinName PADVDDE
+                  -area "50 100 300 250"
+
+                  For the instance depicted in the diagram above, the  command
+                  returns {padring/inst1:PADVDDE:1}.
+
+                *
+
+                  The  following command finds ports of the pin PADVDDE on the
+                  instance padring/inst1 that meet  the  specified  area  con-
+                  straint:
+
+                  findPinPortNumber  -instName  padring/inst1 -pinName PADVDDE
+                  -area "550 120 650 350"
+
+                  For   the   instance   depicted,   the    command    returns
+                  {padring/inst1:PADVDDE:2    padring/inst1:PADVDDE:3}.   Both
+                  port2 and port3 are returned as they overlap with the speci-
+                  fied area constraint.
+
+                * The following command finds suitable ports of the  pin  PAD-
+                  VDDE on the instance padring/inst1 for the specified bump:
+
+                  findPinPortNumber  -instName  padring/inst1 -pinName PADVDDE
+                  -bumps Bump_2
+
+                  For   the   instance   depicted,   the    command    returns
+                  {Bump_2:padring/inst1:PADVDDE:2}.
+
+                * The  following  command finds suitable ports of the pin PAD-
+                  VDDE on the instance padring/inst1 for the specified bumps:
+
+                  findPinPortNumber -instName padring/inst1  -pinName  PADVDDE
+                  -bumps {Bump_1 Bump_2 Bump_3 Bump_4}
+
+                  For    the    instance   depicted,   the   command   returns
+                  {Bump_1:padring/inst1:PADVDDE:1    Bump_2:padring/inst1:PAD-
+                  VDDE:2 Bump_3:padring/inst1:PADVDDE:3}.
+
+Related Information
+              * addBumpConnectTargetConstraint
+
+              * deleteBumpConnectTargetConstraint
+
+              * editBumpConnectTargetConstraint
+
+              * Flip Chip Methodologies chapter of the User Guide
+
+              *
+
+                * Port Numbering
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Flip Chip
+
+                           Fri Apr 04 01:25:37 2025   findPinPortNumber(25.10)

@@ -1,0 +1,480 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+streamOut(25.10)                                              streamOut(25.10)
+
+Name
+       streamOut - Creates a GDSII Stream file of the current database
+
+Syntax
+       streamOut
+
+       <gdsFileName>
+
+       [-attachInstanceName <attributeNumber>]
+
+       [-attachNetName <attributeNumber>]
+
+       [-attachNetProp      {{<prop_name1>      <attr_num1>}     {<prop_name2>
+       <attr_num2>........}}]
+
+       [-area {<x1 y1 x2 y2>} [-strict][-enclosed_instances_only]]
+
+       [-dieAreaAsBoundary]
+
+       [-extraMapFile <mapFile>]
+
+       [-format {stream oasis}[-outputInstanceName <instName>] [-outputNetName
+       <netName>]]
+
+       [-help]
+
+       [-ignoreSubtype {NETTYPE SHAPE}]
+
+       [-libName <libraryName>]
+
+       [-mapFile <mapFile>]
+
+       [-mergeViaCellMapFile <cell_list>]
+
+       [-merge             {<listOfExternalGDSOASISFiles>}             [-noTSV
+       <tsv_name_list>][-uniquifyCellNames]]
+
+       [-reportFile <file_name>]
+
+       [-mode {ALL | FILLONLY | NOFILL | NOINSTANCES}]
+
+       [-offset <x><y>]
+
+       [-outputCriticalNetColorFromFileOnly <sideFile>]
+
+       [-outputMacros]
+
+       [-probe_pin_label <probeLabel>]
+
+       [-signoff_fill]
+
+       [-structureName <structureName> | -noStructureName]
+
+       [-units {100 | 200 | 1000 | 2000 | 10000 | 20000}]
+
+       Creates  a  GDSII Stream file of the current database. Writes a summary
+       of errors and warnings to the log file.
+
+       You can use the streamOut command after the design is  placed,  but  is
+       most  commonly used only after the design is routed (which may also in-
+       clude metal fill shapes).
+
+              * If you do not specify a map file, the Innovus software creates
+                a generic map file, in GDSII Version  3  format.  The  generic
+                file  shows  the mapping that was used, if none was specified.
+                You must customize the file to make it  appropriate  for  your
+                design.  You can change the version by using the setStreamOut-
+                Mode -version parameter.
+
+              * You must specify all layers to stream out. Layers that are not
+                specified in the map file are not included in the file created
+                by this command.
+
+                Note: A cut layer in the map file (for a via)  can  have  both
+                MASK and SIZE at the same time.
+
+              * If  you  specify  the  -merge  parameter and you want to merge
+                files with a version number greater than 3, the software  gen-
+                erates  a file with the highest version number from the merged
+                files.
+
+              * If you do not specify -outputMacros, LEFPIN and LEFOBS do  not
+                apply.  If  you do specify -outputMacros and LEFPIN and LEFOBS
+                are not specified in the map file for the layers  in  the  LEF
+                macros, the GDSII structures for those macros will be empty.
+
+              * If  MAXVOLTAGE and MINVOLTAGE constructs are there in the lay-
+                ermap, streamOut will output a max voltage  label  and  a  min
+                voltage label, for each net, to the GDSII file.
+
+       Note:  Pin  label  is  attached to physical pin shapes. If physical pin
+       shapes do not exist, the pin text is labeled on any  one  instance  pin
+       shape. If both physical pin and instance pin shapes do not exist on the
+       net, no pin text is generated in the output.
+
+Parameters
+       -attachInstanceName <attributeNumber>
+              Specifies the instance name value added to the attribute on SREF
+              of  the  specified  attribute number. The attribute number is an
+              integer and its range is 1-127.
+
+       -attachNetName <attributeNumber>
+              Specifies that the net name will be added to the  specified  at-
+              tribute  number  on  the regular and special net wire shapes and
+              vias SREF, but not on PIN shapes and  pin  vias.  The  attribute
+              number is an integer and its range is 1-127.
+
+       -attachNetProp {{<prop_name1> <attr_num1>} {<prop_name2>
+       <attr_num2>........}}
+              Specifies  the  attribute  number  on wiring shapes that will be
+              used to store the value of the property associated nets  in  the
+              design. For this option, you specify a list of property name and
+              its attribute number.
+
+              Note:  Multiple  property  names  can  be specified. Only wiring
+              shapes associated with nets that contain  one  or  more  of  the
+              specified  property names will have values assigned to their at-
+              tributes.
+
+              Example:
+
+              -attachNetProp { {prop1 100} {prop2 101} }
+
+              In the above example, the attribute number 100 will be  used  to
+              store  the value of the property prop1, and the attribute number
+              101 will be used to store the value of the property prop2. It is
+              a list of lists with a pair of property and its  attribute  num-
+              ber.
+
+       -area {<x1 y1 x2 y2>}
+              Defines  the  area of the design to be output. Any shapes or in-
+              stances enclosed, intersecting, or touching the  specified  area
+              are  output.  So  the data that is output can extend outside the
+              specified area. By default the entire design is output.
+
+       <gdsFileName>
+              Specifies the GDSII Stream output file. Include the  .gz  exten-
+              sion to enable file compression (for example, GDS_file.gds.gz).
+
+       -dieAreaAsBoundary
+              Forces  the streamOut command to write the die area as a polygon
+              (that is, a boundary). Otherwise, the streamOut  command  writes
+              the die area as a rectangle (that is, a box).
+
+       -enclosed_instances_only
+              Specifies to stream out only those instances in which the shapes
+              are fully enclosed by the specified area.
+
+       -extraMapFile <mapFile>
+              Specifies  the  extra  map file. The lines of the extra map file
+              are attached to the map file.
+
+       -format {stream oasis}
+              Specifies the tape out file format.
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each streamOut parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man streamOut.
+
+       -ignoreSubtype {NETTYPE SHAPE}
+              Ignores  the  map file line containing the subtype keyword , and
+              warning message is printed in the log file.
+
+              For example, in the example below, with -ignoreSubtype  {NETTYPE
+              SHAPE} the line 61, 62, and 63 of the map file will be ignored.
+
+              * Line61: M2 SPNET:NETYPE:POWER:MASK:2   32 12
+
+              * Line62: M2 SPNET:SHAPE:STRIPE:MASK:2   32 22
+
+              * Line63: M2 SPNET: NETYPE:GROUND:SHAPE:STRIPE:MASK:2   32 32
+
+              * Line64: M2 SPNET:MASK:2   32 2
+
+       -libName <libraryName>
+              Specifies the library to convert to GDSII Stream format.
+
+              Default: DesignLib
+
+       -mapFile <mapFile>
+              Specifies the file used for layer mapping. This file is required
+              for  successful stream out, and is read by the next tool used in
+              the design flow.  If you do not specify a file with this parame-
+              ter, the Innovus software will read a streamOut.map file if  one
+              exists.  If  a   streamOut.mapfile  does not exist, the software
+              creates a generic map file that you must customize for your  de-
+              sign.
+
+              For  information on the map file format, see "GDSII or OASIS Map
+              File Format" in the Importing and Exporting Designs  chapter  of
+              the Innovus User Guide.
+
+       -merge {<listOfExternalGDSOASISFiles>}
+              Specifies  a  single  file or list of files to merge. Checks all
+              merged files for name collisions, and generates a warning if any
+              names are changed. Uses the following conventions for new names:
+
+              * Replaces dot separators (.) with underscores (_). For example,
+                test.test_gds.gds is renamed test_test_gds_gds.
+
+              * Adds unique identifiers. For example, if more than one cell is
+                named test.test.gds.gds, they are renamed test_test_gds_gds_1,
+                test_test_gds_gds_2, and so on.
+
+              Supports the mixed format of the GDSII and OASIS files. You need
+              to specify the merged files with mixed format using  the  -merge
+              option.  The  tool  will identify the files format, covert them,
+              and merge them to a stream out file.
+
+              Compressed files are acceptable (include the  .gz  extension  to
+              enable  file  compression).  The  Innovus software automatically
+              creates blackboxes when merging and writing macro files. It  ig-
+              nores  any cells in the merge files that are not used in the de-
+              sign.
+
+              If you specify more than one file, separate the file names  with
+              spaces and enclose the list of file names in braces ({}) or dou-
+              ble quotation marks (")
+
+              You can use a wildcard to read all .gds files in a specified di-
+              rectory. The usage is as follows:
+
+              streamOut -merge <GDSIIdir>/*.gds
+
+              where  <GDSIIdir> is the name of the directory that contains the
+              .gds files.
+
+              Use caution when using wildcards, as they might affect the order
+              in which the software reads merge files.
+
+       -mergeViaCellMapFile <cell_list>
+              Specifies the list of cells that need merge via cell from an ex-
+              ternal file.
+
+       -mode {ALL | FILLONLY | NOFILL | NOINSTANCES}
+              Identifies the layers to write.
+
+              Specify one of the following:
+
+              * ALL--Writes all layer information specified in mapFile as fol-
+                lows:
+
+                * All instances
+
+                * All via instances
+
+                * All generated via cells
+
+              * FILLONLY--Writes only fill layers specified in mapFile as fol-
+                lows:
+
+                * No instances
+
+                * Only fill via instances
+
+                * Only generated fill via cells
+
+              * NOFILL--Writes only non-fill layers specified in mapFile.
+
+              * NOINSTANCES--Writes wiring (including  vias)  only;  does  not
+                write out COMPONENT instances.
+
+       -noStructureName
+              Enables  you  merge to files without loading an Innovus database
+              when the -merge parameter is also specified.
+
+       -noTSV <tsv_name_list>
+              Specifies a list of TSV via names that  should  not  be  written
+              out.
+
+       -offset <x><y>
+              Specifies,  in  microns, the location of the design in the GDSII
+              output file. When the GDSII output file  is  saved,  the  design
+              shifts to the specified location.
+
+       -outputCriticalNetColorFromFileOnly <sideFile>
+              Specifies  the net list and the layer range through a side-file.
+              The streamOut command outputs the object color on the  specified
+              layers and nets, Other objects remain gray in GDS.
+
+       Here is an example of a side file:
+
+       <LAYERMAP>
+
+       M5              PIN:MASK:1,NET:MASK:1,SPNET:MASK:1,VIA:MASK:1        35
+       271
+
+       M5             PIN:MASK:2,NET:MASK:2,SPNET:MASK:2,VIA:MASK:2         35
+       272
+
+       M6              PIN:MASK:1,NET:MASK:1,SPNET:MASK:1,VIA:MASK:1        36
+       271
+
+       M6             PIN:MASK:2,NET:MASK:2,SPNET:MASK:2,VIA:MASK:2         36
+       272
+
+       </LAYERMAP>
+
+       <NETNAMELIST>
+
+       TOP/NET1
+
+       TOP/NET2
+
+       </NETNAMELIST>
+
+       -outputInstanceName <instName>
+              Writes the instance name to the oasis file.
+
+       -outputMacros
+              Writes  LEF  abstract information such as LEF pin geometries and
+              obstructions for macros. Writes one text label per port within a
+              LEF macro pin plus one text label per shape for feedthrough pins
+              only if setStreamOutMode -labelAllPinShape is not set to true.
+
+              Specify this parameter to create GDSII output that contains  the
+              LEF  macro  structures  as well as the design data. You can also
+              use this parameter to debug LEF macro definitions against  veri-
+              fication  DRC rules. The output contains macro pins and obstruc-
+              tions.
+
+              Note: LEFPIN and LEFOBS apply only when you specify this parame-
+              ter. If you specify this parameter and LEFPIN and LEFOBS are not
+              specified in the map file for the layers in the LEF  macros  the
+              GDSII structures for those macros will be empty.
+
+       -outputNetName <netName>
+              Writes the net name to the oasis file.
+
+       -probe_pin_label <probeLabel>
+              Specifies probe label string,
+
+              Default: PROBE_PIN
+
+       -signoff_fill
+              Merges the signoff fill data attached to the current DB into the
+              output  GDS  file  and instantiates the signoff top fill cell at
+              0,0 R0 inside the top design cell. The signoff fill format  must
+              be GDS.
+
+       -reportFile file_name
+              Outputs cell name changed to the file.
+
+       -strict
+              Truncates the object outside the area.
+
+       -structureName <structureName>
+
+       < >< >< >
+              Specifies  the  superstructure  that  consists of all geometries
+              that the map file writes out.
+
+              Default: Current design's top cell name
+
+       -uniquifyCellNames
+              Creates unique cell names if there are name collisions when  the
+              software merges files.
+
+              Creates  unique cell names if there are name collisions when the
+              Innovus software merges files.
+
+              You must specify the -merge parameter if you specify this  para-
+              meter.  When  you  list the merge files, list the top-level file
+              first, as the software uses the first name in  the  search  path
+              when renaming cells.
+
+              When  a  cell  name  is  repeated, the software renames the cell
+              <cellName_filename>, where <filename> is the name of  the  merge
+              file in which the cell name appears.
+
+              The  software changes the name of references to that cell in the
+              merge file. The software changes the reference name if the  ref-
+              erenced  cell is defined in the same file, regardless of whether
+              the cell is defined before or after the reference. If  a  refer-
+              ence  in a merge file refers to a cell definition in a different
+              merge file, then the reference  is  not  changed  in  the  GDSII
+              Stream output file.
+
+              Default:  If you do not specify this parameter, the software ig-
+              nores duplicate cell names.
+
+       -units {100 | 200 | 1000 | 2000 | 10000 | 20000}
+              Specifies the resolution for values in the  GDSII  file.  Choose
+              100, 200, 1000, 2000, 10000, or 20000.
+
+              Default: Units specified in LEF file
+
+Examples
+              * The  following  command  creates  a GDSII Stream file (merging
+                cells from the ios.gds file):
+
+                streamOut amba_usb.gds -mapFile streamOut.map -libName Design-
+                Lib
+
+                  -attachInstanceName 12 -merge {ios.gds}
+
+                  -attachNetName 15
+
+                  -units 2000 -mode ALL
+
+                  -dieAreaAsBoundary
+
+              * The following command creates blackboxes for cells  not  found
+                in the merge libraries and writes macros only for those cells:
+
+                streamOut  newFile.gds.gz  -merge  {myFile1  myFile2  myFile3}
+                -outputMacros
+
+              * The following command merges cells needed in the  design  from
+                all files in myDirectory with the current database:
+
+                streamOut myFile.gds.gz -merge myDirectory/*.gds
+
+                If  a  merge file contains cells such as A, B, C, D, X, Y, and
+                Z, and the design contains only cells A, B, and  D,  then  the
+                Innovus software merges only cells A, B, and D.
+
+              *
+
+                The  following  example shows a stream out map file. The first
+                column specifies the layer object name, and the second  column
+                specifies  the layer object type. The third and fourth columns
+                specify the GDS layer and data type to stream  those  objects,
+                respectively. When the object name is "NAME", it indicates the
+                text  label  for the object types specified in the second col-
+                umn.
+
+                ==========original streamout.map file=============
+
+                M1        NET          1        0
+
+                M1        SPNET        2        0
+
+                M1        PIN          3        0
+
+                M1        LEFPIN       4        0
+
+                M1        FILL         5        0
+
+                M1        VIA          6        0
+
+                M1        VIAFILL      7        0
+
+                M1        LEFOBS       8        0
+
+                NAME      M1/NET       1        0 <--- text for nets
+
+                NAME      M1/SPNET     2        0 <--- text for  special  nets
+                (i.e. power nets)
+
+                NAME      M1/PIN       3        0 <--- text for pins including
+                top level IO pins
+
+                NAME      M1/LEFPIN    4        0 <--- text for LEF pins
+
+                ===================================================
+
+Related Information
+              * defStreamOutCheckUncolored
+
+              * run_pegasus_drc
+
+              * run_pvs_drc_rules
+
+              * setStreamOutMode
+
+              * Importing  and  Exporting  Designs chapter in the Innovus User
+                Guide
+
+                * Converting an Innovus Database to GDSII Stream or OASIS For-
+                  mat
+
+                     * About the GDSII Stream or OASIS Map File
+
+                           Fri Apr 04 01:25:37 2025           streamOut(25.10)

@@ -1,0 +1,161 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createInterfaceLogic(25.10)                        createInterfaceLogic(25.10)
+
+Name
+       createInterfaceLogic  -  Creates the specified directory containing ILM
+       files with the appropriate level of extraction for specific model  type
+       such as timing, si, or for all models
+
+Syntax
+       createInterfaceLogic
+
+       [-help]
+
+       [-allowIlmEco]
+
+       [-ignorePorts <ListOfPorts>]
+
+       [-keepAll][-keepSelected]
+
+       [-modelType {timing si all}]
+
+       [-noInterClockPath]
+
+       [-overwrite]
+
+       [-removePowerGround]
+
+       [-dir <dirName> | -cellview {lib | cell | view}]
+
+       [ [-optStage {preCTS postCTS}] ]
+
+       Creates the specified directory containing ILM files with the appropri-
+       ate  level of extraction for specific model type such as timing, si, or
+       for all models. For MMMC, ILM models will be generated  based  on  con-
+       straint modes.
+
+       The  createInterfaceLogic  command  creates  a reduced set of instances
+       representing only the interface paths, that  is,  paths  from  the  I/O
+       ports of the design to the first level of sequential instances (latches
+       are considered sequential elements).
+
+       The  command  automatically modifies the module name with the following
+       rule:
+
+       topModuleName+timestamp+$+moduleName
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each createInterfaceLogic parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man createInterfaceLogic
+
+       -allowIlmEco
+              Allows ECO changes within the ILM block.
+
+       -cellview {lib | cell | view}
+              Specifies OA cell view information for generated ILMs.
+
+              The  -cellview  option cannot be used in non-OA flow. For non-OA
+              flow, you use the -dir option instead.
+
+       -dir <dirName>
+              Specifies the output directory name  where  ILMs  file  will  be
+              saved.  If  the  design is not an OA design, this option must be
+              specified.
+
+       -keepAll
+              Preserves the complete logic of block and hence does not do  any
+              logic pruning based on constraints or path groups.
+
+              Note:  Since  the  complete  logic  is preserved, so all the ILM
+              views, that is, timing, CTS, and SI share the same model data.
+
+       -ignorePorts <ListOfPorts>
+              Specifies list of ports where these ports and the associated in-
+              terface path(s) which are starting or ending at these ports will
+              not be included in the ILM model.
+
+       -keepSelected
+              Preserves all selected instances and nets (in addition to  those
+              normally  kept)  when  you  create  ILMs. Selected instances are
+              those instances that drive the selected nets. You can select in-
+              stances or nets using the selectInst or selectNet commands, then
+              use createInterfaceLogic -keepSelected.
+
+              By default, no additional instances and nets are preserved.
+
+       -modelType {timing | si | all}
+              Specifies the type of ILM model to be created.
+
+              Default: all
+
+              * all: Ensures that all models are written.
+
+              * timing: Ensures that only the timing model is written for non-
+                SI based timing, optimization, or clock tree commands.
+
+              * si: Ensures that only the SI model is written that can be used
+                for the SI based timing and optimization commands.
+
+       -noInterClockPath
+              Minimizes the clock latency at the upper-level CTS when the non-
+              boundary flop in ILM has the maximum clock latency.
+
+       -optStage {preCTS | postCTS}
+              Specifies the optimization stage, preCTS or postCTS.
+
+              This option should be specified both for ILM  and  flexILM  cre-
+              ation.
+
+       -overwrite
+              Overwrites existing files.
+
+       -removePowerGround
+              Removes  PG  ports, PG nets, PG pin connections, and replaces PG
+              net connections on signal pins with 1'b1 or 1'b0 .
+
+Examples
+              * The following command generates both timing model and SI model
+                in directory BlockA:
+
+                createInterfaceLogic -dir BlockA
+
+              * The following command only generates timing model and saves it
+                in directory BlockA:
+
+                createInterfaceLogic -dir BlockA -modelType timing
+
+              * The following command completely replaces  the  library,  cell
+                and view in an OA flow.
+
+                createInterfaceLogic -cellview {lib | cell | view} -overwrite
+
+       Note:   In  the  current ILM flow, SDC constraints originally specified
+       against the complete flat netlist for the design get filtered when  be-
+       ing applied against the ILM view of the design.
+
+       Note:  The  setIlmMode  command settings also affect the instances that
+       createInterfaceLogic command will preserve to model the block.
+
+       Sample Summary Report
+
+       The following is a sample summary report generated at the  end  of  the
+       createInterfaceLogic command:
+
+       In this report, the reduction ratio in the ilm_data model is 93 percent
+       which  means that 7153 out the total 7621 instances for this block have
+       been eliminated. Only 468 instances are written to the Verilog  netlist
+       for the ilm_data model out of which 111 instances are registers.
+
+       This  summary  report  applies  to a block using MMMC. Therefore, views
+       with worst reduction ratio are displayed for each model.
+
+Related Information
+              * setIlmMode
+
+              * Creating ILMs for Shared Modules topic in the Top-level Timing
+                Closure Methodologies chapter of the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025createInterfaceLogic(25.10)

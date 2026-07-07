@@ -1,0 +1,1103 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setViaGenMode(25.10)                                      setViaGenMode(25.10)
+
+Name
+       setViaGenMode  -  Sets global variables for vias that connect rings and
+       stripes when you use  the  addRing,  addStripe,  editPowerVia,  sroute,
+       addSplitPowerVia or editAddRoute commands
+
+Syntax
+        setViaGenMode
+
+       [-help]
+
+       [-reset]
+
+       [-accuracy_effort {low | medium | high}]
+
+       [-add_pin_to_pin_via {true | false}]
+
+       [-align_merged_stack_via_metals {true | false}]
+
+       [-allow_via_expansion {true | false}]
+
+       [-allow_wire_shape_change {true | false}]
+
+       [-area_only {true | false}]
+
+       [-bot_enclosure {<overhang1 overhang2>}]
+
+       [-create_double_row_cut_via {0 | 1 | 2}]
+
+       [-create_max_row_cut_via {true | false}]
+
+       [-cut_spacing {<x_spacing y_spacing>}]
+
+       [-cutclass_preference  {default  |  {[square]  [bar]  [large]}  |  cut-
+       class_name_list} | file_name]
+
+       [-disable_via_merging {true | false}]
+
+       [-extend_out_wire_end {true | false}]
+
+       [-full_cut_via_only {true | false}]
+
+       [-genvia_naming_prefix <viaNamePrefix>]
+
+       [-hookup_contact_max {<distance1_max distance2_max>}]
+
+       [-hookup_contact_pg_track {<start_value pitch_value>}]
+
+       [-hookup_preplace_fix {0 | 1}]
+
+       [-hookup_rail_pair {0 | 1}]
+
+       [-hookup_via_distance  {<distance_value1>  [<distance_value2>  [<bound-
+       ary_spacing>]]}]
+
+       [-hookup_via_fixed_grid {true | false}]
+
+       [-hookup_via_min_distance <distance>]
+
+       [-hookup_via_style {none | loose | compact | moderate}]
+
+       [-hookup_via_viarule      {<filler>      {<default>     |{<list_of_via>
+       <rule>/<cell_names> }} ...}]
+
+       [-hookup_virtual_trim_grid {default |{-layer -mask1 {-pitch  -core_off-
+       set...}}}]
+
+       [-ignore_design_boundary {true | false}]
+
+       [-ignore_DRC {true | false}]
+
+       [-ignore_viarule_enclosure {true | false}]
+
+       [-inherit_wire_status {true | false}]
+
+       [-invoke_verifyGeometry {true | false}]
+
+       [-keep_existing_via {0 | 1 | 2}]
+
+       [-keep_fixed_via {true | false}]
+
+       [-mincut_preference <value>]
+
+       [-optimize_cross_via {true | false}]
+
+       [-optimize_via_on_routing_track {true | false}]
+
+       [-parameterized_via_only {true | false | auto}]
+
+       [-partial_overlap_threshold <float>]
+
+       [-preferred_vias_only {use_lef | open | keep}]
+
+       [-reference_boundary {design|core}]
+
+       [-respect_signal_routes {0 | 1 | 2}]
+
+       [-respect_stdcell_geometry {true | false}]
+
+       [-respect_wire_ndr {true | false}]
+
+       [-set_via_expansion_dir {auto | horizontal | vertical}]
+
+       [-snap_via_center_to_grid {{ layer1 {none | grid | half_grid | either }
+       [hard]} layer2 {{none | grid | half_grid | either } [hard]} ... }]
+
+       [-split_long_via_global_grid   {x_offset   x_pitch   x_length_threshold
+       x_length_multiplier y_offset y_pitch y_length_threshold y_length_multi-
+       plier}]
+
+       [-symmetrical_via_only {true | false | auto}]
+
+       [-top_enclosure {<overhang1 overhang2>}]
+
+       [-use_track_offset {true | false}]
+
+       [-use_trim_metal_enclosure {true | false}]
+
+       [-viarule_preference {default | predefined | generated | <list  of  via
+       rule/cell names> | <file_name>}]
+
+       Sets  global variables for vias that connect rings and stripes when you
+       use the addRing, addStripe, editPowerVia, sroute,  addSplitPowerVia  or
+       editAddRoute commands.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each setViaGenMode parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man setViaGenMode
+
+       -accuracy_effort {low | medium | high}
+              Controls  the  balance  between  accuracy and runtime during via
+              generation.
+
+              * When set to high, viagen checks full DRC rules and creates DRC
+                clean vias.
+
+              * When set to medium, viagen runs  DRC  check  in  the  moderate
+                mode.
+
+              * When set to low, viagen runs in the quick DRC check mode. With
+                this value specified, some available vias may be missed, since
+                the conservative rules are checked.
+
+              The  vias  generated  through this parameter are DRC clean. This
+              parameter generates vias with reduced  runtime  in  the  special
+              scenarios  where  complex DRC rules are triggered. These complex
+              rules include (but are not limited to) same metal  aligned  cuts
+              spacing.
+
+              Default: high
+
+       -add_pin_to_pin_via {true | false}
+              Inserts vias to connect pins between different cover macros.
+
+              Default: false
+
+       -align_merged_stack_via_metals {true | false}
+              Aligns merged stack vias.
+
+              Default: false
+
+       -allow_via_expansion {true | false}
+              Allows via to expand out of intersection area to meet LEF rules.
+
+              Default: true
+
+       -allow_wire_shape_change {true | false}
+              Allows the via to change the metal shape of existing wires.
+
+              Default: true
+
+              Note:  For stack vias, the option is only valid for top and bot-
+              tom metal layers.
+
+              Example:
+
+              * -allow_wire_shape_change true
+
+              * -allow_wire_shape_change false
+
+       -area_only {true | false}
+              Adds vias only within the specified areas.
+
+              Default: false
+
+       -bot_enclosure {<overhang1 overhang2>}
+              Generates vias with the specified bottom enclosure values, with-
+              out modifying the LEF file.  Set  the  -ignore_viarule_enclosure
+              parameter  to  false while using this parameter, so that the en-
+              gine can compare the specified <overhang1> and <overhang2>  val-
+              ues with the Via Rule Generate values.
+
+              The  <overhang1>  and  <overhang2>  values must be above the Via
+              Rule Generate values.
+
+       -create_double_row_cut_via {0 | 1 | 2}
+              Try to expand vias to have one additional cut than original when
+              set the option to 1 or 2. That is, expand original vias  of  1xn
+              or nx1 cuts to vias of 1x(n+1) or (n+1)x1 cuts.
+
+              * 1: create vias with one additional cut where wires on both top
+                and down layers are enough and need no shape change.
+
+              * 2:  create  vias with one additional cut where wires on one of
+                the layers are enough.
+
+              Default: 0
+
+               Example:
+
+              * create_double_row_cut 0
+
+              * create_double_row_cut 1
+
+       -create_max_row_cut_via {true | false}
+              Try to expand vias to have one additional row or column of  cuts
+              than  original  when the option is set to true. It works similar
+              to -create_double_row_cut_via except that there is  no  restric-
+              tion on one row or one column via.
+
+              Default: false
+
+       -cut_spacing {<x_spacing y_spacing>}
+              Generates  vias  with  the specified cut spacing values, without
+              modifying the LEF file.
+
+              The <x_spacing> and <y_spacing> values must  be  above  the  Via
+              Rule Generate values.
+
+       -cutclass_preference {default | {[square] [bar] [large]} | cut-
+       class_name_list | file_name}
+              Specifies  the  preference for the via cut class while inserting
+              special vias. You can specify one of the following values:
+
+              * default: Prefers to use the first viacell in tech LEF  without
+                drc  violation or the first generate viarule to generate maxi-
+                mum cut area. For example, cutWidth * cutHeight * cutNumber.
+
+              * square: Prefers to use the SINGLE cut vias. In the LEF defini-
+                tion, the cut width and length are usually the  same  and  the
+                smallest in that layer. For example, 0.032 by 0.032.
+
+              * bar:  Prefers  to  use the DOUBLE cut vias. In the LEF defini-
+                tion, the cut width is the usually the smallest. For  example,
+                0.032 by 0.08. It mostly equals to 2 SINGLE cut.
+
+              * large:  Perfers  to use the LARGE cut vias. In the LEF defini-
+                tion, the neither the cut width not the length is  the  small-
+                est. For example, 0.08 by 0.08, equals to 4 SINGLE cut.
+
+              The  following  figure  shows the difference between the square,
+              bar, and large values:
+
+              Note:
+
+              * Parameter setting does not support incremental  specification.
+                The last cutClass preference setting is used.
+
+              * When  you  specify {[square] [bar] [large]}, there should be 2
+                or 3 cutClass defined in the LEF file. If Innovus detects that
+                there are more than 3 or less than 2 cutClasses,  the  setting
+                is ignored.
+
+              * In  the specified file, different arguments can be separate by
+                space or line break.
+
+       -disable_via_merging {true | false}
+              Disables via merging in the layers next to the  followpin  layer
+              within the range of two when set the option to true and there is
+              followpin  layer  in the design. Triming will be the only way to
+              solve drc issues.
+
+              For example, if the followpin layer is in 1, disable via merging
+              in 1/2/3; if the followpin layer is in 2, disable via merging in
+              1/2/3/4.
+
+              This function helps if the merging  of  via  consums  additional
+              wire track unnecessarily.
+
+              Default:
+
+              * false in normal scenarios
+
+              * true for advance nodes (with designs of 12 nm or below)
+
+       -extend_out_wire_end {true | false}
+              Allows  via extending outside of existing wire ends at T-type of
+              intersection. When set to false, via extending  outside  of  the
+              existing wire end are not allowed and may shift inside.
+
+              * -extend_out_wire_end 1
+
+              * -extend_out_wire_end 0
+
+              Default: true
+
+       -full_cut_via_only {true | false}
+              Allows the user to create only full cut vias.
+
+              Example
+
+              The  following  via  is generated because of the second left cut
+              will have drc violations when the option is set to false.
+
+              * -full_cut_via_only 0
+
+              When set the option to true, only full cut vias will  be  gener-
+              ated:
+
+              * -full_cut_via_only 1
+
+                 &
+
+              Default: false
+
+       -genvia_naming_prefix <viaNamePrefix>
+              Sets  the  specified prefix name as the prefix for all generated
+              vias created by the Innovus software.
+
+              This helps user to select and edit the vias  that  need  further
+              modification.
+
+              Default: none
+
+       -hookup_contact_max {<distance1_max distance2_max>}
+              Sets the maximum distance to create hookup via from contact, and
+              the  maximum  distance between two hookup via on a continuous M0
+              PG pin. Following are the parameter values:
+
+              * distance1_max: Specifies the distance required by  every  viaT
+                for at least one hookup via drop. For deciding the location of
+                hookup  via  for  distance1_max, every viaT needs at least one
+                hookup via drop within distance1.
+
+              * distance2_max: Specifies the maximum distance between any  two
+                PG hookup vias on a continuous M0 PG pin. An additional hookup
+                via must be dropped from the previous hookup via on a continu-
+                ous  M0  PG  segment  with  distance2_max. Also, an additional
+                hookup via must be dropped within the maximum  distance2  from
+                the endpoint of a continuous M0 PG pin.
+
+              Default: 0 0
+
+              The following scenarios depict the usage of this parameter:
+
+              * Deciding the location of hookup via by viaT:
+
+              * Referencing  of the location of viaT by the tool to add hookup
+                vias:
+
+              * At least one hookup via needs to be available for each contin-
+                uous M0 PG segment, including PG segment at both sides of  the
+                row  edge and the PG pin. The continuous M0 PG segment without
+                viaT also needs to follow the decision rule of distance2:
+
+              * Four individual via cells are defined  in  the  LEF  file  and
+                VIAMAP. Of these, one is 3-cut, two are 2-cut, and the remain-
+                ing  one  is  1-cut. The further breakup of these via cells is
+                mentioned below:
+
+                * 3-cut via cells: Include three v0 cuts, three m0 metals, and
+                  one m1 metals
+
+                * 2-cut via cells: Include two v0 cuts, two m0 metals, and one
+                  m1 metals
+
+                * 1-cut via cell: Include one v0 cuts, one m0 metals, and  one
+                  m1 metals
+
+       -hookup_contact_pg_track {<start_value pitch_value>}
+              Sets  start  point and the pitch of PG track used by hookup con-
+              tact. Following are the parameter values:
+
+              * start_value: Specifies the location of the first PG track.
+
+              * pitch_value: Specifies the distance (steps) between two  adja-
+                cent  PG  tracks. It needs to be an integer multiple of the m1
+                pitch.
+
+              Note: The PG track needs to be aligned with the m1 track.
+
+              Default: 0 0
+
+       -hookup_preplace_fix {0 | 1}
+              Enhances the hookup via generation runtime during the DRC check.
+
+              This parameter works only in the multiple-CPU processing mode.
+
+              Default: 0
+
+       -hookup_rail_pair {0 | 1}
+              Adds hookup via over the pairing M0 followpins that are distrib-
+              uted on both sides of a row with specially defined  viacells  at
+              LEF file. Note that while using this parameter, the PG pins need
+              to  be  on  track, and the width of the M0 followpin needs to be
+              uniform.
+
+              This parameter works only with setting the loose  value  of  the
+              -hookup_via_style  parameter.  Three viacells are defined in the
+              LEF file. One of those is  2-cut,  and  the  remaining  two  are
+              1-cut. Refer to their details below:
+
+              * 2-cut viacell = Two v0 cuts + Two m0 metals + One m1 metals
+
+              * 1-cut viacell = One v0 cuts + One m0 metals + One m1 metals
+
+              For  the  1-cut viacell, m1 needs to overlap completely with M2.
+              If this is not possible, the viacell will not be generated.  Re-
+              fer to the example below:
+
+              Default: 0
+
+       -hookup_via_distance {<distance_value1> [<distance_value2> [<bound-
+       ary_spacing>]]}
+              Enables  control to put the first pg via for each followpin. You
+              can use this parameter in  the  following  ways:-hookup_via_dis-
+              tance {distance_value1}
+
+              -hookup_via_distance {distance_value1 distance_value2}
+
+              -hookup_via_distance   {distance_value1  distance_value2  bound-
+              ary_spacing}
+
+              Following are the parameter's various possible values:
+
+              *
+
+                * distance_value1: Specifies the distance (step)  between  via
+                  stacks  and  is rounded down to M1 pitch*n. Default value is
+                  M1 pitch*4.
+
+                * <distance_value2>: Specifies the distance between via stacks
+                  on filler cell. This value can work with all hookup  styles.
+                  Default  value  is M1 pitch*4. It indicates the via distance
+                  when two neighboring via stacks are over filler cells. Refer
+                  to the figure below:
+
+                * <boundary_spacing>: Specifies the distance between the first
+                  via and core boundary. It also refers the  minimum  distance
+                  between the last via and core boundary.
+
+       -hookup_via_fixed_grid {true | false}
+              When  set  to false (default value), the added hookup via can be
+              shifted to avoid DRC. When set as true, the hookup via can  only
+              be added at the fixed grid.
+
+              The  fixed  grid works with -hookup_via_style. For the loose and
+              moderate styles, the hookup via will be removed, if it has  DRC,
+              when  created.  For  the  compact  style, the hookup via will be
+              kept, whether or not it has DRC.
+
+              The fixed grid is controlled by the following parameter:
+
+              -hookup_via_distance {distance_value1  [distance_value2  [bound-
+              ary_spacing]]}
+
+              Here:
+
+              *
+
+                * distance_value1 is the pitch of grid.
+
+                * boundary_spacing  is the distance between the first grid and
+                  core boundary.
+
+                * The fixed grid does not get influenced by the shape  of  the
+                  design or macros.
+
+                * distance_value2 needs to be set same as distance_value1.
+
+              Below is an example of formation fixed grid using boundary_spac-
+              ing  and  distance_value1.  Note  that all the vias of different
+              lines need to be aligned.
+
+              Below is an example of DRC control for the  loose  and  moderate
+              types  of  hookup via styles. Here, the hookup vias are removed,
+              if DRC exists.
+
+              Below is an example of DRC  control  for  the  compact  type  of
+              hookup  via  style. Here, the hookup via will be kept, irrespec-
+              tive of the existence of DRC.
+
+              Default: false
+
+       -hookup_via_min_distance <distance>
+              Specifies the minimum constrained distance between two PG  vias.
+              This parameter works with the distance between:
+
+              * Two newly added PG vias
+
+              * Existing PG vias and newly added PG vias on the followpin
+
+              Default: min
+
+       -hookup_via_style {none | loose | compact | moderate}
+              Sets hookup via style. The hookup via works between two parallel
+              metal  layers (like M0 and M2, or M1 and M3). Assuming it for M0
+              and M2, viagen adds stack vias between M0 and  M2  according  to
+              the hookup via settings.
+
+              The  associated functionality of various options is provided be-
+              low:
+
+              * none: No via hookup style is set. This is the default value.
+
+              * loose: The tool inserts vias between paralleled wires with the
+                specified step in  -hookup_via_distance.  The  center  of  the
+                left-most  via  needs  to be on the track, which is inside the
+                intersection. The via also needs to be  inside  the  intersec-
+                tion. If a via stack (like stack3) cannot be dropped at a cer-
+                tain step position (dot line area in the figure below) because
+                of the DRC violation, it is moved to a closer or farther posi-
+                tion with the previous stack (stack2) to ensure DRC clean. Ad-
+                ditionally, the next via (stack4) needs to keep the step value
+                with  the  original  position of moved stack (dot line area in
+                the figure below).
+
+                If DRC clean does not occurs, the via stack is removed,  refer
+                to the figure below:
+
+                Note: The hookup style is loose by default, if the via map ta-
+                ble does not exist.
+
+              * compact:  If  a via stack (like stack3) cannot be dropped at a
+                certain step position (dot line area in the figure below)  be-
+                cause  of DRC violation, it is moved to a closer position with
+                the previous stack (stack2) to ensure DRC clean. And the  next
+                via  (stack4)  needs  to keep the step value with the said via
+                (stack3). Refer to the figure below:
+
+                If DRC clean does not occurs by moving the stack,  insert  the
+                via  stack at the original position with DRC violation marker.
+                Refer to the figure below:
+
+                Note: The hookup style is compact by default, if the  via  map
+                table exists.
+
+              * moderate:  If a via stack (like stack3) cannot be dropped at a
+                certain step position (dotted line area in the  figure  below)
+                due  to  the DRC violation, it is moved to a closer or farther
+                position with the previous stack (stack2) to ensure DRC clean.
+                If the via stack (stack3) is dropped to a closer position with
+                the previous stack (stack2), the next via  (stack4)  needs  to
+                keep  the  step value with the said stack (stack3). If the via
+                stack (stack6) is dropped to a farther position with the  pre-
+                vious  stack (stack5), the next via (stack7) needs to keep the
+                step value with the original position of the moved stack.
+
+                If DRC clean is not occurred, viaGen checks  the  next  tracks
+                followed  to  insert  the  via  stack at the nearest DRC clean
+                track.
+
+       -hookup_via_viarule {<filler> {<default> |{<list_of_via>
+       <rule>/<cell_names> }} ...}
+              Specifies the preferred viarule for  the  designated  cell  area
+              during the hookup via generation. The <default> value of the pa-
+              rameter follows the rule of the -viarule_preference parameter to
+              generate  a  hookup via. The <list_of_via rule/cell_names> value
+              uses the list of via rules or cells as the preferred  usage  for
+              filler    cell   during   the   hookup   via   generation.   The
+              -hookup_via_viarule parameter  can  also  work  with  the  -pre-
+              ferred_vias_only parameter to use different types of viarule or-
+              ders for filler cell to be DRC clean.
+
+       -hookup_virtual_trim_grid {default |{-layer -mask1 {-pitch -core_off-
+       set...}}}
+              Creates  a  virtual  trim grid for PG hookup via generation. The
+              created virtual trim grid should align with the via metal of the
+              newly created hookup via. When this parameter is specified,  the
+              existing trim grid is ignored.
+
+              To honor the existing trim grid, either remove this parameter or
+              define  the  existing  trim  grid  within  this  parameter.  The
+              -core_offset parameter is calculated from the bottom core bound-
+              ary to the center of the first grid.
+
+              Note: The width value for this parameter is taken from  the  LEF
+              file.
+
+              Default: ""
+
+       -ignore_design_boundary {true | false}
+              Specifies whether a via can be extended out of the design bound-
+              ary (floorplan area).
+
+              * When set to true, viagen generates vias and ignores the design
+                boundary.
+
+              * When set to false, viagen tries to shift vias first inside the
+                boundary  area.  If  it does not overlap with the intersection
+                point after shifting, viagen deletes it. If it  overlaps  with
+                the  intersection  point after shifting with DRC clean, viagen
+                keeps it.
+
+              See the figure below for understanding the usage of this parame-
+              ter:
+
+              Default: false
+
+       -ignore_DRC {true | false}
+              Setting this option ignores DRC but honors  user-defined  values
+              when  creating  vias.  This speeds up via creation during power-
+              planning but normally causes DRC violations.
+
+              It should only be used during early  prototyping  to  experiment
+              with different power-planning choices that will be updated later
+              to be DRC clean.
+
+              Note:  This parameter ignores only the DRC violations from third
+              party objects, and the software will still check  the  violation
+              inside via.
+
+              Default: false
+
+       -ignore_viarule_enclosure {true | false}
+              When  set  to  true, tool will ignore enclosure value in VIARULE
+              GENERATE and use the optimized enclosure from cut  layer  rules,
+              to  get the maximum number of cuts, minimum via metal shape.When
+              set to  false, the enclosure value in VIARULE GENERATE  must  be
+              satisfied.  When  this  VIARULE  fails DRC check, tool will take
+              next VIARULE or viacell from LEF file.
+
+              Default: true
+
+       -inherit_wire_status {true | false}
+              Setting this parameter to true creates via and makes the  status
+              of  the  via  inherit  the target wire's status. However, if the
+              status of the top or bottom wire is SHIELD,  this  parameter  is
+              ignored  and  the  generated vias will always inherit the SHIELD
+              status. When this parameter is set to false, via status  is  set
+              to ROUTED.
+
+              For  editPowerVia, the target wire is the bottom wire. For other
+              commands calling the VIAGEN engine, either the bottom or the top
+              wire is the target wire, depends on order of wire read-in. So if
+              this parameter is designed to use, editPowerVia  is  the  recom-
+              mended command.
+
+              editPowerVia  does  not  delete  or modify vias having status as
+              FIXED/COVER.
+
+              Type: Boolean
+
+              Default: false
+
+       -invoke_verifyGeometry {true | false}
+              Enables or disables the verify_drc command  called  by  the  via
+              generation software.
+
+              * When  set  to true, the via generation software calls the ver-
+                ify_drc command to detect any minStep violations,  then  calls
+                the  fixVia  -minStep command to fix them. This may impact the
+                run-time performance.
+
+              * When set to false, the via generation software will  not  call
+                the  verify_drc  command. This may leave minStep violations in
+                the design.
+
+              Note:  When   both   the   -invoke_verifyGeometry   and   -opti-
+              mize_cross_via  parameters are set to true, and the process node
+              is above 10N, DRC violations can be reported.
+
+              Default: false
+
+       -keep_existing_via {0 | 1 | 2}
+              If a via exists in an intersection and does not cover the  whole
+              intersection,  a  new via is tried to be dropped in the same in-
+              tersection. Following are the parameter values:
+
+              * 0: Prevents keeping an existing via, while dropping a new via.
+
+              * 1: Keeps an existing via, while dropping a new via.
+
+              * 2: Keeps an existing via and does not drop a new  via  at  the
+                same  intersection,  even when the existing via does not cover
+                the whole intersection area.
+
+              Default: 0 (1 for 10 nm designs)
+
+       -keep_fixed_via {true | false}
+              Controls whether to preserve the fixed vias or not  when  viaGen
+              is called for via generation.
+
+              Default: true
+
+       -mincut_preference <value>
+              Specifies the minimum number of cuts during via generation at an
+              intersection. For example:
+
+              * If  this  parameter is set to 1, viagen generates at least one
+                cut at an intersection, as shown below:
+
+              * If this parameter is set to 2, viagen generates at  least  two
+                cuts at an intersection, as shown below:
+
+              Default: 1
+
+       -optimize_cross_via {true | false}
+              Generates  vias  with the minimum enclosure value on each layer.
+              The different results with false or true values are shown below:
+
+              Default: false
+
+              Note: The default value is true for advanced node (10 NM  and  7
+              NM) designs.
+
+       -optimize_via_on_routing_track {true | false}
+              Free  up routing tracks by shift or modify the vias minimally in
+              intermediate layers and not applied to layers where the wires or
+              pins exist. This option only supports  generated  vias  and  not
+              predefined vias.
+
+              The default is false.
+
+              Note:  Free up routing tracks against forbidden spacing rule for
+              cross  via  and  save routing tracks against end of line spacing
+              rule for non cross via. setViaGenMode  -optimize_cross_via  true
+              will try to generate cross via.
+
+       -reset Resets  all or specified parameters to their default values. Any
+              values that do not already match the default value and  are  re-
+              set. will be reported.
+
+       -parameterized_via_only {true | false | auto}
+              Generates parameterized vias only. When set to:
+
+              * true,  ViaGen  generates  parameterized vias only, which means
+                the DEF syntax of generated vias is with VIARULE. It helps  in
+                OpenAcceess designs.
+
+              * false, ViaGen generates both parameterized and fixed vias.
+
+              * auto,  it is true for OpenAccess design, false for non-OpenAc-
+                cess design.
+
+              Default:
+
+              * false, when the setOaxMode -saveCdsFixedVias parameter is  en-
+                abled in the OpenAccess design.
+
+              * auto, for all other cases.
+
+       -partial_overlap_threshold <float>
+              Specifies  ratio  threshold  of  via creation on partial overlap
+              wires. The parameter value may range from 0 to 1. The  parameter
+              value  1 specifies that no via is dropped on partial overlap in-
+              tersection.   The   tool   drops    via    only    when    over-
+              lap_width/wire_width  is  greater  than  or equal to the thresh-
+              old_value.
+
+              Default: 0
+
+              The following figure depicts parallel overlapping wires:
+
+              The following figures depict vertical cross wires:
+
+       -preferred_vias_only {use_lef | open | keep}
+              Generates only the vias set in -viarule_preference.
+
+              Default: use_lef
+
+              Note: This option must be used with the -viarule_preference  op-
+              tion.
+
+              When the value of this parameter is set to:
+
+              *
+
+                use_lef:  viarule or via cell specified in -viarule_preference
+                is firstly considered. If none of them  fits,  viagen  chooses
+                the first DRC clean predefined viarule in the LEF file or auto
+                viarule that can bring maximum cut area.
+
+                Note that:
+
+              *
+
+                *
+
+                  * Cut area = single cut area * cut number
+
+                  * Auto   viarule   includes  generate  viarule  and  virtual
+                    viarule. Virtual viarule means viarule generated by viagen
+                    based on the cut layer rule.
+
+              *
+
+                open:  Only  predefined  viarule  or  via  cell  specified  in
+                -viarule_preference  is  considered.  The  first  one with DRC
+                clean is kept. If all of them have DRC issues, the whole stack
+                is left open.
+
+              *
+
+                keep:  Only  predefined  viarule  or  via  cell  specified  in
+                -viarule_preference  is  considered.  The  first  one with DRC
+                clean is kept. If all of them have DRC issues, keep the  first
+                one  which  is DRC clean with surrounding. If all of them have
+                DRC issues with surrounding, the whole stack is left open.
+
+              For more information on predefined viarule and generate viarule,
+              see the Via Rule and Generate Via Rule sections respectively  of
+              the  LEF  Syntax chapter of the LEF/DEF Language Reference docu-
+              ment.
+
+       -reference_boundary {design | core}
+              Specifies the offset reference when specifying offset values  in
+              the -split_long_via_global_grid parameter. Following are the pa-
+              rameter values:
+
+              * design: ViaGen uses design boundary as reference.
+
+              * core: ViaGen uses core boundary as reference.
+
+              Default: -reference_boundary design
+
+       -respect_signal_routes {0 | 1 | 2}
+              Controls whether the via generation software honors pre-existing
+              signal routes.
+
+              If  set to 1, instructs the via generation software to read pre-
+              existing signal routes and avoid creating DRC violations for the
+              routes.
+
+              If set to 2, instructs the via generation software to read  pre-
+              existing signal routes and avoid creating DRC violations for the
+              routes. And improve the runtime of VIA12 process.
+
+              Note: Using this setting can affect software performance signif-
+              icantly.
+
+              If set to 0, instructs the via generation software to ignore any
+              pre-existing signal routes.
+
+              Note: DRC violations can occur if this setting is used.
+
+              Default: 0
+
+       -respect_stdcell_geometry {true | false}
+              Respects geometry inside standard cell patterns.
+
+              Default: false
+
+       -respect_wire_ndr {true | false}
+              Controls  spacing between hookup via and signal routes. This al-
+              lows viagen to support all NDR rules.
+
+              * When set to false, viagen honors a set of NDR rules, which in-
+                clude  PG wire NDR, PG via NDR, pin wire NDR, pin via NDR, and
+                signal via NDR.
+
+              * When set to true, the signal wire NDR is also honored, includ-
+                ing those listed above with the false value selection of  this
+                parameter. This means that setting this parameter to true hon-
+                ors all the NDR rules.
+
+              Default: false
+
+       -set_via_expansion_dir {auto | horizontal | vertical}
+              Sets via expansion directions.
+
+              Default: auto
+
+       -snap_via_center_to_grid {{ layer1 {none | grid | half_grid | either }
+       [hard]} layer2 {{none | grid | half_grid | either } [hard]} ... }
+              Specifies the via center alignment style per routing layer. When
+              this  parameter  is  set  as  hard, the added via center will be
+              snapped to metal track, if the added via will  not  be  extended
+              out  of the wire side. If snap via to track will be extended out
+              of the wire side, viagen will keep via in the stripe  center  to
+              save the routing resource.
+
+              none
+
+              Keeps previous behavior, only snaps to wire center line.
+
+              grid
+
+              Snaps via to the full grid layer track.
+
+              half_grid
+
+              Ignores the full grid. Only snaps to the half_grid layer track.
+
+              either
+
+              Can snap to both full and half grid layer track.
+
+              Default: none
+
+              Examples
+
+              *
+
+                Snap  the  vias  to  each  adjacent up and down layers, except
+                Metal1 and Metal2
+
+                *
+
+                  NO stripes on up and down layers
+
+                *
+
+                  Snap the center of via (the whole via, not CUT) to the clos-
+                  est track intersection
+
+              *
+
+                Stripes on both up and down layers
+
+                *
+
+                  Generate via on the stripes intersection area (the  same  as
+                  previous behavior, NO change)
+
+              *
+
+                Stripe  on  adjacent layer 3 and NO stripe on the other neigh-
+                boring routing layer
+
+                *
+
+                  Find the joint point between stripe center and  the  closest
+                  track
+
+                *
+
+                  Snap  the  center  of  via  (the whole via, not CUT) to this
+                  joint point
+
+              *
+
+                Snap via to the full grid of 4) and half grid of 3
+
+                *
+
+                  setViaGenMode -snap_via_to_grid {3 half_grid 4 grid}
+
+                *
+
+                  Snap via to 3 half grid and 4 full grid
+
+              *
+
+                Snap via to full or half grid of 3 and 4
+
+                *
+
+                  setViaGenMode -snap_via_to_grid {3 either 4 either}
+
+                *
+
+                  Tool could snap to closest full or half grid automatically
+
+              *
+
+                Snap via to track if the via is not extended out of wire side,
+                when set as hard
+
+              *
+
+                Keep via in stripe center if the snap via to track is extended
+                out of the wire side, when set as hard
+
+       -split_long_via_global_grid {x_offset x_pitch x_length_threshold
+       x_length_multiplier y_offset y_pitch y_length_threshold y_length_multi-
+       plier}
+              Provides options to control global grids so  that  vias  on  the
+              grids are in line on x and/or y directions.
+
+              * x_offset,  y_offset:  specifies in microns the offset from de-
+                sign boundry
+
+              * x_pitch, y_pitch: specifies in microns the  centre  to  centre
+                distance in split vias
+
+              * x_length_threshold,  y_length_threshold: specifies vias longer
+                or equal to threshold are being split
+
+              * x_length_multiplier, y_length_multiplier: specifies  unit  via
+                length multiplier
+
+              Default: default
+
+       -symmetrical_via_only {true | false | auto}
+              By  default the metal-width of a generated-via matches the width
+              of the intersection of the metal above and below the via. If the
+              width is an odd number of manufacturing grids (mgrids) wide, the
+              resulting via cannot  be  represented  by  a  parameterized  via
+              (LEF/DEF VIA with VIARULE and parameters or OpenAccess standard-
+              Via) because they require a symmetrical enclosure values on both
+              sides  of  the cuts. In that case, a fixed-name via (LEF/DEF VIA
+              with RECT statements or OpenAccess customVia) must be created to
+              have the same width as the intersection area.
+
+              If this option is true, the via metal is enlarged one  mgrid  in
+              the odd-mgrid directions order to make the via symmetrical so it
+              can  be  represented as a parameterized via. This does not cause
+              any DRC violations in general because the via metal should still
+              be covered by the metal above/below the via and avoid  any  min-
+              step violations.
+
+              Fixed-name  vias can cause problems in hierarchical flows as the
+              fixed-names from different  blocks  may  collide.  Parameterized
+              via-names  can  be freely changed by applications and avoid this
+              problem. If the design has odd-mgrid width wires or  pins,  this
+              option is normally a good choice.
+
+              If this parameter is selected as auto, it is true for OpenAccess
+              design, false for non-OpenAccess design.
+
+              Default: auto
+
+       -top_enclosure {<overhang1 overhang2>}
+              Generates  vias with the specified top enclosure values, without
+              modifying the LEF file. Set the -ignore_viarule_enclosure  para-
+              meter  to  false  while using this parameter, so that the engine
+              can compare the specified  <overhang1>  and  <overhang2>  values
+              with the Via Rule Generate values.
+
+              The  <overhang1>  and  <overhang2>  values must be above the Via
+              Rule Generate values.
+
+              When the -top_enclosure parameter is used, the via is covered by
+              metal layers on two opposite sides by at least <overhang1>  dis-
+              tance,  and  on the other two sides by at least <overhang2> dis-
+              tance. The via generation code then  chooses  the  direction  of
+              overhang  that  best  maximizes the number of cuts to fit in the
+              generated via. See the example below:
+
+       -use_track_offset {true | false}
+              Uses track offset.
+
+              Default: false
+
+       -use_trim_metal_enclosure {true | false}
+              Forces the tool to use enclosures with the trimmed layer.
+
+              Default: false
+
+       -viarule_preference {default | predefined | generated | <list_of_via
+       rule/cell_names> | <file_name>}
+              Sets the preferred via-rule usage.  Use  this  parameter  before
+              running the fcroute, sroute, or power planning commands.
+
+              * default
+
+                Use  the  first DRC clean predefined viarule or auto rule that
+                can bring maximum cut area.
+
+              * predefined
+
+                Uses the predefined via rule defined  in  the  LEF  technology
+                file as the preferred usage.
+
+              * generated
+
+                Uses the generated via rule defined in the LEF technology file
+                as the preferred usage.
+
+              * list of via rule/cell names
+
+                Uses the list of via rules/cells as the preferred usage.
+
+              * file name
+
+                Uses via rules/cells which are contained in the specific file.
+
+              This  parameter  works  in the incremental mode. See the example
+              below:
+
+              setViaGenMode -viarule_preference {V1 V2}
+
+              setViaGenMode -viarule_preference {V3}
+
+              getViaGenMode -viarule_preference
+
+              V1 V2 V3
+
+              Default: default
+
+Example
+       The following command creates a virtual trim grid  for  PG  hookup  via
+       generation:
+
+       setViaGenMode  -hookup_virtual_trim_grid  {-layer  M1 -mask1 {-pitch p1
+       -core_offset s1 } -mask2 { -pitch p2 -core_offset s2 }}
+
+       Following is the output of the above command:
+
+Related Information
+              * editPowerVia
+
+              * Power Planning and Routing chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025       setViaGenMode(25.10)

@@ -1,0 +1,135 @@
+{
+  "command": "createPlaceBlockage",
+  "is_cmd": true,
+  "summary": "创建布局阻挡区域",
+  "description": "创建一个布局阻挡区域，用于阻止标准单元的摆放。布局阻挡是一个版图规划对象，通常在导入设计后使用此命令。",
+  "usage": "createPlaceBlockage [-help] [-pushdown] {{[-box {<x1 y1 x2 y2>} | -polygon {{<x1 y1>} {<x2 y2>}...} | -boxList {{<x1 y1>} {<x2 y2>}...} | -allPartition | -allMacro ] [-inst <inst_name> | -hinst <hinst_name>] } [-name <place_blockage_name> | -prefixOn ] [{-type {hard soft partial macroOnly}} [-density <value>] [-excludeFlops ]] [-noCutByCore] [-snapToSite] } [ {-inst <inst_name> | -hinst <hinst_name> | -allPartition | -allMacro } [-cover ] [-innerRingBySide {<x1 y1 x2 y2>} | -innerRingByEdge {<edge1 edge2 edge3 ...>}] [-outerRingBySide {<x1 y1 x2 y2>} | -outerRingByEdge {<edge1 edge2 edge3 ...>}] ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushdown",
+      "description": "为阻挡设置下推属性。具有下推属性的阻挡会从设计的顶层被推入到模块中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-box",
+      "description": "指定阻挡区域的坐标（左下角和右上角）。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-polygon",
+      "description": "指定阻挡区域的多边形顶点坐标（以微米为单位）。",
+      "required": false,
+      "type": "point_list"
+    },
+    {
+      "name": "-boxList",
+      "description": "指定一系列阻挡区域的坐标列表。",
+      "required": false,
+      "type": "box_list"
+    },
+    {
+      "name": "-allPartition",
+      "description": "为每个分区创建一个覆盖该分区的布局阻挡。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allMacro",
+      "description": "为每个宏单元创建一个覆盖该宏单元的布局阻挡。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "指定要应用布局阻挡的实例名称。",
+      "required": false,
+      "type": "inst"
+    },
+    {
+      "name": "-hinst",
+      "description": "指定要应用布局阻挡的层次化实例名称。",
+      "required": false,
+      "type": "hInst"
+    },
+    {
+      "name": "-name",
+      "description": "指定布局阻挡的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefixOn",
+      "description": "指定使用由 getFPlanMode -defaultBlockageNamePrefix 属性定义的前缀来命名布局阻挡，格式为 prefix_<int>。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-type",
+      "description": "指定要创建的阻挡类型：hard（硬阻挡，默认值）、soft（软阻挡）、partial（部分密度阻挡）或 macroOnly（仅宏阻挡）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-density",
+      "description": "为 partial 或 soft 类型的阻挡指定允许的最大密度（百分比，步长为5，范围5-100）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-excludeFlops",
+      "description": "指定在全局布局期间，触发器和锁存器不会被放置在阻挡区域内。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCutByCore",
+      "description": "指定布局阻挡不应在核心边界处被截断（但始终会在芯片边界处被截断）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snapToSite",
+      "description": "将新创建的布局阻挡对齐到行站点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cover",
+      "description": "与 -outerRingByEdge 或 -outerRingBySide 参数结合使用时，创建一个实心的布局阻挡（覆盖对象本身及指定的额外光晕区域），否则该参数无效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-innerRingByEdge",
+      "description": "在指定对象内部创建一个空心的环形布局阻挡。edgeN 是第N条边内部阻挡的宽度（微米）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-innerRingBySide",
+      "description": "在指定对象内部创建一个空心的环形布局阻挡。x1, y1, x2, y2 分别对应底、右、顶、左各边内部阻挡的宽度（微米）。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-outerRingByEdge",
+      "description": "在指定对象外部创建一个空心的环形布局阻挡。edgeN 是第N条边外部阻挡的宽度（微米）。默认创建环形阻挡，使用 -cover 参数可创建实心阻挡。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outerRingBySide",
+      "description": "在指定对象外部创建一个空心的环形布局阻挡。x1, y1, x2, y2 分别对应底、右、顶、左各边外部阻挡的宽度（微米）。默认创建环形阻挡，使用 -cover 参数可创建实心阻挡。",
+      "required": false,
+      "type": "box"
+    }
+  ]
+}

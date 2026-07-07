@@ -1,0 +1,57 @@
+{
+  "command": "generateRCFactor",
+  "is_cmd": true,
+  "summary": "生成用于优化RC相关性的电阻和电容缩放因子",
+  "description": "通过将本地提取生成的SPEF文件与用户指定的参考RC数据或在更高精度模式下自动运行的提取结果进行比较，生成最优RC相关性所需的电阻和电容缩放因子。生成后，该命令会将缩放因子摘要输出到文件，此文件可用于设置实际的缩放因子。该命令允许根据指定的参数为一个或多个引擎生成缩放因子。可以运行布线前（-preroute）或布线后（-postroute）或两种类型的提取来生成缩放因子。对于布线后提取，可以运行努力级别为低或中的提取。比较的参考可以是外部SPEF，也可以是指定努力级别的布线后提取引擎生成的SPEF。使用外部SPEF作为参考时，需使用-spefMapFile参数指定一个包含多个SPEF文件的文件名，用于MMMC设置。注意：运行此命令中的签核提取需要独立的Quantus提取许可证，并在路径设置中指定Quantus路径。如果没有独立的Quantus提取许可证，可以使用-spefMapFile参数指定签核SPEF文件。此外，当指定-reference为medium、high或signoff时，需要正确设置Quantus技术文件。",
+  "usage": "generateRCFactor [-help] [-outputFile <file_name>] [-preroute {true | false}] [-postroute {low | medium}] [-reference {low | medium | high | signoff | externalSpef}] [-spefMapFile <file_name>] [-useSameRouting {true | false}] [-use_ostrich_filters <file_name>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出generateRCFactor参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outputFile",
+      "description": "指定命令将保存新RC因子设置的文件名。此文件可用于设置实际的缩放因子。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preroute",
+      "description": "为布线前提取生成缩放因子。设置为true时，为布线前提取的信号网络和时钟网络生成最优缩放因子。默认值：true。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-postroute",
+      "description": "指定是否为布线后提取生成缩放因子，并指定是为努力级别低还是中的引擎生成缩放因子。如果未指定此参数，则不为布线后提取生成缩放因子。使用-postroute medium参数时，软件会为信号网络和时钟网络生成不同的缩放因子。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reference",
+      "description": "指定要作为比较参考的布线后引擎或外部SPEF。默认值：signoff。如果指定externalSpef，则应使用-spefMapFile参数指定用于比较的第三方SPEF文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spefMapFile",
+      "description": "指定在MMMC设计中使用时用于比较的SPEF映射文件。使用此参数时，设计必须已完成布局和完全布线，且引用的SPEF文件必须来自同一布线设计。映射文件包含RC角点列表及每个RC角点对应的SPEF文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useSameRouting",
+      "description": "设置为true时，指定在生成SPEF时使用相同的布线数据库。命令将跳过在调用布线前提取之前进行的早期全局布线调用。默认值：false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_ostrich_filters",
+      "description": "指定包含用户定义的Tcap、res和Xcap的ostrich过滤器值的文件名。这些用户定义的值将在Ostrich运行期间应用。如果用户未指定此参数，将使用默认的ostrich过滤器值。用户指定的ostrich过滤器文件格式包含-tcap、-res和-xcap部分，每个部分包含-min_data、-max_data、-min_fanout、-max_fanout和-max_perc_dev等值。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

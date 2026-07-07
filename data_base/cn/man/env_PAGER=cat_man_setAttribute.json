@@ -1,0 +1,237 @@
+{
+  "command": "setAttribute",
+  "is_cmd": true,
+  "summary": "为网络和子网络附加属性",
+  "description": "此命令用于为指定的网络或子网络附加各种属性。这些属性会被NanoRoute布线命令（如routeDesign和setNanoRouteMode）以及earlyGlobalRoute命令所遵循，使得布线过程能够满足特定的要求。属性是持久性的，在整个从全局布线到优化的流程中，布线器都会遵从这些属性。属性保存在Innovus系统数据库中，即使保存并退出数据库，重新导入时属性依然附着在网络上。注意：属性不会保存在DEF文件中。要查看当前的属性设置，请使用getAttribute命令。如果尝试对属于差分对、匹配长度、复杂屏蔽约束组或简单/复杂网络类的任何网络运行此命令，将会报告错误。",
+  "usage": "setAttribute [-help] [-max_fanout <integer>] [-reset] [-stripe_layer_range <minLayer>:<maxLayer>] {-net <netName> | -cell_pin <cell_name>:<pin_name>} [-sub_net <sub_net_name> [-comp_pin <comp>:<pin_name> <list>][-inst_pin <instance:pin_name> list]] [-weight <integer>] [-non_default_rule <rule_name> ] [-non_default_rule_effort {auto|soft|hard|no_taper}] [-shield_net <special_net_name> ] [-shield_side {one_side | two_sides}] [[[-em_ndr_rule  <ruleName>] [-em_ndr_dist <double>]] | [-em_width_rule <layer> <width:dist pairs>]] [-ndr_si_length_limit <layer:distance list>] [-coaxial_shielded_layers <layer_number>:<layer_number>] [-coaxial_shield_limit <layer_number:layer_number>] [-coaxial_shield_interval <tracks_number> | <metal_layer_name>:<tracks_number ...>] [-pattern {steiner|trunk}] [-top_preferred_routing_layer <layer_number>] [-bottom_preferred_routing_layer <layer_number>] [-top_preferred_shielding_layer <layer_number>] [-bottom_preferred_shielding_layer <layer_number>] [-preferred_routing_layer_effort {low|medium|high|hard}] [-preferred_extra_space <integer>] [-avoid_detour {true|false}] [-skip_routing {true|false}] [-skip_antenna_fix {true|false}] [-multi_cut_via_effort {low|medium|high}] [-si_post_route_fix {true|false}] [-min_stack_layer <layer_number>] [-stack_distance <distance>] [-mask <mask_number>] [-layer_mask <bottomLayerNum:topLayerNum>] [-one_side_spacing <bottomLayerNum:topLayerNum>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max_fanout",
+      "description": "指定网络和子网络的最大扇出值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-reset",
+      "description": "用于重置网络的特定属性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stripe_layer_range",
+      "description": "指定容纳不同网络和子网络的不同StripeLayerRange的层范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要设置属性的网络。不要输入超过一个网络名称。",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-cell_pin",
+      "description": "为连接到具有相同主单元实例引脚的所有网络指定属性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sub_net",
+      "description": "指定要设置属性的子网络。此参数与 -net 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-comp_pin",
+      "description": "为连接到具有相同组件实例引脚的所有网络和子网络指定属性。可以指定引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst_pin",
+      "description": "为连接到相同实例引脚的所有网络和子网络指定属性。可以指定引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-weight",
+      "description": "指定网络的相对权重。此值由布局工具遵循，而非布线器。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-non_default_rule",
+      "description": "标识与指定网络一起使用的非默认布线规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-non_default_rule_effort",
+      "description": "指定与指定网络一起使用的非默认规则力度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shield_net",
+      "description": "指定用作关键或高速网络屏蔽的特殊网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shield_side",
+      "description": "指定要布线屏蔽的边数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-em_ndr_rule",
+      "description": "指定用于EM问题修复的非默认规则名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-em_ndr_dist",
+      "description": "指定需要应用EM NDR规则的从源到汇的距离。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-em_width_rule",
+      "description": "指定层宽度:距离对的表格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ndr_si_length_limit",
+      "description": "指定每层并行走线长度的表格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-coaxial_shielded_layers",
+      "description": "指定同轴屏蔽的底层和顶层布线层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-coaxial_shield_limit",
+      "description": "指定同轴屏蔽的底层和顶层布线层限制。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-coaxial_shield_interval",
+      "description": "按布线轨道指定交叉连接的间隔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern",
+      "description": "指定布线模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_preferred_routing_layer",
+      "description": "指定信号网络的首选最高布线层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-bottom_preferred_routing_layer",
+      "description": "指定首选的最低布线层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-top_preferred_shielding_layer",
+      "description": "指定首选最高屏蔽层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-bottom_preferred_shielding_layer",
+      "description": "指定首选最低屏蔽层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-preferred_routing_layer_effort",
+      "description": "确定NanoRoute布线器在为指定网络设置布线层限制时的灵活程度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preferred_extra_space",
+      "description": "指定网络的首选额外间距。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-avoid_detour",
+      "description": "避免指定网络出现大约超过几个网格单元的绕线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_routing",
+      "description": "防止NanoRoute布线器对未布线或部分布线的网络进行布线或重新布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_antenna_fix",
+      "description": "防止布线器修复指定网络上的工艺天线违规。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-multi_cut_via_effort",
+      "description": "指定多切割孔的努力程度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-si_post_route_fix",
+      "description": "修复指定网络上的串扰违规。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-min_stack_layer",
+      "description": "指定最小堆叠层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-stack_distance",
+      "description": "以微米为单位指定堆叠距离。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-mask",
+      "description": "网络的掩码约束设置。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-layer_mask",
+      "description": "指定应应用掩码约束的层范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-one_side_spacing",
+      "description": "指定应应用单边间距约束的层范围。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

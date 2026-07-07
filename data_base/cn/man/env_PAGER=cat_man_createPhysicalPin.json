@@ -1,0 +1,57 @@
+{
+  "command": "createPhysicalPin",
+  "is_cmd": true,
+  "summary": "为顶层端口添加新的物理引脚形状",
+  "description": "该命令用于为顶层端口（DEF PIN）添加一个新的物理引脚形状。它可以用来为现有的电源/地（PG）端口添加更多的引脚形状。如果指定的PG网络还没有顶层端口，该命令也会创建一个新的PG端口。注意：虽然也可以为信号端口添加形状，但不建议这样做，因为多个形状可能导致布线流程问题，且不会创建新的信号端口（需要使用ECO命令来添加新的信号端口）。",
+  "usage": "createPhysicalPin [-help] <pinName> [-allowOutsideBoundary] [-net <netName>] [-samePort] {{ -layer <layerName> {-rect {<x1 y1 x2 y2>} | -polygon {<x1 y1  x2  y2 ... xn yn>}}}}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<pinName>",
+      "description": "指定要添加形状的顶层端口（DEF PIN）的名称。如果该端口不存在，则使用 -net <netName> 来查找顶层端口。如果 <netName> 还没有顶层端口且它是一个PG网络，则会为 <netName> 创建一个名为 <pinName> 的新端口。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-allowOutsideBoundary",
+      "description": "不检查指定的矩形是否在设计边界内。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net <netName>",
+      "description": "指定网络的名称。如果已存在名为 pinName 的顶层端口，则此参数被忽略。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-samePort",
+      "description": "指定物理引脚形状将被添加到第一个DEF PORT。如果未指定此参数，每个引脚形状将在单独的DEF端口上创建。通常每个PG形状应在单独的端口上，以便在上一层级分别连接到PG网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layer <layerName>",
+      "description": "指定LEF（或OA）层名称，或布线层索引值（例如，1表示第一布线层，2表示第二布线层）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rect {<x1 y1 x2 y2>}",
+      "description": "指定矩形形状的坐标。x1, y1 为左下角坐标（微米），x2, y2 为右上角坐标（微米）。",
+      "required": false,
+      "type": "rect"
+    },
+    {
+      "name": "-polygon {<x1 y1 x2 y2 ... xn yn>}",
+      "description": "指定形状每个顶点的坐标。",
+      "required": false,
+      "type": "(point)+"
+    }
+  ]
+}

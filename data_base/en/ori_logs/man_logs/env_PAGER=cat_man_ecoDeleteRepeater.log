@@ -1,0 +1,108 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoDeleteRepeater(25.10)                              ecoDeleteRepeater(25.10)
+
+Name
+       ecoDeleteRepeater  -  Deletes  a  buffer or pair of inverters connected
+       back-to-back
+
+Syntax
+       ecoDeleteRepeater
+
+       [-help][
+
+       -logicalChangeOnly]
+
+       { -inst {<list_of_instances>} | -invPair {{<inv1 inv2>}  {<inv3  inv4>}
+       ...} }
+
+       Deletes a buffer or pair of inverters connected back-to-back. This com-
+       mand merges wires after ECO.
+
+       This  command does not modify dont_touch nets if setEcoMode -honorDont-
+       Touch is set to true.
+
+       Notes:
+
+              * The ecoDeleteRepeater command is simultaneous  setup/hold  and
+                MMMC aware. To make the command simultaneous setup/hold aware,
+                set  the  global  variable set_global timing_enable_simultane-
+                ous_setup_hold_mode to true. The simultaneous setup/hold  mode
+                can  only  be  used for timing analysis. It cannot be used for
+                any physical implementation steps.
+
+              * The ecoDeleteRepeater command cannot be used in the  post-mask
+                ECO.  Please  use  loadECO  <ecofile>  -postMask to delete re-
+                peaters in the post-mask ECO.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ecoDeleteRepeater.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoDeleteRepeater
+
+       <->inst<list_of_instances>
+              Specifies  a buffer or inverter to delete. If you specify an in-
+              verter, the command  finds  another  inverter  on  the  net  and
+              deletes  the  back-to-back pair in order to preserve the logical
+              equivalence. Instances are deleted only if they are tied to each
+              other.
+
+              To specify a pair of instances, enclose the instances in braces.
+
+              -inst {<inst1> <inst2>}
+
+       -invPair {<inv1 inv2>} {<inv3 inv4>} ...
+              Specifies pairs of inverters to be deleted/evaluated  for  dele-
+              tion. You can specify a list of inverter pairs to be deleted.
+
+       -logicalChangeOnly
+              Specifies  that  buffer/inverter  deletion should be done in the
+              logical-only mode.During buffering, this would  be  useful  when
+              the design is unplaced, the location of new buffer is not avail-
+              able,  and  all terms of the net-being-buffered are unplaced. If
+              you specify -logicalChangeOnly option,
+
+              the tool will disable placement/legalization of the  new  buffer
+              and proceed with buffering. During deletion, the tool will add a
+              default  resistance  to replace the removed buffer/inverter, in-
+              stead of calculating the accurate resistance based on locations.
+
+       Note: You can specify the following using the setEcoMode command:
+
+              * setEcoMode -honorDontUse false to modify instances which  have
+                dontUse attribute on cells.
+
+              * setEcoMode -honorDontTouch false to modify instance/nets which
+                are marked dontTouch.
+
+Examples
+              * The following command deletes the specified buffer, A/inst1:
+
+                ecoDeleteRepeater -inst A/inst1
+
+              * The  following  command  deletes  a back-to-back inverter pair
+                containing A/inv1:
+
+                ecoDeleteRepeater -inst A/inv1
+
+              * The  following   command   deletes   instances   DTMF_INST/RE-
+                SULTS_CONV_INST/FE_PHC845_r1644_2_      and      DTMF_INST/RE-
+                SULTS_CONV_INST/FE_PHC845_r1643_3_:
+
+                ecoDeleteRepeater             -inst             {DTMF_INST/RE-
+                SULTS_CONV_INST/FE_PHC845_r1644_2_               DTMF_INST/RE-
+                SULTS_CONV_INST/FE_PHC845_r1643_3_}
+
+Related Information
+              * ecoAddRepeater
+
+              * loadECO
+
+              * setEcoMode
+
+              * timing_enable_simultaneous_setup_hold_mode
+
+                           Fri Apr 04 01:25:37 2025   ecoDeleteRepeater(25.10)

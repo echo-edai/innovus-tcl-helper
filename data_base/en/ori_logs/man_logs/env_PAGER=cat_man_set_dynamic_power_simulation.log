@@ -1,0 +1,98 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_dynamic_power_simulation(25.10)        set_dynamic_power_simulation(25.10)
+
+Name
+       set_dynamic_power_simulation
+
+Syntax
+       set_dynamic_power_simulation
+
+       [-help]
+
+       [-period <value>]
+
+       [-resolution <value>]
+
+       [-reset]
+
+       [-activity_pattern  {<time1>  <activity_name1> <time2> <activity_name2>
+       .... }]
+
+       Specifies the period and resolution for  a  dynamic  power  simulation.
+       This  command  is  used to specify the simulation period in the dynamic
+       vectorbased/vectorless and power-up flows.
+
+       Generally, the number of simulation steps (simulation period divided by
+       resolution) should be selected such that the  number  is  around  1000.
+       Around  20  clock  cycles of the dominant clock specified as period and
+       20/50ps specified as resolution will capture all  switching  events  in
+       the  design.  This  can be fine-tuned to balance the run time and accu-
+       racy. For example, if the dominant clock frequency  is  1GHz,  and  the
+       clock period is 1ns, the recommended simulation period is 20ns and res-
+       olution is 20ps, as shown in the following example:
+
+       set_dynamic_power_simulation -period 20ns -resolution 20ps
+
+       In this case, the number of simulation steps is 1000.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each set_dynamic_power_simulation parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man set_dynamic_power_simulation.
+
+       -activity_pattern {<time1> <activity_name1> <time2> <activity_name2>
+       .... }
+              Divides the total simulation time based on the windows given  in
+              the activity_pattern parameter. For a particular window, it uses
+              the  defined  activity  specified  with  the set_default_switch-
+              ing_activity command.
+
+              When the user-defined low cycle and high cycle time is specified
+              for the input/sequential activity, all the clocks will be in the
+              low or high cycle until completely  past  the  cycle  transition
+              time.
+
+              Following is the use model of this parameter:
+
+              * set_default_switching_activity  -name low -input_activity 0.05
+                -seq_activity 0.1 -clock_gates_output 0.2
+
+              * set_default_switching_activity -name high -input_activity  0.1
+                -seq_activity 0.2 -clock_gates_output 2.0
+
+              * set_dynamic_power_simulation  -period  15ns  -resolution  50ps
+                -activity_pattern {0 high 5ns low 10ns high}
+
+              Here, high activity is used for 0ns to 5ns, low activity is used
+              for 5ns to 10ns, and high activity is used for 10ns to 15ns.
+
+       -period <value>
+              Specifies the simulation period that dynamic power analysis will
+              use. The supported time units are s, ms, us, ns, and ps.  If  no
+              explicit  time  unit  is  specified, the default ns (nanosecond)
+              will be applied.
+
+       -reset Resets all specified options back to default values.
+
+       -resolution <value>
+              Specifies the transient time step size or resolution.  The  sup-
+              ported time units are s, ms, us, ns, and ps. If no explicit time
+              unit is specified, the default ps (picosecond) will be applied.
+
+Examples
+              * The  following command sets up the period and resolution for a
+                dynamic simulation:
+
+                set_dynamic_power_simulation -period 5ns -resolution 100ps
+
+Related Information
+              * set_power_analysis_mode
+
+              * set_default_switching_activity
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:s3e7t_2d0y2n5amic_power_simulation(25.10)

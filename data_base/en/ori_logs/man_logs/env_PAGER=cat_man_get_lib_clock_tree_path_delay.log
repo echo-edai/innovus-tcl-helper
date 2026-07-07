@@ -1,0 +1,128 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_lib_clock_tree_path_delay(25.10)      get_lib_clock_tree_path_delay(25.10)
+
+Name
+       get_lib_clock_tree_path_delay  -  This  command  retrieves  information
+       about the Liberty max_clock_tree_path and min_clock_tree_path delay at-
+       tributes for a library pin
+
+Syntax
+       get_lib_clock_tree_path_delay
+
+       [-help]
+
+       -base_pin base_pin_name
+
+       [-delay_type {max | min}]
+
+       [-edge {rise | fall}]
+
+       [-mode analysis_mode_name]
+
+       [-power_domain power_domain_name]
+
+       -transition transition_time
+
+       -view analysis_view_name
+
+       This    command    retrieves    information    about    the     Liberty
+       max_clock_tree_path  and min_clock_tree_path delay attributes for a li-
+       brary pin. You can then use Tcl to apply the set_clock_latency  command
+       options,     as     required.     The    value    returned    by    the
+       get_lib_clock_tree_path_delay command is in the default  system  units,
+       such  that the user can pass to the set_clock_latency command directly.
+       The same units are used for the -transition value.
+
+       If   the    library    pin    does    not    have    a    corresponding
+       min/max_clock_tree_path delay attribute, the command returns a value of
+       0.  If other errors are encountered, the command fails.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each get_lib_clock_tree_path_delay parameter.  For
+              a detailed description of the command and all of its parameters,
+              use the man command:
+
+               man get_lib_clock_tree_path_delay
+
+       -base_pin <base_pin_name>
+              Specifies   the   name   of   the   base   pin   for  which  the
+              min/max_clock_tree_path attribute value is to be retrieved. This
+              is a required parameter.
+
+       -delay_type {max | min}
+              Specifies whether to use max or min delays. You can specify  ei-
+              ther   max  or  min  to  retrieve  the  max_clock_tree_path  and
+              min_clock_tree_path delay values, respectively.
+
+              Default: max
+
+       -edge {rise | fall}
+              Specifies whether the delay should be retrieved for  the  rising
+              edge or the falling edge of the signal.
+
+              Default: rise
+
+       -mode <analysis_mode_name>
+              Specifies the Liberty timing library mode value to be used while
+              retrieving the delay attributes for the library pin.
+
+              If  no  mode  definition is available, the default look-up table
+              (LUT) is used. The detailed use model is provided below.
+
+              User-Specified Item: Software Behavior
+
+              * mode + delay_type: Use the specified mode  and  the  specified
+                delay_type LUT
+
+              * mode: Use the specified mode and the first max LUT
+
+              * delay_type: Use the first specified delay type LUT
+
+              * No mode and no delay type: Use the first max LUT
+
+              For more information about setting modes, see set_mode.
+
+       -power_domain <power_domain_name>
+              Specifies  the  name of the power domain. This parameter is only
+              required to be specified when the same base cell  has  different
+              models between different power domains.
+
+       -transition <transition_time>
+              Specifies  the input transition time. This is a required parame-
+              ter.
+
+       -view <analysis>_<view_name>
+              Specifies the analysis view name. This is a required parameter.
+
+Examples:
+              * Use  the  following  command  to   retrieve   the   value   of
+                max_clock_tree_path  delay at the rising edge of the specified
+                pin:
+
+                get_lib_clock_tree_path_delay   -base_pin   macro_lib_cell/CLK
+                -view setup_func_m40 -transition 0.1
+
+              * Use   the   following   command   to  retrieve  the  value  of
+                min_clock_tree_path delay at the falling edge of the specified
+                pin:
+
+                get_lib_clock_tree_path_delay   -base_pin   macro_lib_cell/CLK
+                -view  setup_func_m40  -delay_type  min -edge fall -transition
+                0.1
+
+              * Use  the  following  command  to   retrieve   the   value   of
+                max_clock_tree_path  delay  when  macro_lib_cell  is specified
+                only in the setup_func_m40c view of PD_TOP power domain:
+
+                get_lib_clock_tree_path_delay   -base_pin   macro_lib_cell/CLK
+                -view setup_func_m40 -power_domain PD_TOP -transition 0.1
+
+Related Information
+              * set_clock_latency
+
+              * The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:25g:e3t7_l2i0b2_5clock_tree_path_delay(25.10)

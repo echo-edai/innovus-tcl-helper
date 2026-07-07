@@ -1,0 +1,57 @@
+{
+  "command": "generate_fence",
+  "is_cmd": true,
+  "summary": "自动绘制包含其所有子级FlexModel引导线的分区围栏",
+  "description": "该命令自动绘制分区围栏，这些围栏会将其所有子级的FlexModel引导线包围在内。它有助于提高原型设计流程的可用性。推荐的自动生成围栏的使用模型如下：运行proto_design来放置FlexModel引导线/围栏；手动调整/移动FlexModel以缩短时序路径；运行以下命令来分析布局规划并检查时序（如有需要，重复步骤2和3）：place_opt_design, earlyGlobalRoute, timeDesign -proto, load_timing_debug_report -proto；为分区选择FlexModel并定义分区；运行generate_fence以创建包含其所有子级FlexModel引导线的围栏。注意：如果未指定任何选项，则该命令会为所有已定义的现有分区绘制围栏。",
+  "usage": "generate_fence [-help] [-flow {2G}] [-for_partition] [-rectangle_shape] [-target_util <float>] [ [-hInst {<hInst(s)>}] | [-module {<module(s)>}] | [-inst_group {<instGroup(s)>}] ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个generate_fence参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-flow",
+      "description": "启用Auto-Fence Generation 2G流程以自动绘制围栏形状。启用此流程后，将利用混合布局能力提供最佳的模块布局分布。在考虑目标利用率、边界间隙和I/O后，为每个目标模块生成一个围栏。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-for_partition",
+      "description": "指定时，启用分区围栏生成功能。未指定此选项时，默认启用电源域围栏生成功能。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rectangle_shape",
+      "description": "指定时，仅生成矩形形状的围栏。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-target_util",
+      "description": "指定围栏的目标利用率值。默认值：核心利用率。最小值：1e-07，最大值：1。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-hInst",
+      "description": "指定要绘制围栏的层次化实例名称列表。如果只想为特定的主模块或克隆模块创建围栏，可以使用此选项。可以使用通配符。注意：不能同时用于主模块和克隆模块。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst_group",
+      "description": "指定要绘制围栏的实例组名称列表。可以使用通配符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-module",
+      "description": "指定要绘制围栏的分区模块列表。此选项应用于主模块/克隆模块分区。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

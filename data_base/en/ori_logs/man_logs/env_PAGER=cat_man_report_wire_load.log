@@ -1,0 +1,187 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_wire_load(25.10)                                report_wire_load(25.10)
+
+Name
+       report_wire_load  -  Reports the wireload name, library, wire load mode
+       and selection type for all hierarchical instances in the design
+
+Syntax
+        report_wire_load
+
+       [-inst <name_or_collection_of_hierarchical_instances>]
+
+       [-ports <name_or_collection_of_ports>]
+
+       [-late | -early]
+
+       [> | >> <filename>]
+
+       Reports the wireload name, library, wire load mode and  selection  type
+       for all hierarchical instances in the design.
+
+       Note:  To  enable  wireload mode, you are required to set the following
+       global:
+
+       set soceSupportWireLoadMode 1
+
+       Note: To use the wireload model functionality, you must enable the  en-
+       able_wire_load_model_support  global  variable using the following com-
+       mand:
+
+       set_var enable_wire_load_model_support 1
+
+Parameters
+       >|>> <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the list.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -inst <name_or_collection_of_hierarchical_instances>
+              Specifies the name of an instance or collection  for  which  the
+              report_wire_load  command  reports  the  wireload name, library,
+              wire load mode, and selection type. The report_wire_load command
+              also supports wildcard names such as U*.
+
+       -late | -early
+              Reports wireload models in setup or hold analysis mode.  By  de-
+              fault,  the  software  reports wireload models for the mode that
+              you set using the command.
+
+       -ports <name_or_collection_of_ports>
+              Reports wireload information for the specified ports.
+
+Examples
+              * The following example shows the default report  when  wireload
+                mode is set to top:
+
+                report_wire_load
+
+                -----------------------------------------------------------------------
+
+                Design Name top_chip
+
+                Wire Load Mode top
+
+                Instance Module WireLoadModel Library SelctionType
+
+                -----------------------------------------------------------------------
+
+                - top_chip model4 fast library-default
+
+                -----------------------------------------------------------------------
+
+              * The  following  example shows the report when wireload mode is
+                set to enclosed to report lower hierarchy:
+
+                set_wire_load_mode enclosed
+
+                report_wire_load
+
+                -----------------------------------------------------------------------
+
+                Design Name top_chip
+
+                Wire Load Mode enclosed
+
+                Instance Module WireLoadModel Library SelctionType
+
+                -----------------------------------------------------------------------
+
+                - top_chip model4 fast library-default
+
+                U1 randr model4 fast library-default
+
+                U2 randr model4 fast library-default
+
+                -----------------------------------------------------------------------
+
+              * The  following  example  shows  model  assertions  using   the
+                set_wire_load_model  command  the  corresponding reports using
+                the report_wire_load command:
+
+                set_wire_load_model -name model3
+
+                report_wire_load
+
+                ---------------------------------------------------------------------
+
+                Design Name top_chip
+
+                Wire Load Mode enclosed
+
+                Instance Module WireLoadModel Library SelctionType
+
+                ---------------------------------------------------------------------
+
+                - top_chip model3 fast user-asserted
+
+                U1 randr model3 fast user-asserted
+
+                U2 randr model3 fast user-asserted
+
+                ---------------------------------------------------------------------
+
+                set_wire_load_model -name model2 [get_cells U1]
+
+                set_wire_load_model -name model4 [get_cells U2]
+
+                report_wire_load
+
+                ---------------------------------------------------------------------
+
+                Design Name top_chip
+
+                Wire Load Mode enclosed
+
+                Instance Module WireLoadModel Library SelctionType
+
+                ---------------------------------------------------------------------
+
+                - top_chip model3 fast user-asserted
+
+                U1 randr model2 fast user-asserted
+
+                U2 randr model4 fast user-asserted
+
+                ---------------------------------------------------------------------
+
+              * The following example shows the report including port informa-
+                tion:
+
+                report_wire_load -ports [get_ports XYZ/A]
+
+                ---------------------------------------------------------------------
+
+                Design Name   randr
+
+                Wire Load Mode   enclosed
+
+                Port     Module WireLoadModel Library    SelctionType
+
+                ----------------------------------------------------------------------
+
+                P1     randr model2               slow   user-asserted
+
+                P2     randr model4              slow   user-asserted
+
+                ---------------------------------------------------------------------
+
+Related Information
+              * set_wire_load_model
+
+              * reset_wire_load_model
+
+              * setAnalysisMode
+
+                           Fri Apr 04 01:25:37 2025    report_wire_load(25.10)

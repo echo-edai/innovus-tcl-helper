@@ -1,0 +1,342 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_timing_derate(25.10)                        report_timing_derate(25.10)
+
+Name
+       report_timing_derate  -  Reports  delay scaling or derating factors for
+       early and late clock and data paths in the current design
+
+Syntax
+       report_timing_derate
+
+       [-delay_corner <delayCornerName>]
+
+       [-include_inherited]
+
+       [<object_list>]
+
+       [{> | >>} <filename>[.gz]]
+
+       Reports delay scaling or derating factors for early and late clock  and
+       data paths in the current design.
+
+       By default, the report_timing_derate output shows pulse_width_check and
+       clock_period_check  details  for  instance objects (see set_timing_der-
+       ate).
+
+       If you specify this command without any parameters, reports are  gener-
+       ated  for  global  derating factors for each instance, net, or cell for
+       which derating is asserted.
+
+       The following reports are also generated:
+
+              * In best case worst case, maximum and minimum corner
+
+              * Early values from minimum corner and late values from  maximum
+                corner in on-chip variation mode
+
+              * In  MMMC mode, specified corners, or for all corners when cor-
+                ner is not specified
+
+              * Power domains (if present in the design)
+
+Parameters
+       > | >> <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+       -delay_corner <delayCornerName>
+              Reports  derating  factors  for  the specified delay calculation
+              corner only.
+
+              Default: Reports derating factors for all delay calculation cor-
+              ners.
+
+       -include_inherited
+              Reports the object names from which the derating  factor  values
+              are inherited.
+
+              When  specified,  the  report  displays the name of the cell for
+              each instance from which derate values are inherited.
+
+       <object_list>
+              Specifies the list of cells, nets, or library cells.
+
+Examples
+              * The following commands display global derating factors:
+
+                set_timing_derate 1.2
+
+                set_timing_derate -clock -early 1.1
+
+                set_timing_derate -data -late 1.2
+
+                report_timing_derate
+
+                                   --------Clock-----------
+                ----------Data-----------------
+
+                                   Early                 Late            Early
+                Late
+
+                                   --------------------------------------------------------------
+
+                Cell  Delay          1.100000            1.200000     1.200000
+                1.200000
+
+                Net Delay  Static    1.100000            1.200000     1.200000
+                1.200000
+
+                Net  Delay  Dynamic   1.100000            1.200000    1.200000
+                1.200000
+
+                Cell   Check           --                    --             --
+                --
+
+                Retain    delay          --                   --            --
+                --
+
+              * The following commands display instance derating factors:
+
+                set_timing_derate  -cell_delay  -clock  -late  1.3  [get_cells
+                {u55}]
+
+                set_timing_derate -cell_check -late 1.4 [get_cells {u55}]
+
+                report_timing_derate
+
+                ----  Report  Timing Derate for DC Corner: default_emulate_de-
+                lay_corner
+
+                -------------Clock-----------------
+                ---------------Data-----------------
+
+                                        Rise            Fall              Rise
+                Fall
+
+                                    Early  Late      Early Late     Early Late
+                Early Late
+
+                ---------------------------------------------------------------------------
+
+                Cell (leaf): u55
+
+                Cell Delay          -     1.300     --     1.300     --     --
+                --   --
+
+                Cell  Check          --    1.400    --    1.400    --    1.400
+                --   1.400
+
+              * The following commands display hierarchical derating factors:
+
+                set_timing_derate 1.2
+
+                set_timing_derate 1.1 -late h4
+
+                set_timing_derate 1.2 -early h4/h2
+
+                set_timing_derate -cell_check 1.2 h4
+
+                report_timing_derate -include_inherited
+
+                                  ---------------Clock-------------
+                -----------Data---------
+
+                                  Early                 Late             Early
+                Late
+
+                                  ---------------------------------------------------------------
+
+                Cell  Delay         1.200000           1.200000       1.200000
+                1.200000
+
+                Net Delay Static   1.200000           1.200000        1.200000
+                1.200000
+
+                Net  Delay  Dynamic  1.200000          1.200000       1.200000
+                1.200000
+
+                Cell   Check          --                  --                --
+                --
+
+                Retain    delay        --                  --               --
+                --
+
+                Cell (hier): h4
+
+                Cell Delay         1.200000           1.100000        1.200000
+                1.100000
+
+                inherited            top                  --               top
+                --
+
+                Net Delay Static   1.200000           1.100000        1.200000
+                1.100000
+
+                inherited            top                  --               top
+                --
+
+                Net Delay Dynamic  1.200000           1.100000        1.200000
+                1.100000
+
+                inherited            top                  --               top
+                --
+
+                Cell Check         1.200000           1.200000        1.200000
+                1.200000
+
+                inherited            --                   --                --
+                --
+
+                Cell (hier): h4/h2
+
+                Cell Delay         1.200000           1.100000        1.200000
+                1.100000
+
+                inherited            --                   h4                --
+                h4
+
+                Net Delay Static   1.200000           1.100000        1.200000
+                1.100000
+
+                inherited            --                   h4                --
+                h4
+
+                Net Delay Dynamic  1.200000           1.100000        1.200000
+                1.100000
+
+                inherited            --                   h4                --
+                h4
+
+              * The following commands display best case worst  case  derating
+                factors:
+
+                set_timing_derate  -cell_delay  -clock  -late  1.2  [get_cells
+                {f2}] -min
+
+                set_timing_derate -cell_delay -late 1.3 [get_cells {f2}] -max
+
+                report_timing_derate
+
+                ------------------------Report  Timing  Derate  for  MIN  cor-
+                ner----------------------
+
+                                   ---------------Clock-------------
+                -----------Data---------
+
+                                   Early                 Late            Early
+                Late
+
+                                   ---------------------------------------------------------------
+
+                 Cell  Delay         --                   --                --
+                --
+
+                 Net   Delay  Static   --                  --               --
+                --
+
+                 Net  Delay  Dynamic  --                  --                --
+                --
+
+                 Cell   Check          --                  --               --
+                --
+
+                 Retain  delay       --                   --                --
+                --
+
+                 Cell (leaf): f2
+
+                 Cell   Delay          --                   --              --
+                1.200000
+
+                 ------------------------Report Timing  Derate  for  MAX  cor-
+                ner----------------------
+
+                                   ---------------Clock-------------
+                -----------Data---------
+
+                                   Early                 Late            Early
+                Late
+
+                                   ---------------------------------------------------------------
+
+                 Cell  Delay         --                   --                --
+                --
+
+                 Net   Delay  Static   --                  --               --
+                --
+
+                 Net  Delay  Dynamic  --                  --                --
+                --
+
+                 Cell   Check          --                  --               --
+                --
+
+                 Retain  delay       --                   --                --
+                --
+
+                 Cell (leaf): f2
+
+                 Cell   Delay          --                   --              --
+                1.300000
+
+              *
+
+                The following example shows a report that  is  displayed  when
+                sigma/mean derates are applied in the SOCV mode:
+
+                >  set_timing_derate  1.11 -mean -delay_corner [all_delay_cor-
+                ners ] [get_lib_cells XOR3_X4M_A12TS_C35] ->  derate  set  for
+                mean on the lib cell XOR3_X4M_A12TS_C35
+
+                >  set_timing_derate 1.22 -sigma -delay_corner [all_delay_cor-
+                ners ] [get_lib_cells XOR3_X4M_A12TS_C35] ->  derate  set  for
+                sigma on the lib cell XOR3_X4M_A12TS_C35
+
+                >  report_timing_derate  [get_lib_cells XOR3_X4M_A12TS_C35] ->
+                report_timing_derate shows derate split in the format mean_de-
+                rate:sigma_derate
+
+                ---- Report Timing Derate for DC Corner: max_delay_corner
+
+                ------------------------------------Clock-------------------------------------------
+
+                ---------------------------------------
+                -------------------------------------------------------------Data---------
+
+                                      Rise                                Fall
+                Rise                            Fall
+
+                             Early                 Late                  Early
+                Late                Early            Late                Early
+                Late
+
+                                  ---------------------------------------------------------------
+
+                LibraryCell:                    base_svt_c35Fsc12mc_cln28hpmP-
+                bcs30V1100T125/XOR3_X4M_A12TS_C35
+
+                Cell_delay    1.11000:1.22000 1.11000:1.22000  1.11000:1.22000
+                1.11000:1.22000         1.11000:1.22000        1.11000:1.22000
+                1.11000:1.22000 1.11000:1.22000
+
+                Retain_delay      --                   --                   --
+                --                  --                  --                  --
+                --
+
+                Cell    Check       --                  --                  --
+                --                  --                  --                  --
+                --
+
+Related Information
+              * set_timing_derate
+
+              * reset_timing_derate
+
+                           Fri Apr 04 01:25:37 2025report_timing_derate(25.10)

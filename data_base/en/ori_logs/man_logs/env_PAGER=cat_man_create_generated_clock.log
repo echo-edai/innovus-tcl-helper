@@ -1,0 +1,303 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_generated_clock(25.10)                    create_generated_clock(25.10)
+
+Name
+       create_generated_clock  -  Creates  a  new  clock signal from the clock
+       waveform of a given pin in the design, and binds it with  the  pins  or
+       hierarchical pins in the <target_pin_list> argument
+
+Syntax
+       create_generated_clock
+
+       [-help]
+
+       <target_pin_list>
+
+       [-add]
+
+       [-comment <string>]
+
+       [-duty_cycle <percent>]
+
+       [-edge_shift <edge_shift_list>]
+
+       [-invert]
+
+       [-master_clock <source_clock_name>]
+
+       [-name <<clock_name>>]
+
+       -source <source_pin>
+
+       {[-multiply_by <factor>]
+
+       [-divide_by <factor>]
+
+       [-edges <edge_list>]
+
+       [-combinational]}
+
+       Creates  a  new  clock signal from the clock waveform of a given pin in
+       the design, and binds it with the pins  or  hierarchical  pins  in  the
+       <target_pin_list>  argument. Whenever the source clock changes, the de-
+       rived clock(s) change automatically.
+
+       You can generate a new clock waveform using one of the three ways:
+
+              * Multiply the frequency of the source clock
+
+              * Divide the frequency of the source clock
+
+              * Select the edges of the source clock to be mapped to the edges
+                of the new clock
+
+       Given below are the SDC semantics to be  used  when  the  create_gener-
+       ated_clock command is defined:
+
+              * The  edges  are  interpreted  as  alternating rise and falling
+                edges.
+
+              * Each edge must be greater than and equal to its previous edge.
+
+              * Less than 3 edges are not allowed.
+
+              * Legal edge numbers start at "1", edge 0 is undefined.
+
+              * Legal assertion of period 0 will be -edges {1 1 1 }.
+
+       If incorrect clock definitions are specified, an error will  occur  and
+       the clock will not be generated.
+
+       When  the create_generated_clock command is specified without the -mas-
+       ter_clock parameter, and the software finds  multiple  clocks  reaching
+       the  specified  source pin, then the regular clocks are picked ahead of
+       the generated clocks. In case if multiple regular clocks  are  present,
+       the  master  clock is picked based on alphabetical sorting order of the
+       clock names.
+
+       When this constraint is set on a pin, the software will stop the propa-
+       gation of clock phases from all upstream clocks, including  the  gener-
+       ated  clock's  own master clock. The special latency-only phases of the
+       master clock may still be propagated to  fulfill  the  requirements  of
+       other downstream generated clocks, which are used only for latency path
+       calculations.
+
+       Note:  A create_generated_clock assertion on a pin overrides any exist-
+       ing create_generated_clock assertion if both the constraints  have  the
+       same  source  pin. In the following command sequence, the second asser-
+       tion overrides the first:
+
+       create_generated_clock -name GCK1 -source CK -divide_by 2 U_FD1/Q
+
+       create_generated_clock -name GCK2 -source CK -multiply_by 2 U_FD1/Q
+
+       To have both assertions applied, you must specify the  -add  parameter.
+       For example:
+
+       create_generated_clock -name GCK1 -source CK -divide_by 2 U_FD1/Q
+
+       create_generated_clock  -name  GCK2  -add  -master_clock CLK -source CK
+       -multiply_by 2 U_FD1/Q
+
+Parameters
+       -help  Prints out the command usage.
+
+       -add   Models multiple generated clocks on the same source when  multi-
+              ple  clocks must fan into the source pin. Ideally, one generated
+              clock must be specified for each clock that fans into the master
+              pin. Specify this parameter with the -name and -master_clock pa-
+              rameters.
+
+              You can use the -add parameter to specify a different clock name
+              for each generated clock, when used with the  -master_clock  op-
+              tion.  Subsequently,  you  can  use  this clock name for setting
+              other constraints, such as, set_false_path or set_input_delay.
+
+       -combinational
+              Restricts the path search for latency to only paths which do not
+              cross sequential devices, or the source pins of other  generated
+              clocks.
+
+              When  you  specify  -combinational, if there are both sequential
+              and combinational latency paths, the software only considers the
+              combinational paths for the generated clock.  If  there  are  no
+              combinational  latency paths for the generated clock, the gener-
+              ated clock does not inherit latency from its parent clock  hier-
+              archy.
+
+              By  default,  when calculating the latency of a generated clock,
+              the software searches for the longest (and shortest) paths  from
+              the  parent waveform to the generated clock point. All paths are
+              considered, including those which traverse  sequential  elements
+              such as flip-flops, registers, and latches. The default behavior
+              is  intended  for  cases  where  there is a cascade of generated
+              clocks, and some of the clocks are not explicitly defined.
+
+              The -combinational option can be used in  conjunction  with  the
+              -multiply_by, -divide_by, or -edges options.
+
+       -comment <string>
+              Allows you to insert comments. The comments are read but are ig-
+              nored  with a one-time warning message. They are not used during
+              timing analysis reporting nor are they written out during saving
+              of constraints.
+
+       -divide_by <integer>
+              Determines the frequency of the new clock by dividing  the  fre-
+              quency  of the source clock by <dfactor>. For example, if <dfac-
+              tor=5>, the new frequency is 1/5 of the  source  frequency,  and
+              the new clock period is 5 times the source clock period.
+
+       -duty_cycle <percent>
+              Sets the duty cycle (high pulse width or clock period). The num-
+              ber  (<percent>)  is  between  0  and 100. For example, if <per-
+              cent=50>, the high pulse width of the new clock waveform is  the
+              same as its low pulse width.
+
+              Note:  The  -duty_cycle option can only be used with the -multi-
+              ply_by option, otherwise it will be ignored with a warning.
+
+       -edges <edge_list>
+              Selects a list of edges from the  source  clock  that  form  the
+              edges  of  the derived clock. See the frequency division example
+              below.
+
+       -edge_shift <edge_shift_list>
+              Specifies  the  amount  of  shift   for   each   edge   in   the
+              <edge_list>option.  The  amount of shift will be in library time
+              units.
+
+       -invert
+              Inverts the source clock. Use with the -source  option  and  the
+              -multiply_by or -divide_by options.
+
+       -master_clock  <source_clock_name>
+              Generates  a  target clock from the specified clock name. If you
+              specify the -master_clock option and multiple signals arrive  at
+              the  source  pin,  the clock specified by this option is used to
+              generate the target clock. Use the -add  parameter  along  with-
+              master_clock parameter to add a clock to the existing clock when
+              you  want  to specify multiple clocks on the same source for si-
+              multaneous analysis.
+
+       -multiply_by  <integer>
+              Determines the frequency of the new  clock  by  multiplying  the
+              frequency  of  the  source  clock  by <mfactor>. For example, if
+              <mfactor=4>, the new frequency is 4 times the source  frequency,
+              and the new clock period is 1/4 of the source clock period.
+
+       -name <clock_name>
+              Specifies the name for the generated clock.
+
+              Default: The system creates a name for you.
+
+              Always specify a name for the generated clock. Some commands is-
+              sue an error if you use the system-generated name.
+
+       -source <source_pin>
+              Specifies  the  name  of the source pin from which the generated
+              clock is to be derived - with respect to the master  clock  con-
+              taining  the master clock as well as the generated clock defini-
+              tion.
+
+       <target_pin_list>
+              Specifies the list of pins where the generated  clock  assertion
+              is applied. The clock signal propagating downstream from each of
+              these pins becomes associated with the generated clock.
+
+Examples
+              * The following command generates the derived clock waveform, as
+                shown in the figure below:
+
+                create_generated_clock  -name mult_3 -source pinX -multiply_by
+                3 -duty_cycle 50 pinY
+
+       Figure: Derived Clock (Frequency Multiplication)
+
+              * The following command shows one way to  create  a  divide-by-3
+                clock  by using edge numbers of the source waveform to specify
+                the new waveform, as shown in the figure below:
+
+                create_generated_clock -name genclk -source pinX -edges  {1  5
+                7} pinY
+
+       Figure: Derived Clock (Frequency Division)
+
+              * The  following  command  uses the -divide_by option to get the
+                same clock period; the difference is in the duty  cycle:  cre-
+                ate_generated_clock -name div_3 -source pinX -divide_by 3 pinY
+
+                With the -edges option, the above example creates a clock with
+                a  duty  cycle  of 67 percent (20/30). However, using the -di-
+                vide_by3 option preserves the 50 percent  duty  cycle  of  the
+                source clock as shown in the figure below:
+
+       Figure: Derived Clock (Frequency Division, 50 Percent Duty-cycle)
+
+              * Using the following commands, when there is more than 1 source
+                clock,  the  tool  creates  the  generated  clock based on the
+                source clock specified with the -master  option:  create_clock
+                -name  c1 -period 10 [get_ports {ck} ] -add create_clock -name
+                c2 -period 10 [get_ports {ck}  ]  -add  create_generated_clock
+                -name  newclk  -source  ck -divide_by 2 -master_clock c1 reg/Q
+                -add
+
+                Using the report_clocks command, the output  waveform  of  the
+                newclk  clock is a divide-by-2 of the c1 clock and is reported
+                as shown in the example below.
+
+       Example: report_clocks after using the -master option
+
+       > create_clock -name CK1 -period 20 [get_ports {CLK1} ] -add
+
+       > create_clock -name CK2 -period 10 [get_ports {CLK1} ] -add
+
+       > create_generated_clock -name GCLK -source CLK1 -divide_by 2 u8/Q -add
+       -master_clock CK2
+
+       > report_clocks
+
+       ---------------------------------------------------------
+
+       Clock Descriptions
+
+       ----------------------------------------------------------
+
+       Attributes
+
+       ----------------------------------------------------------
+
+       Clock Name  Source  Period   Lead   Trail   Generated   Propagated
+
+       ------------------------------------------------------------------
+
+       CK1         CLK1    20.000   0.000   10.000   n         n
+
+       CK2         CLK1    10.000   0.000   5.000    n         n
+
+       -------------------------------------------------------------------
+
+       Generated-Clock Descriptions
+
+       -------------------------------------------------------------------------------------
+
+       Name  Generated   Master      Master-clock Invert Freq.      Duty-Cycle
+       Edges Edge-Shift
+
+             Source(pin) Source(pin)                     Multiplier
+
+       -------------------------------------------------------------------------------------
+
+       GCLK     u8/Q       CLK1          CK2            n       1/2          -
+       -     -
+
+Related Information
+              * create_clock
+
+              * get_clocks
+
+              * report_clocks
+
+              * reset_generated_clock
+
+                           Fri Apr 04 01:25:37 202c5reate_generated_clock(25.10)

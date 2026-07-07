@@ -1,0 +1,93 @@
+{
+  "command": "report_clocks",
+  "is_cmd": true,
+  "summary": "报告使用create_clock和create_generated_clock命令创建的时钟信息",
+  "description": "该命令用于报告设计中定义的时钟信息，包括所有时钟波形、时钟到达点以及时钟不确定性。报告内容可以通过不同的参数选项进行定制，例如仅显示描述、到达点、不确定性表、相位偏移表、总偏移表、调整表、延迟调整表、源插入延迟、网络插入延迟、层次结构、时钟组等。该命令仅报告与时钟波形相关的约束；对于应用于时钟引脚的约束，应使用report_ports -type命令。",
+  "usage": "report_clocks [-description] [-arrival_points] [-phase_shift_table] [-total_shift_table] [-uncertainty_table] [-adjustment_table] [-delay_adjustment_table] [-source_insertion] [-insertion] [-hierarchy] [-groups] [-clocks <clk_signame> | <clk_signame_list>] [-view <view_name>] [{> | >>} <filename> | -tcl_list]",
+  "options": [
+    {
+      "name": "-description",
+      "description": "仅报告指定时钟波形的描述信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-arrival_points",
+      "description": "仅报告时钟到达点。时钟到达点是执行create_clock或create_generated_clock命令的引脚。注意：此参数已过时，将在未来版本中移除。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-phase_shift_table",
+      "description": "报告详细说明时钟波形之间相位偏移的表格。根据当前分析模式，表格显示晚期或早期模式的相位偏移。在同时进行建立和保持分析的模式下，会同时报告晚期和早期模式的相位偏移表。注意：如果使用-clocks选项请求特定理想（或生成）时钟，则仅报告这些时钟信号之间的关系。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-total_shift_table",
+      "description": "根据当前分析模式，报告详细说明时钟波形之间总关系的表格（晚期或早期模式）。在同时进行建立和保持分析的模式下，两个表格都会报告。注意：如果使用-clocks选项请求特定理想（或生成）时钟，则仅报告这些时钟信号之间的关系。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-uncertainty_table",
+      "description": "根据当前分析模式，报告详细说明使用set_clock_uncertainty命令指定的时钟波形之间不确定性的表格（晚期模式或早期模式）。在同时进行建立和保持分析的模式下，两个表格都会报告。表格仅报告那些已使用set_clock_uncertainty命令定义了不确定性的时钟波形。注意：如果使用-clocks选项请求特定理想（或生成）时钟，则仅报告这些时钟信号之间的关系。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-adjustment_table",
+      "description": "报告两个详细说明由set_multicycle_path命令设置的时钟波形之间保持和建立周期调整的表格。注意：如果使用-clocks选项请求特定理想（或生成）时钟，则仅报告这些时钟信号之间的关系。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delay_adjustment_table",
+      "description": "报告两个详细说明由set_max_delay和set_min_delay命令设置的时钟波形之间早期和晚期路径延迟调整的表格。注意：如果使用-clocks选项请求特定理想（或生成）时钟，则仅报告这些时钟信号之间的关系。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-source_insertion",
+      "description": "报告在时钟波形上指定的源插入延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-insertion",
+      "description": "报告在时钟波形上指定的网络插入延迟。表格中的值采用min:typ:max格式。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hierarchy",
+      "description": "以树状格式报告时钟间的关系。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-groups",
+      "description": "报告现有的时钟组。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clocks",
+      "description": "请求特定理想（或生成）时钟的信息。如果给出列表，则仅报告这些时钟的信息。可以在名称中使用通配符。默认：报告除生成时钟外的所有时钟。使用-generated选项报告生成时钟。注意：此参数已过时，将在未来版本中移除。Cadence建议在不使用-clocks参数的情况下指定时钟名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "仅为指定的分析视图生成时钟报告。仅当软件处于多模式多端角时序分析模式时才能指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "以Tcl列表格式而非表格格式生成报告。这对于将时序与自定义Tcl函数集成以及自定义报告生成非常有用。-tcl_list和<filename>参数互斥，不能同时指定。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPipelineNetGroup(25.10)                    createPipelineNetGroup(25.10)
+
+Name
+       createPipelineNetGroup  -  Creates  Net  Groups  for Pipeline Flip-Flop
+       (PFF) Placement and Reporting
+
+Syntax
+       createPipelineNetGroup
+
+       [-help]
+
+       netGroupName
+
+       [-endReserve <reserveDistanceInMicrons>]
+
+       [-endTerm <termList>]
+
+       [-inst <instNameListOrRegularExp>]
+
+       [-net <listOfNetnamesOrRegularExp>]
+
+       [-startReserve <reserveDistanceInMicrons>]
+
+       [-startTerm <termList>]
+
+       Creates Net Groups for Pipeline Flip-Flop (PFF) Placement  and  Report-
+       ing.  This  command  can be used for analysis before the flops exist in
+       the netlist; or it can be used post flop insertion to  add  a  new  net
+       group.
+
+Parameters
+       -endReserve <reserveDistanceInMicrons>
+              Specifies a distance value from the end points on block boundary
+              to  the internal connection inside the block, which is accounted
+              for in each stage distance value. The unit is in micron.
+
+       -endTerm <termList>
+              Specifies the end points of net groups.
+
+       <netGroupName>
+              Specifies the name of the net group.
+
+       -inst <instNameListOrRegularExp>
+              Creates net group of all nets connected to the given  instances.
+              All  the  instances  must be flip-flops or latches. All the nets
+              attached to the D and Q pins are put into the PFF net group.
+
+       -net <listOfNetNamesOrRegularEx><p>
+              Creates net group of all given nets.
+
+       -startReserve <reserveDistanceInMicrons>
+              Specifies a distance budget  from  internal  connections  inside
+              block  to the start point of the PFF net. This value is added to
+              the first stage distance when  calculating  equidistant  spacing
+              for each stage. The unit is in micron.
+
+       -startTerm <termList>
+              Creates net group of all data nets between the given end points.
+              The PFF-chain is traced from the startTerm, through D and Q ter-
+              minals of PFF(s) until an endTerm is matched.
+
+Example
+              * The  following  command  creates a net group named `netGroup1'
+                for  Pipeline  Flip-Flop  (PFF)  of  all  data  nets   between
+                blockA/DATA_OUT* and blockB/DATA_IN*:
+
+                createPipelineNetGroup  netGroup1  -startTerm blockA/DATA_OUT*
+                -endTerm blockB/DATA_IN*
+
+              * The following command creates a net group named netGroup2  for
+                all  nets  connected  with  all instance names that begin with
+                PIPELINE_INST/in:
+
+                createPipelineNetGroup NetGroup2 -inst PIPELINE_INST/in*
+
+              * The following command creates a net group named netGroup3  for
+                all net names that begin with SUM_P4.
+
+                createPipelineNetGroup NetGroup3 -net SUM_P4*
+
+Related Information
+              * deletePipelineNetGroup
+
+              * modifyPipelineNetGroup
+
+                           Fri Apr 04 01:25:37 202c5reatePipelineNetGroup(25.10)

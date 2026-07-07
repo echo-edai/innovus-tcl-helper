@@ -1,0 +1,75 @@
+{
+  "command": "createInstGroup",
+  "is_cmd": true,
+  "summary": "创建一个新的实例组，甚至可以在核心边界之外创建",
+  "description": "创建一个新的实例组，即使位于核心边界之外。此命令应在导入设计后使用。注意：实例组用于创建新的逻辑层次单元，通常所有电源域都会与一个实例组关联，该实例组始终具有约束围栏。约束围栏意味着属于此组的标准单元不能放置在其外部，并且只有属于此组的标准单元可以放置在其内部。Cadence建议不应违反这种物理-逻辑一致性。一致性要求不仅适用于实例组，也适用于所有具有约束围栏的层次实例和实例组。换句话说，如果围栏A在逻辑上属于围栏B，那么围栏A必须放置在围栏B内部。",
+  "usage": "createInstGroup [-help] <group_name> [<box>] [-isPhyHier] [-guide <box> | -region | -fence | -softGuide] [[-ar <num>] -density <num>] [-softGuide] [-floating | -softGuide] [-floating | -guide <box>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个createInstGroup参数类型和默认信息的简要描述。要获取命令及其所有参数的详细描述，请使用man命令：man createInstGroup",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<group_name>",
+      "description": "指定要创建的组的名称。组是用户定义的组名，用于包含层次实例、实例（叶实例）或其他组。注意：在嵌套分区场景中，要将一个模块添加到另一个模块内，必须在组名中包含目标模块的层次实例名称。例如：createInstGroup i_a/bc。不正确的分组可能导致违规。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "<box>",
+      "description": "指定用于创建新实例组的方框坐标（x1 y1 x2 y2）。* x1：指定方框左下角的x坐标。* y1：指定方框左下角的y坐标。* x2：指定方框右上角的x坐标。* y2：指定方框右上角的y坐标。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-isPhyHier",
+      "description": "指定创建的组是物理层次结构。默认情况下，创建的组不会保存回网表。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-guide",
+      "description": "指定引导区域的方框坐标（x1 y1 x2 y2）。* x1：指定方框左下角的x坐标。* y1：指定方框左下角的y坐标。* x2：指定方框右上角的x坐标。* y2：指定方框右上角的y坐标。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-region",
+      "description": "指定创建一组区域。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fence",
+      "description": "指定创建一组围栏。注意：由于围栏不应跨越多个电源域，createInstGroup命令应仅用于对同一电源域中的对象进行分组（否则设计可能变得无法放置）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-softGuide",
+      "description": "指定创建的组是一个软引导约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ar",
+      "description": "指定宽高比。如果未指定，默认为1。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-density",
+      "description": "指定布局密度百分比。使用十进制格式，例如0.75表示75%的密度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-floating",
+      "description": "创建一个浮动实例组。注意：不支持不规则形状。注意：只能与-fence或-region参数一起使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

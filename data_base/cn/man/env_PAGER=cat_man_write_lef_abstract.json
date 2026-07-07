@@ -1,0 +1,195 @@
+{
+  "command": "write_lef_abstract",
+  "is_cmd": true,
+  "summary": "为当前布线后的模块级设计生成设计抽象（LEF）信息。",
+  "description": "该命令为当前布线后的模块级设计生成设计抽象（LEF）信息。默认情况下，write_lef_abstract 会将当前设计的所有电源/地（PG）和信号引脚复制到 LEF 文件中，并在引脚周围的阻挡（OBS）形状上创建切口。如果在运行 write_lef_abstract 命令之前运行了 verify_antenna，则输出的 LEF 文件会包含工艺天线信息。在自底向上的流程中，通常创建一个简单的 LEF 抽象，包含每个布线层的单个阻挡形状（不围绕引脚切割）、位于模块边界的信号引脚、顶层金属层 PG 条带的电源引脚以及嵌入式凸点引脚形状。",
+  "usage": "write_lef_abstract [-help] <fileName> [-add_obs_layers <layer_list>] [-cutObsMinSpacing] [-cutObsToExposeRouting <distance_in_microns> | -extractRoutingObs <distance_in_microns>] [-excludeObsLayers <layer_list>] [-excludePinLayers <layer_list>] [-design_boundary <point_list> | -extractRoutingObs <distance_in_microns>] [-extractBlockObs] [-extractBlockPGPinLayers <layer_number_list>] [-extractBlockSignalPinLayers <layer_list>] [-extractWellLayerObs <well_layer_list> [-extractWellObsByRow <margin>]] [-ignoreBumpOnPin {all pg signal}] [-ioPadPin] [-noCutObs] [-property] [-extractWellLayerObs <well_layer_list> [-mergeConnectedWellOnly ]] [-obsSpacing {<val> <layers> [<val2> <layers> ...]}< >[-obsSpacingPerLayer]] [-specifyTopLayer <layer_number >[-obs_above_top_layer <layer>+]] [-stripePin [-selected]] [-stripePin [-portForEachStripePin]] [-stripePin [-PGPinLayers <layer_number_list>]] [-stripePin [-PGNets <net>+]] [ -5.6 | -5.7 | -5.8 ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个 write_lef_abstract 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定 LEF 输出文件。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-add_obs_layers",
+      "description": "将指定图层上的形状作为 OBS 形状写入 LEF。这些图层不能是布线层或切割层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cutObsMinSpacing",
+      "description": "使用最小宽度计算间距，在引脚周围的阻挡区域创建切口。此选项不能与 -noCutObs 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cutObsToExposeRouting",
+      "description": "将指定光晕距离内的布线暴露给 LEF 模型。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-design_boundary",
+      "description": "指定定义输出 LEF 设计边界多边形的点列表（矩形使用 4 个点）。它用于代替真实设计边界来计算 LEF SIZE、阻挡布线层的 OBS 形状以及 OVERLAP 图层上的 OBS 形状（如果它是非矩形的）。除非根据其他选项转换为 PIN 形状，否则 LEF 还将包含设计边界之外的任何特殊布线作为 OBS 形状。PIN 形状在边界内部还是外部无关紧要，它们总是被写出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeObsLayers",
+      "description": "保存宏 LEF 文件中的 OBS 时忽略指定图层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludePinLayers",
+      "description": "指定不在指定图层上创建 PIN 形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extractBlockObs",
+      "description": "从实例化的 CLASS BLOCK、CLASS PAD AREAIO 和 CLASS RING 宏中提取所有阻挡（OBS）信息，并将阻挡写入输出 LEF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extractBlockPGPinLayers",
+      "description": "从任何在指定图层列表中有引脚的 CLASS BLOCK、RING、PAD 或 COVER 宏中提取电源和地引脚信息，并将引脚信息写入 LEF 文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extractBlockSignalPinLayers",
+      "description": "从这些图层上的 BLOCK、RING、PAD、COVER 宏中提取连接到设计端口的信号引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extractRoutingObs",
+      "description": "从边界按指定的微米距离提取常规布线和屏蔽线作为 OBS。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-extractWellLayerObs",
+      "description": "从指定阱图层上的实例中提取 OBS。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extractWellObsByRow",
+      "description": "从行的边界框加上指定阱图层的边距中提取 OBS。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-ignoreBumpOnPin",
+      "description": "默认情况下，凸点单元的引脚形状（例如 LEF MACRO CLASS BUMP）会作为 LEF 引脚形状写出。此选项可用于根据它们连接的网络类型来抑制这些 LEF 引脚形状。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-ioPadPin",
+      "description": "将连接到设计引脚的 IO 焊盘作为 LEF 引脚形状写出。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mergeConnectedWellOnly",
+      "description": "仅合并连接的阱形状，而不是将所有形状合并到一个边界框中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCutObs",
+      "description": "为每个布线层创建一个阻挡形状，但具有 pushdown 属性的布线阻挡仍会被切出。默认：在 LEF OBS 中为信号引脚以及电源和地引脚创建切口。此选项不能与 -cutObsMinSpacing 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-property",
+      "description": "写出所有用户定义的设计属性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-obsSpacing",
+      "description": "为 MACRO 写出 LEF58_OBSSPACING 属性。这会覆盖全局 USEMINSPACING OBS 设置，并设置仅此 MACRO 的布线与 OBS 形状之间所需的间距。这相当于在 LEF 中为受影响图层的每个 OBS RECT 添加 SPACING <value>。注意，它只会影响没有现有 SPACING <value> 的 OBS RECT。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-obsSpacingPerLayer",
+      "description": "在图层定义下写出每个图层的间距。此参数没有 -obsSpacing 则无效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specifyTopLayer",
+      "description": "仅为直到指定图层的图层创建覆盖模块的阻挡（OBS 形状）。默认情况下，技术文件中的所有布线层都被完全阻挡，整个模块都有 OBS 形状（可能围绕引脚形状切割）。如果此模块未使用某些最高布线层，应使用此选项将 OBS 形状限制在低于该图层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-obs_above_top_layer",
+      "description": "为这些图层上的特殊布线（不是 PIN 形状）写出 OBS 形状，而不是一个大的抽象 OBS 形状。这些图层将在 LEF 中添加 OBSSPACING FULLDRC，以便这些图层上的 OBS 形状被视为用于 DRC 检查的“真实”形状，而不是抽象阻挡。这适用于在通过 -specifyTopLayer 选项设置的模块“正常”顶层之上有一些稀疏特殊布线的模块。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripePin",
+      "description": "将顶层金属层上的电源和地条带作为电源和地引脚写出。您可以在自底向上的方法中使用此参数，当您为将在分层设计的下一更高级别使用的模块创建抽象时。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "仅将选定的 PG 条带作为 LEF 引脚形状写出。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-portForEachStripePin",
+      "description": "为 -stripePin 创建的每个引脚形状创建一个单独的 LEF 端口。这意味着 verifyConnectivity 将检查每个端口是否在下一级接触 PG 布线形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-PGpinLayers",
+      "description": "将指定图层编号上的电源和地条带作为电源和地引脚写出。必须指定 -stripePin 参数才能使用此参数。默认：顶层金属层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-PGNets",
+      "description": "仅在这些 PG 网络上写出 PG 条带。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-5.6",
+      "description": "指定 LEF 版本号。此值会覆盖使用 lefDefOutVersion 变量设置的任何值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-5.7",
+      "description": "指定 LEF 版本号。此值会覆盖使用 lefDefOutVersion 变量设置的任何值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-5.8",
+      "description": "指定 LEF 版本号。此值会覆盖使用 lefDefOutVersion 变量设置的任何值。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

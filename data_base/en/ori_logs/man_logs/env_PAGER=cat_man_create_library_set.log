@@ -1,0 +1,156 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_library_set(25.10)                            create_library_set(25.10)
+
+Name
+       create_library_set
+
+Syntax
+       create_library_set
+
+       [-help]
+
+       [-aocv <string>]
+
+       [-library_side_file <string>]
+
+       [-link_timing <string>]
+
+       -name <libSetName>
+
+       [-si <string>]
+
+       [-socv <string>]
+
+       [-target_timing <string>]
+
+       [-timing <string>]
+
+       Associates  a TCL list of timing and cdB/UDN libraries with a specified
+       library set name. Library sets allow a group of  library  files  to  be
+       treated  as  a  single  entity so that higher-level descriptions (delay
+       calculation corners) can simply refer to the library  configuration  by
+       name.  The same library set can be referenced multiple times by differ-
+       ent delay calculation corners.
+
+       Timing libraries can be in text format or Cadence binary library format
+       (LDB). The LDB (library database) files  generated  from  other  tools,
+       like Voltus, or Genus are read in to the software with an error message
+       (  TECHLIB-1249).  The LDB files are not forward compatible, that is, a
+       LDB generated from 15.2 version cannot be used with 15.1 or prior  ver-
+       sions of the software.
+
+       Note: The create_library_set command determines the priority of ECSM vs
+       CCS data (if both are present). The software first checks for ECSM con-
+       struct, if it is missing then CCS construct is loaded.
+
+        The order in which you define timing libraries is important. The soft-
+       ware  considers the first library you specify in the list as the master
+       library, with each successive library having a lower priority.
+
+       Parameters
+
+       -help  Prints out the command usage.
+
+       -aocv <string>
+              Specifies the AOCV libraries to include in the library set.
+
+       -library_side_file <string>
+              Specifies the library side file.
+
+       -link_timing <<string>>
+              Specifies the link timing libraries to include  in  the  library
+              set.
+
+       -name <libSetName>
+              Specifies  the name for the library set being created. This name
+              is used to associate the library list with a specific delay cal-
+              culation corner.
+
+       -si <string>
+              Specifies cdB libraries and/or user-defined noise  (UDN)  models
+              to  include in the library set. The cdB and/or UDN libraries are
+              required for performing signal integrity analysis.
+
+              Note: You cannot use this parameter for CCS-N or ECSM-N  models,
+              that is, for cdBs only.
+
+       -socv <string>
+              Specifies the SOCV libraries to include in the library set.
+
+       -target_timing <<string>>
+              Specifies  the target timing libraries to include in the library
+              set
+
+       -timing <string>
+              Specifies the timing libraries to include in the library set.
+
+              Note: Libraries intended for use in an ECSM-based  multi-library
+              interpolation  must be grouped within an additional level of Tcl
+              list structure to identify the intended  usage  to  the  library
+              subsystem. Specify three timing libraries that are characterized
+              at  different  voltages  (typically  the lower and upper voltage
+              bounds, and a third intermediate point). All  voltages  required
+              by the software will be interpolated from this set of libraries.
+              The libraries in the set can differ only in the characterization
+              voltage;  they  must be identical to each other in all other as-
+              pects. However, if you want to perform  multi-temperature  based
+              library  interpolation,  you  can use two library files that are
+              characterized at different temperatures for each voltage  value.
+              See  the  examples  for creating an ECSM-based multi-library set
+              and multi-temperature based library interpolation in  the  Exam-
+              ples section.
+
+              The  ECSM  and  CCS libraries can be very large and loading them
+              may take significant time. You can convert the ASCII NLDM  (Lib-
+              erty  .lib),  ECSM,  and CCS libraries to a binary version using
+              the write_ldb command. For conversion of libraries to  a  binary
+              version, refer to write_ldb.
+
+              Instead  of  the original ASCII libraries, you can specify these
+              binary libraries in the configuration file:
+
+              * Original MMMC setup  file:  create_library_set  -name  libName
+                -timing "AAA.lib BBB.ecsm CCC.ccs"
+
+              * New  MMMC setup file: create_library_set -name libName -timing
+                "AAA.ldb BBB.ldb CCC.ldb"
+
+       The library sets can be created only after the top module is  set.  The
+       following  figure  shows  the creation of a library set that associates
+       timing libraries and cdB libraries with a nominal  voltage  of  1  volt
+       with the library name isCOM-1V.
+
+       Note:  Either  AOCV  or  SOCV libraries can be specified at a time. The
+       AOCV and SOCV files can also be added to  the  library  set  by  either
+       -aocv [list aocv1.lib aocv2.lib] or -socv [list socv1.lib socv2.lib] in
+       the create_library_set settings.
+
+Examples
+              * The  following  command  creates a library set that associates
+                timing libraries and cdB libraries with a nominal voltage of 1
+                volt with the library name IsCOM-1V:
+
+                create_library_set
+
+                 -name  IsCOM-1V  -timing  [list  stdcell_F_1V.lib   ram_F.lib
+                pad.lib]
+
+                -si [list stdcell_F_2.cdb ram_F.cdb pad.cdb]
+
+              * The  following  command creates a library set that can be used
+                to specify the 2-volt version of a core  cell  library,  which
+                could  be  associated  later  with  a 2-volt MSMV power domain
+                specified in the design:
+
+                create_library_set
+
+                -name IsCOM-2V
+
+                -timing [list stdcell_F_2V.lib]
+
+Related Information
+              * get_library_set
+
+              * update_library_set
+
+                           Fri Apr 04 01:25:37 2025  create_library_set(25.10)

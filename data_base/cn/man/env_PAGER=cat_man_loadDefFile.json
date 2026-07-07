@@ -1,0 +1,39 @@
+{
+  "command": "loadDefFile",
+  "is_cmd": true,
+  "summary": "读取DEF文件以在Innovus中构建内存数据库",
+  "description": "读取DEF（Design Exchange Format）文件，在Cadence Innovus工具中构建内存数据库。执行此命令后，可以继续使用其他Innovus命令。通常在运行loadLefFile命令后使用此命令。当指定了OpenAccess参考库列表时，loadDefFile之前不需要运行loadLefFile；否则，应在加载库信息后使用此命令。加载DEF网表后，可以进行布局规划、非时序驱动的布局布线、线网编辑和验证。由于DEF名称与用于时序约束和时序分析的Verilog名称不能正确匹配，因此DEF网表流程不能有效地用于寄生参数提取、延迟计算以及时序驱动的布局布线。",
+  "usage": "loadDefFile [-help] <defFile> [-hier [-stub <stubfile> | -reflib {<listOfRefLibs>}]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印loadDefFile命令的简要描述，包括每个参数的类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<defFile>",
+      "description": "指定要加载的DEF文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-hier",
+      "description": "保留设计层次结构。指定时，通过调用lef2oa创建参考库，并从预加载的LEF文件创建存根（stub.v）。该存根将用于在由lef2oa命令创建的参考库上运行verilogAnnotate。以此方式创建的参考库由def2oa使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stub",
+      "description": "指定要加载的存根文件的名称。此选项只能与-hier一起指定。指定时，存根文件用于verilogAnnotate。不会从LEF文件内部创建存根。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reflib",
+      "description": "指定要加载的OpenAccess参考库列表。指定时，假设参考库构造正确，并且不运行verilogAnnotate。此参考库用于def2oa。由于已经提供了参考库，因此不需要与此选项一起使用loadLefFile。",
+      "required": false,
+      "type": "net+"
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_power_pads(25.10)                                    set_power_pads(25.10)
+
+Name
+       set_power_pads - Specifies power pad information
+
+Syntax
+       set_power_pads
+
+       -reset |{
+
+       [-auto_voltage_source_creation {true|false}]
+
+       [-consider_partial_small_tiles_for_vsrc {true | false}]
+
+       [-def_shape_only {true | false}]
+
+       [-die_instance_name <dieinstname>]
+
+       [-enable_switchnet_ploc_generation {true | false}]
+
+       [-format {defpin | padcell | xy | boundary | xyiv}]
+
+       [-layer <vialayername>]
+
+       -net <net_name>[-number_of_voltage_source <value>]
+
+       [-file <file>]
+
+       [-region {<x1> <y1> <x2> <y2>}]
+
+       [-short_pin_nodes {true | false}]
+
+       [-tile {<x> <y>}]
+
+       }
+
+       Specifies power pad information.
+
+       You  can  specify multiple power pad formats (xy coordinates, pad cell,
+       or power pin) for the same power net, in both,  net-based  and  domain-
+       based rail analysis.
+
+       Note:  All  voltage source names in the power pad location file must be
+       unique for all nets in the domain, e.g. if voltage source name vsrc1 is
+       used in pad location file of net VDD as well as  VSS  in  domain  based
+       analysis,  program will issue error and exit. In addition, the names of
+       voltage sources in the power pad location file must be  different  from
+       the names in the DEF pin section.
+
+Parameters
+       -auto_voltage_source_creation {true|false}
+              Specifies to automatically create voltage sources either for all
+              nets  (-net  ALL)  or  for  a specific net (-net net_name).  The
+              voltage sources are created on the top metal of all via cuts lo-
+              cated either on the user-specified metal layer or the design top
+              metal layer (default).
+
+              Default: false.
+
+       -consider_partial_small_tiles_for_vsrc {true | false}
+              Specifies to honor voltage source  generation  on  small  tiles.
+              Small tiles refer to tile areas less than 1/3 of the pitch*pitch
+              area  size.  This  parameter  is used with the automatic voltage
+              source creation feature (-auto_voltage_source_creation).
+
+              The default value of this parameter is false.
+
+              Example:
+
+              set_power_pads -net  VDD_AO  -auto_voltage_source_creation  true
+              -layer  VIA_5  -consider_partial_small_tiles_for_vsrc true -tile
+              {90 90}
+
+       -def_shape_only {true | false}
+              Specifies to generate voltage sources only on  the  DEF  routing
+              shapes.   This  parameter  controls  the  generation  of voltage
+              sources on the cell instance shapes. When this parameter is  set
+              to  false,  voltage sources are created for both the DEF routing
+              shapes and shapes inside cell instances.
+
+              This parameter is specified with  the  -auto_voltage_source_cre-
+              ation parameter.
+
+              Default: true
+
+       -die_instance_name <dieinstname>
+              Specifies the die instance name for multi-die analysis. This op-
+              tion  is  only  available in multi-die analysis (set_rail_analy-
+              sis_mode -die_mode multi-die).
+
+       -enable_switchnet_ploc_generation {true | false}
+              Specifies to generate voltage sources on all switched nets. This
+              parameter is specified  with  the  -auto_voltage_source_creation
+              parameter.
+
+              Default: false
+
+       -file <file>
+              Specifies the name of the file containing the voltage source in-
+              formation. Not required for -format defpin option.
+
+       -format {defpin | padcell | xy | boundary | xyiv}
+              Specifies how the voltage source is determined.
+
+              Required  for xy, padcell, or boundary.  defpin - Specifies that
+              voltage sources will be determined by  power  pins.   padcell  -
+              Specifies  that voltage sources will be determined by pad cells.
+              xy - Specifies that voltage sources will be specified by x y co-
+              ordinates. You can also specify a PWL function on the X,Y  loca-
+              tion  for  a  voltage source. When specified, Rail Analysis will
+              read the power pad file and use the PWL waveform for the voltage
+              source.
+
+              Example:
+
+              set_power_pads -format xy -file <<xy_plocFile>>
+
+              Add the PWL option in the xy file:
+
+              *vsrc_name   x   y   layer_name [pwl=]
+
+              vsrc3 8.39 370.35 Metal5 pwl=(t1,v1,t2,v2,t3,v3...)  boundary  -
+              Specifies  that  voltage  source  locations will be used for in-
+              stances in the design.  xyiv -
+
+       -layer <vialayername>
+              Specifies the via layer on which the voltage sources are  to  be
+              generated.  If  this  parameter  is  not  specified, the voltage
+              sources will be generated on the top via layer of the design.
+
+              This parameter is specified with  the  -auto_voltage_source_cre-
+              ation parameter.
+
+       -net <net_name>
+              Specifies the name of the power net.
+
+       -number_of_voltage_source <value>
+              Specifies  the  number  of voltage sources to be generated.  You
+              can adjust either -tile or -number_of_voltage_source  to  reduce
+              the number of voltage sources created.
+
+              This  parameter  is specified with the -auto_voltage_source_cre-
+              ation parameter.
+
+              Default: 1 million.
+
+       -region {<x1> <y1> <x2> <y2>}
+              Generates the voltage sources in the specified region.  If  this
+              parameter  is  not  specified,  the software uses the entire de-
+              sign/layout size as the region.
+
+              This parameter is specified with  the  -auto_voltage_source_cre-
+              ation parameter.
+
+       -reset Resets all the previous set_power_pads commands
+
+       -short_pin_nodes {true | false}
+              Specifies  to  short  all interface nodes on a pad cell pin to a
+              single node and create voltage source for that node.
+
+              Default: false
+
+              Example:
+
+              set_power_pads -net vdd -format padcell  -short_pin_nodes  -file
+              pad_cell.file
+
+       -tile {<x> <y>}
+              Defines  the  number of tiles in the X and Y direction for auto-
+              matic creation of voltage sources. When -tile is specified,  the
+              area  (-region or  default design area) will be tiled vertically
+              and horizontally per the given tile size (x*y). For  each  tile,
+              one  voltage  source  will  be  created  on the top metal of the
+              biggest via array. If -tile is not specified, the software  cre-
+              ates  voltage  sources  on the top metal of all via cuts located
+              either on the user-specified via layer or the top via  layer  of
+              the design.
+
+              You  can adjust either -tile or -number_of_voltage_source to re-
+              duce the number of voltage sources created.
+
+              The  -tile  parameter  is   specified   with   the   -auto_volt-
+              age_source_creation parameter.
+
+Examples
+              * The  following command specifies the power pad information for
+                the  VDD_TDSPCore_R  net  in  the   file   dtmf_chip.VDD_TDSP-
+                Core_R.vsrc. The voltages sources are specified by x y coordi-
+                nates.
+
+                set_power_pads    -net   VDD_TDSPCore_R   -format   xy   -file
+                dtmf_chip.VDD_TDSPCore_R.vsrc
+
+              * The following command specifies xy, padcell, and  defpin  for-
+                mats for a single net (VDD) as follows:
+
+                set_power_pads -net VDD -format xy -file VDD.pp
+
+                 set_power_pads -net VDD -format padcell -file VDD.padcell
+
+                 set_power_pads -net VDD -format defpin
+
+              * The  following command specifies power pad information using a
+                combination of user-specified  and  automatic  voltage  source
+                creation methods:
+
+                #  Specific setting for net VSS using automatic voltage source
+                creation
+
+                set_power_pads  -net  VSS  -auto_voltage_source_creation  true
+                -layer VIA_6
+
+                #  Global  setting for all nets using automatic voltage source
+                creation
+
+                set_power_pads  -auto_voltage_source_creation  true  -net  ALL
+                -layer VIA_5
+
+                #  User-specified power pad file for net VDD_AO, therefore au-
+                tomatic voltage source creation feature will  not  be  enabled
+                for this net
+
+                set_power_pads  -net VDD_AO -format padcell -file padcell.file
+                -short_pin_nodes true
+
+Example of power pad location file with XY coordinates for net VDD
+       *-----------------------------------------------------------------------------------------------------------------------------------------------
+
+       * XY power pad location file
+
+       * vsrc name X(um)  Y(um)  LEF/Tech  Layer  <R=value  ohm>  <C=value  F>
+       <L=value H>
+
+       * Package R,L and C parameters are optional
+
+       *------------------------------------------------------------------------------------------------------------------------------------------------
+
+       VDD100 5.000 793.500 M7
+
+       VDD101 1187.835 293.500 M7
+
+       VDD102 695.000 5.000 M6
+
+       VDD103 1187.835 493.500 M7
+
+       VDD104 595.000 1293.800 M6
+
+       VDD105 595.000 5.000 M6
+
+Example of pad cell file for VDD net,
+       *-----------------------------------------------------------------------------------------------------------------------------------------------
+
+       * Pad cell file for Voltus
+
+       * cellname <r=value> <l=value> <c=value>
+
+       * Package parameters are optional
+
+       *------------------------------------------------------------------------------------------------------------------------------------------------
+
+       PVDD1 r=2.5e-3 l=2.5e-11 c=120e-12
+
+       PVDD2 r=2.5e-3 l=2.5e-11 c=120e-12
+
+Related Information
+              * set_rail_analysis_mode
+
+              * set_net_group
+
+              * "Static  Power, IRdrop and EM Analysis" in the Voltus IC Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025      set_power_pads(25.10)

@@ -1,0 +1,87 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+readTransitionFile(25.10)                            readTransitionFile(25.10)
+
+Name
+       readTransitionFile  -  Reads external transition files that are used to
+       perform maximum transition violation reporting and fixing
+
+Syntax
+       readTransitionFile
+
+       -file <fileName>
+
+       [-view <viewName>]
+
+       Reads external transition files that are used to perform maximum  tran-
+       sition violation reporting and fixing.
+
+       The contents of a transition file must be in the following format:
+
+       setTranTime [-add] [-maxR <slewValue> | -maxF <slewValue>] {<pinName>}
+
+       or
+
+       setTranTime [-add] [-minR <slewValue> | -minF <slewValue>] {<pinName>}
+
+       Where:
+
+              * -add: Specifies that the transition value is incremental.
+
+              * -maxR | -maxF: Specifies the maximum rise or fall transition.
+
+              * -minR | -minF: Specifies the minimum rise or fall transition.
+
+                Note: The minimum transition values will be ignored while per-
+                forming transition violation fixing.
+
+              * <pinName>:  Specifies  the  pin  name for which the transition
+                value is specified. To specify multiple pin names, you need to
+                use separate setTranTime statements as given below:
+
+                setTranTime -add -maxR 3.5 inst/A
+
+                setTranTime -add -maxR 3.5 pinB
+
+       Note: The readTransitionFile command uses the time unit that is written
+       in the slew file. If time unit is specified as 1e-12, it reads the val-
+       ues in picoseconds. For time unit specified as 1e-09, the command reads
+       the values in nanoseconds. For example,
+
+       # Time Unit : 1e-09 seconds
+
+       setTranTime -minR 0.80050 {AAA/BBB/CCC/A}
+
+       setTranTime -minF 0.580300 {AAA/BBB/DDD/A}
+
+       When a transition file is read and third-party slew  values  are  anno-
+       tated,  Innovus  uses the following command to report transition viola-
+       tions with the annotated slews:
+
+       timeDesign {-postRoute | -signoff | -reportOnly} -useTransitionFiles
+
+Parameters
+       -file <fileName>
+              Specifies the name of the file that contains  information  about
+              the transition time.
+
+       -view <viewName>
+              Specifies  the  view  name for which the transition file will be
+              read in case of MMMC designs. You need to ensure that you  spec-
+              ify  the transition files for all setup views to perform transi-
+              tion violation fixing.  Note: This  parameter  is  required  for
+              MMMC designs only.
+
+Example
+              * The following command reads an external transition file called
+                sampleFile for non-MMMC designs:
+
+                readTransitionFile -file sampleFile
+
+              * The  following commands read view specific external transition
+                files for a MMMC design:
+
+                readTransitionFile -view view1 -file sampleFile1
+
+                readTransitionFile -view view2 -file sampleFile2
+
+                           Fri Apr 04 01:25:37 2025  readTransitionFile(25.10)

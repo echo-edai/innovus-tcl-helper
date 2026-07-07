@@ -1,0 +1,143 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+all_registers(25.10)                                      all_registers(25.10)
+
+Name
+       all_registers  -  Returns  a  collection of instances and pins of flip-
+       flops, latches, or sequential macros in the design
+
+Syntax
+       all_registers
+
+       [help]
+
+       [-clock {<clock_list>}]
+
+       [-cells]
+
+       [-rise_clock {<clock_list>}]
+
+       [-fall_clock {<clock_list>}]
+
+       [-flops | -edge_triggered]
+
+       [-no_hierarchy]
+
+       [-latches | -level_sensitive]
+
+       [-macros]
+
+       [-master_slave]
+
+       [-data_pins]
+
+       [-clock_pins]
+
+       [-output_pins]
+
+       [-async_pins]
+
+       [-slave_clock_pins]
+
+       Returns a collection of instances and pins of flip-flops,  latches,  or
+       sequential macros in the design. A cell is considered sequential if the
+       library cell defines trigger or timing check arcs.
+
+       Note:  The following options can be used only after building the timing
+       graph:
+
+              * -clock
+
+              * -rise_clock
+
+              * -fall_clock
+
+Parameters
+       -help  Prints out the command usage.
+
+       -async_pins
+              Returns a collection of async preset or clear pins.
+
+       -cells Creates a collection of cells. This is the default option.
+
+       -clock {<clock_list>}
+              Specifies the name of a clock, a list of clocks, or a clock col-
+              lection.
+
+              The all_registers command  returns  a  collection  of  registers
+              clocked by the specified the clock list.
+
+       -clock_pins
+              Returns  a  collection of register clock pins. You can use other
+              parameters to further filter this collection.
+
+       -data_pins
+              Returns a collection of register data input pins.  You  can  use
+              other parameters to further filter this collection.
+
+       -fall_clock {<clock_list>}
+              Specifies the name of a clock, a list of clocks, or a clock col-
+              lection.
+
+              The  all_registers  command  creates  a  collection of registers
+              opened by the falling edge of the clocks specified in the  clock
+              list.
+
+       -flops | -edge_triggered
+              Returns  a  collection  of  edge-triggered sequential instances.
+              Both the -flops and -edge_triggered parameters return  the  same
+              collection.  The  -flops parameter is provided for backward com-
+              patibility.
+
+       -latches | -level_sensitive
+              Returns a collection of  level-sensitive  sequential  instances.
+              Both  -latches  and  -level_sensitive parameters return the same
+              collection. The -latches parameter is provided for backward com-
+              patibility.
+
+       -macros
+              Returns sequential instances that  are  neither  flip-flops  nor
+              latches.
+
+       -master_slave
+              Returns a collection of master-slave register cells.
+
+       -no_hierarchy
+              Searches  the  current  design hierarchy level; does not descend
+              the hierarchy into sub-modules.
+
+       -output_pins
+              Returns a collection of register output pins.
+
+       -rise_clock {<clock_list>}
+              Specifies the name of a clock, a list of clocks, or a clock col-
+              lection. The all_registers command creates a collection of  reg-
+              isters  opened  by  the  rising  edge of clocks specified in the
+              clock list.
+
+       -slave_clock_pins
+              Returns a collection of slave clock  pins  of  the  master-slave
+              registers.   You   can   specify   the   slave   clock  pins  as
+              clocked_on_also in the library.
+
+Example
+              * The following command reports the 10 worst paths going to reg-
+                isters in the design:
+
+                report_timing -to [all_registers] -max_paths 10
+
+              * The following script uses the all_registers command along with
+                other TCL commands to get the number of flip-flops in the  de-
+                sign:
+
+                set flopName [all_registers -flops]
+
+                set flopCount [sizeof_collection $flopName]
+
+                puts "Number of flops in the design is $flopCount"
+
+Related Information
+              * get_cells
+
+              * get_pins
+
+                           Fri Apr 04 01:25:37 2025       all_registers(25.10)

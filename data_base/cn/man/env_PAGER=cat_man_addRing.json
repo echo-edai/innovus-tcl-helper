@@ -1,0 +1,165 @@
+{
+  "command": "addRing",
+  "is_cmd": true,
+  "summary": "为指定网络在核心边界或选定模块周围创建环形电源/地线",
+  "description": "该命令用于在芯片设计的核心边界、选定的模块或核心行组周围为指定的电源或地线网络创建环形布线。它通常在完成初始布局规划后使用，以提供稳健的电源分布。命令支持创建核心环（core_rings）和模块环（block_rings），并允许用户精细控制环的层、宽度、间距、偏移量、形状（矩形或沿轮廓）等多种属性。",
+  "usage": "addRing [-help] [-around {each_block each_reef power_domain default_power_domain selected cluster shared_cluster user_defined}] [-center {0 | 1}] [-exclude_selected {0 | 1}] [-extend_corner {tl tr bl br lt lb rt rb}] [-follow {core io}] [-jog_distance <real_value>] {-nets <name-or-value>} [-offset_adjustment {automatic fixed}] [-rectangle {0 | 1}] [-skip_side {top | bottom | left | right}] [-snap_wire_center_to_grid {None Grid Half_Grid Either}] [-threshold {value | auto}] [-type {core_rings block_rings}] [-uda <subclass_string>] [-use_interleaving_wire_group {0 | 1}] [-use_wire_group {0 | 1}] [-use_wire_group_bits <value>] [-use_wire_group_reinforcement {0 | 1}] [-use_wire_group_reinforcement_group_via {0 | 1}] [-use_wire_group_reinforcement_spacing_width {spacing width}] [-user_defined_region {x1 y1 x2 y2 ...}] {-layer {layer | {top top_layer bottom bottom_layer left left_layer right right_layer}} } {-width {value | {top top_width bottom bottom_width left left_width right right_width}} } {-spacing {value | {top top_spacing bottom bottom_spacing left left_spacing right right_spacing}} } [-offset {value | {top top_offset bottom bottom_offset left left_offset right right_offset}}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令及其参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-around",
+      "description": "指定创建环形布线的目标对象类型，需与 -type 参数配合使用。选项包括 each_block, each_reef, power_domain, default_power_domain, selected, cluster, shared_cluster, user_defined。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-center",
+      "description": "指定是否将核心环居中放置在I/O焊盘和核心边界之间。值为1时居中；否则必须使用 -offset 参数指定偏移量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-exclude_selected",
+      "description": "指定创建核心环时是否排除选定的对象（模块和电源域），使其不在环的边界内。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-extend_corner",
+      "description": "将环形指定方向的线段延伸到遇到目标为止。选项包括 tl, tr, bl, br, lt, lb, rt, rb。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-follow",
+      "description": "指定核心环是沿着核心边界还是I/O边界放置。仅与 -type core_rings 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-jog_distance",
+      "description": "指定在移除拐角之前，允许环形布线跟随参考对象轮廓进行拐弯的最小距离（微米）。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-nets",
+      "description": "指定需要创建环形布线的网络名称列表。列表必须用花括号 {} 括起来。",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-offset_adjustment",
+      "description": "指定当宽度或间距值改变时，偏移量是否自动调整。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rectangle",
+      "description": "如果设置为1，则仅创建矩形环。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-skip_side",
+      "description": "指定在创建环形布线时要跳过的边（上、下、左、右）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-snap_wire_center_to_grid",
+      "description": "控制环形布线中心的对齐方式。选项包括 None（不对齐）、Grid（对齐到布线网格）、Half_Grid（对齐到半布线网格）、Either（对齐到更近的网格或半网格）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-threshold",
+      "description": "指定相邻模块环形线段在合并前允许的最小间距（微米），或设置为 auto 由工具自动决定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定要创建的环形类型：core_rings（核心环）或 block_rings（模块环）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-uda",
+      "description": "显示附加到每个创建的环形线段上的用户自定义属性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_interleaving_wire_group",
+      "description": "如果设置为1，即使同一网络的多条导线被不同网络的导线隔开，也会将它们连接在一起。仅当同时指定 -use_wire_group 1 时可用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group",
+      "description": "如果设置为1，则将同一网络的多条导线连接在一起形成一个线组。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group_bits",
+      "description": "指定线组中包含多少个网络。仅当同时指定 -use_wire_group 1 时可用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group_reinforcement",
+      "description": "指定是否创建加固条纹。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group_reinforcement_group_via",
+      "description": "为线组拐角创建组通孔以及相同导线在水平和垂直方向上的加固条纹，以提高良率和可靠性。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group_reinforcement_spacing_width",
+      "description": "为线组拐角创建组通孔以及相同导线在间距和宽度方向上的加固条纹，以提高良率和可靠性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-user_defined_region",
+      "description": "当使用 -around user_defined 参数时，指定一个多边形区域的坐标序列（至少四组坐标，用花括号括起）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定环形布线各边所使用的金属层。可以是单个层名（用于所有边），或一个指定各边（上、下、左、右）层名的列表。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-width",
+      "description": "指定环形布线各边的金属线宽度。可以是单个值（用于所有边），或一个指定各边（上、下、左、右）宽度的列表。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定环形布线各边与其他环形布线之间的间距。可以是单个值（用于所有边），或一个指定各边（上、下、左、右）间距的列表。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-offset",
+      "description": "指定环形布线各边相对于参考边界（核心或I/O）的偏移量。可以是单个值（用于所有边），或一个指定各边（上、下、左、右）偏移量的列表。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

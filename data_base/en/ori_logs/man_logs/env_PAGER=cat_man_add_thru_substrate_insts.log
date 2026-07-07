@@ -1,0 +1,119 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_thru_substrate_insts(25.10)                add_thru_substrate_insts(25.10)
+
+Name
+       add_thru_substrate_insts  -  Adds  thru-substrate instances to a net to
+       specify two-sided routing for a  critical  net  (backside  routing  has
+       lower RC than frontside routing)
+
+Syntax
+       add_thru_substrate_insts
+
+       [-help]
+
+       [-driver_thru_substrate_cell <cell1>]
+
+       -load_thru_substrate_cell cell2
+
+       -net <net>
+
+       [-redraw]
+
+       [-selected]
+
+       [-shared_load_thru_substrate_cell]
+
+       Adds thru-substrate instances to a net to specify two-sided routing for
+       a  critical net (backside routing has lower RC than frontside routing).
+       All pins or ports of the net must be on the front side, and as  an  ex-
+       ception,  one  backside port is allowed. A thru-substrate instance is a
+       device that tunnels through the substrate to connect frontside  routing
+       with backside routing.
+
+       The driver thru-substrate instance is placed on top of the driver and a
+       load  thru-substrate  instance  is placed on top of its load. If a load
+       thru-substrate instance drives multiple loads, it is placed in the cen-
+       ter of the group of loads. It means that all instances with  a  pin  on
+       the  net  must  be  placed, and if the net has ports, they must also be
+       placed before when the thru-substrate instances can  be  added  to  the
+       net.  Hence,  this command creates unallowed placement that needs to be
+       resolved with the refinePlace command.
+
+       When a net has a backside port with everything else on the front  side,
+       this  command  creates one thru-substrate instance placed on top of the
+       backside port, so that the net's frontside routing can  be  brought  to
+       the  backside, typically to connect to a backside bump. For this usage,
+       specify the same value  for  the  -load_thru_substrate_cell  and  -dri-
+       ver_thru_substrate_cell parameters.
+
+       Use this command to create one FTV for a net with multiple FS leaf pin,
+       multiple FS port(s), and/or a single BS port.
+
+       FTV is placed on the top of the BS port.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each add_thru_substrate_insts parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man add_thru_substrate_insts
+
+       -driver_thru_substrate_cell <cell1>
+              Specifies  the  thru-substrate macro/cell to instantiate a thru-
+              substrate instance, whose front pin is to be routed to the  dri-
+              ver.
+
+       -load_thru_substrate_cell <cell2>
+              Specifies  the  thru-substrate macro/cell to instantiate a thru-
+              substrate instance(s), whose front pin(s) is  to  be  routed  to
+              load(s).
+
+       -net <net>
+              Specifies the net to add thru-substrate instances. The specified
+              net  must not be a PG net or a tie net.  It must have one driver
+              and at least one load. No in-out pins are allowed.
+
+       -redraw
+              Redraws the graphics window.
+
+       -selected
+              Use this parameter to group the loads such that each  group  has
+              its  own  load thru-substrate instance(s). Use this parameter by
+              following the steps listed below:
+
+              * Specify  the   -selected,   -driver_thru_substrate_cell,   and
+                -load_thru_substrate_cell  parameters.  Once  the driver thru-
+                substrate instance is created:
+
+                * The selected loads either share one load thru-substrate  in-
+                  stance, or get their own load thru-substrate instance.
+
+                * The unselected loads connect directly to the net driver.
+
+                * The  backside  pins  of all thru-substrate instances connect
+                  with each other.
+
+              * For further grouping the loads that are connected directly  to
+                the  net  driver in the previous step, select them and specify
+                the -selected and -load_thru_substrate_cell  parameters.  How-
+                ever,  do  not specify the -driver_thru_substrate_cell parame-
+                ter. Each selected load driven by the  net  driver  is  recon-
+                nected  to a new load thru-substrate instance, which is shared
+                if the -shared_load_thru_substrate_cell  parameter  is  speci-
+                fied.
+
+              * Repeat this process until the loads are grouped, as needed.
+
+              While  specifying  the -selected parameter to group loads, dese-
+              lect all the objects before selecting the loads to group.
+
+       -shared_load_thru_substrate_cell
+              Loads share one thru-substrate instance (one thru-substrate  in-
+              stance for each load, if not specified).
+
+Related Information
+       delete_thru_substrate_insts
+
+                           Fri Apr 04 01:25:37 2a0d2d5_thru_substrate_insts(25.10)

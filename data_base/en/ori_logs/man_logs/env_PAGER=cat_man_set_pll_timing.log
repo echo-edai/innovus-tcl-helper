@@ -1,0 +1,188 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_pll_timing(25.10)                                    set_pll_timing(25.10)
+
+Name
+       set_pll_timing - This command identifies phase locked loop (PLL) inser-
+       tion  delays and the associated generated clock(s) that require adjust-
+       ment
+
+Syntax
+       set_pll_timing
+
+       [-help]
+
+       <inst_name>
+
+       -feedback_pin <feedback pin name>
+
+       -output_clock <clock name>
+
+       -output_pin <output pin name>
+
+       [-reference_edge {rise | fall | both}]
+
+       -reference_pin <reference pin name>
+
+       This command identifies phase locked loop (PLL)  insertion  delays  and
+       the  associated  generated  clock(s) that require adjustment. To remove
+       the effect of clock tree latency, PLLs can be used to adjust the  delay
+       on  the  PLL  output  clock waveform so that the effective edges of the
+       clock at the clock tree endpoints are aligned with the reference  edges
+       of the input clock to the PLL.
+
+       When you use the set_pll_timing command, the software uses the settings
+       to  automatically  calculate  and  apply a delay offset to a PLL output
+       clock to compensate for internal clock tree latency.
+
+       The set_pll_timing command works in conjunction with a generated  clock
+       definition  to  provide  the  correct clock timing at the output of the
+       PLL. To use this command, you must first assert a  generated  clock  on
+       the set_pll_timing -output_pin. The -source option of the create_gener-
+       ated_clock  command must also match the -reference_pin specified by the
+       set_pll_timing command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <inst_name>
+              Specifies the instance name or the object ID of a PLL  cell,  on
+              the basis of which the reference pins, feedback pins, or the
+
+              output pins will be searched.
+
+       -feedback_pin <feedback pin name>
+              Specifies the name of the PLL feedback pin.
+
+       -output_clock <clock name>
+              Specifies the generated clock on the PLL output.
+
+       -output_pin <output pin name>
+              Specifies the PLL clock output pin name.
+
+       -reference_edge {rise | fall | both}
+              Defines adjustment edge(s).
+
+              When this parameter is specified, the software selects the edges
+              of the clocks at the reference and feedback pins that need to be
+              aligned. If the rise or fall option is specified, then the clock
+              latency  from  that  reference  edge  to the related edge at the
+              feedback pin will be used. In this case, both the rise and  fall
+              edges will use the same latency adjustment.
+
+              If  both  of these options are specified, then the software will
+              measure separate latency adjustments for both the rise and  fall
+              edges.
+
+              Default: rise
+
+       -reference_pin <reference pin name>
+              Specifies the PLL reference pin name.
+
+Examples
+       Here are some examples.
+
+              * The following example shows the defined clocks in a sample de-
+                sign:
+
+                create_clock  [get_ports  {clk_in}] -name CLK -period 6 -wave-
+                form {0 3}
+
+                create_generated_clock  -name  GCLK1  -source  [get_pins  {my-
+                pll/CLK}] -multiply_by 1 -master_clock [get_clocks {CLK}] -add
+                [get_pins {mypll/GCLK}]
+
+                The  following report_timing command shows the insertion delay
+                values at various points in the timing report:
+
+                report_timing   -from_rise   mypll/GCLK   -to_rise   mypll/CEN
+                -point_to_point
+
+                Path 1:Endpoint: mypll/CEN (^) (unconstrained output)
+
+                Beginpoint:  mypll/GCLK  (^)  triggered  by  leading  edge  of
+                'GCLK1'
+
+                Arrival Time 0.496
+
+                Analysis View: default_analysis_view_setup
+
+                ------------------------------------------------------------
+
+                Pin           Cell      Delay   Arrival   Generated Clock
+
+                                                Time      Adjustment
+
+                ------------------------------------------------------------
+
+                mypll/CLK                       0.112
+
+                mypll/GCLK ->  PLL       0.133  0.246     GCLK1 Adj. = 0.000
+
+                clkTreeL0/Y    CLKBUFX1  0.139  0.385
+
+                clkTreeL1_1/Y  CLKBUFX1  0.118  0.503
+
+                mypll/CEN ->   PLL      -0.007  0.496
+
+                -----------------------------------------------------------
+
+                From the above table, it can be seen that the  rise  insertion
+                delay of clock CLK at pin mypll/CLK is 0.112ns.
+
+                Now,  the  following command will adjust the source latency of
+                clock GCLK1 such that the edges at mypll/CLK and mypll/CEN are
+                aligned i.e. the clock's rising edge should reach mypll/CEN at
+                0.112ns only:
+
+                set_pll_timing [get_cells  mypll]  -reference_pin  CLK  -feed-
+                back_pin CEN -output_pin GCLK -output_clock [get_clocks GCLK1]
+
+              * The  following  report_timing command shows the source latency
+                of GCLK clock as -0.138ns, and the clock reaches mypll/CEN pin
+                at 0.112ns (same as on mypll/CLK):
+
+                report_timing   -from_rise   mypll/GCLK   -to_rise   mypll/CEN
+                -point_to_point
+
+                Path 1:Endpoint: mypll/CEN (^) (unconstrained output)
+
+                Beginpoint:  mypll/GCLK  (^)  triggered  by  leading  edge  of
+                'GCLK1'
+
+                Arrival Time 0.112
+
+                Analysis View: default_analysis_view_setup
+
+                + Source Insertion Delay 0.112
+
+                - PLL Feedback Delay 0.250
+
+                = Beginpoint Arrival Time -0.138
+
+                -----------------------------------------------------------------
+
+                Pin             Cell       Delay    Arrival    Generated Clock
+
+                                                    Time       Adjustment
+
+                -----------------------------------------------------------------
+
+                mypll/GCLK ->                       -0.138    GCLK1 Pll Adj. =
+                0.000
+
+                clkTreeL0/Y     CLKBUFX1   0.139    0.001
+
+                clkTreeL1_1/Y   CLKBUFX1   0.118    0.120
+
+                mypll/CEN ->    PLL       -0.007    0.112
+
+                -----------------------------------------------------------------
+
+Related Information
+              * create_generated_clock
+
+              * create_clock
+
+              * reset_pll_timing
+
+                           Fri Apr 04 01:25:37 2025      set_pll_timing(25.10)

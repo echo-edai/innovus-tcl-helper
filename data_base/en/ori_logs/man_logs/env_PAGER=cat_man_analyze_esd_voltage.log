@@ -1,0 +1,155 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+analyze_esd_voltage(25.10)                          analyze_esd_voltage(25.10)
+
+Name
+       analyze_esd_voltage
+
+Syntax
+       analyze_esd_voltage
+
+       [-help]
+
+       -current_distribution_layer <layer>
+
+       -driver_receiver_file <filename>
+
+       -esd_pin_location_file <filename>
+
+       [-maximum_violations <value>]
+
+       -net<NetName>
+
+       [-report <filename>]
+
+       [-threshold <value>]
+
+       -total_current <value>
+
+       [-detailed_report {true | false}]
+
+       Performs  IR  Drop  analysis for every driver/receiver pair and reports
+       voltage drop above the given limit. Use this  command  to  provide  the
+       current  injection  points  (sinks),  the  current  distribution  layer
+       (source), and the total ESD current to be distributed. The command gen-
+       erates a report containing all the violations where  potential  differ-
+       ence across driver/receiver is greater than the given threshold.
+
+Parameters
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       -current_distribution_layer <layer>
+              Specifies to distribute current to all nodes of the given layer.
+              This is the LEF/DEF layer name. This is a required parameter.
+
+       -detailed_report {true | false}
+              Specifies  to report the differential voltage for each zap point
+              above the specified threshold. It gives the x,y location of  the
+              zap  point and the zap point name. Using this parameter, you can
+              fix all the differential voltage violations in a single run.
+
+       This parameter will generate the report file  with  the  same  name  as
+       specified using the -report parameter and with the _detail.rpt suffix.
+
+              Default : false
+
+              The following is an example of the parameter:
+
+              analyze_esd_voltage
+               -net  VSS -driver_receiver_file ./driverdb_railVSS -esd_pin_lo-
+              cation_file  VSS.pp  -current_distribution_layer   METAL5   -to-
+              tal_current  8 -report FULL_new_gnd_esd_cdm.rpt -detailed_report
+              true -threshold 2
+
+       -driver_receiver_file <filename>
+              Specifies the name of the driver/receiver file of the net.  This
+              file  is  created  by  the  -create_driver_db  parameter  of the
+              set_power_analysis_mode. This is a required parameter.
+
+              The file has multiple columns, wherein the first column  is  the
+              receiver,  and the remaining columns are drivers to the receiver
+              instance. The following is an example of the file content:
+
+              padring/I_RCV_7 io_toplevel/padring/I_DECAP io_toplevel/padring/
+
+              In this example:
+
+              padring/I_RCV_7      is       the       receiver       instance.
+              io_toplevel/padring/I_DECAP  and io_toplevel/padring/ are driver
+              instances.
+
+       -esd_pin_location_file <filename>
+              Specifies the name of the ESD pin location file. This is  a  re-
+              quired parameter.
+
+              The format of the file is:
+
+              #Pin_name    x coord    y coord    layer
+
+              gnd_pin_1      2284.6    -2898.05   m4
+
+       -maximum_violations <value>
+              Specifies  the  number  of  max worst violations to be reported.
+              This is an optional parameter.
+
+              When this value is specified, only the specified number  of  top
+              violations  will be reported. If a value is not specified, volt-
+              age drop for all driver/receiver pairs will be reported.
+
+       -net<NetName>
+              Specifies the name of the net to be analyzed. This is a required
+              parameter.
+
+       -report <filename>
+              Specifies the name of the output report file in which details of
+              the driver-receiver violation pair is written. This  is  an  op-
+              tional  parameter. The report is filtered in descending order of
+              differential voltage.
+
+              The output file has four columns:
+
+              * First column - Differential voltage(V)
+
+              * Second column - Driver name (node location(um) )
+
+              * Third column - Receiver name (node location(um))
+
+              * Fourth column - ESD pin name (location(nm))
+
+              The following is the sample ESD file format:
+
+              14.1324    pmc/a_ip_pmc_chassis_c55fg ( 2050.875 -2760.085 ap  )
+              io_toplevel/padring/I_ESDCLAMP_39   (   1428.200   2884.250   m4
+              )gnd_pin_22 ( 1458.200 2898.050 m4 )
+
+       -threshold <value>
+              Specifies the minimum allowed driver/receiver voltage  for  fil-
+              tering the report. This is an optional parameter.
+
+              When  a threshold value is specified, driver/receiver pairs with
+              differential voltage greater than the specified threshold  value
+              will be reported. If a threshold value is not specified, voltage
+              drop for all driver/receiver pairs will be reported.
+
+       -total_current <value>
+              Specifies  the  total ESD current to be distributed. The default
+              current unit is amperes. This is a required parameter.
+
+Example
+              * The following example performs  static  IR  Drop  analysis  to
+                check the voltage drop between all driver and receiver pairs:
+
+                analyze_esd_voltage
+                 -net   gnd   -driver_receiver_file   ./POWER/driverdb_railgnd
+                -esd_pin_location_file ./epinfile  -current_distribution_layer
+                m1 -total_current 8 -report FULL_new_gnd_esd_cdm.rpt
+
+Related Information
+              * set_rail_analysis_mode
+
+              * analyze_esd_network
+
+              * "ESD  Analysis" in the Voltus IC Power Integrity Solution User
+                Guide
+
+                           Fri Apr 04 01:25:37 2025 analyze_esd_voltage(25.10)

@@ -1,0 +1,297 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+restoreDesign(25.10)                                      restoreDesign(25.10)
+
+Name
+       restoreDesign  -  Restores  a saved database created by saveDesign in a
+       previous session
+
+Syntax
+       restoreDesign
+
+       [-help]
+
+       [<design>]
+
+        [-dynamic_view <analysis_view>]
+
+       [-hold_views <hold_views>]
+
+       [-leakage_view <analysis_view>]
+
+       [-lef_tech_file_map <fileName>]
+
+       [-noBinaryConstraint]
+
+       [-noTiming]
+
+       [-readGlobals <tcl_file_name>]
+
+       [-setup_views <setup_views>]
+
+       [{{<session>} | {-cellview <lib  cell  view>}}  [-mmmcFile  <fileName>]
+       [-lef_files <list_of_files>]]
+
+       [-noTimingGraph]
+
+       Restores  a saved database created by saveDesign in a previous session.
+       It auto-detects the database type and loads it. An OpenAccess DB format
+       is restored with -cellview {<lib> <cell> <view>} while a native Innovus
+       DB format is read using <<session>> <design> for the DB directory name.
+
+       saveDesign optionally includes various types of data, including timing-
+       graph data, RC extraction data. So, the state of the DB after  restore-
+       Design depends on what was saved, and you may need to repeat RC extrac-
+       tion, timing analysis, etc. if that data was not saved.
+
+       If a design is saved with the newer Innovus version and you try to load
+       the design in an older Innovus version, the tool will give an error and
+       stop.  The  "older Innovus version" refers to the main version, such as
+       19.1 and 20.1.  The second number after decimal does not make any  dif-
+       ference.  For  example,  if  a  design  is saved in 20.12 and loaded in
+       20.11, it will not give any error and will work properly.
+
+       For OpenAccess usage, simple digital-only designs generally go back and
+       forth with no special handling. But some types of Virtuoso custom  data
+       cannot be represented directly in the Innovus DB and are stored "on the
+       side"  by restoreDesign and geometrically equivalent data is visible in
+       Innovus. That data is then restored by saveDesign when you  write  back
+       to OA using the correct OA settings.
+
+       There  are different types of OA methodologies and flows supported that
+       are controlled by setOaxMode. You can also look at the Mixed Signal In-
+       teroperability  Guide  for   more   details   on   their   effects   on
+       saveDesign/restoreDesign.
+
+       Note:
+
+              * Innovus  does not support loading another DB while a design is
+                already in memory.
+
+              *
+
+                You should not modify the contents of a saved DB (*.enc.dat or
+                *.db) at any time. If the contents of the saved DB  are  modi-
+                fied, restoring such modified DB might cause problems later or
+                lead to DB corruption or crashes.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each restoreDesign parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man restoreDesign
+
+       -cellview <lib cell view>
+              Specifies the library name, cell name, and view name for reading
+              an OpenAccess DB design.
+
+       <design>
+              Specifies the top cell of the design saved in the <session>  di-
+              rectory.  If you specify any arbitrary cell name as the top cell
+              name, the tool will automatically search the top cell name in DB
+              directory.
+
+       -dynamic_view <analysis_view>
+              Specifies the analysis view for the dynamic power analysis.
+
+       -hold_views <hold_views>
+              Specifies the hold views for loading, rather than the hold views
+              active during saveDesign.
+
+       -leakage_view <analysis_view>
+              Specifies the analysis view for leakage power analysis.
+
+       -lef_files <list_of_files>
+              Specifies the LEF files name for loading. Use this option if you
+              want to replace the existing LEF files in the  design  with  new
+              LEF files instead.
+
+              * This  option is intended to allow upgrading to new versions of
+                LEF files that are compatible with the old versions. The  list
+                of all LEF files used by this design must be given.
+
+              * If  any  pin  locations  or  cell boundaries or OBS shapes are
+                changed for used cells, new DRC violations may occur.
+
+              * If pins are added or removed from used cells,  or  used  cells
+                are removed, fatal errors may occur when loading the netlist.
+
+              * If  the removed pins and cells are unused in the design, warn-
+                ings or errors may still occur if  any  library-specific  data
+                was stored for those cells or pins during the design flow (for
+                example, dont_touch data)
+
+              Example
+
+              Existing LEFs used by saveDesign: tech.lef, A.lef
+
+              You can change A.lef to A_v2.lef as given below:
+
+              restoreDesign place.enc.dat top -lef_files {tech.lef A_v2.lef}
+
+       -lef_tech_file_map <fileName>
+              Specifies  the  location  of the optional layer map file for the
+              IQuantus and Standalone Quantus engines.
+
+              Note: For IQuantus, layer mapping between the LEF  or  DEF  file
+              and  the Quantus technology file is done automatically. This pa-
+              rameter is only necessary if this mechanism fails. If necessary,
+              you can use a copy of the automatically generated layer map file
+              extLogDir/IQRC_*/<design>.layermap.log and modify  it  for  your
+              own use.
+
+              Layer map file is required for use with Standalone Quantus.
+
+              For  TSV  designs,  you  are required to provide the name of the
+              layer map file for IQuantus and Standalone Quantus.
+
+              Note: If used, the layer map file must be in the Common  Command
+              Language (CCL) format.
+
+              The following is an example of the layer map file format:
+
+              extraction_setup \
+
+              -technology_layer_map \
+
+              # <LEF/DEF Name> #<Tech File Name>
+
+              M1 METAL_1 \
+
+              VIA1 VIA_1 \
+
+              M2 METAL_2 \
+
+              Note: For cell-level IQuantus layer map, the DEF/LEF layer names
+              are case sensitive, but ICT layer names are case-insensitive.
+
+              Note:  TQuantus is not impacted by this parameter because it al-
+              ways automatically generates the layer map.
+
+              Default: " "
+
+       -noBinaryConstraint
+              Specifies not to load the binary  timing  constraint  .tcz  file
+              even it is saved to disk in the previous session.
+
+       -noTimingGraph
+              Skips  reading the timing graph even if it was saved to the disk
+              by saveDesign.
+
+       -mmmcFile
+              Specifies the path name to a Multi-Mode/Multi-Corner (MMMC) con-
+              figuration file (for example,  the  same  file  format  used  by
+              init_mmmc_file)  to  replace  the  MMMC file saved by saveDesign
+              (and all the corresponding .lib files, .sdc files,  *_power_con-
+              straints.tcl etc. referenced by the MMMC file).
+
+              If  a  new  MMMC  file is specified using -mmmcFile, the RC data
+              saved by the previous session may mismatch  with  the  new  MMMC
+              file  and cause issues. If restoreDesign -mmmcFile is specified,
+              by default, the tool will not load the RC data. You need to  re-
+              extract RC after the design is loaded.
+
+              Note:  CCOpt  configuration  will not be restored with -mmmcFile
+              specified. You need to re-run create_ccopt_clock_tree_spec after
+              restoreDesign to create a new CCOpt  configuration  against  the
+              new MMMC configuration.
+
+       -noTiming
+              Skips  reading  the MMMC file, timing libraries, and timing con-
+              straints.
+
+              Note: Most designs that use LEF rely on the .lib information  to
+              define  the  bus  order  for MACROs that have bus bit terminals.
+              Therefore, using the -noTiming option can result in the  connec-
+              tivity to bus ports of leaf level instances being reversed. When
+              .lib  information is not available, the default is for bus ports
+              to be treated as descending (for  example,  [7:0]).  When  using
+              Verilog  modules  or OpenAccess abstract views to define the bus
+              order, the connectivity will still be correct even when  -noTim-
+              ing is specified.
+
+              Timing  libraries  cannot  be loaded in the same session after a
+              design is read using the -noTiming option. You must use restore-
+              Design without the -noTiming option in a new session to load the
+              design with timing libraries and constraints.
+
+              If you save a design after restoreDesign -noTiming, it will  not
+              save timing information unless you use saveDesign -addtiming.
+
+       -readGlobals <tcl_file_name>
+              Specifies the UDM variables to be honored when restoring the de-
+              sign. You need to provide a tcl file stating the pre-defined UDM
+              variable names to be honored.
+
+       <session>
+              Specifies  the directory from which to load the DB files. If the
+              <<session>> name ends with .tar.gz it is treated  as  a  gzipped
+              tar file (see saveDesign -tgz option) that is extracted into the
+              directory  first.   So,  restoreDesign  test.enc.dat.tar.gz will
+              create a directory named test with all the DB files inside it.
+
+       -setup_views <setup_views>
+              Specifies the setup views for loading.  Rather  than  the  setup
+              views active during saveDesign.
+
+Examples
+              * The  following  command  loads the saved design files from the
+                test.enc.dat directory:
+
+                restoreDesign test.enc.dat top
+
+              * For physical-only editing, you can do this to speedup restore-
+                Design/saveDesign by ignoring the timing during restoreDesign,
+                and adding it back during saveDesign.
+
+                restoreDesign test1.enc.dat top -noTiming
+
+                <physical-only editing>
+
+                saveDesign test2.enc.dat -addtiming
+
+                Then in a new session
+
+                restoreDesign   test2.enc.dat   top       #has   timing   from
+                test1.enc.dat
+
+                If   the  logical  netlist  was  modified  during  editing  of
+                test1.enc.dat, then  reading  test2.enc.dat  may  have  unpre-
+                dictable timing results.
+
+              * The following command reads the "designLib top placed" OpenAc-
+                cess  cellview  but replaces the existing MMMC settings in the
+                design with the settings in new_mmmc.tcl:
+
+                restoreDesign  -cellview  "designLib  top  placed"   -mmmcFile
+                new_mmmc.tcl
+
+              * The  following command reads the placed.enc.dat design but re-
+                places the saved MMMC settings in the design with the settings
+                in new_mmmc.tcl:
+
+                restoreDesign placed.enc.dat -mmmcFile new_mmmc.tcl
+
+                Then create a new CCOpt configuration:
+
+                create_ccopt_clock_tree_spec
+
+Related Information
+              * create_ccopt_clock_tree_spec
+
+              * fill_setting_save
+
+              * init_mmmc_file
+
+              * saveDesign
+
+              * setOaxMode
+
+              * Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide.
+
+              * Mixed Signal Interoperability Guide for OpenAccess usage.
+
+                           Fri Apr 04 01:25:37 2025       restoreDesign(25.10)

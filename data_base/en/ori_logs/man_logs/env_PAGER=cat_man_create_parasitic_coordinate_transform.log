@@ -1,0 +1,209 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_parasi...nate_transform(25.10)    create_parasi...nate_transform(25.10)
+
+Name
+       create_parasitic_coordinate_transform  -  Determines  accurate location
+       information of nodes during SPEF reading
+
+Syntax
+       create_parasitic_coordinate_transform
+
+       [-help]
+
+       {-inst <inst_name>
+
+       [-x_block_origin <value>]
+
+       [-x_offset< value>]
+
+       [-y_block_origin <value>]
+
+       [-y_offset <value>]
+
+       [-orient {R0 R90 R180 R270 MY MX90 MX MY90}]
+
+       [-relative_to_parent]} | {-reset}
+
+       Determines accurate location information of nodes during SPEF reading.
+
+       In case of hierarchical designs, there can be multiple blocks in a  de-
+       sign  that  are  implemented separately. During Top level STA analysis,
+       SPEFs of these blocks are stitched  together  with  top  for  flat  STA
+       analysis. This works well if pin location of blocks is not required. In
+       case of AOCV analysis, when spatial analysis is enabled, accurate loca-
+       tion  of  all nodes (pin/net) in the design is required for calculating
+       accurate derates in the design. This makes it  necessary  to  determine
+       accurate  nodes  location  during SPEF reading. This can be achieved by
+       transforming SPEF coordinates as per their physical locations.
+
+       Note:
+
+              * This command works with all possible SPEF and RCDB input  com-
+                binations  with  read_parasitics command, which means for only
+                RCDB(s) as input, mix of SPEF(s) and RCDB(s) as input and only
+                SPEF(s) as input.
+
+              * If this command is not specified, the spefIn command tries  to
+                automatically  find  the orientation and origin of the hierar-
+                chical SPEF blocks and applies those identified transforms  to
+                the parasitic co-ordinates.
+
+              * The create_parasitic_coordinate_transform command settings re-
+                main  in  effect  for all the subsequent spefIn and read_para-
+                sitics until they are reset using the -reset option.
+
+              * Whenever the block's origin (in block SPEF/DEF)  is  non-zero,
+                the  x and y coordinates need to be specified for applying the
+                transform.  The  last  two  parameters,  -x_block_origin   and
+                -y_block_origin  in  the  following command use-model are only
+                required to be specified for the case of non-zero  block  ori-
+                gin.
+
+                create_parasitic_coordinate_transform -inst <inst_name>
+
+                -x_offset <x-offset of block origin in top-level DEF/SPEF>
+
+                -y_offset    <y-offset    of   block   origin   in   top-level
+                DEF/SPEF>-orient <orientation>
+
+                -x_block_origin    <x-coord    of    non-zero    block    ori-
+                gin>-y_block_origin  <y-coord of non-zero block origin>For ex-
+                ample:
+
+                *
+
+                  For Non-Zero Origin Block: Specify the block origin as shown
+                  below:
+
+                  create_parasitic_coordinate_transform -inst eco_inst1
+
+                  -x_offset 421.6
+
+                  -y_offset 485
+
+                  -orient R180
+
+                  -x_block_origin 3.4
+
+                  -y_block_origin 9.7
+
+                *
+
+                  For zero origin block: No need to specify the  block  origin
+                  as shown below:
+
+                  create_parasitic_coordinate_transform
+
+                  -inst controller
+
+                  -x_offset 16.8
+
+                  -y_offset 205
+
+                  -orient R0
+
+                  or
+
+                  create_parasitic_coordinate_transform
+
+                  -inst controller
+
+                  -x_offset 16.8
+
+                  -y_offset 205
+
+                  -orient R0
+
+                  -x_block_origin 0
+
+                  -y_block_origin 0
+
+                  Both the above commands are equivalent.
+
+              *
+
+                The  impact of this command is valid till first spefIn command
+                is read (in case of MMMC, till all  corners  SPEFs  have  been
+                read).  If  you want to read SPEF again, this command needs to
+                be applied once again. These transformations will  be  applied
+                during spefIn command.
+
+Parameters
+       -help  Prints  out the command usage. For a detailed description of the
+              command and all of its parameters, use the man command: man cre-
+              ate_parasitic_coordinate_transform
+
+       -inst <inst_name>
+              Indicates the hierarchical name of the instance for  which  SPEF
+              is being read.
+
+       -orient {R0 R90 R180 R270 MY MX90 MX MY90}
+              Indicates  orientation change of instances. The valid values are
+              R0, R90, R180, R270, MX,MX90, MY, and MY90.
+
+       -relative_to_parent
+              When this parameter is specified, the software  considers  block
+              offsets  for  the  specified  instance relative to the immediate
+              parent.
+
+              By default, the software considers the offset value relative  to
+              the top hinst.
+
+       -reset Resets SPEF transform values.
+
+       -x_block_origin <value>
+              Specifies  that in case of non-origin block, offset x-coordinate
+              in microns
+
+       -x_offset <value>
+              Indicates the actual x-coordinate  as  exists  in  the  physical
+              floor plan, corresponding to the specified instance.
+
+       -y_block_origin <value>
+              Specifies  that in case of non-origin block, offset y-coordinate
+              in microns.
+
+       -y_offset <value>
+              Indicates the actual y-coordinate  as  exists  in  the  physical
+              floor plan, corresponding to specified instance.
+
+Examples
+       Consider the following hierarchical design where X and Z are two blocks
+       inside TOP, and Y is another hierarchical block in X:
+
+       Here,  X,Y,  and  Z  have the following physical locations in the floor
+       plan:
+
+       X - (a,b)
+
+       Y- (c,d)
+
+       Z- (m,n)
+
+       You can apply transformations to all blocks with respect to TOP, by us-
+       ing the following commands:
+
+       create_parasitic_coordinate_transform -inst X -x_offset a -y_offset b
+
+       create_parasitic_coordinate_transform -inst Z -x_offset m  -y_offset  n
+       -orient MY
+
+       create_parasitic_coordinate_transform -inst X/Y -x_offset c -y_offset d
+       -orient R180
+
+       These transformations will be applied when spefIn command is issued.
+
+Related Information
+              * set_analysis_view
+
+              * redirect
+
+              * read_parasitics
+
+              * spefIn
+
+              * The following chapter in the Innovus User Guide
+
+                * RC Extraction
+
+                           Fri Apr 04 01:2c5r:e3a7te2_0p2a5rasi...nate_transform(25.10)

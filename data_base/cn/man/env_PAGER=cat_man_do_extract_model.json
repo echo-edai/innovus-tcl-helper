@@ -1,0 +1,183 @@
+{
+  "command": "do_extract_model",
+  "is_cmd": true,
+  "summary": "为顶层单元构建Liberty (.lib)格式的时序模型",
+  "description": "为顶层单元构建一个Liberty (.lib)格式的时序模型，该模型是原始设计的时序等效模型。模型针对给定的分析模式、PVT条件和寄生参数进行提取。如果这些参数中的任何一个发生变化，则必须重新提取模型。模型针对一系列输入转换时间和负载电容进行提取。如果未指定这些范围，软件会自动计算默认值。提取的模型将设计的所有顶层端口定义为引脚。此外，所有其他作为create_clock或create_generated_clock目标的设计引脚将作为内部引脚保留。对于模型提取，设计必须被正确约束。例如，不能存在时钟或数据冲突。在模型提取之前，应使用check_timing命令并纠正所有错误。",
+  "usage": "do_extract_model [-help] <model_filename> [-abs_tol_val <float>] [-abs_tol_val_optimistic <float>] [-abs_tol_val_pessimistic <float>] [-assertions <constraint filename>] [-cell_name <cell_name>] [-clock_slews {<clk_slew1 clk_slew2>...}] [-format <string>] [-gain <integer>] [-include_aocv_weights] [-include_power] [-input_slews {<input_slew1 input_slew2>...}] [-lib_name <lib_name>] [-max_num_loads <value>] [-max_num_slews <value>] [-output_loads {<output_load1 output_load2>...}] [-per_tol_val <float>] [-per_tol_val_optimistic <float>] [-per_tol_val_pessimistic <float>] [-pg] [-precision <integer>] [-resolution <float>] [-tolerance <float>] [-validate <string>] [-verilog_shell_file <filename>] [-verilog_shell_module <top_module_name>] [-view <string>] [-check]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<model_filename>",
+      "description": "指定输出文件的名称。为避免重新绑定问题，建议使用-lib_name和-cell_name参数代替默认名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-abs_tol_val",
+      "description": "指定在验证提取的时序模型时使用的绝对容差值。此参数仅在指定-validate选项时可用。默认值：10ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-abs_tol_val_optimistic",
+      "description": "指定标记乐观失败的绝对容差限制。违反绝对和百分比容差限制的乐观路径将在compare_model_timing命令输出报告中标记为FAIL。此参数可在-validate与模型提取一起使用时使用。默认值：10ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-abs_tol_val_pessimistic",
+      "description": "指定标记悲观失败的绝对容差限制。违反绝对和百分比容差限制的悲观路径将在check_timing_model命令输出报告中标记为FAIL。此参数可在-validate与模型提取一起使用时使用。默认值：10ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-assertions",
+      "description": "转储用于验证流程的模型的约束。默认值：model.asrt。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_name",
+      "description": "指定时序模型中使用的单元名称。默认值：要提取的顶层单元的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_slews",
+      "description": "指定在所有时钟引脚上使用的转换时间值范围。值列表必须用花括号括起来。如果未指定此参数，软件会自动计算适当的值。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-format",
+      "description": "指定提取模型的格式：tlf、dotlib或syntech。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gain",
+      "description": "表示移除引脚时延迟弧数量的增加。此选项在移除引脚可能导致模型大小增加的情况下，用于减少提取的模型大小。默认值：0。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-include_aocv_weights",
+      "description": "在单个弧上写入阶段权重。使用此选项前，必须读入AOCV库并启用AOCV分析（通过使用setAnalysisMode -aocv true）。写入ETM的权重并非用于降额模型。模型本身将包含降额后的延迟。在弧上提取的阶段权重将用于计算跨越ETM的芯片级路径的阶段数。提取模型中的阶段权重将作为用户定义属性转储。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-include_power",
+      "description": "写入有关模块消耗的功率信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-input_slews",
+      "description": "指定在所有输入引脚上使用的转换时间值范围。值列表必须用花括号括起来。如果未指定此参数，软件会自动计算适当的值。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-lib_name",
+      "description": "指定时序模型中使用的库名称。通过指定.lib文件后缀，以Liberty格式写入提取的时序模型。默认值：要提取的顶层单元的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_num_loads",
+      "description": "指定用于延迟弧表征的最大输出负载值数量。较低的值（1或2）可改善运行时间和内存使用，但可能显著降低模型精度。仅在模型大小或模型提取时间至关重要时使用此参数。默认值：64。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_num_slews",
+      "description": "指定用于延迟和检查弧表征的最大输入转换时间或时钟转换时间数量。指定较低的值（1或2）可改善运行时间和内存，但可能显著降低模型精度。使用-max_num_slews参数对运行时间和内存的影响大于-max_num_loads参数。仅在模型大小或模型提取时间至关重要时使用此参数。默认值：64。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-output_loads",
+      "description": "指定在所有输出引脚上使用的负载值范围。值列表必须用花括号括起来。如果未指定此参数，软件会自动计算适当的值。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-per_tol_val",
+      "description": "指定在验证提取的ETM时使用的百分比容差值。此选项仅在同时指定-validate选项时可用。默认值：5%。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-per_tol_val_optimistic",
+      "description": "指定标记乐观失败的百分比容差限制。违反百分比和绝对容差限制的乐观路径将在compare_model_timing命令输出报告中标记为FAIL。此参数可在-validate与模型提取一起使用时使用。默认值：5%。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-per_tol_val_pessimistic",
+      "description": "指定标记悲观失败的百分比容差限制。违反百分比和绝对容差限制的悲观路径将在compare_model_timing命令输出报告中标记为FAIL。此参数可在-validate与模型提取一起使用时使用。默认值：5%。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pg",
+      "description": "允许在提取的模型内部提取电源或地相关的引脚信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-precision",
+      "description": "指定用于时序模型的浮点精度。默认值：4。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-resolution",
+      "description": "指定提取器可以忽略的延迟差异幅度。默认值：0.001。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-tolerance",
+      "description": "以百分比形式指定提取器的精度水平。例如，5.0表示提取模型中允许的正负5.0%误差。容差越高，提取时间越快。默认值：1.0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-validate",
+      "description": "验证为相应视图生成的时序模型，并显示与建立和保持检查相对应的失败数量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verilog_shell_file",
+      "description": "生成一个实例化时序模型的Verilog shell文件。此参数对验证模型很有用。使用-verilog_shell_module参数指定此Verilog文件中顶层模块的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verilog_shell_module",
+      "description": "指定Verilog shell文件的顶层模块名称。默认值：test_shell。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "指定当前活动视图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check",
+      "description": "检查提取的时序模型是否存在任何可能的Liberty相关问题。指定后，命令将显示详细的错误和警告消息及其摘要。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

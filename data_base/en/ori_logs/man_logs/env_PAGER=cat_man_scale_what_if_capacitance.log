@@ -1,0 +1,159 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+scale_what_if_capacitance(25.10)              scale_what_if_capacitance(25.10)
+
+Name
+       scale_what_if_capacitance - Scales the intrinsic cell capacitance value
+       to  determine  how much additional capacitance can be added in a region
+       to reduce dynamic IR drop
+
+Syntax
+       scale_what_if_capacitance
+
+       [-help]
+
+       -reset | {{-global | -region <x1 y1 x2 y2> | -cell <cell_name>  |  -in-
+       stance <inst_name>| -file <filename>}
+
+       [-instrinsic_cap <value>]
+
+       [-loading_cap <value>]
+
+       [-grid_cap <value>]
+
+       [-add]
+
+       [-layer <name>]
+
+       [-net <net_name |>all]
+
+       }
+
+       Scales the intrinsic cell capacitance value to determine how much addi-
+       tional capacitance can be added in a region to reduce dynamic IR drop.
+
+Parameters
+       -add   Specifies  to  add  capacitance  (farads) on the power-grid on a
+              specific layer and region. The parameter  works  in  conjunction
+              with the existing parameters, such as -intrinsic_cap, -grid_cap,
+              and  -loading_cap.  When  this parameter is specified, the value
+              provided with the -intrinsic_cap,  -grid_cap,  and  -loading_cap
+              parameters  will be treated as absolute value instead of a scale
+              factor value, which is the default behavior.
+
+       -cell <cell_name>
+              Specifies to scale the capacitance value for the specified cell.
+
+       -file <filename>
+              Specifies a file containing the list of instances and cells that
+              use the same scaling factor. The format of the file is:
+
+              CELL <cellname>
+
+               INSTANCE <instancename>
+
+       -global | -region <x1 y1 x2 y2>
+              You must specify either -global or -region <x1 y1  x2  y2>.  The
+              -global  option scales the specified capacitances for the entire
+              design.
+
+              The -region <x1 y1 x2 y2> scales the specified  capacitances  in
+              the  region.  The  default  unit of <x1 y1 x2 y2> is in database
+              units
+
+       -grid_cap <value>
+              Scales power-grid capacitance of the  design  to  the  specified
+              scale factor. The default scale value is 1.
+
+              The -grid_cap parameter can be specified either with the -global
+              or  the  -region parameter. This parameter is not supported with
+              the -cell and -instance parameters.
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each scale_what_if_capacitance parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man scale_what_if_capacitance.
+
+       -instance <inst_name>
+              Specifies  to  scale the capacitance value for the specified in-
+              stance.
+
+       -intrinsic_cap <value>
+              Scales instance internal  gate  capacitances  to  the  specified
+              scale factor. The default scale value is 1.
+
+       -layer<layername |>all
+              Specifies  the  LEF  layer  on which capacitance scaling is per-
+              formed. Multiple commands can be issued to scale capacitance  on
+              multiple  layers.  You can specify the all argument to scale all
+              the layers.
+
+       -loading_cap <value>
+              Scales loading capacitance of  the  instance  to  the  specified
+              scale factor. The default scale value is 1.
+
+       -net <net_name |>all
+              Specifies to scale the capacitance value for the specified net.
+
+              Alternatively,  you  can  specify  the all argument to apply the
+              scaling values across all nets simultaneously. With  this  argu-
+              ment,  you  can  apply  what-if  capacitance data to all nets at
+              once, rather than being limited to applying scaling values to  a
+              single net at a time.
+
+       -reset Resets  all  the previous scale_what_if_capacitance command set-
+              tings.
+
+Examples
+              *
+
+                Cell-based capacitance scaling - The following command  scales
+                intrinsic  capacitance  on  all instances of the cell cellA by
+                1e-10 (<intrinsic_cap> * 1e-10):
+
+                scale_what_if_capacitance -cell cellA  -intrinsic_cap 1e-10
+
+              *
+
+                Pin-based capacitance scaling - The following  command  scales
+                intrinsic and loading capacitance on all instances of the cell
+                cellA  connected  to  the pin vdd  by 1e-10 (<intrinsic_cap> *
+                1e-10 and <loading_cap> *1e-10):
+
+                scale_what_if_capacitance -cell cellA -net vdd  -intrinsic_cap
+                1e-10  -add -loading_cap 1e-10
+
+              *
+
+                Region-based  capacitance  scaling  -  The  following  command
+                scales capacitance in the specified region by 1e-10  (<intrin-
+                sic_cap>  *  1e-10,  <loading_cap>  *1e-10,  and  <grid_cap> *
+                1e-10):
+
+                scale_what_if_capacitance
+                 -region  {896.877   937.661   1276.9365   1615.358}  -intrin-
+                sic_cap 1e-10 -loading_cap 1e-10  -grid_cap 1e-10
+
+              * The following command scales grid capacitance in the specified
+                layer by 1e-10:
+
+                scale_what_if_capacitance  -net  VDD  -region  { 0 0 100 100 }
+                -layer M2 -grid_cap 1e-10
+
+              * The following command scales intrinsic capacitance in all lay-
+                ers by 1e-4 for all nets:
+
+                scale_what_if_capacitance -global -net all -layer all -intrin-
+                sic_cap 2e-3 -loading_cap 1e-4
+
+Related Information
+              * create_current_region
+
+              * scale_what_if_resistance
+
+              * scale_what_if_current
+
+              * "What-If Rail Analysis" in the Voltus IC Power Integrity Solu-
+                tion User Guide
+
+                           Fri Apr 04 01:25:37s2c0a2l5e_what_if_capacitance(25.10)

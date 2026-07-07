@@ -1,0 +1,138 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verifyMetalDensity(25.10)                            verifyMetalDensity(25.10)
+
+Name
+       verifyMetalDensity - Checks the metal density of each routing layer and
+       of  macros against values specified by LEF file, or against its own in-
+       ternal default values
+
+Syntax
+         verifyMetalDensity
+
+       [-help]
+
+       [-report filename]
+
+       [-detailed]
+
+       [-ignoreLEFDensity]
+
+       [-layer <layer_name_list>]
+
+       [-area {x1 y1 x2 y2}]
+
+       [-oversize value]
+
+       Checks the metal density of each routing layer and  of  macros  against
+       values  specified by LEF file, or against its own internal default val-
+       ues. Reports density information in the log file.
+
+       If the LEF file does not specify the window size or density, verifyMet-
+       alDensity uses internal default values.
+
+       verifyMetalDensity now supports multi-threading to improve  Metal  Fill
+       runtime  performance  in multi-thread mode. verifyMetalDensity supports
+       the new setMultiCpuUsage command use model. For more  information,  see
+       the following documents:
+
+              * Multiple-CPU  Processing  Commands chapter of the Innovus Text
+                Command Reference.
+
+              * Accelerating the Design Process by Using Multiple-CPU Process-
+                ing chapter of User Guide.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each verifyMetalDensity parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man  verifyMetalDensity
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the coordinates of the area to  verify.  For  example,
+              verifyMetalDensity -area {0 0 100 100}.
+
+              Default: Entire area
+
+              Behavior of verifyMetalDensity -area with external metal density
+
+              When  metal  fill  is added to a block design the external metal
+              density provides a density assumption to verifyMetalDensity. The
+              external density is used only for density  calculation  purposes
+              and no fill shapes are added outside of the design area.
+
+              When  the -area parameter is not specified, the external density
+              value is not used. In this case, the  verifyMetalDensity  window
+              is  pushed  back if it extends outside the design area, as shown
+              in the figure below.
+
+              If the -area parameter is specified and is larger than  the  de-
+              sign  size  then  verifyMetalFill  windows extend outside of the
+              block area and use the external density value for that area.
+
+              If external density is less than the  specified  preferred  den-
+              sity,  it  is more likely that shapes will be added to the area.
+              If external density is greater than the preferred density it  is
+              less  likely  that  shapes  will be added (shapes are only added
+              within the design boundary).
+
+              Note: Windows outside the design boundary are ignored.
+
+       -detailed
+              Generates a detailed metal density report.
+
+       -ignoreLEFDensity
+              Ignores the MACRO DENSITY table in the LEF file and instead uses
+              the default macro density calculation method.
+
+              Note: If you do not specify this  parameter,  verifyMetalDensity
+              uses the LEF MACRO density table for density calculations.
+
+       -layer <layer_name_list>
+              Specifies  the  LEF  or Innovus layers to verify. If you specify
+              only one layer name, you do not need the braces around the name.
+              For example, verifyMetalDensity -layer  {METAL1 METAL2}.
+
+       -oversize <value>
+              Specifies an offset value for the area to verify. The  value  is
+              in  user  units (not in DBU), and can be positive or negative. A
+              positive value adds to the area that is verified.  For  example,
+              if  the  design  covers the area from (0,0) to (100,100) and you
+              specify -oversize   10, verifyMetalDensity checks the area  from
+              ( -10,-10) to (110,110).
+
+              Default: 0.
+
+       -report <filename>
+              Specifies the report file for the metal density violation infor-
+              mation.
+
+              Default: <designName>.metaldensity.rpt.
+
+Examples
+              * The  following  command checks metal density of all layers and
+                generates a report file named Test7.density.rpt:
+
+                verifyMetalDensity -report Test7.density.rpt
+
+              * The following command checks metal density on layer Metal1  in
+                the  area  specified  and  generates  a  detailed report named
+                test_chip.density.rpt:
+
+                verifyMetalDensity -area  {-200  -200  1600.0  1600.0}  -layer
+                {Metal1} -report test_chip.density.rpt -detailed
+
+                In  the  example  above, the layout size is 0 0 1400.0 1400.0.
+                The command considers the density of the area outside  of  the
+                design as 0.
+
+Related Information
+              * Identifying and Viewing Violations chapter of User Guide.
+
+              * Optimizing Metal Density chapter of User Guide.
+
+              * LEF Syntax chapter in the LEF/DEF Language Reference
+
+                           Fri Apr 04 01:25:37 2025  verifyMetalDensity(25.10)

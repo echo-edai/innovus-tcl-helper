@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoCloneFlop(25.10)                                        ecoCloneFlop(25.10)
+
+Name
+       ecoCloneFlop
+
+Syntax
+       ecoCloneFlop
+
+       [-help]
+
+       [-batchMode]
+
+       [-force]
+
+       -instances <flopInstName>
+
+       [-max_num_loads <num_of_loads>]
+
+       [-numClones <number>]
+
+       [-radius <num_of_rows>]
+
+       [-verbose]
+
+       Clones flop instances as long as the flops meet the following criteria:
+
+              * They are not FIXED
+
+              * They are allowed to be resized
+
+              * When they do not share synchronization signals with some other
+                instance
+
+       This  command is used when you want to clone a flop as manual ECO. Man-
+       ual flop cloning is usually performed  on  control  signal  flip-flops,
+       when  the  output  needs  to  reach  sections of the floorplan that are
+       spread out. Cloning the flip-flops allows you to place each clone close
+       to its sink points, thereby reducing the timing closure effort.
+
+       This command should not be used to clone a flop  that  drives  a  clock
+       net,  which  is a net with the attribute isDefInclock, because this may
+       lead to problems during optimization or timing. The default behavior of
+       the command may reject the flip-flop cloning due to design  constraints
+       or QOR impact.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each ecoCloneFlop parameter. For  a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:  man ecoCloneFlop.
+
+       -batchMode
+              When specified, clones multiple instances at the same time  with
+              no timing update in between. For example,
+
+              ecoCloneFlop -batchMode -numClone 2 -insts {reg1 reg2}
+
+              Both, reg1 and reg2 are cloned in the same timing session.
+
+       -force When  specified, forces the flop instance to clone. This parame-
+              ter is used when flop cloning is rejected by the software.
+
+       -instances <flopInstName>
+              Specifies the list of instances to be cloned. This is a required
+              parameter.
+
+       -max_num_loads <num_of_loads>
+              Specifies that cloning should be skipped for  instances  driving
+              more than the specified number of loads.
+
+              Default: 50000
+
+       -numClones <number>
+              Specifies the cloned numbers for the flop instance.
+
+       -radius <num_of_rows>
+              Specifies  that  the  clones should be placed within a radius of
+              the specified number of rows from their preferred location based
+              on the original instance location and the center of mass of  the
+              new set of loads.
+
+              Default: 10
+
+       -verbose
+              When  specified,  verbose  messages  are  displayed  during  the
+              cloning of flop instances.
+
+Example
+       The following command will clone the flip-flop $inst 3 times:
+
+       ecoCloneFlop -instances $inst -numClones 3
+
+Related Information
+              * ecoSplitFlop
+
+              * ecoSplitComplexFlop
+
+              * dumpMultiBitFlopMappingFile
+
+              * reportMultibit
+
+              * setOptMode
+
+              * setDesignMode
+
+              * The following topic in the Innovus User Guide
+
+                * Using the Multi-Bit Flip-Flop Flow
+
+                           Fri Apr 04 01:25:37 2025        ecoCloneFlop(25.10)

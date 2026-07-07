@@ -1,0 +1,111 @@
+{
+  "command": "create_thermal_model",
+  "is_cmd": true,
+  "summary": "设置用于提取金属密度信息的参数，必须在 extract_metal_density 命令之前指定。",
+  "description": "此命令用于配置生成Voltus热模型文件所需的各项参数。它主要用于设置金属密度提取、功率数据库路径、输出格式（simple或stack）、瓦片划分（数量或尺寸）、泄漏功率温度缩放以及单位系统等。该命令是进行精确热分析前准备功率映射文件的关键步骤。",
+  "usage": "create_thermal_model [-help] [-leakage_temperature_scale_table {$<temp1> $<scalefactor1> $<temp2> $<scalefactor2> $<temp3> $<scalefactor3> .....}] [-leakage_temperature_scale_table_file <filename>] [-metal_density_file <filename>] [-power_db <path_to_power_database>] [-vtm_SI_unit {true | false}] [-vtm_conductivity_inputs <filename>] [-vtm_densitytable_tile {<Xint> <Yint>}] [-vtm_file <filename>] [-vtm_format {simple | stack}] [-vtm_format_version {new | default}] [-vtm_header_include_file <filename>] [-vtm_leakage_temp {<temp1> <temp2> <temp3>}] [-vtm_output_dir <directory>] [-vtm_powertable_tile {<Xint> <Yint>}] [-vtm_tile {<Xint> <Yint>}] [-vtm_tile_size {<$X_um> <$Y_um>}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法及各参数的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-leakage_temperature_scale_table",
+      "description": "指定温度值对应的全局缩放因子，用于缩放输入dotlib文件中的泄漏功率值。此参数允许仅在特定温度下缩放功率值，从而可以从单个输入dotlib文件生成多温度泄漏功率映射表。与 -leakage_temperature_scale_table_file 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leakage_temperature_scale_table_file",
+      "description": "指定一个文件，其中包含用户为每个库、单元或实例定义的温度值及对应的缩放因子。此参数允许从单个输入dotlib文件生成多温度泄漏功率映射表。与 -leakage_temperature_scale_table 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-metal_density_file",
+      "description": "指定由 extract_metal_density 命令生成的VTM金属密度文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_db",
+      "description": "指定包含单元边界框、位置和旋转信息的功率数据库路径。该数据库通过设置 set_power_analysis_mode -save_bbx true 参数生成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_SI_unit",
+      "description": "指定功率和长度的单位定义。true 表示单位为米(m)和瓦(W)；false 表示单位为微米(um)和毫瓦(mW)。默认值为 true。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_conductivity_inputs",
+      "description": "此参数与 set_metal_density_options -thermal_conductivity_file 参数功能相同。当需要覆盖金属密度文件中定义的热导率时，可使用此命令提供新的热导率文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_densitytable_tile",
+      "description": "指定金属密度表在X和Y方向上的瓦片数量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_file",
+      "description": "指定输出的Voltus热模型文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_format",
+      "description": "生成基于瓦片的功率映射文件格式，可选择 simple（仅生成功率表）或 stack（生成功率表和金属密度表），以执行精确的热分析。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_format_version",
+      "description": "决定生成默认还是新的功率映射文件格式。设置为 new 时，可以生成功率表（-vtm_powertable_tile）和金属密度表（-vtm_densitytable_tile）具有不同瓦片数量的文件格式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_header_include_file",
+      "description": "允许定义额外的头文件信息，例如文件位置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_leakage_temp",
+      "description": "指定在功率计算流程中用于trilib（单电压但不同温度的dot libs）的泄漏温度值，以输出用户定义温度点的泄漏功率表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_output_dir",
+      "description": "指定Voltus热模型输出文件夹的目录路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_powertable_tile",
+      "description": "指定功率表在X和Y方向上的瓦片数量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_tile",
+      "description": "指定生成的Voltus热模型文件在X和Y方向上的瓦片数量。默认值为10x10。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vtm_tile_size",
+      "description": "指定生成的热模型文件在X和Y方向上的单位瓦片尺寸。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,345 @@
+{
+  "command": "set_pg_library_mode",
+  "is_cmd": true,
+  "summary": "指定将要创建何种类型的电源网格库。",
+  "description": "此命令用于定义生成电源网格库所需的输入类型和配置。必须在运行 generate_pg_library 命令之前指定此命令。",
+  "usage": "set_pg_library_mode [-help] [-add_ploc_cells <cell1> <cell2> ...] [-bulk_ground_pins { <ground_pin_list> }] [-bulk_power_pins { <pin1 voltage1 ... pinN voltageN> }] [-calculate_metal_layer_density {true | false}] [-cell_decap_file <filename>] [-cell_list_file <filename>] [-cell_ploc_details <filename>] -celltype {techonly | stdcells | macros} [-current_distribution {propagation | dynamic_simulation <trigger_file> | current_region region_file}] [-custom_label <label>] [-decap_cells <cell_name_list>] [-default_area_cap <value>] [-default_power_voltage <value>] [-design_qrc_layermap <file>] [-enable_device_size_current_distribution {true | false}] [-enable_distributed_processing {true|false}] [-enable_multi_voltage_cap_generation {true | false}] [-exclude_cell_list_file <filename>] [-extraction_tech_file <file>] [-filler_cells <cell_name_list>] [-fine_grain_memory_cell {true | false}] [-gds_files <file_list>] [-gds_layermap <file>] [-generate_port_using_gds <mbb_layer_name>] [-ground_pins { <ground_pin_list> }] [-ignore_gds_cells {<gds_cell_name_list>}] [-internal_ground_pins <ground_pin_list>] [-internal_power_pins <power_pin_list>] [-layer_tap_node_distance { {<LayerName1> <tap_node_distance>} {<LayerName2> <tap_node_distance>} ... }] [-layers_to_be_ignored_during_tap_creation {<layername>+}] [-layers_to_have_ports_created {<layername>+}] [-lef_layermap <file>] [-liberty_files <file_list>] [-macros_config_file <filename>] [-max_metal_density_tile_dimension {<maxlength> <maxwidth>}] [-non_zero_ground_pins {<pin1> <voltage1> ... <pinN> <voltageN>}] [-oasis_files <file_list>] [-oasis_layermap <file>] [-pin_shape_current_distribution <filename>] [-power_pins { <pin1> <voltage1> ... <pinN> <voltageN> }] [-powergate_finegrain_simulation {true|false}] [-powergate_parameters {{ <cell> <supply> <switched> <Ron> <Idsat> <Ileak> Control_Pin_Logic} + }] [-powergate_parameters_file <filename>] [-spice_corners <corner_list>] [-spice_models <file_list>] [-spice_netlist_list_file <filename>] [-spice_subckts <file_list>] [-spice_subckts_xyscaling <value>] [-stop@via <layername>] [-stop_via_file <filename>] [-tap_node_distance_file <filename>] [-tech_gds_layermap <filename>] [-tech_oasis_layermap <filename>] [-temperature <temp_value_in_degree_celcius>] [-use_lefonly_for_detailedview_generation {true | false}] [-use_powergate_data_from_lib {true|false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add_ploc_cells",
+      "description": "指定要为其添加电压源的低压差稳压器（LDO）单元的名称。可以指定一个单元列表。此参数仅适用于LDO单元，并且在为这些单元创建电压源时必须使用。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-bulk_ground_pins",
+      "description": "指定将晶体管体端子连接到地网的网络名称。此信息用于防止任何电流被分配给这些网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-bulk_power_pins",
+      "description": "指定将晶体管体端子连接到电源网的网络名称。此信息用于防止任何电流被分配给这些网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-calculate_metal_layer_density",
+      "description": "启用宏单元的金属层密度计算。默认值为 false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-cell_decap_file",
+      "description": "指定包含单元列表及每个单元去耦电容值的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_list_file",
+      "description": "指定包含将被处理的单元列表的文件名。当选择 set_pg_library_mode -celltype macros 时，此参数是必需的。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_ploc_details",
+      "description": "指定一个文件，其中包含为电源焊盘和LDO单元在所需位置添加电压源所需的所有信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-celltype",
+      "description": "指定库创建的类型。选项：techonly（仅技术库）、stdcells（标准单元）、macros（宏单元）。",
+      "required": true,
+      "type": "enum"
+    },
+    {
+      "name": "-current_distribution",
+      "description": "指定单元内部的电流分布方法。选项：propagation（传播）、dynamic_simulation（动态仿真）、current_region（电流区域）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-custom_label",
+      "description": "将指定的标签保存在PGV中以便于识别。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-decap_cells",
+      "description": "指定具有显式去耦电容的单元名称，用于去耦优化。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-default_area_cap",
+      "description": "指定单元中默认的基于面积的去耦电容值。默认值为0.0（单位：fF/平方微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-default_power_voltage",
+      "description": "为LEF中存在但未使用 -power_pins 参数指定的电源引脚指定电压。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-design_qrc_layermap",
+      "description": "指定一个文件，提供LEF设计文件中层名到Quantus技术文件中层名的映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_device_size_current_distribution",
+      "description": "指定基于器件尺寸（宽度、长度）计算宏单元的抽头电流分布，而无需执行任何仿真。默认值为 false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_distributed_processing",
+      "description": "指定为库生成流程启用并行处理。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_multi_voltage_cap_generation",
+      "description": "指定计算一系列输入电压（包括标称电压）下的电容值。默认值为 false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-exclude_cell_list_file",
+      "description": "指定一个文件，其中包含应从电源网格库生成中排除的单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extraction_tech_file",
+      "description": "指定将用于提取的技术文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-filler_cells",
+      "description": "列出没有GDS数据的填充单元或穿通单元的单元名称。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-fine_grain_memory_cell",
+      "description": "指定在表征单元时将其标记为细粒度单元，并确保软件自动使用此信息在轨分析流程中识别细粒度存储单元。默认值为 false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-gds_files",
+      "description": "指定在电源网格库生成期间使用的GDSII文件名。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-gds_layermap",
+      "description": "指定一个文件，提供库层（qrcTechFile层）与GDS层之间的映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-generate_port_using_gds",
+      "description": "标识库生成用于计算由DEF文件放置的GDSII单元的放置边界框的层名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ground_pins",
+      "description": "指定所有未指定地网的单元中被视为地网的网络名称。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-ignore_gds_cells",
+      "description": "指定在宏PGV生成期间忽略指定的单元。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-internal_power_pins",
+      "description": "指定开关电源引脚列表。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-internal_ground_pins",
+      "description": "指定开关地引脚列表。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-layer_tap_node_distance",
+      "description": "指定特定层的抽头节点距离。使用此参数，可以在电源网格库生成期间自定义每层的抽头节点距离。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-layers_to_be_ignored_during_tap_creation",
+      "description": "指定库生成在创建电流抽头时要忽略的层名。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-layers_to_have_ports_created",
+      "description": "指定要为其创建端口的层名。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-lef_layermap",
+      "description": "指定一个文件，提供LEF文件和技术文件之间的层映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-liberty_files",
+      "description": "指定直接从指定的Liberty文件读取去耦电容和电阻，用于标准单元和宏PGV生成。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-macros_config_file",
+      "description": "指定为每个宏单元提供每次库生成运行的配置详细信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_metal_density_tile_dimension",
+      "description": "指定图块尺寸，其中<maxlength>表示最大长度，<maxwidth>表示最大宽度（单位：微米）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-non_zero_ground_pins",
+      "description": "指定所有需要指定非零地网的单元中被视为地网的网络名称和电压。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-oasis_files",
+      "description": "指定在电源网格库生成期间使用的OASIS文件名。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-oasis_layermap",
+      "description": "指定一个文件，提供库层（qrcTechFile层）与OASIS层之间的映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_shape_current_distribution",
+      "description": "指定一个电流分布文件，允许您说明电流应如何在电源和地引脚的多个引脚形状之间分布。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_pins",
+      "description": "指定所有未指定电源网的单元中被视为电源网的网络名称和电压。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-powergate_finegrain_simulation",
+      "description": "指定启用细粒度电源门控仿真。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-powergate_parameters",
+      "description": "指定技术库生成表征电源门控单元所需的信息。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-powergate_parameters_file",
+      "description": "指定一个文件，其中包含具有多个控制引脚、输入引脚和电源网的电源开关的详细信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spice_corners",
+      "description": "指定SPICE角点列表。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-spice_models",
+      "description": "指定SPICE网表文件（-spice_subckts）使用的SPICE模型文件名。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-spice_subckts",
+      "description": "指定包含与电源网格库生成期间处理的单元对应的子电路的SPICE网表文件名。",
+      "required": false,
+      "type": "string+"
+    },
+    {
+      "name": "-spice_subckts_xyscaling",
+      "description": "指定基于网表的流程的电流区域比例因子。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-stop@via",
+      "description": "在指定的通孔层停止单元内部电源网格网络的提取。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stop_via_file",
+      "description": "指定一个文件名，其中包含单元列表以及应停止提取电源网格网络的相应通孔层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tap_node_distance_file",
+      "description": "指定一个文件，其中包含给定单元列表的抽头节点之间的距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tech_gds_layermap",
+      "description": "指定一个文件，提供Quantus技术文件中层名到GDS文件中层名的映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tech_oasis_layermap",
+      "description": "指定一个文件，提供Quantus技术文件中层名到OASIS文件中层名的映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-temperature",
+      "description": "指定用于热感知EM/IR分析的库表征温度（摄氏度）。默认值为25。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_lefonly_for_detailedview_generation",
+      "description": "指定仅使用凸块LEF生成详细PGV，而不加载GDS文件。默认值为 false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-use_powergate_data_from_lib",
+      "description": "指定从使用现有 -liberty_files 参数指定的Liberty文件中读取电源门控参数（ron、饱和电流、泄漏电流）。",
+      "required": false,
+      "type": "bool"
+    }
+  ]
+}

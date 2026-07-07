@@ -1,0 +1,74 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_case_a...al_propagation(25.10)    timing_case_a...al_propagation(25.10)
+
+Name
+       timing_case_analysis_for_sequential_propagation
+
+Syntax
+       timing_case_analysis_for_sequential_propagation
+
+       {false | true | case_only | constant_only}
+
+       Default: false
+
+       Controls  whether  constants, which propagated to the inputs of sequen-
+       tial devices like registers or flip-flops, are propagated to the output
+       pins of those devices. This global variable will also affect the propa-
+       gation of constants through integrated clock gating (ICG) cells  -  de-
+       pending   on   the   setting   of  the  related  global  variable  tim-
+       ing_case_analysis_for_icg_propagation.  Refer to the documentation  for
+       this global variable for more information on ICG handling.
+
+       The  constants  can be present in the analysis due to several different
+       reasons - broadly breaking down to netlist constants and case analysis.
+       The netlist constants come from connections to tie-hi or tie-lo  cells,
+       a  1'b0/1'b1  assignment in the netlist, or explicit power rail connec-
+       tions. The constants derived from these sources are  considered  to  be
+       immutable.  The  constants  due to case analysis come strictly from the
+       set_case_analysis constraint and are considered to be temporary -  con-
+       figuring  the  analysis  to align to a certain mode.  You may choose to
+       handle constants from any source in a similar manner or  customize  the
+       handling based on the constant type.
+
+       If you choose to allow propagation of only a specific type of constant,
+       the output pin's state function must resolve to a constant by only con-
+       sidering  inputs  pins  with the required constant type. Otherwise, the
+       constant will not be propagated. The propagation of  constants  to  the
+       output  of  a sequential device may affect how the timing checks on re-
+       lated input pins are analyzed.  If all the possible  transitions  on  a
+       given  input  pin are unable to change the constant state of the output
+       pin, the timing checks on the input pin will be disabled by default.
+
+       Changing the state of this global variable will change where  constants
+       are present in the analysis, typically resulting in sets of timing arcs
+       and timing checks being enabled or disabled. As a result, a full timing
+       update, including a
+
+       fresh  delay  calculation,  will be initiated when this setting is tog-
+       gled.
+
+       Note:   The  setAnalysisMode  -sequentialConstProp  parameter  provides
+       overlapping functionality with this global variable. Changing the state
+       of -sequentialConstProp will also change the state of this global vari-
+       able. You should refrain from using both controls at the same time.
+
+       You can use one of the following options:
+
+       false  Disables  sequential  propagation  from any constant source (de-
+              fault setting).
+
+       true   Allows sequential propagation from any constant source - netlist
+              or constraint-based.
+
+       constant_only
+              Allows sequential propagation only for constants that are due to
+              the propagation of netlist-based constants.
+
+       case_only
+              Allows sequential propagation only for constants that are due to
+              the  propagation  of   constraint-based   constants   from   the
+              set_case_analysis command.
+
+       To set this global variable, use the set command.
+
+                           Fri Apr 04 01:2t5i:m3i7ng2_0c2a5se_a...al_propagation(25.10)

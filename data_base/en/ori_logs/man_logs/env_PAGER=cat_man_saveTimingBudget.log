@@ -1,0 +1,180 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+saveTimingBudget(25.10)                                saveTimingBudget(25.10)
+
+Name
+       saveTimingBudget  -  Saves  the  previously derived timing budgets to a
+       specified directory
+
+Syntax
+       saveTimingBudget
+
+       [-help]
+
+       [-dir <dirName>]
+
+       [{<instList>}]
+
+       [-inst <string> | -ptn <string>]
+
+       [-module_model_tag <string>]
+
+       Saves the previously derived timing budgets to a  specified  directory.
+       The main outputs of this command are the block constraints and the tim-
+       ing model. In the MMMC mode, the saveTimingBudget outputs the block and
+       top viewdefinition.tcl as well.
+
+       Use  this  command after deriving the time budgets using the deriveTim-
+       ingBudget command.
+
+       Note: The software will not write PG information while using the  save-
+       TimingBudget  command. To get accurate PG information in the partition-
+       block .lib, run the following commands in sequence:
+
+       partition
+
+       savePartition
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each saveTimingBudget parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command: man saveTimingBudget
+
+       <instList>
+              Saves the budget files for instances.  You  use  this  parameter
+              with the deriveTimingBudget -inst command.
+
+       -dir <dirName>
+              Specifies  the  relative directory name where the derived timing
+              budget files will be saved. These files are saved in  a  sub-di-
+              rectory     named    cellName_timingViewName.sdc.gz    at    the
+              dirName/cellName/cellName_timingViewName.sdc.gz location through
+              the relative directory path. If you do not specify this  parame-
+              ter, the timing budget files are saved in the current directory.
+              For example, if you run the following command, a directory named
+              STB will be saved at the current path:
+
+              deriveTimingBudget -dir STB
+
+       -inst <instList>| -ptn <ptnList >
+              Saves  the budget file for partitions or instances for which you
+              have generated timing budgets. You do not need to  specify  -ptn
+              or  -inst  if  you  have previously specified deriveTimingBudget
+              -ilm.
+
+              The -ptn parameter saves the budget files  for  partitions.  You
+              use this parameter with the deriveTimingBudget -ptn command.
+
+              The  -inst  parameter  saves the budget files for instances. You
+              use this parameter with the deriveTimingBudget -inst command.
+
+              Default: The tool saves budgets for all instances and partitions
+              specified by deriveTimingBudget.
+
+       -module_model_tag <string>
+              Creates a new mmmc directory and  saves  the  view  definitions,
+              libs,  and  constraints therein. The created mmmc directory will
+              be located as follows:
+
+              <shdb_root>/<block_name>/<tag_name>/mmmc
+
+              For example:
+
+              * The saveTimingBudget -module_model_tag ABCD command will  save
+                view    definition,   libs,   and   constraints   within   the
+                shdb_root/block_name/ABCD/mmmc directory.
+
+              * The default behavior of  the  savePartition  -module_model_tag
+                ABCD  command  is not impacted, and the view definition, libs,
+                and constraints are saved in  the  .enc.dat  file  within  the
+                shdb_root/block_name/ABCD/pnr directory.
+
+              * The  saveTimingBudget -module_model_tag ABCD and savePartition
+                -module_model_tag ABCD  commands  are  completely  independent
+                (those will not affect the functioning of each other).
+
+Examples
+       The following examples are based on a scenario, where a design with the
+       ptn1 partition has two instances, L1 as the master, and L1_clone as the
+       clone:
+
+              * The  following  set  of commands saves the timing budget files
+                for partition in the STB/ptn1 directory. It saves  the  timing
+                budget information for both the partition and top. Also, since
+                it  uses the masterOnly mode, the budgets will be based on the
+                master timing only:
+
+                deriveTimingBudget -ptn ptn1
+
+                saveTimingBudget -dir STB
+
+              * The following set of commands saves timing budget  files  only
+                for  the L1_clone instance in the STB/ptn1 directory. Since it
+                uses the merged mode, the timing budgeting information will be
+                based on the worst case data from both the instances. In  this
+                case,  any  of  the master or clone instances, or both, can be
+                specified while running saveTimingBudget. The best approach is
+                to not specify either of those, and let  the  saveTimingBudget
+                command save the information generated by the deriveTimingBud-
+                get command:
+
+                setBudgetingMode -masterClone merged
+
+                deriveTimingBudget -inst {L1 L1_clone}
+
+                saveTimingBudget -dir STB -inst {L1_clone}
+
+              * The  following  set  of commands saves the timing budget files
+                for the L1 instance in the STB/ptn1 directory.  It  saves  the
+                timing budget information for only the partition instance:
+
+                deriveTimingBudget -inst L1 (or L1_clone)
+
+                saveTimingBudget -dir STB
+
+              * The  following  set  of commands saves the timing budget files
+                for the L1 instance in the STB/ptn1.L1 directory, and for  the
+                L1_clone instance in the STB/ptn1.L1_clone directory. It saves
+                the  timing  budget  information  only  for  the partition in-
+                stances:
+
+                deriveTimingBudget -inst {L1 L1_clone}
+
+                saveTimingBudget -dir STB
+
+              * The following set of commands saves the  timing  budget  files
+                only for the L1_clone instance in the STB/ptn1.L1_clone direc-
+                tory:
+
+                deriveTimingBudget -inst {L1 L1_clone}
+
+                saveTimingBudget -dir STB -inst {L1_clone}
+
+Related Information
+              * The  following sections in the Timing Budgeting chapter of the
+                User Guide document:
+
+                     * "Deriving Timing Budgets"
+
+              *
+
+                *
+
+                  * "Top-Level Budgets Derived by Using Active Logic View"
+
+              *
+
+                *
+
+                  * "Deriving Preliminary Budgets in Early Design Phase"
+
+                     * "Budgeting Output Files for MMMC Designs"
+
+                     * "Generated Report for Design Example"
+
+                     * "Verifying Timing Budgets"
+
+                     * "Reading the Justify Budget Report"
+
+                           Fri Apr 04 01:25:37 2025    saveTimingBudget(25.10)

@@ -1,0 +1,158 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setMaxCapPerFreq(25.10)                                setMaxCapPerFreq(25.10)
+
+Name
+       setMaxCapPerFreq  -  Adds  a maximum capacitance per frequency table to
+       the existing max_capacitance statement in the timing library
+
+Syntax
+       setMaxCapPerFreq
+
+       [-help]
+
+       [-lib libName]
+
+       [-force]
+
+       -freq {<freq1 ><freq2 >...}
+
+       -cap {<cap1 ><cap2 >...}
+
+       -pins {cell pin}
+
+       Adds a maximum capacitance per frequency table to the existing  max_ca-
+       pacitance  statement  in  the timing library. Timing analysis uses this
+       table to detect violations, andoptDesign attempts to repair violations.
+
+       The timing engine derives the frequency of an instance from  the  clock
+       domain  to which it is connected (the fastest clock domain, if there is
+       more than one). If the instance is a clock instance (that is,  part  of
+       the clock tree), the actual clock frequency is used. If the instance is
+       part  of  the  combinational  logic (that is, a flip-flop, or the logic
+       connected to the output of a flip-flop), the frequency used equals one-
+       half of the associated clock domain frequency because a flip-flop  out-
+       put  can only toggle at one-half the rate of the input clock. For exam-
+       ple, a clock of 1.0 Mhz has 1,000,000 rise  and  fall  transitions  per
+       second;  however the output of a flip-flop connected to a 1.0 Mhz clock
+       can only have 500,000 rise and fall transitions per second.
+
+       Timing analysis computes the frequency directly from the timing  graph.
+       Use the dbSetNetFrequency command to write the effective frequency onto
+       the associated net in the database. You can then use the dbNetFrequency
+       database  command to check a given net's frequency value. The frequency
+       values are stored in Hertz in the database. Modifying this  value  with
+       the dbSetNetFrequency database command only affects verifyACLimit.
+
+       Note:  This  command  supports MMMC and performs DRV computation as per
+       view frequency. This feature is enabled by  setting  the  below  global
+       variable to true.
+
+       set_global timing_report_drv_enable_frequency_per_view true
+
+       For  detailed  description of the variable, see the Timing Global Vari-
+       ables chapter.
+
+       You can use this command any time  after  loading  the  timing  library
+       files (that is, after importing or restoring the design).
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setMaxCapPerFreq parameter.  For  a  detailed
+              description  of  the  command and all of its parameters, use the
+              man command:
+
+              man setMaxCapPerFreq
+
+       -cap {<cap1 ><cap2 >...}
+              Specifies a list of capacitance values that must be greater than
+              or equal to 0. You must specify the same  number  of  -freq  and
+              -cap values.
+
+              The  software  derives the maximum capacitance from a linear in-
+              terpolation (or extrapolation) for a given frequency value using
+              two frequency values in the table. For interpolation, the  soft-
+              ware uses the closest value above the frequency, and the closest
+              value  below the frequency. For extrapolation, the software uses
+              the two closest values to the frequency.
+
+              Type: Float, specified in units of pF
+
+       -force Computes the maximum capacitance from the interpolated -freq and
+              -cap values only, and ignores any previously defined max_capaci-
+              tance values for these pins in the library.
+
+              Default: Computes the maximum capacitance using the  worst  case
+              (minimum  value)  between the library max_capacitance values and
+              the interpolated -cap values.
+
+       -freq {<freq1 ><freq2 >...}
+              Specifies a list of at least two frequency values that  must  be
+              greater  than or equal to 0. You must specify the same number of
+              -freq and -cap values, and the frequency values must  be  speci-
+              fied in ascending order.
+
+              Type: Float, specified in units of Hz
+
+       -lib <libName>
+              Modifies only the matching cell-pins in the specified library.
+
+              Default: Modifies the matching cell-pins in all libraries
+
+       -pins {<cell><pin>}
+              Adds  the  new  capacitance  constraints to the specified set of
+              cells and pins. You can specify output or inout pins. The aster-
+              isk (*) wildcard character can be used in a cell or pin name. If
+              a table associated with the pin already exists, it  is  replaced
+              with the new table.
+
+              For  analysis  and  optimization, the software uses the most re-
+              strictive (the lowest capacitance) value from either  the  table
+              or  the .lib max_capacitance. If you also specify the -force pa-
+              rameter, the max_capacitance value is ignored. The  final  value
+              can  be  further  modified using .sdc set_max_capacitance state-
+              ments.
+
+Examples
+       Assume all output pins of a library have a max_capacitance  of  3.5  pF
+       from the library file.
+
+              * The following command sets the frequency dependent max_capaci-
+                tance  to 3.0 pF at a frequency of 100 Mhz, and to 1.5 pF at a
+                frequency of 200 Mhz, for all output or  inout  pins  for  all
+                cells in the library named fast:
+
+                setMaxCapPerFreq  -lib fast -freq {100e6 200e6} -cap {3.0 1.5}
+                -pins {* *}
+
+                As a result, for a net at 300 Mhz, an and2 cell output pin has
+                an extrapolated max_capacitance value of 0 pF (which means the
+                cell cannot be used at that frequency). An extrapolation to 50
+                Mhz results in a max_capacitance value of  3.75  pF.  However,
+                the 3.75 pF value is greater than the existing .libmax_capaci-
+                tance  limit of 3.5 pF; therefore timing analysis uses the 3.5
+                pF value.
+
+              * The following command applies the same constraints to all  li-
+                braries  with  cell  names matching dff* that have a pin named
+                Qbar:
+
+                setMaxCapPerFreq -force -freq {100e6  200e6}  -cap  {3.0  1.5}
+                -pins {dff* Qbar}
+
+                Note:  The  original  .libmax_capacitance limit is ignored be-
+                cause the -force parameter is specified; therefore  extrapola-
+                tion  to  50 Mhz results in a final max_capacitance constraint
+                value of 3.75 pF.
+
+Related Information
+              * dbNetFrequency
+
+              * dbSetNetFrequency
+
+              * optDesign
+
+              * verifyACLimit
+
+              * timing_report_drv_enable_frequency_per_view
+
+                           Fri Apr 04 01:25:37 2025    setMaxCapPerFreq(25.10)

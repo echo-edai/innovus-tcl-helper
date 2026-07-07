@@ -1,0 +1,105 @@
+{
+  "command": "create_current_region",
+  "is_cmd": true,
+  "summary": "在全局电源网络上指定静态或动态电流区域，以在电源轨分析中精确捕获高/低电流消耗区域。",
+  "description": "该命令用于在已放置宏单元上方的全局电源网络上指定静态或动态电流区域，以便在电源轨分析中精确捕获高电流和低电流消耗区域。它可以在电源轨分析之前使用，用于在用户定义的层上、电源网格顶部指定电流区域或功耗分布。这些电流区域通常为那些没有电源网格视图库的已放置宏单元指定，因为该宏单元内部的功耗/电流分布可能会影响相邻区域的IR压降。在电源规划的早期阶段，也可以在顶层电源网格上为未放置的宏单元定义这些电流区域。",
+  "usage": "create_current_region [-help] -reset | {-region <x1 y1 x2 y2> [-current <value>| -current_pwl_file<filename>] [-die_instance_name <dieinstname>] [-file <filename>] [-label <name>] [-layer <layername>] [-intrinsic_cap <value>] [-loading_cap <value>] [-series_resistance<value>] [-net<net_name>] [-polygon {<x1> <y1> <x2> <y2> <x3> <y3> ..<x1> <y1>}] [-pwrnet<net_name>] [-gndnet<net_name>]}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "重置所有之前的 create_current_region 命令设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-region",
+      "description": "指定层上的区域，电源轨分析引擎将在此区域内分布指定的电流和电容（动态模式下）。坐标单位应为微米。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-current",
+      "description": "在静态模式下，指定一个以mA为单位的电流值。在动态模式下，指定一个以时间（ns）和电流（mA）格式表示的PWL电流波形。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-current_pwl_file",
+      "description": "指定一个PWL电流文件。该文件有两列：时间（ns）和电流值（mA）。与 -current 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-die_instance_name",
+      "description": "指定需要应用电流区域的芯片名称。仅适用于多芯片分析流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-file",
+      "description": "指定包含每个芯片电流区域列表的文件名。只能与 -die_instance_name 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-label",
+      "description": "为特定电流区域指定一个名称，以便于识别和管理。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定将执行缩放的层名称。这是一个必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-intrinsic_cap",
+      "description": "指定以皮法（pf）为单位的单元本征电容。在动态模式下是必需参数，在静态模式下禁用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-loading_cap",
+      "description": "指定以皮法（pf）为单位的单元负载电容。在动态模式下是必需参数，在静态模式下禁用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-series_resistance",
+      "description": "指定连接到电流区域定义中每个抽头点的串联电阻（ESR）值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要施加电流的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-polygon",
+      "description": "指定一个非矩形的多边形电流区域，电流将分布在其中。坐标点按逆时针顺序排列，最后一个坐标应与第一个相同。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pwrnet",
+      "description": "指定要施加电流的电源网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gndnet",
+      "description": "指定要施加电流的地网络名称。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+range_collection(25.10)                                range_collection(25.10)
+
+Name
+       range_collection - Returns a sub-collection of the base collection
+
+Syntax
+       range_collection
+
+       [-help]
+
+       <base_collection>
+
+       <from>
+
+       <to>
+
+       Returns  a  sub-collection  of  the base collection. The sub-collection
+       range lies between the `from' and `to' (including `from' and `to')  in-
+       dex numbers specification of this command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <base_collection>
+              Specifies the base collection.
+
+       <from> Specifies the `from' index number.
+
+       <to>   Specifies the `to' index number.
+
+       The  index  number can be an integer or an expression, such as, "end OR
+       end-integer" (with no spaces within the expression).
+
+       If the specified to/from value is negative  (less  than  0),  then  the
+       software  will change this value to 0. If the value is greater than the
+       "collection_size - 1", then it will be changed  to  "collection_size  -
+       1".
+
+Examples
+              * The following example sets $points as the base collection:
+
+                > set points [get_cells *]
+
+                0x13
+
+                > sizeof_collection $points
+
+                22
+
+              * The  following  example returns the sub-collection of the base
+                collection $points between the index number range from 2 to 4:
+
+                > range_collection $points 2 4
+
+                clk_buf2 clk_buf3 clk_buf4
+
+                0x16
+
+                > range_collection $points 4 2
+
+                clk_buf2 clk_buf3 clk_buf4
+
+                0x17
+
+              * The following example returns a sub-collection  starting  from
+                index number 0 till the end of the base collection:
+
+                > range_collection $points 0 end
+
+                clk_buf1  pad1  clk_buf2 clk_buf3 clk_buf4 buf1 buf2 buf3 buf4
+                mem dff1 dff2 clkand2 pu_cell_1 pu_lat_1 u1 cg4  genLoop  com-
+                boLoop pad2 dff3 latch1
+
+                0x18
+
+              * The  following  example returns a sub-collection starting from
+                end-integers 4 to 2:
+
+                > range_collection $points end-4 end-2
+
+                genLoop comboLoop pad2
+
+                0x19
+
+              * The following example shows a range starting from  a  negative
+                value to a value greater than the collection size. The follow-
+                ing warning messages are displayed:
+
+                > range_collection $points -5 100
+
+                **WARN: (TCLCMD-1419): 'from' index with value -5 is less than
+                start index, so it is changed to 0 .
+
+                **WARN:  (TCLCMD-1419):  'to'  index with value 100 is greater
+                than end index, so it is changed to 21 .
+
+                clk_buf1 pad1 clk_buf2 clk_buf3 clk_buf4 buf1 buf2  buf3  buf4
+                mem  dff1  dff2 clkand2 pu_cell_1 pu_lat_1 u1 cg4 genLoop com-
+                boLoop pad2 dff3 latch1
+
+                0x1a
+
+              * The following example shows the warning message displayed  for
+                a negative start index number:
+
+                > range_collection $points end-25 end-20
+
+                **WARN: (TCLCMD-1419): 'from' index with value -4 is less than
+                start index, so it is changed to 0 .
+
+                clk_buf1 pad1
+
+                0x1b
+
+              * The  following  command  shows an error if the specified index
+                number is not an integer:
+
+                > range_collection $points s end
+
+                **ERROR: (TCLCMD-1418): Bad index 's':  must  be  integer?  or
+                end?[-]integer?
+
+Related Information
+              * index_collection
+
+                           Fri Apr 04 01:25:37 2025    range_collection(25.10)

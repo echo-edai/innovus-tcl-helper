@@ -1,0 +1,219 @@
+{
+  "command": "defOutBySection",
+  "is_cmd": true,
+  "summary": "将信息写入DEF文件的指定部分",
+  "description": "该命令用于将设计信息写入DEF（Design Exchange Format）文件的指定部分。默认情况下，它会写入DIEAREA（及相关的FE_CORE_BOX*属性）以及COMPONENTS和NETS部分的网表信息（不包括布局和布线信息），这些默认部分可以通过选项显式抑制。其他部分或子部分仅根据选项设置添加。默认不写入LEF文件中定义的过孔，但若全局环境变量defOutLefVia设置为1，则会写入。该命令可以在导入设计后使用。",
+  "usage": "defOutBySection [-help] <filename> [-addHalfWireExtensionOnPin] [-bumpAsPin] [-compPlacement] [-earlyGlobalRoute] [-fills] [-groups [-noPrintGroupRegex]] [-ioRow] [-netRouting] [-noComps] [-noCoreCells] [-noDieArea] [-nonDefaultRules] [-noNets] [-noPrintWildCard] [-no_virtual_trim] [-outputMaskLayers <layerNames>] [-pBlockages] [-pins] [-rBlockages] [-rows] [-scanChains] [-selected] [-specialNetRouting] [-specialNets] [-specialRouteUserClass <user_class_list>] [-specialShape <swire_type_list>] [-tracks] [-unit unit_per_micron] [-unplaced] [-usedVia] [-verilog_from_def_netlist_flow] [-vias]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addHalfWireExtensionOnPin",
+      "description": "强制将引脚上的零延伸改为默认的半宽度延伸。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bumpAsPin",
+      "description": "将凸块（bump）单元作为顶层引脚写入DEF文件的PINS部分。用于生成供Quantus门级提取使用的DEF文件。注意：使用此参数生成的DEF文件无法读回Innovus软件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-compPlacement",
+      "description": "将元件布局和方向信息写入DEF文件的COMPONENTS部分。输出仅限于状态为PLACED/FIXED/COVER的实例，除非同时指定了-unplaced选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-earlyGlobalRoute",
+      "description": "将早期全局布线器生成的线网信息写入DEF文件的NETS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<filename>",
+      "description": "指定DEF输出文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-fills",
+      "description": "将金属填充信息写入DEF文件的FILLS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-groups",
+      "description": "将组信息写入DEF文件的GROUPS部分。使用此参数时，Innovus还会写入区域（region）信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noPrintGroupRegex",
+      "description": "禁止使用正则表达式表示实例名称。必须与-groups参数同时指定。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ioRow",
+      "description": "基于I/O焊盘布局生成I/O行，并将I/O行信息写入DEF文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-netRouting",
+      "description": "将布线数据写入DEF文件的NETS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noComps",
+      "description": "从DEF文件中排除元件信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCoreCells",
+      "description": "从DEF文件中排除核心单元信息，以减少导入APD时的数据量。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noDieArea",
+      "description": "从DEF文件中排除DIEAREA及相关的FE_CORE_BOX*属性（FE_CORE_BOX_LL_X, FE_CORE_BOX_UR_X, FE_CORE_BOX_LL_Y, FE_CORE_BOX_UR_Y）。如果不需要某些部分（如SCANCHAINS或NONDEFAULTRULES）与DIEAREA或核心框设置保持一致，可以使用此选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonDefaultRules",
+      "description": "将非默认规则（NDR）写入DEF文件的NONDEFAULTRULES部分。注意：此参数仅与-noNets一起使用有效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noNets",
+      "description": "从DEF文件中排除线网信息。注意：如果指定了此参数，-netRouting和-earlyGlobalRoute参数将被忽略。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noPrintWildCard",
+      "description": "禁止使用通配符格式表示特殊线网连接。如果指定，-compPlacement参数将被忽略。注意：此参数必须与-specialNets参数一起使用才有效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_virtual_trim",
+      "description": "排除虚拟修剪金属层上的修剪金属形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outputMaskLayers",
+      "description": "仅在指定的层上输出MASK数据。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins",
+      "description": "将引脚信息写入DEF文件的PINS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pBlockages",
+      "description": "将布局阻挡信息写入DEF文件的BLOCKAGES部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rBlockages",
+      "description": "将布线阻挡信息写入DEF文件的BLOCKAGES部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rows",
+      "description": "将行信息写入DEF文件的ROWS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-scanChains",
+      "description": "将扫描链信息写入DEF文件的SCANCHAINS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "仅输出选中对象的信息，具体行为取决于选中类型（如线网、实例、线段、过孔、凸块、阻挡或组）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specialNets",
+      "description": "将特殊线网的引脚连接写入DEF文件的SPECIALNETS部分。与-selected一起指定时，仅写入选中线网的引脚连接。不写入布线信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specialNetRouting",
+      "description": "将特殊线网的布线信息写入DEF文件的SPECIALNETS部分（需与-specialNets参数一起使用）。与-selected一起使用可仅写入选中线网的布线信息。与-specialRouteUserClass一起使用可仅写入具有指定user_class属性的特殊布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specialRouteUserClass",
+      "description": "仅输出具有指定列表中user_class属性的特殊布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-specialShape",
+      "description": "写入具有指定形状类型的特殊布线信息。注意：在使用setSpecialRouteType命令标记特殊布线和过孔并设置其形状类型后使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tracks",
+      "description": "将布线轨道信息写入DEF文件的TRACKS和GCELLGRID语句。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unit",
+      "description": "定义DEF文件的单位（每微米单位数）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-unplaced",
+      "description": "当与-compPlacement选项结合使用时，在COMPONENTS部分中包含UNPLACED状态的实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-usedVia",
+      "description": "指定仅将使用过的过孔写入DEF文件，未使用的过孔将被忽略。默认也排除所有LEF过孔。若要在DEF文件中包含使用过的LEF过孔，需在指定此参数前将全局变量defOutLefVias设置为1。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog_from_def_netlist_flow",
+      "description": "协调由loadDefFile命令生成的DEF和Verilog文件中的名称。loadDefFile命令生成一个扁平的Verilog文件，其中所有特殊字符都被转义。使用此参数可将转义名称转换回DEF文件中的原始名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-vias",
+      "description": "将过孔信息写入DEF文件的VIAS部分。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

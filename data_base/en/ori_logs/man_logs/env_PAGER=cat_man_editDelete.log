@@ -1,0 +1,381 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editDelete(25.10)                                            editDelete(25.10)
+
+Name
+       editDelete  -  Deletes physical wires, any vias connected to the wires,
+       and violation markers associated with the wires
+
+Syntax
+       editDelete
+
+       [-help]
+
+       [-area {<x1 y1 x2 y2>}]
+
+       [-direction {H | V | 45 | 135}]
+
+       [-duplicate_via]
+
+       [-floating_via]
+
+       [-layer {<list_of_layers>}]
+
+       [-nets <net>*]
+
+       [-parallel_routing]
+
+       [-physical_pin_only]
+
+       [-regular_wire_with_drc]
+
+       [-selected]
+
+       [-shape {RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE
+
+                PADRING BLOCKRING FILLWIRE FILLWIREOPC DRCFILL None}]
+
+       [-shield]
+
+       [-shield_only]
+
+       [-status {FIXED NOSHIELD ROUTED SHIELD UNKNOWN}
+
+       [-subclass <sublass_name>]
+
+       [-trim_metal]
+
+       [-type {Regular| Special | Patch}]
+
+       [-use {CLOCK POWER SIGNAL}]
+
+       [-via_cell <cell_name_list>]
+
+       [-with_edit_flag {0 | 1}]
+
+       [-object_type {Wire Via} ]
+
+       Deletes physical wires, any vias connected to the wires, and  violation
+       markers associated with the wires. Use editDelete -physical_pin_only to
+       delete physical pins in the design.
+
+       By  default,  when  you  delete a wire or via with editDelete, the tool
+       searches and deletes all related DRC markers. If you do  not  want  the
+       related  DRC  markers  to be cleared when you delete a wire or via, set
+       the setEditMode -drc_on parameter to  false  before  using  editDelete.
+       This can improve the run time if have to delete a large number of wires
+       and vias.
+
+       By  default,  the  editDelete command retains TSVs and deletes only the
+       real routing layers and vias. You can change this behavior  by  setting
+       the  setEditMode -delete_tsv parameter to true before using editDelete.
+
+       Note: The editDelete command deletes only those vias that are connected
+       to wires.
+
+       The  editDelete  command  deletes physical wires. The deleteNet command
+       deletes logical nets. For more information, see deleteNet.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each editDelete parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man editDelete
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the coordinates for the area from which to delete  the
+              wires.
+
+              Default: Deletes all wires.
+
+       -direction {H | V | 45 | 135}
+              Specifies the orientation of the wires to delete.
+
+              Default:  If  you  do  not specify this parameter, deletes wires
+              with either orientations.
+
+              H: Specifies that only horizontal wires are to be deleted.
+
+              V: Specifies that only vertical wires are to be deleted.
+
+              45: Specifies that 45-degree wires are to be deleted.
+
+              135: Specifies that 135-degree wires are to be deleted.
+
+        -duplicate_via
+              Specifies that duplicate vias should be deleted. Only the  -nets
+              parameter  can be specified along with this parameter. Check the
+              Examples section for examples of deleting  duplicate  vias  with
+              and without -nets.
+
+       -floating_via
+              Specifies that only floating vias should be deleted.
+
+       -layer {<list_of_layers>}
+              Specifies  the  layers  from which to delete wires. You must use
+              LEF layer names or a routing layer index value (1 for the  first
+              routing  layer, 2 for the second routing layer, and so on). This
+              option supports backside and Through Silicon Via (TSV) layers as
+              well.
+
+              If you are specifying multiple layers, enclose them in braces.
+
+              Default: If you do not specify  this  parameter,  deletes  wires
+              from all layers.
+
+       -nets <net>*
+              Specifies  the  net  or list of nets from which to delete wires.
+              You can use wildcard values in this field. For example,  if  you
+              specify  V*,  deletes  wires  from  nets VDD and VSS. If you are
+              specifying multiple nets, enclose them in braces.
+
+              Note: By default, the wires and vias shielding the  nets  speci-
+              fied  with  editDelete  -nets  are  not  deleted. If you want to
+              delete the shielding as well, specify -shield along with -nets.
+
+       -object_type {Wire Via}
+              Specifies whether wires or vias should be deleted. You can spec-
+              ify both as well.
+
+              If -object_type is not specified, editDelete deletes both  wires
+              and vias by default.
+
+       -parallel_routing
+              Specifies  that  the wires created by NanoRoute parallel routing
+              are to be deleted.
+
+       -physical_pin_only
+              Specifies that the  physical  pins  in  the  design  are  to  be
+              deleted.  You  can  use  filter  options,  such as -net, -layer,
+              -area, and -selected along  with  -physical_pin_only  to  delete
+              specific physical pins.
+
+       -regular_wire_with_drc
+              Deletes the regular wires with violation markers. This parameter
+              works only when -nets or -status are specified as filters.
+
+              Note: editDelete -selected parameter deletes only physically se-
+              lected  objects. To delete wires with violations from a specific
+              net, specify the net name with the editDelete -nets parameter:
+
+              editDelete -nets <netName> -regular_wire_with_drc
+
+       -selected
+              Deletes selected wires, vias, and physical pins.
+
+              Note: Only physically selected objects are deleted. If selectNet
+              is used to select a net, editDelete -selected cannot be used  to
+              delete  that  net's wires. This is because selectNet selects the
+              net only logically. If you want to delete the  entire  net,  use
+              editSelect -nets instead of selectNet to ensure the wires of the
+              net are physically selected.
+
+       -shape {{RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE PADRING BLOCK-
+       RING FILLWIRE FILLWIREOPC DRCFILL None}}
+              Specifies  the shapes of the wires to delete. The status must be
+              in all upper-case letters. If you specify multiple  shapes,  en-
+              close  the  shapes in braces. For shape definitions, see Shapes,
+              in the "DEF Syntax" chapter of the LEF/DEF Language Reference.
+
+              Default: If you do not specify this parameter, deletes wires  of
+              all shapes.
+
+       -shield
+              Deletes  the wires and vias of the nets specified with the -nets
+              parameter, along with the wires and vias shielding the specified
+              nets.
+
+              Note: This parameter cannot be used with -shield_only.
+
+       -shield_only
+              Deletes only the wires and vias  shielding  the  nets  specified
+              with the -nets parameter. The signal nets being shielded are re-
+              tained.
+
+              Note: This parameter cannot be used with -shield.
+
+       -status {FIXED NOSHIELD ROUTED SHIELD UNKNOWN}
+              Specifies  the  status of wires to delete. The status must be in
+              uppercase letters. If you specify more than one status,  enclose
+              the status list in braces.
+
+              Note: If you select -type Special -status NOSHIELD or -type Reg-
+              ular -status SHIELD the software generates an error message.
+
+       -subclass <sublass_name>
+              Specifies the subclass name of the wires to be deleted. Use this
+              parameter  if  you want to delete rings, stripes, or other wires
+              belonging to a specific subclass.
+
+              Note: You can use wildcards  in  <subclass_name>.  Only  special
+              wire is supported by this option.
+
+       -trim_metal
+              Deletes  the  trim  metal  attached  to all patch wires, without
+              deleting the  patch  wires.  If  -selected  is  also  specified,
+              deletes  only the trim metal attached to the selected patch wire
+              without deleting the patch wire.
+
+       -type {Regular| Special | Patch}
+              Specifies whether to delete regular  wires,  special  wires,  or
+              patch wires.
+
+              Note: If you specify Regular, omit the -shape parameter or spec-
+              ify -shape None.
+
+       -use {CLOCK POWER SIGNAL}
+              Indicates  that wires will be deleted on the basis of the speci-
+              fied use:
+
+              CLOCK: Specifies that only wires for clock nets will be deleted.
+
+              POWER: Specifies that only wires for power nets will be deleted.
+
+              SIGNAL: Specifies that only wires for general signal  nets  will
+              be deleted.
+
+       -via_cell <cell_name_list>
+              Specifies  the via cells of the vias to be deleted.  You can use
+              wildcards while specifying the via cell names. If you are speci-
+              fying multiple cell names, enclose them in braces.
+
+       -with_edit_flag {0 | 1}
+              Deletes all modified wires, that is wires with value 1  for  the
+              isEdit property on the net.
+
+              Notes
+
+              * As  the  isEdit  property  is  added on the whole net, all the
+                wires on the net with isEdit value set to 1 will be deleted.
+
+              * The isEdit property is used to flag nets with  modified  wires
+                and vias. This is useful when evaluating how many objects need
+                to  be  modified  for  fixing DRC violations and then deciding
+                whether to fix the violations manually or through ECO routing.
+                The  isEdit  property  is   controlled   through   the   -cre-
+                ate_is_edit_flag  parameter  of  setEditMode. By default, this
+                parameter is set to 0. If you set the value of this  parameter
+                to  1,  the isEdit property is set to 1 for nets with modified
+                wires or vias.
+
+Examples
+              * The following command removes wires from the METAL1 and METAL2
+                layers:
+
+                editDelete -layer {METAL1 METAL2}
+
+              * The following command removes horizontal  fillwires  from  the
+                METAL1 layer:
+
+                editDelete -layer METAL1 -direction H -shape FILLWIRE
+
+              * The following command removes wires from the specified area:
+
+                editDelete -area 100 100 200 200
+
+              * The following command removes the selected wires and vias from
+                the specified area:
+
+                editDelete -area 100 100 200 200 -selected
+
+              * The  following command only deletes the special wires that be-
+                long to the net carry4 leaving the vias untouched:
+
+                editDelete -type Special -nets carry4 -object_type {Wire}
+
+              * The following command deletes all physical pins:
+
+                editDelete -physical_pin_only
+
+              * The following command deletes all physical pins from net VSS:
+
+                editDelete -nets VSS -physical_pin_only
+
+              * The following command deletes all physical pins from nets  VSS
+                and VDD:
+
+                editDelete -nets {VDD VSS} -physical_pin_only
+
+              * The  following  command  deletes  all physical pins from layer
+                METAL2:
+
+                editdelete -layer METAL2 -physical_pin_only
+
+              * The following command deletes all physical pins from the spec-
+                ified area:
+
+                editDelete -area {26 0 31 4} -physical_pin_only
+
+              *
+
+                The following set of commands deletes  the  selected  physical
+                pin:
+
+                select_obj  <ptr  of  layerShape>  #Selects the pointer of the
+                layer shape
+
+                                               #belonging to a physical pin
+
+                editDelete -selected
+
+              * The following command deletes the regular wires with violation
+                markers from only the specified net:
+
+                editDelete -nets B -regular_wire_with_drc
+
+              * The following command deletes only routed regular  wires  with
+                violation markers from the specified net:
+
+                editDelete -nets B -regular_wire_with_drc -status ROUTED
+
+              * The following command deletes all duplicate vias:
+
+                editDelete -duplicate_via
+
+              * The following command deletes all duplicate vias with net name
+                as abc:
+
+                editDelete -nets abc -duplicate_via
+
+Related Information
+              * editAddRoute
+
+              * editAdjust
+
+              * editCommitRoute
+
+              * editCutWire
+
+              * editDuplicate
+
+              * editMerge
+
+              * editMove
+
+              * editResize
+
+              * editRotate
+
+              * editSelect
+
+              * editSplit
+
+              * editTrim
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025          editDelete(25.10)

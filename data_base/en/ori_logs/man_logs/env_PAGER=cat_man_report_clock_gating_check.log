@@ -1,0 +1,107 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_clock_gating_check(25.10)              report_clock_gating_check(25.10)
+
+Name
+       report_clock_gating_check  -  Reports  information  of  all or specific
+       clock gating checks of the current design
+
+Syntax
+       report_clock_gating_check
+
+       [<object_list>]
+
+       [-view <view_name>]
+
+       [{> | >>} <file_name>]
+
+       Reports information of all or specific clock gating checks of the  cur-
+       rent design. If you specify a list of pins, cells, or clocks, the clock
+       gating check information is reported for the specified objects only. If
+       you  use  the report_clock_gating_check command without an object list,
+       all clock gating check information is reported.
+
+       The Type column of the generated report (see examples below)  can  con-
+       tain one of the following abbreviations:
+
+              * I indicates that the clock gating check is inferred.
+
+              * L  indicates  that  the clock gating check is from the library
+                (integrated clock gating check).
+
+       Set the report_precision global variable using the  set_global  command
+       to specify the accuracy of the result in terms of number of significant
+       digits.
+
+Parameters
+       <object_list>
+              Specifies  a list of pins, instances, or clocks. A collection of
+              these can also be specified.
+
+              * Pin: Any pin of a clock gating cell can be specified  and  the
+                check information will be reported for that pin.
+
+              * Instance:  Any  instance  name  of  a clock gating cell can be
+                specified and the check information will be reported for  that
+                instance.
+
+              * Clock: Only a clock at a given clock (reference) pin of a cell
+                can  be  specified  for reporting the check information. Check
+                information about the clocks at enable (signal) pin cannot  be
+                reported.
+
+              If  the  <object_list> parameter is not specified, all the clock
+              gating check points (inferred and library) of the current design
+              are reported.
+
+       -view <view_name>
+              Specifies a view for which clock gating check is to be reported.
+              The default is worst of all the views.
+
+       {> | >>} <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+Examples
+       The  following command returns a clock gating check report for the cur-
+       rent design:
+
+       report_clock_gating_check
+
+       The clock gating check report returned by this command is as follows:
+
+       +------------------------------------------------------------------------+
+
+       |                                 Clock     Gating     Check     Report
+       |
+
+       |------------------------------------------------------------------------|
+
+       |  Instance  |  Enable  | Clock | Type | Level | Setup | Setup | Hold |
+       Hold |
+
+       |          |        |       |      |       | Rise  |  Fall   |  Rise  |
+       Fall |
+
+       |----------+--------+-------+-------+-------+-------+-------+-------+----|
+
+       |     i1    |    A   |   B   |   I  |   L   | 0.000 | 0.000 |   -  |  -
+       |
+
+       |    i2    |    B   |   A   |   I  |   H   | 0.000 | 0.000 |   -  |   -
+       |
+
+       |    icg    |  CEN   |  CLK  |   L  |   H   | 0.149 | 0.181 |   -  |  -
+       |
+
+       +------------------------------------------------------------------------+
+
+Related Information
+              * report_precision
+
+              * set_global
+
+                           Fri Apr 04 01:25:37r2e0p2o5rt_clock_gating_check(25.10)

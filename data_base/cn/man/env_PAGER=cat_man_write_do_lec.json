@@ -1,0 +1,255 @@
+{
+  "command": "write_do_lec",
+  "is_cmd": true,
+  "summary": "为 Conformal 逻辑等价性检查工具写出 dofile 文件。",
+  "description": "write_do_lec 命令用于生成 Conformal 逻辑等价性检查器（LEC）的脚本文件（如 dofile），以进行 Innovus 生成网表的正式验证。该命令可以生成扁平化或层次化的比较脚本。生成的 dofile 包含标准的 Conformal 流程命令，如果网表经过扫描插入，则需要手动添加 DFT 约束。该命令会创建一个验证目录（默认名为 fv/invs/%s），用于存放名称映射信息文件（通常包含 MBIT 触发器与其拆分/单比特候选者的映射信息）。可以使用 write_lec_directory_naming_style 命令更改目录名称。",
+  "usage": "write_do_lec [-help] [-1801_golden <fileName>] [-1801_revised <fileName>] [-checkpoint <fileName>] [-cpf_golden <fileName>] [-cpf_revised <fileName>] [-cw_sim <simulationLanguage>] [-dft_constraint_file <fileName>] [-env_var <envVariables>] [-fastelab2gen] [-fastgen2fvmap] [-fastrtl2elab] [-golden_design {rtl|fv_map|<file>}] [-gzip_fv_json] [-log_file <fileName>] [-low_power_analysis] [-no_dft] [-no_exit] [-no_insert_iso_in_dof] [-no_lp] [-post_compare <fileName>] [-post_read_power_intent <fileName>] [-pre_compare <fileName>] [-pre_exit <fileName>] [-pre_read <fileName>] [-pre_read_design <fileName>] [-pre_read_power_intent <fileName>] [-pre_verification_information <fileName>] [-revised_design {fv_map|<file>}] [-rtl_revised] [-sim_lib <simulationLibrary>] [-sim_plus_liberty] [-smart] [-tmp_dir <directoryName>] [-top <designName>] [-verbose] [-write_session <fileName>] [-hier  | -flat ] [<output_filename> | >]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印 write_do_lec 命令及其参数的简要描述和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-1801_golden",
+      "description": "指定原始（golden）IEEE-1801 文件的名称。仅适用于 IEEE-1801 流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-1801_revised",
+      "description": "指定与设计当前状态对应的修订版 IEEE-1801 文件的名称。仅适用于 IEEE-1801 流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-checkpoint",
+      "description": "指定要生成的检查点文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cpf_golden",
+      "description": "指定原始（golden）CPF 文件的名称。如果省略，将从 cpf_files 设计属性推断。仅适用于 CPF 流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cpf_revised",
+      "description": "指定修订版 CPF 文件的名称。如果省略，将使用 -cpf_golden 指定的文件。如果 CPF 设计对象存在名称变更，必须使用 write_power_intent -cpf 命令生成此文件。仅适用于 CPF 流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cw_sim",
+      "description": "指定 Conformal LEC 用于推断 ChipWare 组件的仿真模型语言。可选值：{V1995|V2001|SV|VHDL1987|VHDL1993}。默认值：read_hdl 命令中指定的语言。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dft_constraint_file",
+      "description": "在执行 compare 命令之前，从指定文件加载 DFT 约束。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-env_var",
+      "description": "指定在 dofile 中用于目录和文件名的 UNIX 环境变量的名称和值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fastrtl2elab",
+      "description": "生成一个简化的 LEC dofile，用于快速诊断 RTL 与 elaborated 设计之间的差异。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fastelab2gen",
+      "description": "生成一个简化的 LEC dofile，用于快速诊断 elaborated 与 generic 设计之间的差异。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fastgen2fvmap",
+      "description": "生成一个简化的 LEC dofile，用于快速诊断 generic 与 fv_map 设计之间的差异。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-golden_design",
+      "description": "指定要进行比较的原始（golden）设计。可选值：rtl（使用 hdl_filelist 属性中的文件）、fv_map（使用 Innovus 映射期间自动写入的网表）或 <file>（指定替代原始设计的 UNIX 路径文件）。默认值：rtl。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gzip_fv_json",
+      "description": "指定压缩实现信息文件。需要 Conformal 19.10-s300 或更高版本。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hier",
+      "description": "指定进行层次化 LEC 比较。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-log_file",
+      "description": "指定 Conformal LEC 日志文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-low_power_analysis",
+      "description": "指定添加 Conformal Low Power 命令以比较原始与修订设计之间的电源域。必须存在电源意图。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_dft",
+      "description": "防止将 DFT 约束写入 dofile。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_exit",
+      "description": "不在 dofile 末尾添加 exit 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_insert_iso_in_dof",
+      "description": "防止在生成的 dofile 中为原始和修订设计的 LEC commit power intent 命令添加 -insert_isolation 选项。在 Innovus 中提交电源意图（使用 commit_power_intent 命令）之前写出 dofile 时使用此选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_lp",
+      "description": "防止验证电源意图信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-post_compare",
+      "description": "指定一个 dofile，在 LEC dofile 的比较命令之后加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-post_read_power_intent",
+      "description": "指定一个 dofile，在 LEC dofile 的 read_power_intent 命令之后加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_compare",
+      "description": "指定一个额外的 dofile，必须在 LEC dofile 的 set system mode lec 或 write hier_compare dofile 命令之前加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_exit",
+      "description": "指定一个额外的 dofile，必须在 LEC dofile 的 exit 命令之前加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_read",
+      "description": "指定一个额外的 dofile，必须在 LEC dofile 读取库和设计之前加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_read_design",
+      "description": "指定一个 dofile，在 LEC dofile 读取设计之前加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_read_power_intent",
+      "description": "指定一个 dofile，在 LEC dofile 的 read_power_intent 命令之前加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_verification_information",
+      "description": "指定一个 dofile，在 LEC dofile 设置验证信息之前加载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-revised_design",
+      "description": "指定要与原始设计进行比较的修订设计。可选值：fv_map（使用 Innovus 映射期间自动写入的网表）或 <file>（指定修订设计的 UNIX 路径文件）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rtl_revised",
+      "description": "指定修订设计是经过 DFT 插入并反标后的 RTL。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sim_lib",
+      "description": "以 Verilog 1995 格式指定仿真库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sim_plus_liberty",
+      "description": "指定仿真库是综合库的补充。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-smart",
+      "description": "启用高级 SMART Lec 功能。需要 Conformal SMARTLec 许可证。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tmp_dir",
+      "description": "指定生成文件必须写入的目录名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top",
+      "description": "指定 Innovus 中顶层设计的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verbose",
+      "description": "生成具有详细报告功能的 dofile。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-write_session",
+      "description": "指定保存 LEC 会话的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-flat",
+      "description": "执行扁平化的 Conformal LEC 比较。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<output_filename>",
+      "description": "将所有输出重定向到指定的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": ">",
+      "description": "将所有输出重定向到标准输出。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "command": "set_via_pillars",
+  "is_cmd": true,
+  "summary": "为单元引脚设置通孔柱列表或为实例引脚设置单个通孔柱",
+  "description": "此命令用于为单元（cell）的引脚（term）设置一个通孔柱（via pillar）规则列表，或者为具体实例的引脚（instTerm）设置单个通孔柱规则。通过 -required 参数可以设置通孔柱规则的强制要求级别，控制软件在插入通孔柱时是否考虑设计规则检查（DRC）以及尝试的策略（例如从大到小尝试）。为单元引脚设置列表后，其实例引脚只能从该列表中选择规则。",
+  "usage": "set_via_pillars [-help] {-term <term> | -instTerm <instTerm>} <stack_via_rule+> [-required {0 | 1 | 2 | 3 | 4}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令参数的简要说明，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-term",
+      "description": "指定单元引脚名称（cell name/term base_name）或指针。允许为此引脚设置一个通孔柱规则列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instTerm",
+      "description": "指定实例引脚名称或指针。只能为此引脚设置单个通孔柱规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<stack_via_rule+>",
+      "description": "提供一个通孔柱规则列表（用于单元引脚）或单个通孔柱规则（用于实例引脚）。对于实例引脚，此规则必须在其对应单元引脚的规则列表中。提供一个空字符串（\"\"）可以移除实例引脚上的通孔柱规则。",
+      "required": true,
+      "type": "string+"
+    },
+    {
+      "name": "-required",
+      "description": "为 -term 或 -instTerm 指定的引脚设置 .stackViaRuleRequired 属性，决定是否强制要求使用堆叠通孔及其处理模式。值为0：忽略此引脚的堆叠通孔规则检查（仅对单元引脚设置会影响所有实例，对实例引脚设置仅影响自身）。值为1：强制要求，使用最小通孔柱插入并采用脏模式（即使有DRC也添加通孔柱）。值为2：强制要求，使用最小通孔柱插入并采用干净模式（有DRC则不添加通孔柱）。值为3：强制要求，使用从大到小多次尝试插入并采用脏模式。值为4：强制要求，使用从大到小多次尝试插入并采用干净模式。值2、3、4仅适用于单元引脚（-term）。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

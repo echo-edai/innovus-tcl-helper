@@ -1,0 +1,128 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_shape(25.10)                                              add_shape(25.10)
+
+Name
+       add_shape - The command add_shape adds DEF SPECIALNETS wiring shapes to
+       the database
+
+Syntax
+       add_shape
+
+       [-help]
+
+       -layer {<layerNameOrPointer>}
+
+       [-net {<netName>}]
+
+       [-shape  {None RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE FILLWIRE
+       BLOCKAGEWIRE PADRING BLOCKRING DRCFILL FILLWIREOPC}]
+
+       [-shield_net {<netNameOrPointer>}]
+
+       [-status {ROUTED FIXED COVER SHIELD NOSHIELD}]
+
+       [-user_class <className>]
+
+       {-rect {<x1 y1 x2 y2>} | -patch {<x1 y1 x2 y2>} | -polygon {<x1  y1  x2
+       y2 ...xn yn>} |
+
+       [-pathSeg  {<x1  y1  x2  y2>} -width <value> [-beginExt <value> -endExt
+       <value>]]}
+
+       The command add_shape adds DEF SPECIALNETS wiring shapes to  the  data-
+       base. You can use the command at any point in the design flow.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation  for each add_shape parameter. For a detailed description
+              of the command and all of its parameters, use the man command:
+
+              man add_shape
+
+       -beginExt <value>
+              Specify the extension beginning value in microns.
+
+              Default: The default extension for a pathSeq is 0.
+
+       -endExt <value>
+              Specify the extension beginning value in microns.
+
+              Default: The default extension for a pathSeq is 0.
+
+       -layer {<layerNameOrPointer>}
+              Name of the layer or layer pointer.
+
+       -net <netName>
+              Name of the net.
+
+       -pathSeg {<x1 y1 x2 y2>}
+              The beginning and ending coordinates for the path segment.
+
+       -patch {<x1 y1 x2 y2>}
+              Specifies the coordinates  of  the  lower-left  and  upper-right
+              points of the rectangle for creating the patch wires.
+
+       -polygon {<x1 y1 x2 y2 ...xn yn>}
+              The point list of the polygon.
+
+       -rect {<x1 y1 x2 y2>}
+              Specifies  the  coordinates  of  the  lower-left and upper-right
+              points of the rectangle for creating the horizontal and vertical
+              wires.
+
+       -shape {None RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE FILLWIRE
+       BLOCKAGEWIRE PADRING BLOCKRING DRCFILL FILLWIREOPC}
+              Defines the SPECIALNETS wiring shape.
+
+              Default: None
+
+       -shield_net {<netNameOrPointer>}
+              The name or pointer of the net to be shielded  by  the  via  in-
+              stance.  The -shield_net parameter is only allowed when  -status
+              SHIELD is used.
+
+       -status {ROUTED FIXED COVER SHIELD NOSHIELD}
+              Defines the SPECIALNETS wiring status.
+
+              Default: ROUTED.
+
+       -width <value>
+              The width in microns.
+
+       -user_class
+              Defines the attribute class by user.
+
+Example
+              * -pathSeg: The command would add a pathSeg to the net with  the
+                name  VSS  on  layer METAL1 at the co-ordinates (100, 100, 250
+                ,250) with a width of 2.5 microns and the begin and end exten-
+                sions of 1.25 microns.
+
+                Note: Typically, the begin and end extension values  are  zero
+                for  most  DEF  SPECIALNETS  wiring, but can be any value that
+                would result in the end of the wire falling on the manufactur-
+                ing grid.
+
+                add_shape -net VSS -layer METAL1 -pathSeg {100  100  250  250}
+                -width 2.5 -beginExt 1.25 -endExt 1.25
+
+              * -polygon:  The  command would add a polygon shaped wire to the
+                net with the name VSS on layer METAL1 as a polygon with  coor-
+                dinates specified.
+
+                add_shape  -net  VSS  -layer  METAL1  -polygon {{25.05 25.115}
+                {25.115 25.05} {25.115 24.95} {5.05 4.885} {4.95 4.885} {4.885
+                4.95} {4.885 5.05} {24.95 25.115}}
+
+              * This command would add a polygon shape swire to  snet  VSS  on
+                layer METAL3 having coordinates similar to the swire belonging
+                to the net VSS on layer METAL1.
+
+                add_shape  -polygon  [dbGet [dbGet [dbGet top.nets.name VSS -p
+                ].swires.layer.name M1 -p2 ].polyPts -i  0]  -net  VSS  -layer
+                METAL3
+
+Related Information
+              * DEF Syntax chapter in the LEF/DEF Language Reference
+
+                           Fri Apr 04 01:25:37 2025           add_shape(25.10)

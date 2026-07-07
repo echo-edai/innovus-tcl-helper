@@ -1,0 +1,321 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+partition(25.10)                                              partition(25.10)
+
+Name
+       partition  -  Converts  the  specified  module fences to be partitions,
+       pushes down the physical cells or power routing information to the par-
+       tition level design(s), and duplicates strips  in  the  partition  that
+       overlap with the partition boundary at their original widths
+
+Syntax
+       partition
+
+       [-help]
+
+       [<partitionName> {list}]
+
+       [-addPinForPGWireLayersInDistance       {{<layer_name1      distance1>}
+       {l<ayer_name2 distance2>}}]
+
+       [-inputNetsForWireDistribution <filename>]
+
+       [-noTopPushDown]
+
+       [-noViaCutSpace]
+
+       [-pgPushDownHonorUPF]
+
+       [-pushAllRoutes]
+
+       [-pushDownHonorInsidePinForSpecialNet]
+
+       [-pushDownSelectedPGWiresAsRouteBlockage]
+
+       [-pushDownSpecialNetAsObs {<SNet list>}]
+
+       [-skipRouteBlockagesOutsidePartition]
+
+       [-pinCutSpace]
+
+       [-noInheritPhysical]
+
+       [-pushRoute]
+
+       [-pushdownAllBumps | -pushDownSelectedPGBump]
+
+       Converts the specified module fences to be partitions, pushes down  the
+       physical  cells or power routing information to the partition level de-
+       sign(s), and duplicates strips in the partition that overlap  with  the
+       partition  boundary  at their original widths. You can use this command
+       after specifying the partition(s).
+
+       Notes:
+
+              * While bringing back mis-aligned rows to top-level design,  the
+                partition  command  automatically detects mis-aligned rows and
+                pushes down the row information as it is to the top-level  de-
+                sign.
+
+              * To assign signal pins for the partitions, use the assignPtnPin
+                command.
+
+              * This  command should be used in combination with the assignPt-
+                nPin command. Cadence recommends not mixing these version  4.2
+                pin  commands  with previous (version 4.1 or earlier) pin com-
+                mands in the design flow.
+
+              * While handling metal fills, the partition command removes  the
+                metal-fill shapes that cross the partition boundary. It pushes
+                down  only  those  fill-shapes  that  are inside the partition
+                boundary and are on the metal-layers owned by the partition.
+
+              * In top-down flow, the partition command only promotes P/G pins
+                from the list of pins promoted by the setPromotedMacroPin com-
+                mand.
+
+              * The partition command supports partitions with flexmodels  and
+                structured data paths.
+
+              *
+
+                The  partition  command  pushes  down the route blockage layer
+                even when the layer type is master-slice. It  creates  routing
+                blockages for master-slice layers, in the "OBS" section of LEF
+                (from  macro/IP/PADs),  that are overlapping partition fences.
+                With this feature:
+
+                * The shape of the routing blockage is the same as  the  over-
+                  lapping shape of the layer, in the "OBS" section.
+
+                * The routing blockage is given a "pushdown" property, so that
+                  it is not brought back in assembleDesign.
+
+              *
+
+                *
+
+                  The  union  of overlapping shapes of layers in "OBS" section
+                  is taken for master and clones.
+
+              * The partition command automatically saves all  the  bus  guide
+                constraints with associated net groups. This enables bus rout-
+                ing at block level as per chip level constraints.
+
+              * The partition command automatically saves all the cell padding
+                information  to each partition block data. This information is
+                saved in partitioned block .fp file.
+
+              * The partition command inherits all the attributes assigned  to
+                a  net for block implementation flow. Preserving these attrib-
+                utes allows the Early Global Router and the  NanoRoute  Router
+                to route the nets following specific requirements.
+
+              * The  partition  command  now  preserves  all the pin shapes of
+                nets.
+
+Parameters
+       -addPinForPGWireLayersInDistance {{<layer_name1 distance1>}
+       {l<ayer_name2 distance2>}}
+              Specifies the layers and distance to consider for creating  pins
+              on  PG stripes that lie in the specified distance range from the
+              partition boundary.
+
+              Note: Some designs shorten the PG stripes to  avoid  stripes  of
+              different  net/voltages  in different abutted partition abutting
+              together and creating a short. In such wire shapes,  the  parti-
+              tion  command  does  not create any pins by default since the PG
+              stripes do not touch the partition boundary.  However,  you  can
+              use the  -addPinForPGWireLayersInDistance parameter to create PG
+              pins during block implementation for wire shapes that lie in the
+              specified  distance  range from the partition boundary. The -ad-
+              dPinForPGWireLayersInDistance parameter identifies the PG  wires
+              for  the  specified  layers in the given proximity (in preferred
+              direction of route) of the  partition  boundary  to  create  pin
+              shapes on them.
+
+              For example, the following command creates pins on PG stripes on
+              layers  M10-M13 that are within a distance of 5 um from the par-
+              tition boundary.
+
+              partition -addPinForPGLayersInDistance {{M10 5} {M11 5} {M12 5}}
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each partition parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand: man partition.
+
+       -inputNetsForWireDistribution <filename>
+              Specifies the file containing the net names to use for wire dis-
+              tribution.
+
+              Data_type: string, optional
+
+       -noInheritPhysical
+              Specifies  that physical only (filler) cells are not pushed down
+              into the partition; they remain at the top level.
+
+              Data_type: bool, optional
+
+       -noTopPushDown
+              Specifies that top-level power routing is not pushed  down  from
+              top-level  design to partition blocks on layers not reserved for
+              partition. Nothing is pushed down on layers reserved for top de-
+              sign.
+
+              Data_type: bool, optional
+
+       -noViaCutSpace
+              Specifies that there are no  cuts  in  the  obstructions  around
+              vias.  You  can  use this parameter when you want to ensure that
+              the top-level routing can connect the  vias  without  using  the
+              space between the vias and the corresponding cover blockages.
+
+              Data_type: bool, optional
+
+       <partitionName ...>
+              Specifies the partition names to be committed.
+
+              Data_type: string, optional
+
+       -pgPushDownHonorUPF
+              When enabled, the UPF information is pushed down to partitions.
+
+              Data_type: bool, optional
+
+       -pinCutSpace
+              Specifies that there are cuts in the obstructions around pins.
+
+              Default:  By  default,  there  are  no  cuts in the obstructions
+              around pins so that the top-level routing can connect  the  pins
+              without  using  the space between the pins and the corresponding
+              cover blockages.
+
+              Data_type: bool, optional
+
+       -pushAllRoutes
+              Pushes down all signal routes  including  intra-partition,  top-
+              partition, and violated routes.
+
+              Data_type: bool, optional
+
+       -pushRoute
+              Pushes down signal routes when the design is partitioned.
+
+              Note:  All the wires of a hierarchy-violating net are discarded,
+              in case even a single wire of that net has  a  hierarchy  viola-
+              tion.
+
+              Data_type: bool, optional
+
+       -pushdownAllBumps
+              Specifies  that  all the PG bumps should be pushed down into the
+              partition.
+
+              Data_type: bool, optional
+
+       -pushDownHonorInsidePinForSpecialNet
+              Preserves wire segments till partition pins  at  the  top  level
+              while  wire segments beyond partition pins are still pushdown as
+              it is.  With this option enabled, Innovus automatically  detects
+              the  list of nets with inside pin having a fixed status over the
+              partition and all top- level nets crossing the partition  bound-
+              ary.  The  pure  top level nets along with wire segments of nets
+              connected to partition pins are replaced by route  blockages  in
+              block  data and the actual wire segments are retained at the top
+              level.
+
+              At the top-level:
+
+              * All wires till the partition pin (with fixed status) are kept.
+                For pure top nets, all wires are kept.
+
+              * LEF obstructions are cut out for preserved wires segments.
+
+              * LEF shape against overlapping top instances are cut out.
+
+              At the block level:
+
+              * Routing blockages till the partition pin for wires  that  were
+                retained at top level are created.
+
+              * All wires segments after the partition pin are retained.
+
+              * Placement  blockages are created for top instances overlapping
+                partition fence area.
+
+              Note: Before using this option, ensure that partition area  pins
+              - of the corresponding net - must be FIXED.
+
+              Data_type: bool, optional
+
+       -pushDownSelectedPGBump
+              Specifies  that only the selected PG bumps should be pushed down
+              into the partition. The bumps which are  not  selected  come  as
+              route blockage.
+
+              Data_type: bool, optional
+
+       -pushDownSelectedPGWiresAsRouteBlockage
+              Pushes  down selected PG routes as route blockages into the par-
+              tition. This parameter enables you to select the  wire  segments
+              that you want to keep at the top-level  design. These non-pushed
+              down wires must be special PG Routes.
+
+              Data_type: bool, optional
+
+       -pushDownSpecialNetAsObs {<SNet list>}
+              Specifies  a  list of special nets, which will be pushed down as
+              routing blockages. It supports all types of special nets includ-
+              ing power/ground nets. You can use  wildcards  while  specifying
+              the net name.
+
+              Data_type: string, optional
+
+       -skipRouteBlockagesOutsidePartition
+              Skips pushing of objects which are close to partition fence.
+
+              Data_type: bool, optional
+
+Example
+              * The  following  command  converts fences to partition data and
+                pushes down route crossing over fence EUG inside the partition
+                boundary:
+
+                partition EUG -pushRoute
+
+              * PG is Metal7, Metal8
+
+                Partition is defined with reserved layer Metal6
+
+                The following command copies PG from top to block for all  the
+                PG layers:
+
+                Partition <ptnName>
+
+                The  following command cuts PG from top to block for PG layers
+                reserved for partitions. For layers above the reserved  layer,
+                PG is not pushed down to ptn.
+
+                partition ptnName -noTopPushDown
+
+                If  reserved  layer is Metal7 then Metal7 PG is cut at top and
+                pushed down and Metal8 PG will not be pushed down.
+
+Related Information
+              * assembleDesign
+
+              * assignPtnPin
+
+              * flattenPartition
+
+              * setPromotedMacroPin
+
+              * savePartition
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Pushing Down Signal Routes
+
+                           Fri Apr 04 01:25:37 2025           partition(25.10)

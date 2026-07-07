@@ -1,0 +1,21 @@
+{
+  "command": "update_io_latency",
+  "is_cmd": true,
+  "summary": "提供一种在设计中添加时钟网络后，自动平衡IO时钟与核心时钟延迟的方法，以尽可能维持时钟树综合前后的时钟间偏移。",
+  "description": "该命令提供了一种自动化手段，用于在设计中添加时钟网络后，平衡IO时钟和核心时钟的延迟，从而尽可能维持时钟树综合（CTS）前后时钟之间的偏移。这有助于最小化输入输出（IO）时序裕量的变化。命令执行以下操作：测量并计算每个核心时钟的理想平均延迟；计算IO时钟与核心时钟在CTS前的偏移；在所有时钟根引脚或端口上断言set_propagated_clock，使时钟树进入传播模式；测量并计算每个核心时钟在传播模式下的平均延迟；调整IO时钟网络上的set_clock_latency，以最小化CTS前后IO与核心时钟之间的偏移。如果单个IO时钟与多个核心时钟交互，则IO时钟将根据所有相关核心时钟的总体平均延迟进行调整。为确保有效，此命令应仅在时钟树实现后使用，以便命令能够观察到时钟树的理想状态和传播状态。注意：在update_io_latency命令之后，不应再发出set_propagated_clock命令。",
+  "usage": "update_io_latency [-source] [-verbose]",
+  "options": [
+    {
+      "name": "-source",
+      "description": "调整核心时钟的源延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "在对每个IO时钟进行调整时，向控制台提供额外信息。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

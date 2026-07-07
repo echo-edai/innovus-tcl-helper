@@ -1,0 +1,165 @@
+{
+  "command": "insertPtnFeedthrough",
+  "is_cmd": true,
+  "summary": "在分区（Partition）设计中插入穿通（Feedthrough）缓冲器或创建穿通连接。",
+  "description": "该命令用于处理分区（Partition）或模块（Block）之间的物理连接。当信号线需要穿越一个分区到达另一个分区时，可以通过插入缓冲器（Buffer）或创建穿通连接（ASSIGN语句）来实现。命令支持多种模式：可以基于现有拓扑文件、基于布线信息或基于用户指定的网络列表来选择需要处理的网络。它还支持时序驱动（通过slack选择）和拥塞感知（通过拥塞情况选择）的自动网络选择流程。用户可以为新创建的实例和网络指定前缀，排除特定的网络或分区，选择缓冲器单元类型，以及决定是否仅进行检查而不实际插入（checkOnly模式）。此外，它还支持在具有重复对称布局的主克隆设计中使用，并能重用已插入的缓冲器。",
+  "usage": "insertPtnFeedthrough [-help] [-allLowercase] [-blockageFile <string>] [-blockedEdgesFile <string>] [-instPrefix <string>] [-netPrefix <string>] [-repeatedSymmetricAbuttedFPlan] [-reuseBuffer {true false 0 1}] [-saveTopoFile <string>] [-useShortName] [-verbose] [[[-selectNet <string> | -selectMarkedNet | -autoSelectNetsByCongestion | -autoSelectNetsBySlack | [ [-excludeNet <string>] ]] ] | -topoFile <string> ] [ -topoFile <string> | -routeBased | -routeBasedStrict | [[-excludePtnList {ptnName | ptnNameList} ] ] ] [ -topoFile <string> | -routeBased | -routeBasedStrict ] [ -routeBased [-autoSelectNetsBySlack ] [-autoSelectNetsByCongestion ]] [-noBuffer | [[-bufCell {cellName | cellNameList}] [-doubleBuffer ]]] [[-checkOnly ] | [[-ecoFile <string>] [-netMapping <string>]] ] [-checkOnly | -doubleBuffer ] [-topoFile <string> ] [-noBuffer ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法说明。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allLowercase",
+      "description": "指定为新插入的穿通缓冲器和穿通网络名称使用全小写字符。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-blockageFile",
+      "description": "指定一个文件，其中包含被视为基于布局的穿通插入障碍物的线段坐标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockedEdgesFile",
+      "description": "指定一个文件，其中包含分区名称及其边号，这些边被视为在本命令中被阻塞。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instPrefix",
+      "description": "为新创建的实例指定前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-netPrefix",
+      "description": "为新创建的网络指定前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-repeatedSymmetricAbuttedFPlan",
+      "description": "适用于主克隆设计，这些设计具有以对称配置排列的重复组件，数据流独立地从顶部流向每个组件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reuseBuffer",
+      "description": "在单次运行中，跨模块的多个实例化重用已插入的缓冲器。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-saveTopoFile",
+      "description": "将现有布局规划中的穿通缓冲器拓扑树信息保存到文件中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useShortName",
+      "description": "指定使用缩写的新插入穿通网络名称，以防止多次运行后网络名称过长。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "指定在日志中包含网络特定信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selectNet",
+      "description": "指定一个文件，其中包含要作为分区穿通网络并插入穿通缓冲器的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selectMarkedNet",
+      "description": "指定应在GUI中当前选定的网络上插入穿通缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoSelectNetsByCongestion",
+      "description": "指定用于拥塞感知的穿通插入流程的选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoSelectNetsBySlack",
+      "description": "指定用于时序驱动的穿通插入流程的选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeNet",
+      "description": "指定一个文件，其中包含要从作为分区穿通网络中排除的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-topoFile",
+      "description": "指定包含拓扑树信息的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-routeBased",
+      "description": "将校正布线以保持等效性，强制穿通路径为单入口，并仅创建连接到两个或更少分区引脚的网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-routeBasedStrict",
+      "description": "严格遵循布线并放置引脚。可能破坏等效性，不强制单入口，并且可以创建连接到三个或更多分区引脚的网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludePtnList",
+      "description": "指定不应向指定分区添加穿通缓冲器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noBuffer",
+      "description": "在网表中生成ASSIGN语句，而不是插入缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bufCell",
+      "description": "指定穿通缓冲器单元类型的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-doubleBuffer",
+      "description": "在穿通输入引脚附近添加一个缓冲器，并在穿通输出引脚附近添加一个缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-checkOnly",
+      "description": "指定不插入穿通缓冲器，仅进行检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ecoFile",
+      "description": "指定用于记录ECO指令的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-netMapping",
+      "description": "生成一个文件，将原始网络名称映射到为穿通缓冲器创建的新网络名称。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

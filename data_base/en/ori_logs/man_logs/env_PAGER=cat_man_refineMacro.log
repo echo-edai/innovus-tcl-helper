@@ -1,0 +1,135 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+refineMacro(25.10)                                          refineMacro(25.10)
+
+Name
+       refineMacro - Refines the placement of macros in the floorplan
+
+Syntax
+        refineMacro
+
+       [-help]
+
+       {{-area  {x1  y1  x2  y2} [-selected]}| -permutePack | -markStep | -re-
+       storeStep <step_number>
+
+              |-restoreMark <mark_number>}
+
+       [-adjustPack]
+
+       [-ioPinClearance]]
+
+       Refines the placement of macros in the floorplan. By default,  the  re-
+       fineMacro command performs global incremental macro adjustment. You can
+       also  adjust  specific  macro packs, or all of the macros in a specific
+       area of the design. You can use refineMacro command after  creating  an
+       initial  floorplan and analyzing the results. Macros must have a status
+       of PLACED in the database in order to use this command.
+
+Parameters
+       -adjustPack
+              Adjusts the way that macros packs are placed, relative to  their
+              locations. For example, an array of 16 macros might be placed in
+              four  rows  of  four macros (4 x 4), if they are near the top or
+              bottom of the chip. This might  change  to  eight  rows  of  two
+              macros  (8  x 2), if the macros are moved near the left or right
+              edge of the chip.
+
+              Data_type: bool, optional
+
+       -area <x1> <y1> <x2><y2>
+              Adjusts the placement of any macros within the specified area to
+              reduce empty area between them. If you also  specify  -selected,
+              the  selected  macros  are moved to the specified area and their
+              position is adjusted along with any macros  already  within  the
+              area.
+
+              Type: Float, specified in microns
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each refineMacro parameter.  For  a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:
+
+              man refineMacro.
+
+        -ioPinClearance
+              Leaves an internally calculated amount of  clearance  space  be-
+              tween  placed  macros  and block I/O pins. Use this parameter to
+              ensure that pins are accessible to the router.
+
+              Data_type: bool, optional
+
+       -markStep
+              Marks an intermediate macro refinement step to  save.  When  you
+              perform incremental macro refinement, each adjustment is consid-
+              ered a step. By default, all incremental steps done with the re-
+              fineMacro  command   are saved and listed in the log file with a
+              number. Since the manal refinement steps (such as move,  rotate,
+              and  flip)  are not saved by default, you can use this parameter
+              to mark manual refinement steps, or  any  other  important  step
+              that you want to save.
+
+              Note:  Innovus  saves up to 1000 incremental refinement steps in
+              the database and 20 marks before overwriting them.
+
+              Data_type: bool, optional
+
+       -permutePack
+              Adjusts the placement of a selected pack  of  macros  to  reduce
+              empty area between them. A pack is a set of macros from the same
+              seed  that  have  similar  sizes and aspect ratios and have been
+              grouped together. You must select the macro  pack  in  the  main
+              window  before using this parameter. You can select one macro to
+              select the entire pack. Macro pack information  is  stored  tem-
+              porarily  in  the database. If you quit the Innovus session, the
+              information is lost.
+
+              Data_type: bool, optional
+
+       -restoreMark <mark_number>
+              Returns the design to the state it was in  after  the  specified
+              marked  step  (-markStep).  For example, to return the design to
+              the state it was in after the step saved as mark2, specify:
+
+              refineMacro -restoreMark 2
+
+              You can find the mark numbers listed in the log file.
+
+              Data_type: int, optional
+
+       -restoreStep <step_number>
+              Returns the design to the state it was in  after  the  specified
+              intermediate non-marked step.
+
+              For  example,  to return the design to the state it was in after
+              step 4, specify:
+
+              refineMacro -restoreStep 4
+
+              To return the design to the state it was in after  the  previous
+              adjustment, specify:
+
+              refineMacro -restoreStep -1
+
+              You can find the step numbers listed in the log file.
+
+              Data_type: int, optional
+
+       -selected
+              Moves  the  selected  macros  to  the specified area and adjusts
+              their position along with any macros already within the area.
+
+              Note: You cannot use this parameter without specifying the -area
+              parameter.
+
+              Data_type: bool, optional
+
+Example
+       The following command moves the selected macros to a new area:
+
+       refineMacro -selected -area 100 100 200 300
+
+Related Information
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025         refineMacro(25.10)

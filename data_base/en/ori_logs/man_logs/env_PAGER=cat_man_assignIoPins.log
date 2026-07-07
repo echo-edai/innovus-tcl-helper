@@ -1,0 +1,268 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+assignIoPins(25.10)                                        assignIoPins(25.10)
+
+Name
+       assignIoPins  - Assigns the top I/O pin locations for a block-level de-
+       sign
+
+Syntax
+       assignIoPins
+
+        [-help]
+
+        [-align]
+
+       [-debugPinAll]
+
+       [-debugPinFile <fileName>]
+
+        [-improveSI]
+
+            [  {-pin  {  <pinNameList>  }  |  -pin_file   <fileName>   |  -ex-
+       clude_pin_file  <fileName> } [-moveFixedPin ]  [-ignore_group_pins ]]
+
+       [-autoBusGroup]
+
+       Assigns  the  top  I/O  pin locations for a block-level design. Set the
+       maximum or minimum pin layers with the  setPinAssignMode  -maxLayer  or
+       -minLayer  parameters.  By  default,  the assignIoPins command sets the
+       depth of all partition pins equal to: MINAREA/pin width.  This  ensures
+       that  the  minimum  area  rule is met. However, if any pin-size-related
+       constraints are specified on these pins, the  user-specified  pin  size
+       will have a higher precedence.
+
+       Notes:
+
+              * The MINAREA/pin width means that the default pin width will be
+                met  MAR  (minimum area rule) if an area rule of this layer is
+                defined in the technology LEF. An I/O pin width value is based
+                on the following order:
+
+                1. User-specified pin width constraint.
+
+                2. Minimum area rule of the layer if it is  available  in  the
+                technology file.
+
+                3. Default layer width
+
+              * When  assigning  pins, the assignIoPins command does not check
+                for violations between placed pins and shapes of objects (such
+                as macros, standard cells,  etc)  just  inside  the  partition
+                fence  (design boundary). This may result in DRV violations if
+                the fence (design boundary) to core distance is zero.
+
+              * The assignIoPins command honors preferred  routing  layer  at-
+                tributes as soft constraints during pin assignment and reports
+                the  nets  that have these attributes. It also honors the keep
+                out spacing constraints on pin groups and net groups.
+
+              * In bottom-up flow, the   assignIoPins  command  promotes  both
+                signal  and  P/G  pins  from  the list of pins promoted by the
+                setPromotedMacroPin command.
+
+              * The assignIoPins command honors net/pin groups that  have  all
+                nets  from  multiple  buffer  chains  added in the same group.
+                Such  groups  can  be  generated  through  bus   guide   flow,
+                feedthrough  insertion flow, or can be user created. It places
+                the pins of such nets in order to achieve better pin alignment
+                and improve the QoR.
+
+       You can use this command after running placement and early global rout-
+       ing to legalize the I/O pins. However, placement  is  not  a  mandatory
+       step for pin assignment. Placement is recommended for better QOR.
+
+Parameters
+       -align If  you  specify  this  option, each top I/O pin will be aligned
+              with one of the instance pins with which it  is  connected.  The
+              instance  pin with which the I/O pin is aligned is the one whose
+              distance from its nearest edge is shortest  among  all  the  in-
+              stance pins connected to the top I/O pin.
+
+              Default:  If you do not specify this option, the location of the
+              top pin is based on the average of the distance of all  instance
+              pins  (that are connected to the top I/O pin) from their respec-
+              tive nearest edges.
+
+              Data_type: bool, optional
+
+       -autoBusGroup
+              Specifies that the buses will be grouped automatically.
+
+              Note: Internally the createPinGroup command is applied on buses.
+              It is removed automatically after the command execution.
+
+              Data_type: bool, optional
+
+       -debugPinAll
+              Specifies that all pins will be debugged.
+
+              Note: The -debugPinAll and -debugPinFile parameters can be  used
+              to write the following information in the log file:
+
+              * Pin assign mode information
+
+              * Connectivity information of each partition pin, including pin-
+                Group/netGroup name and NDR name
+
+              * Available pin slot information on each edge for each layer and
+                pin slot density
+
+              * PinGuide  box  and  virtual  pinGuide box information, master-
+                clone series, feedthru chain and so on.
+
+              * Reason for failure on the first failed location
+
+              * For pins with location constraints, if the pin is  not  placed
+                at  the  location  constraint then the reason is provided in a
+                tabular form.
+
+              * For placed partition pins,  the  pin  location,  layer,  edge,
+                spacing and so on are provided.
+
+              Data_type: bool, optional
+
+       -debugPinFile <fileName>
+              Specifies  the file containing the pin-list for partition or the
+              net that is to be used for debugging.
+
+              Data_type: string, optional
+
+       -exclude_pin_file <fileName>
+              Specifies pin-list to be excluded for partition in a file.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each assignIoPins parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man assignIoPins
+
+       -ignore_group_pins
+              Avoid  placing  the whole group of pins. With this parameter en-
+              abled, the pinGroup and netGroup pins  are  ignored  during  se-
+              lected pin assignment.
+
+              Data_type: bool, optional
+
+       -improveSI
+              Avoid  signal  integrity issues by blocking tracks while placing
+              pins to avoid overlap of wires. With this  parameter  specified,
+              the  asignIoPins command does not allow pins to be placed on the
+              tracks in an area which spans a layer higher or  lower  (on  the
+              preferred  routing direction) and also on the tracks on the left
+              and right of the placed pin.
+
+              Data_type: bool, optional
+
+       -moveFixedPin
+              If you use this parameter, the specified pins with a <Fixed>sta-
+              tus can also be moved. However, this parameter must be used with
+              the -pin parameter to specify the list of  fixed  pins  to  move
+              while assigning io-pins.
+
+              Note:  Pins  that are not specified but have a <Fixed>status are
+              not moved.
+
+              Default: If you do not specify  this  parameter,  the  specified
+              pins with a <Fixed>status are not moved.
+
+              Data_type: bool, optional
+
+       -pin <pinNameList>
+              Specifies that only the specified pins should be assigned.
+
+              Note: To move fixed pins while assigning io pins, you must spec-
+              ify the -moveFixedPin parameter.
+
+              Default : If you do not specify this parameter, all pins are as-
+              signed.
+
+              Data_type: string, optional
+
+       -pin_file <fileName>
+              Specifies the pin list for a partition in a file.
+
+              In  the pin file, the pins and nets are specified in the follow-
+              ing format:
+
+              Partition: <PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Partition: <PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Nets: < ><netA ><netB ..netN>
+
+              Note: While specifying the pin list in the pin_file, it is  nec-
+              essary  to  give the "Partition" keyword followed by the name of
+              the partition or block. If this is not specified, no  operations
+              are  performed.  You can specify multiple partitions in the same
+              pin_file.
+
+              The pin_file does not support buses or wild cards for pin names.
+              If a pin specified in the list or a partition is not present  in
+              the design, a warning is displayed.
+
+              Data_type: string, optional
+
+Example
+              * The  following  command  assigns all io pins and can also move
+                pins with fixed-status.
+
+                assignIoPins -moveFixedPin -pin *
+
+              * The following command accept a file pinLst.txt  that  contains
+                the list of pins and assigns io pins.
+
+                assignPtnPin -pin_file pinLst.txt
+
+                Where <pinLst.txt> contains:
+
+                 Partition: top
+
+                 out1
+
+                out2
+
+                out3
+
+                Partition: A
+
+                in1
+
+                in2
+
+                in3
+
+                Partition: B
+
+                pina
+
+                pinb
+
+                pinc
+
+                The assignIoPins command selects all Io pins under the section
+                Partition:top.
+
+Related Information
+              * setPinAssignMode
+
+              * createPinGroup
+
+              * createPinGuide
+
+              * createNetGroup
+
+              * assignPtnPin
+
+              * setPromotedMacroPin
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Block Implementation
+
+                * Assigning I/O Pins
+
+                           Fri Apr 04 01:25:37 2025        assignIoPins(25.10)

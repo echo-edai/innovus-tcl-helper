@@ -1,0 +1,490 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+analyze_resistance(25.10)                            analyze_resistance(25.10)
+
+Name
+       analyze_resistance - Performs effective resistance analysis
+
+Syntax
+        analyze_resistance
+
+       [-help]
+
+       [-cell <master_cell_name>]
+
+       [-die_mode {3dic}]
+
+       [-force_reextraction {true | false}]
+
+       [-instance_list {<instance1> <pin1> <instance2> <pin2>...}]
+
+       [-instance_list_file <filename>]
+
+       [-instance_pair_list {<instance1instance2pin1  pin2> ...}]
+
+       [-instance_pair_list_file <filename>]
+
+       -net <netName> | -domain <domainName>
+
+       [-node_list {<node1> <node2>.....  <METAL_LAYER> <LABEL>}]
+
+       [-node_list_file <filename>]
+
+       [-node_pair_list  {<node1X>  <node1Y>  <METAL_LAYER1> <node2X> <node2Y>
+       <METAL_LAYER2>...<LABEL>}]
+
+       [-node_pair_list_file <filename>]
+
+       [-output <filename>]
+
+       [-output_dir <directory_name>]
+
+       [-region {<x1> <y1> <x2> <y2> <layer> <number_of_nodes> <region_name>}]
+
+       [-report_limit <value>]
+
+       [-threshold <value>]
+
+       [-print_cell_name]
+
+       [-domain_threshold<value>]
+
+       [-net_threshold<value>]
+
+       [-exclude_list_file <filename>]
+
+       Performs effective resistance analysis. Effective  resistance  computes
+       effective  resistance  between  two  nodes on the power-grid, or from a
+       node to all the voltage sources in the design, or from an  instance  to
+       all the voltage sources in the design.
+
+       You  can  run this command without performing power calculation and IR-
+       drop analysis. The flow requires you to  load  the  design,  set  power
+       nets, set power pads, and run resistance analysis. This command enables
+       the  tool  to  consider  the entire power structure, including embedded
+       ring structure within IO cells if any.
+
+       Note: The analyze_resistance full chip analysis  supports  running  the
+       set_rail_analysis_mode  -enable_rlrp_analysis  command to perform least
+       resistance path analysis (RLRP) in conjunction  with  effective  resis-
+       tance  analysis  (REFF) in the DP mode. However, RLRP and REFF analysis
+       should be done separately in the XP mode. When performing the point-to-
+       point  effective  resistance  analysis  (analyze_resistance)  for   the
+       power/signal   nets   in   the  XP  mode,  disable  the  RLRP  analysis
+       (set_rail_analysis_mode -enable_rlrp_analysis false).
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each analyze_resistance parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man analyze_resistance.
+
+       -cell <master_cell_name>
+              Reports  effective resistance for all instances of the specified
+              master cell name. The -cell parameter improves the usability  of
+              effective resistance calculation by allowing you to specify only
+              the  cell  name  of  the  instances you want to analyze. You can
+              specify  multiple  cells  for  performing  effective  resistance
+              analysis of multiple cells simultaneously.
+
+       -die_mode {3dic}
+              Specifies to perform multi-die effective resistance analysis.
+
+       -domain <domainName>
+              Specifies the domain name that is to be analyzed.
+
+       -domain_threshold<value>
+              Specifies  the  minimum  allowed effective resistance (effective
+              resistance sum of each net) to instance. For  specific  instance
+              list  analysis,  the instances below the threshold value will be
+              reported as "PASS", while  the  instances  above  the  threshold
+              value  will  be  reported as "FAIL". For full chip analysis, the
+              instances below the threshold value will not be reported in  the
+              domain report. The default value is 0.
+
+       -exclude_list_file <filename>
+              Specifies  the  name of a file containing a list of cells or in-
+              stances that will not be processed during the resistance  analy-
+              sis flow. The specified cells/instances will be ignored from re-
+              port generation.
+
+       The use model of this parameter is:
+
+       analyze_resistance -exclude_list_file <<file_name>>
+
+              File Format:
+
+              <CELL | INST> <<name>>
+
+              Example:
+
+              CELL BUMP_MASTER
+
+              CELL ESD_MASTER
+
+              INST INSTA
+
+       -force_reextraction {true | false}
+              Specifies to force a re-extract of resistances.
+
+       -instance_list {<instance1pin1instance2pin2...}>
+              Specifies  the  list of instances for which effective resistance
+              is to be calculated. pin is an optional  argument.  By  default,
+              the tool will use the instance pin associated with the net being
+              analyzed. The pin argument can be used in special cases when two
+              different pins of an instance are connected to the same net.
+
+              Note:  The -instance_list and -instance_list_file parameters are
+              mutually  exclusive  to   the   -instance_pair_list   and   -in-
+              stance_pair_list_file  parameters. This means that you can spec-
+              ify -instance_list and -instance_list_file together but you can-
+              not specify -instance_list and -instance_list_pair together.
+
+       -instance_list_file <filename>
+              Specifies the name of the instance list file. This file contains
+              the list of instances in the same format as  mentioned  for  the
+              -instance_list parameter. The file allows you to specify a large
+              number  of instances. -instance_list_file and -instance_list are
+              mutually exclusive.
+
+              Note: The -instance_list and -instance_list_file parameters  are
+              mutually   exclusive   to   the   -instance_pair_list  and  -in-
+              stance_pair_list_file parameters. This means that you can  spec-
+              ify -instance_list and -instance_list_file together but you can-
+              not specify -instance_list and -instance_list_pair together.
+
+       -instance_pair_list {<instance1instance2pin1pin2>... }
+              Specifies  the instance pair list to enable effective resistance
+              calculation between  two  instances  in  the  design.  <pin1>and
+              <pin2>are pins of <instance1>and <instance2>, respectively.
+
+              Note:  The -instance_list and -instance_list_file parameters are
+              mutually  exclusive  to   the   -instance_pair_list   and   -in-
+              stance_pair_list_file  parameters. This means that you can spec-
+              ify -instance_list and -instance_list_file together but you can-
+              not specify -instance_list and -instance_list_pair together.
+
+       -instance_pair_list_file <filename>
+              Specifies the name of the instance pair  list  file.  This  file
+              contains  the instance pair list in the same format as mentioned
+              for the -instance_pair_list parameter. The file  allows  you  to
+              specify    a    large    number    of   instance   pairs.   -in-
+              stance_pair_list_file and -instance_pair_list are  mutually  ex-
+              clusive.
+
+              Note:  The -instance_list and -instance_list_file parameters are
+              mutually  exclusive  to   the   -instance_pair_list   and   -in-
+              stance_pair_list_file  parameters. This means that you can spec-
+              ify -instance_list and -instance_list_file together but you can-
+              not specify -instance_list and -instance_list_pair together.
+
+       -net <netName>
+              Specifies the net name that is to be analyzed.
+
+       -net_threshold<value>
+              The effective resistance requirements for different  power  nets
+              vary depending on the design. For example, an array or periphery
+              supply  to  an  SRAM needs to be signed off at a lower effective
+              resistance threshold compared to the core supplies. This parame-
+              ter allows you to specify different threshold values for differ-
+              ent nets.
+
+              The use model of this parameter is given below:
+
+              set_rail_analysis_domain -name ALL -pwrnets {vdd vddar vdda vdd1
+              vdd2} -gndnets vss
+
+              analyze_resistance -threshold 50 -net_threshold {{vdd 50} {vddar
+              20} {vdda 35} {vss 40}} -domain ALL -output_dir Reffective
+
+              In this example, the threshold value for different nets are:
+
+              vdd -> 50
+
+              vddar ->20
+
+              vdda -> 35
+
+              vss -> 40
+
+              vdd1 -> 50
+
+              vdd2 -> 50
+
+              Here, for all the remaining nets for which a value is not speci-
+              fied using the -net_threshold  parameter,  the  value  specified
+              with the -threshold parameter is applied.
+
+              The  different  threshold values will have an impact on the list
+              of     instances     reported     in     the     <state_dir>/Re-
+              ports/<net>/<net>.effr report.
+
+       -node_list {<node1> <node2..... > <METAL_LAYER> <LABEL>}
+              Specifies  the  list  of user-defined nodes for effective resis-
+              tance calculation between the specified user-defined  nodes  and
+              all  voltage  sources.  You can add a list of nodes based on the
+              region on a given layer. LABEL is any  name  chosen  by  you  to
+              identify  node  entries  in the list. This is optional but helps
+              during debugging.
+
+              Note: The -node_list and -node_list_file parameters are mutually
+              exclusive to the -node_pair_list and -node_pair_list_file  para-
+              meters.   This   means  that  you  can  specify  -node_list  and
+              -node_list_file together but you cannot specify  -node_list  and
+              -node_pair_list together.
+
+       -node_list_file <filename>
+              Specifies the name of the node list file. This file contains the
+              list  of  user-defined nodes in the same format as mentioned for
+              the -node_list parameter. The file allows you to specify a large
+              number of nodes.
+
+              You can specify multiple nets for  node  list  based  resistance
+              analysis. The use model for multiple nets is:
+
+              analyze_resistance   -domain   <<domain  name>>  -node_list_file
+              <<filename>>
+
+              Here,
+
+              * the -domain parameter will specify the domain name,  that  is,
+                the domain with nets that is required to be analyzed.
+
+              * the  -node_list_file  parameter  will include the multiple net
+                names
+
+              The format for specifying multiple nets is:
+
+              NET <netname1>
+
+              node1X node1Y METAL_LAYER [LABEL]
+
+              node2X node2Y METAL_LAYER [LABEL]
+
+              NET <netname2>
+
+              node1X node1Y METAL_LAYER [LABEL]
+
+              node2X node2Y METAL_LAYER [LABEL]
+
+              Note: The -node_list and -node_list_file parameters are mutually
+              exclusive to the -node_pair_list and -node_pair_list_file  para-
+              meters.   This   means  that  you  can  specify  -node_list  and
+              -node_list_file together but you cannot specify  -node_list  and
+              -node_pair_list together.
+
+       -node_pair_list {<node1X> <node1Y> <METAL_LAYER1> <node2X> <node2Y >
+       <METAL_LAYER2>...<LABEL>}
+              Specifies  the  node pair list for effective resistance calcula-
+              tion between two nodes on the power-grid. You can add a list  of
+              nodes  based  on  the region on a given layer. LABEL is any name
+              chosen by you to identify node entries in the list. This is  op-
+              tional but helps during debugging.
+
+              Note: The -node_list and -node_list_file parameters are mutually
+              exclusive  to the -node_pair_list and -node_pair_list_file para-
+              meters.  This  means  that  you  can  specify   -node_list   and
+              -node_list_file  together  but you cannot specify -node_list and
+              -node_pair_list together.
+
+       -node_pair_list_file <filename>
+              Specifies the name of the node pair list file.  This  file  con-
+              tains the node pair list in the same format as mentioned for the
+              -node_pair_list  parameter.  The  file  allows  you to specify a
+              large number of node pairs.
+
+              You can specify multiple nets for node pair  list  based  resis-
+              tance analysis. The use model for multiple nets is:
+
+              analyze_resistance  -domain <<domain name>> -node_pair_list_file
+              <<filename>>
+
+              Here,
+
+              * the -domain parameter will specify the domain name,  that  is,
+                the domain with nets that is required to be analyzed.
+
+              * the  -node_pair_list_file  parameter will include the multiple
+                net names
+
+              The format for specifying multiple nets is:
+
+              NET <netname1>
+
+              node1X node1Y METAL_LAYER1 node2X node2Y METAL_LAYER2 [LABEL]
+
+              node3X node3Y METAL_LAYER3 node4X node4Y METAL_LAYER4 [LABEL]
+
+              NET <netname2>
+
+              node1X node1Y METAL_LAYER1 node2X node2Y METAL_LAYER2 [LABEL]
+
+              node3X node3Y METAL_LAYER1 node4X node4Y METAL_LAYER4 [LABEL]
+
+              Note: The -node_list and -node_list_file parameters are mutually
+              exclusive to the -node_pair_list and -node_pair_list_file  para-
+              meters.   This   means  that  you  can  specify  -node_list  and
+              -node_list_file together but you cannot specify  -node_list  and
+              -node_pair_list together.
+
+       -output <filename>
+              Specifies  the  name of the output report file that contains the
+              report header and the sorted list for resistance values.
+
+              Note: This parameter should not be specified in the XP  flow  as
+              the XP reports are consolidated under the state directory by de-
+              fault.
+
+       -output_dir <directory_name>
+              Specifies  the  name of the directory in which the output report
+              file is saved.
+
+       -print_cell_name
+              Specifies to print cell names in the  effective  resistance  re-
+              port.  This  parameter  allows  you to sort resistance values by
+              cell names.
+
+       -region {<x1 y1 x2 y2 layer number_of_nodes region_name>}
+              Analyzes resistance in the specified region. You can draw a  box
+              on  a  specific layer, and specify the number of nodes to be se-
+              lected (maximum limit of 100 nodes). This parameter  allows  you
+              to compute effective resistance on a given layer across the chip
+              and determine how the resistance is changing for the design from
+              top to bottom layer. You can assign a name for the region.
+
+       -report_limit <value>
+              Specifies  the number of instances printed in the report to save
+              disk space.
+
+       -threshold value
+              Specifies the minimum allowed effective  resistance  to  display
+              node/node-pair/instance/instance-pair  that  have  a  resistance
+              value above this threshold value. If you specify threshold as  a
+              non  zero value, then instances with resistance value above that
+              threshold will be tagged as FAIL and the rest will be tagged  as
+              PASS.
+
+Examples
+              * The  following  command performs effective resistance calcula-
+                tion for the list of nodes and instances:
+
+                analyze_resistance -net VSS -node_list { 231 1061.6 M1 }  -in-
+                stance_list_file instance.list
+
+              * The  following  command specifies a list of user-defined nodes
+                and a node list file for effective resistance calculation:
+
+                analyze_resistance -net VDD -node_list {{ 213.556  133.469  M1
+                I123 }} -node_list_file /../node_list.txt.1 -output reff_rpt
+
+              *
+
+                The  following is an example of specifying a list of instances
+                for effective resistance calculation:
+
+                analyze_resistance -instance_list {{INV11  vdd}  {INV21  vdd}}
+                -net VDD
+
+              *
+
+                The  following  is an example of specifying a list of user-de-
+                fined nodes for effective resistance calculation:
+
+                analyze_resistance  -net  VDD  -node_list  {{800   11.88   M4}
+                {999.768 11.88 M4} {1000.296 11.880 M4}} -output out.txt
+
+              *
+
+                The  following  is an example of specifying node pair list for
+                effective resistance calculation:
+
+                analyze_resistance -net VDD -node_pair_list  {195.728  133.369
+                M1 213.556 133.469 M1} -output out_nodelist.txt
+
+              *
+
+                The  following  is an example of specifying instance pair list
+                for effective resistance calculation:
+
+                analyze_resistance -net GND -instance_pair_list  {inst1  inst2
+                GND GND} -output outfile -threshold 100
+
+              *
+
+                The  following  command performs effective resistance calcula-
+                tion for full chip analysis:
+
+                analyze_resistance  -threshold  13.0   -domain_threshold  25.0
+                -domain ALL
+
+                Sample Report:
+
+                NET: VSS VDD
+
+                # Threshold:   25.000
+
+                # Total Effective resistance for instances sorted from high to
+                low
+
+                # PASS/FAIL         REFF  INSTANCE                  PIN...
+
+                  FAIL               25.664     clk__L1_I1         VDD(51.52%)
+                VSS(48.48%)
+
+                  FAIL               25.35     clk__L2_I1          VDD(52.16%)
+                VSS(47.84%)
+
+                  FAIL               25.037     clk__L3_I1         VDD(51.56%)
+                VSS(48.44%)
+
+              *
+
+                The following command performs effective  resistance  calcula-
+                tion for instance list analysis:
+
+                analyze_resistance -domain ALL -threshold 13.0 -domain_thresh-
+                old 25.0 -instance_list_file inst.list
+
+                Sample Report:
+
+                NET: VSS VDD
+
+                # Threshold:   25.000
+
+                # Total Effective resistance for instances sorted from high to
+                low
+
+                # PASS/FAIL         REFF  INSTANCE             PIN...
+
+                  FAIL               25.664     clk__L1_I1         VDD(51.52%)
+                VSS(48.48%)
+
+                  FAIL              25.35      clk__L2_I1          VDD(52.16%)
+                VSS(47.84%)
+
+                  FAIL               25.037     clk__L3_I1         VDD(51.56%)
+                VSS(48.44%)
+
+                  PASS              24.724     clk__L4_I1          VDD(52.21%)
+                VSS(47.79%)
+
+                  PASS               23.047     inst_pll           VDD(50.55%)
+                VSS(49.45%)
+
+              * The following command reports reff for all  instances  of  the
+                cell type CKBD8:
+
+                analyze_resistance -net VDD -cell CKBD8
+
+                The  following  is  a  sample  reff report generated using the
+                -cell parameter:
+
+Related Information
+              * set_rail_analysis_mode
+
+              * analyze_signal_resistance
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025  analyze_resistance(25.10)

@@ -1,0 +1,310 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_global_slack_report(25.10)              write_global_slack_report(25.10)
+
+Name
+       write_global_slack_report  - Reports early and late slacks on every in-
+       stance pin in the design
+
+Syntax
+         write_global_slack_report
+
+       [-early]
+
+       [-late]
+
+       [-rise]
+
+       [-fall]
+
+       [-include_ports]
+
+       [-max_slack <val>]
+
+       [-min_slack <val>]
+
+       [-view <view_name>]
+
+       [> | >> <file_name>]
+
+       [<pin_port_list>]
+
+       Reports early and late slacks on every instance pin in the design.
+
+       This command computes and reports the required time and slack values of
+       the specified pins.
+
+Parameters
+       -help  Prints out the command usage.
+
+       > | >> <filename>
+              Specifies the output file name.
+
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+       -early/-late
+              Specifies the mode for which slack is to be reported.
+
+       -fall/-rise
+              Specifies the transition for which slack is to be reported.
+
+       -include_ports
+              Reports  slack  information for ports. By default, the slack in-
+              formation is reported for pins only.
+
+       -max_slack <val>
+              Reports pins that have early and late slack values less than the
+              specified value.
+
+              Type: Float
+
+       -min_slack <val>
+              Reports pins that have early and late slack values less than the
+              specified value.
+
+              Type: <Float>
+
+              Note: This parameter is obsolete and will be removed in a future
+              release. Cadence recommends that you use the -max_slack  parame-
+              ter.
+
+       <pin_port_list>
+              Specifies  the list of pins or ports for which slack information
+              is to be reported.
+
+       -view <view_name>
+              Reports slack information for the specified view.
+
+Examples
+              * The following command reports the early  and  late  slacks  on
+                every instance pin in the design:
+
+                tempus > write_global_slack_report > out.rpt
+
+                # Unit: 1ns
+
+                #    <late_rise>    <late_fall>    <early_rise>   <early_fall>
+                <view_name> <hpin_name>
+
+                #
+                -------------------------------------------------------------------
+
+                *               *           *             *             (null)
+                u2/Q
+
+                *               *           *             *             (null)
+                u8/Q
+
+                *               *           *             *             (null)
+                b11/A
+
+                *               *           *             *             (null)
+                b11/Y
+
+                0.823           0.347       0.115         0.501         (null)
+                u10999/A
+
+                0.823           0.347       0.115         0.501         (null)
+                u10999/Y
+
+                #
+                ---------------------------------------------------------------------------
+
+              * The following command reports slack for a pin collection:
+
+                tempus> set x [get_pins -hier */A]
+
+                0x14 <---- 'x' stores Pointer for pin collection
+
+              * The following command will generate a global slack report  for
+                pin collection as defined in "x":
+
+                tempus> write_global_slack_report $x
+
+                # Unit: 1ns
+
+                #    <late_rise>   <late_fall>    <early_rise>    <early_fall>
+                <view_name> <hpin_name>
+
+                #
+                ---------------------------------------------------------------------------
+
+                19.622       19.742        0.321         0.106          (null)
+                seg1/u1/A
+
+                19.622        19.742        0.321         0.106         (null)
+                seg1/u2/A
+
+                18.018       18.362        1.876         1.486          (null)
+                seg1/u10/A
+
+                18.018        18.362        1.876         1.486         (null)
+                seg1/u11/A
+
+                18.362       18.018        1.486         1.876          (null)
+                seg1/u12/A
+
+                18.018        18.362        1.876         1.486         (null)
+                seg1/u13/A
+
+                25.845       25.883       -0.934        -1.053          (null)
+                seg2/u1/A
+
+                25.845        25.883       -0.934        -1.053         (null)
+                seg2/u2/A
+
+                #
+                ---------------------------------------------------------------------------
+
+              * The following example shows slack calculations, when  you  run
+                the report_timing command for the same hpin.
+
+                tempus > write_global_slack_report DT_IN/RE_CO/r697_reg_2/D
+
+                # Unit: 1ns
+
+                # <late_rise> <view_name> <late_fall> <view_name> <early_rise>
+
+                <view_name> <early_fall> <view_name> <hpin_name>
+
+                #
+                ----------------------------------------------------------------------------
+
+                12.641 dtmf_view_setup 12.127 dtmf_view_setup * *
+
+                DT_IN/RE_CO/r697_reg_2/D
+
+                tempus  >  report_timing  -to  DT_IN/RE_CO/r697_reg_2/D  -late
+                -fall
+
+                Path 1: MET Setup Check with Pin DT_IN/RE_CO/r697_reg_2/CKN
+
+                Endpoint: DT_IN/RE_CO/r697_reg_2/D (v) checked with trailing
+
+                edge of 'vclk2'
+
+                Beginpoint: DT_IN/RE_CO/r697_reg_2/Q (v) triggered by trailing
+
+                edge of 'vclk2'
+
+                Path Groups: {vclk2}
+
+                Analysis View: dtmf_view_setup
+
+                Other End Arrival Time 7.015
+
+                - Setup 0.600
+
+                + Phase Shift 14.000
+
+                - Uncertainty 0.250
+
+                = Required Time 20.164
+
+                - Arrival Time 8.037
+
+                = Slack Time 12.127
+
+                Clock Fall Edge 7.000
+
+                + Clock Network Latency (Prop) 0.015
+
+                = Beginpoint Arrival Time 7.015
+
+                +-----------------------------------------------------------------------------+
+
+                | Instance               | Arc          | Cell     |  Delay  |
+                Arrival | Required|
+
+                |                         |               |          |       |
+                Time    | Time |
+
+                |----------------------------------------+------------+---------+------+------|
+
+                | DT_IN/RE_CO/r697_reg_2 | CKN v         |          |        |
+                7.015   | 19.142  |
+
+                |  DT_IN/RE_CO/r697_reg_2  |  CKN v -> Q v | SDFFNX1 | 0.710 |
+                7.725   | 19.852  |
+
+                | DT_IN/RE_CO/i_6594     | B v -> Y v   | MX2X1    |  0.312  |
+                8.037   | 20.164  |
+
+                |  DT_IN/RE_CO/r697_reg_2  |  D v          | SDFFNX1 | 0.000 |
+                8.037   | 20.164  |
+
+                +-----------------------------------------------------------------------------+
+
+                tempus  >  report_timing  -to  DT_IN/RE_CO/r697_reg_2/D  -late
+                -rise
+
+                Path 1: MET Setup Check with Pin DT_IN/RE_CO/r697_reg_2/CKN
+
+                Endpoint: DT_IN/RE_CO/r697_reg_2/D (^) checked with trailing
+
+                edge of 'vclk2'
+
+                Beginpoint: DT_IN/RE_CO/r697_reg_2/Q (^) triggered by trailing
+
+                edge of 'vclk2'
+
+                Path Groups: {vclk2}
+
+                Analysis View: dtmf_view_setup
+
+                Other End Arrival Time 7.015
+
+                - Setup 0.204
+
+                + Phase Shift 14.000
+
+                - Uncertainty 0.250
+
+                = Required Time 20.560
+
+                - Arrival Time 7.919
+
+                = Slack Time 12.641
+
+                Clock Fall Edge 7.000
+
+                + Clock Network Latency (Prop) 0.015
+
+                = Beginpoint Arrival Time 7.015
+
+                +-----------------------------------------------------------------------------+
+
+                |  Instance                |  Arc          | Cell    | Delay |
+                Arrival |Required |
+
+                |                         |               |                  |
+                Time    | Time    |
+
+                |--------------------------+--------------+---------+-------+---------+-------|
+
+                |  DT_IN/RE_CO/r697_reg_2  |  CKN v        |         |       |
+                7.015    | 19.656 |
+
+                | DT_IN/RE_CO/r697_reg_2 | CKN v -> Q ^ | SDFFNX1  |  0.628  |
+                7.643    | 20.284 |
+
+                |  DT_IN/RE_CO/i_6594      |  B ^ -> Y ^   | MX2X1   | 0.276 |
+                7.919    | 20.560 |
+
+                | DT_IN/RE_CO/r697_reg_2 | D ^          | SDFFNX1  |  0.000  |
+                7.919    | 20.560 |
+
+                +-----------------------------------------------------------------------------+
+
+       Related Information
+
+              * write_global_slack_worst_trigger_path_on_clocks
+
+                           Fri Apr 04 01:25:37w2r0i2t5e_global_slack_report(25.10)

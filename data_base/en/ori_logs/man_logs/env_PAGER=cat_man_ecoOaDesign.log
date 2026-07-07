@@ -1,0 +1,102 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoOaDesign(25.10)                                          ecoOaDesign(25.10)
+
+Name
+       ecoOaDesign  -  Imports  an  OpenAccess  database  and  an ECO-modified
+       netlist
+
+Syntax
+       ecoOaDesign
+
+       [-help]
+
+       <lib cell view>
+
+       -ecoVerilogFile <input_fileName>
+
+       [-postMask [-<suffix><suffixName>]]
+
+       [-useGACells <GACoreSite>]
+
+       [-reportFile <output_fileName>]
+
+       Imports an OpenAccess database and an  ECO-modified  netlist.  Restores
+       the  physical  objects in the database, examines the changes in the new
+       netlist, and implements the required connectivity changes in the  logi-
+       cal  database  without  making changes to the physical objects. It pre-
+       serves the spare cell markings in the old lib/cell/view.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each ecoOaDesign parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man ecoOaDesign.
+
+       <cell> Specifies the OpenAccess cell name of the top cell to import.
+
+       <lib>  Specifies the OpenAccess library name.
+
+       -ecoVerilogFile <input_fileName>
+              Specifies the changed Verilog netlist.
+
+              Note: The original netlist must be written out from the original
+              <lib  cell view> and it must be hand-modified to incorporate the
+              required ECO changes.
+
+       -reportFile <output_fileName>
+              Specifies a report file that shows the additions and removals of
+              instances and nets in the new Verilog netlist.
+
+              Default: eco.log
+
+       -postMask
+              Specifies that ecoOaDesign works in the post-mask mode. If  this
+              parameter  is  not specified, then Innovus considers the mode as
+              pre-mask by default.
+
+       -<suffix> <suffixName>
+              Specifies the suffix name for the the spare cells.
+
+              By default, the suffix is _SPARE.
+
+       <->useGACells<GACoreSite>
+              Specifies the GA core site.
+
+              The -useGACells parameter is valid only in the post-mask mode.
+
+              * For cells that match the specified GA core site:
+
+                * Newly added GA cells that exist in memory  but  not  in  the
+                  OpenAccess database are left unplaced.
+
+                * GA  cells  that  exist in the OpenAccess database but not in
+                  the memory are deleted in the new database.
+
+              * For cells that do not match the specified GA  core  site,  In-
+                novus  treats them as standard cells as described in post-mask
+                mode.
+
+       <view> Specifies the OpenAccess view name to import.
+
+Examples
+       The following command reads the modified Verilog from the  eco.v  file,
+       complete  physical  pre-ECO  database  from  the  lib/cell/view design-
+       Lib/TOP/final in the post-mask mode:
+
+       ecoOaDesign designLib TOP final -ecoVerilogFile eco.v -postMask
+
+       In post-mask mode, no physical database changes are allowed and the new
+       logical changes coming through eco.v are incorporated using spare cells
+       in successive ecoPlace and ecoRoute commands.
+
+Related Information
+              * ecoPlace
+
+              * ecoRoute
+
+              * For more information, refer to the Innovus-Based ECO Flow sec-
+                tion of the Chip Finishing and ECO  Flows  chapter  of   Mixed
+                Signal Interoperability Guide.
+
+                           Fri Apr 04 01:25:37 2025         ecoOaDesign(25.10)

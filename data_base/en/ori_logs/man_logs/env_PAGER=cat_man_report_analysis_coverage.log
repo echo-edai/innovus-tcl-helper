@@ -1,0 +1,395 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_analysis_coverage(25.10)                report_analysis_coverage(25.10)
+
+Name
+       report_analysis_coverage  - Provides information about timing checks in
+       the design
+
+Syntax
+       report_analysis_coverage
+
+       [-help]
+
+       [<pin_port_list>]
+
+       [-check_type <check_type_list>]
+
+       [-exclude_untested <reason_list>]
+
+       [-include_dyn_checks]
+
+       [-include_parallel_check_arcs]
+
+       [-include_when_cond]
+
+       [-max_paths{type <integer>}]
+
+       [-nworst <<integer>>]
+
+       [-retime {aocv | ssta | path_slew_propagation | aocv_path_slew_propaga-
+       tion}]
+
+       [-sort {pin | refpin | checktype | slack | reason}]
+
+       [-tcl_list]
+
+       [-unsorted]
+
+       [-verbose <check_status_list>]
+
+       [-view <view_name>]
+
+       [> <filename[.gz]>]
+
+       [>> <filename[.gz]>]
+
+       Provides information about timing checks in the design.
+
+       For each type of timing check, the command reports the number of checks
+       that meet constraints, violated constraints, or that  are  untested  in
+       the  SUMMARY section of the report. The DETAILS section includes infor-
+       mation about the signal pin, reference pin, check type, slack, and  the
+       reason for being untested.
+
+       When the timing_report_group_based_mode global variable is set to true,
+       this  command  will report a check at end points for all the clocks. In
+       verbose mode, the "clock" column will be displayed.
+
+       Use check_timingto look for missing constraints.
+
+Parameters
+       {> | >>}  <file_name>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  <filename>parameter  must be the last argument in the list.
+              The <filename> and -tcl_list parameters are mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -check_type <check_type_list>
+              Reports checks that as specified in the <check_type_list>.
+
+              Valid check types are:
+
+              * clock_gating_hold
+
+              * clock_gating_pulse_width
+
+              * clock_gating_setup
+
+              * clock_period
+
+              * clock_separation
+
+              * data_hold
+
+              * data_setup
+
+              * external_delay:
+
+              * hold
+
+              * no_change_hold
+
+              * no_change_setup
+
+              * path_delay
+
+              * pulse_width
+
+              * recovery
+
+              * removal
+
+              * setup
+
+              * skew
+
+              * time_borrow
+
+              Note: If there are no specified timing checks in the design, the
+              report shows "No timing checks found."
+
+              Default: All (all types of check(s) are reported)
+
+       -exclude_untested <reason_list>
+              Excludes from the report endpoints that are unconstrained due to
+              a specific reason.
+
+              Valid reasons are:
+
+              * const: Constant reaching signal/reference pin  of  any  timing
+                check.
+
+              * false_path: Path disabled due to set_false_path.
+
+              * no_endpoint_clock:  Missing  clock at the reference pin of the
+                timing check.
+
+              * no_startpoint_clock: Missing clock at the signal  pin  of  the
+                timing  check.  This  may  happen if the clock signal does not
+                reach the launching register.
+
+              * unknown: None of the  known  reasons  are  identified  for  an
+                untested path.
+
+              * user_disable: Checks arc disable due to set_disable_timing.
+
+       -include_dyn_checks
+              Reports  the  dynamic  checks (data_to_data, path_delay) on pins
+              that  are  constrained  by  set_data_check,  set_max_delay,   or
+              set_min_delay  constraints. By default, these checks will not be
+              reported and the command only reports the  pins  constrained  by
+              all  library  checks,  set_output_delay or inferred clock gating
+              checks.
+
+              The dynamic checks, such as set_data_check or set_max_delay  are
+              not  reported  by default, when -include_dyn_checks parameter is
+              not specified.
+
+       -include_parallel_check_arcs
+              Reports all the parallel check arcs that have been merged.
+
+       -include_when_cond
+              Reports the when condition of check arcs.
+
+       -max_paths{type <integer}>
+              Enumerates the specified number of worst paths  in  the  design,
+              regardless of the endpoint.
+
+       -nworst <integer>
+              Enumerates the specified number of paths for each endpoint.
+
+       -retime {aocv | ssta | path_slew_propagation | aocv_path_slew_propaga-
+       tion}
+              Reanalyzes the set of paths using the specified method.
+
+       <pin_port_list>
+              Limits the report to timing checks on specified pins or ports.
+
+       -sort {pin | refpin | checktype | slack | reason}
+              Sorts  the  checks  by  the specified option while reporting de-
+              tailed information using the -verbose option. The -sort  parame-
+              ter does not change the order of the columns.
+
+              The  valid sort options are: pin, refpin, checktype, slack, rea-
+              son
+
+              When sorting by pin name, if the pin names  are  the  same,  the
+              software then attempts to sort the checks by slack value. If the
+              slack values are the same, the software attempts to sort by tim-
+              ing check type.
+
+              When  sorting  by  timing check type, if the check types are the
+              same, the software then attempts to sort by slack value. If  the
+              slack  values are the same, the software attempts to sort by pin
+              name.
+
+              When sorting by slack, if the slack values  are  the  same,  the
+              software  then  attempts  to sort the checks by pin name. If the
+              pin names are the same, the software attempts to sort by  timing
+              check type.
+
+              When  you sort by slack, the slack value is reported in order of
+              least negative to most negative (worst slack last).
+
+              You can use the following commands for debugging purposes and to
+              improve readability of the report:
+
+              report_analysis_coverage -verbose untested -sort reason
+
+              report_analysis_coverage -verbose violated -sort slack
+
+              Default: By default, checks are sorted by slack value (slack).
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The -tcl_list and <filename>parameters are  mutually  exclusive;
+              you cannot specify them together.
+
+       -unsorted
+              Reports  unsorted  slacks with untested end points at the end of
+              the report.
+
+       -verbose <check_status_list>
+              Limits the detailed information to checks as per  the  specified
+              status.
+
+              The valid status types are: met, violated, and untested.
+
+              * met: Shows as a positive value in the Slack column.
+
+              * violated: Shows as a negative value in the Slack column.
+
+              * untested: Shows as UNTESTED in the Slack column and the reason
+                is given in the Reason column. The Reason column will be blank
+                when  a  Slack  number is displayed - this indicates the check
+                has been tested.
+
+              You can reduce the number of lines in  the  DETAILS  section  by
+              filtering out the met checks, as shown in the example below:
+
+              report_analysis_coverage -verbose {violated untested}
+
+              Note:  The -verbose parameter supports multi-threading.
+
+       -view <view_name>
+              Generates  a timing check report for the specified analysis view
+              only. You can specify this parameter only when the  software  is
+              in multi-mode multi-corner analysis mode.
+
+Examples
+              * The  following  command  filters from the report all endpoints
+                that are unconstrained because of the reason const:
+
+                report_analysis_coverage  -exclude_untested   const   -verbose
+                untested
+
+                ---------------------------------------------------------------
+
+                TIMING CHECK COVERAGE SUMMARY
+
+                ---------------------------------------------------------------
+
+                Check    Type               No.   of       Met        Violated
+                Untested
+
+                                       Checks
+
+                --------------------------------------------------------------
+
+                Clock Gating Hold     1          0 (0%)    1 (100%)   0 (0%)
+
+                Clock Gating Setup    1          1 (100%)  0 (0%)     0 (0%)
+
+                ClockPeriod           28         24 (85%)  0 (0%)     4 (14%)
+
+                ExternalDelay (Early) 1          0 (0%)    0 (0%)     1 (100%)
+
+                ExternalDelay (Late)  1          0 (0%)    0 (0%)     1 (100%)
+
+                Hold                  13         8 (61%)   1 (7%)     4 (30%)
+
+                PulseWidth            28         24 (85%)  0 (0%)     4 (14%)
+
+                Setup                 13         8 (61%)  1 (7%)      4 (30%)
+
+                --------------------------------------------------------------
+
+                TIMING CHECK COVERAGE DETAILS
+
+                -----------------------------------------------------------
+
+                Pin       Reference    Pin         Check    Type         Slack
+                Reason
+
+                ----------------------------------------------------------
+
+                out1         -                 ExternalDelay(Early)   UNTESTED
+                No data signal
+
+                out1        -                 ExternalDelay(Late)     UNTESTED
+                No data signal
+
+                u99/CK  ^    u99/CK  ^         ClockPeriod            UNTESTED
+                No endpoint clock
+
+                u99/CK  ^    u99/CK  v         PulseWidth             UNTESTED
+                No endpoint clock
+
+                u99/CK  v    u99/CK  ^         PulseWidth             UNTESTED
+                No endpoint clock
+
+                u99/CK  v    u99/CK  v         ClockPeriod            UNTESTED
+                No endpoint clock
+
+                u99/D        u99/CK  ^         Hold                   UNTESTED
+                No endpoint clock
+
+                u99/D       u99/CK  ^         Setup                   UNTESTED
+                No endpoint clock
+
+                u8/CK  ^     u8/CK  ^          ClockPeriod            UNTESTED
+                No endpoint clock
+
+                u8/CK  ^     u8/CK  v          PulseWidth             UNTESTED
+                No endpoint clock
+
+                u8/CK  v     u8/CK  ^          PulseWidth             UNTESTED
+                No endpoint clock
+
+                u8/CK  v     u8/CK  v          ClockPeriod            UNTESTED
+                No endpoint clock
+
+                seg1/u9/D    seg1/u9/CK  ^     Hold                   UNTESTED
+                No data signal
+
+                seg1/u9/D   seg1/u9/CK  ^     Setup                   UNTESTED
+                No data signal
+
+                seg2/u9/D    seg2/u9/CK  ^     Hold                   UNTESTED
+                No data signal
+
+                seg2/u9/D   seg2/u9/CK  ^     Setup                   UNTESTED
+                No data signal
+
+                ------------------------------------------------------------------------------
+
+                When  the software is in multi-mode multi-corner timing analy-
+                sis mode, You can specify the -view parameter  to  generate  a
+                timing check report for the specified analysis view only:
+
+                > report_analysis_coverage -view view1
+
+                ----------------------------------------------------
+
+                TIMING CHECK COVERAGE SUMMARY (Analysis View: view1)
+
+                -------------------------------------------------------
+
+                Check    Type             No.    of       Met         Violated
+                Untested
+
+                                    Checks
+
+                ------------------------------------------------------------
+
+                Clock Gating Hold     1        0 (0%)     1 (100%)     0 (0%)
+
+                Clock Gating Setup    1        1 (100%)   0 (0%)       0 (0%)
+
+                ClockPeriod           28       24 (85%)   0 (0%)       4 (14%)
+
+                ExternalDelay (Early)  1         0  (0%)      0  (0%)        1
+                (100%)
+
+                ExternalDelay  (Late)   1         0  (0%)      0  (0%)       1
+                (100%)
+
+                Hold                  14       8 (57%)    1 (7%)       5 (35%)
+
+                PulseWidth            28      24 (85%)    0 (0%)       4 (14%)
+
+                Setup                 14       8 (57%)    1 (7%)       5 (35%)
+
+                ---------------------------------------------------------------
+
+Related Information
+              * check_timing
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2r0e2p5ort_analysis_coverage(25.10)

@@ -1,0 +1,21 @@
+{
+  "command": "ccopt_add_exclusion_drivers",
+  "is_cmd": true,
+  "summary": "通过在排除的时钟接收点上方添加排除驱动器，将其从时钟树中移除",
+  "description": "该命令用于从时钟树中移除被排除的接收点（sinks），方法是在这些接收点上方添加排除驱动器。建议在运行 create_ccopt_clock_tree_spec 命令后使用此命令。或者，也可以使用 add_exclusion_drivers 属性来实现相同功能。新添加的驱动器名称以 `CTS_cse` 开头，便于识别。此功能有助于修复时钟网络上的保持时间违例，因为 GigaOpt 不会修复时钟网络上的保持时间违例。通过在被排除的接收点（例如触发器的 D 引脚）上方添加一个排除缓冲器或一对反相器，缓冲器输出引脚到触发器 D 引脚之间的网络将变为非时钟网络，从而使 GigaOpt 能够修复该路径上的保持时间违例。",
+  "usage": "ccopt_add_exclusion_drivers [-help] [-lib_cell list_library_cells]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。如需命令及其所有参数的详细描述，请使用 man 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lib_cell",
+      "description": "指定用作排除驱动器的特定缓冲器或反相器库单元。如果未指定此参数，或者使用 add_exclusion_drivers 属性启用此功能，CCOpt 将从 CTS 单元列表中选择面积较小的驱动器作为排除驱动器。CCOpt 将根据 use_inverters 属性的值选择添加反相器对或单个缓冲器。",
+      "required": false,
+      "type": "list_library_cells"
+    }
+  ]
+}

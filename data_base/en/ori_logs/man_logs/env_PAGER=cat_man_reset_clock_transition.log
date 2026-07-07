@@ -1,0 +1,236 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_clock_transition(25.10)                    reset_clock_transition(25.10)
+
+Name
+       reset_clock_transition  -  Removes  the clock transition assertions you
+       had set on the specified list of clock waveforms
+
+Syntax
+       reset_clock_transition
+
+       clock_list
+
+       Removes the clock transition assertions you had set  on  the  specified
+       list of clock waveforms.
+
+Parameters
+       <clock_list>
+              Specifies  a list of clock waveforms for which the clock transi-
+              tion assertions are removed. The <clock_list> variable can be  a
+              Tcl list or collection of clock waveforms.
+
+Examples
+              * The  following  commands  set the clock transition assertions,
+                and resets them and displays the results using the report_tim-
+                ing command:
+
+                set_clock_transition 0.123 [get_clocks WAVE]
+
+                report_timing -net -to BLK/BR2/D
+
+                # Generates the following report
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.192
+
+                + Phase Shift 10.000
+
+                = Required Time 9.808
+
+                - Arrival Time 0.249
+
+                = Slack Time 9.559
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                +-----------------------------------------------------------------------+
+
+                | Instance   | Cell    | Arc       | Pin     | Slew  | Delay |
+                Arrival |
+
+                |            |         |           |         |       |       |
+                Time    |
+
+                |------------+---------+-------------+-------+-------+-------+---------|
+
+                |            |        | tclk ^     | tclk    | 0.123 |       |
+                0.000 |
+
+                | CG/BC1     | BUFX2  |            | A       | 0.123 | 0.000 |
+                0.000 |
+
+                | CG/BC1     | BUFX2  | A ^ -> Y ^ | Y       | 0.123 | 0.000 |
+                0.000 |
+
+                | TC1        | BUFX2  |            | A       | 0.123 | 0.000 |
+                0.000 |
+
+                | TC1        | BUFX2  | A ^ -> Y ^ | Y       | 0.123 | 0.000 |
+                0.000 |
+
+                | CG1        | AND2X4 |            | B       | 0.123 | 0.000 |
+                0.000 |
+
+                | CG1        | AND2X4 | B ^ -> Y ^ | Y       | 0.123 | 0.000 |
+                0.000 |
+
+                | BLK/blkint | BUFX2  |            | A       | 0.123 | 0.000 |
+                0.000 |
+
+                | BLK/blkint | BUFX2  | A ^ -> Y ^ | Y       | 0.123 | 0.000 |
+                0.000 |
+
+                | BLK/BR1    | DFFHQX1|            | CK      | 0.123 | 0.000 |
+                0.000 |
+
+                reset_clock_transition [get_clocks WAVE]
+
+                report_timing -net -to BLK/BR2/D
+
+                # Generates the following report:
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.191
+
+                + Phase Shift 10.000
+
+                = Required Time 9.809
+
+                - Arrival Time 0.249
+
+                = Slack Time 9.560
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                +----------------------------------------------------------------+
+
+                | Instance | Cell      | Arc         | Pin   | Slew  | Delay |
+                Arrival |
+
+                |                                    |                       |
+                Time  |
+
+                |------------+---------+-------------+-------+-------+-------+---|
+
+                |            |         | tclk ^      | tclk  | 0.000 |       |
+                0.000 |
+
+                | CG/BC1     | BUFX2   |             | A     | 0.000 | 0.000 |
+                0.000 |
+
+                | CG/BC1     | BUFX2   | A ^ -> Y ^  | Y     | 0.000 | 0.000 |
+                0.000 |
+
+                | TC1        | BUFX2   |             | A     | 0.000 | 0.000 |
+                0.000 |
+
+                | TC1        | BUFX2   | A ^ -> Y ^  | Y     | 0.000 | 0.000 |
+                0.000 |
+
+                | CG1        | AND2X4  |             | B     | 0.000 | 0.000 |
+                0.000 |
+
+                | CG1        | AND2X4  | B ^ -> Y ^  | Y     | 0.000 | 0.000 |
+                0.000 |
+
+                | BLK/blkint | BUFX2   |             | A     | 0.000 | 0.000 |
+                0.000 |
+
+                | BLK/blkint | BUFX2   | A ^ -> Y ^  | Y     | 0.000 | 0.000 |
+                0.000 |
+
+                | BLK/BR1    | DFFHQX1 |             | CK    | 0.000 | 0.000 |
+                0.000 |
+
+                -----------------------------------------------------------------------
+
+              *
+
+                The following commands set the  clock  transition  assertions,
+                and resets them and displays the results using the report_tim-
+                ing command:
+
+                set_clock_transition 0.123 [get_clocks CLK_W_2]
+
+                report_timing  -net  -format {pin arc cell slew delay arrival}
+                -to seg3/u14/D
+
+                Path 1: MET Setup Check with Pin seg3/u14/CK
+
+                Endpoint:  seg3/u14/D  (^)  checked  with  leading   edge   of
+                'CLK_W_3'
+
+                Beginpoint:   seg3/u9/Q  (^)  triggered  by  leading  edge  of
+                'CLK_W_3'
+
+                Path Groups: {CLK_W_3}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.171
+
+                + Phase Shift 2.000
+
+                = Required Time 1.829
+
+                - Arrival Time 1.409
+
+                = Slack Time 0.420
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Ideal) 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                -----------------------------------------------------------------------
+
+                Pin         Edge Net          Cell   Slew     Delay    Arrival
+                Required
+
+                                                             Time    Time
+
+                ----------------------------------------------------------------------
+
+                seg3/u9/CK    ^    seg3/wout      -      0.123   -       0.000
+                0.420
+
+                seg3/u9/Q    ^   seg3/n9        DFF    0.071    0.220    0.220
+                0.640
+
+                seg3/u10/Y    ^    seg3/n10       BUF    0.074   0.071   0.291
+                0.711
+
+                seg3/u11/Y   v   seg3/n11       INV    0.638    0.312    0.603
+                1.023
+
+                seg3/u13/Y    ^    seg3/n13       BUF    1.078   0.403   1.409
+                1.829
+
+                seg3/u14/D   ^   -              DFF    1.078    0.000    1.409
+                1.829
+
+                ----------------------------------------------------------------------
+
+Related Information
+              * set_clock_transition
+
+                           Fri Apr 04 01:25:37 202r5eset_clock_transition(25.10)

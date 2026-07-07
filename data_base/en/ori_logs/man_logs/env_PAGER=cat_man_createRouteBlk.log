@@ -1,0 +1,399 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createRouteBlk(25.10)                                    createRouteBlk(25.10)
+
+Name
+       createRouteBlk - Creates a routing blockage object
+
+Syntax
+        createRouteBlk
+
+       [-help]
+
+       [-cutLayer <layerName> | {<layerNamelist ...>} | all]
+
+       [-drcRegionLayer <layerName>| {<layerNamelist ...>} | all]
+
+       [-inst <name>]
+
+       [-layer <layerName> | {<layerNamelist ...>} | all]
+
+       [-mask <integer>]
+
+       [-noWrongWay]
+
+       [-pushdown]
+
+       [-trimMetalLayer <layerName> | {<layerNamelist ...>} | all]
+
+       {-box  {<x1  y1  x2 y2>} | -cover | -polygon {{<x1 y1>} {<x2 y2>}...} |
+       -boxList {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...} }
+
+       [-exceptpgnet | -pgnetonly  | -partial <integer>]
+
+       [-spacing <float >| -designRuleWidth <float>]
+
+       [-fills | -exceptFill ]
+
+       [-name <blk>| -prefixOn]
+
+       Creates a routing blockage object. The object area prevents routing  of
+       specified  metal  layers,  signal routes, and hierarchical instances in
+       this area. Use this command during partition floorplanning.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each createRouteBlk parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createRouteBlk
+
+       -box {<x1 y1 x2 y2>}
+              Specifies the coordinates of the blockage area.
+
+              * x1:  Specifies  the  lower  left  x coordinate of the blockage
+                area.
+
+              * y1: Specifies the lower left  y  coordinate  of  the  blockage
+                area.
+
+              * x2:  Specifies  the  upper  right x coordinate of the blockage
+                area.
+
+              * y2: Specifies the upper right y  coordinate  of  the  blockage
+                area.
+
+              Data_type: box, required
+
+              For  example,  the  following command creates a routing blockage
+              object on metal layers 1, 4, and 5:
+
+              createRouteBlk -box {0 0 100 100} -layer {metal1 metal4 metal5}
+
+              Note: You can also add variables to specify the  blockage  area.
+              For example,
+
+              set box "0 0 100 100"
+
+              createRouteBlk -box $box
+
+       -boxList {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...} }
+              Specifies the coordinates of a list of blockage areas.
+
+              Data_type: point_list, required
+
+       -cover Specifies that a routing blockage of the same size as the speci-
+              fied block instance (-inst <name>) will be created on top of the
+              instance.
+
+              Note: The -inst parameter must be specified with this parameter.
+
+              Data_type: bool, required
+
+       -cutLayer <layerName> | {<layerNamelist ...>} | all
+              Specifies  the  cut layer, list of cut layers, or all cut layers
+              on which the routing blockage is to be applied. To  specify  cut
+              layer  between  the  first  layer (e.g. metal1) and second layer
+              (e.g. metal2), use the second layer name (e.g. metal2). For  ex-
+              ample, -cutLayer metal2. Similarly, if you want to create block-
+              age  on  cut  layer  between  the second layer (e.g. metal2) and
+              third layer (e.g.  metal3),  use  the  third  layer  name  (e.g.
+              metal3). For example, -cutlayer metal3, and so on.
+
+              Note: The values specified with this parameter will override any
+              default  blockage  layers specified with the setRouteBlkDefault-
+              Layercommand.
+
+              Default: If you do not specify this parameter, the Innovus soft-
+              ware will check if any default blockage layers have been  speci-
+              fied with the setRouteBlkDefaultLayercommand. If yes, the layers
+              specified  with the setRouteBlkDefaultLayercommand will be used.
+              If no, the default is metal3 if the number of layers is  greater
+              than  3, or metal2 if the number of layers is less than or equal
+              to 3.
+
+              Data_type: list, optional
+
+       -designRuleWidth <float>
+              Specifies the effective width of the blockage for  the  purposes
+              of  spacing  calculations.  If you specify -designRuleWidth, you
+              cannot specify -spacing.
+
+              Type: The <effectiveWidth> is a real number greater than  0,  in
+              microns.
+
+              Data_type: float, optional
+
+       -drcRegionLayer <layerName>| {<layerNamelist ...>} | all
+              Specifies  the  drc region layers, list of drc region layers, or
+              all drc region layers on which the routing blockage is to be ap-
+              plied.
+
+              Data_type: list, optional
+
+       -exceptFill
+              Specifies that the routing blockage is  to  be  applied  to  all
+              other net routings except for metal fills.
+
+              Data_type: bool, optional
+
+       -exceptpgnet
+              Specifies that the routing blockage is to be applied on a signal
+              net routing and not on power or ground net routing. Use this op-
+              tion  to  block signal routing above or around a sensitive block
+              to avoid noise from nearby signal nets  but  still  allow  power
+              connections to go through the blockage.
+
+              Note:   Blocking  the  signal  net  routing  helps  in  avoiding
+              crosstalk or coupling caused by signal routes.
+
+              Data_type: bool, optional
+
+       -fills Specifies that the routing blockage is to be  applied  on  metal
+              fills.
+
+              Data_type: bool, optional
+
+       -inst <name>
+              Specifies the name of the instance on which the routing blockage
+              is to be applied.
+
+              Note:  When the -cover parameter is specified, the -inst parame-
+              ter must also be specified. However, when the -inst parameter is
+              specified then specifying the -cover option is optional.
+
+              Data_type: string, optional
+
+       -layer <layerName> | {<layerNamelist ...>} | all
+              Specifies the layer, list of layers, or all layers on which  the
+              routing blockage is to be applied.
+
+              Note: The values specified with this parameter will override any
+              default  blockage  layers specified with the setRouteBlkDefault-
+              Layercommand.
+
+              Default: If you do not specify this parameter, the Innovus  will
+              check  if  any  default blockage layers have been specified with
+              the setRouteBlkDefaultLayercommand. If yes, the layers specified
+              with the setRouteBlkDefaultLayercommand will be used. If no, the
+              default is wire3 if the number of layers is greater than  3,  or
+              wire2 if the number of layers is less than or equal to 3.
+
+              Note:  You  must specify the layerName as a number or as a layer
+              name defined in LEF. For example, layerName can be specified  as
+              2 or metal2.
+
+              Data_type: list, optional
+
+       -mask <integer>
+              Blocks  routing  layers  with specified masks. Layers with other
+              masks can still be routed through the blockage.
+
+              Note:
+
+              * The default value of the -mask parameter is  0.  This  implies
+                that all the specified layers will be blocked.
+
+              * If  the  -mask  parameter  is  specified with an integer value
+                greater than 0, then both layers with specified mask  and  un-
+                colored layers are blocked.
+
+                Example.  If -mask 1 is specified, it blocks mask 1 and uncol-
+                ored routes.
+
+              * If more than one layers are associated  with a mask, the  mask
+                is applied to all of them.
+
+              * If  the  -mask  parameter is specified, the tool checks if the
+                mask is suitable for all of the specified layers. If  not,  it
+                displays  an  ERROR message and no blockages are created.  The
+                number of arguments specified with the -mask parameter must be
+                same as the number of arguments specified  with  the   -layer,
+                -cutLayer and -trimMetalLayer parameters.
+
+              * The  setNanoRouteMode  and verify_drc commands honor the -mask
+                parameter.
+
+              Default: 0
+
+              Data_type: int, optional
+
+       -name <blk>
+              Specifies the layer name of the route blockage.
+
+              Data_type: string, optional
+
+       -noWrongWay
+              When this parameter is specified, wrong way routing  is  avoided
+              in the region. Both router and verify_drc will report DRC if any
+              jogs are present.
+
+              Data_type: bool, optional
+
+       -partial <integer>
+              Specifies  the  density for partial routing blockages. It causes
+              the global router to only use up to the specified percent of the
+              routing resource on the layer  in  the  blockage  area,  so  the
+              global router will see higher congestion and put fewer routes on
+              that layer in the area.
+
+              For example, -partial 75 means only 75% of routing resource in a
+              gcell  is available for global routing, and this will affect the
+              final demand/supply values in the congestion map after  routing.
+              It is an integer in the range 0 to 100.
+
+              This  can  be useful if the router consistently creates too much
+              congestion in a specific area. If  you  add  a  partial  routing
+              blockage  in  that  area you can force the router to end up with
+              less "real congestion" in that area. When there are  overlapping
+              partial  routing blockages, the lowest density percentage of the
+              blockages will be used in the overlapping region.  For  example,
+              when a partial routing blockage with 75 percent density overlap-
+              ping  with another partial routing blockage with 50 percent den-
+              sity, the density of the overlapping region will be 50 percent.
+
+              Note: You can attach a partial routing blockage to a  block  in-
+              stance  with  -inst if the congestion is related to the boundary
+              and pins of a specific block.
+
+              Note:   The  -designRuleWidth,  -exceptpgnet,  -pgnetonly,   and
+              -spacing  parameters  are not allowed for partial routing block-
+              ages.
+
+              Minimum: 0
+
+              Maximum: 100
+
+              Data_type: int, optional
+
+       -pgnetonly
+              Specifies that the routing blockage is to  be  applied  only  on
+              power  or ground net special routes and not on signal nets. This
+              option affects only commands that create special routes,such  as
+              addRing,  addStripe,  or sroute, when they are used for PG nets.
+              NanoRoute, which is used to connect tie-high or tie-low  connec-
+              tions or to connect to secondary standard-cell power-pin connec-
+              tions, is also not affected by this option. Use this option dur-
+              ing  power  planning  to  prevent  power routes from getting too
+              close to block edges and, as a result, blocking signal  pin  ac-
+              cess or causing congestion in narrow channels.
+
+              Note: This option cannot be used with -exceptpgnet.
+
+              Data_type: bool, optional
+
+       -prefixOn
+              Specifies that the routing blockages should be named with a pre-
+              fix.
+
+              Data_type: bool, optional
+
+       -polygon {{<x1 y1>} {<x2 y2>}...
+              Specifies the polygon vertices of the blockage, in microns.
+
+              Note:  Although createRouteBlk can be be used to create triangu-
+              lar blockages, metal fill does not currently support  triangular
+              route blockages.
+
+              Data_type: point_list, required
+
+       -pushdown
+              Set  pushdown  attribute for blockages. A blockage with pushdown
+              attribute is pushed down into the block from the  top  level  of
+              the design.
+
+              Note:  A normal routing blockage is just used to check for over-
+              laps with routes. A route blockage with  pushdown  attribute  is
+              treated as a real wire shape from above with full DRC checks.
+
+              Data_type: bool, optional
+
+       -spacing <float>
+              Specifies  the  minimum spacing allowed between the blockage and
+              any other routing shape. If you  specify  -spacing,  you  cannot
+              specify -deignRuleWidth.
+
+              Type:  The float is a real number greater than or equal to 0, in
+              microns.
+
+              Note: When the blockage is of FILL type,  the  spacing  property
+              does  not work. In that case, metal fill can still be abutted to
+              the fill blockage.
+
+              Data_type: float, optional
+
+       -trimMetalLayer <layerName> | {<layerNamelist ...>} | all
+              Specifies the trim metal layer, list of trim  metal  layers,  or
+              all trim metal layers on which the routing blockage is to be ap-
+              plied.
+
+              For  example,  the  following  command  command  creates routing
+              blockages in trim metal layers Metal1 and Metal2.
+
+              createRouteBlk -trimMetalLayer {metal1 metal2 ...}
+
+              Data_type: list, optional
+
+Example
+              * The following command creates a  routing  blockage  object  to
+                block metal3 routing in this area:
+
+                createRouteBlk  -box  {2353.8000 7123.000 2653.8000 8298.2000}
+                -layer metal3
+
+              * The following command creates a  routing  blockage  object  on
+                metal layers 1, 4, and 5:
+
+                createRouteBlk  -box  {0  0  100  100}  -layer  {metal1 metal4
+                metal5}
+
+              * The following command creates a  routing  blockage  object  on
+                metal layers 1, 4 and blocks the signal net routing:
+
+                createRouteBlk  -box  {10 18 1782 2300} -layer {metal1 metal4}
+                -exceptpgnet
+
+              * The following command creates a routing blockage object having
+                polygon vertices (10, 10), (10, 15), (15, 15), (15, 20),  (20,
+                20), (20, 10) on the metal layer 1:
+
+                createRouteBlk  -polygon {10 10 10 15 15 15 15 20 20 20 20 10}
+                -layer metal1
+
+              * The following command creates a routing blockage on top of the
+                the specified block instance that is of the same size the  in-
+                stance.
+
+                createRouteBlk -inst DTMF_INST/PLLCLK_INST -cover
+
+              * The following command creates a routing blockage object on drc
+                region layer:
+
+                createRouteBlk -box {500 400 600 500} -drcRegionLayer R1
+
+              * The following command creates a routing blockage object with a
+                prefix name:
+
+                set prefix namesetFPlanMode -defaultBlockageNamePrefix prefix
+
+                createRouteBlk -box {500 400 600 500} -prefixOn
+
+              * The  following  command  creates  a  routing blockage on metal
+                fills only:
+
+                createRouteBlk -box {500 400 600 500} -fills
+
+              * The following command creates a routing blockage on  power  or
+                ground net special routes only and not on signal nets.
+
+                createRouteBlk -box {0 0 100 100} -pgnetonly
+
+Related Information
+              * deleteRouteBlk
+
+              * setRouteBlkDefaultLayer
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025      createRouteBlk(25.10)

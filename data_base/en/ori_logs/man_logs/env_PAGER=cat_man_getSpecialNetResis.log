@@ -1,0 +1,124 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+getSpecialNetResis(25.10)                            getSpecialNetResis(25.10)
+
+Name
+       getSpecialNetResis - Reports resistance values for specified nets
+
+Syntax
+       getSpecialNetResis
+
+       [-help]
+
+       [-net {netName +}]
+
+       [-outfile <fileName>]
+
+       [-temperature <temperature>]
+
+       [-view <viewName>]
+
+       [-worst | -p2p <x1 y1 layerName1 x2 y2 layerName2]
+
+       Reports  resistance  values  for specified nets. Use this command after
+       power planning.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each getSpecialNetResis parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man getSpecialNetResis.
+
+       -net {netName +}
+              Specifies the names of regular or power/ground nets that  appear
+              in the SPECIALNETS section of the DEF file.
+
+       -outfile <fileName>
+              Creates  a  report containing the resistance values of nets. The
+              power analysis software adds the extension .res  to  the  <file-
+              Name> you specify.
+
+       -temperature <temperature>
+              Specifies  the  temperature to be used during temperature-depen-
+              dent resistance extraction. The temperature-dependent resistance
+              coefficient is taken from the capacitance table.
+
+       -worst For cases where a special net , that connects two  or  more  in-
+              stances  by  their non-PG pins, reports information on the worst
+              (largest) effective resistance based on pair of  pins,  and  the
+              path that has the worst resistance.
+
+       -p2p <<x1 y1 layer1 x2 y2 layer2>
+              Calculate  resistance  based  on  point-to-point  coordinate and
+              layer between two port layer shapes of instance pins.  The  pair
+              of the pins are suggested both as PG pins or non-PG pins.
+
+       -view <viewName>
+              Specifies the view to analyze.
+
+Examples
+              * The  following  command  constructing  power graph for P/G net
+                VDD_LOW:
+
+                getSpecialNetResis -p2p 1095 2960 M5 3316 5705 M6 VDD_LOW
+
+                Inst1 is block0
+
+                Inst2 is WIR@IO@0154@0263
+
+                ##### Start Calculating Resistance between each Dc Source  and
+                Current Sink #####
+
+                Width-based sheet resistance table (silicon width) is used ...
+
+                Resistance:  6.9025  Ohm  :  From  block0/AVD (1094.94 2959.89
+                METAL5) To WIR@IO@0154@0263/VDD (3298 5702 METAL6)
+
+                Resistance:  6.9014  Ohm  :  From  WIR@IO@0154@0263/VDD  (3316
+                5704.5 METAL6) To block0/AVD (1082.44 2959.39 METAL5)
+
+                Effective  resistance  on  net  VDD_LOW between block0/AVD and
+                WIR@IO@0154@0263/VDD = 6.9025 Ohms
+
+              * The  following  command  to  construct  power  graph  for  net
+                SPNS_RESDEL3V:
+
+                getSpecialNetResis -worst SPNS_RESDEL3V
+
+                #####  Start Calculating Resistance between each Dc Source and
+                Current Sink #####
+
+                Resistance: 6.971 Ohm  :  From  buff_RESETZ0/POCREL3V  (506.12
+                -2755.78  METAL2)  To  buff_RESETZ0/RESDEL3V  (508.54  -2756.2
+                METAL2)
+
+                Resistance: 381.44 Ohm :  From  buff_RESETZ0/POCREL3V  (506.12
+                -2755.78  METAL2)  To  ctop0/vreg0/REGRES3V (-1094.98 -2191.92
+                METAL2)
+
+                Resistance: 29.175 Ohm :  From  buff_RESETZ0/POCREL3V  (506.12
+                -2755.78 METAL2) To ctop0/nf_RESETZ0/RESDEL3V (531.27 -2673.66
+                METAL2)
+
+                Resistance:  8.1427  Ohm  : From buff_RESETZ0/POCREL3V (506.12
+                -2755.92  METAL3)  To  buff_RESETZ0/RESDEL3V  (508.54  -2756.2
+                METAL2)
+
+                Resistance:  382.62  Ohm  : From buff_RESETZ0/POCREL3V (506.12
+                -2755.92 METAL3) To  ctop0/vreg0/REGRES3V  (-1094.98  -2191.92
+                METAL2)
+
+                Resistance:  30.346  Ohm  : From buff_RESETZ0/POCREL3V (506.12
+                -2755.92 METAL3) To ctop0/nf_RESETZ0/RESDEL3V (531.27 -2673.66
+                METAL2)
+
+                ...
+
+                ...
+
+                Worst  effective  resistance  on  net  SPNS_RESDEL3V   between
+                buff_RESETZ0/RESDEL3V and ctop0/vreg0/REGRES3V = 388.32 Ohms
+
+                           Fri Apr 04 01:25:37 2025  getSpecialNetResis(25.10)

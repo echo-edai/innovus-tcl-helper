@@ -1,0 +1,100 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+unregister_gui_edit_callback(25.10)        unregister_gui_edit_callback(25.10)
+
+Name
+       unregister_gui_edit_callback  -  Removes the callback function from the
+       specified move action
+
+Syntax
+       unregister_gui_edit_callback
+
+       [-help]
+
+       -command <string>
+
+        -edit_type {selection pre-move post-move}
+
+       Removes the callback function from the specified move action.  In  GUI,
+       the move action involves the following three steps:
+
+              * Click an object.
+
+              * Move the object to the new location.
+
+              * Click to place the object at the new location and complete the
+                move.
+
+       The callback function is implemented based on the move action specified
+       with the -edit_type parameter.
+
+Parameters
+       -help  Prints  the  usage of the command. For a detailed description of
+              the command, use the man command:
+
+              man unregister_gui_edit_callback
+
+       -command <string>
+              Specifies the name of the callback function.
+
+       -edit_type {selection pre-move post-move}
+              Specifies the GUI edit function:
+
+              * selection - Implements the callback function when an object is
+                selected (after Step 1).
+
+              * pre-move - Implements the callback function  just  before  the
+                object  is  placed at the new location (after Step 2, just be-
+                fore you change the coordinates in Step 3).
+
+              * post-move - Implements the callback function after  an  object
+                is moved (after Step 3, when the tool updates the DB records).
+
+Example
+       Consider the following proc definition:
+
+       proc move_event_callback {
+
+            set objList [dbGet selected]
+
+            foreach obj $objList {
+
+                  set type [dbGet $obj.objType]
+
+                  if {$type == "sdp"} {
+
+                       custom_snap_sdp $obj
+
+                  } elseif {$type == "inst"} {
+
+                       set cellName [dbGet $obj.cell.name]
+
+                       if {[regexp grf $cellName]} {
+
+                            custom_snap_grf $obj
+
+                       }
+
+                  }
+
+       }
+
+       }
+
+       The  following command triggers the move_event_callback function on the
+       selected object just before the move is completed:
+
+       register_gui_edit_callback      -edit_type      pre_move       -command
+       move_event_callback
+
+       The  following  command removes the callback to the move_event_callback
+       function:
+
+       unregister_gui_edit_callback     -edit_type      pre_move      -command
+       move_event_callback
+
+Related Information
+              * register_gui_edit_callback
+
+              * report_gui_edit_callback
+
+                           Fri Apr 04 01:25:u3n7re2g0i2s5ter_gui_edit_callback(25.10)

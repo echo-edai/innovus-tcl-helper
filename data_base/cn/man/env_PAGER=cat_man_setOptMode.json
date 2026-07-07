@@ -1,0 +1,550 @@
+{
+    "is_cmd": true,
+    "summary": "设置用于时序优化的全局参数。",
+    "description": "setOptMode 命令用于设置时序优化的全局参数。这些参数在您通过调用 optDesign 命令或使用 ECO 菜单中的“优化设计”表单运行时序优化时自动使用。要查看 setOptMode 命令的当前设置，请参阅 getOptMode。",
+    "usage": "setOptMode [-help] [options...] [-reset]",
+    "options": [
+        {
+            "name": "-help",
+            "description": "输出包含每个 setOptMode 参数的类型和默认信息的简要描述。有关命令及其所有参数的详细描述，请使用 man 命令：man setOptMode。",
+            "default": "N/A"
+        },
+        {
+            "name": "-opt_activity_refresh_args",
+            "description": "指定要传递给 Innovus 中 xreplay 的仿真选项列表。可以使用此参数指定以下参数：\n* [-xrun_path] 指定用于运行 Xcelium 进行重放仿真的 xrun 二进制路径。\n* [-rtl_stim] 指定输入的 RTL 激励文件。\n* [-stim_format] -rtl_stim 的子选项，提供 rtl 激励的格式。\n* [-dut_instance] -rtl_stim 的子选项，提供 rtl 激励中的 dut 层次结构。\n* [-start] 指定开始时间，以运行特定激励时间段的回放，例如 24ns。默认是仿真开始时间。\n* [-end] 指定结束时间，以运行激励时间段的回放，例如 100ns。默认是仿真结束时间。\n* [-verilog_model_files] 指定库 Verilog 模型列表。\n* [-stim_annotation] 仅遵守指定对象的激励标注。\n* [-pre_script] 指定在 xreplay 之前要获取的 Tcl 文件。\n* [-out] 指定输出的重放门级激励文件。默认是 joulesWorkDir/replayed_stim.shm。\n* [-reset_activity_before_readback] 将在读取 xreplayed 活动文件之前重置先前的活动。\n* [-read_stimulus_options {-slew_type max_slew}] 忽略小毛刺功耗。\n注意：使用此选项时，功耗报告中的毛刺可能少于默认流程（即没有 -slew_type max_slew）的情况。\n* [-delay_mode none | zero | unit | punit | delay | pdelay] (默认: none)\n* [-gen_sim_models lec | liberate] 生成仿真模型文件。它有两个选项，lec 和 liberate。指定此命令时，这两个选项之一是必需的。\n* -lec_path <path_to_lec> 指定 lec 可执行文件的完整路径。生成零延迟模型文件。\n* -liberate_path <path_to_liberate> 指定 liberate 可执行文件的完整路径。生成基于延迟的模型文件。\n例如，setOptMode -opt_activity_refresh_args \"...除了其他文件外...-gen_sim_models [lec | liberate] [-lec_path path_to_lec 或 -liberate_path <path_to_liberate>]\"\n要设置参数，请使用：setOptMode -opt_activity_refresh_args \"<args>\"\n要查询参数，请使用：getOptMode -opt_activity_refresh_args",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_add_always_on_feed_through_buffers",
+            "description": "由 optDesign 和 PD-aware addRepeaterByRule 使用。当此参数设置为 true 时，optDesign 将在所有优化步骤的预布线和后布线中使用常开缓冲器；并且 addRepeaterByRule 将使用常开缓冲器进行中继器插入。应用于优化期间进行激进的常开缓冲。\n默认的 optDesign 行为是仅在预布线 DRV 修复期间使用常开缓冲器。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_add_insts",
+            "description": "控制时序优化是否可以添加实例。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_add_ports",
+            "description": "控制时序优化是否向设计的较低层次结构添加端口。禁止软件添加端口（当此参数设置为 false 时）可能不是最优的，因为缓冲器不允许被精确地添加到需要的位置；然而，这保留了设计的层次边界，以便生成的测试向量仍然有效，并且可以进行模块级验证。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_add_repeater_report_failure_reason",
+            "description": "当设置为 true 时，启用为 addRepeaterByRule 命令的每个网络打印详细的失败原因。默认情况下，报告将在 timingReports 目录中生成。如果目录不可用，则会创建它。例如，<run_dir>/timingReports/ARRFailureReason/ARRRpt.preRoute.1\n使用模型：\nsetOptMode -opt_add_repeater_report_failure_reason true\naddRepeaterByRule -selNet ./net.list -rule $scr/rule -preRoute -reportIgnoredNets ignore_nets\n注意以下事项：\n* 被忽略的网络报告会附加在失败原因报告文件的开头。如果指定了 \"-reportIgnoredNets IGNORE_NET_REPORT_NET_FILE_NAME\"，那么被忽略的网络报告也会保存到文件 \"IGNORE_NET_REPORT_NET_FILE_NAME\" 中。\n* 对于具有不同网络集和约束的多次 ARR 调用，将在 ARRFailureReason 目录下生成相应数量的失败报告。将添加后缀 \"_<n>\"，其中 n 是第 n 次 ARR 调用。例如，三次 ARR 调用将导致生成以下三个文件：\n<run_dir>/timingReports/ARRFailureReason/ ARRRpt.preRoute.1\n<run_dir>/timingReports/ARRFailureReason/ ARRRpt.preRoute.2\n<run_dir>/timingReports/ARRFailureReason/ ARRRpt.preRoute.3\n* ARR 报告的默认模式是 preRoute。如果您指定 -postRoute 或 -alongRoute，报告名称中将附加以下内容：\n<run_dir>/timingReports/ARRFailureReason/ ARRRpt.postRoute.1\n<run_dir>/timingReports/ARRFailureReason/ ARRRpt.alongRoute.1\n注意：参数 -reportIgnoredNets 的行为保持不变。它使用用户指定的文件名在运行目录下写入报告。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_all_end_points",
+            "description": "除了最差负时序裕量优化外，还运行总负时序裕量优化，并在所有端点上进行，以确保高质量的时序结果。\n此功能在运行 setDesignMode -flowEffort standard | extreme 时序收敛流程中的任何一个时自动激活。因此，尽管默认值为 false，但它会被 setDesignMode 命令覆盖。\n注意：当此参数设置为 false 时，在预布线优化期间可能仍会进行一些快速的 TNS 优化，但对后布线建立优化没有影响。它对保持优化也没有影响，这意味着无论此设置如何，所有违反保持时间的路径都将始终被优化。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_allow_only_cell_swapping",
+            "description": "强制后布线优化仅执行同尺寸 Vth 交换以改善时序。此选项在多 Vth 库设计中效果最佳。\n注意：在特定情况下重新优化时序时使用此选项，其中布线应保持不变。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_allow_multi_bit_on_flop_with_sdc",
+            "description": "当此参数设置为 true 或默认情况下，软件在多比特触发器流程中合并或分割触发器时将不遵守 SDC 约束。将此参数设置为 false 以在合并或分割触发器时遵守 SDC 约束。\n使用 mergeOnly 在合并时忽略 SDC 约束，但在分割时遵守。使用 splitOnly 在分割时忽略 SDC 约束，但在合并时遵守。\n默认值：true\n注意：当此参数设置为 true 时，软件将进行合并/分割，即使 D/Q 引脚上有 SDC，并且 SDC 将被复制到新触发器的相应 D/Q 引脚。\n但是，如果 SE/SI 引脚上有 SDC 约束，合并会变得更加复杂。例如，单个触发器 A 和触发器 B 有 1 个 SE 引脚和 D/Q 引脚。合并完成后，D/Q 引脚上的 SDC 将被复制到新的 D0/Q0 和 D1/Q1，并且 SDC 信息不会丢失。但在新的 2 位触发器中，将只有一个 SE 引脚。这就产生了应该将哪个 SDC 复制到新触发器中的问题。在这种情况下，软件将检查触发器 A 和触发器 B 中的 SE 引脚 SDC。如果它们兼容，则将进行合并。否则，即使参数设置为 true，也不会进行合并。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_area_recovery",
+            "description": "控制时序优化是否通过减小门尺寸或删除缓冲器来创建额外空间，同时保持最差时序裕量和总负时序裕量。\n此参数可在三种模式下使用：default、true 和 false。\n* default：默认情况下，区域缩减总是在全局优化之后和第二次 TNS 优化之后调用。在 optDesign 的其余部分，区域缩减的调用取决于当前设计的密度水平。\n* true：当此参数设置为 true 时，区域缩减总是在全局优化阶段之前、全局优化阶段之后以及第二次 TNS 优化之后调用。在 optDesign 的其余部分，区域缩减的调用取决于当前设计的密度水平。\n* false：在 optDesign 期间不执行区域缩减。\n默认值：default\n注意：此参数用于在预布线优化期间回收面积。要在后布线优化期间回收面积，请使用此命令的 -opt_post_route_area_reclaim 参数。",
+            "default": "default"
+        },
+        {
+            "name": "-opt_area_recovery_setup_target_slack",
+            "description": "指定用户定义的用于面积回收与时序的目标时序裕量。当指定时序裕量值时，软件会阻止面积回收优化创建或处理接近关键的路径。\n通常，您可以将 setOptMode -opt_area_recovery_setup_target_slack 0.1 与 setOptMode -opt_setup_target_slack 一起使用，默认值为 0.0。这意味着面积回收将不会处理任何小于 0.1ns 的路径。\n请注意，-opt_setup_target_slack 的值具有更高的优先级。\n例如，如果 setOptMode -opt_area_recovery_setup_target_slack 设置为 -0.1 且 setOptMode -opt_setup_target_slack 为 0.0，则建立时序将不允许超过 0ps，并且会发出警告。\n类似地，如果 setOptMode -opt_area_recovery_setup_target_slack 为 +0.1 且 setOptMode -opt_setup_target_slack 设置为 +0.2，则时序将以 +0.2 为目标，并且会发出警告。\n您需要在任何面积回收完成之前设置此参数。",
+            "default": "0ns"
+        },
+        {
+            "name": "-opt_clone_insts_list",
+            "description": "指定要克隆的实例列表。实例由命令 ecoCloneInstGroup 克隆。\nsetOptMode -opt_clone_insts_list { {...} ... }\necoCloneInstGroup -maxFanout <max_fanout>\n示例：\nsetOptMode -opt_clone_insts_list {{subinst/registergate subinst/i1 subinst/nandgate}}\necoCloneInstGroup -maxFanout 16",
+            "default": "\"\" (空字符串)"
+        },
+        {
+            "name": "-opt_consider_routing_congestion",
+            "description": "在优化建立、保持、drv 或毛刺期间，检查后布线阶段的布线拥塞。该选项还会影响后CTS保持修复。此选项有助于改善 NR DRC 以及由拥塞设计上的布线绕道引起的时序跳变。\n默认情况下，此参数按以下方式设置：\n* auto - 对于后CTS保持修复“关闭”，对于后布线建立和保持修复“开启”\n* false - 对于后CTS保持修复和后布线建立和保持修复“关闭”\n* true - 对于后CTS保持修复和后布线建立和保持修复都“开启”",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_constant_inputs",
+            "description": "当设置为 true 时，强制优化具有恒定输入的实例，即使这会恶化目标增益（在面积、功耗和延迟方面）。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_constant_nets",
+            "description": "控制时序优化是否优化恒定网络。此参数仅影响后布线优化。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_concatenate_default_and_user_prefixes",
+            "description": "控制是否将时序优化添加的单元和网络的默认前缀与 -opt_new_net_prefix 和 -opt_new_inst_prefix 指定的前缀组合。默认情况下，软件将指定的前缀与默认前缀组合。为此参数指定 false 以忽略默认前缀，仅使用 -opt_new_net_prefix 和 -opt_new_inst_prefix 指定的前缀。\n例如，如果默认前缀是 PSN_000234 并且您键入以下命令：setOptMode -opt_concatenate_default_and_user_prefixes true -opt_new_net_prefix POSTROUTE_N -opt_new_inst_prefix POSTROUTE_C\n软件使用以下前缀：\n* 对于优化添加的单元：POSTROUTE_C_PSN_00234\n* 对于优化添加的网络：POSTROUTE_N_PSN_00234\n如果默认前缀是 PSN_000234 并且您键入以下命令：setOptMode -opt_concatenate_default_and_user_prefixes false -opt_new_net_prefix POSTROUTE_N -opt_new_inst_prefix POSTROUTE_C\n软件使用以下前缀：\n* 对于优化添加的单元：POSTROUTE_C\n* 对于优化添加的网络：POSTROUTE_N\n注意：如果您为此参数指定 false，则还必须指定 -opt_new_inst_prefix 和 -opt_new_net_prefix。此外，您必须为实例和网络指定不同的前缀。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_delete_insts",
+            "description": "控制时序优化是否可以删除实例。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_detail_drv_failure_reason",
+            "description": "当设置为 true 时，启用打印详细的 DRV 失败原因报告文件，其中包含带有网络名称的失败摘要。日志文件包含不带网络名称的失败摘要的简单版本。此外，前一定数量（默认 50）的违规网络会连同违规原因一起打印在单独的文件中。\n默认情况下，此参数设置为 false，这意味着仅在日志文件中打印不带网络名称的失败摘要的简单版本，并且不创建其他文件。\n注意：如果在优化流程中没有 DRV 失败，即使此参数设置为 true，也不会生成失败原因报告文件。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_detail_drv_failure_reason_max_num_nets",
+            "description": "指定要在报告文件中打印其 DRV 失败原因的违规网络数量。默认值为 50，这意味着默认打印前 50 个违规网络的失败原因。可以指定的最小值为 1。可以指定的最大值为 9999。如果指定此值，则打印所有违规网络的失败原因。\n例如，如果您将此选项设置为 100，那么前 100 个最大转换违规网络（如果存在）将打印在文件 \"xx.maxTran\" 中，前 100 个最大电容违规网络（如果存在）将打印在文件 \"xx.maxCap\" 中。此外，也可能生成文件 \"xx.maxFanout\"。\n对于生成的每个文件，第一个打印的网络具有最严重的违规值。文件在打印时根据违规值排序。",
+            "default": "50"
+        },
+        {
+            "name": "-opt_down_size_insts",
+            "description": "控制时序优化是否可以减小实例尺寸。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_drv",
+            "description": "修复所有受最大电容违规和最大转换违规约束的网络。电容和转换约束值在时序约束文件或库中指定。如果您为此参数指定 false，则软件仅修复有时序违规的路径。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_drv_margin",
+            "description": "根据指定的边距十进制值缩放 maxCap 和 maxTran 约束。例如，为此参数指定值 0.2 会使边距在优化期间收紧（使其更悲观）20%，指定值 -0.2 会使边距放宽（使其更乐观）20%。引入悲观边距可改善布线前后 DRC 违规数量之间的相关性。\n值范围：-0.7 ~ 0.7",
+            "default": "0"
+        },
+        {
+            "name": "-opt_drv_with_miller_cap",
+            "description": "当设置为 true 时，启用 timeDesign 和 optDesign 的 ECSM/CCS 米勒电容 DRV 报告和修复。但是，还必须将 timing_report_use_receiver_model_capacitance 变量设置为 true。\n默认情况下，此参数设置为 false，这意味着米勒电容 DRV 报告和修复被禁用。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_duplicate_cte_constrained_hport",
+            "description": "当设置为 true 时，允许缓冲复制具有 CTE 约束的 hport 以修复 DRV 和建立违规。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_early_hold_fixing",
+            "description": "设置预CTS优化中保持修复的理想或传播时钟模式。提供以下设置：\n使用早期时钟流程 (ECF)\n* none：关闭 place_opt_design (POD) 中的保持修复。这是默认设置。\n* ideal：开启 place_opt_design 中的保持修复（使用理想时钟模式）。\n* propagated：开启 place_opt_design 中的保持修复（使用传播时钟模式）。\n不使用 ECF\n* none：关闭 place_opt_design (POD) 中的保持修复。\n* ideal：开启 place_opt_design 中的保持修复（使用理想时钟模式）。\n* propagated：与 ideal 相同。",
+            "default": "none"
+        },
+        {
+            "name": "-opt_enable_clock_pulse_width_checks",
+            "description": "当设置为 true 时，检查并修复最小时钟脉冲宽度违规。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_enable_data_to_data_checks",
+            "description": "在优化期间启用数据到数据的检查。\n在优化期间，数据到数据的时序检查默认设置为关闭，以确保引擎专注于其他路径。要允许在优化期间检查可见，可以将此选项设置为 true。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_enable_podv2_clock_opt_flow",
+            "description": "当设置为 false 时，启用 place_opt_design 和 ccopt_design 流程。默认情况下，它设置为 true，这意味着启用 place_opt_design V2 (PODV2 或 pod_turbo) 和 clock_opt_design 流程。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_enable_restructure",
+            "description": "控制时序优化是否交换引脚并重组网表。\n注意：当 setDesignMode -flowEffort express 被设置时，此参数不被启用。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_enable_targeted_synthesis",
+            "description": "当设置为 true 时，为在 ECO 期间添加的一组实例启用定向综合模式。将此参数设置为 true 可使优化器对这些实例执行 DRV、建立和回收保持优化。\n使用以下命令在实例上定义一个对象属性 targetedSynthesis：\nfor each inst $new_insts {\ndbSet [dbGet -p top.insts.name $inst].targetedSynthesis true\n}\n其中，new_insts 是使用 ECO 添加的新实例的集合。当此参数设置为 true 并且在实例上定义了对象属性 targetedSynthesis 时，将对这些实例进行优化。\n可以运行 optDesign 命令来执行 DRV、建立和保持优化。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_fix_fanout_load",
+            "description": "强制时序优化纠正扇出负载违规，根据库的不同，可能是最大负载或最大扇出计数违规。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_flop_pins_report",
+            "description": "将此参数设置为 true，以打印在 simplifyNetlist 期间删除的触发器中使用的完整层次结构引脚名称。输出文件名格式为 <userPrefix>_simplified_flops_pins.rpt。\n您可以选择在同一会话中写入带引脚（-opt_flop_pins_report）或不带引脚（-opt_flops_report）的两个文件。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_flops_report",
+            "description": "将此参数设置为 true，以打印在 simplifyNetlist 期间删除的触发器中使用的完整层次结构触发器名称。输出文件名格式为 <userPrefix>_simplified_flops.rpt。\n您可以选择在同一会话中写入带引脚（-opt_flop_pins_report）或不带引脚的文件。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_high_effort_cells",
+            "description": "指定用于高努力时序优化的单元列表。此参数适用于预布线和后布线建立优化。\n注意：如果为指定的单元设置了 dont_touch 约束，则这些单元将不会用于高努力时序优化。",
+            "default": "\"\" (空字符串)"
+        },
+        {
+            "name": "-opt_hold_allow_overlap",
+            "description": "允许保持修复算法在没有足够大的空白空间位置时插入带有重叠的缓冲器。然后将在 ECO 布线之前进行布局合法化。激活此选项允许工具修复保持违规，但可能对建立时序产生一些负面影响。\n* auto：保持修复将在后CTS阶段以允许重叠模式运行，而不是在后布线阶段。\n* true：保持修复将在后CTS和后布线阶段都以允许重叠模式运行。\n* false：保持修复在后CTS和后布线阶段都不以允许重叠模式运行。",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_hold_allow_resize",
+            "description": "控制保持优化内部的调整尺寸能力。\n当设置为 true 或 false 时，调整尺寸在后CTS和后布线保持优化中分别开启或关闭。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_hold_allow_setup_tns_degradation",
+            "description": "控制软件是否允许总负时序裕量在保持修复操作期间恶化。\n默认情况下，软件允许时序裕量恶化以修复更多的保持违规。要覆盖默认行为并确保在保持修复期间保持建立总负时序裕量，请为此参数指定 false。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_hold_cells",
+            "description": "允许您强制仅使用特定的缓冲器和延迟单元列表。<list_of_buffers> 包含常规缓冲器和延迟缓冲器单元。当此列表至少包含一个单元时，仅使用指定的单元。\n默认值：空列表。这将触发默认流程。\n注意：此参数不支持通配符。<list_of_buffers> 必须仅包含确切的单元名称。\n注意：当指定此列表时，optDesign 会禁用自动单元过滤，这可能会影响 optDesign 的运行时间/QOR/漏电。\n注意：optDesign 使用指定的单元而不遵守 dont_use 属性。",
+            "default": "空列表"
+        },
+        {
+            "name": "-opt_hold_on_excluded_clock_nets",
+            "description": "控制是否在排除的时钟网络上执行保持修复。\n此参数适用于后CTS和后布线保持优化。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_hold_slack_threshold",
+            "description": "允许您提供一个保持时序裕量阈值，超过此阈值的保持时序违规将不会被修复。这用于避免在早期阶段修复超出范围的违规，此时时序约束和设计环境可能还不够成熟。时序裕量值以纳秒 (ns) 为单位指定。\n注意：当使用此参数指定保持时序裕量阈值时，保持修复时序表会排除时序裕量比指定值更差的违规。\n注意：指定的阈值是针对保持 WNS 的。",
+            "default": "<->1000ns"
+        },
+        {
+            "name": "-opt_hold_target_slack",
+            "description": "指定一个以纳秒为单位的目标时序裕量值，仅用于保持分析。在建立违规修复期间，建立目标时序裕量为 <setupTargetSlack>，保持目标时序裕量值为 0。通常，您同时使用 -opt_setup_target_slack 和 -opt_hold_target_slack 进行保持分析。如果仅指定 -opt_hold_target_slack，则 -opt_setup_target_slack 值为 0。",
+            "default": "0"
+        },
+        {
+            "name": "-opt_honor_density_screen",
+            "description": "控制优化时序时是否遵守密度屏（用于控制拥塞的部分布局障碍）。\n默认情况下，此参数设置为 false，这意味着不遵守密度屏。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_honor_fences",
+            "description": "指定时序优化考虑围栏或区域约束。每个 optDesign 步骤都遵守此选项。如果您在参数设置为 true 的情况下优化设计，则布局是合法的。\n此功能对于层次化设计很有用。因为此参数为时序优化添加了约束，所以仅在需要时启用它。\n注意：对于多电源电压 (MSV) 设计，此参数默认设置为 true。\n注意：如果会导致围栏利用率超过 100%，则当此参数设置为 true 时，optDesign 将不会遵守非常小的围栏。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_hold_ignore_path_groups",
+            "description": "指定哪些时钟域或路径组应从保持时序优化中排除。此选项仅影响 optDesign -postCTS/-postRoute -hold。\n注意：要重置此选项，请应用一个空列表。\n注意：如果一条违规路径位于两个路径组中，并且仅使用 -opt_hold_ignore_path_groups 参数指定了其中一个路径，则此路径在保持修复期间仍会被修复。",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_icg_enable_pin_rebuffering",
+            "description": "当设置为 true 时，重新缓冲网络以在时钟树插入后启用反相时钟门 (ICG) 实例的引脚。当设置为 auto 时，重新缓冲受影响的 ICG 使能。默认情况下，此参数设置为 false，这意味着该功能被禁用。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_leakage_to_dynamic_ratio",
+            "description": "控制功耗驱动优化的优先级。您可以设置 0 到 1 之间的任何值。将此参数与 -opt_power_effort 参数一起使用。\n一些关于此参数值含义的示例如下：\n* setOptMode -opt_leakage_to_dynamic_ratio 1\n这是默认值，意味着时序优化将是纯粹的漏电功耗驱动优化。\n* setOptMode -opt_leakage_to_dynamic_ratio 0\n这意味着时序优化将是纯粹的动态功耗驱动优化。\n* setOptMode -opt_leakage_to_dynamic_ratio 0.5\n这意味着时序优化将同时是动态和漏电功耗驱动，并且可能需要进行权衡以获得漏电和动态功耗优化之间的平衡。\n* setOptMode -opt_leakage_to_dynamic_ratio 0.1\n这意味着时序优化将同时是动态和漏电功耗驱动，但动态功耗优化将受到青睐。\n* setOptMode -opt_leakage_to_dynamic_ratio 0.9\n这意味着时序优化将同时是动态和漏电功耗驱动，但漏电功耗优化将受到青睐。",
+            "default": "1"
+        },
+        {
+            "name": "-opt_max_density",
+            "description": "指定密度（面积利用率）的最大值。optDesign 命令不会使网表增长超过此值。当达到接近此参数指定值的密度时，optDesign 的优化能力有限。",
+            "default": "0.95"
+        },
+        {
+            "name": "-opt_max_length",
+            "description": "指定 optDesign 遵守 maxLength 规则，就像任何其他 DRV 规则（max_cap/max_tran/max_fanout）一样。optDesign 命令将修复所有违反此规则的网络，并确保不创建任何违反此规则的长网络。\n该值以微米为单位指定。\n注意：此参数意味着会在网表中插入更多的缓冲器。\n默认值：-1\n最小值=-1，最大值=2147483647\n此参数默认被禁用。\n注意：在预布线阶段，由于流程中发生的布线拓扑变化，运行 optDesign 后可能仍存在一些 maxLength 违规。",
+            "default": "-1"
+        },
+        {
+            "name": "-opt_move_insts",
+            "description": "允许关键路径中的单元在软件修复建立违规或沿关键路径优化时序时移动，如果允许它们移动可以改善时序的话。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_multi_bit_combinational_mode",
+            "description": "启用基于面积和功耗的用户特定多比特组合单元 (MBCC) 合并和分割。\n* auto：基于面积（如果功耗努力为 none）启用 MBCC 的合并或分割，否则基于功耗。\n* power：基于功耗启用 MBCC 的合并或分割。\n* area：基于面积启用 MBCC 的合并或分割。",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_multi_bit_combinational_opt",
+            "description": "启用和禁用多比特组合流程。此流程作为预CTS优化阶段的一部分被调用。提供以下设置：\n* true：启用组合单元的合并和分割\n* false：禁用该流程\n* mergeOnly：仅合并组合单元。\n* splitOnly：仅分割组合单元。",
+            "default": "splitOnly"
+        },
+        {
+            "name": "-opt_multi_bit_combinational_merge_timing_effort",
+            "description": "指定多比特组合合并的时序努力级别。\n* 如果参数设置为 high，软件合并组合单元以保持或改善时序。\n* 如果参数设置为 low，软件合并组合单元并允许时序恶化。\n* 如果参数设置为 medium，软件允许合并而时序没有/最小恶化。",
+            "default": "medium"
+        },
+        {
+            "name": "-opt_multi_bit_combinational_split_timing_effort",
+            "description": "指定多比特组合分割的时序努力级别。\n* 如果参数设置为 low，软件仅允许对关键路径进行分割。\n* 如果参数设置为 medium，分割在关键路径上进行以改善时序并消除关键时序瓶颈。\n* 如果参数设置为 high，软件执行积极分割以尝试改善时序。",
+            "default": "low"
+        },
+        {
+            "name": "-opt_multi_bit_flop_merge_bank_label_inference",
+            "description": "当设置为 true 时，此参数启用具有相同库标签的触发器的软合并。默认情况下，此参数设置为 false，这意味着进行硬合并。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_multi_bit_flop_merge_timing_effort",
+            "description": "指定 MBFF 合并的时序努力级别。\n* low 努力设置允许时序恶化以实现合并。\n* medium 努力意味着合并发生要么没有时序恶化，要么合并后时序恶化最小。\n* high 努力设置不允许任何恶化，并且仅在保持或改善时序的情况下进行合并。",
+            "default": "medium"
+        },
+        {
+            "name": "-opt_multi_bit_flop_name_prefix",
+            "description": "指定 MBFF 名称前缀。当单比特触发器合并为多比特触发器时，您可以使用此参数指定新合并触发器的前缀。如果未指定前缀，合并触发器的名称以默认名称 CDN_MBIT_ 开头。",
+            "default": "CDN_MBIT_"
+        },
+        {
+            "name": "-opt_multi_bit_flop_name_suffix",
+            "description": "指定 MBFF 名称后缀。设置此参数后，软件会在多比特单元实例名称的末尾添加用户指定的后缀以及多比特单元的位宽。\n例如，以下命令用于指定 _FTREG 作为后缀：\nsetOptMode -opt_multi_bit_flop_name_suffix _FTREG\n对于 2 位多比特单元：CDN_MBIT_bit1_MB_bit2_FTREG2\n对于 4 位多比特单元：CDN_MBIT_bit1_MB_bit2_MB_bit3_MB_bit4_FTREG4",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_multi_bit_flop_name_separator",
+            "description": "指定触发器合并和分割名称分隔符。分隔符在分割和合并触发器时使用。默认分隔符是 _MB_。使用模型详述如下。\n场景1：\n当两个或多个 SBFF 合并时，分隔符用于单比特触发器名称之间。MBFF 命名为：prefix_bit1_separator_bit2_separator_bit3..._separator_bit#。\n场景2：\n当 MBFF 分割成更小的比特时，每个更小的比特命名为：prefix_bit1_separator_bit2。\n场景3：\n当 MBFF 分割成原始数量的单比特触发器时，每个 SBFF 恢复为其原始名称，即没有前缀和分隔符，如 bit1, bit2...\n考虑以下示例以理解上述场景：\n有四个 SBFF：bit1, bit2, bit3, 和 bit4。\n* 使用默认设置，当它们合并时，生成以下 MBFF：\nCDN_MBIT_bit1_MB_bit2_MB_bit3_MB_bit4\n此 MBFF 具有默认前缀和默认分隔符。\n* 当上述 MBFF 分割成两位 MBFF 时，生成以下内容：\nCDN_MBIT_bit1_MB_bit2, 和\nCND_MBIT_bit3_MB_bit4\n* 当 MBFF 分割成原始 SBFF 时，SBFF 的名称恢复为原始名称：\nbit1, bit2, bit3, 和 bit4",
+            "default": "_MB_"
+        },
+        {
+            "name": "-opt_multi_bit_flop_opt",
+            "description": "启用和禁用多比特触发器流程。此流程作为预CTS优化阶段的一部分被调用。将此参数设置为 true 以启用触发器的合并和分割。将其设置为 false 以禁用该流程。将其设置为 mergeOnly 以仅合并触发器。默认情况下，参数设置为 splitOnly，这意味着该流程启用用于分割 MBFF。\n注意：\n* 此选项独立于 -opt_enable_restructure、-opt_resize_flip_flops 和 -opt_preserve_all_sequential 选项。\n* 为确保足够的多比特转换率，允许从库中使用更多可用的多比特触发器单元。使用命令 reportMultibit -equiv 将相应的多比特触发器单元写入单比特触发器单元。\n* 为了减少触发器合并步骤中的长运行时间，请确保连接到触发器的扫描使能信号网络已缓冲，这意味着没有最大扇出违规。",
+            "default": "splitOnly"
+        },
+        {
+            "name": "-opt_multi_bit_flop_reorder_bits",
+            "description": "启用交换 MBFF 比特以利用混合驱动强度 (MDS) 多比特单元。可能的设置如下：\n* false：软件不识别 MDS 单元，也不进行比特重排序\n* timing：软件识别并使用 MDS 单元进行时序优化\n* power：软件识别并使用 MDS 单元进行功耗优化\n* true：软件识别并使用 MDS 单元同时进行时序和功耗优化\n注意：当此参数设置为 true、power 或 timing 时，将在使用 reportMultibit -cell 参数生成的报告中添加一个“比特强度（强到弱）”列。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_multi_bit_flop_split_report_failure_reason",
+            "description": "当设置为 false 时，禁用打印 MBFF 分割失败原因。默认情况下，此参数设置为 true，这意味着会打印 MBFF 实例未分割的原因。这是默认行为。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_multi_bit_flop_split_timing_effort",
+            "description": "指定 MBFF 分割的时序努力级别。\n* low 努力设置意味着仅在必要时对关键路径进行分割。\n* medium 努力设置意味着对更多关键路径进行分割以改善时序并消除关键时序瓶颈。\n* high 努力设置进行积极分割并尝试改善时序。",
+            "default": "low"
+        },
+        {
+            "name": "-opt_multi_bit_unused_bit_count",
+            "description": "指定每个多比特单元中允许的最大未使用比特数。\n注意：要使用此参数，请将 -opt_multi_bit_unused_bits 参数设置为 true。",
+            "default": "0",
+            "min": "1",
+            "max": "32"
+        },
+        {
+            "name": "-opt_multi_bit_unused_bits",
+            "description": "指定映射的多比特实例是否可以有一个或多个未使用的比特。默认情况下，在预布局阶段，Innovus 尝试将单比特寄存器合并为没有未使用比特的多比特实例。如果在合并过程中，软件无法找到宽度与总线剩余比特匹配的合适多比特 lib_cell，它会选择最接近的匹配宽度，这留下最少的未使用比特，从而增加多比特合并覆盖率。\n当设置为 false 时，防止任何导致未使用（未驱动/未加载）比特的合并。\n当设置为 true 时，软件尝试在预布局和预CTS阶段将单比特寄存器合并为具有未使用比特的多比特实例。\n当设置为 preCTS 时，软件在预CTS阶段将单比特寄存器合并为具有未使用比特的多比特实例。",
+            "default": "prePlace"
+        },
+        {
+            "name": "-opt_new_inst_prefix",
+            "description": "指定要添加到时序优化创建的实例的前缀字符串。例如，如果默认前缀是 OFC_000234，当您使用命令 setOptMode -opt_new_inst_prefix POSTROUTE_ 时，添加到实例名称的组合前缀是 POSTROUTE_OFC_00234。\n注意：要忽略默认前缀，请使用以下参数：-opt_concatenate_default_and_user_prefixes false。",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_new_net_prefix",
+            "description": "指定时序优化创建网络时要添加的前缀字符串。例如，如果默认前缀是 PSN_000234，当您使用命令 setOptMode -opt_new_inst_prefix POSTROUTE_ 时，添加到网络名称的组合前缀是 POSTROUTE_PSN_00234。\n注意：要忽略默认前缀，请使用以下参数：-opt_concatenate_default_and_user_prefixes false。",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_one_pass_lec",
+            "description": "当设置为 true 时，启用单次逻辑等效性检查 (LEC) 流程。在单次 LEC 中，您可以在 RTL 和后布线优化 (PRO) 网表之间进行寄存器传输级 (RTL) 到网表的比较——任何布局和布线 (PnR) 阶段网表——只需一步。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_podv2_flow_effort",
+            "description": "指定 place_opt_design V2 (PODV2) 流程的努力级别。参见 clock_opt_design。\n提供以下设置：\n* auto：软件遵循 setDesignMode -flowEffort 设置来执行优化。\n* standard：软件执行快速的预CTS优化，运行时间较少。此选项推荐用于早期设计阶段或简单设计中的 PPA 估算。\n* extreme：软件执行深度优化以追求最佳 PPA。运行时间较高。",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_pin_swapping",
+            "description": "控制时序优化是否允许引脚交换。\n注意：当 setDesignMode -flowEffort express 被设置时，此参数不被启用。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_post_route_allow_overlap",
+            "description": "控制时序优化是否允许在 optDesign -postRoute 期间重叠。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_post_route_area_reclaim",
+            "description": "此参数可用于布线后在 optDesign -postRoute 期间回收面积。它在不影响时序和 DRV 违规的情况下安全地回收面积。您可以使用以下选项：\n* none：不进行面积回收。这是默认设置。\n* setupAware：进行回收，但不考虑保持。这可能会显著恶化保持时序，但将在保持建立时序的同时提供最佳可能的回收结果。\n* holdAndSetupAware：进行回收，但同时考虑保持和建立。它不会像单独的 setupAware 那样提供良好的回收结果。但这意味着建立和保持时序都将得到保持。",
+            "default": "none"
+        },
+        {
+            "name": "-opt_post_route_art_flow",
+            "description": "确保时序优化适用于基于 ART 的流程。在基于 ART 的流程中，它部分激活顶层和分区块接口路径的设计，以便如果设计很大，可以减少内存使用和运行时间。\n此参数将分区内的核心逻辑标记为 dont_touch，因此该逻辑不会被优化。\n注意：此参数需要分区定义信息，并且仅适用于后布线模式。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_post_route_check_antenna_rules",
+            "description": "允许优化检查/忽略用于 LEF 安全交换的天线规则。默认行为是检查天线规则以避免由单元交换引起的天线违规。LEF 文件中定义了某些天线规则。默认情况下，在进行用于漏电功耗优化的 LEF 安全交换和用于 LEF 安全时序恢复时，确保单元具有相同的天线规则。如果单元没有相同的天线规则，则不会交换它们。\n但是，如果此参数设置为 false，则在 postRoute 模式下，进行 LEF 安全交换时将不考虑天线规则。因此，将此选项设置为 false 可以改善时序和漏电，但可能导致布线存在天线违规，这将需要调用 ecoRoute 命令进行清理。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_post_route_drv_recovery",
+            "description": "控制当指定了 optDesign -postRoute -setup -hold 和 optDesign -postRoute -hold 命令时执行的 DRV/毛刺恢复步骤。您可以指定以下选项：\n* false：禁用 DRV/毛刺恢复。\n* auto：允许软件确定何时触发 DRV/毛刺恢复。这里，如果任何 DRV 或毛刺恶化超过某个边距，将触发恢复。\n* true：如果设计中存在任何剩余的 DRV/毛刺，则始终触发 DRV/毛刺恢复。",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_post_route_fix_clock_drv",
+            "description": "控制是否在后布线优化开始时调用 ccopt_pro。\n默认情况下，此参数设置为 true，这意味着调用 ccopt_pro 以修复布线后在时钟树中发生的时钟树设计规则违规 (DRV)。这些 DRV 最常见的是用户设置的时钟转换时间违规。要禁用 DRV 的修复，请将参数设置为 false。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_post_route_fix_glitch",
+            "description": "确定是否在 SI 优化期间修复毛刺违规。要禁用毛刺违规的修复，请将此参数设置为 false。\n注意：对于 SI 毛刺修复，必须将 setSIMode -enable_glitch_report 参数设置为 true。如果 setOptMode -opt_post_route_fix_glitch 设置为 true 但 setSIMode -enable_glitch_report 设置为 false，软件将在毛刺修复期间发出警告。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_post_route_fix_si_transitions",
+            "description": "启用在后布线优化中修复 SI 引起的转换违规。\n注意：转换值将仅用于最大转换违规修复，不会影响 EDI 时序引擎中的时序计算。这是因为转换效应在延迟推出计算期间由内部 SI 引擎考虑。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_post_route_hold_recovery",
+            "description": "控制当指定了 optDesign -postRoute -setup -hold 和 optDesign -postRoute -hold 命令时执行的保持恢复步骤。您可以指定以下选项：\n* false：禁用保持恢复。\n* auto：允许软件确定何时触发保持恢复。这里，如果 WNS 或 TNS 恶化超过某个边距，将触发恢复。\n* true：如果时序不满足，则始终触发保持恢复，无论后布线时序的增益/恶化如何。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_post_route_setup_recovery",
+            "description": "控制当指定了 optDesign -postRoute -setup -hold 和 optDesign -postRoute -hold 命令时执行的建立恢复步骤。您可以指定以下选项：\n* false：禁用建立恢复。\n* auto：允许软件确定何时触发建立恢复。这里，如果 WNS 或 TNS 恶化超过某个边距，将触发恢复。\n* true：如果时序不满足，则始终触发建立恢复，无论后布线时序的增益/恶化如何。",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_power_effort",
+            "description": "指定 Innovus 中的功耗驱动优化功能。此参数为优化设计中的漏电功耗和动态功耗提供努力级别。将 -opt_power_effort 参数与 -opt_leakage_to_dynamic_ratio 参数一起使用，以提供卓越的 QOR 并触发功耗驱动优化。功耗驱动优化意味着 optDesign 命令现在在时序优化的每个步骤在转换级别执行功耗、性能和面积 (PPA) 权衡。\n您可以指定以下任一选项：\nnone：指定不执行功耗优化。\nlow：当功耗优化不是最高优先级时指定此参数。使用低努力级别选项表示以下内容：\n* 功耗优化仅在 optDesign 流程的某些阶段执行，这取决于 -opt_leakage_to_dynamic_ratio 参数的值。当 -opt_leakage_to_dynamic_ratio 为 1.0 时，optDesign 将在每个时序优化步骤后优化漏电功耗，并且在保持修复期间不插入高漏电单元。当 -opt_leakage_to_dynamic_ratio 为 0.0 时，optDesign 将在预CTS阶段优化动态功耗。对于 -opt_leakage_to_dynamic_ratio 在 0.0 和 1.0 之间的所有值，以上两者都完成。\n* 时序优化是功耗感知的，但在选择要实施的最佳时序优化修复时仅使用低努力技术。\n* 时序收敛仍然是第一优先级，实现的最差负时序裕量与努力模式“none”中的相同。\n* 平均而言，与努力模式“none”相比，对于 -opt_leakage_to_dynamic_ratio 为 0.5，CPU 全流程运行时间影响为 +26%。这可能因所使用的比率和设计而异。\n* 平均而言，MEM 全流程影响为 +5%。\n* 利用率与努力级别“none”的结果大致持平。\n* 平均而言，与努力模式“none”相比，整体标准单元动态功耗节省为 -30%，最高可达 -69%。平均而言，与努力模式“none”相比，整体标准单元漏电功耗节省为 -41%，在某些设计上最高可达 -90%。这是通过 -opt_leakage_to_dynamic_ratio 为 0.5 实现的，如果此比率改变，将会变化。\n注意：上述数字是估计值，完全取决于设计类型。因此，它们可能与上面给出的平均值有很大不同。\nhigh：当低功耗是最高优先级时使用高努力级别选项。使用高努力级别选项表示以下内容：\n* 功耗优化在 optDesign 的所有调用期间执行，这取决于 -opt_leakage_to_dynamic_ratio 参数的值。时序优化是功耗感知的，并在选择最佳时序优化修复时使用高努力技术。\n* 如果之前可以实现，时序收敛仍然应该可以实现，并且在大多数情况下，达到的最差负时序裕量与努力模式“none”相同。\n* 平均而言，与努力“none”相比，对于 -opt_leakage_to_dynamic_ratio 0.5，CPU 全流程运行时间影响为 +63%。这可能因所使用的比率和设计而异。\n* 平均而言，MEM 全流程影响为 +11%。\n* 与努力级别“none”结果相比，利用率平均提高了 -1.3%。\n* 平均而言，与努力模式“none”相比，整体标准单元动态功耗节省为 -32%，最高可达 -70%。平均而言，与努力模式“none”相比，整体标准单元漏电功耗节省为 -54%，在某些设计上最高可达 -98%。这是通过 -opt_leakage_to_dynamic_ratio 为 0.5 实现的，如果此比率改变，将会变化。\n注意：上述数字是估计值，完全取决于设计类型。因此，它们可能与上面给出的平均值有很大不同。\n在执行功耗优化之前，需要使用 set_analysis_view -leakage 或 -dynamic <view_name> 命令指定正确的功耗视图。漏电和动态优化都需要以设计中最重要的视图为目标，然后在优化漏电、内部和开关功耗时使用它。如果正在进行动态优化（当 -opt_leakage_to_dynamic_ratio 是除默认值 1 之外的任何值时），那么还需要指定开关活动。这可以通过使用 read_activity_file -format {VCD | TCF | SAF} <file name> 来完成。在没有开关文件的情况下，建议指定以下内容：\nset_default_switching_activity -input_activity 0.2 -seq_activity 0.2。\n这将确保整个流程的可预测性和一致性。",
+            "default": "none"
+        },
+        {
+            "name": "-opt_pre_route_ndr_aware",
+            "description": "通过提供 NDR 名称列表启用基于 NDR 的优化。使用基于 NDR 的优化，GigaOpt 为时序关键网络分配 NDR 以改善时序。GigaOpt 将自动评估提供的 NDR 列表，并选择可以帮助时序的 NDR。从 TAT 的角度来看，不建议使用许多 NDR。",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_preserve_all_sequential",
+            "description": "在优化网表时保留时序元素。\n当 setOptMode -opt_remove_redundant_insts 参数设置为 true 时，该命令会删除不可观察或无用的逻辑。但是，您可以通过将 -opt_preserve_all_sequential 参数设置为 true 来保留时序元素。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_preserve_hpin_function",
+            "description": "确定是否保留层次模块端口的逻辑功能。\n当设置为 false 时，只有应用了时序断言的层次模块端口将被保留（不被删除、复制或极性更改）。这是推荐的设置，因为它允许时序优化有更多的自由度，同时不影响网表功能或时序约束。\n当设置为 true 时，每个层次模块的每个端口都将被保留（不被删除、复制或极性更改）。这是非常严格的。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_remove_redundant_insts",
+            "description": "控制时序优化是否简化网表。软件通过以下方式简化网表来回收面积、减少拥塞并改善运行时间：\n* 删除悬空输出实例\n* 传播常量\n* 删除不可观察的逻辑\n* 重新映射无用的逻辑\n软件遵守 set_dont_touch 约束，因此它不会删除受约束的触发器，并且不会触及非唯一化的模块。\n注意：当 setDesignMode -flowEffort express 被设置时，此参数不被启用。\n注意：如果网表包含备用单元，请确保使用 specifySpareGate 命令定义它们，否则它们可能会被 -opt_remove_redundant_insts 参数删除。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_remove_redundant_insts",
+            "description": "控制时序优化是否简化网表。软件通过以下方式简化网表来回收面积、减少拥塞并改善运行时间：\n* 删除悬空输出实例\n* 传播常量\n* 删除不可观察的逻辑\n* 重新映射无用的逻辑\n软件遵守 set_dont_touch 约束，因此它不会删除受约束的触发器，并且不会触及非唯一化的模块。\n注意：当 setDesignMode -flowEffort express 被设置时，此参数不被启用。\n注意：如果网表包含备用单元，请确保使用 specifySpareGate 命令定义它们，否则它们可能会被 -opt_remove_redundant_insts 参数删除。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_report_multi_bit_unmerged_reasons",
+            "description": "当此参数设置为 true 时，未合并的多比特触发器/锁存器的原因会打印在 MBFF 摘要中。有关使用模型的详细信息，请参阅《报告 MBFF 的未合并原因》。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_resize_flip_flops",
+            "description": "控制时序优化是否增大或减小触发器尺寸。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_resize_level_shifter_and_iso_insts",
+            "description": "控制时序优化是否调整电平转换器和隔离实例的尺寸。在默认模式 (false) 下，电平转换器和隔离器被视为“禁止接触”实例，在时序优化期间不会更改。\n当此参数设置为 true 时，电平转换器和隔离单元会通过使用 optDesign 进行时序优化而调整尺寸。\n注意：当此参数设置为 true 时，即使电平转换器和隔离单元被标记为 dont_touch，也可以调整所有电平转换器和隔离单元的尺寸。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_resize_power_switch_insts",
+            "description": "当设置为 true 时，启用优化期间调整电源开关实例的尺寸。默认情况下，此参数设置为 false，这意味着在优化期间不调整电源开关实例的尺寸。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_route_opt_recovery",
+            "description": "控制 route_opt_design 流程中的时序恢复步骤。当使用标准努力（setDesignMode -flowEffort standard）的 route_opt_design 时序未收敛时使用它。提供以下设置：\n* false：禁用时序恢复。\n* auto：允许软件确定何时触发保持/drv 恢复。这里，如果保持/drv 恶化超过某个边距，将触发恢复。\n* true：如果时序不满足，则始终触发时序恢复，无论后布线时序的增益/恶化如何。\n例如，要启用建立时序恢复，请使用以下设置：\nsetOptMode -opt_route_opt_recovery true\nsetOptMode -opt_post_route_setup_recovery true\nroute_opt_design\n注意：您可以将以下参数与 -opt_route_opt_recovery true 设置一起指定以启用建立/保持/drv 恢复。但是，这会导致运行时间增加。\nsetOptMode -opt_post_route_setup_recovery true\nsetOptMode -opt_post_route_hold_recovery true\nsetOptMode -opt_post_route_drv_recovery true",
+            "default": "auto"
+        },
+        {
+            "name": "-opt_sequential_genus_restructure_report_failure_reason",
+            "description": "当设置为 true 时，顺序关键区域重新综合 (CRR) 失败原因会在 SeqCrrFailReasons.rpt 文件中报告。该报告包括实例名称和相应的失败原因。\n注意：当启用 CRR 时，Innovus 使用 Genus 重新结构化部分设计以在建立优化期间改善时序/面积/功耗。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_setup_target_slack",
+            "description": "指定用于建立分析的目标时序裕量值（以纳秒为单位）。在建立违规修复期间，建立目标时序裕量为 <setupTargetSlack>，保持目标时序裕量设置为 0。通常，您同时使用 -opt_setup_target_slack 和 -opt_hold_target_slack 进行保持分析。如果仅指定 -opt_hold_target_slack，则 -opt_setup_target_slack 值为 0。",
+            "default": "0ns"
+        },
+        {
+            "name": "-opt_skew",
+            "description": "控制时序优化是否运行 skewClock 命令。\n此参数在 CTS 运行之前生成调度和延迟文件，或者在 CTS 之后添加缓冲器和反相器，就像 skewClock 所做的那样。有用偏移优化在 optDesign 内迭代运行，因此您不需要多次指定此参数。\n注意：setAnalysisMode -opt_skew 参数在 optDesign -preCTS 之后设置为 true，这会生成延迟文件。\n当 -opt_skew 参数设置为 false 时，它会禁用所有地方的有用偏移，无论其他 setOptMode -opt_skew* 设置如何，例如使用 -opt_skew_ccopt、-opt_skew_post_route 和 -opt_skew_pre_cts 参数指定的设置。\n注意：当 setDesignMode -flowEffort express 被设置时，此参数不被启用。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_skew_ccopt",
+            "description": "指定 CTS 和后CTS流程中有用偏移的努力。它取代了早期的参数 -opt_skew_pre_cts 和 -opt_skew_post_route。\n此参数设置仅由 ccopt_design 和 optDesign -postCTS 遵守。\n* none：低努力 ccopt_design，无偏移\n* standard：低努力 ccopt_design。这是默认设置。\n* extreme：高努力 ccopt_design\n注意：为了获得最佳可能的时序结果，extreme 设置将显著增加 ccopt_design 命令的执行时间。此外，为了获得最佳结果，extreme 设置应与 setDesignMode -flowEffort extreme 一起使用。\n已废弃的选项/命令以及此参数设置的相应值详述如下：\n* setOptMode -opt_skew_pre_cts false 对应于 setOptMode -opt_skew_ccopt standard\n* setOptMode -opt_skew_post_route true 对应于 setOptMode -opt_skew_ccopt standard（如果 setDesignMode -flowEffort 未设置为 extreme）\n* setOptMode -opt_skew_post_route false 对应于 setOptMode -opt_skew_ccopt none（如果 setDesignMode -flowEffort 未设置为 extreme）",
+            "default": "standard"
+        },
+        {
+            "name": "-opt_skew_post_route",
+            "description": "当设置为 false 时，它禁用后布线优化中的有用偏移。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_skew_pre_cts",
+            "description": "当设置为 false 时，它禁用预CTS优化中的有用偏移。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_target_based_opt_file",
+            "description": "指定包含目标优化 (TBOpt) 将用于使用 optDesign -postRoute -targeted 命令进行细粒度目标优化的信息的文件。\nTBOpt 文件的格式如下：\nNETS : {net1} {net2} {netN}\nFROMTOS : {fromTerm1 toTerm1} {fromTerm2 toTerm2} {fromTermN toTermN}\nINSTS : {inst1} {inst2} {instN}\nPATHS : {endpoint1} {endpoint2} {endpointN}\nEND_POINT_ADJ : {endpoint1} {slack_adj: value in ps}\nAREA_RECLAIM : {ModuleName} {x1 y1 x2 y2}\nPWR_RECLAIM : {ModuleName} {x1 y1 x2 y2}\nSI_GLITCH : {netName or netNameList} {value: e.g. 0.1}\nDRVS : {netName1} {netName2} {max_tran: e.g. 100}\n注意：有关文件语法以及关于节点规范和端点调整、面积、功耗、最大转换和 SI 毛刺优化的更多信息，请参阅《Innovus 用户指南》中的“生成目标文件”和“使用目标文件进行目标优化”。\n下面提供了一个 TBOpt 文件的示例：\nNETS : {mod_i/mod_sub_i/reset_l_sync_3} {mod_i/mod_sub_i/FE_OCPN210_reset_l_sync_3}\nINSTS : {mod_i/mod_sub_i/reset_l_sync_reg_15} {mod_i/mod_sub_i/FE_OCPC210_reset_l_sync_16}\nPATHS : {mod_i/mod_sub_i/ser_en/data_d1_reg_32/D}",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_target_based_opt_file_only",
+            "description": "此参数与 -opt_target_based_opt_file 参数一起使用。默认情况下，此参数设置为 true。因此，默认情况下，TBOpt 仅优化使用 -opt_target_based_opt_file 参数指定的文件中包含的节点。当设置为 false 时，TBOpt 会优化文件中指定的节点之外的其他节点，如果软件认为它们是关键的。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_target_based_opt_hold_file",
+            "description": "指定包含 TBOpt 将用于执行保持优化的信息的文件。\nsetOptMode -opt_target_based_opt_hold_file <hold_file_name>\noptDesign -postRoute -targeted -hold\n注意：您可以使用以下命令启动建立优化，然后进行保持优化：\noptDesign -postRoute -targeted -setup -hold\n保持优化仅在 -opt_target_based_opt_file_only 模式下调用。",
+            "default": "\"\""
+        },
+        {
+            "name": "-opt_tied_inputs",
+            "description": "当设置为 true 时，强制优化输入连接在一起的实例，即使这会恶化目标增益（在面积、功耗和延迟方面）。\n注意：当运行 ecoRemoveTiedInputs 命令时，不需要指定此参数。在这种情况下，此参数会自动设置为 true，并且会优化输入连接在一起的实例。命令运行后，参数将恢复为执行命令之前的值。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_time_design_compress_reports",
+            "description": "当设置为 true 时，此参数强制 timeDesign 和 optDesign 以压缩格式输出时序报告。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_time_design_expanded_view",
+            "description": "当设置为 true 时，这将强制 timeDesign 或 optDesign 根据日志文件中的视图打印摘要时序报告。\n注意：当自动视图修剪流程对 optDesign 开启时，此参数没有任何影响。这是从软件 15.1 发布版本开始的默认流程。因此，要在此流程中输出特定视图的时序报告，请在执行优化后运行 timeDesign -expandedViews。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_time_design_num_paths",
+            "description": "允许您选择在 timeDesign 或 optDesign 最终摘要报告中每个路径组应报告的路径数量。",
+            "default": "50"
+        },
+        {
+            "name": "-opt_time_design_report_net",
+            "description": "当设置为 true 时，它强制 timeDesign 或 optDesign 打印带网络部分的时序报告。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_time_design_vertical_timing_summary",
+            "description": "当设置为 true 时，在 timeDesign 和最终摘要报告后打印垂直时序摘要。",
+            "default": "false"
+        },
+        {
+            "name": "-opt_unfix_clock_insts",
+            "description": "控制软件是否允许调整固定时序元素的尺寸以及在布局合法化期间移动它们。optDesign 在此步骤开始时临时移除每个时序元素的固定属性，并在结束时将其设置回原始值。此选项不会移除时钟树的路由线。它尽可能最小化时序元素的移动。此选项仅影响 optDesign -postCts 和 optDesign -postRoute。\n* 当为 true 时，允许软件调整固定寄存器的尺寸并移动它们。\n* 当为 false 时，不允许软件调整固定寄存器的尺寸或移动它们。\n注意：如果您为此参数指定 true，Cadence 建议您使用 routeDesign 命令来布线您的设计。",
+            "default": "true"
+        },
+        {
+            "name": "-opt_verbose",
+            "description": "控制时序优化输出到日志文件的信息量。指定 true 以输出用于调试设计问题的附加信息。当您将此参数设置为 true 时，未修复保持违规的各种原因会列在日志文件中。\n有关更多信息，请参阅下面的“保持违规仍未修复的原因”部分。",
+            "default": "false"
+        },
+        {
+            "name": "-reset",
+            "description": "将参数重置为其默认值。-reset 参数必须是第一个指定的参数。如果您单独指定 -reset，软件会将所有 setOptMode 参数重置为其默认值。如果您在 -reset 之后指定参数，软件仅将这些参数重置为其默认值。任何与默认值不匹配且被重置的值将被报告。",
+            "default": "N/A"
+        }
+    ]
+}

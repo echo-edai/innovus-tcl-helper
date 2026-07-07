@@ -1,0 +1,338 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_module_model(25.10)                                set_module_model(25.10)
+
+Name
+       set_module_model  -  Sets or configures specific block model(s) to top-
+       level design
+
+Syntax
+       set_module_model
+
+       [-help]
+
+       [-allow_port_mismatch]
+
+       [-dir <model_data_directory>]
+
+       [-hold_views <string>]
+
+       [-phys_hier]
+
+       [-setup_views <string>]
+
+       [-tag <flow_tag>]
+
+       [-type {flexilm lef ilm pnr pnr_shell boundary_model }]
+
+       [-update]
+
+       {[[[[-cell  <moduleName>]  [-default_set_options  <string>]]  |   [-top
+       <cell_name> [-logical_only ]]]
+
+       [-add_ons  {1801 etm latency pnr_view scan_info spef timing_context ex-
+       traction_context}]] |
+
+       -default_dir <default_model_data_directory> |
+
+       -default_create_options <default_option> |
+
+       -default_commit_options <string> |
+
+       -active_rc_corners <list_of_rc_corners> }
+
+       Sets or configures specific block model(s) to top-level design.
+
+Parameters
+       -active_rc_corners <list_of_rc_corners>
+              Specifies the list of RC corners.
+
+              Note: For multi-corners, different applications  have  different
+              ways  to  get  or specify RC corners for outputting/reading SPEF
+              (Standard Parasitic Exchange Format ). In the Integrated Hierar-
+              chical Database (iHDB) flow,  the  -active_rc_corners  parameter
+              provides a uniform way to use RC corners.
+
+              Note:  The  create_module_model  -type  spef honors the set_mod-
+              ule_model -active_rc_corners command to output SPEF(s)  for  the
+              specified  RC  corners. By default, multi corner SPEFs are saved
+              as    gzip.    The    output    SPEF(s)     are     saved     at
+              <iHDB_root>/<cell>/<tag>/spef/<topCell>.<cornerName>.spef.gz
+
+              Data_type: string, optional
+
+       -add_ons {1801 etm latency pnr_view scan_info spef timing_context ex-
+       traction_context}
+              Specifies  the  supplement model that can be loaded additionally
+              with an existing model or a design. The following is the list of
+              the supported model types:
+
+              * 1801: UPF for power domain
+
+              * etm: Extraction timing model
+
+              * latency: Clock latency information
+
+              * pnr_view: Full pnr physical DB
+
+              * scan_info: Scan chain information
+
+              * spef: SPEF file from RC extraction
+
+              * timing_context: Timing context model
+
+              * extraction_context: Extraction context model
+
+              For example the following command specifies that the etm add  on
+              type is associated with the -type lef parameter. It uses LEF and
+              timing model ETM (.lib) together at top-level design:
+
+              set_module_model -cell tdsp_core -type lef -add_ons {etm}
+
+              Note:  The  1801 add on type can only be specified for ilm model
+              type (-type ilm).
+
+              Note: The pnr_view add on type can only  be  specified  for  ilm
+              model  type (-type ilm)where it will load in the full pnr physi-
+              cal DB on top of an ILM model so you can see all cells and rout-
+              ing. This can be used for debugging timing.
+
+              Note: The spef add on type honors the -active_rc_corners parame-
+              ter to read in SPEFs (Standard Parasitic Exchange Format  )  for
+              the specified RC corners.
+
+              Note:   The  spef  add on type cannot be used with the pnr_shell
+              model type.
+
+              Note: With the latency and scan_info  add  on  types,  the  cre-
+              ate_module_model  command  can  save  the latency and scan chain
+              data into iHDB. The commit_module_model command can  bring  back
+              the latency data of an ILM data to the top-level design for pre-
+              CTS  stage,  and be able to merge block scan chains back to top-
+              level design.
+
+              Data_type: bool, optional
+
+       -allow_port_mismatch
+              Allows model I/O ports mismatching from the  original  database.
+              It replaces the new updated LEF and provides an ability to bring
+              in an updated model with mis-matched ports to top-level design.
+
+              Note:  This  parameter  can  be specified with the lef, flexIlm,
+              ilm, and pnr type (-type) of module models only.
+
+              Data_type: string, optional
+
+       -cell <moduleName>
+              Specifies the cell name(s) to be loaded. You can specify a  list
+              of cell names.
+
+              Note: The -cell parameter accepts wildcards as input.
+
+              Data_type: string, optional
+
+       -default_commit_options< string>
+              Specifies the default commit options. These default settings are
+              honored by the commit_module_model command.
+
+              Use Model:
+
+              set_module_model      -default_commit_options     {<listOfAssem-
+              bleDesignOptions>} -type pnr
+
+              set_module_model  -default_commit_options  {<listOfSetIlmTypeOp-
+              tions>} -type ilm
+
+              Example:
+
+              set_module_model    -default_commit_options   {-keepPinGeometry}
+              -type pnr
+
+              set_module_model -default_commit_options {-model si} -type ilm
+
+              Data_type: string, optional
+
+       -default_create_options <default_options>
+              Specifies the default create options for a specific model  type.
+              These  default  settings  are honored by the create_module_model
+              command.
+
+              Note: You must specify the -type parameter with this option.
+
+              Note: While specifying the default create options,  ensure  that
+              you specify the correct names of the options as per the selected
+              Innovus interface.
+
+              Data_type: string, optional
+
+       -default_dir <default_model_data_directory>
+              Specifies  the  default  central directory name where the module
+              models data will be saved/loaded.
+
+              Note: If set_module_model -default_dir is not specified, the In-
+              novus system does not set any directory by  default.  Later  on,
+              when  you  try  to run the restore_module_model command, it dis-
+              plays an error message that the -default_dir  parameter  is  not
+              set. This option MUST be set before loading any Integrated Hier-
+              archical Database (iHDB) design.
+
+              Data_type: string, optional
+
+       -default_set_options <string>
+              Sets the default options.
+
+              Data_type: string, optional
+
+       -dir <model_data_directory>
+              Specifies  the directory where data of the specified cell can be
+              found.
+
+              Note: The -dir parameter will override the -default_dir  setting
+              for this cell.
+
+              Note:  The -dir parameter cannot be specified if the -cell para-
+              meter has been specified using wildcards.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for each set_module_model parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man set_module_model
+
+       -hold_views <string>
+              Specifies the hold views.
+
+              Note:  The  -setup_views and -hold_views parameters allow you to
+              specify the active analysis views for the loaded design. Innovus
+              uses these settings to know which SDC constraints to use. By de-
+              fault, the active views will be based on the viewDefinition.file
+              of pnr model (*.enc.dat).
+
+              Data_type: string, optional
+
+       -logical_only
+              Specifies that only the logical data will be read.  It  controls
+              whether  to  load DEF and LEF libraries or not. If -logical_only
+              is specified, Innovus only loads Verilog/.lib but not DEF/LEF.
+
+              Data_type: bool, optional
+
+       -phys_hier
+              Enables you to load the physical hierarchy for viewing purpose.
+
+              Data_type: bool, optional
+
+       -setup_views <string>
+              Enables you to setup views.
+
+              Note: The -setup_views and -hold_views parameters allow  you  to
+              specify the active analysis views for the loaded design. Innovus
+              uses these settings to know which SDC constraints to use. By de-
+              fault, the active views will be based on the viewDefinition.file
+              of pnr model (*.enc.dat).
+
+              Data_type: string, optional
+
+       -tag <flow_tag>
+              Specifies  the  tag name of the specified cell. It can be design
+              stage/status name such as `prects', `cts', etc....
+
+              Note: The 'latest' tag will be used if this option is not speci-
+              fied. `latest' can also be specified as tag name for referencing
+              to the latest updated tag.
+
+              Note: For a specific cell, you only need to specify this tag op-
+              tion for one model type. For subsequent model  type  setting  of
+              the  same  cell,   same tag name will be used if it's not speci-
+              fied.
+
+              Data_type: string, optional
+
+       -top <cell_name>
+              Specifies the top module model. This is a light way to load  the
+              top-level  Verilog  netlist.  When specified with -type pnr, the
+              tool only loads the Verilog and DEF from the pnr model.
+
+              Note: When the -top parameter is specified,  the  default  model
+              type (-type) is pnr.
+
+       -type {flexilm ilm lef pnr pnr_shell boundary_model}
+              Specifies  the model type. The model type can be boundary_model,
+              lef, flexIlm, ilm, pnr, or pnr_shell.
+
+              The following is the list of the most frequently used iHDB  mod-
+              ule model types:
+
+              * flexilm: Flexible interface logic model
+
+              * ilm: Interface logic model
+
+              * lef: LEF abstract
+
+              * pnr: Innovus DB
+
+              * pnr_shell:  Reduced  pnr  model  where only the first level of
+                logics is kept.
+
+              * boundary_model: Boundary model for timing analysis
+
+              Note: You must specify the -type parameter.
+
+              Data_type: enum, optional
+
+       -update
+              Specifies that the data of the specified  cell  will  be  loaded
+              without doing any checking.
+
+              Data_type: bool, optional
+
+Example
+              * The  following command specifies the default central directory
+                name (./DATA) where models data will be saved/loaded.
+
+                set_module_model -default_dir ./DATA
+
+              *
+
+                The following command configures the  tdsp_core  module  model
+                using  LEF  and  timing  model ETM (.lib) together at the top-
+                level design:
+
+                set_module_model -cell  tdsp_core  -tag  my_prects  -type  lef
+                -add_ons {etm}
+
+              *
+
+                The  following  example specifies the default options for type
+                lef:
+
+                set_module_model -type lef -default_create_options  {-specify-
+                TopLayer M10 -stripePin}
+
+Related Information
+              * check_module_model
+
+              * commit_module_model
+
+              * create_module_model
+
+              * report_module_model
+
+              * restore_module_model
+
+              * savePartition
+
+              * update_module_model
+
+              * write_module_model_context
+
+              * Hierarchical  and Prototyping Flow chapter in the Innovus User
+                Guide
+
+                *
+
+                  Integrated Hierarchical Database Flow
+
+                           Fri Apr 04 01:25:37 2025    set_module_model(25.10)

@@ -1,0 +1,368 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setPathGroupOptions(25.10)                          setPathGroupOptions(25.10)
+
+Name
+       setPathGroupOptions  -  Specifies  options to guide timing optimization
+       and timing analysis when path groups are used
+
+Syntax
+        setPathGroupOptions
+
+       [-help]
+
+       <pathgroupName>
+
+        [-early]
+
+       [-effortLevel {low | high}]
+
+       [-late]
+
+       [-skewingSlackConstraint <value_in_ns>]
+
+       [-slackAdjustment
+               <float>]
+
+       [-slackAdjustmentPriority
+               <integer>]
+
+       [-targetSlack
+               <float>]
+
+       [-view <view_names>]
+
+       [-weight <integer>]
+
+       Specifies options to guide timing optimization and timing analysis when
+       path groups are used. To reset parameters to their default  value,  use
+       resetPathGroupOptions.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setPathGroupOptions parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+               man setPathGroupOptions
+
+       -early Specifies early mode.
+
+              This parameter is used with the -slackAdjustment option when you
+              wish to adjust a path group's slack in Hold timing mode only.
+
+              Note the following:
+
+              * If  you  do  not specify either -early or -late, then -late is
+                implied.
+
+              * If you specify -early, then -early is used.
+
+              * If you specify -late, then -late is used.
+
+              * If you specify both -early and -late,  then  both  -early  and
+                -late are used, which means the same value of -early and -late
+                are set at the same time.
+
+              For example,
+
+              setPathGroupOptions reg2reg -slackAdjustment -0.3 -early -late
+
+              Slack adjustment of -0.3 applied on reg2reg path_group
+
+              **INFO: Setting reg2reg as high effort level since it has a neg-
+              ative slack adjustment.
+
+              reportPathGroupOptions
+
+              --------------------------------------------------------------------------
+
+              |Path                 Group|Effort|Adjustment(early/late)|Target
+              Slack|weight|SkewingSlackCons|view|
+
+              -------------------------------------------------------------------------
+
+              |reg2reg   | high |    -0.3 /     -0.3   |        0   |   2    |
+              300    |setup_view9|
+
+       -effortLevel {low | high}
+              Specifies  the effort applied to close timing on a specific path
+              group. This parameter is honored by timing optimization  (optDe-
+              sign).
+
+              Select one of the following options:
+
+              low:  Specifies  that this path group is optimized together with
+              other path groups for best overall slack. low is the default ef-
+              fort value for all user-created path groups.
+
+              Note: Cadence recommends you specify low  effort  for  all  path
+              groups  except  that  ones  that  the  tool should focus on most
+              strongly.
+
+              high: Specifies that this path  group  is  optimized  separately
+              from  the  low-effort  path  groups in order to achieve the best
+              possible WNS for this path group.
+
+              Default: low
+
+       <pathgroupName>
+              Specifies the path group for which to set options.
+
+       -late  Specifies late mode.
+
+              This parameter is used with the -slackAdjustment option when you
+              wish to adjust a path group's slack in Setup timing  mode  only.
+              For usage details, see the description of the -early parameter.
+
+       -skewingSlackConstraint <value_in_ns>
+              When  set, applies the specified skewing slack constraint to the
+              path group. The value specified is in nanoseconds. If  not  set,
+              no skewing slack constraint is applied to the path group.
+
+              This  parameter  provides  the  ability to control the I/O slack
+              during skewing without degrading the core slack value. The skew-
+              ing engine skews in a way not to make any already -ve slack path
+              more -ve or not introduce a new -ve slack path.
+
+              Examples:
+
+              If the following is specified:
+
+              setPathGroupOptions R2O -skewingSlackConstraint 0
+
+              Before skewing: FF's D slack is -100 ps(R2R), Q slack  is  -20ps
+              (R2O)
+
+              After skewing: D slack is -100ps, Q slack is -20ps
+
+              Before  skewing:  FF's  D slack is -100 ps(R2R), Q slack is 30ps
+              (R2O)
+
+              After skewing: D slack is -70ps, Q slack is 0ps
+
+              Note:
+
+              * This option can control CCOpt useful skew. If you are  running
+                ECF  (early clock flow), preCTS will use CCOpt useful skew en-
+                gine to do skewing. in this scenario, this  option  will  take
+                effect.
+
+              * This option can control postCTS skewClock behavior
+
+              * This option does not impact timing analysis
+
+       -slackAdjustment <float>
+              Specifies  a positive or negative value used to modify path con-
+              straints on all paths that are part of a  specific  path  group.
+              The value is in nanoseconds.
+
+              To  relax  the  path  constraints computed by the timing engine,
+              specify a positive value. To  tighten  the  timing  constraints,
+              specify a negative value.
+
+              This parameter is honored by timing optimization (optDesign) and
+              timing  analysis  (report_timing).  This  means  that  that  the
+              -slackAdjustment parameter setting impacts the  timing  analysis
+              result and all optimization is then performed based on this tim-
+              ing.  Using this parameter might have an impact on run time dur-
+              ing timing optimization.
+
+              Note: Path groups with negative slack adjustment will  be  auto-
+              matically  set to high effort, unless the -effortLevel option is
+              explicitly set to "'low". For positive slack adjustment, the ef-
+              fort level will remain the same. This means if the effort is low
+              before setting a positive slack adjustment, the new effort  will
+              be  low;  if  the effort is high before setting a positive slack
+              adjustment, the new effort will be high.
+
+              Tip: Use this parameter together with the -effort  parameter  to
+              direct timing optimization focus.
+
+       -slackAdjustmentPriority <integer>
+              Provides  priority to a path group for the slack adjustment fea-
+              ture. The paths that are a part of overlapping path  groups  get
+              slack  adjustment from the path group that has a higher priority
+              value. If the number is higher, the priority is higher. In  case
+              of multiple overlapping path groups with different slack adjust-
+              ment values, the most constraining slack adjustment is applied.
+
+              Default: 0
+
+              Note:  The  -slackAdjustmentPriority  parameter  is  ignored  if
+              -slackAdjustment is not specified.
+
+       -targetSlack <float>
+              Specifies a target value for setup slack,  in  nanoseconds,  for
+              all  paths that are part of a specific path group. The value can
+              be positive or negative.
+
+              This parameter is honored by  timing  optimization  (optDesign).
+              Using  this  parameter  might  have an impact on run time during
+              timing optimization.
+
+              Note: Setting this parameter does not impact the timing analysis
+              results, and only setup optimization considers the target  slack
+              as the goal of optimization.
+
+              The  path  group target slack (setPathGroupOptions -targetSlack)
+              and the global setup target  slack  (setOptMode  -opt_setup_tar-
+              get_slack)  are cumulative. When both are set, global setup tar-
+              get slack adds on top of what is specified  using  the  setPath-
+              GroupOptions  -targetSlack  parameter.  The effective number de-
+              pends upon whether path group target slack number is positive or
+              negative.
+
+              The global setup target slack is the timing closure  target  for
+              timing optimization.
+
+              Note:  When  both,  -slackAdjustment and -targetSlack parameters
+              are set, the setup optimization considers the target slack based
+              on slack adjustment timing.
+
+       -view <view_names>
+              Specifies the view names. This parameter is used when  you  want
+              to specify different effort levels of the path group for differ-
+              ent views.
+
+              Default: {}
+
+              Note:  When this parameter is used, only the specified views are
+              active for timing analysis on the path group. Any timing report-
+              ing on this path group with inactive views will result in an er-
+              ror.
+
+       -weight <integer>
+              Defines the optimization priority. For the default path  groups,
+              the software assigns weights in the following manner:
+
+              * For  high-effort path groups: the software assigns a weight of
+                "1" to reg2cgate and "2" to reg2reg.
+
+              * All low-effort path groups are assigned a  default  weight  of
+                "0".
+
+              You  can  assign  any  value  to this parameter ( 0 to INT_MAX).
+              There is no upper limit.
+
+              The software looks at the relative priority of the  weights  for
+              each path group -- the higher the number, the higher the weight.
+              For  example,  if  there are 10 path groups with weights ranging
+              from 1 to 10 and they are all high-effort path groups, the high-
+              effort optimization for  all  these  ten  path  groups  will  be
+              started  simultaneously.  If, however, the optimization is stuck
+              at the path group with the weight 6, the software drops all  the
+              path  groups that have weights ranging from 1 to 6 and continues
+              to work on the remaining four path groups.
+
+              Note: Use this parameter to control optimization and not  slack-
+              AdjustmentPriority, which only controls the slackAdjustment.
+
+Examples
+              * To   change  the  timing  measured  for  all  setup  paths  in
+                PATH_GROUP_A by relaxing the required time by  2  nanoseconds,
+                specify:
+
+                setPathGroupOptions PATH_GROUP_A -slackAdjustment 2
+
+              * To   change  the  timing  measured  for  all  setup  paths  in
+                PATH_GROUP_B by tightening the required time by  0.2  nanosec-
+                onds, specify:
+
+                setPathGroupOptions PATH_GROUP_B -slackAdjustment -0.2
+
+              * To   direct   the  optDesign  command  to  optimize  paths  in
+                PATH_GROUP_C until the worst setup slack in that path group is
+                better than 2 nanoseconds, specify:
+
+                setPathGroupOptions PATH_GROUP_C -targetSlack 2
+
+                optDesign
+
+                When these commands run, the software internally  subtracts  2
+                nanoseconds   from   the   required  time  for  all  paths  of
+                PATH_GROUP_C.
+
+                Note that the optDesign command stops optimization when it  no
+                longer  thinks  that  it  can make progress, regardless of the
+                slack target.
+
+              * To  change  the  timing  measured  for  all  hold   paths   in
+                PATH_GROUP_D by relaxing the required time by 0.2 nanoseconds,
+                specify:
+
+                setPathGroupOptions PATH_GROUP_D -slackAdjustment +0.2 -early
+
+              * The  following  commands  are  used  to set the  effort level,
+                skewing slack constraint, weight, and views of  the  two  path
+                groups, and generate a report using these parameters:
+
+                setPathGroupOptions reg2reg -effortLevel low -skewingSlackCon-
+                straint 0.3 -view AV_HL_FUNC_MIN_RC1
+
+                setPathGroupOptions  reg2cgate -effortLevel high-skewingSlack-
+                Constraint 0.5 -view AV_HL_FUNC_MAX_RC1
+
+                reportPathGroupOptions
+
+                The software prints the following report:
+
+       ---------------------------------------------------------------------------------------------------
+
+       |Path   Group|Effort|Adjustment(early/late)|Target   Slack|weight|Skew-
+       ingSlackCons|view               |
+
+       ---------------------------------------------------------------------------------------------------
+
+       |reg2reg    |low    | 0.1/     0.2         | 0          |   2  |    0.3
+       |AV_HL_FUNC_MIN_RC1 |
+
+       |reg2cgate |high  | 0.2/     0           | 0          |   1   |     0.5
+       |AV_HL_FUNC_MAX_RC1 |
+
+       The  description  of the columns headings and the corresponding parame-
+       ters to which they map is provided below.
+
+              Path Group" <pathgroupName>:
+
+              Effort" -effortLevel
+
+               low: Specifies that this path group is optimized together  with
+              other path groups for best overall slack. low is the default ef-
+              fort  value  for  all user-created path groups.  high: Specifies
+              that this path group is optimized separately from the low-effort
+              path groups in order to achieve the best possible WNS  for  this
+              path group.
+
+              Adjustment (early/ late)" -slackAdjustment
+
+              Target  Slack"  -targetSlack: Specifies a target value for setup
+              slack, in nanoseconds, for all paths that are part of a specific
+              path group. The value can be positive or negative.
+
+              Note: This column only displays the latest setting, either early
+              or late.
+
+              weight" -weight
+
+              * For high-effort path groups: the software assigns a weight  of
+                "1" to reg2cgate and "2" to reg2reg.
+
+              * All  low-effort  path  groups are assigned a default weight of
+                "0".
+
+              SkewingSlackCons" -skewingSlackConstraint
+
+              view" -view
+
+Related Information
+              * createBasicPathGroups
+
+              * resetPathGroupOptions
+
+              * reportPathGroupOptions
+
+              * The following chapter in the Innovus User Guide
+
+                * Optimizing Timing
+
+                           Fri Apr 04 01:25:37 2025 setPathGroupOptions(25.10)

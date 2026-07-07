@@ -1,0 +1,183 @@
+{
+  "command": "addWellTap",
+  "is_cmd": true,
+  "summary": "添加仅物理性质的阱接触单元",
+  "description": "添加仅物理性质的阱接触单元。阱接触单元是某些工艺库要求的、仅用于物理填充的单元，用于限制电源或地连接与衬底阱之间的电阻。阱接触单元以预放置状态放置。\n* 要删除阱接触单元，请使用 deleteFiller 命令。\n* 要验证阱接触单元的放置、生成由阱接触单元引起的违规标记并创建违规报告，请使用 verifyWellTap 命令。\n当设置了 set_well_tap_mode -tap_function_cells 时，addWellTap 将端接单元视为接触功能单元。",
+  "usage": "addWellTap [-help] [-area <x1> <y1> <x2> <y2>] [-avoidAbutment] [-cell <cellName>] [-cellInterval <microns>] [-channel_offset <offset_value>] [-checkerBoard] [-fixedGap] [-inRowOffset <microns>] [{-check_channel | -vertical_boundary_spacing <spacing_with_well_tap> | -incremental <list_of_cells>}] [-powerDomain <powerDomainName>] [-prefix <prefixName>] [-siteOffset <number_of_sites>] [-skipRow <number>] [-startRowNum <number>] [{{-termination_cell  <termination_cell_list>  | {-top_termination_cell <cell_list>   -bottom_termination_cell    <cell_list>}}    -column_cell <tap_column_cell_list>} [-block_boundary_only {true | false}]] [{-wellCutCell <list_of_well_cut_cells>} [-fixCutCell {true | false]] [-pitch <microns> [-pitchOffset <microns>]] [{-insert_cells <list_of_cells> | -incremental <list_of_cells>}] [-safety_tmr [-safety_tmr_insts <instance_list>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个 addWellTap 参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定边界框的坐标，单位为微米。默认使用包含所有核心行的核心框。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-avoidAbutment",
+      "description": "指定插入的接触单元是否应避免水平和垂直邻接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定技术库中用作阱接触的单元名称。该单元应为 CORE 类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cellInterval",
+      "description": "指定同一行中一个阱接触单元中心到下一个阱接触单元中心的最大距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-channel_offset",
+      "description": "指定通道中接触单元与阻挡之间的偏移值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-checkerBoard",
+      "description": "以棋盘格模式放置阱接触单元，即每隔一行偏移半个间距。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fixedGap",
+      "description": "确保始终维持指定的间距。如果无法在指定的 -cellInterval 处放置阱接触单元，软件不会搜索合法位置，而是继续在下一个位置放置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inRowOffset",
+      "description": "指定第一个阱接触单元相对于站点行起始点的偏移量，单位为微米。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-check_channel",
+      "description": "在通道内插入阱接触单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-vertical_boundary_spacing",
+      "description": "指定与阱接触单元的垂直边界间距。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-incremental",
+      "description": "检查指定的 <list_of_cells> 中的任何单元实例是否在同一行中距离下一个阱接触单元 0.45 倍的 -cellInterval 范围内。如果是，则不在该位置添加阱接触单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-powerDomain",
+      "description": "指定插入阱接触单元的电源域。这是阱接触单元放置并连接到正确电源和地网络的区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefix",
+      "description": "指定已放置阱接触单元的前缀。软件会在前缀后添加下划线和唯一字符串，格式为：prefix_<uniqueString>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-siteOffset",
+      "description": "指定一个偏移值（以站点数为单位），使垂直接触单元能够感知。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-skipRow",
+      "description": "指定在相同模式的两行之间跳过的行数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-startRowNum",
+      "description": "指定必须放置阱接触单元的行号，从设计的底部或左侧开始计数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-termination_cell",
+      "description": "指定可用作端接触单元的单元列表。addWellTap 从此列表中选择最合适的端接触单元，并将其插入阱接触列段的顶部和底部。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_termination_cell",
+      "description": "指定在顶部使用的端接触单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_termination_cell",
+      "description": "指定在底部使用的端接触单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-column_cell",
+      "description": "指定需要端接的阱接触列列表。此参数必须为端接触单元插入指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_boundary_only",
+      "description": "指定是否仅在块边界的阱接触列上插入端接触单元。默认值为 false，即在核心边界行和块边界行都插入端接单元。注意：此参数仅在插入端接单元时有效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-wellCutCell",
+      "description": "指定包含阱切割的单元列表。addWellTap -incremental 流程将此列表中指定的单元视为放置阻挡，因为它们会切割行并修复其中的闩锁违规。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fixCutCell",
+      "description": "修复属于 wellCutCell 列表的所有实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitch",
+      "description": "与 -fixedGap 参数一起使用，为软件提供额外的灵活性，以便在无法在指定位置放置单元时放置阱接触单元。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pitchOffset",
+      "description": "与 -fixedGap 和 -pitch 参数一起使用，为软件提供更大的灵活性。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-insert_cells",
+      "description": "插入混合阱接触单元，并支持 LUP 层和边界层规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-safety_tmr",
+      "description": "在每个 TMR（三重模块冗余）触发器的左右边缘相邻位置放置阱接触单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-safety_tmr_insts",
+      "description": "指定需要相邻放置阱接触单元的实例列表。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

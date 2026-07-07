@@ -1,0 +1,324 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_do_lec(25.10)                                        write_do_lec(25.10)
+
+Name
+       write_do_lec  -  Writes  out  the  dofile  for the Conformal(R) Logical
+       Equivalence Checker tool
+
+Syntax
+       write_do_lec
+
+       [-help]
+
+       [-1801_golden <fileName>]
+
+       [-1801_revised <fileName>]
+
+       [-checkpoint <fileName>]
+
+       [-cpf_golden <fileName>]
+
+       [-cpf_revised <fileName>]
+
+       [-cw_sim <simulationLanguage>]
+
+       [-dft_constraint_file <fileName>]
+
+       [-env_var <envVariables>]
+
+       [-fastelab2gen]
+
+       [-fastgen2fvmap]
+
+       [-fastrtl2elab]
+
+       [-golden_design {rtl|fv_map|<file>}]
+
+       [-gzip_fv_json]
+
+       [-log_file <fileName>]
+
+       [-low_power_analysis]
+
+       [-no_dft]
+
+       [-no_exit]
+
+       [-no_insert_iso_in_dof]
+
+       [-no_lp]
+
+       [-post_compare <fileName>]
+
+       [-post_read_power_intent <fileName>]
+
+       [-pre_compare <fileName>]
+
+       [-pre_exit <fileName>]
+
+       [-pre_read <fileName>]
+
+       [-pre_read_design <fileName>]
+
+       [-pre_read_power_intent <fileName>]
+
+       [-pre_verification_information <fileName>]
+
+       [-revised_design {fv_map|<file>}]
+
+       [-rtl_revised]
+
+       [-sim_lib <simulationLibrary>]
+
+       [-sim_plus_liberty]
+
+       [-smart]
+
+       [-tmp_dir <directoryName>]
+
+       [-top <designName>]
+
+       [-verbose]
+
+       [-write_session <fileName>]
+
+       [-hier  | -flat ] [<output_filename> | >]
+
+       Writes out the dofile for the Conformal(R) Logical Equivalence  Checker
+       tool.
+
+       For   formal   verification  of  the  Innovus-generated  netlists,  the
+       write_do_lec command  generates,  within  Innovus,  the  Conformal  LEC
+       scripts (such as dofile). These scripts are used for equivalence check-
+       ing.  You  can generate a flat or a hierarchical comparison script. The
+       dofile written out by this command  contains  standard  Conformal  flow
+       commands  and  you  will  need to add the DFT constraints if netlist is
+       scan inserted.
+
+       The write_do_lec command creates a verification directory, if does  not
+       already  exist, in which the name mapping information file will be cre-
+       ated. The name mapping file will usually contain the  mapping  informa-
+       tion  of MBIT flops against its split/single bit candidate. By default,
+       the name of this verification directory  is  fv/invs/%s.  You  can  use
+       write_lec_directory_naming_style to change the directory name.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each write_do_lec parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man write_do_lec
+
+       -1801_golden <fileName>
+              Specifies the name of the golden (original) 1801 file.  This op-
+              tion only applies to the IEEE-1801 flow.
+
+       -1801_revised <fileName>
+              Specifies the name of the revised 1801 file that corresponds  to
+              the  current  state  of the design.  This option only applies to
+              the IEEE-1801 flow.
+
+       -checkpoint <fileName>
+              Specifies the name of the checkpoint file to generate.
+
+       -cpf_golden <fileName>
+              Specifies the name of the golden (original) file.
+
+              If omitted, the file will be inferred from the cpf_files  design
+              attribute.
+
+              This option only applies to the CPF flow.
+
+       -cpf_revised <fileName>
+              Specifies the name of the revised CPF file.
+
+              If  you omit this option, the file specified for the -cpf_golden
+              option will be used.
+
+              If you expect name changes in the CPF design objects,  you  must
+              generate  this  file  using the write_power_intent -cpf command.
+              This option only applies to the CPF flow.
+
+       -cw_sim <simulationLanguage>
+              Specifies the language of the simulation models that the Confor-
+              mal Logical Equivalence Checker should use to infer the ChipWare
+              components.
+
+              You can specify any of the following values:
+
+              {V1995|V2001|SV|VHDL1987|VHDL1993}
+
+              Default: Language specified in the read_hdl command.
+
+       -dft_constraint_file <fileName>
+              Sources DFT constraints from the specified file before executing
+              the compare command.
+
+       -env_var <envVariables>
+              Specifies the names and values of UNIX environment variables  to
+              be used for directory and file names in the dofile.
+
+       -fastrtl2elab
+              Generates  an  abbreviated LEC dofile for quick diagnosis of RTL
+              vs elaborated.
+
+       -fastelab2gen
+              Generates an abbreviated LEC dofile for quick diagnosis of elab-
+              orated vs generic.
+
+       -fastgen2fvmap
+              Generates an abbreviated  LEC  dofile  for  quick  diagnosis  of
+              generic vs fv_map.
+
+       <output_filename>
+              Redirects all the output to the specified file.
+
+       -flat  Performs a flattened Conformal LEC comparison.
+
+       -golden_design {rtl|fv_map|<file>}
+              Specifies  the  golden design to compare to. You can specify the
+              following values:
+
+              * rtl: write_do_lec will access the  hdl_filelist  attribute  to
+                use the same set of files that were read into Innovus.
+
+              * fv_map:  write_do_lec will use the netlist automatically writ-
+                ten by Innovus during mapping (syn_map).
+
+              * <file>: Specifies the UNIX path to an alternative  golden  de-
+                sign.
+
+              If  the  file  was loaded into Innovus (using either read_hdl or
+              read_netlist), the tool knows the language format of  the  file.
+              Otherwise,  the tool assumes that the format of the file is Ver-
+              ilog-1995.
+
+              Default: rtl
+
+       -gzip_fv_json
+              Specifies to compress the implementation information file.
+
+              This option is available with Conformal 19.10-s300 or newer ver-
+              sions.
+
+       -hier  Specifies whether to do hierarchical LEC comparison or not.
+
+       -log_file <fileName>
+              Specifies the name of the Conformal LEC logfile.
+
+       -low_power_analysis
+              Specifies to add the Conformal Low Power commands to compare the
+              power domains between the golden and revised designs. Power  in-
+              tent must be present.
+
+       -no_dft
+              Prevents that DFT constraints are written to the dofile.
+
+       -no_exit
+              Does not add the exit command to the end of the dofile.
+
+       -no_insert_iso_in_dof
+              Prevents  that  the -insert_isolation option is added to the LEC
+              commit power intent commands for the golden and  revised  design
+              in the generated dofile.
+
+              Use this option when you write out a dofile before the power in-
+              tent  is committed in Innovus (before using the commit_power_in-
+              tent command).
+
+       -no_lp Prevents verification of power intent information.
+
+       -post_compare <fileName>
+              Specifies a dofile to be sourced from the LEC dofile just  after
+              the comparison.
+
+       -post_read_power_intent <fileName>
+              Specifies  a dofile to be sourced from the LEC dofile just after
+              read_power_intent.
+
+       -pre_compare <fileName>
+              Specifies an extra dofile that must  be  sourced  from  the  LEC
+              dofile  before the LEC set system mode lec or write hier_compare
+              dofile command.
+
+       -pre_exit <fileName>
+              Specifies an extra dofile that must  be  sourced  from  the  LEC
+              dofile before the LEC exit command.
+
+       -pre_read <fileName>
+              Specifies  an  extra  dofile  that  must be sourced from the LEC
+              dofile before the library and design are read.
+
+       -pre_read_design <fileName>
+              Specifies a dofile to be sourced from the LEC dofile just before
+              reading the design.
+
+       -pre_read_power_intent <fileName>
+              Specifies a dofile to be sourced from the LEC dofile just before
+              read_power_intent.
+
+       -pre_verification_information <fileName>
+              Specifies a dofile to be sourced from the LEC dofile just before
+              setting the verification information.
+
+       -revised_design {fv_map|<file>}
+              Specifies the revised design to compare to  the  golden  design.
+              You can specify the following values:
+
+              * fv_map:  write_do_lec will use the netlist automatically writ-
+                ten by Innovus during mapping (syn_map).
+
+              * <file>: Specifies the UNIX path to the revised design.
+
+       -rtl_revised
+              Specifies that the revised design is DFT inserted back-annotated
+              RTL.
+
+       -sim_lib <simulationLibrary>
+              Specifies the simulation library in Verilog 1995.
+
+       -sim_plus_liberty
+              Specifies that the simulation library is an addition to the syn-
+              thesis library.
+
+       -smart Enables advanced SMART Lec capabilities.
+
+              Requires a Conformal SMARTLec license.
+
+       -tmp_dir <directoryName>
+              Specifies the name of the directory to which the generated files
+              must be written.
+
+       -top <designName>
+              Specifies the name of the top-level design in Innovus.
+
+       -verbose
+              Generates a dofile with verbose reporting.
+
+       -write_session <fileName>
+              Specifies the filename to save the LEC session.
+
+Examples
+              * The following command will source the extra_settigs.do  dofile
+                before the compare command in the sample.do file.
+
+                write_do_lec -revised revised.v -pre_compare extra_settings.do
+                > sample.do
+
+              * The  following  command  generates a dofile that will point to
+                the System Verilog simulation models of  all  ChipWare  compo-
+                nents used in the design.
+
+                write_do_lec  -revised_design  ../netlist/top_nl.v -cw_sim sv\
+                     -log_file cw_sim_sv.log > cw_sim.sv_lec.do
+
+Related Information
+              * write_lec_files
+
+              * write_lec_directory_naming_style
+
+              * write_name_mapping
+
+                           Fri Apr 04 01:25:37 2025        write_do_lec(25.10)

@@ -1,0 +1,171 @@
+{
+  "command": "assignPtnPin",
+  "is_cmd": true,
+  "summary": "在分区提交前分配分区引脚",
+  "description": "assignPtnPin 命令用于在分区被提交之前分配分区引脚。默认情况下，运行此命令后，分配的引脚将处于“已放置”状态。可以通过使用 -markFixed 选项运行此命令来指定“固定”状态。该命令不在本地上下文中对齐引脚，从而避免在其他场景下出现错位，并最大限度地减少远见网络对（双引脚网络）之间的最大错位影响。例如，在主/克隆引脚分配中，由于克隆引脚遵循主分区的位置，因此主分区上引脚的位置被确定，以便克隆上的引脚也能在克隆上对齐。运行 saveFPlan 命令将平面布局中的引脚分配保存到名为 fpFileName.fp.ptnpin 的单独文件中，该文件包含在主 fpFileName.fp 平面布局文件中。默认情况下，assignPtnPin 命令将所有分区引脚的深度设置为：MINAREA/引脚宽度。这确保了满足最小面积规则。但是，如果对这些引脚指定了任何与引脚大小相关的约束，则用户指定的引脚大小将具有更高的优先级。assignPtnPin 命令内部调用 reportUnalignedNets 命令在命令行生成摘要报告。分配引脚时，assignPtnPin 命令不会检查已放置引脚与紧邻分区围栏（设计边界）内的对象（如宏、标准单元等）形状之间的违规。如果围栏（设计边界）到内核的距离为零，则可能导致 DRV 违规。您可以在指定分区、放置设计以及运行或加载布线信息后使用此命令。如果没有可用的布线信息，Innovus 软件将使用投影引脚分配。但是，放置并不是引脚分配的必要步骤。建议进行放置以获得更好的 QoR。注意：* assignPtnPin 命令在引脚分配期间将首选布线层属性视为软约束，并报告具有某些属性分配给它们的网络。它还遵守引脚组或网络组的禁止布线间距约束。* 此命令仅分配信号引脚。电源和接地引脚在分区期间创建。但是，此引脚优化遵循电源条带和跟随引脚。* 此命令为黑盒以及常规分区分配引脚。如果在具有一个或多个引脚具有单个 LEF 端口但 LEF 端口内有多个形状的黑盒上运行此命令，则该命令将删除这些多个形状并创建单个形状。如果在具有一个或多个引脚具有多个 LEF 端口的黑盒上运行此命令，则第一个 LEF 端口将按照命令处理，其余 LEF 端口将保持不变。* assignPtnPin 命令执行其他分区内分区的自动引脚分配。它放置嵌套分区的引脚，类似于单层分区。* 在自顶向下流程中，assignPtnPin 命令仅提升由 setPromotedMacroPin 命令提升的引脚列表中的信号引脚。* assignPtnPin 命令遵循包含来自多个缓冲器链的所有网络的网络/引脚组。此类组可以通过总线引导流程、穿通插入流程生成，也可以是用户创建的。它放置此类网络的引脚以实现更好的引脚对齐并提高 QoR。* assignPtnPin 命令可以将引脚放置在连接到网表中定义的 PG 电源的分区上。注意：您可以使用 check_design -type pin_assign 命令在运行 assignPtnPin 命令之前检测潜在问题并纠正设计。",
+  "usage": "assignPtnPin [-help] [-basedOnMasterOnly] [-blackbox] [-debugPinAll] [-debugPinFile <fileName>] [-dumpVirtualPinGuide] [-ignoreAbuttedCheck] [-improvePinOrder] [-improveSI] [-layerPriority {layeridList}] [-markFixed] [-printPinMovementStatistics] [-skipAutoBusBitOrder] [-skipPlaceExternalUnconnectedPin] [-unplacedOnly] [<partitionName> | {{{-ptn <partitionName> {-pin {pinName list}}} | {-pin_file  <fileName>  [-exclude_ptn  <ptnName>]} | {-exclude_pin_file <ptnName>}} [-moveFixedPin ] [ -ignore_group_pins ]}] [-alignFeedThruPinsOptWithMasterClone ] [-autoBusGroup ] [-enforceRoute | -enforceRouteLegal | -enforceFlyline ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 assignPtnPin 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-basedOnMasterOnly",
+      "description": "指定对于具有分区克隆的设计，命令应仅考虑分区主分区，并将主分区分配用于所有克隆。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-blackbox",
+      "description": "分配黑盒的引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-debugPinAll",
+      "description": "指定将调试所有引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-debugPinFile",
+      "description": "指定包含用于调试的分区或网络的引脚列表的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dumpVirtualPinGuide",
+      "description": "写入网络组和引脚组的虚拟引脚引导。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignoreAbuttedCheck",
+      "description": "启用时，引脚分配期间忽略邻接检查。这导致在邻接设计上更快的引脚分配。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-improvePinOrder",
+      "description": "减少引脚对齐期间的飞线交叉。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-improveSI",
+      "description": "通过放置引脚时阻塞走线来避免信号完整性问题，以防止导线重叠。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layerPriority",
+      "description": "指定在引脚分配期间应优先使用的金属层，以增加优先层中的对齐。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-markFixed",
+      "description": "指定所有引脚将具有固定状态。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-printPinMovementStatistics",
+      "description": "打印最终引脚位置与网络和分区边缘交点偏差（以微米为单位）的摘要。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipAutoBusBitOrder",
+      "description": "跳过自动将总线引脚放置在一起。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipPlaceExternalUnconnectedPin",
+      "description": "跳过放置未连接到分区外部的分区引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unplacedOnly",
+      "description": "仅分配未放置的引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ptn",
+      "description": "指定用于引脚分配的分区名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定要在相应分区中分配的引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_file",
+      "description": "指定文件中分区的引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_ptn",
+      "description": "指定要从引脚文件中排除的分区。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_pin_file",
+      "description": "指定文件中要排除的分区引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-moveFixedPin",
+      "description": "如果使用此参数，具有固定状态的指定引脚也可以移动。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_group_pins",
+      "description": "避免放置整个引脚组。启用此参数后，所选引脚分配期间将忽略引脚组和网络组引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-alignFeedThruPinsOptWithMasterClone",
+      "description": "指定应放置引脚，以便它们在不同分区上跨主/克隆分区上的缓冲器对齐。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoBusGroup",
+      "description": "指定总线将自动分组。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enforceRoute",
+      "description": "指定引脚分配完全遵循早期全局布线生成的布线结果，不考虑任何引脚约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enforceRouteLegal",
+      "description": "指定在引脚分配期间，引脚仅放置在靠近布线交叉点但合法的位置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enforceFlyline",
+      "description": "指定引脚分配完全遵循飞线，不考虑任何引脚约束。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

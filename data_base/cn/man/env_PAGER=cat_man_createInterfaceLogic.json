@@ -1,0 +1,81 @@
+{
+  "command": "createInterfaceLogic",
+  "is_cmd": true,
+  "summary": "创建包含指定提取级别ILM文件的目录，用于时序、SI或所有模型",
+  "description": "createInterfaceLogic命令创建一个仅包含接口路径（从设计的I/O端口到第一级时序实例的路径）的简化实例集。该命令生成ILM（Interface Logic Model）文件，用于特定模型类型（如时序、信号完整性或所有模型），并支持MMMC（多模式多角）流程，ILM模型将基于约束模式生成。它会自动按照规则（顶层模块名+时间戳+$+模块名）修改模块名称。",
+  "usage": "createInterfaceLogic [-help] [-allowIlmEco] [-ignorePorts <ListOfPorts>] [-keepAll][-keepSelected] [-modelType {timing si all}] [-noInterClockPath] [-overwrite] [-removePowerGround] [-dir <dirName> | -cellview {lib | cell | view}] [ [-optStage {preCTS postCTS}] ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowIlmEco",
+      "description": "允许在ILM块内进行ECO更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignorePorts",
+      "description": "指定端口列表，这些端口及其关联的起始或终止于这些端口的接口路径将不包含在ILM模型中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keepAll",
+      "description": "保留块的完整逻辑，因此不基于约束或路径组进行任何逻辑修剪。注意：由于保留了完整逻辑，所有ILM视图（时序、CTS和SI）共享相同的模型数据。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepSelected",
+      "description": "在创建ILM时，保留所有选定的实例和网络（除了通常保留的之外）。选定的实例是驱动选定网络的实例。可以使用selectInst或selectNet命令选择实例或网络，然后使用createInterfaceLogic -keepSelected。默认情况下，不保留额外的实例和网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-modelType",
+      "description": "指定要创建的ILM模型类型。默认值：all。all：确保写入所有模型。timing：确保仅为非SI基础的时序、优化或时钟树命令写入时序模型。si：确保仅写入可用于SI基础时序和优化命令的SI模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noInterClockPath",
+      "description": "当ILM中的非边界触发器具有最大时钟延迟时，最小化上层CTS的时钟延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-overwrite",
+      "description": "覆盖现有文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-removePowerGround",
+      "description": "移除PG（电源地）端口、PG网络、PG引脚连接，并将信号引脚上的PG网络连接替换为1'b1或1'b0。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dir",
+      "description": "指定ILM文件将保存的输出目录名。如果设计不是OA设计，则必须指定此选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cellview",
+      "description": "为生成的ILM指定OA单元视图信息（库 | 单元 | 视图）。-cellview选项不能在非OA流程中使用。对于非OA流程，应使用-dir选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-optStage",
+      "description": "指定优化阶段，preCTS或postCTS。此选项应在创建ILM和flexILM时都指定。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

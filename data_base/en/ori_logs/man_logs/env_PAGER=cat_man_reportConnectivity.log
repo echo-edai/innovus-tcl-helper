@@ -1,0 +1,224 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportConnectivity(25.10)                            reportConnectivity(25.10)
+
+Name
+       reportConnectivity  -  Reports  the  connectivity of pins including I/O
+       pins, partition pins, hpins, hterms, hinstterms, and instterms
+
+Syntax
+       reportConnectivity
+
+       [-help]
+
+       <pinName>
+
+       [-level <integer>]
+
+       [-pinOnly]
+
+       Reports the connectivity of pins including I/O  pins,  partition  pins,
+       hpins, hterms, hinstterms, and instterms.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reportConnectivity command parameter.  For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command: man reportConnectivity
+
+       -level <integer>
+              Specifies the number of levels to be printed in the report.
+
+              Note: The level cannot be set to 0.
+
+              Default: 1
+
+              Data_type: int, optional
+
+       <pinName>
+              Specifies the name of the pin whose connectivity is  to  be  re-
+              ported.
+
+              Data_type: string, required
+
+       -pinOnly
+              Prints  a  concise connectivity report of partition pins and I/O
+              pins from the start point
+
+              Data_type: bool, optional
+
+       The connectivity report uses the following symbols:
+
+       -->    When going inside child hinst
+
+       <--    When going to parent hinst
+
+              |" When the level of both pins is same
+
+       assign When there is assign statement in netlist
+
+Example
+              * The following command reports the connectivity of  the  speci-
+                fied ibias pin.
+
+                reportConnectivity ibias
+
+                The following is the resulting report.
+
+                  1 io       input  -        ibias
+
+                  2 hterm    input  -->      IOPADS_INST/ibias
+
+              * The  following  command reports the connectivity of the speci-
+                fied ibias pin up to level 2:
+
+                 reportConnectivity ibias -level 2
+
+                The following is the resulting report.
+
+                  1 io       input  -        ibias
+
+                  2 hterm    input  -->      IOPADS_INST/ibias
+
+                  3 instterm input  -->      IOPADS_INST/Pibiasip/PAD
+
+              * The following command reports the connectivity of  the  speci-
+                fied ibias pin with a concise connectivity report of partition
+                pins and I/O pins :
+
+                reportConnectivity ibias -level 2 -pinOnly
+
+                The following is the resulting report.
+
+                  1 io       input  -          ibias
+
+                  2 io       output assign     port_pad_data_out[15]
+
+                  3 io       output assign     tdigit_flag
+
+                  4 io       output assign     tdigit[7]
+
+                  5 io       output assign     tdigit[3]
+
+                  6 io       output assign     tdigit[4]
+
+                  7 io       output assign     tdigit[5]
+
+                  8 io       output assign     tdigit[6]
+
+                  9 io       output assign     tdigit[2]
+
+                 10 io       output assign     tdigit[1]
+
+                 11 io       output assign     tdigit[0]
+
+                 12 io       output assign     scan_out_2
+
+                 13 io       output assign     port_pad_data_out[14]
+
+                 14 io       output assign     port_pad_data_out[10]
+
+                 15 io       output assign     port_pad_data_out[1]
+
+                 16 io       output assign     port_pad_data_out[0]
+
+                 17 io       output assign     port_pad_data_out[2]
+
+                 18 io       output assign     port_pad_data_out[4]
+
+                 19 io       output assign     port_pad_data_out[3]
+
+                 20 io       output assign     port_pad_data_out[7]
+
+                 21 io       output assign     port_pad_data_out[6]
+
+                 22 io       output assign     port_pad_data_out[5]
+
+                 23 io       output assign     port_pad_data_out[8]
+
+                 24 io       output assign     port_pad_data_out[11]
+
+                 25 io       output assign     port_pad_data_out[9]
+
+                 26 io       output assign     port_pad_data_out[12]
+
+                 27 io       output assign     port_pad_data_out[13]
+
+                 28 io       output assign     scan_out_1
+
+                 29 io       output assign     vcop
+
+                 30 io       output assign     vcom
+
+              * The  following  command reports the connectivity of the speci-
+                fied i1/p1_buff2/A instterm up to level 10:
+
+                reportConnectivity i1/p1_buff2/A -level 10
+
+                The following is the resulting report.
+
+                  1 instterm input  -        i1/p1_buff2/A
+
+                  2 instterm output |          i1/p1_buff2/Y
+
+                  3 hterm    input  |            i1/p01/in
+
+                  4 hterm    output assign         i1/p01/out
+
+                  5 ptnpin   output <--              i1/out
+
+                  6 instterm input  |                  top_buff2/A
+
+                  7 instterm output |                    top_buff2/Y
+
+                  8 instterm input  |                      top_buff3/A
+
+                  9 instterm output |                        top_buff3/Y
+
+                 10 io       output <--                        out
+
+              * The following command reports the connectivity of  the  speci-
+                fied i1/p01/out hinstterm up to level 10:
+
+                reportConnectivity i1/p01/out -level 10
+
+                The following is the resulting report.
+
+                  1 hterm    output -        i1/p01/out
+
+                  2 ptnpin   output <--        i1/out
+
+                  3 instterm input  |            top_buff2/A
+
+                  4 instterm output |              top_buff2/Y
+
+                  5 instterm input  |                top_buff3/A
+
+                  6 instterm output |                  top_buff3/Y
+
+                  7 io       output <--                  out
+
+              * The  following  command reports the connectivity of the speci-
+                fied out I/O pin up to level -5:
+
+                reportConnectivity out -level -5
+
+                The following is the resulting report.
+
+                  1 io       output -                out
+
+                  2 instterm output -->            top_buff3/Y
+
+                  3 instterm input  |            top_buff3/A
+
+                  4 instterm output |          top_buff2/Y
+
+                  5 instterm input  |        top_buff2/A
+
+                  6 ptnpin   output |      i1/out
+
+Related Information
+              * assignPtnPin
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025  reportConnectivity(25.10)

@@ -1,0 +1,163 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setDontUse(25.10)                                            setDontUse(25.10)
+
+Name
+       setDontUse  -  Sets  a dont_use attribute on a cell, prohibiting timing
+       optimization commands from using this cell during optimization
+
+Syntax
+       setDontUse
+
+       [-help]{{<cellName ><value>} | {-reset}}
+
+       [-hinst <hinstName>[-reset]]
+
+       Sets a dont_use attribute on a cell,  prohibiting  timing  optimization
+       commands  from using this cell during optimization. Optionally, you can
+       specify a library that contains the cell. Using this command  overrides
+       the  library  and/or timing constraints. The dont_use attribute you set
+       remains persistent through save and restore operations.
+
+       If you set the dont_use attribute on a cell whose dont_use attribute is
+       already set, the software issues a warning message, for example:
+
+       setDontUse buff1 true
+
+       Setting BUFF1 as a don't use cell
+
+       setDontUse buff1 true
+
+       Warning: Cell BUFF1 already has a dont_use attribute
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each setDontUse parameter. For a detailed descrip-
+              tion  of the command and all of its parameters, use the man com-
+              mand:
+
+              man setDontUse
+
+       <cellName>
+              Specifies the cell to constrain. To choose a cell in a  specific
+              library,  specify  <libName/cellName>.  You can use wildcards to
+              specify cell names.
+
+       -hinst <hinstName>
+              Specifies the hierarchical module instance names  on  which  the
+              "don't  use" setting should be applied. This parameter is speci-
+              fied with the <cellName> and the <value> parameters.
+
+              setDontUse -hinst <cellName value>
+
+              The following scenarios are applicable to the use of this  para-
+              meter:
+
+              * The  hinst  setting  overrides  the non-instance specific set-
+                tings. For example:
+
+                setDontUse -hinst Inst1 BUFX1 false
+
+                Where Inst1 is the instance name, BUFX1 is the cell name,  and
+                the value is set to false
+
+                setDontUse BUFX1 true
+
+                Where BUFX1 is the cell name and the value is set to true
+
+                In the above example, the first command will override the sec-
+                ond  command  and  so the cell, BUFX1 is usable within the in-
+                stance, Inst1, but not elsewhere within the design.
+
+              * The more specific definition always takes precedence irrespec-
+                tive of the sequence of commands. For example:
+
+                Setting 1
+
+                setDontUse -hinst Inst1/Inst2 BUFX1 true
+
+                setDontUse -hinst Inst1 BUFX1 false
+
+                In Inst1/Inst2, the dont_use attribute of BUFX1 is true
+
+                Setting 2
+
+                setDontUse -hinst Inst1 BUFX1 false
+
+                setDontUse -hinst Inst1/Inst2 BUFX1 true
+
+                In Inst1/Inst2, the dont_use attribute of BUFX1 is also true
+
+                So, the above two settings are equivalent.
+
+              * When using this parameter, complete instance names  should  be
+                specified. Wildcards are not supported.
+
+              * The  true or false value specified for cells using the setDon-
+                tUse command can be reset by using the -reset parameter along-
+                with the -hinst parameter.
+
+       -reset This parameter is used with the -hinst  parameter.  When  speci-
+              fied, it removes all dont_use constraints attached to the speci-
+              fied hierarchical module instance.
+
+              setDontUse -hinst A BUF1 true
+
+              setDontUse -hinst A -reset
+
+              The  above command resets the dont_use attribute on cell BUF1 in
+              hinst A.
+
+              Note: The setDontUse -hinst <hinstName>  -reset  command  clears
+              the  "don't  use"  settings  for  the specified hierarchical in-
+              stances but does not clear the "don't use" settings for any sub-
+              hierarchical instances inside  the  specified  hierarchical  in-
+              stances. For example:
+
+              setDontUse -hinst A BUF1 true
+
+              setDontUse -hinst A/B BUF2 true
+
+              setDontUse -hinst A -reset
+
+              The above sequence of commands resets the dont_use constraint on
+              BUF1 but does not reset the dont_use constaint on BUF2.
+
+              Note:  The  standard  design-wide dont_use constraints from SDC,
+              .lib, and the setDontUse command without  the  -hinst  parameter
+              will still apply.
+
+       <value>
+              Specifies  whether  to set or unset the dont_use attribute: true
+              sets the dont_use attribute on the specified cell, and false un-
+              sets it.
+
+Command Order
+       Use this command before you run optDesign.
+
+Examples
+              * The following commands set buff1  and  buff2  as  "don't  use"
+                cells:
+
+                setDontUse buff1 true
+
+                Setting BUFF1 as a don't use cell
+
+                setDontUse buff2 true
+
+                Setting BUFF2 as a don't use cell
+
+              * The  following  command sets AND2 in library libSlow as "don't
+                use" cells:
+
+                setDontUse libSlow/AND2 true
+
+                Setting libSlow/AND2 as a don't use cell
+
+Related Information
+              * optDesign
+
+              * The following topic in the Innovus User Guide
+
+                     * Using the Footprintless Flow
+
+                           Fri Apr 04 01:25:37 2025          setDontUse(25.10)

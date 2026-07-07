@@ -1,0 +1,193 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_input_delay(25.10)                                  set_input_delay(25.10)
+
+Name
+       set_input_delay  - Defines the arrival time relative to a clock edge on
+       input ports or internal input pins
+
+Syntax
+        set_input_delay
+
+       [-clock <clock_name>]
+
+       [-clock_fall]
+
+       [-rise] [-fall]
+
+       [-max] [-min]
+
+       [-add_delay]
+
+       [-network_latency_included]
+
+       [-source_latency_included]
+
+       [-reference_pin <pin_name>]
+
+       [-level_sensitive]
+
+       <delay_value>
+
+       <port_or_pin_list>
+
+       Defines the arrival time relative to a clock edge on input ports or in-
+       ternal input pins. This input path delay models the delay from  an  ex-
+       ternal register to an input port of the module.
+
+       If  the input delay is not specified on an input port, it is assumed to
+       be zero.
+
+Parameters
+       -add_delay
+              Adds delay information to the existing input  delay.  The  addi-
+              tional  delay  information can be for multiple paths relative to
+              different clocks or clock edges leading to an input port or  in-
+              ternal  input pins. If you do not use the -add_delay option, the
+              software uses the last set_input_delay related  to  a  pin  when
+              there are multiple set_input_delay statements for the same pin.
+
+       -clock <clock_name>
+              Specifies  that  the delay is relative to the rising edge of the
+              given clock. If you do not specify the -clock parameter, the de-
+              lay is relative to time zero. To specify a delay relative to the
+              falling edge of the clock, use the -clock_fall option  with  the
+              -clock option.
+
+              When  you  specify multiple clocks, an error occurs and the con-
+              straint is ignored.
+
+       -clock_fall
+              Specifies that the delay is relative to the falling edge of  the
+              clock.  You  must specify the -clock parameter with this parame-
+              ter.
+
+              Default: Delay is relative to the rising edge.
+
+              You cannot specify the -clock_fall parameter without the  -clock
+              parameter.
+
+       <delay_value>
+              Specifies the value for the path delay.
+
+       -fall  Specifies that the input delay refers to the falling edge of the
+              signal  at  specified  ports  or pins. If you do not specify the
+              -fall option, the input delay applies to both the edges.
+
+       -level_sensitive
+              Models input delay that is launched by a positive  level  sensi-
+              tive latch.
+
+              Use  the  -clock  parameter  to model a positive level sensitive
+              latch, or the -clock_fall parameter to model  a  negative  level
+              sensitive latch.
+
+              You  cannot  specify  the -level_sensitive parameter without the
+              -clock parameter.
+
+       -max   Specifies that the delay refers to the setup analysis. If you do
+              not specify the -max parameter, the input delay applies to  both
+              setup and hold analysis.
+
+              Note: If for a specific clock the maximum delay is less than the
+              minimum delay, then during analysis the software makes the maxi-
+              mum delay equal to the minimum delay.
+
+       -min   Specifies  that the delay refers to the hold analysis. If you do
+              not specify the -min parameter, the input delay applies to  both
+              setup and hold analysis.
+
+       -network_latency_included
+              Specifies  that the clock network latency should not be added to
+              the input delay value. If you do not specify  this  option,  the
+              clock network latency of the related clock is added to the input
+              delay value. This parameter has no effect if the specified clock
+              is in propagated mode.
+
+       <port_or_pin_list>
+              Specifies   a   list   of   input   port   or   pin  names.  The
+              port_or_pin_list argument can be a collection.
+
+       -reference_pin <pin_name>
+              Adds source and network latency of the specified  reference  pin
+              to  the input delay value in propagated mode. A reference pin is
+              a leaf pin in the fanout cone of the clock source of  the  clock
+              that you specify using the -clock parameter.
+
+              You  cannot use the -reference_pin parameter to specify multiple
+              pins. If specified, the command issues a warning and accepts the
+              first pin.
+
+              You cannot use  the  -reference_pin  parameter  with  the  -net-
+              work_latency_included or -source_latency_included parameters.
+
+              You  cannot  use the -reference_pin parameter to specify hierar-
+              chical pins.
+
+       -rise  Specifies that input delay refers to the rising edge of the sig-
+              nal at the specified ports or pins. If you do  not  specify  the
+              -rise option, the input delay applies to the both edges.
+
+       -source_latency_included
+              Specifies  that  the clock source latency should not be added to
+              the input delay value.
+
+              With different delay values for -rise/-fall and -min/-max,  only
+              the  last specified combination of -network_latency_included and
+              -source_latency_included parameters is  honored.  The  specified
+              combination can be one of the following:
+
+              a) Either -network_latency_included or -source_latency_included
+
+              b) Both of these
+
+              c) None of these
+
+Examples
+              * The  following  command sets an input delay of 1.0 for all in-
+                puts in the current design relative to the rising edge of  the
+                CLK1 clock:
+
+                set_input_delay -clock CLK1 1.0 [all_inputs]
+
+              * The following command sets an input delay of 2.0 for the input
+                IN1  port  relative  to  the  falling  edge of the CLK1 clock:
+                set_input_delay -clock CLK1 2.0 -clock_fall { IN1 }
+
+              * The following example shows an input IN1  port  that  is  con-
+                strained  by  both the rising edge and the falling edge of the
+                same CLK1 clock. The -add_delay  option  prevents  the  second
+                set_input_delay  statement  from overwriting the first set_in-
+                put_delay:
+
+                set_input_delay -clock CLK1 1.0 { IN1 }
+
+                set_input_delay -clock CLK1 -clock_fall -add_delay 2.0 { IN1 }
+
+              * When multiple -min and -max values are specified  relative  to
+                the same clock using the -add_delay option at the same port or
+                pin,  the worst case value for each case is used. For the -min
+                case the smallest value is retained, and for the -max case the
+                largest value is retained. For example, the input delay  value
+                of 1.0 is stored for the shortest path and the value of 4.0 is
+                stored for the longest path in the following example:
+
+                set_input_delay -min -clock CLK1 1.0 { IN1 }
+
+                set_input_delay -min -clock CLK1 2.0 -add_delay { IN1 }
+
+                set_input_delay -max -clock CLK1 3.0 -add_delay { IN1 }
+
+                set_input_delay -max -clock CLK1 4.0 -add_delay { IN1 }
+
+Related Information
+              * all_inputs
+
+              * create_clock
+
+              * report_ports
+
+              * set_load
+
+              * set_output_delay
+
+                           Fri Apr 04 01:25:37 2025     set_input_delay(25.10)

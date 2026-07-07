@@ -1,0 +1,77 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addFillerGap(25.10)                                        addFillerGap(25.10)
+
+Name
+       addFillerGap  -  Moves placed standard cell instances to create gaps so
+       that filler cells can be added
+
+Syntax
+       addFillerGap
+
+       <minGap >
+
+       [-effort {none | low | medium | high}]
+
+       [-radius <micron>]
+
+       Moves placed standard cell instances to  create  gaps  so  that  filler
+       cells  can  be added. Tries to move cells to create a gap of the speci-
+       fied size. If enough space is not available,  moves  cells  until  they
+       touch  each  other.  If a gap already exists, and it is larger than the
+       specified size, the command does not move cells to make it smaller.
+
+       By default, this command deletes all routing, because the routing is no
+       longer valid due to the movement of the cells. To override this  behav-
+       ior, specify the following command:
+
+       setPlaceMode -place_detail_preserve_routing true
+
+       This command has the following limitations:
+
+              * It does not moved FIXED cells.
+
+              * It does not guarantee to that all gaps will be larger than the
+                specified minimum gap size.
+
+       Use this command after placement and before routing.
+
+Parameters
+       <minGap>
+              Specifies  the  minimum-size  gap  in which a filler cell can be
+              added. Unit is micron.
+
+       -effort {none | low| medium | high}
+              Specifies the effort the command needs to spend for honoring the
+              given gap constraint.
+
+              * none effort specifies that no standard cell is moved for  hon-
+                oring the giving gap constraint.
+
+              * low  effort  specifies  that only single height standard cells
+                can be moved within the same row.
+
+              * medium effort specifies that only single height standard cells
+                can be moved across the rows.
+
+              * high effort specifies that the standard  cells  can  be  moved
+                across  rows,  and  double  height standard cells can be moved
+                within the same row.
+
+              Default: low
+
+       -radius <micron>
+              Specifies the searching radius when solving the  minimum  filler
+              gap.
+
+              Default: 16
+
+Example
+       The  following command moves standard cells within a row to create gaps
+       of at least two microns between the cells:
+
+       addFillerGap 0.168
+
+Related Information
+              * setPlaceMode
+
+                           Fri Apr 04 01:25:37 2025        addFillerGap(25.10)

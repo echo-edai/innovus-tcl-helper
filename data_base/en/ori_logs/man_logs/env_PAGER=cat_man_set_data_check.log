@@ -1,0 +1,125 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_data_check(25.10)                                    set_data_check(25.10)
+
+Name
+       set_data_check - Sets data-to-data checks using the specified values of
+       setup and hold time
+
+Syntax
+       set_data_check
+
+       [-help]
+
+       <<check_value>>
+
+       [-clock <<clock_object>>]
+
+       [-hold]
+
+       [-setup]
+
+       {-from   <<pin_or_port_list>>   |   -rise_from  <<pin_or_port_list>>  |
+       -fall_from <<pin_or_port_list>>}
+
+       {-to <<pin_or_port_list>> | -rise_to  <<pin_or_port_list>>  |  -fall_to
+       <<pin_or_port_list>>}
+
+       Sets  data-to-data  checks using the specified values of setup and hold
+       time. Data-to data checks are non-sequential checks  that  constrain  a
+       data  signal  with  respect  to another data signal. The reference (re-
+       lated) delay is defined by the -from pin/port and the target(s) by  the
+       -to pin/port. Note that these need not to be on the same component.
+
+       In a normal sequential check, a data signal is constrained with respect
+       to a clock signal. In a sequential setup, the clock is incremented by a
+       cycle between launch (-from) and capture (-to). In contrast, a data-to-
+       data  setup  check is performed on the same edge as the launch. A clock
+       can be specified to refine the triggering condition  of  the  reference
+       signal.  You  can  use the set_multicycle_path constraint to adjust the
+       cycle accounting rules.
+
+Parameters
+       -clock <clock_object>
+              Specifies the name of the clock that triggers the data event for
+              the reference (-from) pin.
+
+              In the case where there are multiple data  events  triggered  by
+              different clock phases arriving at the -from pin, the -clock pa-
+              rameter  allows  you  to specify which data event should be used
+              for the "related pin" side of the timing check.
+
+       {-from <<pin_or_port_list>> | -rise_from <<pin_or_port_list>> |
+       -fall_from <<pin_or_port_list>>}
+              Specifies the pins or ports that are set  as  related  pins  for
+              data-to-data checks.
+
+              The <pin_or_port_list> argument can contain either object IDs or
+              hierarchical names relative to the current module.
+
+              Use only one -from, -rise_from, or -fall_from parameter per com-
+              mand.
+
+              By  default,  the -from parameter checks both the rising and the
+              falling edges.
+
+              Using -rise_from parameter checks at the rising edge of the sig-
+              nal on the from pins.
+
+              Using -fall_from parameter checks at the  falling  edge  of  the
+              signal on the from pins.
+
+              Note: You cannot use the -from parameter to specify multiple ob-
+              jects.
+
+       -setup | -hold
+              Specifies  whether  the  data  check  value is for setup or hold
+              check. If you do not specify either -setup or -hold option,  the
+              value applies to both setup and hold.
+
+       {-to <<pin_or_port_list>> | -rise_to <<pin_or_port_list>> | -fall_to
+       <<pin_or_port_list>>}
+              Specifies the pins or ports that are set as constrained pins for
+              data-to-data checks.
+
+              The <pin_or_port_list> argument can contain either object IDs or
+              hierarchical names relative to the current module.
+
+              Use only one -to, -rise_to, or -fall_to parameter per command.
+
+              By default, the -to parameter constrains both the rising and the
+              falling edges.
+
+              Using  -rise_to parameter constrains the rising edge of the sig-
+              nal on the to pins.
+
+              Using -fall_to parameter constrains the falling edge of the sig-
+              nal on the to pins.
+
+       <check_value>
+              Specifies the value of the setup or hold time for the check.
+
+Examples
+              * The following example demonstrates how the set_data_check com-
+                mand can be used to constrain signals:
+
+                Consider two control signals, say XE and SE, going to a  macro
+                block.  Both of these are derived from the same state machine,
+                and hence launched from the same clock domain. You want XE  to
+                reach the macro earlier than SE. The set_data_check constraint
+                can  meet  this design intent, by applying data checks on non-
+                sequential signals, without setting path specific limits using
+                the following command:
+
+                set_data_check  -from  [get_pins   {sub/SE}]   -to   [get_pins
+                {sub/XE}] -setup 0.5
+
+                The set_data_check command establishes data-to-data checks us-
+                ing  similar  ideas  of  setup  and hold time as in sequential
+                checks, with the -from parameter denoting the reference signal
+                (the clock in a traditional setup/hold timing check), and  the
+                -to parameter indicating the signal being constrained.
+
+Related Information
+              * reset_data_check
+
+                           Fri Apr 04 01:25:37 2025      set_data_check(25.10)

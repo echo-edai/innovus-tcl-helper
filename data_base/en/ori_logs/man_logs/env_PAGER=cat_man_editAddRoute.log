@@ -1,0 +1,116 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editAddRoute(25.10)                                        editAddRoute(25.10)
+
+Name
+       editAddRoute - Creates a wire segment that starts or ends at the speci-
+       fied coordinates
+
+Syntax
+       editAddRoute
+
+       [-help]
+
+       <point>
+
+       Creates  a  wire  segment  that starts or ends at the specified coordi-
+       nates. Splits diagonal wires  whose  width  is  greater  than  the  LEF
+       MAXWIDTH parameter for that layer as they are drawn.
+
+       If  required,  the tool allows you to change the net order while adding
+       wire segments. Check the Examples sections for details.
+
+       Note: Before running any Wire Editor  command,  all  objects  and  pre-
+       routed wires/vias must be colorized already.
+
+       If  you  do not want to view flight lines between Power and Ground (PG)
+       wires and pins when drawing PG nets, use setLayerPreference  flightLine
+       -isVisible 0 to turn off the display of these flightlines. editAddRoute
+       as well as editCommitRoute honor this setting.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each editAddRoute parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man editAddRoute
+
+       <point>
+              Specifies  the  x  and  y coordinates for the start point or end
+              point of the wire segment.
+
+              Note that if the points you specify with each successive editAd-
+              dRoute command are not aligned vertically or  horizontally,  the
+              tool  adjusts the coordinates to align the end point of one seg-
+              ment with the start point of the next segment.
+
+Example
+              * The following commands create wire  segments  that  start  and
+                stop  at  the  specified points. The complete wire ends at the
+                point specified by editCommitRoute.
+
+                editAddRoute 33.392 36.831    #Start of first wire segment
+
+                editAddRoute 32.985 32.766     #End  of  first  wire  segment,
+                start of second
+
+                editAddRoute 18.064 32.115    #End of second wire segment
+
+                editAddRoute 20.951 27.073    #End of third wire segment
+
+                editCommitRoute 20.992 27.114 #End of wire
+
+              * Use  the  following  set of commands to add wire segments with
+                different orders of nets:
+
+                uiSetTool addWire
+
+                setEditMode -layer_horizontal M10
+
+                setEditMode -nets { a b c d e f}
+
+                setEditMode -wire_override_spec  {{1  0.062  0.128}  {2  0.062
+                0.1900}  {3  0.062  0.128} {4 0.062 0.1900} {5 0.062 0.128} {6
+                0.062 0.1900} }
+
+                editAddRoute {1000 2500}
+
+                editAddRoute {1100 2500}
+
+                setEditMode -layer_vertical M9
+
+                #Change Net Order
+
+                setEditMode -nets { a c b d f e}
+
+                setEditMode -wire_override_spec  {{1  0.082  0.228}  {2  0.082
+                0.2900}  {3  0.082  0.228} {4 0.082 0.6680} {5 0.082 0.228} {6
+                0.082 0.2900} }
+
+                editAddRoute {1100 2600}
+
+                editCommitRoute {1100 2600}
+
+Related Information
+              * editCommitRoute
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * setLayerPreference
+
+              * uiSetTool
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025        editAddRoute(25.10)

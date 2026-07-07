@@ -1,0 +1,361 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+defComp(25.10)                                                  defComp(25.10)
+
+Name
+       defComp
+
+Syntax
+       defComp
+
+       [-help]
+
+       <fileName >[-bump]
+
+       [-defAsGolden]
+
+       [-ignoreLayerFrom <layer>]
+
+       [-ignoreLayerTo <layer>]
+
+       [-ignoreLogicChange]
+
+       [-metalShapeDiff]
+
+       [-placeBlockage]
+
+       [-reportFile <reportFile>]
+
+       [-row]
+
+       [-snetPin]
+
+       [-unit <units_value>]
+
+       [-ignoreCellPlace <lef_macro_classes_list>
+
+                 [-checkCellPrefix<prefix_list>]]
+
+       Compares  a DEF file with the physical design data in the Innovus data-
+       base and reports any differences. You can use the defComp command after
+       importing a design.
+
+       For example, after you perform an Engineering Change  Order  (ECO)  and
+       make  changes to a DEF file, you can use the defComp command to compare
+       the new file to the information stored in the Innovus database. Use the
+       following command to compare physical design data:
+
+       defComp <defFile> -reportFile <fileName>
+
+       The default filename is defPhyDiff.rpt
+
+       The report file includes the following information:
+
+              * VERSION statement
+
+                VERSION <num>
+
+              * UNITS statement
+
+                UNITS <num>
+
+              * ADDINST statement
+
+                ADDINST <instName> <cellName> <x> <y>  <orientation>Note:  The
+                report  provides  the  connectivity  of added instances in the
+                NETS section described below.
+
+              * DELINST statement
+
+                DELINST <instName cellName x y orientation >
+
+              * CHANGECELL statement
+
+                CHANGECELL <instName> <newCellName> <oldCellName>
+
+                The master cell of the instance  <instName>  is  changed  from
+                <oldCellName>  to  <newCellName>. The coordinate, orientation,
+                and connectivity of the instance are not changed. If a  master
+                cell  is  changed  along with any of the coordinates, orienta-
+                tion, or connectivity of the instance, Innovus considers  this
+                change as a deletion and addition of the instance. Rather than
+                including  a  CHANGECELL statement, the file contains one pair
+                of DELINST and ADDINST statements.
+
+              * MOVEINST statement
+
+                MOVEINST <instName> [COORD <oldX> <oldY> <newX> <newY>]  [ORI-
+                ENT <oldOrientation> <newOrientation>]
+
+                The statement contains the COORD phrase if the instance <inst-
+                Name>  has  moved,  and  the ORIENT phrase if the instance has
+                changed orientation.
+
+              * ADDNET statement
+
+                ADDNET <netName>
+
+              * DELNET statement
+
+                DELNET <netName>
+
+              * ADDPIN statement
+
+                ADDPIN <netName instName pinName >
+
+              * DELPIN statement
+
+                DELPIN <netName> <instName> <pinName>
+
+              * CHANGEROUTE and ENDCHANGEROUTE statements
+
+                CHANGEROUTE <netName>
+
+                ENDCHANGEROUTE
+
+                These statements mark the beginning and end of the CHANGEROUTE
+                section that contains changes on the routing  segment  on  net
+                <netName>. The wire change statements are included between the
+                CHANGEROUTE and ENDCHANGEROUTE statements.
+
+              * POWERROUTE and ENDPOWERROUTE statements
+
+                POWERROUTE <netName>
+
+                ENDPOWERROUTE
+
+                These  two  statements  mark  the beginning and the end of the
+                POWERROUTE section that contains the power routing differences
+                between two DEF files. The wire change statements are included
+                between the POWERROUTE and ENDPOWERROUTE statements.
+
+              * CHANGEAREA statement
+
+                CHANGEAREA <llx lly urx ury>
+
+                The bounding-box of any added or deleted wire shapes (regular,
+                patch-wire, or special-wires  including  wire  extensions)  or
+                vias  (bbox  across  all layers) is merged into the CHANGEAREA
+                box. For added/deleted instances,  the  bounding  box  of  the
+                placement  overlap area (LEF SIZE) is used. That means any PIN
+                or OBS shape that sticks outside the  placement  overlap  area
+                are  not  included  in the bbox. COVER cells with no placement
+                area use the bounding box of all the PIN and OBS shapes in the
+                cell.
+
+              * Wire change statements
+
+                The ADDWIRE, DELWIRE, ADDVIA, and DELVIA statements appear be-
+                tween the CHANGEROUTE and ENDCHANGEROUTE statements,  orPOWER-
+                ROUTE and ENDPOWERROUTE statements.
+
+              * ADDWIRE statement
+
+                ADDWIRE <layerName width x1 y1 x2 y2>
+
+              * DELWIRE statement
+
+                DELWIRE <layerName width x1 y1 x2 y2>
+
+              * ADDVIA statement
+
+                ADDVIA  [<botLayerName bx1 by1 bx2 by2>] <topLayerName tx1 ty1
+                tx2 ty2>
+
+                Note: For turnvias, Innovus reports <topLayerName> only.
+
+              * DELVIA statement
+
+                DELVIA [<botLayerName> <bx1> <by1> <bx2> <by2>] <topLayerName>
+                <tx1> <ty1> <tx2> <ty2>
+
+                Note: For turnvias, Innovus reports <topLayerName> only.
+
+              * ADDOBS statement
+
+                ADDOBS <layerName> <x1> <y1> <x2> <y2>
+
+              * DELOBS statement
+
+                DELOBS <layerName> <x1> <y1> <x2> <y2>
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each defComp parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man defComp.
+
+       -bump  Checks  only  bump-related  objects, such as bump and areaio in-
+              stance in the COMPONENTS section, bump assignment,  and  special
+              routing  in the SPECIALNETS section.The information reported in-
+              cludes:
+
+              * Added, moved, and deleted bumps
+
+              * Added, changed, and deleted routing
+
+              * Added, changed, and deleted net assignments
+
+              Note: When this option is specified, defComp  suppresses  checks
+              on  default objects, such as standard cells and blocks, and only
+              checks bump-related objects.
+
+       -checkCellPrefix <prefix_list>
+              Checks instances whose instance name begins with  the  specified
+              prefix.  You can use this parameter only if you also specify the
+              -ignoreCellPlace parameter. If you specify more than one prefix,
+              you must enclose the list in braces, for example, {CORE PAD}.
+
+              Default: All LEF MACRO classes specified by the -ignoreCellPlace
+              parameter are ignored.
+
+       -defAsGolden
+              Treats the DEF file as the golden file when  comparing  the  DEF
+              file to the data in the database.
+
+              By  default,  the  software  compares the DEF to the data in the
+              database and reports the differences relative to  the  database.
+              For  example,  ADDINST  in the report file means the instance is
+              not in the database, but in the DEF file.
+
+              When you specify -defAsGolden, the software reports the  differ-
+              ences  relative  to  the DEF file. Therefore, if the instance is
+              not in the database, but is in the DEF file, DELINST is  written
+              in the report file.
+
+       <fileName>
+              Specifies  the name of the DEF file you want to compare with the
+              physical design data in the database.
+
+       -ignoreCellPlace <lef_macro_classes_list>
+              Ignores the specified cell classes, for example {CORE PAD}.
+
+       -ignoreLayerFrom <layer>
+              Ignores the specified metal or cut layer, and all metal and  cut
+              layers  above.  You can specify this parameter with the -ignore-
+              LayerTo parameter to select a  layer  range.  You  must  specify
+              metal  layers as Metal1, Metal2, Metal3, and so on, and cut lay-
+              ers as V1, V2, V3, and so on.
+
+              Default: All layers are compared.
+
+       -ignoreLayerTo <layer>
+              Ignores the specified metal or cut layer, and all metal and  cut
+              layers  below.  You can specify this parameter with the -ignore-
+              LayerFrom parameter to select a layer range.  You  must  specify
+              metal  layers as Metal1, Metal2, Metal3, and so on, and cut lay-
+              ers as V1, V2, V3, and so on.
+
+              Default: All layers are compared.
+
+       -ignoreLogicChange
+              Ignores logic changes when comparing a DEF file with the  physi-
+              cal design data in the Innovus database.
+
+       -metalShapeDiff
+              Without  the  option,  the  command will report the same routing
+              segment or via with one pair of line as difference  -  one  with
+              "ADDWIRE/ADDVIA"   and one with "DELWIRE/DELVIA" - in the report
+              file if it is on a different net or  if  its  routing  type  has
+              changed from special to regular or vice versa between db and def
+              file.
+
+              With  the option, the command will not report such difference in
+              report file.
+
+       -placeBlockage
+              Compares placement blockage and block halo equivalence.
+
+       -reportFile <fileName>
+              Specifies the name of the report containing the results  of  the
+              comparison.
+
+              Default: defPhyDiff.rpt
+
+       -row   Compares  row and site equivalence, name, location, and orienta-
+              tion.
+
+       -snetPin
+              Reports any pins that have changed between the NETS and SPECIAL-
+              NETS sections.
+
+       -unit <units_value>
+              Uses the specified UNITS value (typically, the  UNITS  value  in
+              the DEF file) to scale all distance values in the report file.
+
+              Default: Uses the current database unit (DBU) value in the data-
+              base,  derived  from the LEF information, to scale distance val-
+              ues.
+
+Example
+              * The following command compares data in  the  myDEF  file  with
+                that  in  the  database,  and writes the results to myResults-
+                File.rpt:
+
+                defComp myDEF -reportFile myResultsFile.rpt
+
+              * The following command checks rows,  placement  blockages,  and
+                block halos in myDEF. This example checks all instances except
+                class  CORE  and  PAD;  however,  it checks CORE and PAD cells
+                whose instance name prefix is PRE. This  example  also  checks
+                all  wires  and  vias  except  for those on and between layers
+                Metal2 and Metal6, and writes the comparison results to  myRe-
+                sultsFile.def.
+
+                defComp   -row   -placeBlockage  -ignoreCellPlace  {CORE  PAD}
+                -checkCellPrefix PRE  -ignoreLayerFrom  Metal2  -ignoreLayerTo
+                Metal6 -reportFile myResultsFile.def myDEF
+
+              * The  following report is generated by the command defComp -def
+                a.def -reportFile defCompArea.out:
+
+                ###############################################################
+
+                 #  Generated by:      Cadence Innovus 15.20-d132_1
+
+                 #  OS:                Linux x86_64(Host ID vlsj-daven)
+
+                 #  Generated on:      Fri Oct  2 14:17:41 2015
+
+                 #  Design:            top
+
+                 #  Command:           defComp -def a.def -reportFile  defCom-
+                pArea.out
+
+                 ###############################################################
+
+                 VERSION 1
+
+                 UNITS 2000
+
+                 MOVEINST i1/i2 COORD 211200 252000   204600 252000
+
+                 ADDINST i1/new_inst AND2X1 100320 100800 FS
+
+                 DELINST i1/del_inst BUFX1  188760 252000 N
+
+                 CHANGEROUTE dOut2[1]
+
+                   DELWIRE METAL3 280 248920 51160 249480
+
+                   ADDWIRE METAL3 180 251110 51060 251670
+
+                 ENDCHANGEROUTE
+
+                 DELPIN VSS i1/spare_1 A
+
+                 ADDPIN VSS i1/spare_2 A
+
+                 POWERROUTE VSS
+
+                   DELWIRE METAL1 94080 266320 270240 268320
+
+                   ADDWIRE METAL1 94680 281970 270840 283970
+
+                 ENDPOWERROUTE
+
+                 CHANGEAREA 180 100800 270840 283970
+
+                           Fri Apr 04 01:25:37 2025             defComp(25.10)

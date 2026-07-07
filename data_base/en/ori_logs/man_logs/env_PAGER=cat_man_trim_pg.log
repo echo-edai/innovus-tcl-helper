@@ -1,0 +1,129 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+trim_pg(25.10)                                                  trim_pg(25.10)
+
+Name
+       trim_pg  - This command offers a semi-automated mechanism that helps in
+       trimming the redundant PG stripes and vias using an existing power grid
+       pattern based on IR drop analysis reports
+
+Syntax
+       trim_pg
+
+       [-help]
+
+       [-area {<x1, y1, x2, y2>} | -candidate_file <file_name>]
+
+       -net {<list_of_nets>} {{-layer {<layer_name1> [<layer_name2>]} -pattern
+       {<str1> [<str2> ... <strN>]} -type {stripe |  via}}  |  -candidate_file
+       <file_name>}
+
+       [-exclude_local_grid  {{<lx1  ly1  ux1  uy1>} {<lx2 ly2 ux2 uy2>}...} |
+       -candidate_file <file_name>]
+
+       [-exclude {{<lx1 ly1 ux1  uy1>}  {<lx2  ly2  ux2  uy2>}...}  |  -candi-
+       date_file <file_name>]
+
+       [-keep_dangling_via]
+
+       [-threshold <threshold_value> | -candidate_file <file_name>]
+
+       This  command  offers a semi-automated mechanism that helps in trimming
+       the redundant PG stripes and vias using an existing power grid  pattern
+       based  on  IR drop analysis reports. The command eliminates the need to
+       manually adjust the power structure to reduce the power grid  pessimism
+       for area, timing, or power improvement in a design.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each trim_pg parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man trim_pg
+
+       -area {<x1 y1 x2 y2>}
+              Defines  the  area  in which stripes and vias are to be trimmed.
+              The stripes  overlapped  with  the  box  defined  by  -area  are
+              trimmed.
+
+              Default: entire core area
+
+       -candidate_file <file_name>
+              Specifies the candidate filename.
+
+       -exclude {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}
+              Excludes  the  box  areas  for the stripes and vias in which the
+              part of stripes need not to be trimmed. This parameter  is  used
+              along  with  the -area parameter to specify the exclusion areas.
+              If a stripe partially overlaps  with  the  exclusion  area,  the
+              overlapping  segment of the stripe is not trimmed. The exclusion
+              box can partially overlap the  -area box.
+
+       -exclude_local_grid {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}
+              Excludes the areas in which the whole stripes  are  skipped  for
+              trimming.  If  a  stripe  is  completely  inside one of the -ex-
+              clude_local_grid box (can touch the boundary),  it  is  excluded
+              from  the  trim  candidates and is not counted when applying the
+              trim pattern. It is useful when trimming is done on a large area
+              but there are local stripes in this area, which could affect the
+              global trim pattern. The exclusion box can partially overlap the
+              -area box.
+
+       -keep_dangling_via
+              Keeps the dangling vias while trimming stripes. By default, dan-
+              gling vias are removed.
+
+       -layer {<layer_name1> [<layer_name2>]}
+              Specifies the metal layer names for  stripe  and  via  trimming.
+              While  trimming  a  stripe,  specify  <layer_name1> on which the
+              stripes  are  to  be  trimmed.  While  trimming   via,   specify
+              <layer_name2>between which the stack vias are to be trimmed. The
+              first layer is used as the reference while applying the via trim
+              pattern.
+
+       -net {<list_of_nets>}
+              Specifies  the  list  of power or ground nets to be trimmed. The
+              following figure presents area trimmed by the -net parameter:
+
+       -pattern {<str1> [<str2> ... <strN>]}
+              Specifies the trimming pattern. While trimming a stripe, specify
+              <str1>. The string is a sequence of  "0"  and  "1"  to  indicate
+              whether  to  trim or keep a stripe. While trimming a via, <str1>
+              and multiple strings (if needed) define a multidimensional  trim
+              pattern.  Each  string  is a sequence of "0" and "1" to indicate
+              whether to trim or keep a  stack  via  along  the  corresponding
+              stripe  on the reference layer. The reference layer is the first
+              layer in the  -layer parameter.
+
+       -threshold <threshold_value>
+              Specifies the threshold value for stripe  merging.  The  stripes
+              with  center-line spacing smaller than or equal to the threshold
+              value are considered for trimming.
+
+              Default: 0
+
+       -type {stripe | via}
+              Specifies the type of trimming, which is either on the stripe of
+              a layer or the stack via between two layers.
+
+Examples
+              * The following command trims 50% of the VDD  stripes  on  a  M6
+                metal layer inside a {0 0 500 500} box:
+
+                trim_pg  -net  VDD  -type stripe -layer M6 -area {0 0 500 500}
+                -pattern 10
+
+              * The following command trims a via (stack) along with  half  of
+                the  M9  VDD  stripes, and one-third of its stack vias between
+                the M9 and M6 metal layers:
+
+                trim_pg -net VDD -type via -layer {M9 M6} -area {0 0 500  500}
+                -pattern {110 1}
+
+Related Information
+       For  more  details and examples, see the "Trimming Redundant PG Stripes
+       and Vias" section of the Power Planning and Routing chapter in the  In-
+       novus User Guide.
+
+                           Fri Apr 04 01:25:37 2025             trim_pg(25.10)

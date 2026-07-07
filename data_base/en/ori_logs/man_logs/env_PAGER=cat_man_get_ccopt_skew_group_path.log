@@ -1,0 +1,206 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_skew_group_path(25.10)              get_ccopt_skew_group_path(25.10)
+
+Name
+       get_ccopt_skew_group_path  - This command returns the path delay infor-
+       mation for the specified skew group
+
+Syntax
+       get_ccopt_skew_group_path
+
+       [-help]
+
+       [-check_type {setup | hold}]
+
+       [-delay_corner delay_corner]
+
+       [-delay_type {early | late}]
+
+       [-show_generator_paths]
+
+       -skew_group <skew_group_name>
+
+       [-longest  | -shortest]
+
+       [-summarize_stage_depth <cell_type_list>]
+
+       [-virtual_delays_only  | -real_delays_only]
+
+       [-wire_delays_only  | -cell_delays_only]
+
+       [-sink <pin> | -below <pin>]
+
+       This command returns the path delay information for the specified  skew
+       group. By default, this command returns the longest source-to-sink path
+       in  the specified skew group, which is the path with the largest delay.
+       Paths are returned as a list of pins. You can use -shortest  to  return
+       the shortest source-to-sink path rather than the longest.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each get_ccopt_skew_group_path  parameter.  For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command:
+
+               man get_ccopt_skew_group_path
+
+       -below <pin>
+              Specifies that CCOpt will only consider paths below this pin.
+
+       -cell_delays_only
+              Specifies that CCOpt will only consider  cell  delays  (ignoring
+              wire  delays).  By default both cell and wire delays are used to
+              calculate delays.
+
+       -check_type {setup | hold}
+              Specifies whether the check type for the  specified  skew  group
+              should be setup or hold.
+
+              If  a  check type is specified, but the -delay_type parameter is
+              not specified, the software behaves in the following manner:
+
+              * -check_type -setup will mean -delay_type -late
+
+              * -check_type -hold will mean -delay_type -early
+
+              Note: If a check type is not specified, the software will always
+              look at what the views permit, preferring the  "setup"  view  if
+              there is a choice.
+
+       -delay_corner <delay_corner>
+              Specifies  the delay corner to use when calculating delays. (use
+              all_delay_corners to see all configured delay corners)
+
+              If this parameter is not specified, the software  will  use  the
+              delay  corner  specified  using  the CCOpt property, primary_de-
+              lay_corner. However, if no valid  delay  corner  is  found,  the
+              software will error out.
+
+              Note:  For  detailed  help  on  the  CCOpt property, primary_de-
+              lay_corner, run the following command:
+
+              get_ccopt_property -help primary_delay_corner
+
+       -delay_type {early | late}
+              Specifies whether to use early or late half delays.
+
+              When early is specified, CCOpt uses only early path timing  data
+              to calculate path delay, for the clock edge specified. When late
+              is specified, CCOpt uses only late path timing data to calculate
+              path delay, for the clock edge specified.
+
+              Note:  If  the delay type is not specified but the check type is
+              specified as "setup", the software will consider the delay  type
+              as  "late".  If the check type is "hold", the software will con-
+              sider the delay type as "early".
+
+       -longest
+              Specifies that CCOpt will return the longest path  delay  within
+              the skew group. This is the default option.
+
+       -real_delays_only
+              Specifies  that CCOpt will only consider the real path delays in
+              the design. It will not include the virtual path delays added by
+              trial CTS to resolve skew constraints.
+
+       -shortest
+              Specifies that CCOpt will  return  the  shortest  source-to-sink
+              path  within the skew group (that is, the path with the smallest
+              source-to-sink delay). By  default,  this  command  returns  the
+              longest path.
+
+       -show_generator_paths
+              Specifies that CCOpt follows generated clock tree paths when de-
+              termining  the longest source-to-sink path. By default generated
+              clock tree paths are not followed.
+
+       -sink <pin>
+              Specifies that CCOpt will return the longest path  to  this  pin
+              for the specified skew group.
+
+       -skew_group <skew_group_name>
+              Specifies  the name of the skew group for which path information
+              will be returned. This is a required parameter.
+
+       -summarize_stage_depth <cell_type_list>
+              Specifies that the command will consider the number of cells  of
+              the specified type(s) in the tree, instead of considering delay.
+              Possible values are buffer, inverter,logic, clock_gate, and gen-
+              erator. You can also specify * to include all cell types.
+
+              For  example, the following command shows you the path with most
+              buffers and inverters in the skew group, PM_HL_FUNC.
+
+              get_ccopt_skew_group_path  -summarize_stage_depth  {buffer   in-
+              verter} -longest -skew_group m_dsram_clk/PM_HL_FUNC
+
+              Note:  The  *  setting is not used in combination with any other
+              cell type. For example, the below is not a valid setting.
+
+              -summarize_stage_depth {* buffer}
+
+       -virtual_delays_only
+              Specifies that CCOpt will return  the  shortest  path  delay  or
+              longest  path  delay  only  considering  the virtual path delays
+              (added by trial balancing) in the design and any user pin inser-
+              tion delays applied before CTS. It will not  include  real  path
+              delays added by clustering buffers and existing cells in the de-
+              sign.
+
+       -wire_delays_only
+              Specifies  that  CCOpt  will only consider wire delays (ignoring
+              cell delays). By default both cell and wire delays are  used  to
+              calculate delays.
+
+Examples
+              *
+
+                Use the following command to retrieve the list of skew groups:
+
+                get_ccopt_skew_groups *
+
+                m_clk/PM_HL_FUNC m_digit_clk/PM_HL_FUNC m_dsram_clk/PM_HL_FUNC
+                m_ram_clk/PM_HL_FUNC m_rcc_clk/PM_HL_FUNC m_spi_clk/PM_HL_FUNC
+                refclk/PM_HL_FUNC
+
+              * Use  the  following  command  to  retrieve the paths with most
+                buffers and inverters in the skew group, PM_HL_FUNC:
+
+                get_ccopt_skew_group_path -summarize_stage_depth  {buffer  in-
+                verter} -longest -skew_group m_dsram_clk/PM_HL_FUNC
+
+       TEST_CONTROL_INST/AZ_cid_BUF_m_dsram_clk_G0_L1_1/Z
+       RAM_256x16_TEST_INST/CPF_LS_160_m_dsram_clk/I
+       RAM_256x16_TEST_INST/CPF_LS_160_m_dsram_clk/Z
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L3_1/I
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L3_1/Z
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L4_1/I
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L4_1/Z
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L5_1/I
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L5_1/Z
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L6_1/I
+       TDSP_CORE_INST/TDSP_CORE_MACH_INST/RC_CG_HIER_INST29/AZ_csf_BUF_m_dsram_clk_G0_L6_1/Z
+       RAM_256x16_TEST_INST/RAM_256x16_INST/CLK
+
+Related Information
+              * get_ccopt_skew_groups
+
+              * get_ccopt_property
+
+              * get_ccopt_skew_group_delay
+
+              * delete_ccopt_skew_groups
+
+              * modify_ccopt_skew_group
+
+              * report_ccopt_skew_groups
+
+              * set_ccopt_property
+
+              * The following topics in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                * Manual Setup and Adjustment of the Clock Tree Specification
+
+                           Fri Apr 04 01:25:37g2e0t2_5ccopt_skew_group_path(25.10)

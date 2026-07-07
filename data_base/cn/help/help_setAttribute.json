@@ -1,0 +1,237 @@
+{
+  "command": "setAttribute",
+  "is_cmd": true,
+  "summary": "设置网络或引脚属性的命令",
+  "description": "setAttribute 命令用于为指定的网络、子网络或单元引脚设置各种布线、屏蔽、时序和物理设计规则属性。它可以控制布线层偏好、非默认规则（NDR）、屏蔽配置、扇出限制、天线修复跳过、多切割通孔优化等，是进行精细布线约束和优化的重要工具。",
+  "usage": "setAttribute [-help] [-max_fanout <integer>] [-reset] [-stripe_layer_range <integer:integer>] {-net <net_name> | -cell_pin <cell_name:pin_name> } [-sub_net <sub_net_name> [-comp_pin <comp<:pin_name> list>][-inst_pin <instance<:pin_name> list>]] [-weight <integer>] [-non_default_rule <rule_name>] [-non_default_rule_effort {auto|soft|hard|no_taper}] [-shield_net <special_net_name(s)>] [-shield_side <one_side|two_sides>] [[[-em_ndr_rule <rule_name>] [-em_ndr_dist <double>]] | [-em_width_rule <layer width:dist pairs>]] [-ndr_si_length_limit <layer dist pairs>] [-coaxial_shielded_layers <layer_number:layer_number>] [-coaxial_shield_limit <layer_number:layer_number>] [-coaxial_shield_interval <[integer|{layer_name:integer ...}]>] [-pattern {steiner|trunk}] [-top_preferred_routing_layer <layer_number>] [-bottom_preferred_routing_layer <layer_number>] [-top_preferred_shielding_layer <layer_number>] [-bottom_preferred_shielding_layer <layer_number>] [-preferred_routing_layer_effort {low|medium|high|hard}] [-preferred_extra_space <integer>] [-avoid_detour {true|false}] [-skip_routing {true|false}] [-skip_antenna_fix {true|false}] [-multi_cut_via_effort {low|medium|high}] [-si_post_route_fix {true|false}] [-min_stack_layer <layer_number>] [-stack_distance <distance>] [-mask <integer>] [-layer_mask <integer:integer>] [-one_side_spacing <integer:integer>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max_fanout",
+      "description": "扇出控制",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-reset",
+      "description": "重置所有字段",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stripe_layer_range",
+      "description": "指定应用不同次级电源网络条带层范围约束的层范围，例如 3:4 表示应用于 M3 和 M4",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "网络名称、通配符或网络类型",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-cell_pin",
+      "description": "单元引脚名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sub_net",
+      "description": "子网络名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-comp_pin",
+      "description": "组件名称和引脚列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst_pin",
+      "description": "实例名称和引脚列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-weight",
+      "description": "对象的布线权重",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-non_default_rule",
+      "description": "非默认规则名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-non_default_rule_effort",
+      "description": "非默认规则应用力度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shield_net",
+      "description": "用于屏蔽该网络的特殊网络名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shield_side",
+      "description": "布线屏蔽的边数",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-em_ndr_rule",
+      "description": "电迁移非默认规则名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-em_ndr_dist",
+      "description": "电迁移非默认规则的源到漏距离",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-em_width_rule",
+      "description": "层宽度与距离对的表格，例如 \"M1 1.0:0.5, M2 2.0:1.0\"",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ndr_si_length_limit",
+      "description": "层长度对的表格，例如 \"M1 1.0, M2 2.0\"",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-coaxial_shielded_layers",
+      "description": "同轴屏蔽的底层和顶层布线层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-coaxial_shield_limit",
+      "description": "同轴屏蔽的底层和顶层布线层限制",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-coaxial_shield_interval",
+      "description": "两个交叉连接之间的空轨道数，0..63，默认为0（每条轨道）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern",
+      "description": "布线模式类型",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_preferred_routing_layer",
+      "description": "对象的顶层首选布线层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_preferred_routing_layer",
+      "description": "对象的底层首选布线层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_preferred_shielding_layer",
+      "description": "对象的顶层首选屏蔽层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_preferred_shielding_layer",
+      "description": "对象的底层首选屏蔽层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preferred_routing_layer_effort",
+      "description": "首选布线层应用力度等级",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preferred_extra_space",
+      "description": "网络的首选额外间距",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-avoid_detour",
+      "description": "避免网络的布线绕道",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_routing",
+      "description": "跳过该网络的布线",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_antenna_fix",
+      "description": "跳过该网络的天线修复",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-multi_cut_via_effort",
+      "description": "多切割通孔应用力度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-si_post_route_fix",
+      "description": "布线后信号完整性修复",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-min_stack_layer",
+      "description": "最小堆叠层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stack_distance",
+      "description": "堆叠距离",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mask",
+      "description": "网络的掩模约束设置。合法值为0到层的掩模数。0表示无约束，非零值表示网络上的所有布线应在指定掩模上创建。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-layer_mask",
+      "description": "指定掩模约束应应用的层范围。例如，3:4 表示约束应用于 M3 和 M4。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-one_side_spacing",
+      "description": "指定单边间距约束应应用的层范围。例如，3:4 表示约束应用于 M3 和 M4。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

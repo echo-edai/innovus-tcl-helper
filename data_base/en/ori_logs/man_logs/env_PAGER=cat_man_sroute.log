@@ -1,0 +1,715 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+sroute(25.10)                                                    sroute(25.10)
+
+Name
+       sroute - Routes power structures
+
+Syntax
+       sroute
+
+       [-help]
+
+       [-allowJogging {0 | 1}]
+
+       [-allowLayerChange {0 | 1}]
+
+       [-area {x1 y1 x2 y2}]
+
+       [-blockPin {<useLef all onBoundary leftBoundary rightBoundary topBound-
+       ary bottomBoundary abutPins>}]
+
+       [-blockPinLayerRange {<minLayerName maxLayerName>}]
+
+       [-blockPinTarget  {nearestTarget | boundaryWithPin | farthestPadRing} |
+       {[blockring] [padring] [ring] [stripe] [ringpin] [blockpin]}]
+
+       [-blockPinWidthRange {<min max>}]
+
+       [-connect {[blockPin]  [corePin]  [padPin]  [padRing]  [floatingStripe]
+       [secondaryPowerPin]}]
+
+       [-connectAlignedBlockAndPadPin {blockPinAsTarget | padPinAsTarget}]
+
+       [-connectInsideArea]
+
+       [-corePinCheckStdcellGeoms]
+
+       [-corePinLayer <layerNumList>]
+
+       [-corePinTarget   {{[blockring]  [ring]  [stripe]  [padring]  [ringpin]
+       [blockpin]}|{ firstAfterRowEnd | boundaryWithPin  |  farthestPadRing  |
+       none }}]
+
+       [-corePinWidth <real>]
+
+       [-crossoverViaLayerRange {<bot top>}]
+
+       [-deleteExistingRoutes]
+
+       [-detailed_log]
+
+       [-floatingStripeTarget {[blockring] [ring] [stripe] [padring] [ringpin]
+       [blockpin] [followpin]}]
+
+       [-inst {<names_of_blocks>}]
+
+       [-layerChangeRange {<bottomLayerName topLayerName>}]
+
+       [-nets {<names>}]
+
+       [-noBlockPinOneAmongOverlappedPins]
+
+       [-padPinLayerRange {<minLayerName maxLayerName>}]
+
+       [-padPinWidth <real>]
+
+       [-padPinPortConnect  {[onePort | allPort ][ oneGeom |allGeom] | prefer-
+       Layer}
+
+       [-padRingWidth <real>]
+
+       [-padRingLayer {<layerNumList>}]
+
+       [-powerDomains [<powerDomainName1 powerDomainName2> ...]]
+
+       [-secondaryPinNet {<list_of_nets>}]
+
+       [-secondaryPinRailVerticalStripeGrid {<topLayerNum width pitch>}]
+
+       [-stripeLayerRange {<minLayerName maxLayerName>}]
+
+       [-targetObjListFile <filename>]
+
+       [-targetViaLayerRange {<bot top>}]
+
+       [-uda <subclass_string>]
+
+       [-padCellSkipRoutingOnPadSide {<top bottom left right>}]
+
+       [-padPinTarget {nearestTarget | {[blockring] [ring] [stripe]  [ringpin]
+       [blockpin] [followpin]}}]
+
+       [-secondaryPinRailLayer]
+
+       Routes  power  structures.  Use this command after creating power rings
+       and power stripes. Depending on the parameters you use, it can  do  any
+       or all of the following:
+
+              * Create pad rings
+
+              * Connect pins on specified nets on the blocks
+
+              * Connect pads to nearby rings or stripes
+
+              * Extend unconnected stripes to make a connection
+
+              * Route standard cell pins
+
+       Note:  To  undo  the sroute command, use the defOut command to save the
+       design database before you issue the sroute command. Then you  can  use
+       the  defIn  command  to  restore the design to its state before running
+       sroute.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each sroute parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man sroute
+
+       -allowJogging {0 | 1)
+              Specifies that jogs are allowed during routing to avoid DRC vio-
+              lations.
+
+              Note: You can use -allowJogging 1 and -connect padRing  together
+              to enable jog connection in pad ring connection.
+
+       -allowLayerChange {0 | 1}
+              Allows connections to targets on different layers.
+
+              Default:
+
+              Note:  This  parameter  replaces the -noLayerChangeRoute parame-
+              ters.
+
+              If the 1 preferred routing direction is  vertical  and  standard
+              cells have their VDD and VSS pins on layer 1, sroute will change
+              routing  layers  to continue extending the followpin connections
+              to core rings by this option
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the coordinates for the area in which power is  to  be
+              routed.
+
+              Default: If you do not specify this parameter, the entire design
+              is routed.
+
+              If  you  specify this parameter, existing routes are always pre-
+              served, even if you also specify the -deleteExistingRoutes para-
+              meter.
+
+       -blockPin {useLef all onBoundary leftBoundary rightBoundary topBoundary
+       bottomBoundary abutPins}
+              Specifies which block pins to connect.
+
+              Note: This parameter replaces the -blockPin {useLefConvention  |
+              allPins  | boundaryPins}, -blockPinBoundaryOnly, and -blockSides
+              parameters.
+
+              Use one of the following options:
+
+              * abutPins: Pins are abutted.
+
+              * all: All pins on all ports are connected,  regardless  of  how
+                pins are specified in the LEF file.
+
+              * bottomBoundary:  Only  pins  on  the  bottom boundary are con-
+                nected.
+
+              * onBoundary: Connects only pins that abut block boundaries.
+
+              * topBoundary: Only pins on the top boundary are connected.
+
+              * useLef: Pins are connected exactly as  specified  in  the  LEF
+                file. For example, if the LEF file has multiple ports with one
+                geometry  connecting  to  each  port, then one pin per port is
+                connected.
+
+       -blockPinLayerRange {minLayerName maxLayerName}
+              Specifies the layers on which the tool can make connections, be-
+              tween the bottom-most and top-most layers. A value  of  1  indi-
+              cates the lowest metal later, 2 indicates the next layer up, and
+              so forth.
+
+              * maxLayerName:  Specifies  the top-most block pin layer to con-
+                nect to.
+
+              * minLayerName: Specifies the bottom-most  block  pin  layer  to
+                connect to.
+
+       -blockPinTarget {nearestTarget | boundaryWithPin | farthestPadRing} |
+       {[blockring] [padring] [ring] [stripe] [ringpin] [blockpin]}}
+              Extends  the  block  pin  to targets of specified type. Multiple
+              target types are allowed. The block pin will be open if no spec-
+              ified target is found:
+
+              * nearestTarget: Extends the block pin to the nearest legal tar-
+                get.
+
+              * boundaryWithPin: Extends the block pin to the design  boundary
+                and  creates  a  new  power pin along the design boundary. Any
+                overlaps with existing I/O pins at  the  design  boundary  are
+                flagged as violations after the extension.
+
+              * farthestPadRing  :  Extends the block pin to the last pad ring
+                that already exists on top of the I/O pad cells.
+
+              * blockring padring ring stripe ringpin blockpin
+
+              Note:
+
+              * Specify either {nearestTarget}, {boundaryWithPin},  {farthest-
+                PadRing},  or  a  value  from the following for which multiple
+                keywords are allowed:
+
+                {blockring padring ring stripe ringpin blockpin}
+
+              * Shielding wire is not regarded as the target of the block pin.
+
+       -blockPinWidthRange {min max}
+              Specifies the allowable pin widths, between the maximum and min-
+              imum widths given.
+
+              Specifies the maximum block pin width to connect to.
+
+              Default: If you do not specify this parameter, the software uses
+              a value of 100.
+
+              Specifies the minimum block pin width to connect to. The default
+              value is 0.0
+
+       -connect  {[blockPin] [corePin] [padPin] [padRing] [floatingStripe]
+       [secondaryPowerPin] }
+              Connects the specified objects to rings and stripes.
+
+              If -connect is not provided, sroute  connects  padPin,  padRing,
+              corePin, blockPin and floatingStripe by default.
+
+              If -connect {} is provided, sroute does nothing and exits.
+
+              While  connecting  to the padRing, the connecting result may ap-
+              pear unexpected if the pads do not abut to the boundary. This is
+              because in such cases, the direction calculation is  inaccurate.
+              Creating  IO rows in consistency with the pad ring direction can
+              guide the connecting direction.
+
+              To connect secondaryPowerPin, you must explicitly use the combi-
+              nation  of  -connect  {secondaryPowerPin}  and  -secondaryPinNet
+              {netname}.
+
+              Note:  You can use -allowJogging 1 and -connect padRing together
+              to enable jog connection in pad ring connection.
+
+       -connectAlignedBlockAndPadPin {blockPinAsTarget | padPinAsTarget}
+              Specifies whether block or pad pins can  be  connection  targets
+              for aligned pad or block pins.
+
+              Note: This parameter replaces -blockPinToAlignedPadPin and -pad-
+              PinToAlignedBlockPin
+
+              * blockPinAsTarget: Specifies that a block pin can be considered
+                a  connection target for a pad pin if the block pin is aligned
+                with the pad pin.
+
+              * padPinAsTarget: Specifies that a pad pin can be  considered  a
+                connection  target  for  a block pin if the pad pin is aligned
+                with the block pin.
+
+       -connectInsideArea
+              Specifies that connections from all sources within the specified
+              area can connect only to targets that are also inside that area.
+
+              Note: This parameter is only available if you also  specify  the
+              -area parameter.
+
+              Default:  If  you  do not specify this option the software makes
+              connections from all sources within the specified area  to  tar-
+              gets both inside and outside the specified area.
+
+       -corePinCheckStdcellGeoms
+              Checks  the standard cell geometries in the design for any spac-
+              ing violations between the power rail to power stripe  vias  and
+              cell  blockages to repair any DRC violations. When detected, In-
+              novus repairs these violations by trimming  the  via  arrays  as
+              needed. Use this parameter after routing the power structures.
+
+              Default: off
+
+       -corePinLayer {<layerNumList>}
+              Connects  power  pins only on the specified layers. A value of 1
+              indicates the lowest metal later, 2 indicates the next layer up,
+              and so forth. If you specify more than one layer, you  must  en-
+              close the list in curly braces.
+
+              Default: If you do not specify this parameter, only pins on 1 or
+              2 will be connected.
+
+              Note: Recommend to use LEF layer name.
+
+       -corePinTarget {{[blockring] [ring] [stripe] [padring] [ringpin]
+       [blockpin]}|{ firstAfterRowEnd | boundaryWithPin | farthestPadRing |
+       none }}
+              Specifies the extension target for followpins.
+
+              * firstAfterRowEnd:  Extends  the standard cell pin to the first
+                ring or stripe outside of the row.
+
+              * boundaryWithPin: Extends the standard cell pin to  the  design
+                boundary  and  creates a new power pin along the design bound-
+                ary. Any overlaps with existing I/O pins at the design  bound-
+                ary are flagged as violations after the extension.
+
+              * farthestPadRing: Extends the standard cell pin to the last pad
+                ring that already exists on top of the I/O pad cells.
+
+              * none:  Unconnected  standard  cell  pins are not extended, and
+                connections may be left open.
+
+              * blockring ring stripe padring ringpin blockpin
+
+              Note: Followpin wire can be targets for stripe and secondary pin
+              connection, but not for followpin connection.
+
+              Default: firstAfterRowEnd.
+
+       -corePinWidth real
+              If sroute -corePinWidth is run  prior  to  placement,  then  the
+              standard cell rails are created with the specified width.
+
+              If  it  is  run after the placement, sroute will only route pins
+              that have the specified width.
+
+       -crossoverViaLayerRange {<bot> <top>}
+              Specifies the highest and lowest layer that can be used for  via
+              stacking at the crossover point between power structures.
+
+              Note: This parameter does not apply to T-pattern connections.
+
+              Default:  If  you  do not specify this parameter, all layers are
+              used.
+
+       -deleteExistingRoutes
+              Specifies that the software remove existing connections when you
+              use the sroute command multiple times.
+
+              Default: The software maintains existing connections  each  time
+              you issue the sroute command.
+
+              Note:  If  you  specify the -area parameter, existing routes are
+              always preserved, even if you also specify  the  -deleteExistin-
+              gRoutes parameter.
+
+       -detailed_log
+              Prints the detailed log file.
+
+       -floatingStripeTarget {[blockring] [ring] [stripe] [padring] [ringpin]
+       [blockpin] [followpin]}
+              Specifies the target shape for floating stripes.
+
+              Default: {blockring ring stripe padring ringpin blockpin follow-
+              pin}
+
+       -inst {<names_of_blocks>}
+              Specifies the blocks to connect.
+
+              Note: This parameter replaces the -blocks parameter.
+
+       -layerChangeRange {bottomLayerName topLayerName}
+              Allows  routing  between  the specified bottom-most and top-most
+              layer, inclusive.
+
+              Default: If you do not specify this parameter, the tool can  use
+              any layer.
+
+              Note:  This  parameter replaces -layerChangeBotLayer and -layer-
+              ChangeTopLayer.
+
+       -nets {names}
+              Specifies the names of the nets to connect. If  you  connect  to
+              more  than  one  net,  you  must  enclose the net names in curly
+              braces and separate the names with a space. This parameter  sup-
+              ports wildcard characters (like * and ?), when the setSrouteMode
+              -signalPinAsPG parameter is set to true.
+
+              Default: If you do not specify this parameter, the software con-
+              nects all power and ground nets in the design.
+
+       -noBlockPinOneAmongOverlappedPins
+              Specifies that all pins (including those that overlap) should be
+              routed.
+
+              Note:  This  parameter  is  effective  only  if sroute -blockPin
+              allPins is specified.
+
+              Default: If you omit this parameter, if  multiple  pins  overlap
+              either fully or partially, only one will be routed.
+
+       -padCellSkipRoutingOnPadSide {top bottom left right}
+              Specifies the pad pins of the pads should not be connected.
+
+              * bottom:  Specifies the pad pins on the bottom side of the pads
+                should not be connected..
+
+              * left: Specifies the pad pins on the  left  side  of  the  pads
+                should not be connected.
+
+              * right:  Specifies  that power pads along the right side of the
+                chip should not be connected.
+
+              * top: Specifies that power pads along the top side of the  chip
+                should not be connected.
+
+       -padPinLayerRange {<minLayerName maxLayerName>}
+              Specifies  that  routing  is allowed between the bottom-most and
+              top-most pad pin layers, inclusive.
+
+              This parameter replaces -padPinMaxLayer and -padPinMinLayer.
+
+              * maxLayerName: Specifies the top-most pad pin layer allowed for
+                connection.
+
+              * minLayerName: Specifies the bottom-most pad pin layer  allowed
+                for connection.
+
+       -padPinPortConnect {[onePort | allPort ][ oneGeom |allGeom] | prefer-
+       Layer}
+              Specifies connections to pad pin ports.
+
+              * onePort:  Routes  to  only  one  port of a pad pin if multiple
+                ports are defined in the LEF file.
+
+              * allPort: Routes to all ports.
+
+              * oneGeom: Routes to one geometry per port only.
+
+              * allGeom: Routes to all geometries of the same  port  for  each
+                pad pin.
+
+              * preferLayer: Routes to all geometries on the same port, but in
+                the preferred routing direction only.
+
+       -padPinTarget {nearestTarget | {[blockring] [ring] [stripe] [ringpin]
+       [blockpin] [followpin]}}
+              Specifies  the  target  type.Extends  the  pad pin to targets of
+              specified type. Multiple target types are allowed. The  pad  pin
+              will be open if no specified target found.
+
+              * nearestTarget:  Extends  the pad pin to the nearest legal tar-
+                get.
+
+              * blockring ring stripe ringpin blockpin:
+
+              Default: nearestTarget
+
+       -padPinWidth <real>
+              Routes only pad pins that have the specified width. If no  width
+              is specified, the software automatically calculates the width of
+              the  pad  pins  to use. It is usually not necessary to specify a
+              pin width.
+
+       -padRingLayer <layerNumber>
+              Specifies which routing layer to use. A value of 1 indicates the
+              lowest metal later, 2 indicates the next layer up, and so forth.
+              The default is all layers.
+
+              Note: Recommend to use LEF layer name.
+
+       -padRingWidth <real>
+              Specifies the width of pins to connect  with.  By  default,  the
+              software automatically calculates this width.
+
+       -powerDomains [<powerDomainName1 powerDomainName2 ...>]
+              Restricts sroute activity to the specified power domains.
+
+              Default: All power domains
+
+              Note:  The -deleteExistingRoutes parameter will ignore the -pow-
+              erDomains parameter while removing existing connections. To  re-
+              move special nets in a power domain, run editDelete manually be-
+              fore sroute.
+
+       -secondaryPinNet {<list_of_nets>}
+              Connects voltage level shifter pins on the specified nets to the
+              closest segment of the ring around the power domain. This option
+              is available only if a power domain is defined.
+
+              Note: This parameter replaces -shifterPinConnection.
+
+       -secondaryPinRailLayer <layerName>
+              Specifies  connections to secondary pin rail layers. This is op-
+              tional.
+
+       -secondaryPinRailVerticalStripeGrid {topLayerNum width pitch}
+              Specifies connections to secondary power pins.
+
+              Note: This parameter  replaces  -lsStripeLayer,  -lsStripeWidth,
+              and -lsStripePitch.
+
+              * topLayerNum:  Specifies the top-most stripe layer on which the
+                tool can route secondary power pins.
+
+              * width: Specifies the width (in user  units)  of  stripes  that
+                connect to secondary power pins.
+
+              * pitch:  Specifies  the  pitch  (in user units) of stripes that
+                connect to secondary power pins.
+
+       -stripeLayerRange {<minLayerName maxLayerName>}
+              Enables you to control the floating stripes (to be connected  by
+              sroute)  by specifying a layer range helpful in case of advanced
+              node designs. You need to specify the following values with this
+              parameter:
+
+              * maxLayerName: Specifies the top-most floating stripe layer al-
+                lowed for connection.
+
+              * minLayerName: Specifies the bottom-most floating stripe  layer
+                allowed for connection.
+
+       -targetObjListFile <filename>
+              Specifies  a  .obj file that contains a list of objects that the
+              sroute software is to either consider as a target or remove from
+              the list of available targets.
+
+              Note: Cadence recommends that you use the  Target  List  Editing
+              page  of  the SRoute form to create this file. For more informa-
+              tion, see "SRoute" in the Route Menu chapter of the Innovus Menu
+              Reference.
+
+       -targetViaLayerRange {<bot top>}
+              Specifies the highest and lowest layer that can be used for  via
+              stacking at a target.
+
+              Default:  If  you  do not specify this parameter, all layers are
+              used.
+
+       -uda <subclass_string>
+              Displays the  user  defined  attribute  attached  to  followpin,
+              blockwire, core wires, iowires and padring.
+
+Extra Configuration File Options for sroute
+       You  should  only  use the extra configuration file if you are familiar
+       with its use.
+
+       The following variables can be used in the extra configuration file:
+
+                     * srouteAlignViaOnStripe {true | false}
+
+                     * srouteAutoRingPadBlockpinRoute {true | false}
+
+                       Generates rings between pad pins and block  pins.  When
+                       this  option is set to true, the Innovus software auto-
+                       matically generates the  rings  between  pad  pins  and
+                       block pins to be used as targets for pad pins and block
+                       pins.
+
+       The default is false.
+
+                     * srouteAutoRingLayer layer_number
+
+                       Specifies the layer of the rings.
+
+                     * srouteAutoRingOffsetFromBlockPin db_unit
+
+                       Specifies the clearance between the rings and the block
+                       pins.
+
+                     * srouteConnectAreaIO {true | false}
+
+                     * srouteFollowPinOnShapePin {true | false}
+
+                       The default is false.
+
+       Specifies whether the primary pins are O-shaped.
+
+                     * srouteForbidStackVia {true | false}
+
+                       Note:  This  variable is obsolete and has been replaced
+                       by srouteForbidStackVia.
+
+                     * srouteMinRailLength minLength
+
+                       Limits the creation of followpin rails to a  length  at
+                       or  above  the  specified value. SRoute will not create
+                       followpin rails with a length less than  the  specified
+                       value.  You  can use this variable to restrict the cre-
+                       ation of followpin rails where row spacing is  limited.
+                       Units in database units.
+
+                     * srouteMinRailLength minLength
+
+                       Limits  the  creation of followpin rails to a length at
+                       or above the specified value. SRoute  will  not  create
+                       followpin  rails  with a length less than the specified
+                       value. You can use this variable to restrict  the  cre-
+                       ation  of followpin rails where row spacing is limited.
+                       Units in database units.
+
+                     * srouteRoutePowerBarPort {true | false}
+
+                       The default is true.
+
+       When set to false, SRoute does not attempt to route outside  the  block
+       after the power bars are routed.
+
+                     * srouteAlignViaOnStripe {true | false}
+
+                       The default is false.
+
+       Controls  the  alignment  of stacked cross vias between followpin rails
+       and stripes. When a followpin rail passes through a  pair  of  stripes,
+       the  power  routing software generates stacked vias to connect the fol-
+       lowpin rail to the stripe of the same net. The stacked via  is  created
+       between  the  stripes  and  spans  from the followpin rail layer to the
+       layer just below the stripe layer. The via between the stripe layer and
+       the layer below is placed at the intersection of the followpin rail and
+       the stripe of the same net. The vias are connected with a wire from the
+       layer just below the stripe layer.
+
+       The srouteAlignViaOnStripe configuration file option  is  enabled  when
+       set to true and only when the following conditions are met:
+
+                            * When  you  specify two nets with the sroute com-
+                              mand. For example:
+
+                              sroute -nets {VDD GND}
+
+                            * When stripes are of the same layer  and  of  the
+                              same width
+
+                            * When  the  distance  between the stripes is less
+                              than their width
+
+                            * When there are only two stripe wires within  the
+                              distance of the width (not split)
+
+                              Note:  This  variable replaces srouteAlignViaOn-
+                              Stripe.
+
+                     * srouteSecondaryPinIgnoreStandardCell {true | false}
+
+                       In the previous release, if the followpins were on  the
+                       1  or the 2 layer, the command always treated the stan-
+                       dard cells in the path of the followpin wires as block-
+                       ages.
+
+       In this release, you can set the option to true  to  specify  that  the
+       standard cells in the path of the followpin wires should not be consid-
+       ered  as  blockages even if the followpins are on the 1 or the 2 layer.
+       This way, the secondary pin routing can route  through  these  standard
+       cells.
+
+       By  default,  the value is false. This means that the standard cells in
+       the path of the followpin wires are treated as blockages if the follow-
+       pins are on the 1 or the 2 layer.
+
+                     * srouteShifterPinObjListFile file_name
+
+                       Specifies a file containing a list  of  secondary  pins
+                       for  sroute  to  ignore when routing. Use this variable
+                       when you have already routed certain shifter  pins,  if
+                       the  shifter  pins  have different alignment, or if you
+                       want to use a different router (such as  NanoRoute)  to
+                       connect the pins, for example.
+
+       The file format is as follows:
+
+       delete pin pin_name macro macro_name layer layer_name
+
+       In the file, you can repeat this line for any pins as you want.
+
+       Currently, layer is ignored.
+
+                     * srouteForbidStackVia {true | false}
+
+                       The default is false.
+
+       Note: This variable replaces srouteForbidStack.
+
+                     * srouteViaOnPadCorePin {true | false}
+
+                       The default is false.
+
+       Earlier  pad  core  pins were only considered for cross via generation.
+       With the option srouteViaOnPadCorePin, pad core pins are considered  as
+       routing targets.
+
+                     * srouteTandemPadBlockpinRoute [1|2|0]
+
+                       Controls  the tandem route and routes block pin and pad
+                       pin in both preferred and non-preferred layers. Where,
+
+              *
+
+                *
+
+                  * 0 stands for do not do tandem route. This is the default.
+
+                  * 1 stands for preferred layer only.
+
+                  * 2 stands for all layers.
+
+                * srouteTandemRouteReliefViaInterval dbunit
+
+                  Creates stack via over tandem wires at specified intervals.
+
+Related Information
+              * getSrouteMode
+
+              * setSrouteMode
+
+              * Power Planning and Routing chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025              sroute(25.10)

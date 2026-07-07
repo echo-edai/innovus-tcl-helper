@@ -1,0 +1,131 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_clock_tree_nets(25.10)              get_ccopt_clock_tree_nets(25.10)
+
+Name
+       get_ccopt_clock_tree_nets  -  This command returns a list of clock tree
+       nets whose names match the specified pattern
+
+Syntax
+       get_ccopt_clock_tree_nets
+
+       [-help]
+
+       [pattern]
+
+       [-in_clock_trees <list_of_trees>]
+
+       [-net_types leaf | trunk | top]
+
+       [-not_in_clock_trees <list_of_trees>]
+
+       [-regexp]
+
+       This command returns a list of clock tree nets whose  names  match  the
+       specified  pattern. By default, the command returns all clock tree nets
+       with matching names, but you can use optional parameters to filter  the
+       list  based on net type and clock tree membership. Valid values for net
+       types are leaf, trunk, and top.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each  get_ccopt_clock_tree_nets parameter. For a
+              detailed description of the command and all of  its  parameters,
+              use the man command:  man get_ccopt_clock_tree_nets.
+
+       -in_clock_trees <list_of_trees>
+              Specifies  a  TCL  list  of clock trees whose nets are to be in-
+              cluded in the list. If not specified, all the nets  of  all  the
+              clock  trees  in the design that satisfy the other conditions of
+              the command will be returned.
+
+       -net_types leaf | trunk | top
+              Only returns nets of the specified type(s). All clock tree  nets
+              fall into one of three categories:
+
+              * leaf nets - nets connected to sinks
+
+              * top  nets  - nets with a high transitive fanout, exceeding the
+                threshold  specified  using   the   set_ccopt_property   rout-
+                ing_top_min_fanout CCOpt property
+
+              * trunk nets - all other nets in the clock tree that are neither
+                leaf nor top nets
+
+              By default, all net types are returned: leaf, top, and trunk.
+
+       -not_in_clock_trees <list_of_trees>
+              Specifies  a  TCL  list  of clock trees whose nets are to be ex-
+              cluded from the list. If not specified, all the nets  that  sat-
+              isfy the other conditions of the command will be returned.
+
+       <pattern>
+              Returns  clock  tree nets that match this pattern. If not speci-
+              fied, all the nets that satisfy the other conditions of the com-
+              mand will be returned.
+
+       -regexp
+              When specified, treats all patterns as full TCL regular  expres-
+              sions.  If  not specified, pattern is treated as a wildcard pat-
+              tern.
+
+Examples
+              *
+
+                The following command returns the list of all clock tree  nets
+                in all clock trees:
+
+                get_ccopt_clock_tree_nets *
+
+                refclk   clk   TEST_CONTROL_INST/clk_CPF_LS_DUP_101  TEST_CON-
+                TROL_INST/n_0         TEST_CONTROL_INST/n_1         m_tdsp_clk
+                TDSP_CORE_INST/clk_CPF_LS_DUP_162
+                TDSP_CORE_INST/TDSP_CORE_MACH_INST
+
+              *
+
+                The  following command returns the list of all trunk type nets
+                in all clock trees:
+
+                get_ccopt_clock_tree_nets * -net_types trunk
+
+                refclk  clk   TEST_CONTROL_INST/clk_CPF_LS_DUP_101   TEST_CON-
+                TROL_INST/n_1     m_tdsp_clk     m_spi_clk    m_rcc_clk    RE-
+                SULTS_CONV_INST/rcc_clk_CPF_LS_DUP_161   RESULTS_CONV_INST/up-
+                per770/n_4         RESULTS_CONV_INST/upper1336/n_4         RE-
+                SULTS_CONV_INST/lower770/n_4   RESULTS_CONV_INST/lower1336/n_4
+                RESULTS_CONV_INST/n_1390      RESULTS_CONV_INST/n_1389     RE-
+                SULTS_CONV_INST/n_1394      RESULTS_CONV_INST/n_1393       RE-
+                SULTS_CONV_INST/n_1392 RESULTS_CONV_INST/n_1391 m_dsram_clk
+
+              *
+
+                The following command returns the list of all nets whose names
+                start with the word "TEST":
+
+                get_ccopt_clock_tree_nets TEST*
+
+                TEST_CONTROL_INST/clk_CPF_LS_DUP_101     TEST_CONTROL_INST/n_0
+                TEST_CONTROL_INST/n_1
+
+              *
+
+                The following command returns the list of all nets  that  con-
+                tain the word "TEST":
+
+                get_ccopt_clock_tree_nets TEST -regexp
+
+                TEST_CONTROL_INST/clk_CPF_LS_DUP_101     TEST_CONTROL_INST/n_0
+                TEST_CONTROL_INST/n_1 RAM_256x16_TEST_INST/wr_CPF_LS_DUP_160
+
+Related Information
+              * create_ccopt_clock_tree
+
+              * delete_ccopt_clock_trees
+
+              * set_ccopt_property
+
+              * The following topic in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                           Fri Apr 04 01:25:37g2e0t2_5ccopt_clock_tree_nets(25.10)

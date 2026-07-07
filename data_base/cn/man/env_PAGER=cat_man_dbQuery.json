@@ -1,0 +1,81 @@
+{
+  "command": "dbQuery",
+  "is_cmd": true,
+  "summary": "返回与指定区域重叠或邻接的对象列表",
+  "description": "dbQuery 命令用于查询并返回与用户指定的一个或多个搜索区域（矩形或多边形）存在重叠、邻接或包含关系的设计对象列表。默认情况下，它使用对象的实际多边形轮廓进行重叠检查，并支持所有类型的布线障碍物（如部分障碍、填充障碍和槽障碍）。用户可以通过参数指定对象类型、搜索区域、重叠关系类型以及检查时是否使用对象的边界框等。",
+  "usage": "dbQuery [-help] [-abut_only] | [-enclosed_only] | [-overlap_only] [-areas {{<llx1 lly1 urx1 ury1>} {<llx2 lly2 urx2 ury2>} <...>}] [-bbox_overlap] [-d] [-layers {<layer1 layer2 ...>} [-strict_via_inst_layer_check]] [-objType  {bump  busGuide  inst instAllShapes instTerm term marker net pBlkg pWire pgInstTerm rBlkg regular resizeBlkg  row  special  sViaInst sWire  viaInst  wire  whatIfWire  whatIfVia  pinShape  guiRect  guiLine guiPoly partition}] [-polygons {<x11 y11 x12 y12 x13 y13> < ...>}] [-threads]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-abut_only",
+      "description": "仅返回与搜索区域邻接的对象。对象多边形与搜索区域没有重叠部分，但至少有一个点或边相交。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enclosed_only",
+      "description": "仅返回完全包含在搜索区域内的对象。对象多边形完全位于搜索区域内。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-overlap_only",
+      "description": "仅返回与搜索区域部分重叠的对象。对象多边形部分在搜索区域内，部分在外。单个接触点不被视为重叠。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-areas",
+      "description": "指定搜索区域，格式为矩形列表 {llx lly urx ury}。默认单位是微米（除非使用 -d 参数）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bbox_overlap",
+      "description": "使用对象的边界框而非多边形形状进行重叠、邻接或包含检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "指定 -areas 或 -polygons 参数的值使用数据库单位，而非微米。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layers",
+      "description": "仅返回位于指定层上的对象。适用于特定对象类型（如 pinShape, wire, viaInst 等）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-strict_via_inst_layer_check",
+      "description": "与 -layers 参数联用，仅返回通孔（via）对象中与指定层匹配的层上的形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-objType",
+      "description": "指定要搜索的对象类型列表。支持多种对象类型同时搜索。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-polygons",
+      "description": "指定多边形搜索区域。默认单位是微米（除非使用 -d 参数）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-threads",
+      "description": "启用多线程模式进行查询。建议仅在指定多个区域且查询耗时过长时使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

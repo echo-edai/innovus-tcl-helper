@@ -1,0 +1,63 @@
+{
+  "command": "optPower",
+  "is_cmd": true,
+  "summary": "优化设计功耗，通过替换为低功耗门单元或在不影响时序的情况下删除缓冲器/反相器。",
+  "description": "该命令通过将门单元替换为功耗更低的版本，或在不影响时序的情况下删除缓冲器和反相器，来优化设计的功耗。其优化类型（泄漏功耗、动态功耗或两者结合）由 `setOptMode -opt_leakage_to_dynamic_ratio` 命令的设置决定。默认情况下（比值为1.0），该命令仅执行泄漏功耗优化。在执行功耗优化前，必须正确设置设计，包括设置正确的功耗视图、确保库包含单元泄漏功耗信息以及正确指定开关活动性。",
+  "usage": "optPower [-help] [-allowResizing] [-effortLevel {high}] [-force] [-preCts | -postCts | -postRoute] [-prePlace] [-seqOnly]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowResizing",
+      "description": "指定优化使用单元尺寸调整来进行功耗回收和（如有需要）时序恢复。这将导致布局细化和布线ECO，可能增加运行时间，但能获得更好的功耗优化效果，有时可能影响时序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-effortLevel",
+      "description": "指定优化力度为高。启用后，功耗优化将采用更积极的回收策略，并执行时序恢复步骤，通常会导致运行时间显著增加。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "强制将每个实例调整到泄漏功耗最低的单元，忽略设计规则违例和最佳时序。仅在 `setOptMode -opt_leakage_to_dynamic_ratio` 设置为1.0时有效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-preCts",
+      "description": "在时钟树综合之前，对已完成布局的设计进行功耗优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postCts",
+      "description": "在时钟树综合完成后，对设计进行功耗优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postRoute",
+      "description": "在布线完成后，对设计进行功耗优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-prePlace",
+      "description": "对未布局的设计进行功耗优化。此参数必须与 `-force` 参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-seqOnly",
+      "description": "指定仅对时序单元进行动态功耗优化。此选项可与 `-force` 参数在所有模式（preCts, prePlace, postCts, postRoute）下配合使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

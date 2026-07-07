@@ -1,0 +1,187 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPGPin(25.10)                                          createPGPin(25.10)
+
+Name
+       createPGPin  -  Creates a power/ground pin as per the specified coordi-
+       nates of the physical shape
+
+Syntax
+        createPGPin
+
+       [-help]
+
+        {-onDie {-selected | -net <netName>}
+
+       [-width <float>]
+
+       [-length <float>]} |
+
+        {<pgPinName> [-net <netName>]
+
+       [-geom <layerName llx lly urx ury>]}
+
+       [-dir {undefined | input | output}]
+
+       Creates a power/ground pin as per  the  specified  coordinates  of  the
+       physical  shape.  You can use this command to create a power/ground pin
+       without having to first create a power stripe with the  addStripe  com-
+       mand.
+
+       If  the  -geom parameter is not specified, only the logical pin is cre-
+       ated.
+
+       If the -geom parameter is specified, the physical pin is also created.
+
+       If a logical power/ground pin exists before this command  is  run,  the
+       net name will be ignored if it is specified.
+
+       If  a  logical  power/ground  pin does not exist before this command is
+       run:
+
+              * If a net has been  specified  with  the  -net  parameter,  the
+                power/ground pin will be created and attached to the net spec-
+                ified.
+
+              * If  a net name has not been specified, the net name is assumed
+                to be the same as the pin name. In this case, the power/ground
+                pin will be created and attached to that nets.
+
+Parameters
+       -dir {undefined | input | output}
+              Specifies the direction of the power/ground pin. You can specify
+              one of the following:
+
+              * undefined: Specifies that the direction of the pin is not  de-
+                fined.
+
+              * input: Specifies that the direction of the pin is input.
+
+              * output: Specifies that the direction of the pin is output.
+
+              Data_type: enum, optional
+
+       -geom <layerName llx lly urx ury>
+              Specifies the geometry of the physical pin.
+
+              * layerName:  Specifies  the layer on which the power/ground pin
+                will be created. The layerIdcan range from 1 to n, where,  the
+                maximum value for n is the top most routing layer.
+
+                Note:  Layers can also be specified using layer names (for ex-
+                ample, Metal1, Metal2, Metal3) or the LEF layer names.
+
+              * llx: Specifies the lower-left x coordinate, in microns, of the
+                power/ground pin.
+
+              * lly: Specifies the lower-left y coordinate, in microns, of the
+                power/ground pin.
+
+              * urx: Specifies the upper-right x coordinate,  in  microns,  of
+                the power/ground pin.
+
+              * ury:  Specifies  the  upper-right y coordinate, in microns, of
+                the power/ground pin.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each <createPGPin>parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createPGPin
+
+       -length <float>
+              Specifies the length of the power/ground pin.
+
+              Default: Same as the width
+
+              Data_type: float, optional
+
+       -net <netName>
+              Specifies the name of the net to which the power/ground pin will
+              be attached.
+
+              Data_type: string, optional
+
+       -onDie Creates  power/ground pin on the die.
+
+              Data_type: bool, optional
+
+       <pgPinName>
+              Specifies the name of the power/ground pin.
+
+              Data_type: string, optional
+
+       -selected
+              Creates  power/ground pin on the die, for all selected stripes.
+
+              Data_type: bool, optional
+
+       -width <float>
+              Specifies the width of the power/ground pin.
+
+              Default: width of the stripe.
+
+              Data_type: float, optional
+
+Examples
+              * This  example is for the case where a logical pin name has not
+                been defined prior to running the command and a net  name  has
+                been specified.
+
+                The following command creates a power/ground pin named pgpin_A
+                on layer Metal2 and attaches the pin to the net net_A. The pin
+                coordinates are 7 (llx), 3 (lly), 17 (urx), and 23 (ury).
+
+                createPGPin -geom Metal2 7 3 17 23 -net net_A pgpin_A
+
+              * This  example is for the case where a logical pin name has not
+                been defined prior to running the command and a net  name  has
+                not been specified.
+
+                The following command creates a power/ground pin named pgpin_B
+                on  layer  Metal3 and attaches the pin to the net pgpin_B. The
+                pin coordinates are 7 (llx), 3 (lly), 17 (urx), and 23  (ury).
+                As  the net name was not specified, the net name is assumed to
+                be the same as the pin name.
+
+                createPGPin -geom Metal3 7 3 17 23 pgpin_B
+
+              * This example is for the case where a logical pin name has  al-
+                ready been defined prior to running the command.
+
+                The following command creates a power/ground pin named pgpin_C
+                on  layer Metal5. The pin coordinates are 7 (llx), 3 (lly), 17
+                (urx), and 23 (ury). In this case, the logical  pin  name  was
+                already  defined  prior  to  running the command, and so a net
+                name is not required. Even if a net name  were  specified,  it
+                would have been ignored.
+
+                createPGPin -geom Metal5 7 3 17 23 pgpin_C
+
+              * This  example is for the case where the net name is not speci-
+                fied and the -geom parameter has not been specified.
+
+                The following command creates a logical pin names pgpin_D. The
+                net name is assumed to be the same as  the  pin  name  and  no
+                physical pin is created.
+
+                createPGPin pgpin_D
+
+              * This  example  is for the case where the pin is created on the
+                die attached to net vdd with a width of 2 and a length of 3.
+
+                createPGPin -onDie -net vdd -width 2 -length 3
+
+Related Information
+              * addStripe
+
+              * deletePGPin
+
+              * Power Menu chapter in the Innovus Menu Reference
+
+                     * Create P/G Pin
+
+                           Fri Apr 04 01:25:37 2025         createPGPin(25.10)

@@ -1,0 +1,75 @@
+{
+  "command": "trim_pg",
+  "is_cmd": true,
+  "summary": "修剪电源地网络中的金属走线和通孔",
+  "description": "该命令用于修剪（trim）指定的电源地（PG）网络中的金属走线（stripe）或通孔（via）。用户可以通过指定网络、层、修剪类型、修剪图案、排除区域、合并阈值等多种参数，精确控制修剪的范围和行为。例如，可以修剪特定层上的走线，或修剪连接两个特定层的通孔堆叠。命令支持通过候选文件（candidate_file）批量指定参数，也支持直接定义修剪区域和排除区域。",
+  "usage": "trim_pg [-help] [-keep_dangling_via] -net {list_of_nets} { {-layer {<layer_name1> [<layer_name2>]} -pattern <trimming_pattern> -type {stripe via}} | -candidate_file <file_name> } [ -exclude_local_grid {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} | -candidate_file <file_name> ] [ -exclude {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} | -candidate_file <file_name> ] [ -threshold <float> | -candidate_file <file_name> ] [ -area {x1, y1, x2, y2} | -candidate_file <file_name> ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法帮助信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_dangling_via",
+      "description": "修剪走线时保留悬空的通孔",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定要进行修剪的网络名称列表",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-layer",
+      "description": "指定层名。修剪走线时为一个层名；修剪通孔时为两个层名",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern",
+      "description": "指定修剪图案",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定修剪类型：'stripe' 修剪单层走线，'via' 修剪两层间的通孔堆叠",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-candidate_file",
+      "description": "指定包含修剪候选参数的文件名",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_local_grid",
+      "description": "指定要完全跳过修剪的局部区域（整个走线被跳过）",
+      "required": false,
+      "type": "box_list"
+    },
+    {
+      "name": "-exclude",
+      "description": "指定要排除修剪的区域（区域内的部分走线不被修剪）",
+      "required": false,
+      "type": "box_list"
+    },
+    {
+      "name": "-threshold",
+      "description": "指定走线合并的阈值",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-area",
+      "description": "指定进行修剪的矩形区域（可选）",
+      "required": false,
+      "type": "box"
+    }
+  ]
+}

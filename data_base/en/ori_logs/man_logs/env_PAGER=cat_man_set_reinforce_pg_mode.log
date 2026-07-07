@@ -1,0 +1,205 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_reinforce_pg_mode(25.10)                      set_reinforce_pg_mode(25.10)
+
+Name
+       set_reinforce_pg_mode - Sets global variables for the reinforce_pg com-
+       mand
+
+Syntax
+        set_reinforce_pg_mode
+
+       [-help]
+
+       [-auto_ir_fix_effort {low | medium | high}]
+
+       [-critical_path_slack {<slack>}]
+
+        [-irdrop_hierarchical_block  {block1 block2 ... | *}]
+
+       [-irdrop_hierarchical_top_rail_analysis_directory {<directory_name>}]
+
+       [-reset]
+
+       [-respect_defined_nets {<file_name>}]
+
+       [-respect_routes {none | fixed | fixed_and_clock | all}]
+
+       [-respect_stdcell_geometry {none | sequential | all}]
+
+       [-timing_aware_effort {none | low | medium | high}]
+
+       Sets global variables for the reinforce_pg command.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each set_reinforce_pg_mode parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man set_reinforce_pg_mode
+
+       -auto_ir_fix_effort {low | medium | high}
+              Specifies  the  IR fixing effort level during the stripe genera-
+              tion. Use this parameter to control the IR  fixing  effort.  The
+              number  of  fixed  tiles is changed according to the effort set-
+              tings. The higher the effort value, the larger number  of  tiles
+              are  passed back from Voltus to RPG for polygon insertion, which
+              results in insertion of more polygons.
+
+              This parameter works only with the reinforce_pg -auto_ir_fix pa-
+              rameter.
+
+              Default: low
+
+       -critical_path_slack {<slack>}
+              Specifies a slack threshold value (in nanoseconds) for  critical
+              nets during timing-driven PG stripe reinforcement. It means that
+              reinforce_pg  honors  all  the  violation paths with slack value
+              lesser than the specified -critical_path_slack value, since  all
+              such associated nets are considered critical.
+
+              Default: 0
+
+       -irdrop_hierarchical_block {block1 block2 ... | *}
+              Reports  the IR drop violations on the specified list of hierar-
+              chical block(s) to fix IR drop. The names of the specified hier-
+              archical blocks should be  instantiations  of  the  same  master
+              block,  which is the loaded block. If you specify the * value of
+              this parameter, all the instantiations of the loaded  block  are
+              considered.
+
+       -irdrop_hierarchical_top_rail_analysis_directory {<directory_name>}
+              Reads  the  rail  analysis information of full chip available in
+              the specified directory for the  hierarchical  flow  blocks.  It
+              collects the IR drop information of the specified block and uses
+              it to fix the IR drop.
+
+       -reset Resets all or specified parameters to their default values.
+
+       -respect_defined_nets {<file_name>}
+              When  this parameter is used, reinforce_pg respects the user-de-
+              fined nets listed in the specified file, which are  critical  in
+              stripe  generation.  This  helps  in  reserving space around the
+              specified nets, and the newly added PG wires are DRC clean  with
+              these nets. This parameter is independent of the -respect_routes
+              parameter.  However,  when  it  is  used  together with the -re-
+              spect_routes parameter, reinforce_pg respects all of them.
+
+              Default: ""
+
+       -respect_routes {none | fixed | fixed_and_clock | all}
+              Specifies the route types to honor check of pre-existing  routes
+              during stripe generation. This parameter always honor all covers
+              and  PGs, but does not honor the trail routes, Following are the
+              parameter values:
+
+              * none: Specifies that no route types are respected.
+
+              * fixed: Respects fixed regular wires.
+
+              * fixed_and_clock: Respects fixed and routed clocks.
+
+              * all: Respects fixed and routed clocks along  with  the  routed
+                signals.
+
+              For more information on the support of the set_reinforce_pg_mode
+              -respect_route  parameter  values  with various statuses of net,
+              see Support of  set_reinforce_pg_mode  -respect_route  Parameter
+              Values.
+
+              Default: fixed_and_clock
+
+       -respect_stdcell_geometry {none | sequential | all}
+              Specifies  all types of geometries (including pin and obs) to be
+              respected in via generation. This parameter checks the  standard
+              cell  types  to  decide  weather  the  DRC violation needs to be
+              checked on its geometries (including pin and obs) in via genera-
+              tion.
+
+              Default: all
+
+       -timing_aware_effort {none | low | medium | high}
+              Specifies the timing aware effort level on critical paths of re-
+              inforce_pg. The reinforce_pg command performs  timing  analysis,
+              when  the  -timing_aware_effort parameter is set to low, medium,
+              or high. Use the set_reinforce_pg_mode -critical_path_slack  pa-
+              rameter to determine the slack range.
+
+              When the set_reinforce_pg_mode -critical_path_slack parameter is
+              not  defined,  following will be the behavior of the non-default
+              values of -timing_aware_effort:
+
+              * Low Effort: Protects the clock trunk, when this  parameter  is
+                set to low.
+
+              * Medium Effort: Protects the clock tree, when this parameter is
+                set to medium.
+
+              * High Effort: Protects the clock tree and adds routing blockage
+                with  the timing analysis result from first run of polygon in-
+                sertion, when this parameter is set to high.
+
+              The -critical_path_slack parameter can work only when the  -tim-
+              ing_aware_effort parameter is set to low, medium, or high.
+
+              See  the  figure  below for understanding the timing aware rein-
+              force PG flow:
+
+              The following figure presents reserving of spaces around  criti-
+              cal  net using with and without the -timing_aware_effort parame-
+              ter:
+
+              Default: none
+
+Support of set_reinforce_pg_mode -respect_route Parameter Values
+       The following table presents the support of  the  set_reinforce_pg_mode
+       -respect_route parameter values with various statuses of net:
+
+       ________________________________________________________
+
+       |   Target   PG   Honoring   a  Wire         |   -respect_route  Values
+       |
+
+       |______________________________________________|________|
+
+       | Net Use  |  Status               |  none     |  fixed    |   fixed_an
+       |  all      |
+
+       |           |                        |           |           |  d_clock
+       |           |
+
+       |__________|___________|___________|___________|________|
+
+       | Yes      |  Yes      |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | Yes      |  Yes      |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | No       |  Yes      |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | Clock    |  No       |  No       |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | Signal   |  No       |  No       |  No       |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | No       |  No       |  No       |  No       |
+
+       |__________|___________|___________|___________|________|
+
+Related Information
+              * reinforce_pg
+
+              * get_reinforce_pg_mode
+
+              * Power Planning and Routing chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025set_reinforce_pg_mode(25.10)

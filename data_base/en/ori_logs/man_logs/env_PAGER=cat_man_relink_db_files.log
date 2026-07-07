@@ -1,0 +1,74 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+relink_db_files(25.10)                                  relink_db_files(25.10)
+
+Name
+       relink_db_files  -  Relinks symbolic links to library files inside a DB
+       directory
+
+Syntax
+       relink_db_files
+
+        [-help]
+
+       -db_dir <db_directory>
+
+       -new_lib_dirs {<new_lib_directory1> <new_lib_directory2> ...}
+
+       Relinks symbolic links to library files inside a DB directory.
+
+       By default, saveDesign saves the location of library files as  symbolic
+       links  under  <db_dir>/libs/.... When a DB directory is copied to a new
+       network where all the libraries are in a different location, or  a  new
+       version of the library files are needed, you can use relink_db_files to
+       change the symbolic links to new locations .
+
+       The  relink_db_files  command  will search each -new_lib_dirs directory
+       and the sub-directory tree below it for each library file  name  inside
+       <db_dir>, and create a symbolic link to the new location. Only the base
+       file  name  is used for the search (except for qrcTechFile). Therefore,
+       two path names inside the new directory, such  as  /timing/fast/std.lib
+       and  /timing/slow/std.lib,  will have duplicate names of "std.lib". The
+       duplicate names are not supported and will cause an error. You can  use
+       the  restoreDesign command to update all the LEF full-path names or use
+       a new MMMC files with all the new .lib  full-path  names  if  duplicate
+       file names need to be updated. If there are missing library file names,
+       the tool will show an error.
+
+       The  relink_db_files  command  supports .lib, .lef, and qrcTechFile li-
+       brary file types.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each relink_db_files parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man relink_db_files
+
+       -db_dir <db_directory>
+              The  current  db directory which contains incorrect library sym-
+              bolic links.
+
+       -new_lib_dirs<{new_lib_directory1 new_lib_directory2 ...}>
+              The new directories to search for library files.
+
+Example
+       If the current LEF files are all under/libs/lefs_v1.0/ (or sub-directo-
+       ries) and the current .lib and  qrcTechFiles  are  all  under/libs/tim-
+       ing_v1.0/ (or sub-directories), you use the following command to update
+       the LEF files to use /libs/lefs_v2.0/:
+
+       >relink_db_files    -db_dir    my_db   -new_lib_dirs   {/libs/lefs_v2.0
+       /libs/timing_v1.0}
+
+       Note: The command must find every library file. Therefore, you need  to
+       list the top of the old timing directory tree along with the top of the
+       new LEF files directory tree.
+
+Related Information
+              * saveDesign
+
+              * restoreDesign
+
+                           Fri Apr 04 01:25:37 2025     relink_db_files(25.10)

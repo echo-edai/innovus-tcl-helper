@@ -1,0 +1,183 @@
+{
+  "command": "finishFloorplan",
+  "is_cmd": true,
+  "summary": "执行高级的布局相关优化，以生成更完善的版图规划",
+  "description": "finishFloorplan命令对版图规划执行高级的布局相关优化，以产生更完善的版图规划。该命令可用于任何版图规划，包括第三方生成的版图规划。可以使用setFinishFPlanMode命令来设置活动对象，并为finishFloorplan命令指定通道方向。setFinishFPlanMode的参数会影响finishFloorplan命令的行为。注意：可以使用finishFPlan别名来访问finishFloorplan命令的功能。注意：finishFloorplan命令遵循setFPlanMode命令的-no_cut_row参数设置，该参数指定是否需要在其他操作之前切割行。当-no_cut_row参数被禁用时，如果setFinishFPlanMode命令的“-activeObj row”或“-drcRegionObj nonRowArea”选项被设置，finishFloorplan命令会在设计中的当前行/非行区域周围添加阻塞。如果在其他操作之前未切割行但-no_cut_row参数被启用，finishFloorplan命令可以作为切割行流程来工作，以在满足行约束的行/非行区域周围添加阻塞。",
+  "usage": "finishFloorplan [-help] [-mask <integer>] { [-autoHalo | [-autoHaloBasedOnPitch  [-margin  <value>]]  |  -addHalo <width> | [-fillPlaceBlockage <blkgType> <maxGap> [-density  <value>] [-excludeFlops] [-deadArea <float>] [-honor_placement_density]] | [-fillRouteBlockage <maxGap> [-layer <layerID>] [-cutLayer <cutLayerID>] [-fills | -exceptFill ] [-exceptpgnet ] [-spacing   <spaceValue>   |   -designRuleWidth   <width>]   [-deadArea <maxDeadArea>]] | -addCornerBlockage <string> | [-drcRegionLayer <layer+> [-edgeExtend {<x y>}] [-edgeShrink {<x y>}]]| -addCoreEOLBlockage  |  -addBoundaryBlockage | -addRowBasedRegionBlockage| -undo ] [-area {<x1 y1 x2 y2>}] [-namePrefix <name>] }",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个finishFloorplan参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mask",
+      "description": "指定添加路由阻塞和创建DRC区域时使用的掩码编号。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-autoHalo",
+      "description": "自动在设计中的每个宏周围添加光环。对于每个宏边缘，光环厚度与该边缘上的引脚密度成比例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoHaloBasedOnPitch",
+      "description": "根据边缘上的引脚数量、布线层和层间距自动添加光环。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-margin",
+      "description": "指定使用-autoHaloBasedOnPitch添加光环时的间距边距。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-addHalo",
+      "description": "添加具有指定宽度的布局光环。注意：-addHalo参数不添加布线光环。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-fillPlaceBlockage",
+      "description": "添加指定阻塞类型（blkgType）的布局阻塞，以填充宏到宏、宏到边界、宏到OBS、OBS到OBS以及边界到OBS的间隙，最大到指定大小（maxGap）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-density",
+      "description": "指定部分布局阻塞的密度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeFlops",
+      "description": "指定触发器和锁存器将从部分布局阻塞中排除。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-deadArea",
+      "description": "指定死区的最大值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-honor_placement_density",
+      "description": "在添加布局阻塞时添加标准单元密度检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fillRouteBlockage",
+      "description": "添加路由阻塞，最大到指定大小（maxGap）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-layer",
+      "description": "指定路由阻塞的层ID。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cutLayer",
+      "description": "指定要应用路由阻塞的切割层ID。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fills",
+      "description": "指定路由阻塞将应用于金属填充。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exceptFill",
+      "description": "指定路由阻塞将应用于除金属填充外的所有其他网络布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exceptpgnet",
+      "description": "指定路由阻塞将应用于信号网络布线，而不是电源或地网络布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定路由阻塞内各层之间的最小间距。该值是一个大于或等于0的实数。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-designRuleWidth",
+      "description": "指定路由阻塞的有效宽度。该值是一个大于0的实数。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-addCornerBlockage",
+      "description": "指定自动添加到拐角周围的硬布局阻塞的宽度和高度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-drcRegionLayer",
+      "description": "指定区域层名称列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-edgeExtend",
+      "description": "指定DRC区域可以从指定边缘扩展。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-edgeShrink",
+      "description": "指定DRC区域可以从指定边缘收缩。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-addCoreEOLBlockage",
+      "description": "在活动对象边界周围添加具有“COREEOLBLOCKAGE”属性的行尾（EOL）路由阻塞。此参数只能将行作为活动对象。对于每一层，EOL路由阻塞垂直于首选布线方向。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addBoundaryBlockage",
+      "description": "在活动对象边界周围添加具有“BOUNDARYBLOCKAGE”属性的边界路由阻塞。此参数只能将芯片作为活动对象。对于每一层，边界阻塞垂直于首选布线方向。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addRowBasedRegionBlockage",
+      "description": "当指定时，它添加基于行的区域阻塞。此参数在某些行区域中添加具有“ROWBASED”属性的区域层阻塞。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-undo",
+      "description": "撤销上一次的finishFloorplan运行。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "分别指定阻塞区域的左下角x坐标、左下角y坐标、右上角x坐标和右上角y坐标。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-namePrefix",
+      "description": "指定添加的阻塞的名称前缀，以避免与现有阻塞命名冲突。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

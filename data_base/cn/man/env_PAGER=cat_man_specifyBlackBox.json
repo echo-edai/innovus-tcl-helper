@@ -1,0 +1,201 @@
+{
+  "command": "specifyBlackBox",
+  "is_cmd": true,
+  "summary": "将硬宏转换为黑盒或指定黑盒主实例",
+  "description": "该命令用于将设计中的硬宏（hard macro）转换为黑盒（blackbox）。它也可用于指定一个实例作为多个实例化黑盒的主模板。该命令通常在导入设计后使用。\n注意：虽然可以将硬宏转换为黑盒，但Cadence不建议这样做，因为更改黑盒大小时不会更新阻挡层（blockage）定义。\n注意：对于具有背面金属层的设计，同时支持正面和背面金属层。然而，背面金属层的支持不会影响自动引脚分配流程，该流程仅在正面层上分配引脚。",
+  "usage": "specifyBlackBox [-help] [-coreSpacing {<left right top bottom>}] [-minPitchLeft <integer>] [-minPitchRight <integer>] [-minPitchTop <integer>] [-minPitchBottom <integer>] [-pinLayerLeft {<list_of_layers>}] [-pinLayerRight {<list_of_layers>}] [-pinLayerTop {<list_of_layers>}] [-pinLayerBottom {<list_of_layers>}] [-reservedLayer {<list_of_layers>}] [-placementHalo {<left right top bottom>}] [-routingHalo <float>] [-routingHaloTopLayer <integer>] [-routingHaloBottomLayer <integer>] [-noRebuildTiming] [ -cell <string>| -masterInst <string>] {-size {<x y>} | -area <float> | -gateCount <string> | {-gateArea <float >[-cellUtil <float>] [ -includeMacroArea {0 | 1} {-macroArea <float >| -macroList {<macroName> [<count>]}}]}} [{-area <float >| -gateCount <string>} [-minWidth <float> | -minHeight <float> | -fixedWidth <float> | -fixedHeight <float> ]] [-minWidth <float> | -minHeight <float> |  -fixedWidth  <float> | -fixedHeight <float> |-aspectRatioRange {<min max>}] [-aspectRatio <float >|-aspectRatioRange {<min max>}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-coreSpacing",
+      "description": "指定模块边界与核心设计区域在左、右、上、下各边的间距（单位：微米）。分区引脚将位于分区实例边界和核心区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-minPitchLeft",
+      "description": "指定黑盒左侧的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minPitchRight",
+      "description": "指定黑盒右侧的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minPitchTop",
+      "description": "指定黑盒顶部的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minPitchBottom",
+      "description": "指定黑盒底部的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pinLayerLeft",
+      "description": "指定用于黑盒左侧的金属层列表。水平金属层（例如Metal3、Metal5）用于黑盒的左侧和右侧。以整数形式指定，例如 {2 4}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinLayerRight",
+      "description": "指定用于黑盒右侧的金属层列表。水平金属层（例如Metal3、Metal5）用于黑盒的左侧和右侧。以整数形式指定，例如 {2 4}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinLayerTop",
+      "description": "指定用于黑盒顶部的金属层列表。垂直金属层（例如Metal2、Metal4）用于黑盒的顶部和底部。以整数形式指定，例如 {2 4}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinLayerBottom",
+      "description": "指定用于黑盒底部的金属层列表。垂直金属层（例如Metal2、Metal4）用于黑盒的顶部和底部。以整数形式指定，例如 {2 4}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reservedLayer",
+      "description": "指定在分区中用于布线和生成分区引脚的金属层列表。任何未指定的金属层（通常是最顶层的金属层）允许在分区上方布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-placementHalo",
+      "description": "指定黑盒周围（左、下、右、上）不应用于布局的额外间距（单位：微米）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-routingHalo",
+      "description": "指定黑盒周围的路由间距（单位：微米）。可以指定正值或负值。正值表示光晕在黑盒外部，负值表示光晕在黑盒内部生效。该值用于黑盒的所有边。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-routingHaloTopLayer",
+      "description": "指定将为其创建路由光晕的顶部分区层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-routingHaloBottomLayer",
+      "description": "指定将为其创建路由光晕的底部分区层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-noRebuildTiming",
+      "description": "跳过重新构建时序图和重新初始化顶层单元信息，以提高具有大量黑盒的设计的黑盒规范运行时间。注意：由于时序图只需要为最后一个黑盒构建，因此必须在最后一个specifyBlackBox命令中不使用此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定单元的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-masterInst",
+      "description": "指定主黑盒的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-size",
+      "description": "指定模块的固定宽度和高度（单位：微米）。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-area",
+      "description": "指定总面积（单位：平方微米）。如果指定了块面积，则创建的块宽高比默认为1。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-gateCount",
+      "description": "指定门数量值。总面积等于指定的门数量乘以指定的每个门的面积。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gateArea",
+      "description": "指定门面积。如果-includeMacroArea参数的值为0，则门面积等于标准单元面积。如果值为1，则门面积还包括宏面积。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-cellUtil",
+      "description": "指定单元利用率。该值用于推导黑盒面积。默认值为1（100%）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-includeMacroArea",
+      "description": "值为0指定门面积不包括通过-macroArea或-macroList参数指定的宏面积。值为1指定门面积包括通过-macroArea或-macroList参数指定的宏面积。默认值为0。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-macroArea",
+      "description": "指定宏的总面积（单位：平方微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-macroList",
+      "description": "指定其面积将在计算总门面积时被包括的硬宏的名称。macroName参数指定宏的名称，count参数指定宏被引用的次数。默认count值为1。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-minWidth",
+      "description": "指定指定模块的最小宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-minHeight",
+      "description": "指定指定模块的最小高度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-fixedWidth",
+      "description": "指定模块的固定宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-fixedHeight",
+      "description": "指定模块的固定高度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-aspectRatio",
+      "description": "指定宽高比值。该值与面积信息结合确定宽度和高度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-aspectRatioRange",
+      "description": "设置宽高比范围的最小和最大值。该值与指定的相关面积信息结合，使黑盒能够在保持当前面积的情况下改变形状。",
+      "required": false,
+      "type": "point"
+    }
+  ]
+}

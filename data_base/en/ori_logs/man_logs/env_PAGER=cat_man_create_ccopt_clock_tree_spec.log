@@ -1,0 +1,115 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_ccopt_clock_tree_spec(25.10)        create_ccopt_clock_tree_spec(25.10)
+
+Name
+       create_ccopt_clock_tree_spec  - Creates a clock tree network with asso-
+       ciated skew groups and other clock tree synthesis  (CTS)  configuration
+       settings  such as ignore pins, case analysis, maxTrans, and so on based
+       on a multi-mode timing configuration in the common timing engine (CTE)
+
+Syntax
+       create_ccopt_clock_tree_spec
+
+       [-help]
+
+        [-file filename]
+
+       [-keep_all_sdc_clocks]
+
+        [-views viewList]
+
+       Creates a clock tree network with  associated  skew  groups  and  other
+       clock  tree synthesis (CTS) configuration settings such as ignore pins,
+       case analysis, maxTrans, and so on based on a multi-mode timing config-
+       uration in the common timing engine (CTE).
+
+       When you run this command, one skew group will be created for each  SDC
+       clock  in  each  constraint  mode. Each such skew group will be able to
+       take a skew target from any delay corner, but will have this target set
+       to "ignore" unless there is an active analysis view that links the con-
+       straint mode for the skew group to that delay  corner.  The  output  of
+       this  command  is a sequence of Innovus Tcl commands that can be edited
+       manually.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each create_ccopt_clock_tree_spec parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man create_ccopt_clock_tree_spec.
+
+       -file <filename>
+              Specifies the name for the clock tree specification script file.
+              Providing  the  filename writes out the specified file. The file
+              is not executed. To execute the file, run the following:
+
+              create_ccopt_clock_tree_spec -file spec.tcl
+
+              source spec.tcl
+
+              Note: You can execute the file only once. If you run  the  above
+              again, the software gives an error message:
+
+              source spec.tcl
+
+              Cannot run clock tree spec: clock trees are already defined.
+
+              The  already  loaded  specification file can be removed by using
+              either of the following commands:
+
+              * delete_ccopt_clock_tree_spec
+
+              * reset_ccopt_config
+
+              Note: If this parameter is not specified, the  clock  trees  are
+              defined  by  directly  running clock tree extraction without the
+              creation of a clock tree extraction script.
+
+       -keep_all_sdc_clocks
+              Specifies that all clocks and clock trees should be kept in  1:1
+              ratio, wherever possible.
+
+              This  means  that  CCOpt will maintain generated clock names for
+              clock trees, even where these are  functionally  redundant,  for
+              example,  clocks  defined  on  buffer outputs. By default, CCOpt
+              will not define these redundant clock trees.
+
+       -views <viewList>
+              Specifies the Tcl list of analysis view names. By  default,  the
+              software considers all active analysis views.
+
+Example
+              *
+
+                The    following    example    shows    how    running    cre-
+                ate_ccopt_clock_tree_spec defines clock trees by directly run-
+                ning clock tree extraction instead of creating  a  clock  tree
+                extraction script:
+
+                get_ccopt_clock_trees *
+
+                create_ccopt_clock_tree_spec
+
+                get_ccopt_clock_trees *
+
+                m_clk  m_digit_clk  m_dsram_clk  m_ram_clk m_rcc_clk m_spi_clk
+                refclk<1> refclk
+
+Related Information
+              * ccopt_design
+
+              * clock_opt_design
+
+              * create_ccopt_clock_tree
+
+              * delete_ccopt_clock_tree_spec
+
+              * reset_ccopt_config
+
+              *
+
+                The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:25:c3r7ea2t0e2_5ccopt_clock_tree_spec(25.10)

@@ -1,0 +1,159 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_min_transition(25.10)                            set_min_transition(25.10)
+
+Name
+       set_min_transition
+
+Syntax
+       set_min_transition
+
+       [-help]
+
+       <transition_limit>
+
+       <object_list>
+
+       [-clock_path]
+
+       [-data_path]
+
+       [-fall]
+
+       [-override]
+
+       [-rise]
+
+       Sets the minimum slew time limit (transition) on the specified ports of
+       the top timing module and/or clock waveforms.
+
+       When  set  on a port, the slew time at the port must be greater than or
+       equal to the specified limit. When set on a module, the  limit  applies
+       to  all  the  pins in the module and its ports if the module is the top
+       timing module. The minimum transition limits on pins can come from  li-
+       brary  objects,  which  are  the  default minimum transition of the li-
+       braries or minimum transition on library cell pins. In this  case,  the
+       most  constraining  limit, which is the largest, will apply on pins and
+       ports.
+
+       Use the report_ports -type slew_limit command to view the minimum tran-
+       sition limits set on ports of the top timing module.
+
+       When limits are set on a  clock  waveform,  you  can  use  -clock_path,
+       -data_path, -rise, and -fall parameters to provide more specifications.
+
+       The set_min_transition constraint on clock objects will be honored only
+       by  the  report_constraint  command  for DRV violations. The constraint
+       will not be used in optimizations.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clock_path
+              Specifies all pins that are  in  the  network  of  the  specific
+              clocks in the object list.
+
+       -data_path
+              Specifies  all  pins  that are in the data paths launched by the
+              specific clocks in the object list.
+
+       -fall  Specifies falling transition.
+
+       <object_list>
+              Specifies the list of objects - ports,  instance  pins,  library
+              cell pins, modules, and/or clock waveforms.
+
+       -override
+              Overrides  the minimum transition limit from other sources, such
+              as, library or constraints.
+
+              This parameter can be used to force a specific constraint  value
+              for  a  specified list of instance pins/port/library cell pins -
+              this overrides the maximum/minimum values set prior to this set-
+              ting.
+
+              To enable this feature, make the following setting:
+
+              set timing_constraint_enable_drv_limit_override true
+
+       -rise  Specifies rising transition for all selected pins.
+
+       <transition_limit>
+              Specifies the value of the  minimum  slew  time  limit  (minimum
+              transition).  This value must be less than or equal to zero. The
+              minimum slew time limit is in time units from the  target  tech-
+              nology library.
+
+Examples
+              * The  following  example sets a minimum transition limit of 0.9
+                units on all the ports of the top timing module, and a minimum
+                transition limit of 0.7 units on the top timing module:
+
+                set_min_transition 0.9 [get_ports *]
+
+                 set_min_transition 0.7 [current_design]
+
+                The minimum limit that applies to ports is 0.9, which  is  the
+                most constraining value.
+
+              * The following example shows a report of the minimum transition
+                limit set on ports using the report_ports command, as shown in
+                the following example:
+
+                set_min_transition 0.9 [get_ports *]
+
+                report_ports -type slew_limit -pin [get_ports *]
+
+                Minimum Transition Limit Set on Ports Report
+
+                set_min_transition 0.9 [get_ports *]
+
+                > report_ports -type slew_limit -pin [get_ports *]
+
+                -------------------------------------------
+
+                Pin    Dir   Assertion    Value
+
+                Name
+
+                -------------------------------------------
+
+                CLK2   IN    slew_limit  ( 0.900 : )
+
+                CLK1   IN    slew_limit  ( 0.900 : )
+
+                in2    IN    slew_limit  ( 0.900 : )
+
+                in1    IN    slew_limit  ( 0.900 : )
+
+                out2   OUT   slew_limit  ( 0.900 : )
+
+                out1   OUT   slew_limit  ( 0.900 : )
+
+                -------------------------------------------
+
+                > report_constraint -drv_violation_type min_transition
+
+                Check type : min_transition
+
+                ---------------------------
+
+                Pin : CLK4
+
+                Transition Time: 0.003
+
+                - min_transition: 0.900
+
+                -----------------------------------------------------
+
+                slack : -0.897 ( VIOLATED )
+
+Related Information
+              * set_max_transition
+
+              * reset_min_transition
+
+              * report_ports
+
+              * report_constraint
+
+                           Fri Apr 04 01:25:37 2025  set_min_transition(25.10)

@@ -1,0 +1,63 @@
+{
+  "command": "generate_xpgv",
+  "is_cmd": true,
+  "summary": "为大型数字模块创建电源网格视图（xPGV）模型",
+  "description": "该命令用于为大型数字模块创建电源网格视图（xPGV）模型。模块的xPGV可以在签核动态IR压降分析之后，或者在模块的动态早期电源轨分析（ERA）之后生成。在这两种情况下，xPGV都是使用模块的R-C网格以及在分析期间在通孔层捕获的电流来生成的。这些模块级的xPGV可以在下一级设计或顶层全芯片分析期间被实例化。下一级的电源轨分析将因为使用了xPGV内部建模的电源网格而运行得更快。",
+  "usage": "generate_xpgv -cell <cell_name> [-inst_list <inst1> inst2 .. <instn>] [-libgen_include <file_name>] [-output_dir <directory_name>] [-rail_include <file_name>] [-reuse_block_state_directory <directory_name>] -state_directory <directory_name> [-mvmf_config <config_file>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法说明",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要为其生成xPGV模型的模块名称",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-inst_list",
+      "description": "指定要为其生成xPGV模型的模块实例",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-libgen_include",
+      "description": "指定一个文件，该文件包含将在xPGV模型生成过程中运行的附加库生成选项",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mvmf_config",
+      "description": "指定生成一个包含不同功能模式的单一xPGV模型。使用此参数，可以指定一个包含不同模式以及每种模式对应映射状态目录的文件。当指定-mvmf_config时，每个功能模式的模块级电流会以多电压多频率（MvMf）方式保存在单个PGV中。在xPGV实例化期间，会根据每种模式所连接的电源域自动选择不同的模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_dir",
+      "description": "指定创建电源网格库报告的输出目录名称。默认为当前工作目录",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rail_include",
+      "description": "指定一个文件，该文件包含将在xPGV模型生成过程中运行的附加电源轨分析选项",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reuse_block_state_directory",
+      "description": "指定一个现有的电源轨分析状态目录以跳过模块提取。软件假设设计数据（DEF和GDS）和电源网格库没有改变，并将使用指定状态目录内的提取数据生成xPGV。如果状态目录不包含必要的设计和电源网格数据库文件，将发出错误消息并提供缺失文件的信息。此参数用于在需要将电源轨运行中分析的整个设计用于创建xPGV的情况。但是，如果需要为模块的每个实例（子模块）生成xPGV，则不得使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-state_directory",
+      "description": "指定电源轨分析状态目录的路径",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

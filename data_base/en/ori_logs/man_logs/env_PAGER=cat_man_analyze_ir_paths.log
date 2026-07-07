@@ -1,0 +1,131 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+analyze_ir_paths(25.10)                                analyze_ir_paths(25.10)
+
+Name
+       analyze_ir_paths
+
+Syntax
+       analyze_ir_paths
+
+       [-help]
+
+       -clock_period <float>
+
+       [-hierarchical_activity_file <string>]
+
+       [-max_slack <float>]
+
+       [-pre_simulation_period <float>]
+
+       -seq_activity <float>
+
+       -simulation_period <float>
+
+       [-user_defined_critical_paths <string>]
+
+       Generates a physical-aware multi-cycle switching activity file contain-
+       ing  toggle  information  of  voltage sensitive paths as well as timing
+       critical paths in the design for Tempus Power Integrity analysis.  This
+       command  generates `swsrc.txt' file in the run directory, which then is
+       fed back to the software using the read_activity_file command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clock_period <float>
+              Specifies the period of dominant clock of the design in  library
+              time units. Tempus PI refers to this specified period for multi-
+              cycle activity generation.
+
+       -hierarchical_activity_file <string>
+              Provides  a mechanism for different sequential activity for sev-
+              eral partitions in the design. The  following  is  the  required
+              format:
+
+              <hierarchical instance 1> <activity>
+
+              <hierarchical instance 2> <activity>
+
+              ...
+
+       -max_slack <float>
+              Specifies  the  maximum slack limit in library time units, above
+              which the timing paths are not considered for  activity  genera-
+              tion.
+
+       -pre_simulation_period <float>
+              Specifies  the pre-simulation duration that will be used by Tem-
+              pus PI for activity generation.
+
+              This parameter is useful when package model information is read-
+              in using set_package command, as it allows the package  oscilla-
+              tions to settle down.
+
+              Note:  The  value  specified must match to value specified under
+              set_rail_analysis_mode -record_results_start_time setting.
+
+       -seq_activity <float>
+              Specifies the activity of sequential endpoints  in  the  design.
+              This  value  will  be used to control the number of IR sensitive
+              paths, along with their fanout cone, to toggle in each cycle.
+
+       -simulation_period <float>
+              Specifies the simulation period in library time units that  Tem-
+              pus  PI  dynamic power analysis will use. The larger the simula-
+              tion period, the more will be the number of paths covered in the
+              analysis.
+
+              The following formula can be used to set the simulation period:
+
+              sim_cycles = (2/seq_act)*N
+
+              Where,
+
+              * seq_act is the input  sequential  activity  (e.g.,  0.05,  0.1
+                etc.)
+
+              * N is the number of nworst paths to be covered per endpoint
+
+              * sim_period is equal to the sim_cycles*<time period of dominant
+                clock>
+
+              It  is  recommended to have N>=1, that is, at least one path per
+              endpoint should be scheduled in the analysis.
+
+       -user_defined_critical_paths <string>
+              Specifies a collection of timing paths that are  to  be  priori-
+              tized for toggling while generating Tempus PI activity.
+
+              This  feature is useful when designers have prior information on
+              certain timing paths that may switch  together  and  can  poten-
+              tially cause IR-induced STA violations.
+
+Examples
+              * The  following  command generates the activity file for design
+                with dominant clock of 2GHz, with  input  sequential  activity
+                being 0.1 and simulation duration being 20ns:
+
+                analyze_ir_paths   -seq_activity   0.1  -simulation_period  20
+                -clock_period 0.5
+
+              * The following example specifies different sequential  activity
+                for different hierarchical partitions, with 0.2 sequential ac-
+                tivity for unspecified partitions and top:
+
+                analyze_ir_paths   -seq_activity   0.2  -simulation_period  30
+                -clock_period 0.5 -hierarchical_activity_file hact.txt
+
+                Contents of `hact.txt':
+
+                hierA/inst1 0.25
+
+                hierB/inst2 0.15
+
+              * The following command specifies the  pre-simulation  duration,
+                particularly  useful  for  package oscillations to settle when
+                package models have been read-in:
+
+                analyze_ir_paths  -seq_activity  0.1   -simulation_period   30
+                -clock_period 0.5 -pre_simulation_period 10
+
+                           Fri Apr 04 01:25:37 2025    analyze_ir_paths(25.10)

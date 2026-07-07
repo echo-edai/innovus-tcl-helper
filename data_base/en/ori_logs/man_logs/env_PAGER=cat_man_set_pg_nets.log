@@ -1,0 +1,126 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_pg_nets(25.10)                                          set_pg_nets(25.10)
+
+Name
+       set_pg_nets
+
+Syntax
+       set_pg_nets
+
+       -reset |
+
+       [-help]
+
+       -net <net_name>
+
+       -voltage <value>
+
+       [-threshold <value>]
+
+       -tolerance <value>
+
+       -force
+
+       [-die_instance_name <dieinstname>]
+
+       [-pkg_net_name<package_net_name>]
+
+       [-lib_binding_voltage<value>]
+
+       [-vu_limit <value>]
+
+       Specifies  the  power  grid  nets.  Using this command, you can specify
+       power/ground net voltages in the  static  and  dynamic  power  analysis
+       flow, and the rail analysis flow.
+
+       For  the  power analysis flow, you must specify the set_pg_nets command
+       before report_power.
+
+       Note: When specifying a ground net with a  non-zero  nominal  operating
+       voltage value, a threshold greater than the ground value must be speci-
+       fied in order for the net to be treated as the ground net.
+
+Parameters
+       -die_instance_name <dieinstname>
+              Specifies the die instance name for multi-die analysis. This op-
+              tion  is  only  available in multi-die analysis (set_rail_analy-
+              sis_mode -die_mode multi-die).
+
+       -force Skips the validity check on power nets.
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each set_pg_nets parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man set_pg_nets.
+
+       -lib_binding_voltage<value>
+              Specifies  the  voltage  to be used for library binding in power
+              analysis. This parameter binds the instances to the library that
+              is closest to the user-specified library binding voltage.
+
+       -net<net_name>
+              Specifies the name of the power or ground net that you  want  to
+              analyze.
+
+       -pkg_net_name<package_net_name>
+              Specifies  the  net  name  on  the package side. By default, the
+              package net name is same as the net name.
+
+       -reset Specifies to clear all previously specified values for this com-
+              mand. This parameter can be used to honor the power  and  ground
+              voltages  defined  in the Innovus database without impacting the
+              regular EM-IR analysis.
+
+       -threshold<value>
+              Specifies the minimum allowed voltage on the power  net  or  the
+              maximum  rise on the ground net, depending on the setting of the
+              -voltage parameter. The -threshold parameter is used  to  verify
+              that  the  power grid passes the limit check and to set the fil-
+              ters for an IR plot.
+
+       -tolerance <value>
+              Specifies the tolerance range of the voltage  value.  Specify  a
+              value from 0 to 1 (not including 1). A value of 0.2 results in a
+              range of "voltage +20%" to "voltage -20%."
+
+              Default: 0.3.
+
+       -voltage<value>
+              Specifies the voltage on the power rail to be analyzed.
+
+       -vu_limit <value>
+              Specifies the  voltage drop limit for a net.  This parameter al-
+              lows  you  to  specify  the voltage threshold value for each net
+              separately. The specified threshold value is used for  the  rail
+              reports,  histograms,  and  plots. If the threshold value is not
+              specified for some of the nets being analyzed, the default range
+              will be applied to those nets.
+
+              Default Range: 0mV to max VU
+
+Examples
+              * The following command specifies a VDD_TDSPCore  value  of  0.9
+                volts with a threshold of 0.89V and a tolerance of 0.3:
+
+                set_pg_nets  -net  VDD_TDSPCore  -voltage 0.9 -threshold 0.890
+                -tolerance 0.3
+
+              * The following command specifies to  use  the  library  binding
+                voltage  for binding the libraries to the instances instead of
+                "-voltage":
+
+                set_pg_nets -net vdd -voltage 0.90 -lib_binding_voltage 0.75
+
+Related Information
+              * set_rail_analysis_mode
+
+              * set_rail_analysis_domain
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025         set_pg_nets(25.10)

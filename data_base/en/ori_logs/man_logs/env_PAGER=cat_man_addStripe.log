@@ -1,0 +1,853 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addStripe(25.10)                                              addStripe(25.10)
+
+Name
+       addStripe - Creates power stripes within the specified area
+
+Syntax
+        addStripe
+
+        [-help]  [-all_blocks {0 | 1}] [-area {{<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3
+       y3 x4 y4> ...} ...}]
+
+        [-area_blockage {{<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}]
+
+        [-between_bumps {0 | 1}] [-block_ring_bottom_layer_limit <layer>]
+
+        [-block_ring_top_layer_limit <layer>] [-create_pins {0 | 1}]
+
+       [-direction {horizontal | vertical}]
+
+        [-extend_to {design_boundary | first_padring | last_padring |  all_do-
+       mains}]
+
+       [-insts <instance_name>]
+
+        [-layer <layer>]
+
+       [-master <master_cell>]
+
+        [-max_same_layer_jog_length <real_value>]
+
+        [-merge_stripes_value {auto | value}]
+
+       [-narrow_channel {0 | 1}]
+
+       [-nets {list_of_nets}]
+
+       [-number_of_sets <integer_value>]
+
+       [-over_bumps {0 | 1}]
+
+       [-over_physical_pins {0 | 1}]
+
+       [-over_pins {0 | 1}] [-over_power_domain {0 | 1}]
+
+        [-padcore_ring_bottom_layer_limit <layer>]
+
+        [-padcore_ring_top_layer_limit <layer>] [-pin_layer <layer>]
+
+        [-pin_offset <real_value>]
+
+       [-pin_width {<min_value max_value>}]
+
+       [-power_domains <domain_name>]
+
+       [-report_cut_stripe <filename>]
+
+        [-same_layer_target_only {0 | 1}]
+
+       [-set_to_set_distance <real_value>]
+
+       [-snap_wire_center_to_grid  {None  |Grid  |  Mask1_Grid  | Mask2_Grid |
+       Half_Grid | Either} [-allow_snapping_override_custom_spacing {0 | 1}]]
+
+       [-spacing <name_or_value>] [-start <real_value>]
+
+           [-stapling {length | auto {offset layer1_pitch:n | reference_layer1
+       [reference_layer2]}}]
+
+       [-start_from {left | right | bottom | top}]
+
+       [-start_offset <real_value>] [-stop <real_value>]
+
+       [-stop_offset <real_value>] [-switch_layer_over_obs {0 | 1}]
+
+       [-uda <subclass_string>] [-use_interleaving_wire_group {0 | 1}]
+
+       [-use_wire_group {-1 | 0 | 1}]
+
+       [-use_wire_group_bits <integer_value>]
+
+       [-via_rows <integer>]
+
+       [-via_columns <integer>]
+
+       [-width <name_or_value>]
+
+       Creates power stripes within the specified area. If the router  encoun-
+       ters an obstruction, the stripe connects to the last stripe on the same
+       net.  Otherwise,  the  stripes  stop at the core row boundary. Use this
+       command after creating an initial floorplan.
+
+Adding Stripes in Multi-Threading Mode
+       You can generate stripes in multi-threading mode by using the following
+       command before addStripe:
+
+       setMultiCpuUsage
+
+       When the specified CPU number is bigger than the estimated CPU  number,
+       addStripe uses the estimated CPU number for multi-threading. Otherwise,
+       it uses the specified CPU number.
+
+       Estimated CPU number = (free memory - 512 MB)/(added memory*2)
+
+       If  any  of  the following options are specified, addStripe will inter-
+       nally disable the multi-threading mode:
+
+              * {-over_bumps {0 | 1} | -between_bumps {0 | 1}} | -over_pins {0
+                | 1} -pin_layer layer {-master master_cells | -all_blocks}}
+
+              * UDM global variable pwStripeRouteOverRowsOnly is equal to 1
+
+       addStripe supports the new setMultiCpuUsage command use model.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each addStripe parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man addStripe
+
+       -all_blocks {0 | 1}
+              Specifies that stripes should be generated over all blocks.
+
+              Default: 0
+
+       -allow_snapping_override_custom_spacing {0 | 1}
+              When set to 1, it allows  snapping  of  stripes  overriding  the
+              specified spacing to the closest track. If the closest track has
+              conflicts, the stripe is removed.
+
+              When  set to 0, it snaps the stripes in the first set to the in-
+              ward direction, and the other stripes to the closest track. This
+              parameter keeps the actual spacing greater than or equal to  the
+              specified spacing.
+
+              Default: 0
+
+       -area{{<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}
+              Specifies  the  coordinates  of  the  design  area  in which the
+              stripes must be created. The -x_left_offset and  -x_right_offset
+              values  are  measured  from  this  boundary  area  for  vertical
+              stripes, and the -y_top_offset and -y_bottom_offset  values  are
+              measured from this boundary area for horizontal stripes.
+
+              Note:
+
+              * If a core ring exists in the design, the stripes automatically
+                connect  to  the core ring if you do not use the -area parame-
+                ter. You can also create stripes in an area defined by a poly-
+                gon (rectilinear). For example:
+
+                addStripe -area {100 100 100 200 150 200 150 150 200  150  200
+                100}
+
+                Default:  If  you  do  not specify this parameter, stripes are
+                created for the entire core box.
+
+              * -area and -extend_to design_boundary are  mutually  exclusive.
+                The following error is issued on them being used together:
+
+                You  cannot  specify  stripes  over design boundary and set an
+                area constraint. Instead, specify area to cover design  bound-
+                ary.
+
+              * -area  and  -extend_to first_padring/last_padring are mutually
+                exclusive. The following error is issued on  them  being  used
+                together:
+
+                You  cannot  specify stripes over padring and set an area con-
+                straint. Instead, specify area to cover padring.
+
+              * When this parameter is used with setAddStripeMode -domain_off-
+                set_from_core true, the -start_offset value for specified area
+                is measured from core on using addStripe -area.
+
+       -area_blockage {{<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}
+              Specifies the blockage coordinates to restrict the  addition  of
+              any stripes to this region.
+
+              This  parameter supports rectangular and rectilinear area_block-
+              ages. Their spacing is 0 during stripe generation.
+
+              Examples
+
+              * Rectangular area_blockage:
+
+                -area_blockage {100 100 200 200}
+
+              * Rectilinear area_blockage:
+
+                -area_blockage {100 100 100 200 150 200 150 150  200  150  200
+                100}
+
+              You can add multiple blockages at the same time.
+
+              Rectangular  areas  or  rectilinear area or their mixture can be
+              specified. For multiple areas,  each  of  them  must  be  inside
+              brace.
+
+              Examples
+
+              * multiple rectangles
+
+              -area_blockage {{x1 y1 x2 y2} {a1 b1 a2 b2} ...}
+
+              * multiple rectilinear area
+
+              -area_blockage {{x1 y1 x2 y2 ... } {a1 b1 a2 b2 a3 b3 ...} ...}
+
+              * mixture of them
+
+              -area_blockage  {{x1 y1 x2 y2} {a1 b1 a2 b2} ... {x1 y1 x2 y2 x3
+              y3 ...} {a1 b1 a2 b2 a3 b3 ...} ...}
+
+              The specified areas that are not included inside brace  will  be
+              ignored. For example
+
+              -area_blockage {{x1 y1 x2 y2} a1 b1 a2 b2 a3 b3 ... {c1 d1 c2 d2
+              c3 d3 ...}}
+
+              {x1  y1  x2 y2} and {c1 d1 c2 d2 c3 d3 ...} will be used, and a1
+              b1 a2 b2 a3 b3 ... are ignored
+
+       -between_bumps {0 | 1}
+              Specifies that stripes should be generated between bumps.
+
+              Default: 0
+
+       -block_ring_bottom_layer_limit<layer_name>
+              Specifies the lowest layer that stripes can switch to  when  en-
+              countering a block ring. Stripes that encounter a block ring can
+              only switch to this layer or higher.
+
+       -block_ring_top_layer_limit <layer_name>
+              Specifies  the highest layer that stripes can switch to when en-
+              countering a block ring. Stripes that encounter a block ring can
+              only switch to this layer or lower.
+
+       -create_pins {0 | 1}
+              If set to 1, IO pins are created for each  stripe.  Any  overlap
+              with  existing  IO  pins  at the design boundary is flagged as a
+              warning after the stripes are created. If set to 0, pins are not
+              created.
+
+              By default, addStripe would create pins for any stripe  touching
+              the  design  boundary.  When -extend_to  design_boundary is used
+              the option -create_pins is 1 by default.
+
+       -direction {horizontal | vertical}
+              Sets the stripe direction.
+
+              Default: If you do not specify this parameter, the new generated
+              stripe follows the preferred direction defined in the tlef file.
+
+       -extend_to
+              The boundary for the stripes. Specify one of the following  val-
+              ues:
+
+              all_domains
+
+              Stripes  are  created  over all power domains for each power and
+              ground net within each power domain. Stripes start and  stop  at
+              each  power domain boundary or ring around the power domain, and
+              ignore the values in the -nets parameter.
+
+              first_padring
+
+              Stripes are created within the area enclosed  by  the  pad  ring
+              closest to the core area.
+
+              last_padring
+
+              Stripes  are  created  within  the area enclosed by the pad ring
+              closest to the design boundary.
+
+              design_boundary
+
+              Stripes are created within the design boundary
+
+       -insts <instance_name>
+              Specifies the instance name for generating power stripes.
+
+       -layer <layer>
+              Specifies the name of the layer  in  which  to  create  stripes.
+              Stripes can be created on only one layer at a time.
+
+              The following types of formulas are supported:
+
+              *
+
+                Lefname
+
+              *
+
+                Metal layer number
+
+              Example:
+
+               If Metal2 is named by `MET2' in LEF file, then you can use
+
+              *
+
+                MET2
+
+              *
+
+                2
+
+              to identify metal2.
+
+       -master <master_cells>
+              Specifies  the instances of the standard cell (or block) masters
+              over which stripes should be generated.
+
+              The option supports regular expression:  ?  matches  any  single
+              characters and * matches any sequence of characters.
+
+       -max_same_layer_jog_length<value>
+              The maximum length, in micrometers, that a stripe can jog on the
+              same  layer  before switching to an adjacent layer. For example,
+              if you specify a value of  2  micrometers,  and  an  obstruction
+              causes  a  stripe  on layer METAL4 to jog for 3 micrometers, the
+              jog will occur on layer METAL3 or METAL5.  However,  if  an  ob-
+              struction  causes  the  stripe to jog for only 1 micrometer, the
+              jog occurs on layer METAL4.
+
+              Default: 2 (If you do not specify this parameter, the stripe au-
+              tomatically switches to an adjacent layer if the jog  length  is
+              two times the width of the stripe.)
+
+       -merge_stripes_value <value>
+              Merges  a stripe with a nearby block ring if the threshold spac-
+              ing between the stripe and ring is smaller than  the  <value>(in
+              micrometers)  specified  with this parameter. The stripe jogs to
+              connect to the nearby ring only on the stripe layer.
+
+              Note: To prevent stripes from merging with block rings, set  the
+              value of this parameter to - 1.
+
+              Default:  10  (If  you do not specify this parameter, stripes do
+              not jog to merge with rings that are more than 10 <mu>m away.)
+
+              To merge the stripe on all layers, set the following variable of
+              the setAddStripeMode command:
+
+              -merge_with_all_layers 1
+
+       -narrow_channel {0 | 1}
+              Generates stripes over narrow channel area. Narrow channel  usu-
+              ally  exists  between  two blocks/power domains, or between core
+              boundary and blocks/power domains. If there  are  part  of  rows
+              without a certain net and layer of power mesh crossing over, the
+              area  of neighboring part of rows is defined as a narrow channel
+              for that net and layer. When adding overall stripes, some narrow
+              channels might be missed because of start offset and set to  set
+              distance. In this circumstance, adding stripes in narrow channel
+              can help to supply power to stdcells in that channel. The recom-
+              mended  flow  is  to  add  overall stripes first and then to add
+              stripes in narrow channel, if needed.
+
+              When the -narrow_channel parameter is used with setAddStripeMode
+              -extend_to_closest_target stripe, the narrow channel stripes are
+              extended to connect the closest followpin and stripes.
+
+              Default : 0
+
+              Examples of narrow channels:
+
+              Narrow potential channels for vertical stripes
+
+              Narrow potential channels for horizontal stripes
+
+              Note: This parameter can be used  with  the  -power_domains  and
+              -over_power_domain parameters.
+
+              The  -narrow_channel  parameter  generates  stripes with uniform
+              channel width in both the vertical and horizontal directions, if
+              the -number_of_sets parameter is set to an integer value greater
+              than 1. The added wires are created at the  channel  evenly,  as
+              shown below:
+
+              If the -start_offset parameter is used for specifying the start-
+              ing offset value before the above setting of the -narrow_channel
+              parameter,  and  the  specified  offset  location has a DRC, the
+              added wire shifts to the left or up to the closed DRC clean  lo-
+              cation, as shown below:
+
+              addStripe  -width  $W  -spacing $spacing -number_of_sets N -nar-
+              row_channel 1 -nets {$net1 $net2 ...} ...
+
+              If the -start_offset parameter is not used before the above set-
+              ting of the -narrow_channel parameter, the wires  are  added  to
+              the center of the channel. With this setting:
+
+              * When  the  -number_of_sets  parameter is set to 1, this center
+                has the same distance from the channel  boundaries,  as  shown
+                below:
+
+                addStripe  -width $W -spacing $spacing -number_of_sets 1 -nar-
+                row_channel 1 -nets {$net1 $net2 ...} ...
+
+              * When the -number_of_sets parameter is set to an integer  value
+                (N)  greater  than 1, addStripe calculates the pitch to evenly
+                distribute the PG in the channel.
+
+                Pitch: P = Length / N
+
+                Additionally, the two PG stripes set at the edge of the  chan-
+                nel are at the same distance from the middle of the PG set and
+                the channel boundary is at P/2, as shown below:
+
+                addStripe -width $W -spacing $spacing -number_of_sets $N -nar-
+                row_channel 1 -nets {$net1 $net2 ...} ...
+
+       -nets {<list_of_nets>}
+              Specifies the names of the nets for which stripes are to be cre-
+              ated.  The  number of net names determines the number of stripes
+              within each set of stripes. The first net in the  name  list  is
+              created  first  and  corresponds to the left or bottom stripe of
+              the set. Separate multiple net names with a  space  and  enclose
+              the  list  in  curly  braces, for example, -nets {net1 net2 net3
+              net3}. Braces are not required for one name.
+
+       -number_of_sets <integer>
+              Specifies the number of stripe sets  to  be  created.  You  must
+              specify  either this parameter or the -set_to_set_distance para-
+              meter.
+
+              Default: If you do not specify this  parameter,  the  number  of
+              sets is derived from the -set_to_set_distance parameter.
+
+       -over_bumps {0 | 1}
+              Specifies that stripes should be generated over bumps. When used
+              with  -area, it extends stripes to the boundary of the specified
+              area.
+
+              Run setAddStripeMode -extend_to_closest_target area_boundary be-
+              fore  generating  stripes  over  bumps   using   the   addStripe
+              -over_bumps parameter. See the example below:
+
+              setAddStripeMode -extend_to_closest_target area_boundary
+
+              addStripe  -net  VDD  -direction  horizontal -area {x1 y1 x2 y2}
+              -over bumps 1 ...
+
+              Following is the output of the above commands:
+
+              Default: 0
+
+       -over_physical_pins {0 | 1}
+              Adds stripes over the physical pins to detect  the  physical  PG
+              terminals and add stripes to continue them. Following is the use
+              modelof this option:
+
+              addStripe   -over_physical_pins   1   -nets  {net_names}  -width
+              {pin_width|width_value}     -direction     {vertical|horizontal}
+              [-pin_layer Mx] [-pin_offset offset_value]
+
+              While using this option:
+
+              *
+
+                * The  tool  generates  one  stripe  on one physical pin sepa-
+                  rately, except for the following special cases:
+
+                  * When two same  net  pins  (left  and  right)  are  totally
+                    aligned. In this case, one stripe between two pins is gen-
+                    erated.
+
+                  * When  two  different  net  pins  are  partially or totally
+                    aligned. In this case, one stripe on  left/bottom  pin  is
+                    generated  and  break  at right/up pin with DRC clean dis-
+                    tance.
+
+                * -width pin_width makes stripe width same as that of  related
+                  physical P/G pin.
+
+                * When  offset_value  in  -pin_offset  offset_value is greater
+                  than zero, stripes shift up for left/right  pins  and  right
+                  for up/down pins.
+
+                * If  both  -over_physical_pins  and  -over_pin are specified,
+                  -over_physical_pins is ignored.
+
+              In the following example, stripes are added  over  the  physical
+              pins in the horizontal direction for the vdd and vss nets:
+
+              addStripe  -over_physical_pins  1 -nets {VDD VSS} -width 10 -di-
+              rection horizontal -pin_layer metal11
+
+              Following is the block-level design of the output:
+
+       -over_pins {0 | 1}
+              Specifies that stripes should  be  generated  over  power/ground
+              pins in a standard cell or block.
+
+              Default: 0
+
+              Note:  With  this option, user could define value "pin_width" in
+              option "-width", then tool will generate stripe according to pin
+              width automatically.
+
+       -over_power_domain {0 | 1}
+              If set to 1, adds stripes only within power domain boundaries or
+              the fence around a soft block. For power domains, these  stripes
+              start  and  stop  at  the power ring that surrounds the selected
+              power domain boundary. For fences, these stripes start and  stop
+              at  the  fence. If both a power domain and a fence are selected,
+              the power domain takes precedence.If you do not specify this pa-
+              rameter or if you specify it with a value of 0, stripes are pre-
+              vented from extending to the power domain boundary.
+
+              Note:
+
+              * When this option is specified, you can use -start_from {bottom
+                | top | left | right}  and  -start_offset  parameters  to  set
+                boundaries, but you cannot use the -start and -stop parameters
+                to specify an absolute location.
+
+              * In  addition,  the  software  issues  a warning message if the
+                specified power and ground nets do not  match  the  power  do-
+                main's power or ground nets.
+
+              * When   addStripe   -over_power_domain   1  is  used  with  se-
+                tAddStripeMode -domain_offset_from_core true, the  -start_off-
+                set value for the selected power domain/block is measured from
+                core on using addStripe -over_power_domain 1.
+
+              Default: 0
+
+       -padcore_ring_bottom_layer_limit<layer_name>
+              Specifies  the  lowest layer that stripes can switch to when en-
+              countering a pad or core ring. Stripes that encounter a  pad  or
+              core ring can only switch to this layer or higher.
+
+       -padcore_ring_top_layer_limit<layer_name>
+              Specifies  the highest layer that stripes can switch to when en-
+              countering a pad or core ring. Stripes that encounter a  pad  or
+              core ring can only switch to this layer or lower.
+
+       -pin_layer<layer>
+              Specifies the layer on which the stripe is generated.
+
+              Note:  The  layer you specify with this parameter is the same as
+              the layer you specify with the -layer parameter.
+
+              Default: TOP
+
+       -pin_offset
+              Offsets the stripe a specified distance from  the  pin  edge  to
+              make well tap cell connections. The offset is from the left edge
+              of  the stripe to the left edge of the same net pin. This can be
+              a negative number and is in user units.
+
+       -pin_width {<min_value max_value>}
+              Specifies the  range  of  minimum  and  maximum  pin  width  for
+              -over_pins or  -over_physical_pins.
+
+       -power_domains <domain_name>
+              Specifies the power domain name for generating power stripes.
+
+              Note: This parameter cannot be used with the -narrow_channel pa-
+              rameter.  Use  the  -area  parameter to generate -narrow_channel
+              stripes over certain areas.
+
+       -report_cut_stripe <filename>
+              Saves the information related to a cut stripe  in  a  DRC  file.
+              This  helps  in  identifying  the power stripe that has been re-
+              moved/cut from the design to avoid any DRC  violation  following
+              user settings.
+
+              You can use the following command to load the generated DRC file
+              into the design and view the cut stripe mark in the GUI:
+
+              loadDrc *.drc
+
+              The following example shows how the information related to a cut
+              stripe is stored in the a.drc file:
+
+              addStripe -report_cut_stripe a.drc
+
+              The  following  figure depicts that the place highlighted in red
+              circle will be marked, because here the VSS  stripe  is  cut  to
+              avoid short violation to VDD segment:
+
+       -same_layer_target_only
+              Specifies  connection  to  overlapping targets on the same layer
+              only.
+
+       -set_to_set_distance <real>
+              Specifies the distance (pitch) from the reference stripe of  one
+              set  to  the reference stripe of the next set. The value of this
+              parameter must be a positive number  specified  in  micrometers.
+              You  must  specify  either this parameter or the -number_of_sets
+              parameter.
+
+              Default: If you do not specify this parameter, the distance  be-
+              tween sets is derived from the -number_of_sets parameter.
+
+       -snap_wire_center_to_grid {None | Grid | Mask1_Grid | Mask2_Grid |
+       Half_Grid | Either}
+              Controls  the  snapping  of the center of the stripes. If you do
+              not specify this parameter, stripes are not snapped to the rout-
+              ing grid.
+
+              Note: When tech LEF specifies RIGHTWAYONGRIDONLY on  a  specific
+              layer, stripes are automatically snapped to the routing grid.
+
+              Specify one of the following options:
+
+              * None: Does no snapping of the wires.
+
+              * Grid:  Snaps the center of the wire to the routing grid of the
+                same layer as the wire.
+
+              * Mask1_Grid: Snaps the center of the wire to the routing  track
+                of Mask1.
+
+              * Mask2_Grid:  Snaps the center of the wire to the routing track
+                of Mask2 .
+
+              * Half_Grid: Snaps the center of the wire  to  the  half-routing
+                grid.  The half-routing grid is a virtual grid with the tracks
+                at the center of every two  adjacent  tracks  of  the  routing
+                grid.
+
+              * Either:  Snaps  the  center  of  the wire to the closer of the
+                routing grid or half-grid track.
+
+              Default: None
+
+       -spacing<spacing>
+              Specifies the width of the gap between stripes in each set.  You
+              can  specify different spacing between each pair of stripes. For
+              n number of stripes, you can specify n  -1  spacing  values.  If
+              fewer  values  are specified, the last-specified spacing is used
+              for the remaining unmatched stripe pairs.
+
+       -stapling {length | auto {offset layer1_pitch:n | reference_layer1
+       [reference_layer2]}}
+              Turns on the stapling stripe generation feature and controls the
+              stapling pattern. In the syntax:
+
+              *
+
+                length: Specifies the length of stapling stripes.
+
+              *
+
+                auto: When specified, stapling length  is  calculated  by  the
+                tool  automatically,  with  the minimum length that can be DRC
+                clean.
+
+              *
+
+                offset: Specifies the distance from  design  boundary  to  the
+                center  of  the first stapling stripe by default. Refer to the
+                following example:
+
+                Example 1
+
+                addStripe -stapling {0.5 0.6 0.8:1}  -nets  {VDD  VSS}  -layer
+                metal2 -width 0.1 -direction vertical -set_to_set_distance 0.5
+
+              *
+
+                pitch:n:  Specifies  the center to center distance between two
+                stapling stripes in end direction (refer to Example 1  above).
+                It  is  defined by n times of the track pitch on layer1, where
+                stripes are needed to be connected by stapling stripes.
+
+              *
+
+                reference_layer1: When the stripes on layer1 to  be  connected
+                already  exist, you can directly specify the reference layer 1
+                name. It specifies that the stapling stripe center is  on  the
+                center line of the reference stripes (offset value is the cen-
+                ter  offset  of  first  bottom/left stripe; the pitch:n is the
+                set-to-set distance of stripes on layer1).
+
+              *
+
+                reference_layer2: When the stripes on layer2 to  be  connected
+                already  exist, you can specify the reference layer 2 name, so
+                that the stapling stripes  are  generated  referring  to  both
+                layer1  and  layer2 and connect them. When reference_layer2 is
+                specified, the real offset and stapling pitch will be the  av-
+                erage  value  from layer1 and layer2 settings. It aims to find
+                the center of two layers of wires to be connected by  stapling
+                stripes. Refer to the example below:
+
+                Example 2
+
+                set metal3_track_offset 3
+
+                set metal3_pitch 0.8
+
+                addStripe  -stapling  `3  $metal3_track_offset $metal3_pitch:5
+                metal5' -nets {VDD VSS} -layer metal4  -width  0.5  -direction
+                vertical -set_to_set_distance 2
+
+              You can use -stapling in the following ways:
+
+              *
+
+                -stapling {length|auto offset pitch:n}
+
+              *
+
+                -stapling {length|auto reference_layer}
+
+              *
+
+                -stapling {length|auto offset pitch:n reference_layer2}
+
+              *
+
+                -stapling {length|auto reference_layer1 reference_layer2}
+
+       -start <value>
+              The start coordinate for adding stripes.
+
+       -start_from {bottom | top | left | right}
+              For horizontal stripes:
+
+              * bottom  indicates that stripes should be generated from bottom
+                to top, taking the bottom offset into account.
+
+              * top indicates that stripes should be  generated  from  top  to
+                bottom, taking the top offset into account.
+
+              Default: bottom
+
+              For vertical stripes:
+
+              * left  indicates  that stripes should be generated from left to
+                right, taking the left offset into account.
+
+              * right indicates that stripes should be generated from right to
+                left, taking the right offset into account.
+
+              Default: left
+
+              Note: Offset values  set  with  this  parameter  are  considered
+              "hard": The power planning software adheres strictly to the val-
+              ues.  However,  the  opposite values are considered "soft": Such
+              values could be greater than the hard values, but will never  be
+              less  than the hard values. For example, if you set a right off-
+              set value of 4 <mu>m, the left value will be at least  4  <mu>m,
+              but could be greater.
+
+       -start_offset <real_value>
+              Specifies  the  starting  offset  value  off  of the appropriate
+              boundary of the stripe generation area to the  nearest  edge  of
+              the  first  stripe.  For  example, for vertical stripes starting
+              from the left, offset is measured from  the  left  side  of  the
+              stripe  generation  area  to  the left edge of the first stripe.
+              This is an optional field.
+
+       Note: The parameters -start and -start_offset are exclusive, and cannot
+       be used together.
+
+       -stop  The stop coordinate for the region for adding the stripe.
+
+       -stop_offset <real_value>
+              Specifies the stopping  offset  value  off  of  the  appropriate
+              boundary  of the stripe generation area. For example, for verti-
+              cal stripes starting from the left, the offset is measured  from
+              the  right  side  of  the stripe generation area. This is an op-
+              tional field.
+
+              Note: The parameters -stop and -stop_offset are  exclusive,  and
+              cannot be used together.
+
+       -switch_layer_over_obs {0 | 1}
+              Specifies  if  the  switch layer is placed over obstructions. It
+              controls whether  a  stripe  switches  layers,  is  routed  over
+              blocks, and then continues on the original layer.
+
+              Using  this  parameter  eliminates  the need for a power routing
+              mesh layer, and avoids maximum via stack rule violations.
+
+              Default: 0
+
+              Type: Boolean, optional
+
+       -uda <subclass_string>
+              Displays the user defined attribute  attached  to  each  created
+              stripe segment.
+
+       -use_interleaving_wire_group {0 | 1}
+              If set to 1, connects multiple wires from the same net together,
+              even  if  separated  by wires from a different net. You can only
+              specify this parameter if you also specify  -use_wire_group   1.
+              If you do not specify this parameter or if you specify it with a
+              value of 0, interleaving wire groups are not used.
+
+              Default: 0
+
+       -use_wire_group {-1 | 0 | 1}
+              If  set  to 1, connects wires from the same net together. If you
+              do not specify this parameter or if you specify it with a  value
+              of 0, wire groups are not used.
+
+              If  set  to -1 and multiple same net are specified in -nets, the
+              wire group property will not be updated or created.
+
+              Note: For stripes to connect to rings  using  wire  groups,  you
+              must specify the -useWireGroup parameter in both the addRing and
+              addStripe commands.
+
+              Default: 0
+
+       -use_wire_group_bits <integer>
+              Specifies  how  many  nets are to be included in the wire group.
+              You  can  only  specify  this  parameter  if  you  also  specify
+              -use_wire_group 1.
+
+              Default: The same number of nets as specified in the -nets para-
+              meter.
+
+       -via_rows <integer>
+
+       -via_columns <integer>
+              Specifies the number of cuts to make in the power vias (for both
+              stack and non-stack).
+
+              Default: 0
+
+       -width <width>
+              Specifies  the width of the stripes. You can specify a different
+              width for each net within a set. If the number of widths  speci-
+              fied  does not match the number of net names, the last-specified
+              width is used for the rest of unmatched nets.
+
+Example
+       The following command adds stripes in the vertical  direction  for  the
+       vdd and gnd nets:
+
+       addStripe  -direction  vertical  -nets  {vdd  gnd} -width 10 -spacing 1
+       -layer METAL6 -start_offset 50  -set_to_set_distance  50
+
+Related Information
+              * getAddStripeMode
+
+              * setAddStripeMode
+
+              * Power Planning and Routing chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025           addStripe(25.10)

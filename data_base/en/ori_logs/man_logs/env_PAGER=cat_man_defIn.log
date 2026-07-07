@@ -1,0 +1,313 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+defIn(25.10)                                                      defIn(25.10)
+
+Name
+       defIn - Loads the specified DEF file
+
+Syntax
+       defIn
+
+       [-help]
+
+       <fileName>
+
+       [-add_blockage]
+
+       [-allWarning]
+
+       [-components]
+
+       [-deleteBump]
+
+       [-deleteSpecialRoute]
+
+       [-ignore_drcfill]
+
+       [-ignore_pg_connectivity]
+
+       [-nets]
+
+       [-override_special_routing {pg signal logical physical all}]
+
+       [-preserveShape]
+
+       [-removeHalfWireExtensionOnPin]
+
+       [-specialnets]
+
+       [-specialRouteUserClass <user_class_name>]
+
+       [-verilog_from_def_netlist_flow]
+
+       [-incremental_routing]
+
+       Loads  the  specified DEF file. defIn can be used at any step after im-
+       porting a design. The typical usage is:
+
+              * Load a DEF file containing the floorplan saved by  Innovus  or
+                other tool.
+
+              * Load  a DEF file containing the scan chain information so that
+                placement can do scan chain reorder.
+
+              * Load a DEF file containing the cell's  placement  and  routing
+                saved by Innovus or other tool.
+
+       Note: defIn ignores the shielding segment with self reference.
+
+       When  you load a DEF file, you must be at the same level in the hierar-
+       chy where the DEF file was saved.
+
+       The Innovus software loads the DEF file information into  the  database
+       in several ways, depending on the object:
+
+              * Tracks, gcells, rows, die area
+
+                The  software deletes all of the existing objects in the data-
+                base and reads in the new information.
+
+                Note: The defIn command can read a rectilinear die  area,  but
+                converts  it  to  a rectangular die area with blockages at the
+                cut off area.
+
+              * Blockages, fills, special nets
+
+                The software compares the physical data  (such  as  shape  and
+                layer)  to  the existing data in the database. If it finds the
+                same data in the database, it ignores  the  data  in  the  DEF
+                file. If the data does not already exist, the software adds it
+                to  the  database.  For special nets, the software merges wire
+                segments in the DEF file with any existing ones in  the  data-
+                base that overlap and have the same attributes, such as layer,
+                width,  shape, and direction. The software does not delete any
+                existing data.
+
+                Note: As a lot of spacing rules in advanced  nodes  no  longer
+                just  rely  on  wire width, DESIGNRULEWIDTH is not allowed for
+                20nm and below nodes.
+
+              * Nondefault rules, vias
+
+                The software adds the objects to the database if they  do  not
+                already exist there. If a nondefault rules definition with the
+                same  name already exists, the software ignores the one in the
+                DEF file. If a via definition with the same name  already  ex-
+                ists, and the via is a fixed via, the software ignores the one
+                in  the  DEF file. If a generated via definition with the same
+                name already exists, the geometries are  read,  but  the  name
+                might  be  changed.  The software does not delete any existing
+                objects of these types.
+
+                The DEF reader checks the NDR rule only if its  name  is  "DE-
+                FAULT"  and checks whether all definition of the "DEFAULT" NDR
+                match the LEF default rule. If the NDR rule name  is  not  DE-
+                FAULT, the tool will give the following warning message:
+
+                WARN:  The  definition  of  "s%" are different between the NDR
+                Rule "DEFAULT" in DEF file and the implicit  default  rule  in
+                LEF File.
+
+                Also,  DEF  reader  will not create a "DEFAULT" NDR in DB, and
+                give following warning message:
+
+                WARN: Innovus does not allow user to specify an NDR rule named
+                as "DEFAULT", ignore it when reading the DEF file and use  LEF
+                rule to replace it.
+
+              * Nets
+
+                For  each net in the DEF file, the software removes the exist-
+                ing regular routing (not special routing), then adds the rout-
+                ing from the DEF file for this net. If the net has a shielding
+                segment with self reference, defIn will ignore the check.  For
+                example:
+
+                SPECIALNETS 1 ;
+
+                - VDD + SHIELD VDD ( 0 0 ) ( 0 100 ) ...
+
+                If  the  shielded net is not self referenced, defIn will check
+                the shielding segment. For example:
+
+                SPECIALNETS 1 ;
+
+                - VDD + SHIELD net1 ( 0 0 ) ( 0 100 ) ...
+
+                NETS 1 ;
+
+                -nets + SHIELDNET VDD ...
+
+              * Pins
+
+                For each pin in the DEF file, the software removes the  exist-
+                ing  physical  information for the pin, then adds the physical
+                information from the DEF file for this pin. If a pin does  not
+                already  exist,  and it is a power or ground pin, the software
+                adds it to the database. If the pin is not a power  or  ground
+                pin, the software generates an error message.
+
+              * Groups, regions
+
+                If a group name in the DEF file matches an existing hierarchi-
+                cal  instance name in the database, the region's boundary con-
+                straint is attached to the hierarchical  instance,  overriding
+                any  existing boundary constraint. The software checks whether
+                the group members belong to  the  hierarchical  instance,  and
+                generates  a  warning message if any do not belong. If a group
+                name does not match any hierarchical instance name, the  soft-
+                ware creates the instance group with an attached region bound-
+                ary  constraint,  if  one exists. Regions that are not used by
+                groups in the same DEF file are ignored. The software does not
+                remove existing groups.
+
+                Note: You can import DEF files containing wildcards (*) in the
+                GROUPS statement. The defIn command does not support  multiple
+                groups per region.
+
+              * Components
+
+                You  cannot  add  new  logical cells. You can add new physical
+                cells, such as:
+
+                     * Cells with CLASS PAD
+
+                     * Cells with CLASS COVER and no signal pin
+
+                     * Instance with + SOURCE DIST
+
+       You can use the defIn command after importing a design.
+
+       You can use the defIn  -verilog_from_def_netlist_flow command only  af-
+       ter using the
+           loadDefFile
+          command.
+
+       Note:  Do  not attempt to use the defIn  -verilog_from_def_netlist_flow
+       command in any other Tcl scripts.
+
+       After   loading   the   DEF   netlist   using   the   <defIn>    <-ver-
+       ilog_from_def_netlist_flow>  command,  you  can  perform floorplanning,
+       non-timing driven placement and routing, wire  editing,  and  verifica-
+       tion. You cannot use the DEF netlist flow for parasitic extraction, de-
+       lay  calculation,  and  timing-driven placement and routing effectively
+       because the DEF names do not properly match the Verilog names  used  in
+       timing constraints and timing analysis.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each defIn parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man defIn
+
+       -add_blockage
+              Converts undefined instances (except COVER  cells)  into  block-
+              ages.
+
+       -allWarning
+              Lists all warning messages issued when you load the DEF file.
+
+              Default:  Limits  the  number  of  warning messages to the first
+              1,000.
+
+       -components
+              Reads the COMPONENTS section of the DEF file and  ignores  other
+              sections,  except  when the -nets or -specialnets parameters are
+              specified.
+
+       -deleteBump
+              Deletes all bumps in the database before reading the DEF file.
+
+       -deleteSpecialRoute
+              Deletes all special routes in the database  before  reading  the
+              DEF file. This includes the RDL routing as well as the power and
+              ground special routes in the design.
+
+       -ignore_drcfill
+              Ignores the special routing with DRCFILL shape attribute.
+
+       -ignore_pg_connectivity
+              Ignores  the  pg  connectivity  in the SPECIALNETS and NETS sec-
+              tions.
+
+       <fileName>
+              Specifies the name of the DEF file to load.
+
+       -incremental_routing
+              Prevents deletion of the whole routing of the  signal  net,  and
+              just adds the new wires and vias.
+
+       -nets  Reads  the  NETS  section of the DEF file and ignores other sec-
+              tions, except when the -components  or  -specialnets  parameters
+              are specified.
+
+       -override_special_routing {pg signal logical physical all}
+              Deletes  the  special routing in db on nets specified in the def
+              file by the net type. If you specify this option before  reading
+              the def context, the special routing on the nets will be deleted
+              and then new routing is read.
+
+              Data_type: enum, optional
+
+       -preserveShape
+              Prevents creation of symbolic center-line connected routing data
+              and preserves the routing data as-is.
+
+              The  option will override the global environment variable defIn-
+              ShapeBasedDefFile.
+
+       -removeHalfWireExtensionOnPin
+              Truncates the half-width extension back to  zero  extension  for
+              all  wire  end points that overlap a pin. This is useful for DEF
+              files  created  by  defOut   -addHalfWireExtensionOnPin,   which
+              forces  all  NETS  section routing to use the default half-width
+              wire extension.
+
+              Note: Using this parameter can cause DRC violations.
+
+       -specialRouteUserClass <user_class_name>
+              Sets the specified user-class name on  all  the  special  routes
+              read in from the DEF file.
+
+       -specialnets
+              Reads  the SPECIALNETS and VIAS sections of the DEF file and ig-
+              nores other sections, except when the -components or -nets para-
+              meters are specified.
+
+       -verilog_from_def_netlist_flow
+              Reconciles the names in the DEF and Verilog files  generated  by
+              the  loadDefFile command. This procedure is required if you want
+              to retrieve any information that matches the original DEF file.
+
+Example
+              * The following command loads the TOPCHIP DEF placement file:
+
+                defIn TOPCHIP.def
+
+              * The following command loads the power grid from a DEF file:
+
+                defIn -specialnets TOPCHIP.def
+
+Related Information
+              * defInShapeBasedDefFile
+
+              * defOverlapWireReportFileName
+
+              * loadDefFile
+
+              * Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide
+
+                     * "Updating Files During an Innovus Session"
+
+              * Placing the Design chapter of the Innovus User Guide
+
+                     * "ScanDEF-Based Reordering Approach"
+
+              * ECO Flows chapter in the Innovus User Guide
+
+                     * "Pre-Mask ECO Changes from a New DEF File"
+
+                           Fri Apr 04 01:25:37 2025               defIn(25.10)

@@ -1,0 +1,180 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_clock_latency(25.10)                          reset_clock_latency(25.10)
+
+Name
+       reset_clock_latency  - Resets assertions made by previous set_clock_la-
+       tency commands
+
+Syntax
+       reset_clock_latency
+
+       [-source]
+
+       [-clock <clock_list>]
+
+       <pin_or_clock_list>
+
+       Resets assertions made by previous set_clock_latency commands.
+
+Parameters
+       -clock <clock_list>
+              Specifies the list of clocks with which associated set_clock_la-
+              tency constraints, at the pin level, are to be removed.
+
+              Note: This parameter cannot be used with clocks specified  using
+              the <pin_or_clock_list> parameter.
+
+       <pin_or_clock_list>
+              Specifies  a list of pins, ports, or clock objects for which the
+              assertions are to be removed.
+
+       -source
+              Removes the source latency.
+
+Examples
+              * The following commands show the use of the reset_clock_latency
+                command to remove a  leaf-level  set_clock_latency  assertion,
+                after the clock tree has been put into propagated mode:
+
+                set_clock_latency 3.141 [get_pins BLK/BR2/CK]
+
+                report_timing -to BLK/BR2/D -path_type full_clock
+
+                The following report is generated:
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 3.141 <---
+
+                - Setup 0.191
+
+                + Phase Shift 10.000
+
+                = Required Time 12.950
+
+                - Arrival Time 0.249
+
+                = Slack Time 12.701
+
+                set_propagated_clock [get_ports tclk]
+
+                report_timing -path_type full_clock -net -to BLK/BR2/D
+
+                The following report is generated:
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 3.141 <--------
+
+                - Setup 0.191
+
+                + Phase Shift 10.000
+
+                = Required Time 12.950
+
+                - Arrival Time 0.594
+
+                = Slack Time 12.356
+
+                In  this example, setting the root of the clock tree to propa-
+                gated mode is not sufficient to override the set_clock_latency
+                assertion  at  the  clock  endpoint.  You  must  use  the  re-
+                set_clock_latency command to remove the assertion, so that the
+                register sees propagated clock timing.
+
+                reset_clock_latency [get_pins BLK/BR2/CK]
+
+                report_timing -path_type full_clock -net -to BLK/BR2/D
+
+                The following report is generated:
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 0.345 <--------
+
+                - Setup 0.186
+
+                + Phase Shift 10.000
+
+                = Required Time 10.159
+
+                - Arrival Time 0.588
+
+                = Slack Time 9.571
+
+              * The  following  commands show that reset_clock_latency is only
+                effective when it is applied on the same object for which  you
+                had set the assertion using the set_clock_latency command:
+
+                Latency here is specified on a pin object:
+
+                set_clock_latency 3.141 [get_pins BLK/BR2/CK]
+
+                report_timing -path_type full -net -to BLK/BR2/D
+
+                The following report is generated:
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 3.141 <-
+
+                - Setup 0.191
+
+                + Phase Shift 10.000
+
+                = Required Time 12.950
+
+                - Arrival Time 0.249
+
+                = Slack Time 12.701
+
+                Resetting  of the latency is done on a clock object and has no
+                effect on downstream latencies specified on pin objects.
+
+                In this example, a reset_clock_latency on the  clock  waveform
+                that is driving BLK/BR2/CK will have no effect.
+
+                reset_clock_latency [get_clocks WAVE]
+
+                report_timing -path_type full -net -to BLK/BR2/D
+
+                # The following report is generated:
+
+                Path 1: MET Setup Check with Pin BLK/BR2/CK
+
+                Endpoint: BLK/BR2/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: BLK/BR1/Q (v) triggered by leading edge of 'WAVE'
+
+                Other End Arrival Time 3.141 <-
+
+                - Setup 0.191
+
+                + Phase Shift 10.000
+
+                = Required Time 12.950
+
+                - Arrival Time 0.249
+
+                = Slack Time 12.701
+
+Related Information
+              * set_clock_latency
+
+                           Fri Apr 04 01:25:37 2025 reset_clock_latency(25.10)

@@ -1,0 +1,339 @@
+{
+  "command": "setSIMode",
+  "is_cmd": true,
+  "summary": "设置用于串扰分析和修复的信号完整性配置参数",
+  "description": "setSIMode 命令用于配置在串扰（crosstalk）分析和修复过程中使用的各种信号完整性参数。这些参数控制着攻击者（aggressor）与受害者（victim）网络的交互方式、噪声（毛刺）分析、延迟计算、时序窗口处理以及报告生成等多个方面。通过调整这些参数，用户可以在分析精度、运行时间和结果悲观度之间进行权衡，以满足特定的设计签核（signoff）要求。",
+  "usage": "setSIMode [-help] [-reset] [-accumulated_small_attacker_factor <double>] [-accumulated_small_attacker_mode {cap | current | zero_mean}] [-accumulated_small_attacker_threshold <double>] [-attacker_alignment {path | path_overlap | timing_aware_edge | input_arrival}] [-clock_delta_delay_threshold <double>] [-clocks {asynchronous|synchronous}] [-constrained_input_threshold_failure_point {input | both}] [-delta_delay_annotation_mode {lumpedOnNet | arc}] [-delta_delay_threshold <double>] [-double_switching {none | clock | data_sequential | all}] [-enable_bus_attacker_correlation {true | false}] [-enable_delay_report {true | false}] [-enable_drv_with_delta_slew {true | false}] [-enable_dynamic_receiver_peak_limits {true | false}] [-enable_double_clocking_check {true | false}] [-enable_glitch_propagation {true | false}] [-enable_glitch_propagation_spice_deck {true | false}] [-enable_glitch_report {true | false}] [-enable_logical_correlation {true | false}] [-enable_overshoot_undershoot_glitch {true | false}] [-enable_two_stage_driver_weakening {true | false}] [-enable_user_defined_bus_merging {true | false}] [-enable_virtual_attacker_constituent_report {true | false}] [-glitch_accuracy_level <int>] [-glitch_analysis_type {source | full_propagation}] [-hold_slack <double>] [-individual_attacker_clock_threshold <float>] [-individual_attacker_simulation_filtering {true | false}] [-individual_attacker_threshold <double>] [-input_glitch_full_propagation_threshold <double>] [-input_glitch_full_propagation_vh_threshold <double>] [-input_glitch_full_propagation_vl_threshold <double>] [-input_glitch_threshold <double>] [-input_glitch_vh_threshold <double>] [-input_glitch_vl_threshold <double>] [-nonlinear_attacker_slew {true | false}] [-num_si_iteration <int>] [-pessimistic_mode {advanced | advanced_node | reduced_pessimism | increased_pessimism | high_pessimism}] [-receiver_clk_peak_limit <double>] [-receiver_latch_peak_limit <double>] [-receiver_peak_limit <double>] [-report_max_virtual_attacker_constituents <int>] [-report_si_slew_max_transition {true | false}] [-secondary_attacker_decoupling_factor <double>] [-separate_delta_delay_on_data {true | false}] [-setup_slack <double>] [-si_reselection {delta_delay | slack}] [-si_reselection_delay_threshold <double>] [-skip_noise_model_check <pins>] [-skip_tw <nets>] [-switch_prob <double>] [-unconstrained_net_use_inf_tw {true | false}] [-use_infinite_TW {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 setSIMode 参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定的选项重置为其默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-accumulated_small_attacker_factor",
+      "description": "指定控制电容模式累积小攻击者效应的乘法因子。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-accumulated_small_attacker_mode",
+      "description": "指定是否对累积小攻击者使用基于电流匹配的方法。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-accumulated_small_attacker_threshold",
+      "description": "更改累积小攻击者的毛刺阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-attacker_alignment",
+      "description": "指定攻击者对齐方式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_delta_delay_threshold",
+      "description": "指定应计算时钟增量延迟的阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-clocks",
+      "description": "将时钟视为彼此同步或异步。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-constrained_input_threshold_failure_point",
+      "description": "允许控制当用户指定对象特定 RIP 阈值时的毛刺失效标准。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delta_delay_annotation_mode",
+      "description": "计算路径中每个弧（单元弧和网络弧）的延迟。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delta_delay_threshold",
+      "description": "为设计指定一个阈值，低于该阈值的串扰影响将在给定网络上被移除。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-double_switching",
+      "description": "指定将执行双开关分析的数据类型（时钟、数据时序或全部）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_bus_attacker_correlation",
+      "description": "使软件将总线位视为相关的攻击者。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_delay_report",
+      "description": "启用 SI 延迟报告。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_drv_with_delta_slew",
+      "description": "当设置为 true 时，基于 SI 转换时间报告最大转换违规。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_dynamic_receiver_peak_limits",
+      "description": "启用使用时序弧上的 CCS-noise 数据自动计算两级单元的 ROP 阈值。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_double_clocking_check",
+      "description": "在 AAE 中启用双时钟检查。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_glitch_propagation",
+      "description": "启用毛刺通过单级单元的传播以及通过单级和双级单元的驱动器弱化。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_glitch_propagation_spice_deck",
+      "description": "启用将驱动器输入毛刺波形打印在 SPICE 网表中，以便 SPICE 也能执行单级毛刺传播。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_glitch_report",
+      "description": "启用存储毛刺信息，以便使用 report_noise 命令进行进一步调试。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_logical_correlation",
+      "description": "启用 AAE-SI 逻辑相关性。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_overshoot_undershoot_glitch",
+      "description": "启用过冲/下冲分析和报告。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_two_stage_driver_weakening",
+      "description": "启用两级驱动器弱化模式。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_user_defined_bus_merging",
+      "description": "启用总线合并功能——如果一个网络在两个组中，则合并这些组。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_virtual_attacker_constituent_report",
+      "description": "启用虚拟攻击者成分报告。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-glitch_accuracy_level",
+      "description": "指定毛刺分析的精度级别。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-glitch_analysis_type",
+      "description": "指定毛刺分析类型——源或全传播。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hold_slack",
+      "description": "指定用于保持的松弛重选阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-individual_attacker_clock_threshold",
+      "description": "设置受害者时钟网络上单个攻击者网络的毛刺容限。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-individual_attacker_simulation_filtering",
+      "description": "使用电气滤波来减少由于小攻击者在其模拟值低于单个攻击者阈值时被保留而带来的悲观度。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-individual_attacker_threshold",
+      "description": "设置受害者网络上单个攻击者网络的毛刺容限。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-input_glitch_full_propagation_threshold",
+      "description": "指定接收器输入毛刺阈值，超过该阈值 Tempus 将不会在全传播模式下传播毛刺，并标记为 RIP 违规。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-input_glitch_full_propagation_vh_threshold",
+      "description": "指定接收器 VH 输入毛刺阈值，超过该阈值 Tempus 将不会在全传播模式下传播毛刺，并标记为 RIP 违规。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-input_glitch_full_propagation_vl_threshold",
+      "description": "指定接收器 VL 输入毛刺阈值，超过该阈值 Tempus 将不会在全传播模式下传播毛刺，并标记为 RIP 违规。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-input_glitch_threshold",
+      "description": "指定 AAE 分析期间的输入毛刺失效阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-input_glitch_vh_threshold",
+      "description": "指定 AAE 分析期间的输入毛刺 vh 失效阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-input_glitch_vl_threshold",
+      "description": "指定 AAE 分析期间的输入毛刺 vl 失效阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-nonlinear_attacker_slew",
+      "description": "使用非线性攻击者。如果设置为 false，则使用线性攻击者。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-num_si_iteration",
+      "description": "指定在 SI 延迟分析期间应执行的最大时序窗口迭代次数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pessimistic_mode",
+      "description": "指定用于调整延迟计算结果的悲观模式设置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-receiver_clk_peak_limit",
+      "description": "定义接收器峰值模式下时钟输入的毛刺检查限制。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-receiver_latch_peak_limit",
+      "description": "定义接收器峰值模式下锁存器输入的毛刺检查限制。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-receiver_peak_limit",
+      "description": "定义所有节点处的接收器峰值/毛刺峰值限制。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-report_max_virtual_attacker_constituents",
+      "description": "指定要报告的虚拟攻击者成分的最大数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-report_si_slew_max_transition",
+      "description": "仅为 DRV 最大转换报告启用 SI 转换时间报告。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-secondary_attacker_decoupling_factor",
+      "description": "指定次级攻击者的去耦因子。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-separate_delta_delay_on_data",
+      "description": "将增量延迟分离到数据上（增量延迟始终为时钟分离）。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-setup_slack",
+      "description": "指定用于建立的松弛重选阈值。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-si_reselection",
+      "description": "指定时序窗口迭代期间的 SI 重选标准。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-si_reselection_delay_threshold",
+      "description": "允许您更改延迟重选标准。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-skip_noise_model_check",
+      "description": "指定一个引脚列表，这些引脚将不进行噪声模型检查。",
+      "required": false,
+      "type": "pins"
+    },
+    {
+      "name": "-skip_tw",
+      "description": "指定要跳过时序窗口的网络列表。",
+      "required": false,
+      "type": "nets"
+    },
+    {
+      "name": "-switch_prob",
+      "description": "设置攻击者切换概率。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-unconstrained_net_use_inf_tw",
+      "description": "指定无约束网络将具有无限时序窗口。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-use_infinite_TW",
+      "description": "在单次 SI 运行中使用无限时序窗口。",
+      "required": false,
+      "type": "bool"
+    }
+  ]
+}

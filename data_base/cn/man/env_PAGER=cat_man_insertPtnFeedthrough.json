@@ -1,0 +1,165 @@
+{
+  "command": "insertPtnFeedthrough",
+  "is_cmd": true,
+  "summary": "在分区中插入馈通缓冲器，以改变原始网表，避免网络布线穿越模块区域。",
+  "description": "该命令用于在分区设计中插入馈通缓冲器，通过修改原始网表，避免网络布线穿越模块区域。执行此命令时会自动运行ECO布局。默认使用设计导入时提供的缓冲器，也可以通过-bufCell参数指定缓冲器，或使用-noBuffer参数在网表中生成ASSIGN语句。此命令应在完成分区设计的布局规划步骤后使用。\n该命令可以检测设计是否具有电源域，并自动为馈通路径中插入到电源域的缓冲器基于电源域库绑定进行推导。如果馈通路径中为始终开启电源域找不到常规缓冲器，则会报告错误信息。基于布局和布线的馈通插入均支持始终开启和可切换电源域。\n可以通过-saveTopoFile参数将馈通缓冲器拓扑树信息保存到文件中，之后可以使用-topoFile参数通过指定包含拓扑树信息的文件来为ECO网表复制馈通缓冲器插入。也可以手动创建拓扑文件来指导特定网络的馈通插入。\n注意事项包括：默认使用基于布局结果的最短路径算法推导馈通拓扑；默认将设计视为无通道设计，所有网络都是馈通插入的候选；处理浮动端口的网络；从所属的任何网络组中移除已插入馈通缓冲器的网络；更新存在馈通缓冲器插入网络的引脚引导信息；自动处理具有主/克隆分区的设计；支持嵌套分区；打印网络中所有消息的摘要；馈通始终使用低功耗兼容缓冲器/AO缓冲器。",
+  "usage": "insertPtnFeedthrough [-help] [-allLowercase] [-blockageFile <fileName>] [-blockedEdgesFile <fileName>] [-instPrefix <instancePrefix>] [-netPrefix <netPrefix>] [-repeatedSymmetricAbuttedFPlan] [-reuseBuffer {true false 0 1}] [-saveTopoFile <fileName>] [-useShortName] [-verbose] [[[-selectNet  <fileName> | -selectMarkedNet | -autoSelectNetsByCongestion | -autoSelectNetsBySlack | [ [-excludeNet <fileName>] ]] ] | -topoFile <topologyFileName> ] [ -topoFile <topologyFileName>  |  -routeBased  |  -routeBasedStrict  | [-excludePtnList {<ptnName> | <ptnNameList>} ] ] [ -topoFile <topologyFileName> | -routeBased | -routeBasedStrict ] [ -routeBased [-autoSelectNetsBySlack ] [-autoSelectNetsByCongestion ]] [-noBuffer  |  [[-bufCell {<cellName> | <cellNameList>}] [-doubleBuffer ]]] [[-checkOnly ] | [[-ecoFile  <fileName>]  [-netMapping  <fileName>]]  ] [-topoFile <topologyFileName> ] [-noBuffer ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个insertPtnFeedthrough参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allLowercase",
+      "description": "指定插入的馈通缓冲器和馈通网络名称全部使用小写字符。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-blockageFile",
+      "description": "指定一个包含线段坐标的文件，这些线段被视为基于布局的馈通插入的障碍物。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockedEdgesFile",
+      "description": "指定一个文件，其中包含分区名称及其被视为阻塞的边缘编号，用于insertPtnFeedthrough命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instPrefix",
+      "description": "为新创建的实例指定前缀。指定的前缀将替代默认前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-netPrefix",
+      "description": "为新创建的网络指定前缀。指定的前缀将替代默认前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-repeatedSymmetricAbuttedFPlan",
+      "description": "此选项与主克隆设计相关。用于具有以对称方式排列的重复组件且数据流独立地从顶部流向每个组件的布局规划。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reuseBuffer",
+      "description": "在单次运行中跨模块的多个实例重用已插入的缓冲器。此选项应仅用于具有主分区和克隆分区的设计。默认值：true。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-saveTopoFile",
+      "description": "将馈通缓冲器拓扑树信息保存到文件中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useShortName",
+      "description": "指定插入的馈通网络名称使用缩写，以便在多次运行时网络名称不会过长。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "指定在日志中包含网络特定信息。默认值：仅在日志中包含摘要信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selectNet",
+      "description": "指定一个包含网络名称的文件，这些网络将成为分区的馈通网络并插入馈通缓冲器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selectMarkedNet",
+      "description": "指定应在当前在GUI中选定的网络上插入馈通缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoSelectNetsByCongestion",
+      "description": "指定自动识别拥塞通道中的关键网络。这些关键网络将被扁平布线，以便后续可以通过分区进行馈通以减少拥塞，而其余网络则通过遵守围栏进行布线。布线完成后，基于布线结果插入馈通。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoSelectNetsBySlack",
+      "description": "指定自动识别设计中的关键网络。这些关键网络将被扁平布线，以便后续可以通过分区进行馈通以改善时序，而其余网络则通过遵守围栏进行布线。布线完成后，基于布线结果插入馈通。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeNet",
+      "description": "指定一个包含网络名称的文件，这些网络将被排除在成为分区的馈通网络之外。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-topoFile",
+      "description": "指定包含拓扑树信息的文件。此信息用于为网表创建馈通缓冲器。如果使用-topoFile参数，则仅考虑拓扑文件中指定的网络进行馈通缓冲器插入。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-routeBased",
+      "description": "基于布线结果推导馈通拓扑。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-routeBasedStrict",
+      "description": "基于布线结果推导馈通拓扑，并遵循每个交叉点。与-routeBased参数相比，-routeBasedStrict选项根据布线交叉插入更多数量的缓冲器，并且支持特殊布线。如果布线跨越边界，它可以在分区内网络上插入缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludePtnList",
+      "description": "指定不应向指定的分区添加馈通缓冲器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noBuffer",
+      "description": "在网表中生成ASSIGN语句，而不是插入缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bufCell",
+      "description": "指定馈通缓冲器单元类型的名称。注意：对于MSV设计，可以指定多个缓冲器单元。第一个缓冲器将用于默认电源域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-doubleBuffer",
+      "description": "在馈通输入引脚附近添加一个缓冲器，并在馈通输出引脚附近添加一个缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-checkOnly",
+      "description": "指定不插入馈通缓冲器。此参数在您想了解insertPtnFeedthrough命令将如何影响设计时很有用。将打印摘要信息。您可以与-saveTopoFile参数一起指定此参数，以保存馈通拓扑信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ecoFile",
+      "description": "指定用于记录ECO指令的文件。此参数不能与-checkOnly参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-netMapping",
+      "description": "生成一个文件，将原始网络名称映射到为馈通缓冲器创建的新网络名称。注意：如果稍后要运行hiliteFeedthroughNets命令以高亮显示网络的馈通路径，则必须指定此参数。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoChangeCell(25.10)                                      ecoChangeCell(25.10)
+
+Name
+       ecoChangeCell  -  Upsizes  or downsizes the specified instance based on
+       the available footprint
+
+Syntax
+       ecoChangeCell
+
+       [-help]
+
+       -cell <list_of_cells >|-upsize | -downsize
+
+       -inst <instNames>
+
+       [-loc {xLoc yLoc} [-orient {R0 | R90 | R180 | R270 | MX | MX90 |  MY  |
+       MY90}]]
+
+       [-pinMap <oldpin1 newpin1 oldpin2 newpin2> ...]
+
+       Upsizes  or  downsizes  the  specified  instance based on the available
+       footprint. Cell mapping is also possible as long as the output pins are
+       functionally the same. This command also checks for and observes  power
+       domains.
+
+       This  command does not modify dont_touch nets if setEcoMode -honorDont-
+       Touch is set to true.
+
+       Note: If you use the ecoChangeCell command  to  modify  a  `fixed'  in-
+       stance, the software issues a warning message.
+
+       Instead, you can specify the following using the setEcoMode command:
+
+              * setEcoMode -honorFixedStatus false, to modify FIXED instance.
+
+              * setEcoMode  -honorDontUse false to modify instances which have
+                dontUse attribute on cells.
+
+              * setEcoMode -honorDontTouch false to modify instance/nets which
+                are marked dontTouch.
+
+       Notes:
+
+              * The ecoChangeCell command is simultaneous setup/hold and  MMMC
+                aware.  To make the command simultaneous setup/hold aware, set
+                the  global   variable   set_global   timing_enable_simultane-
+                ous_setup_hold_mode  to true. The simultaneous setup/hold mode
+                can only be used for timing analysis. It cannot  be  used  for
+                any physical implementation steps.
+
+              * When  resizing  instances inside multiple-instantiated blocks,
+                the resize would be  applied  to  all  instantiations  of  the
+                block.
+
+              * You  can  change  a  buffer  to  a pair of inverters using the
+                ecoDeleteRepeater and ecoAddRepeater commands. You can  change
+                a  buffer  to  an inverter by first using setEcoMode -LEQCheck
+                false and then using ecoChangeCell. However, please note  that
+                it results in the change in logic.
+
+              *
+
+                The ecoChangeCell command cannot be used in the post-mask ECO.
+                Please  use  loadECO  <ecofile>  -postMask  to change cells in
+                post-mask ECO.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ecoChangeCell.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoChangeCell
+
+       -orient {R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90}
+              Specifies the legalized orientation for the instance.
+
+              You can specify this parameter with the -loc parameter only.
+
+       -inst <instNames>
+              Specifies the names of the instances to be changed.
+
+       -loc {xLoc yLoc}
+              Specifies  the  legalized  location  where  the instance will be
+              placed.
+
+       -upsize
+              Upsizes the specified instance with the next available  cell  in
+              the  same  footprint unless the specified cell is already of the
+              highest driving strength. Upsizing an  instance  that  drives  a
+              large  load can improve the driver delay and the transition time
+              at the receivers.
+
+       -downsize
+              Downsizes the specified instance with the next available cell in
+              the same footprint unless the specified cell is already  of  the
+              lowest driving strength. Downsizing an instance on the noncriti-
+              cal  path  can  reduce the loading of its driver on the critical
+              path.
+
+       -cell <list_of_cells>
+              Specifies the name of a specific cell(s) to  be  substituted  in
+              the  design.  The function of the original cell has to match the
+              function of the new cell for all the outputs  used  by  the  old
+              cell. The original master cell and the new master cell must have
+              exactly same number of pins.
+
+       -pinMap <oldpin1 newpin1 oldpin2 newpin2>
+              Specifies  the  pin  mapping  for  the new cell based on the old
+              cell. This option is required if the new master cell has differ-
+              ent pin names than the original cell. The net connected to <old-
+              pin1> of the original cell should be connected to  <newpin1>  of
+              the new cell, and so forth.
+
+Examples
+              * Upsizes the specified instance:
+
+                ecoChangeCell -inst Top_I18 -upsize
+
+              * Downsizes the specified instance:
+
+                ecoChangeCell -inst Top_I18 -downsize
+
+              * Modifies  the  specified  instance  according to the specified
+                cell:
+
+                ecoChangeCell -inst Top_I18 -cell BUFX20
+
+              * Changes to another cell with a different pin name:
+
+                ecoChangeCell -inst Top_I27 -cell TXOR2X2 -PINMAP A X B Y Y Z
+
+              * The following example changes to another cell with a different
+                pin name:
+
+                setEcoMode -LEQCheck false
+
+                ecoChangeCell -inst FE_OFC0_tdigit_7 -cell INV_X4 -pinMap Z ZN
+                A A
+
+                The image below shows the old name and the new name after  the
+                above code was executed.
+
+Related Information
+              * ecoAddRepeater
+
+              * ecoDeleteRepeater
+
+              * setEcoMode
+
+              * timing_enable_simultaneous_setup_hold_mode
+
+                           Fri Apr 04 01:25:37 2025       ecoChangeCell(25.10)

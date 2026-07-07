@@ -1,0 +1,293 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+checkPlace(25.10)                                            checkPlace(25.10)
+
+Name
+       checkPlace  - Checks FIXED and PLACED cells for violations, adds viola-
+       tion markers to the design display area, and generates a violation  re-
+       port
+
+Syntax
+       checkPlace
+
+       [<violationReportFileName>]
+
+       [-clearMarker]
+
+       [-honorPrerouteForFiller]
+
+       [-ignoreFillerInUtil]
+
+       [-ignoreOutOfCore]
+
+       [-inst <list_of_instances>]
+
+       [-ioPinBlockage]
+
+       [-macroBlockage]
+
+       [-noCheckPinAccess]
+
+       [-noHardFence]
+
+       [-noHalo]
+
+       [-noPreplaced]
+
+       [-selectedOnly]
+
+       Checks FIXED and PLACED cells for violations, adds violation markers to
+       the design display area, and generates a violation report. Use the Vio-
+       lation Browser to see the violation markers.
+
+       This command considers preplaced instances and macros as FIXED.
+
+       Note:  The  utilization  value  reported  by checkPlace and the density
+       value reported by timeDesign might differ because checkPlace  considers
+       padding  when  calculating utilization but timeDesign does not consider
+       padding when calculating density.
+
+       You can delete padding by running the deleteAllCellPad  command  before
+       running checkPlace.
+
+       Note:  If  setPlaceMode -place_detail_legalization_inst_gap is defined,
+       checkPlace will report the gaps that violate the specified spacing.
+
+       The checkPlace command checks for the following violations:
+
+              * Implant max cover length. If this violation is  detected,  GUI
+                adds  markers  for  every instance. As per this violation rule
+                the implant shapes cannot be  fully  covered  horizontally  by
+                neighbor  shapes  on  both  top  and bottom opposite sides. If
+                checkPlace detects the violation, GUI adds markers  for  every
+                instance
+
+              * Region  and  fence  violations (Instances placed outside their
+                region or fence)
+
+              * Out of core area violations (Instances placed partly or wholly
+                outside the core area)
+
+              * Not placed on placement grid (Standard cells not on the place-
+                ment grid, or blocks not on the manufacturing  grid).  If  the
+                design  is  using  the FinFET technology, checkPlace will also
+                check if standard cells and blocks are not aligned on the Fin-
+                FET grid and report violations.
+
+              * Row orientation violations (Instances whose orientation is il-
+                legal for their row; may short power to ground)
+
+              * Tech site violations  (Instances  placed  on  tech  sites  not
+                matching  their  cells and instances that do not have rows for
+                their tech sites)
+
+              * Overlapping with other instance (Placed instances that overlap
+                with other instances)
+
+              * Pin access violations (Instances with at least one signal  pin
+                that does not have routing access due to pre-wires)
+
+              * Orientation violations (Instances whose orientation is not le-
+                gal based on its cell symmetry rules)
+
+              * Routing/placement  blockage  violations  in the core area (In-
+                stances placed in an obstruction created by pre-wires or rout-
+                ing blockage)
+
+                The command does not check fixed macros.
+
+              * Site orientation violations (Instances whose orientation  does
+                not match the tech site orientation)
+
+              * Not  of  fence  violations (Instances placed inside a fence to
+                which it does not belong)
+
+              * Instance  padding  violations   if   setPlaceMode   -place_de-
+                tail_honor_inst_pad is set to true.
+
+              * Standard cells' power-pin connection
+
+              * Checks  the  VT  implant  spacing  rule when VT shape does not
+                touch the cell boundary.
+
+              *
+
+                Prints implant layer names in the Implant Layer Spacing viola-
+                tion. The implant Spacing Violation would be as follows:
+
+                Implant_Spacing_Violation
+
+                $instance1 implant layer $layer1 has corner touch violation to
+                $instance2 implant layer $layer2
+
+                VT group name: $Group  Base layer: $layer
+
+                MinWidth: $width  MinSpacing:$spacing    ShiftDistance: $value
+
+                Box=$box
+
+                Note: It only works for the static  check  of  the  checkPlace
+                command.
+
+              * Prevents  the  placement  of cells that can cause m1 shorts at
+                routing. It flags such cells as pre-place DRC markers to avoid
+                the m1 shorts.
+
+              * Via spacing violations
+
+       In addition to checking for violations, the command reports the follow-
+       ing:
+
+              * Number of placed instances in the design
+
+              * Number of unplaced macros in the design
+
+              * Placement density, in terms of used sites over available sites
+
+              * Default power domain density
+
+Parameters
+       -noCheckPinAccess
+              Specifies whether to check for pin access violations.
+
+       -clearMarker
+              Removes the violation markers from a  previous  checkPlace  run,
+              without rerunning checkPlace.
+
+       -honorPrerouteForFiller
+              Checks  for  placement blockage violations on physical instances
+              placed under preroutes or specified by  setPlaceMode  -place_de-
+              tail_preroute_as_obs.
+
+              By  default, checkPlace does not treat filler cells placed under
+              preroutes as violations, even though they are  placement/routing
+              blockages;  however,  it  does treat standard cells placed under
+              preroutes as violations.
+
+       -ignoreFillerInUtil
+              Ignores filler cells in calculating utilization.
+
+       -ignoreOutOfCore
+              Skips instances outside the core design area.
+
+       -inst <list_of_instances>
+              Specifies the list of instances to check.
+
+       -ioPinBlockage
+              Instructs legalization routines to treat top-level I/O  pins  as
+              fixed  metal  obstructions while placing standard cell instances
+              at the block level. There is a minor run-time penalty with  this
+              parameter, so it is not turned on by default.
+
+       -macroBlockage
+              Checks  for  overlap  between hard macro and macro-only blockage
+              and reports macro blockage  violation.  By  default,  macro-only
+              blockage  is ignored for both hard macro and standard cell. With
+              this setting, it is  treated  as  a  placement  obstruction  for
+              macros.
+
+       -noHalo
+              Skips  block  halos.  Uses  the place-and-route boundary for the
+              placement overlap check.
+
+       -noHardFence
+              Ignores fence and region placement constraints.
+
+       -noPreplaced
+              Does not check fixed instances. When this  parameter  is  speci-
+              fied, checkPlace treats fixed instances as placement blockages.
+
+       -selectedOnly
+              Specifies to check only the selected instances legality.
+
+       <violationReportFileName>
+              Specifies the report file. If you do not specify this parameter,
+              the command displays a summary report.
+
+              The  report  file  is more detailed than the summary report, and
+              lists every instance with a violation.It contains details on the
+              violations along with a Tcl procedure to select instances  based
+              on the violation type.
+
+       Note:  If  a  design is loaded where a macro is fixed in an orientation
+       that is not supported according to its LEF, running checkPlace  changes
+       the orientation and the position of the macro, even if the -noPreplaced
+       option is specified. Here is an example:
+
+       Cell positions before checkPlace:
+
+       FPFEL0_SLM/fpicl/fpiclmsc/ThermRemote_FP_1: {544.32 648}
+
+       FPFEL0_SLM/fpicl/fpiclmsc/ThermRemote_FP_2: {544.32 669.6}
+
+       < CMD> checkPlace
+
+       **WARN:  (ENCDB-1266):  Both given orientation and original orientation
+       not legal,
+
+       FPFEL0_SLM/fpicl/fpiclmsc/ThermRemote_FP_1 changes to orientation R0
+
+       **WARN: (ENCDB-1266): Both given orientation and  original  orientation
+       not legal,
+
+       FPFEL0_SLM/fpicl/fpiclmsc/ThermRemote_FP_2 changes to orientation R0
+
+       Design has 3 cells with cell padding or block halo.
+
+       Begin checking placement ... (start mem=690.9M, init mem=714.5M)
+
+       *info: Placed = 1098
+
+       *info: Unplaced = 0
+
+       Placement Density:0.00%(0/407468)
+
+       Finished   checkPlace   (cpu:  total=0:00:07.6,  vio  checks=0:00:00.0;
+       mem=696.2M)
+
+       Cell positions after checkPlace:
+
+       FPFEL0_SLM/fpicl/fpiclmsc/ThermRemote_FP_1: {544.446 648}
+
+       FPFEL0_SLM/fpicl/fpiclmsc/ThermRemote_FP_2: {544.446 669.6}
+
+       If few instances are getting overlapped, the report will clearly speci-
+       fies the violation type and list all the instances. Here is an example:
+
+       #########################################################
+
+       ## Total instances with placement violations: 5
+
+       #########################################################
+
+       ## Insts placed overlapping with other insts (5) ##
+
+       #########################################################
+
+       ### 4 (Preplaced) Overlapping with other instance>
+
+       set pchkOverlapFixedList [list \
+
+        {proc0/rf0/u0/u0/rfd_reg_22_27/DFF} \
+
+        {proc0/rf0/u0/u0/rfd_reg_37_26/DFF} \
+
+        {proc0/rf0/u0/u0/rfd_reg_37_27/DFF} \
+
+        {proc0/rf0/u0/u0/rfd_reg_38_27/DFF} \
+
+        ]
+
+Related Information
+              * timeDesign
+
+              * deleteAllCellPad
+
+              * setPlaceMode
+
+              * verify_drc
+
+              * Tools Menu chapter in the Innovus Menu Reference
+
+                * Violation Browser
+
+                           Fri Apr 04 01:25:37 2025          checkPlace(25.10)

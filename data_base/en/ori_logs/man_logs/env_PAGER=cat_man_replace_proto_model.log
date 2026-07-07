@@ -1,0 +1,135 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+replace_proto_model(25.10)                          replace_proto_model(25.10)
+
+Name
+       replace_proto_model  -  Converts flexmodel netlist back to the original
+       full netlist  with  changes  at  the  partition  block  level  whenever
+       feedthrough insertion step is needed in the flow
+
+Syntax
+        replace_proto_model
+
+       [-help]
+
+       [-out_dir <string] >
+
+       [-ptn_dir <string>]
+
+       [-module_model_tag <string> -full_module_model_tag<string>]
+
+       Converts  flexmodel  netlist  back  to  the  original full netlist with
+       changes at the partition block  level  whenever  feedthrough  insertion
+       step  is  needed  in the flow. You can use this command after using the
+       savePartition command. This command saves a directory under each parti-
+       tion directory with the  default  name  <designName>_proto_full.enc.dat
+       and you need to use this DB for block implementation.
+
+       To use this command in a FlexModel based partition flow:
+
+              * Import a full chip FlexModel netlist design.
+
+              * Floorplan the design.
+
+              * Run the following commands to analyze the floorplan.
+
+                * place_design
+
+                * earlyGlobalRoute
+
+                * timeDesign -proto
+
+                * load_timing_debug_report -proto
+
+              * Do feedthrough insertion .
+
+              * Do pin assignment
+
+              * Optionally optimize the design.
+
+              * Budget the timing for blocks using the deriveTimingBudget com-
+                mand.
+
+              * Partition the design using the partition command.
+
+              * Save  the  partition  using  savePartition  -dir  $ptnDir (for
+                placement and pin locations copy)
+
+              * replace_proto_model -ptn_dir $ptnDir -outdir $ptnDir
+
+       Note: The replace_proto_model command only supports the netlist changes
+       caused by feedthrough insertion, so replace_proto_model will  have  is-
+       sues  if there is some netlist change issued by other commands such as-
+       createLogicHierarchy before calling replace_proto_model. This is a lim-
+       itation for the replace_proto_model command.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each replace_proto_model parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man replace_proto_model.
+
+       -full_module_model_tag< string>
+              Specifies  the  module  model  tag for the original full netlist
+              that is used in the iHDB directory structure for saving the full
+              hierarchical DB (output) after eco.
+
+              Note: The -full_module_model_tag and  -module_model_tag  parame-
+              ters  are  part  of  the Integrated Hierarchical Database (iHDB)
+              flow and are used by the replace_proto_model command to  convert
+              the  FlexModel  netlist back to the original full netlist in the
+              iHDB directory structure. Before  using  these  parameters,  you
+              must  set  the  default central directory name (set_module_model
+              -default_dir <default_model_data_directory> ) where  the  module
+              models data will be saved/loaded.
+
+              Data_type: string, optional
+
+       -module_model_tag <string>
+              Specifies  the module model tag for the hierarchical DB (input).
+              This module model tag is used  in  the  Integrated  Hierarchical
+              Database flow.
+
+              Note:  The -full_module_model_tag and  -module_model_tag parame-
+              ters are part  of  the  iHDB  flow  and  are  used  by  the  re-
+              place_proto_model  command to convert the FlexModel netlist back
+              to the original full netlist in the  iHDB  directory  structure.
+              Before  using these parameters, you must set the default central
+              directory    name    (set_module_model     -default_dir     <de-
+              fault_model_data_directory>  ) where the module models data will
+              be saved/loaded.
+
+              Data_type: string, optional
+
+       -out_dir <string>
+              Specifies the directory to save post ECO full top/block  netlist
+              partition data.
+
+              Data_type: string, optional
+
+       -ptn_dir <string>
+              Specifies the partition directory for original full netlist.
+
+              Data_type: string, optional
+
+Example
+       The  following command will read the FlexModel data with tag name "ptn"
+       as input, and dump the original full netlist with tag  name  "full"  in
+       the iHDB directory structure.
+
+       replace_proto_mode  -module_model_tag ptn -full_module_model_tag full
+
+Related Information
+              *
+
+                savePartition
+
+              * set_proto_model
+
+              *
+
+                Prototyping Methodologies chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025 replace_proto_model(25.10)

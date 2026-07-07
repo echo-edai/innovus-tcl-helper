@@ -1,0 +1,375 @@
+{
+  "command": "create_spice_deck",
+  "is_cmd": true,
+  "summary": "生成路径的SPICE跟踪文件",
+  "description": "create_spice_deck命令用于为指定的时序路径生成SPICE网表（SPICE deck），以便进行精确的电路仿真。该命令会查找并包含运行SPICE所需的库单元，生成的SPICE网表包含有源/无源器件（如FET、电容、电阻）、初始条件、电压源以及门、网络和单元实例的实际名称。用户可以通过-report_timing等参数指定需要分析的路径，并可选地运行仿真。",
+  "usage": "create_spice_deck [-help] [-add_driver_for_constraint_check {true | false}] [-add_side_load_measurement {true | false}] [-add_voltage_for_missing_sensitization] [-bbox_cells <string>] [-constraint_check {true | false}] [-depth <integer>] [-enable_arrival_measurements {true | false}] [-enable_fast_simulation {true | false}] [-enable_mis {tied_input | independent_input | none}] [-enable_spectre_x {true | false}] [-exclude_side_load_cells <string>] [-exclude_side_load_cells_for_missing_subckt {true | false}] [-force_delete_output_dir] [-file_prefix <string>] [-format <string>] [-from <string>] [-from_fall <string>] [-from_rise <string>] [-glitch_simulation_mode {input_output | output}] [-ground <string>] [-include_cell_variation {true | false}] [-lsf_job_string <string>] [-measure_point {all | path | stage}] [-merge_spice_deck {true | false}] [-mc_simulation_init_args <string>] [-mc_simulation_tran_args <string>] [-model_file <string>] [-no_hard_stop_at_to_pins {true | false}] [-outdir <string>] [-power <string>] [-receiver_pin <string>] [-report_noise <string>] [-report_timing <string>] [-run_simulation] [-segment  {data_path  | launch_path | launch_clock_path | capture_path all}] [-segment_end <string>] [-segment_start <string>] [-side_path_level <integer>] [-spectre <string>] [-spectre_analysis_options <string>] [-spectre_cmd_options <string>] [-spectre_lang_escape_chars <string>] [-spice_include <string>] [-stimuli_file <string>] [-subckt_file <string>] [-supply_voltage_file <string>] [-sweep_range <float>] [-sweep_steps <integer>] [-sweep_victim {true | false}] [-temperature <float>] [-through <string>] [-to <string>] [-use_control_param {true | false}] [-use_distributed_load_for_side_receivers {true | false}] [-user_defined_measure_statements {append | overwrite}] [-user_defined_measure_statements_file <string>] [-use_ndw_for_constraint_check {true | false}] [-waveform_aware_pulse_width_checks {true | false}] [-view <string>] [-xtalk {delay | vl_glitch | vh_glitch | vlu_glitch | vho_glitch}] [[ > | >> ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add_driver_for_constraint_check",
+      "description": "启用包含前级驱动器的约束检查网表生成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add_side_load_measurement",
+      "description": "在时钟网络SPICE网表中添加侧负载测量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add_voltage_for_missing_sensitization",
+      "description": "为缺失的敏化条件添加电压。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox_cells",
+      "description": "指定在SPICE仿真中被视为黑盒的单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-constraint_check",
+      "description": "启用约束检查网表生成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-depth",
+      "description": "创建指定阶段深度的时钟网络SPICE网表。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-enable_arrival_measurements",
+      "description": "允许添加到达时间测量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_fast_simulation",
+      "description": "启用快速仿真模式，加速SPICE仿真。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_mis",
+      "description": "在SPICE网表创建期间启用高级多输入切换（aMIS）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_spectre_x",
+      "description": "启动Spectre时启用spectreX许可证检出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_side_load_cells",
+      "description": "指定一个单元列表，对其使用引脚电容作为侧负载，而不是实例化它们。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_side_load_cells_for_missing_subckt",
+      "description": "为缺失SPICE子电路的单元添加侧负载引脚电容，而不是实例化它。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force_delete_output_dir",
+      "description": "强制删除用户通过-outdir参数指定的目录。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-file_prefix",
+      "description": "为生成的SPICE网表文件添加指定前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "允许更改运行路径仿真的内部报告格式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from",
+      "description": "从指定引脚开始创建SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_fall",
+      "description": "从指定引脚的下降沿开始创建SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_rise",
+      "description": "从指定引脚的上升沿开始创建SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-glitch_simulation_mode",
+      "description": "指定毛刺仿真模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ground",
+      "description": "指定地节点列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_cell_variation",
+      "description": "写出运行仿真所需的SPICE网表。当设置为true时，软件从Tempus内部运行蒙特卡洛仿真。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lsf_job_string",
+      "description": "指定用于启动仿真的集群作业句柄。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-measure_point",
+      "description": "指定是添加全部、路径还是阶段测量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-merge_spice_deck",
+      "description": "允许启用合并的SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mc_simulation_init_args",
+      "description": "传递运行MC仿真所需的蒙特卡洛参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mc_simulation_tran_args",
+      "description": "初始化仿真的完整瞬态时间和瞬态时间步长。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-model_file",
+      "description": "指定包含SPICE模型信息的SPICE模型文件路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-no_hard_stop_at_to_pins",
+      "description": "控制SPICE网表生成的遍历行为。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outdir",
+      "description": "指定将包含生成的延迟和/或毛刺SPICE网表的输出目录名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power",
+      "description": "指定电源网络的全局名称列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-receiver_pin",
+      "description": "指定需要生成毛刺SPICE网表的接收器引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report_noise",
+      "description": "将report_noise命令参数指定为括号内的参数列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report_timing",
+      "description": "将report_timing命令选项指定为花括号内的参数列表，用于定义生成SPICE跟踪的路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-run_simulation",
+      "description": "在生成SPICE网表之外，启用路径仿真。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-segment",
+      "description": "从路径SPICE网表中创建一个片段的SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-segment_end",
+      "description": "指定片段结束项的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-segment_start",
+      "description": "指定片段开始项的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-side_path_level",
+      "description": "指定要包含在SPICE跟踪中的侧路径阶段级别数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-spectre",
+      "description": "指定用于仿真的Spectre版本位置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spectre_analysis_options",
+      "description": "向运行中添加Spectre分析选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spectre_cmd_options",
+      "description": "指定Spectre的命令行选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spectre_lang_escape_chars",
+      "description": "指定Spectre中的转义字符列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spice_include",
+      "description": "指定应写入SPICE网表的用户自定义行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stimuli_file",
+      "description": "允许指定包含用于指定库单元的激励的文件路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-subckt_file",
+      "description": "指定包含SPICE信息的SPICE子电路文件路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-supply_voltage_file",
+      "description": "指定包含用于SPICE仿真的用户自定义电源/地电压的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sweep_range",
+      "description": "指定扫描受害者的范围。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-sweep_steps",
+      "description": "指定扫描受害者的步数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sweep_victim",
+      "description": "启用受害者扫描。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-temperature",
+      "description": "指定SPICE仿真中使用的用户自定义温度。单位：摄氏度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-through",
+      "description": "创建经过-through点的SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to",
+      "description": "创建在指定to引脚结束的SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_control_param",
+      "description": "允许通过用户自定义参数控制所创建SPICE网表中的电源/地电压水平。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_distributed_load_for_side_receivers",
+      "description": "允许控制是否将接收器输出负载用作分布式负载或集总负载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-user_defined_measure_statements",
+      "description": "指定是覆盖SPICE网表中的默认测量语句，还是将其与默认测量语句追加。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-user_defined_measure_statements_file",
+      "description": "允许为生成SPICE网表的路径的任何给定片段添加延迟/压摆率测量语句。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_ndw_for_constraint_check",
+      "description": "启用使用NDW波形的约束检查网表生成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "指定视图名称——如果为非默认视图创建毛刺SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-waveform_aware_pulse_width_checks",
+      "description": "为波形感知的脉冲宽度检查生成SPICE网表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-xtalk",
+      "description": "为使用report_timing参数指定的阶段生成SI（信号完整性）SPICE网表。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

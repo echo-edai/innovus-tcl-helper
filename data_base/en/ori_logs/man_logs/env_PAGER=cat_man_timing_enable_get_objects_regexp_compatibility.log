@@ -1,0 +1,66 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_enable_..._compatibility(25.10)  timing_enable_..._compatibility(25.10)
+
+Name
+       timing_enable_get_objects_regexp_compatibility
+
+Syntax
+       timing_enable_get_objects_regexp_compatibility {true | false}
+
+       Default: false
+
+       Defines  the  pattern search scope to boundaries deduced from hierarchy
+       separation characters specified in the search pattern.
+
+       When set to false, the commands with -regexp parameter will  search  at
+       the top level only (unless used with the -hier parameter).
+
+       When set to true, the commands will search the specified pattern within
+       the hierarchies based upon the given pattern hierarchy (similar to pat-
+       tern  search  without  the -regexp parameter). The -hier along with the
+       -regexp parameter shows the same behavior similar to when  the  command
+       is used without the -regexp option - only the leaf level object name is
+       compared to the pattern match.
+
+       To set this global variable, use the set command.
+
+       Examples
+
+       Command behavior when this global variable is false:
+
+       get_pins -regexp seg2/.*/QN
+
+       **WARN:  (TCLCMD-513): The software could not find a matching object of
+       the specified type for the pattern '.*/.*'
+
+       **ERROR: (TCLCMD-917): Cannot find 'pins' that match 'seg2/.*.*/QN'
+
+       get_pins -regexp seg2/.*/QN -hier
+
+       seg2/u3/QN seg2/u9/QN seg2/u14/QN
+
+       get_pins -regexp .*/QN -hier
+
+       seg1/u3/QN seg1/u9/QN  seg1/u14/QN  seg2/u3/QN  seg2/u9/QN  seg2/u14/QN
+       seg3/u3/QN seg3/u9/QN seg3/u14/QN u2/QN u5/QN u8/QN
+
+       Command behavior when this global variable is true:
+
+       get_pins -regexp seg2/.*/QN
+
+       seg2/u3/QN seg2/u9/QN seg2/u14/QN
+
+       get_pins -regexp seg2/.*/QN -hier
+
+       **WARN:  (TCLCMD-513): The software could not find a matching object of
+       the specified type for the pattern '.*/.*'
+
+       **ERROR:    (TCLCMD-917):    Cannot    find    'pins'    that     match
+       'seg2/.*.*.*.*.*/QN'
+
+       get_pins -regexp .*/QN -hier
+
+       seg1/u3/QN  seg1/u9/QN  seg1/u14/QN  seg2/u3/QN  seg2/u9/QN seg2/u14/QN
+       seg3/u3/QN seg3/u9/QN seg3/u14/QN u2/QN u5/QN u8/QN
+
+                           Fri Apr 04 01:t2i5m:i3n7g_2e0n2a5ble_..._compatibility(25.10)

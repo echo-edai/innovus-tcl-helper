@@ -1,0 +1,199 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_twf_attribute(25.10)                              set_twf_attribute(25.10)
+
+Name
+       set_twf_attribute - Specifies static timing analysis information
+
+Syntax
+       set_twf_attribute
+
+       [-help]
+
+       [-clock <clock_name>]
+
+       [-clock_edge {rise | fall}]
+
+       [-clock_freq <value>]
+
+       [-fall_delay <{min:max>or<single_value}>]
+
+       [-fall_slack <{min:max>or<single_value}>]
+
+       [-fall_slew <{min:max>or<single_value}>]
+
+       [-net <net_name>]
+
+       [-pin <pin_name>]
+
+       [-reset]
+
+       [-rise_delay <{min:max>or<single_value}>]
+
+       [-rise_slack <{min:max>or<single_value}>]
+
+       [-rise_slew <{min:max>or<single_value}>]
+
+       [-type {data | clock}]
+
+       [-shift_arrival_time   <time>]
+
+       [-clear_twf_attr]
+
+       Specifies static timing analysis information. The command allows you to
+       override  timing  parameters,  such  as  slew  and  clock,  on  desired
+       pins/nets from an existing timing windows file (TWF).
+
+Parameters
+       -clear_twf_attr
+              Specifies to reset the TWF file values for  a  specific  pin  or
+              net. The use model of this parameter is:
+
+              set_twf_attribute -clear_twf_attr -pin/-net <<name>>
+
+       -clock <clock_name>
+              Specifies  the clock name. This indicates that the nets and pins
+              that are timing constrained have arrival times (timing  windows)
+              caused by this clock.
+
+       -clock_edge {rise | fall}
+              Specifies the capturing clock edge direction: rise or fall.
+
+       -clock_freq <value>
+              Specifies the clock frequency. You must specify the -clock para-
+              meter  along with the  -clock_freq parameter to assign the clock
+              for which the frequency needs to be updated.
+
+       -fall_delay <{min:max>or<single_value}>
+              Specifies the fall delay for the pin. This parameter is not sup-
+              ported in the static power analysis flow.
+
+       -fall_slack <{min:max>or<single_value}>
+              Specifies the fall slack for the pin.
+
+       -fall_slew <{min:max>or<single_value}>
+              Specifies the fall slew for the pin.
+
+       -net<net_name>
+              Specifies the net name. The -net and -pin parameters  are  mutu-
+              ally exclusive.
+
+       <-pin> <pin_name>
+              Specifies  the  pin name. The -net and -pin parameters are mutu-
+              ally exclusive.
+
+       -reset Resets all specified options back to default values.
+
+       -rise_delay <{min:max>or<single_value}>
+              Specifies the rise delay for the pin. This parameter is not sup-
+              ported in the static power analysis flow.
+
+       -rise_slack <{min:max>or<single_value}>
+              Specifies the rise slack for the pin.
+
+       -rise_slew <{min:max>or<single_value}>
+              Specifies the rise slew for the pin.
+
+       -shift_arrival_time   <time>
+              Specifies to filter the idle period of the current  waveform  in
+              the dynamic power analysis flow. This parameter is useful in re-
+              moving  the idle period of the current waveform result with long
+              idle period (small current) before the 1st high current peak be-
+              cause of TWF delay annotation. The parameter  allows  to  offset
+              idle period from the TWF delay values.
+
+       The use model is given below:
+
+       set_twf_attribute -shift_arrival_time 3.0ns
+
+              The  default  value  is 0ns. The supported time units are s, ms,
+              us, ns, and ps. The default unit is ns. You must specify a posi-
+              tive value only. A positive value means shift right in the  time
+              line or add more delay to the original arrival time.
+
+              You  can  specify the -clock parameter to limit the changes to a
+              clock domain. In addition, you can further add the -pin/-net pa-
+              rameter to limit the changes to a block. The following are exam-
+              ples of shifting different delays to different clock domains be-
+              cause different clocks may have different clock insertion delays
+              at the top level:
+
+              set_twf_attribute -shift_arrival_time 1.2ns -clock clk_a
+
+              set_twf_attribute -shift_arrival_time 2.3ns -clock clk_b
+
+              If a clock domain is not specified, the delay will be applied to
+              all the specified nets/pins.
+
+              Note: The final rise/fall delays for the annotated nets/pins af-
+              ter the shift has been applied are reported under the "Shift Ar-
+              rival Time Report" section of the detailed  TWF  Attributes  re-
+              port. This report is generated using the set_power_analysis_mode
+              -report_twf_attributes detailed parameter.
+
+              The  following  example  illustrates a sample command and report
+              snippet:
+
+              Command:
+
+              set_twf_attribute -shift_arrival_time 3.0ns
+
+              set_power_analysis_mode  -method  dynamic_vectorless  ...   -re-
+              port_twf_attributes detailed
+
+              Report:
+
+              Clock domain annotated
+
+                - CK1_1
+
+                - CK1_2
+
+                - CK2_1
+
+                - CK2_2
+
+              Rise Delay      Fall Delay      Net Name
+
+              1e-09           1e-09           CK1_1
+
+              1e-09           1e-09           CK1_2
+
+              1e-09           1e-09           CK2_1
+
+       -type {data | clock}
+              Specifies  whether  the  net or pin is part of the clock or data
+              network.
+
+Examples
+              * The following command specifies to use the following  TWF  at-
+                tributes for the net netB1:
+
+                set_twf_attribute   -net   netB1   -rise_delay   2.1978:2.1978
+                -rise_slew 0.05:0.05 -rise_slack 0.2741:3.6961
+
+                -fall_delay  2.1819:2.1819  -fall_slew  0.05:0.05  -fall_slack
+                0.237:3.6948 -clock CK1_1 -clock_freq 100 -type data
+
+              * The   following   commands   reset  the  TWF  values  for  the
+                "DFF11/DFF/Q" pin to default, and then sets the rise/fall  de-
+                lay:
+
+                set_twf_attribute -clear_twf_attr -pin "DFF11/DFF/Q"
+
+                set_twf_attribute    -pin   "DFF11/DFF/Q"   -rise_delay   0.35
+                -fall_delay 0.45 -clock CLK1
+
+Related Information
+              * set_power_analysis_mode
+
+              * read_twf
+
+              * report_power
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025   set_twf_attribute(25.10)

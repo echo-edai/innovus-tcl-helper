@@ -1,0 +1,233 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_voltus_insight_mode(25.10)                  set_voltus_insight_mode(25.10)
+
+Name
+       set_voltus_insight_mode
+
+Syntax
+       set_voltus_insight_mode
+
+       [-help]
+
+       -config <filename>
+
+       [-db_mapping <filename>]
+
+       -domain  <name>
+
+       [-hier_block_instance  <names>]
+
+       [-hierarchical {true | false}]
+
+       [-import_analysis_data {true | false}]
+
+       [-ir_effort {high||medium||low}]
+
+       [-nParallel <value> ]
+
+       [-scenario_default <list>]
+
+       [-skip]
+
+       [-timing_effort {high||medium||low}]
+
+       [-watch_box  ]
+
+       [-watch_inst ]
+
+       Specifies  the  user-defined  settings  related to the Voltus InsightAI
+       flow. The command allows you to configure flows for various  scenarios,
+       such as differing EIV method, EIV evaluation window, and thresholds for
+       each  instance type. Using this command, you can tailor your configura-
+       tions precisely, ensuring optimal performance for every scenario.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each set_voltus_insight_mode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man set_voltus_insight_mode.
+
+       -config <filename>
+              (Mandatory)  Specifies  the  name of the configuration file that
+              includes details about the PG network  definition,  EIV  method,
+              EIV evaluation window, list of scenarios, and their setting.
+
+       -db_mapping <filename>
+              Specifies the name of the file that contains the mapping between
+              a scenario and its corresponding rail analysis directory.
+
+              Following is a snippet of the mapping file:
+
+              SCENARIO_1   RailDir/latest
+
+              SCENARIO_2   RailDir/latest
+
+       -domain  <name>
+              (Mandatory) Specifies the name of the power domain.
+
+       -hier_block_instance  <names>
+              Specifies  the list of instances of the master block that are to
+              be repaired or reported.  This parameter is specified  with  the
+              -hierarchical  parameter. When the instances are specified using
+              this parameter, only the specified instances are repaired or re-
+              ported.
+
+       -hierarchical {true | false}
+              Specifies to run the hierarchical  repair  flows  (reinforce_pg,
+              IR-aware  placement,  and  ECO).  When  this parameter is set to
+              true, you must specify at least one state directory in the  con-
+              figuration file.
+
+              Default: false
+
+       -import_analysis_data {true | false}
+              Specifies  to import the existing rail analysis results. If this
+              parameter is set to true, you must specify at  least  one  state
+              directory in the configuration file specified with -config.
+
+              Default: false
+
+       -ir_effort {high||medium||low}
+              Specifies  the  effort  level  for running IR repair. The effort
+              level for IR repair can be set to high, medium, or low.  By  de-
+              fault,  the level is set to high. If there is an impact on Qual-
+              ity of Results (QOR), you may choose to lower the effort level.
+
+              Default: high
+
+              To achieve optimal results, a balance between IR and timing  ef-
+              forts  is crucial. The default setting is high IR and low timing
+              effort, which generally provides the best IR fix rate.  However,
+              if  there  is  a  degradation in timing, you should increase the
+              timing effort to safeguard it. If the timing  continues  to  de-
+              grade even with a high timing effort, then you should reduce the
+              IR effort.
+
+       -nParallel <value>
+              Specifies  the  number  of scenarios or databases that are to be
+              analyzed.
+
+       -scenario_default <list>
+              Specifies the list of default scenarios or databases.
+
+       -skip  Skips  user-defined  instances  specified  with  -watch_box  and
+              -watch_instances.
+
+       -timing_effort {high||medium||low}
+              Specifies  the  effort  level the software uses for timing opti-
+              mization.  The effort level for  timing  can  be  set  to  high,
+              medium,  or  low.  By default, the level is set to low to ensure
+              best IR fix. If timing degrades, you may choose to increase  the
+              effort level.
+
+              To  achieve optimal results, a balance between IR and timing ef-
+              forts is crucial. The default setting is high IR and low  timing
+              effort,  which generally provides the best IR fix rate. However,
+              if there is a degradation in timing,  you  should  increase  the
+              timing  effort  to  safeguard it. If the timing continues to de-
+              grade even with a high timing effort, then you should reduce the
+              IR effort.
+
+       -watch_box <filename>
+              Specifies a file containing the list of  regions,  wherein  only
+              the  instances  inside  these  regions will be reported. You can
+              write multiple regions in the file.
+
+              The format of the file is:
+
+               {{x1,y1}{x2,y2}}
+
+               {{x3,y3}{x4,y4}}
+
+       -watch_inst <filename>
+              Specifies a file containing the list of instances to be reported
+              for IR repair. You can write multiple instances in the file.
+
+              The format of the file is:
+
+               instance_1
+
+              Instance_2
+
+Examples
+              * The following command runs  2  scenarios  with  different  eiv
+                method, eiv_eval_window, and thresholds for each instance type
+                (clock and data):
+
+                set_voltus_insight_mode  -config  insight.config  -domain  ALL
+                -db_mapping db_mapping.txt
+
+                Following is a snippet from the  insight.config  file:####  PG
+                Network Definition ###
+
+                Nets VDD VSS
+
+                Domain_1 ALL  VDD   VSS
+
+                #### Global Options ###
+
+                eiv_eval_window {}
+
+                eiv_method {}
+
+                #### Scenario Definition ###
+
+                SCENARIO_DEFAULT: SCENARIO_1  SCENARIO_2
+
+                #### Scenarion Setting ###
+
+                SCENARIO_1
+
+                   eiv_eval_window elapse
+
+                   eiv_method Worst
+
+                   Domain Domain_1
+
+                        threshold_data 0.4
+
+                        threshold_clock 0.4
+
+                   Net VSS
+
+                        threshold_data 0.09
+
+                        threshold_clock 0.09
+
+                   Net VDD
+
+                        threshold_data 0.81
+
+                        threshold_clock 0.81
+
+                SCENARIO_2
+
+                   eiv_eval_window switching
+
+                   eiv_method WorstAvg
+
+                   Domain Domain_1
+
+                        threshold_data 0.4
+
+                        threshold_clock 0.4
+
+                   Net VSS
+
+                        threshold_data 0.09
+
+                        threshold_clock 0.09
+
+                   Net VDD
+
+                        threshold_data 0.81
+
+                        threshold_clock 0.81
+
+Related Information
+              * "Voltus InsightAI" in Innovus User Guide
+
+              * get_voltus_insight_mode
+
+                           Fri Apr 04 01:25:37 20s2e5t_voltus_insight_mode(25.10)

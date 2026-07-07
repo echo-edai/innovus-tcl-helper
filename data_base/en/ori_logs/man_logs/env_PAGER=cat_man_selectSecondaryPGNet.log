@@ -1,0 +1,94 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+selectSecondaryPGNet(25.10)                        selectSecondaryPGNet(25.10)
+
+Name
+       selectSecondaryPGNet  -  Selects  Power/Ground  (P/G) net wire segments
+       from specified instances
+
+Syntax
+       selectSecondaryPGNet
+
+       [-help]
+
+       -insts <inst>+
+
+       {-net <net_name> | -pin <pin_name>}
+
+       Selects Power/Ground (P/G) net wire segments from specified  instances.
+       The  wire  segments  are selected from the instance P/G pins to stripes
+       (swire targets). This provides an easy way to select and delete routing
+       from specific instance P/G pins to stripes.
+
+       Note: This command does not support dangling secondary P/G nets.
+
+Parameters
+       -help  Prints the usage of the command. For a detailed  description  of
+              the command, use the man command:
+
+              man selectSecondaryPGNet
+
+       -insts <inst>+
+              Specifies  the  list  of instances that have a secondary PG pin.
+              Wildcards are supported in instance names.
+
+              If one or more specified instances does  not  connect  with  the
+              specified net, the tool displays a warning and ignores those in-
+              stances.
+
+       -net <net_name>
+              Specifies the net name. This parameter cannot be used with -pin.
+
+              Note: <net_name> does not take any wildcard values.
+
+       -pin <pin_name>
+              Specifies the pin name.
+
+              This parameter cannot be used with -net.
+
+Examples
+              *
+
+                The  following command selects the routing from the P/G pin in
+                instance A of net VDD_1 to the power stripe:
+
+                selectSecondaryPGNet -net VDD_1 -insts {A}
+
+              *
+
+                The following command selects the routing from the P/G pins in
+                instances A and B in net VDD_1 to the power stripe:
+
+                selectSecondaryPGNet -net VDD_1 -insts {A B}
+
+              *
+
+                The following command selects the routing from the P/G pins in
+                instances A/B1 and A/B2 in net VDD_1 to the power stripe:
+
+                selectSecondaryPGNet -net VDD_1 -insts {A/*}
+
+              * The following command selects secondary  PG  net  through  the
+                VDDO pin and checks all its ports:
+
+                selectSecondaryPGNet -insts $instn -pin VDDO
+
+                If  a  port of the the VDDO pin has an open, the tool prints a
+                message as follows:
+
+                **WARN: (IMPSPR-405): There is  no  route  for  secondary  pin
+                "VDDO"   to  inst  "PD_CHIPLET2_PADS_PD_CHIPPADS_pads_out_bal-
+                anced_ls_padring_chiplet2_u_DISP_LSYNC_C_UPF_LS" at  '3.085500
+                1.902500'.
+
+Related Information
+              * deleteSecondaryPGNet
+
+              * deselectSecondaryPGNet
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025selectSecondaryPGNet(25.10)

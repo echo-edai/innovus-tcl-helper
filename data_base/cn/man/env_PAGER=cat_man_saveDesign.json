@@ -1,0 +1,159 @@
+{
+  "command": "saveDesign",
+  "is_cmd": true,
+  "summary": "保存完整的 Innovus 设计数据库，支持原生格式或 OpenAccess 格式。",
+  "description": "该命令用于保存完整的 Innovus 设计数据库。如果指定了文件名（fileName），则以原生的 Innovus 格式保存；如果指定了 -cellview 或 -view 参数，则以 OpenAccess 数据库（OA DB）格式保存。原生 Innovus DB 格式适用于使用 LEF 文件进行技术库和物理库数据初始化的流程，而 OA DB 格式适用于使用 OA 库进行初始化的流程。命令可以在 init_design 之后的任何时间使用，并支持多种选项来控制保存行为，例如是否包含时序图数据、RC 提取数据、如何处理外部文件引用等。保存的设计可以通过 restoreDesign 命令在后续会话中恢复。",
+  "usage": "saveDesign [-help] [-addTiming] [-current_top_cell_only] [-mmmc2] [-noFill] [-no_pvs_fill] [-skip_file {metric cmd}] [-no_wait <out_file>] {{<fileName> } | {{{-cellview {<libname> <cellname> <viewname>} | -view <viewname>}  [ -saveRestoreFile <file_name>] [-oaUsedLibsOnly | -oaLibs ]} }} [-timingGraph [-noConstraint ]] [[-user_path [-keep_input_path ]] ] [-tcon ] [-rc ] [-libs ] [-lib2ldb ] [-def ] [-verilog ] [-tgz ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印每个 saveDesign 参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addTiming",
+      "description": "当使用 restoreDesign -noTiming 恢复数据库时，时序数据不会被加载。此选项允许从原始 restoreDesign 位置复制被忽略的时序数据，并在 saveDesign 期间将其添加回来。适用于物理编辑（如 DRC 修复）且网表未修改的场景。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-current_top_cell_only",
+      "description": "指定仅保存当前设计模块及其子模块的网表。默认情况下，会保存输入网表中的所有模块，即使它们不属于当前设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cellview",
+      "description": "使用指定的库、单元和视图名称，以 OpenAccess 数据库格式保存设计。设计将保存在 lib/cell/view OA 目录中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-def",
+      "description": "除了 DB 目录中的正常 DB 文件外，还保存一个 DEF 文件。此参数通常不用于扁平或模块流程，也不被 restoreDesign 使用。在层次化流程中可能有用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定输出文件的名称，该文件包含一个 restoreDesign 命令以加载保存的 DB。扩展名 .dat 会被附加到名称后，以创建一个输出目录来使用原生 Innovus 格式保存 DB。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keep_input_path",
+      "description": "保存的路径与输入文件中的路径相同。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-libs",
+      "description": "强制将外部文件引用（如 LEF、.lib、SDC 文件）复制到 DB 目录内的 libs 子目录中，而不是使用符号链接。这使得 DB 目录更大，但适合发送到不同网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lib2ldb",
+      "description": "将 MMMC 文件中引用的 .lib 时序库转换为 .ldb 格式，并写入输出设计目录内的 libs 子目录中。MMMC 文件中对原始 .lib 文件的引用将更改为 libs 子目录中对应的 .ldb 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mmmc2",
+      "description": "以 MMMC2 格式保存完整的设计数据库。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noConstraint",
+      "description": "保存时序图数据时不包含 SDC 约束数据，需要与 -timingGraph 选项一起使用。这有助于减少磁盘大小并加速 saveDesign 和 restoreDesign，但时序图数据无法被其他发布版本加载。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noFill",
+      "description": "不保存 DB 内的任何金属或通孔填充形状。适用于执行了 ECO 布线且填充数据将被重新生成的情况。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_pvs_fill",
+      "description": "不保存 PVS 填充数据文件。在某些 PVS 流程中，来自 PVS 的流片（GDS）文件会保存在 Innovus DB 目录内。如果当前设计的 ECO 更改使 PVS 填充文件无效，可使用此选项阻止其被复制。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_wait",
+      "description": "在单独的过程中保存设计。您可以在保存设计的同时继续执行新命令。这对于保存中间结果而不必等待保存完成很有用。输出消息或错误消息将重定向到指定的 <out_file>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-oaLibs",
+      "description": "保存 cds.lib 中指定的所有 OA 库到目录 libname/cellname/viewname/libs/oa/ 下。仅适用于 OA 设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-oaUsedLibsOnly",
+      "description": "仅保存 init_oa_ref_lib 和 init_oa_search_lib 中列出的、通过按需处理引用的库。指定此参数后，将创建一个仅包含指定库的新 cds.lib 文件。库将保存在目录 libname/cellname/viewname/libs/oa/ 下。仅适用于 OA 设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rc",
+      "description": "保存 RC 提取数据，包括增量提取的数据。默认情况下，Innovus 不会自动保存 RC 提取数据以节省磁盘空间和运行时间。如果设计未提取或使用 preRoute 提取引擎提取数据，则此参数不会保存 RC 提取数据。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-saveRestoreFile",
+      "description": "指定一个文件名的文件，该文件可以被 source 以读回 OpenAccess 设计。如果添加此选项，可以保存一个 *.inn 文件并记录 restoreDesign 命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_file",
+      "description": "移除指定的数据库文件。可以指定 {metric}、{cmd} 或 {metric cmd} 来跳过保存相应的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tcon",
+      "description": "强制将所有 SDC 文件复制到 DB 目录内部，即使它们没有更改。默认情况下，如果 SDC 时序约束未被修改，则保留指向原始外部 SDC 文件的链接以减少磁盘大小。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tgz",
+      "description": "将设计保存为 gzip 压缩的 tar 文件。saveDesign 命令会保存 fileName.dat，并自动启用 -libs 和 -sdc 选项，强制将所有外部文件引用复制到 DB 目录内，然后对目录进行 tar 打包并用 gzip 压缩，生成一个可移植的 Innovus 设计 tar 包。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-timingGraph",
+      "description": "保存时序图数据。指定此参数时，-rc 参数也会自动启用。这意味着在 postRoute 阶段，RC 提取数据也会与时序图数据一起保存。在 preRoute 阶段，RC 不会被保存，但所有信息都存在，可以在不需要重建时序图的情况下完全时序分析设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-user_path",
+      "description": "按用户输入的原样存储外部文件引用（例如完整路径如 /x/y 或相对路径如 ../x/y, ./x/y），并保留路径名中使用的任何符号链接。默认情况下，所有外部文件引用都存储为不带任何符号链接的绝对路径。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog",
+      "description": "在 DB 目录内保存一个 Verilog 文件，除了正常的 DB 文件外。此参数通常不用于扁平或模块流程，也不被 restoreDesign 使用。可以在层次化流程中使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "指定 OA 视图的名称。该视图将保存在与 restoreDesign 或 init_design 初始化期间使用的相同 lib/cell/ 目录中。此选项提供了快速保存视图的快捷方式。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

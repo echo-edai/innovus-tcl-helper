@@ -1,0 +1,188 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editCopy(25.10)                                                editCopy(25.10)
+
+Name
+       editCopy  - Copies selected or specified objects to the specified loca-
+       tion
+
+Syntax
+       editCopy
+
+       [-help]
+
+       [-objects <string>]
+
+       [-orientation {R0 R90 R180 R270 MX MX90 MY MY90}]
+
+       [-net <net_name> | -net_group <string> | -keep_net_name]
+
+       [-rotate_point {x y} | -times <integer>]
+
+       [-rotate_point {x y} | [<dx> <dy> ]]
+
+       Copies selected or specified objects to the specified location. In  the
+       current  release, the command supports the copying of bus guides, regu-
+       lar wires and vias, special wires and vias, as  well  as  patch  wires.
+       When  setEditMode  -snap_objects_to_track regular (or special or patch)
+       is set before using editCopy, copied wires of that type are snapped  to
+       track.
+
+       Note: Use the copyObject and pasteObject commands to copy placement and
+       routing blockages.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each editCopy parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man editCopy
+
+       <dx>   Specifies the dx distance to move the object copy in microns.
+
+       <dy>   Specifies the dy distance to move the object copy in microns.
+
+       -keep_net_name
+              Specifies  that  the net name from the original object should be
+              retained after copying.
+
+       -net <net_name>
+              Specifies the net to which the copied object should be assigned.
+              If neither -net nor -keep_net_name is specified and:
+
+              * The copied wire connects to a single wire,  the  tool  assigns
+                the single wire's net to the copied wire.
+
+              * The  copied  wire  connects to multiple wires on the same net,
+                the tool assigns the net to the copied wire.
+
+              * The copied wire connects to multiple wires on different  nets,
+                the  tool  assigns  _NULL  to the copied wire and displays the
+                following message:
+
+                **WARN: (IMPSPR-304): One target route connects to  more  than
+                one  routes  on different nets, net for the target route might
+                not be correctly assigned. Undo and try again to pick a proper
+                location.
+
+       -net_group <string>
+              Assigns the specified net group name to the new copy of the  bus
+              guide.  You  can  specify  only  one  net  group  name  with the
+              -net_group parameter. If the net group name you specify does not
+              exist, the tool does not copy the bus guide and issues an  error
+              message.
+
+              If  you  copy  a bus guide without the -net_group parameter, the
+              new bus guide retains the net group name  of  the  original  bus
+              guide.
+
+              Note  that  the -net_group parameter cannot be used for wires or
+              vias. If you use it for copying a wire or via, the tool  ignores
+              the setting but continues the copy operation with a warning.
+
+              Similarly,  the  -net  and -keep_net_name parameters do not work
+              for  bus  guides.  If  you  copy  a  bus  guide  with  -net   or
+              -keep_net_name, the tool ignores the settings, issues a warning,
+              and copies the bus guide with the original net group name.
+
+       -objects <string>
+              Specifies the object pointers to be copied.
+
+       -orientation {R0 R90 R180 R270 MX MX90 MY MY90}
+              Specifies the orientation of object copy after pasting. Use this
+              parameter  to rotate the selected wire or via during copy/paste.
+              For values R0, R90, R180, and R270, the wire or via  is  rotated
+              by specified degrees around the lower left point. For values MX,
+              MX90, MY, and MY90, the bounding box is mirrored.
+
+       -rotate_point {x y}
+              Rotates  the  copied wire(s) around the specified point {<x y>},
+              when specified along with the  -orientation  parameter.  If  the
+              -rotate_point  parameter  is not specified, the copied wires are
+              rotated by default around the lower-left corner of the  bounding
+              box of the original wires.
+
+              If you specify the -rotate_point parameter without the -orienta-
+              tion parameter, the tool copies the object at the same location.
+              This is the same as specifying the -orientation {R0} option.
+
+              Note: The -rotate_point parameter cannot be used with the -times
+              parameter.
+
+       -times <integer>
+              Specifies  the  number  of times the object is to be copied. For
+              example, if you specify 3, the selected wire is  copied  thrice.
+              The  distance  between  different copies of the wire is equal to
+              the distance between the original wire and the  first  copy.  If
+              you  move the first copy, the other copies are moved by the same
+              distance:
+
+              Note: If DRC checking is  turned  on  with  setEditMode  -drc_on
+              true, all copied wires obey the DRC rules.
+
+Examples
+              * The  following  command copies the specified wire 5 microns up
+                and to the right of the original and rotates the  wire  by  90
+                degrees around the lower left corner:
+
+                editCopy 5 5 -orientation R90 -objects <wire_pointer>
+
+              * The  following  command  copies the selected wires 3 times and
+                the distance between each copy set is as specified:
+
+                editCopy 5.0 10.0 -times 3 -keep_net_name
+
+              *
+
+                The following commands rotate the new  copy  of  the  selected
+                wire  by  90,  180,  and 270 degrees, respectively, around the
+                specified rotation point, x y:
+
+                editCopy -orientation R90 -rotate_point x y
+
+                editCopy -orientation R180 -rotate_point x y
+
+                editCopy -orientation R270 -rotate_point x y
+
+              * The following commands rotate the new  copy  of  the  selected
+                group  of  wires  by  90,  180, and 270 degrees, respectively,
+                around the specified rotation point, x y:
+
+                editCopy -orientation R90 -rotate_point x y
+
+                editCopy -orientation R180 -rotate_point x y
+
+                editCopy -orientation R270 -rotate_point x y
+
+              * The following command copies the selected bus guide 10 microns
+                to the right of the original:
+
+                editCopy 10 0
+
+              * The following command copies the selected bus guide 10 microns
+                to the right of the original and assigns the net  group  B  to
+                the copy:
+
+                editCopy 10 0 -net_group B
+
+Related Information
+              * copyObject
+
+              * editDuplicate
+
+              * editMove
+
+              * pasteObject
+
+              * setEditMode
+
+              * Edit Menu chapter of the Menu Reference
+
+                * Copy command
+
+              * Editing Wires chapter of the User Guide
+
+                * Copying Wires
+
+                           Fri Apr 04 01:25:37 2025            editCopy(25.10)

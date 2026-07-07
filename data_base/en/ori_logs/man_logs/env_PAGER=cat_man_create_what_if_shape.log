@@ -1,0 +1,265 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_what_if_shape(25.10)                        create_what_if_shape(25.10)
+
+Name
+       create_what_if_shape  -  Specifies  to  add,  select, deselect, delete,
+       list, and display the what if wires/vias to a design
+
+Syntax
+        create_what_if_shape
+
+       [-help]
+
+       [-area {<llx lly urx ury>}]
+
+       [-display]
+
+       [-direction {hor | ver}]
+
+       [-offset {X Y}]
+
+       [-add -method {auto | exact}]
+
+       [-layer <layerName>]
+
+       [-nets<{net1net2net3...}>]
+
+       [-spacing <value>]
+
+       [-objects {selected | all} ]
+
+       [-add  | -select | -deselect |
+
+        -delete | -list  | -save <filename> | -load <filename>]
+
+       [-pitch <pitch>]
+
+       [-add -width <width>]
+
+       [-type {wire | via} ]
+
+       [-format {txt def}]
+
+       [-save <filename> -append ]
+
+       [-remove_existing_wires]
+
+       Specifies to add, select, deselect, delete, list, and display the  what
+       if wires/vias to a design.
+
+Parameters
+       -help  Outputs the command usage.
+
+       -add   Specifies to add what-if wires/vias.
+
+       -append
+              Specifies  to append all what-if wires/vias to the existing file
+              specified with the -save  <filename> parameter.
+
+       -area <{llx lly urx ury}>
+              Specifies the rectangular region in which the what if wires/vias
+              are to be generated.
+
+       -delete
+              Specifies to delete all or selected what-if shapes by constraint
+              -net/-layer/-type. You can use  this  parameter  in  conjunction
+              with the -objects parameter.
+
+       -deselect
+              Specifies   to   deselect  all  what-if  shapes  by  constraints
+              -net/-layer/-type. Use this parameter in conjunction with  -area
+              to deselect what-if shapes overlapping with the specified area.
+
+       -direction {hor | ver}
+              Controls the direction of the wires added.
+
+       -display
+              Invokes the GUI to show what-if shapes and zooms to the selected
+              shapes. It works only in the -win mode.
+
+       -format {txt def}
+              Specifies the output file format. The def  format  specifies  to
+              create  incremental  DEF  to load into GUI using  read_def -top.
+              The default output format is  txt.
+
+       -layer <layerName>
+              Specifies the LEF layer name for wires, or layer pair for via to
+              be added.
+
+       -list  Specifies to list all or selected what-if shapes  by  constraint
+              -net/-layer/-type  .  You  can use this parameter in conjunction
+              with the -objects parameter.
+
+       -load <filename>
+              Specifies to load the saved what-if shape file.
+
+       -method {auto | exact}
+              Specifies the method used to add vias:
+
+              * auto: When area and layer pair are specified, the  tool  auto-
+                matically  adds  vias on all intersecting points on the speci-
+                fied layer pairs in the given area.
+
+              * exact: When an area and layer pair  are  specified,  the  tool
+                adds  a  via  of  exact size of the specified area between the
+                specified layer pair.
+
+       -nets<{net1net2net3...}>
+              Specifies the name of the nets for which what-if  wires/vias  is
+              to  be  created. The what-if engine will create a shape based on
+              the net pattern.
+
+       -objects {selected | all}
+              Specify -objects in conjunction with the -delete or -list  para-
+              meters  to  delete or list the selected what-if shapes.  You can
+              also delete or list all what-if shapes.  The  default  value  is
+              all.
+
+              For example, you can use the following command to delete the se-
+              lected objects:
+
+              create_what_if_shape -delete -objects selected
+
+       -offset {X Y}
+              Specifies to create metal/via from the area + offset. This para-
+              meter  is  useful  when  you run multiple what-if shape creation
+              commands and want to keep the same area but have different  off-
+              set.
+
+       -pitch <pitch>
+              Specifies  the  distance between the centre line of two adjacent
+              what-if wires (pitch) to be drawn in the specified -area in  the
+              preferred  direction  of  the specified -layer. The direction of
+              created wires can also be controlled using the -direction  para-
+              meter.
+
+              If this parameter is not provided, a single rectangular shape of
+              size {llx,lly,urx,ury} is created.
+
+       -remove_existing_wires
+              Specifies to remove a wire and connected vias from the specified
+              layer and area before adding what-if shapes.
+
+       -save <filename>
+              Specifies  to  save  all the in-memory what-if wires/vias to the
+              specified file. The format of the file is:
+
+              type wire net netName area llx lly urx ury layer layer1
+
+              type via net netName area llx lly urx ury layer layer1 layer2
+
+              Following is an example of the file containing one wire and  one
+              via shape:
+
+              type   wire   net  VDD  area  191.000000  763.000000  207.000000
+              772.000000 layer METTOP
+
+               type  via  net  VDD  area  513.000000   497.700000   517.000000
+              499.100000 layer METG1 ME
+
+       -select
+              Specifies   to   select   all   what-if   shapes  by  constrains
+              -net/-layer/-type. Use this parameter in conjunction with  -area
+              to select what-if shapes overlapping with the specified area.
+
+       -spacing <value>
+              Specify the spacing between each net. Use this parameter to con-
+              trol  the  spacing  between each net. The -pitch value specified
+              should be greater than number of nets * (width+spacing).
+
+       -type {wire | via}
+              Specifies what kind of shape is to be created.
+
+       -width <value1><value2> ..<valuen>
+              Specifies the width of what-if wires. You can use the -width pa-
+              rameter to specify a separate width value for each net.
+
+Examples
+              * The following command adds a what-if wire for the net VDD  and
+                on the LEF layer METTOP:
+
+                create_what_if_shape  -type  wire  -net  VDD -area {391.000000
+                663.000000 407.000000 672.000000} -layer METTOP -add
+
+                create_what_if_shape -type wire  -net  VDD  -area  {191.000000
+                663.000000  207.000000 772.000000} -layer METTOP -add -pitch 9
+                -width 0.4
+
+              * The following command creates a what-if via for  the  net  VDD
+                and on the LEF layers METG1 MET5:
+
+                create_what_if_shape  -type  via  -net  VDD  -area {513.000000
+                497.700000 517.000000 499.100000}  -layer  {METG1  MET5}  -add
+                -method exact
+
+                create_what_if_shape  -type  via -area {0 0 1000 1000} -method
+                auto -layer {METTOP METG1} -add -net VDD
+
+              *
+
+                The following  command  specifies  to  list  selected  what-if
+                shapes:
+
+                create_what_if_shape -list -objects selected
+
+              *
+
+                The  following  command  specifies to select and highlight all
+                wires in the win mode:
+
+                create_what_if_shape -select
+
+              *
+
+                The following command specifies to select  and  highlight  all
+                what-if vias using area:
+
+                create_what_if_shape -type via -area {500 490 530 500} -select
+                -net VDD
+
+              *
+
+                The  following  command  specifies to save what-if shapes into
+                the file whatif.shapes:
+
+                create_what_if_shape -save whatif.shapes
+
+              *
+
+                The following command specifies to delete all  what-if  shapes
+                in memory:
+
+                create_what_if_shape -delete -objects all
+
+              * In the following example, for nets "VDD VDD1 VDD2 VSS",  three
+                spacing  is  possible  (between VDD and VDD1, between VDD1 and
+                VDD2, and between VDD2 and VSS), that is, spacing is "0.5  0.6
+                0.7" and width of what-if wires for all nets is "0.5":
+
+                create_what_if_shape
+                 -net  {VDD  VDD1  VDD2 VSS} -pitch 4 -width 0.5 -spacing {0.5
+                0.6 0.7 -area {0 0 12 12} -type wire -add -layer  M10  -direc-
+                tion hor
+
+              *
+
+                The  following  command will remove all wires on M7 in the 0,0
+                to 100,100 region as well as any vias connected to the deleted
+                wires:
+
+                create_what_if_shape -remove_existing_wires -layer {M7}  -area
+                { 0 0 100 100 }
+
+Related Information
+              * scale_what_if_capacitance
+
+              * create_current_region
+
+              * scale_what_if_current
+
+              * scale_what_if_resistance
+
+              * "What-If Rail Analysis" in the Voltus IC Power Integrity Solu-
+                tion User Guide
+
+                           Fri Apr 04 01:25:37 2025create_what_if_shape(25.10)

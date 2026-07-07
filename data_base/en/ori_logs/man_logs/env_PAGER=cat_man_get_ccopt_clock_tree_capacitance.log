@@ -1,0 +1,136 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_cloc...ee_capacitance(25.10)  get_ccopt_cloc...ee_capacitance(25.10)
+
+Name
+       get_ccopt_clock_tree_capacitance  -  This command retrieves the capaci-
+       tance on the specified pin
+
+Syntax
+       get_ccopt_clock_tree_capacitance
+
+       [-help]
+
+       <pin> | <port>
+
+       [-delay_corner <corner>]
+
+       [-delay_type {early | late}]
+
+       [-edge {rise | fall | both}]
+
+       [-load | -wire]
+
+       This command retrieves the capacitance on the specified pin.  When  you
+       run  the  command  without specifying the type of capacitance to be re-
+       trieved, load or wire, then the command retrieves the total capacitance
+       on a pin, which includes both the wire capacitance of nets connected to
+       the pin, and the load capacitance of pins connected to those nets.  Be-
+       cause  the capacitance varies depending on the timing data used to cal-
+       culate delays, this command provides options such as rise, fall, early,
+       and late that let you specify the exact timing  criteria  to  use  when
+       calculating capacitances.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each  get_ccopt_clock_tree_capacitance  parameter.
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man get_ccopt_clock_tree_capacitance.
+
+       -delay_corner <corner>
+              Specifies the delay corner of the specified pin for which capac-
+              itance information is provided.
+
+              By default, if delay corner is not specified, CCOpt uses the CTS
+              primary  corner  as  configured  by  the set_ccopt_property pri-
+              mary_delay_corner <<corner>> command. If this  is  not  set,  it
+              will  use  the  default setup analysis view as configured by the
+              set_default_view -setup <<view>> command.
+
+       -delay_type {early | late}]
+              Specifies whether to use early or late half delays.
+
+              When early is specified, CCOpt uses only early path timing  data
+              to  calculate  capacitances,  for the clock edge specified. When
+              late is specified, CCOPT uses only late path timing data to cal-
+              culate capacitances, for the clock edge specified.
+
+              By default, if neither early or late are specified,  CCOpt  will
+              use late half delays to calculate capacitances.
+
+       -edge {rise | fall | both}
+              Specifies the edge of the specified pin for which capacitance is
+              to be calculated.
+
+              When  fall is specified, CCOpt uses only falling clock edge tim-
+              ing data to calculate  capacitances.  When  rise  is  specified,
+              CCOpt  uses  only rising clock edge timing data to calculate ca-
+              pacitances.
+
+               By default, if neither rise or fall are specified or if both is
+              specified, CCOpt uses both rising and falling clock edge  timing
+              data to calculate capacitances.
+
+       -load | -wire
+              When -load is specified, the command returns the driven load ca-
+              pacitance value of the specified pin.
+
+              When -wire is specified, the command returns the driven wire ca-
+              pacitance value of the specified pin.
+
+              The two options are mutually exclusive.
+
+       <pin>|<port>
+              Specifies  the  pin or port for which the load capacitance value
+              is to be returned.This is a required parameter.
+
+Examples
+              * Use the following command to return the  list  of  clock  tree
+                cells:
+
+                get_ccopt_clock_tree_cells 770 -regexp
+
+                RESULTS_CONV_INST/upper770/g54 ...
+
+              * Use the following command to return the pins for the specified
+                object:
+
+                get_property    [get_pins   -of_object   RESULTS_CONV_INST/up-
+                per770/g54] hierarchical_name
+
+                RESULTS_CONV_INST/upper770/g54/ZN        RESULTS_CONV_INST/up-
+                per770/g54/I
+
+              * Use  the  following command to return the capacitance informa-
+                tion for the specified pin:
+
+                get_ccopt_clock_tree_capacitance         RESULTS_CONV_INST/up-
+                per770/g54/ZN
+
+                The software returns the following:
+
+                0.0160777831078
+
+              * Use  the  following command to return the wire capacitance in-
+                formation for the specified pin:
+
+                get_ccopt_clock_tree_capacitance     TEST_CONTROL_INST/g145/ZN
+                -wire
+
+                The software returns the following:
+
+                0.00874637126923
+
+Related Information
+              * get_ccopt_clock_tree_cells
+
+              * get_pins
+
+              * set_ccopt_property
+
+              * set_default_view
+
+              * The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:g2e5t:_3c7co2p0t2_5cloc...ee_capacitance(25.10)

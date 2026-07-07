@@ -1,0 +1,479 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_lef_abstract(25.10)                            write_lef_abstract(25.10)
+
+Name
+       write_lef_abstract  -  Generates  design abstract (LEF) information for
+       the current routed block-level design
+
+Syntax
+       write_lef_abstract
+
+       [-help]
+
+       <fileName>
+
+       [-add_obs_layers <layer_list>]
+
+       [-cutObsMinSpacing]
+
+       [-cutObsToExposeRouting  <distance_in_microns>   |   -extractRoutingObs
+       <distance_in_microns>]
+
+       [-excludeObsLayers <layer_list>]
+
+       [-excludePinLayers <layer_list>]
+
+       [-design_boundary   <point_list>|  -extractRoutingObs  <distance_in_mi-
+       crons>]
+
+       [-extractBlockObs]
+
+       [-extractBlockPGPinLayers <layer_number_list>]
+
+       [-extractBlockSignalPinLayers <layer_list>]
+
+       [-extractWellLayerObs  <well_layer_list  >[-extractWellObsByRow   <mar-
+       gin>]]
+
+       [-ignoreBumpOnPin {all pg signal}]
+
+       [-ioPadPin]
+
+       [-noCutObs]
+
+       [-property]
+
+       [-extractWellLayerObs <well_layer_list> [-mergeConnectedWellOnly ]]
+
+       [-obsSpacing  {<val> <layers> [<val2> <layers> ...]}< >[-obsSpacingPer-
+       Layer]]
+
+       [-specifyTopLayer <layer_number >[-obs_above_top_layer <layer>+]]
+
+       [-stripePin [-selected]]
+
+       [-stripePin [-portForEachStripePin]]
+
+       [-stripePin [-PGPinLayers <layer_number_list>]]
+
+       [-stripePin [-PGNets <net>+]]
+
+       [ -5.6 | -5.7 | -5.8 ]
+
+       Generates design abstract (LEF)  information  for  the  current  routed
+       block-level  design. By default, write_lef_abstract copies all the cur-
+       rent design PG and signal pins to the LEF and creates cut-outs  in  the
+       obstructions (OBS shapes) around the pins. The output LEF file contains
+       process  antenna  information, if you run verify_antenna before you run
+       the write_lef_abstract command.
+
+       A routing blockage with a pushdown attribute (e.g. a DEF BLOCKAGE  with
+       +  PUSHDOWN)  is  treated  as an area of routing reserved for the level
+       above this block. The LEF will have these blockages cut-out of the OBS.
+
+       In a bottom-up flow (where the block was not  created  using  the  cre-
+       atePartition  command),  you normally create a simple LEF abstract that
+       contains:
+
+              * one obstruction (OBS) shape per routing layer without  cutting
+                around pins
+
+              * signal pins located along the block boundary
+
+              *
+
+                add  power  pins  for  the  top  metal  layer  PG stripes (see
+                -stripePin and -PgpinLayers options)
+
+              *
+
+                embedded bump pins shapes are also  written  out  as  LEF  pin
+                shapes
+
+       If the block used four routing layers out of a possible six layers, you
+       would run the following command:
+
+       write_lef_abstract -noCutObs -stripePin -PGpinLayers 4 -specifyTopLayer
+       4
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each write_lef_abstract parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man write_lef_abstract
+
+       -5.6 | -5.7 | -5.8 | -6.0
+              Specifies the LEF version number. This value overrides any value
+              you set with the lefDefOutVersion variable.
+
+              Default: The software uses the current  lefDefOutVersion  value.
+              The default value for lefDefOutVersion is 5.8.
+
+       -add_obs_layers layer_list
+              Writes  the  shapes  on on the specified layers as OBS shapes in
+              the LEF. These layers cannot be routing or cut layers.
+
+       -cutObsMinSpacing
+              Creates cut outs in the  blockages  around  pins  using  minimum
+              width  to calculate the spacing. This option cannot be used with
+              -noCutObs.
+
+       -cutObsToExposeRouting <distance_in_microns>
+              Exposes routing within the specified  halo  distance  to  a  LEF
+              model.
+
+       -design_boundary <point_list>
+              Specifies  a list of points defining the design boundary polygon
+              for the output LEF (a rectangle would use 4 points).  It is used
+              instead of the real design boundary to compute the LEF SIZE, OBS
+              shapes to block routing layers, and OBS shapes  on  the  OVERLAP
+              layer  if  it is non-rectangular.  The LEF will also include any
+              special routes that are  outside  the  design  boundary  as  OBS
+              shapes  unless  they  are converted to PIN shapes based on other
+              options. It does not matter if PIN shapes are inside or  outside
+              the design boundary, they are always written out.
+
+              This  is  intended  for  a block that only has bumps and/or top-
+              level RDL routing to the bumps that are outside the "real" block
+              boundary. The real block boundary can be specified with this op-
+              tion to shrink the SIZE and OBS shapes to just include  the  ac-
+              tive  area of the block, and let the bumps and RDL routing stick
+              outside.
+
+              An important limitation is that any instances or regular routing
+              shapes (for example, created by routeDesign) outside the  design
+              boundary will be ignored. It is assumed that placement and rout-
+              ing  blockages are used to prevent this outside the "real" block
+              boundary.
+
+       -excludeObsLayers <layer_list>
+              Ignores the specified layer when saving OBS  in  the  macro  LEF
+              file. You can use this parameter to set the layer as the follow-
+              ing format:
+
+                     * One  layer: For example, if you specify -excludeObsLay-
+                       ers {AP}, the AP layer is not saved to OBS.
+
+                     * Multiple layers:  For  example,  if  you  specify  -ex-
+                       cludeObsLayers  {M7 M8}, M7, M8 layers are not saved to
+                       OBS.
+
+       -excludePinLayers <layer_list>
+              Specifies not to create PIN shapes on the specified layers.
+
+       -extractBlockObs
+              Extracts all obstruction (OBS) information from the instantiated
+              CLASS BLOCK, CLASS PAD AREAIO, and CLASS RING macros and  writes
+              out  the obstructions to the output LEF file. OBS information is
+              extracted for layers that are not already being completely  cov-
+              ered under the normal routing layer range and for cut layers be-
+              tween  routing  layers  that are completely covered. It also ex-
+              tracts OBS from bumps.
+
+       -extractBlockPGPinLayers <layer_number_list>
+              Extracts the power and ground pin  information  from  any  CLASS
+              BLOCK,  RING,  PAD,  or  COVER macros with pins on layers in the
+              specified layer list and writes out the pin information  to  the
+              LEF file.
+
+              The  layer names can be either names in the technology file like
+              metal1, or technology independent names like  1  for  the  first
+              routing layer, 2 for the second routing layer.
+
+              For example, to create PG pins on layers metal3 and metal4, use:
+
+              -extractBlockPGPinLayers {metal3 metal4}
+
+              Or
+
+              -extractBlockPGPinLayers {3 4}
+
+       -extractBlockSignalPinLayers <layer_list>
+              Extract  signal  pins, connected to design term, from the BLOCK,
+              RING, PAD, COVER macros on these layers.
+
+       -extractRoutingObs <distance_in_microns>
+              Extracts regular routing and the shield wire  as  OBS  from  the
+              boundary by the specified distance in microns.
+
+       -extractWellLayerObs <well_layer_list>
+              Extracts OBS from instances on the specified well layers.
+
+              If you have DRC spacing value checks for the well layers in your
+              LEF,  you  can copy the well layer OBS shapes out to the LEF ab-
+              stract so the well shapes can be checked at the next level up.
+
+       -extractWellObsByRow <margin>
+              Extracts OBS from the bounding box of rows plus  the  margin  on
+              the specified well layers.
+
+              You can create well layer OBS shapes in the LEF abstract for all
+              the  standard cell rows, with additional margin in microns. This
+              is useful if the standard-cell LEF abstracts do  not  have  well
+              shapes  in  them  but  you want to see well OBS in the abstract.
+              This option requires the -extractWellLayerObs option to indicate
+              which layers to create.
+
+       <fileName>
+              Specifies the LEF output file.
+
+       -ioPadPin
+              Writes out the IO pads that are connected to the design pins  as
+              LEF pin shapes.
+
+       -ignoreBumpOnPin {all pg signal}
+              By default, pin shapes of bump cells (e.g. LEF MACRO CLASS BUMP)
+              are  written  out as LEF pin shapes.  This option can be used to
+              suppress those LEF pin shapes depending on the type of net  they
+              are connected to.
+
+       -mergeConnectedWellOnly
+              Merges connected well shapes only, instead of merging all shapes
+              into one bounding box.
+
+       -noCutObs
+              Creates  a  single obstruction shape for each routing layer, ex-
+              cept routing blockages with the  pushdown  attribute  are  still
+              cut-out.
+
+              Default:  Creates  cut-outs  in the LEF OBS for signal pins, and
+              power and ground pins.
+
+              This option cannot be used with -cutObsMinSpacing.
+
+       -property
+              Writes out all the user-defined design properties.
+
+       -obsSpacing {<val> <layers> [<val2> <layers> ...]}
+              Writes out the LEF58_OBSSPACING property for  the  MACRO.   This
+              overrides  the  global  USEMINSPACING  OBS  setting and sets the
+              spacing required between routing and the OBS shapes of just this
+              MACRO. This is equivalent to adding a SPACING <value>  to  every
+              OBS  RECT on the affected layers in the LEF.  Note, it will only
+              affect an OBS RECT that has no existing SPACING <value>.
+
+              <val> = 'min'  for min-spacing, and <layers> = {} for  all  lay-
+              ers.
+
+              The order of the arguments is the order in the LEF file. In LEF,
+              the last value for a given layer "wins" over previous values for
+              that macro.
+
+              For example, -obsSpacing {min {} 1.0 {m2 m3} 2.0 {m5}} would add
+              this to the LEF:
+
+              PROPERTY LEF58_OBSSPACING "
+
+               OBSSPACING MIN ;
+
+               OBSSPACING 1.0 LAYER m2 LAYER m3 ;
+
+               OBSSPACING 2.0 LAYER m5 ; " ;
+
+              So,  OBS  shapes  in this MACRO on every layer would use SPACING
+              <min-spacing> for that specific layer, then m2, m3  are  changed
+              to  use  SPACING  1.0,  and finally m5 is changed to use SPACING
+              2.0.
+
+       -obsSpacingPerLayer
+              Writes out the spacing for each layer under  the  layer  defini-
+              tion. This parameter does not work without -obsSpacing.
+
+              Data_type: bool, optional
+
+              To  assign the value to all layers, you should set the layers as
+              "{}". For example, if you specify write_lef_abstract -obsSpacing
+              {1.0 {}} -obsSpacingPerLayer, it means the spacing of all layers
+              is 1.0
+
+              Macro A
+
+              OBS
+
+              Layer M1 SPACING 1.0 ;
+
+              RECT ...;
+
+              Layer M2 SPACING 1.0 ;
+
+              RECT ...;
+
+              END
+
+              END A
+
+              The following example sets the spacing of all layers as 1.0, ex-
+              cept M2.
+
+              write_lef_abstract -obsSpacing {1.0 {} 2.0 {M2}} -obsSpacingPer-
+              Layer
+
+              Macro A
+
+                ...
+
+                OBS
+
+                  Layer M1 SPACING 1.0 ;
+
+                  RECT ... ;
+
+                  Layer M2 SPACING 2.0 ;
+
+                  RECT ... ;
+
+                  Layer M3 SPACING 1.0 ;
+
+                  RECT ... ;
+
+                  ...
+
+                END
+
+                ...
+
+              END A
+
+       -obs_above_top_layer <layer>+
+              Writes out OBS shapes rather than one large abstract  OBS  shape
+              for  special-routes on these layers that are not PIN shapes. The
+              layers will have OBSSPACING FULLDRC added to the LEF so the  OBS
+              shapes  on  those  layers  are  treated as 'real' shapes for DRC
+              checking, and not abstract obstructions. This  is  intended  for
+              blocks  that  have  some sparse special-routing above the blocks
+              "normal" top-layer set with the -specifyTopLayer option (for ex-
+              ample, it might be a few special-routes for clocks that match up
+              with the chip clock distribution but must be visible inside  the
+              block). Only special-routes are currently supported.
+
+       -PGNets <net>+
+              Writes out PG stripes only on these PG nets.
+
+              If  you specify a net name that does not exist in the design, or
+              the net is not a PG net, tool will give an error and stop.
+
+       -PGpinLayers <layer_number_list>
+              Writes out power and ground stripes on the specified layer  num-
+              bers as power and ground pins.
+
+              The  layer names can be either names in the technology file like
+              metal1, or technology independent names like  1  for  the  first
+              routing layer, 2 for the second routing layer.
+
+              For example, to create PG pins on layers metal3 and metal4, use:
+
+              -PGPinLayers {metal3 metal4}
+
+              Or
+
+              -PGPinLayers {3 4}
+
+              In  the  example  below,  the  command will write out metal5 and
+              metal6 stripe shapes, and any via5 cut-shapes on the PG nets  to
+              the LEF abstract as PIN shapes
+
+              -PGPinLayers {metal5 via5 metal6}
+
+              Note:  You must specify the -stripePin parameter in order to use
+              this parameter.
+
+              Default: The top metal layer
+
+       -portForEachStripePin
+              Creates a separate LEF  port  for  each  pin  shape  created  by
+              -stripePin.  This  means that verifyConnectivity will check that
+              every port is touching a PG routing shape  at  the  next  level.
+              This  is  normally  what users want for individual PG stripes on
+              the top-layer of the block - each separate stripe  shape  should
+              be  connected to a top-level route or via somehow. This can help
+              in detecting some missing power-mesh connections before  running
+              a complete IR drop analysis.
+
+       -selected
+              Writes out only the selected PG stripes as LEF pin shapes.
+
+       -specifyTopLayer <layer_number>
+              Creates  obstructions  (OBS  shapes) covering the block only for
+              layers up to the specified layer.
+
+              The layer name can be either a name in the technology file  like
+              metal1,  or  a technology independent names like 1 for the first
+              routing layer, 2 for the second routing layer.
+
+              For example, to specify metal4 as the top layer, use:
+
+              -specifyToplayer metal4
+
+              Or
+
+              -specifyTopLayer 4
+
+              By default, all routing layers in the technology file are  fully
+              obstructed with OBS shapes across the entire block (possibly cut
+              around pin shapes). If this block does not use some of the high-
+              est  routing layers, you should use this option to limit the OBS
+              shapes to below layer.
+
+       -stripePin
+              Writes out power and ground stripes on the top  metal  layer  as
+              power and ground pins. You can use this parameter in a bottom-up
+              methodology,  when you create abstracts for blocks that you will
+              use at the next higher level of a hierarchical design.
+
+              Only special-routes created by power-route commands will be out-
+              put as pin shapes. That means special-routes that have  a  shape
+              value  of  ring, stripe, followpin, iowire, corewire, blockwire,
+              padring, and blockring are included. The shape value is the same
+              as. DEF SPECIALNETS + SHAPE value or dbGet sWire  .shape  value.
+              Special-routes with a shape value of blockagewire, drcfill, fil-
+              lopc, fillwire, or notype are not output.
+
+Example
+       Suppose  you  have a design that was routed on only the first 5 routing
+       layers, even though the technology has higher metal layers.
+
+       You would use the following command to include any PG stripes on metal5
+       as pins in the block LEF to allow connecting to them from above, and to
+       only create OBS for routing layers up to layer 5.
+
+       write_lef_abstract my.lef -specifyTopLayer 5 -stripePin -PgpinLayers 5
+
+       If your design also included a block inside that has PG pins on  metal5
+       with no PG stripes in the current design covering them, you can include
+       layer 5 PG pins from the internal blocks using the following command:
+
+       write_lef_abstract   my.lef  -specifyTopLayer  5  -stripePin  -extract-
+       BlockPGPinLayers 5
+
+       If you also want to include metal4 PG stripes as pins,  and  metal4  PG
+       pins from the block, you would use the following command:
+
+       write_lef_abstract my.lef -specifyTopLayer 5 -stripePin -Pgpinlayers {4
+       5} -extractBlockPGPinLayers {4 5}
+
+       If  you  want  to  include  some sparse special-route shapes on metal6,
+       metal7 (for example, for a few manually routed clock nets) , you  would
+       use the following command:
+
+       write_lef_abstract my.lef -specifyTopLayer metal5  -obs_above_top_layer
+       {metal6 metal7}
+
+Related Information
+              * lefDefOutVersion
+
+              * routeDesign
+
+              * verify_antenna
+
+              * Importing  and  Exporting  Designs chapter in the Innovus User
+                Guide
+
+              * Top-level Timing Closure Methodologies chapter in the  Innovus
+                User Guide
+
+                     * Example Top-Level Implementation Flow with ILMs
+
+                           Fri Apr 04 01:25:37 2025  write_lef_abstract(25.10)

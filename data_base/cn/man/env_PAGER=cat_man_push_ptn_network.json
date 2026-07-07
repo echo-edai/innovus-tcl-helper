@@ -1,0 +1,99 @@
+{
+  "command": "push_ptn_network",
+  "is_cmd": true,
+  "summary": "将网络（标准单元及其连接线）逻辑和物理地推入重叠的分区中",
+  "description": "该命令用于将一个网络（标准单元及其连接的导线）逻辑上和物理上推入重叠的分区中。具体功能包括：\n* 通过执行所有必要的逻辑端口创建，将一组网络逻辑上推入重叠分区。\n* 将网络的特殊导线物理上推入重叠分区，并执行所有必要的分区引脚创建。被推入的导线与原始导线外观完全相同。\n* 在需要的地方创建 Verilog assign 语句，以确保推入的逻辑在逻辑上等同于原始逻辑。\n注意事项：\n* 该命令不支持包含主分区和克隆分区的设计。在此类场景中，仅能看到主分区，重叠的导线和逻辑将仅被推入主分区。\n* 该命令会在提交分区后自动处理连接到顶层网络的新网络。\n* 该命令支持部分布线的网络。它不要求网络的导线必须满足 DRC/LVS 规则。导线无需连接到驱动或负载的实例引脚。即使导线位于源实例引脚或接收实例引脚的 5u 半径范围内，工具也会考虑将该网络推入。",
+  "usage": "push_ptn_network [-help] [-exclude_ptn_list <ptnNameList>] [-filter string] [-inst_prefix <instPrefixName>] [-logical_only] [-net_prefix <netPrefixName>] [-output_logical_only_nets string] [-output_nets_for_wire_distribution <string>] [-ptn_net_dir <fileName>] {-nets netNameList | -file <fileName> | -buf_only | -insts <instNameList>} [-check_only [-output <fileName>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_ptn_list",
+      "description": "指定不将指定分区内的实例/网络推入。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-filter",
+      "description": "指定仅推入名称匹配指定正则表达式的实例/网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst_prefix",
+      "description": "为被推入的实例指定自定义前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-logical_only",
+      "description": "仅将网络逻辑上推入重叠分区。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net_prefix",
+      "description": "为被推入的网络指定自定义前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_logical_only_nets",
+      "description": "指定一个文件名，其中包含网络名称。此参数与 -logical_only 一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_nets_for_wire_distribution",
+      "description": "输出用户指定的网络，以便稍后在分区命令中使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ptn_net_dir",
+      "description": "指定包含每个分区对应推入网络名称的目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要考虑推入的网络名称列表及其连接的实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-file",
+      "description": "指定包含要考虑推入的网络名称列表的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-buf_only",
+      "description": "指定仅考虑所有缓冲器及其连接的网络进行推入。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-insts",
+      "description": "指定所有实例及其连接的网络将被考虑推入。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_only",
+      "description": "告知哪些网络将被推入。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-output",
+      "description": "指定一个文件名，其中将提及要推入的网络名称。此参数与 -check_only 一起使用。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

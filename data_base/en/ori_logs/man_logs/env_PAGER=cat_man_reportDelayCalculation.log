@@ -1,0 +1,445 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportDelayCalculation(25.10)                    reportDelayCalculation(25.10)
+
+Name
+       reportDelayCalculation  - Reports the delay calculation information for
+       a cell or net timing arc
+
+Syntax
+       reportDelayCalculation
+
+       [-help]
+
+       [-active_arcs]
+
+       -from <string>
+
+       [-max]
+
+       [-min]
+
+       [-mis]
+
+       [-outfile <filename>]
+
+       [-show_all_attackers]
+
+       [-si]
+
+       [-thresholds]
+
+       -to <string>
+
+       [-view <string>]
+
+       [-voltage]
+
+       [-waveform]
+
+       Reports the delay calculation information for a cell or net timing arc.
+       You can use this command to report delay calculation  details  for  the
+       specified  timing  arc.  The delay calculation report may be useful for
+       debugging timing or for verifying timing data.
+
+       You can run the report_timing command before running  reportDelayCalcu-
+       lation to have the correct timing window and aggressor slew.
+
+       The reportDelayCalculation command output shows 3-sigma multiplier, in-
+       stead  of  single sigma. This ensures that the sigma representation for
+       both the delay and transition time is the same.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each reportDelayCalculation parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:  man  reportDelayCalculation.
+
+       -active_arcs
+              Disables reporting of  all the non-active  parallel  delay  arcs
+              and reports only the valid check arcs.
+
+       -from <string>
+              Specifies the name of the From port or pin.
+
+              If  the  From port or pin is output of a cell and To port or pin
+              is input of a cell, delay is calculated for the net and the  de-
+              lay  type  in the report is 'net delay.' If the From port or pin
+              is input of a cell and To port or pin is output of a cell, delay
+              is calculated for the cell and the delay type in the  report  is
+              'cell delay.'
+
+       -max   Indicates  that  the  delay calculation report is for the worst-
+              case operating conditions in min-max mode. If  neither  min  nor
+              max  arguments  are  specified,  then the default mode is set to
+              max.
+
+       -min   Indicates that the delay calculation report is for the best-case
+              operating conditions in min-max mode. If neither min nor max ar-
+              guments are specified, then the default mode is set to max.
+
+       -mis   Reports advanced multi-input switching (AMIS) details.
+
+       -outfile <filename>
+              Specifies the name of the output file in which to save the delay
+              calculation report.
+
+       -si    Reports signal integrity (SI) related information.
+
+       -show_all_attackers
+              Allows you to report all the small attackers.
+
+       -thresholds
+              Displays the rise delay, rise slew, fall delay, fall  slew,  and
+              slew delay threshold values for the From and To pins.
+
+       -to <string>
+              Specifies the name of the To port or pin.
+
+              If  the  From port or pin is output of a cell and To port or pin
+              is input of a cell, delay is calculated for the net and the  de-
+              lay  type  in the report is 'net delay.' If the From port or pin
+              is input of a cell and To port or pin is output of a cell, delay
+              is calculated for the cell and the delay type in the  report  is
+              'cell delay.'
+
+       -view <string>
+              Specifies the view name for which to print the delay calculation
+              report when using the multi-mode multi-corner (MMMC) mode.
+
+       -voltage
+              Displays the voltage of the cell or net timing arc.
+
+       -waveform
+              Reports waveforms of the specified pins.
+
+Examples
+              * The  following command shows the cell delay calculation report
+                for the From pin I1/A and To pin I1/Y:
+
+                reportDelayCalculation -from I1/A -to I1/Y
+
+                From pin : I1/A
+
+                To Pin : I1/Y
+
+                Cell : S2INVV1D1
+
+                Library : test
+
+                Arc sense : negative unate
+
+                Delay type : cell delay
+
+                ----------------------------------------
+
+                RC Summary for net N2
+
+                ----------------------------------------
+
+                Number of capacitance : 7
+
+                Net capacitance : 0.026057 pF
+
+                Total rise capacitance: 0.027172 pF
+
+                Total fall capacitance: 0.027169 pF
+
+                Number of resistance : 7
+
+                Total resistance : 1094.135127 Ohm
+
+                ----------------------------------------
+
+              * The following command shows the net delay  calculation  report
+                for the from pin ff1/Q and to pin A1/buf1/A with waveforms:
+
+                tempus>   reportDelayCalculation  -from  ff1/Q  -to  A1/buf1/A
+                -waveform
+
+                From pin : ff1/Q
+
+                Cell : DFFX2
+
+                Library : gpdk045bc
+
+                To pin : A1/buf1/A
+
+                Cell : BUFX2
+
+                Library : gpdk045bc
+
+                Delay type: net
+
+                -------------------------------------------------------------
+
+                From pin waveforms
+
+                -------------------------------------------------------------
+
+                Rise Waveform : { 0.00e+00 0.00000 5.35e-10  0.05400  1.07e-09
+                0.10800 1.61e-09 0.16200
+
+                2.14e-090.21600  2.68e-09  0.27000  3.21e-09  0.32400 3.75e-09
+                0.37800 4.28e-09 0.43200
+
+                4.82e-09 0.486005.35e-09  0.54000  5.89e-09  0.59400  6.42e-09
+                0.64800 6.96e-09 0.70200
+
+                7.50e-09  0.756008.03e-09  0.81000  8.57e-09  0.86400 9.10e-09
+                0.91800 9.64e-09 0.97200
+
+                1.02e-08 1.02600 1.07e-08 1.08000 }
+
+                Fall Waveform : { 0.00e+00 1.08000 3.69e-10  1.02600  7.39e-10
+                0.97200 1.11e-09 0.91800
+
+                1.48e-09  0.86400  1.85e-09  0.81000 2.22e-09 0.75600 2.59e-09
+                0.70200 2.96e-09 0.64800
+
+                3.32e-09 0.59400 3.69e-09 0.54000  4.06e-09  0.48600  4.43e-09
+                0.43200 4.80e-09 0.37800
+
+                5.17e-09  0.32400  5.54e-09  0.27000 5.91e-09 0.21600 6.28e-09
+                0.16200 6.65e-09 0.10800
+
+                7.02e-09 0.05400 7.39e-09 -0.00000 }
+
+                -------------------------------------------------------------
+
+                To pin waveforms
+
+                -------------------------------------------------------------
+
+                Rise Waveform : { 2.73e-14 0.00000 5.35e-10  0.05318  1.07e-09
+                0.10793 1.61e-09 0.16125
+
+                2.14e-09  0.21587  2.68e-09  0.26930 3.21e-09 0.32383 3.75e-09
+                0.37734 4.28e-09 0.43179
+
+                4.82e-09 0.48538 5.35e-09 0.53975  5.89e-09  0.59341  6.42e-09
+                0.64772 6.96e-09 0.70144
+
+                7.50e-09  0.75570  8.03e-09  0.80946 8.57e-09 0.86368 9.10e-09
+                0.91748 9.64e-09 0.97166
+
+                1.02e-08 1.02549 1.07e-08 1.07965 }
+
+                Fall Waveform : { 2.38e-14 1.08000 3.69e-10  1.02719  7.39e-10
+                0.97209 1.11e-09 0.91911
+
+                1.48e-09  0.86416  1.85e-09  0.81104 2.22e-09 0.75623 2.59e-09
+                0.70298 2.96e-09 0.64828
+
+                3.32e-09 0.59493 3.69e-09 0.54033  4.06e-09  0.48688  4.43e-09
+                0.43237 4.80e-09 0.37885
+
+                5.17e-09  0.32440  5.54e-09  0.27081 5.91e-09 0.21643 6.28e-09
+                0.16279 6.65e-09 0.10846
+
+                7.02e-09 0.05476 7.39e-09 0.00048 }
+
+                -------------------------------------------------------------
+
+                -------------------------------------------------------------
+
+                RC Summary for net n2
+
+                -------------------------------------------------------------
+
+                Number of capacitance : 19
+
+                Net capacitance : 0.714975 pF
+
+                Total rise capacitance: 0.716177 pF
+
+                Total fall capacitance: 0.716179 pF
+
+                Number of resistance : 24
+
+                Total resistance : 101.624695 Ohm
+
+                -------------------------------------------------------------
+
+                Rise Fall
+
+                -------------------------------------------------------------
+
+                Net delay : 0.002500 ns 0.002300 ns
+
+                From pin transition time: 8.565800 ns 5.910500 ns
+
+                To pin transition time : 8.568400 ns 5.913000 ns
+
+                -------------------------------------------------------------
+
+              * The following command shows the attacker status in the SI  de-
+                lay  calculation  report  output  (when  setSIMode -enable_de-
+                lay_report is set to true):
+
+                reportDelayCalculation -si -from seg3/u5/Y -to seg3/u6/A
+
+                From pin : seg3/u5/Y
+
+                Cell : INV
+
+                Library : cell_w
+
+                To pin : seg3/u6/A
+
+                Cell : INV
+
+                Library : cell_w
+
+                Base or SI: SI delay
+
+                Delay type: net
+
+                -------------------------------------------------------------
+
+                RC Summary for net seg3/n5
+
+                -------------------------------------------------------------
+
+                Number of capacitance : 17
+
+                Net capacitance : 0.293534 pF
+
+                Total rise capacitance: 0.320849 pF
+
+                Total fall capacitance: 0.320780 pF
+
+                Number of resistance : 17
+
+                Total resistance : 567.671387 Ohm
+
+                -------------------------------------------------------------
+
+                SI information for rise
+
+                ---------------------------------------------------------------------------------
+
+                Victim timing window : 1.0743 ns 2.7024 ns CLK_W_3
+
+                ---------------------------------------------------------------------------------
+
+                Attacker Status Direction Slew  Coupling  cap  Fanout  Voltage
+                Bump Timing window Clock
+
+                ---------------------------------------------------------------------------------
+
+                seg2/n5  INF Fall 0.303667 ns 0.138759 pF 1 1.080 v 0.198396 v
+                1.1917 ns 2.8626 ns CLK_W_2
+
+                seg1/n5 INF Fall 0.314333 ns 0.138787 pF 1 1.080 v 0.182412  v
+                1.3881 ns 3.0723 ns CLK_W_1
+
+                ---------------------------------------------------------------------------------
+
+                SI information for fall
+
+                ---------------------------------------------------------------------------------
+
+                Victim timing window : 1.2016 ns 5.0700 ns CLK_W_3
+
+                ---------------------------------------------------------------------------------
+
+                Attacker  Status  Direction  Slew  Coupling cap Fanout Voltage
+                Bump Timing window Clock
+
+                ---------------------------------------------------------------------------------
+
+                seg2/n5 INF Rise 0.550667 ns 0.138759 pF 1 1.080 v 0.138780  v
+                1.0887 ns 2.0217 ns CLK_W_2
+
+                seg1/n5  INF Rise 0.800167 ns 0.138787 pF 1 1.080 v 0.107892 v
+                1.2751 ns 2.3031 ns CLK_W_1
+
+                ---------------------------------------------------------------------------------
+
+                Model types
+
+                ---------------------------------------------------------------------------------
+
+                Net Term Cell Model
+
+                ---------------------------------------------------------------------------------
+
+                seg3/n5 seg3/u5/Y INV NLDM
+
+                seg3/n5 seg3/u6/A INV NLDM
+
+                seg2/n5 Y INV NLDM
+
+                seg1/n5 Y INV NLDM
+
+                ---------------------------------------------------------------------------------
+
+                Delays Rise Fall
+
+                -------------------------------------------------------------
+
+                Incr Net Delay : 0.565900 ns 0.093700 ns
+
+                Net delay (mean) : 0.696000 ns 0.188900 ns
+
+                (3-sigma) : 0.000000 ns 0.000000 ns
+
+                Timing Derate (mean) : 1.000000 1.000000
+
+                (sigma) : 1.000000 1.000000
+
+                Derated Net delay (mean) : 0.696000 ns 0.188900 ns
+
+                (3-sigma) : 0.000000 ns 0.000000 ns
+
+                -------------------------------------------------------------
+
+                -------------------------------------------------------------
+
+                Transitions Rise Fall
+
+                -------------------------------------------------------------
+
+                Input transition (mean) : 0.482600 ns 0.234800 ns
+
+                (sigma) : 0.000000 ns 0.000000 ns
+
+                Output transition (mean) : 0.622200 ns 0.274100 ns
+
+                (sigma) : 0.000000 ns 0.000000 ns
+
+                -------------------------------------------------------------
+
+                Abbreviative attacker status and filtered reason:
+
+                -------------------------------------------------------------
+
+                SY : Synchronous
+
+                INF: Attacker with infinite timing window
+
+                PE : Filtered due to physical exclusion
+
+                UF : Filtered by user
+
+                CN : Filtered because it is a constant net
+
+                SB : Filtered due to small bump
+
+                TA : Filtered because of timing window does not overlap
+
+                LC : Filtered due to logical correlation
+
+                ACT: Attacker is Active.
+
+                -------------------------------------------------------------
+
+       Related Commands
+
+              * report_timing
+
+              * setDelayCalMode
+
+              * setSIMode
+
+                           Fri Apr 04 01:25:37 202r5eportDelayCalculation(25.10)

@@ -1,0 +1,225 @@
+{
+  "command": "validate_pg_library",
+  "is_cmd": true,
+  "summary": "验证宏单元电源网格库（PGV）",
+  "description": "该命令用于验证宏单元的电源网格库（PGV）。它以宏单元PGV和Liberty文件作为输入，通过运行静态和动态电源及电源轨分析来执行基于IR压降的验证。在此流程中，库生成工具会读取输入的PGV并生成一个包含该宏单元实例的虚拟DEF文件（单单元设计），然后对该设计运行静态/动态电源及电源轨分析。用户可以分析电源和电源轨结果，以检查PGV内部的热点、连接性和电流分布。",
+  "usage": "validate_pg_library [-help] [-activity <value>] -cell<cell_name> [-clock {<clk1> <clk2> ...}] [-disable_rail_analysis {true | false}] [-dynamic_analysis_duration <value>] [-enable_xp {true | false}] [-extraction_include_file <filename>] -extraction_tech_file <tech_file_path> [-frequency <value>] [-input_pin_set_case_analysis_low {<pin1> <pin2> ...}] [-input_pin_set_case_analysis_high {<pin1> <pin2> ...}] [-liberty <liberty_file>] [-max_ir_drop <value>] [-net_capacitance <value>] [-output <output_dir>] [-pin_capacitance <value>] -power_grid_library_path <pgv_path> [-power_grid_library_view <view_name>] [-power_pad_size <value>] [-rail_analysis_type {static | dynamic}] [-sdc_file <filename>] [-set_power_switching_pattern <trigger_file>] [-set_total_power <value>] [-step_size <value>] [-supply_voltage <value>] -tech_lef_file <tech_lef_file_path> [-transition_time <time>] [-power_include_file <filename>] [-rail_include_file_begin <filename>] [-rail_include_file_end <filename>] [-rail_trigger_switching_pattern <pattern>] [-temperature <value>] [-twf_path <twf_location>] [-user_defined_ploc_file<filename>] [-pgv_mode_dynamic_switch_pattern <pattern>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-activity",
+      "description": "指定输入引脚的翻转率。如果未指定，则使用默认值0.2。该值表示一个输入引脚在一个时钟周期内的翻转次数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要验证的单元名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-clock",
+      "description": "指定时钟引脚列表。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-disable_rail_analysis",
+      "description": "指定在宏PGV验证期间是否禁用电源轨分析。与-enable_xp参数配合时的行为：如果-enable_xp设为true，工具将仅在XP模式下运行电源分析；如果设为false，工具将仅在非XP（普通）模式下启用电源分析。默认值：false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dynamic_analysis_duration",
+      "description": "指定动态电源分析将使用的仿真周期。它是为计算电源分析期间的IR压降而选择的窗口持续时间。默认值：10ns。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_xp",
+      "description": "指定是否在广泛并行（XP）模式下验证宏PGV。默认值：false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extraction_include_file",
+      "description": "以包含文件的形式指定提取器（ZX）命令和变量。此参数仅适用于XP模式下的独立报告生成流程（validate_pg_library -enable_xp true）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extraction_tech_file",
+      "description": "指定提取技术文件的路径。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-frequency",
+      "description": "指定时钟频率。默认值：100Mhz。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-input_pin_set_case_analysis_low",
+      "description": "指定需要保持逻辑低电平的引脚列表。SDC文件中的set_case_analysis命令与此处描述的将引脚设置为恒定值的命令具有相同效果。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-input_pin_set_case_analysis_high",
+      "description": "指定需要保持逻辑高电平的引脚列表。SDC文件中的set_case_analysis命令与此处描述的将引脚设置为恒定值的命令具有相同效果。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-liberty",
+      "description": "指定用于功耗计算的Liberty文件名。此参数对于静态功耗分析流程是可选的，对于动态功耗分析流程是必需的。在静态流程中，需要指定-liberty或-set_total_power。如果两个参数都指定了，则以-set_total_power参数为准。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_ir_drop",
+      "description": "指定允许的最大IR压降。默认值：5（百分比）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net_capacitance",
+      "description": "指定网络电容值。默认值：1pF。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output",
+      "description": "指定输出目录的名称。此目录保存电源和电源轨报告，以及设计输出（如.lef、.def等）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pgv_mode_dynamic_switch_pattern",
+      "description": "指定动态功耗计算流程中功能模式的开关模式。此参数的使用模型与set_power -dynamic_switch_pattern参数相同。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_capacitance",
+      "description": "指定引脚电容值。默认值：1pF。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_grid_library_path",
+      "description": "指定电源网格库文件的路径。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-power_grid_library_view",
+      "description": "指定电源网格视图名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_include_file",
+      "description": "指定电源分析包含文件。此文件指定了动态引擎中某些没有Voltus等效命令的命令。此参数仅适用于动态电源分析流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_pad_size",
+      "description": "指定两个相邻DEF电压源之间的距离。默认值：50（微米）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rail_analysis_type",
+      "description": "指定执行静态分析还是动态分析。默认值：static。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rail_include_file_begin",
+      "description": "提供一个包含额外电源轨选项的文件，这些选项将在analyze命令之前运行。可用于那些没有Voltus等效命令的旧版电源轨分析命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rail_include_file_end",
+      "description": "提供一个包含额外电源轨选项的文件，这些选项将在analyze命令之后运行。可用于那些没有Voltus等效命令的旧版电源轨分析命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rail_trigger_switching_pattern",
+      "description": "指定动态触发文件。当设计中使用带有电流签名的宏EM视图时，需要确定此块/单元的触发时间。动态触发文件用于确定此时间。此参数的使用模型与set_rail_analysis_mode -dynamic_trigger_file参数相同。默认值：None。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sdc_file",
+      "description": "指定时序约束文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-set_power_switching_pattern",
+      "description": "指定实例和单元引脚上的激励模式。仅在动态模式下为实例和单元类型指定此参数。此参数的使用模型与set_power -dynamic_switch_pattern参数相同。默认值：None。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-set_total_power",
+      "description": "指定设计的总功耗（单位：瓦特）。此功耗将根据单元面积进行分配。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-step_size",
+      "description": "指定仿真步长（单位：皮秒）。默认值：20ps。此参数仅适用于动态电源分析流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-supply_voltage",
+      "description": "指定每个电源引脚的电压。默认值：1V。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tech_lef_file",
+      "description": "指定技术LEF文件的路径。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-temperature",
+      "description": "设置静态功耗计算的温度。默认值：125度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-transition_time",
+      "description": "指定设计中特定引脚或实例的转换时间。此参数仅适用于动态电源分析流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-twf_path",
+      "description": "指定用于噪声和功耗计算的时序窗口文件（TWF）的位置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-user_defined_ploc_file",
+      "description": "指定包含网络名称和相应用户定义的ploc或电源焊盘文件（.pploc）的文件名。.pploc文件包含电源和地网络的电源引脚或电压源位置。此参数提供了包含用户指定或工具生成的电压源的灵活性。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

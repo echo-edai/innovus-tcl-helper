@@ -1,0 +1,107 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+update_oa_lib(25.10)                                      update_oa_lib(25.10)
+
+Name
+       update_oa_lib  -  Updates  the specified OpenAccess library from within
+       Innovus
+
+Syntax
+       update_oa_lib
+
+       [-help]
+
+       <lib_name>
+
+       [-compress_level <value>]
+
+       [-create_cdsinfo_tag]
+
+        [-tech_attach_to_reference]
+
+       Updates the specified OpenAccess library from within Innovus.  You  can
+       use this command to:
+
+              *
+
+                Convert the specified library to use a tech reference from the
+                attached tech so that the non-parameterized or custom vias can
+                be  written to it. Saving non-parameterized vias to OA require
+                write permission to OA tech so that custom viadef entry can be
+                created. If attached technology is  read-only  and  OpenAccess
+                design   has   non-parameterized  vias,  you  should  run  up-
+                date_oa_lib with -tech_attach_to_reference command line option
+                before invoking saveDesign. The tool is then able to save  the
+                design  and  does  not  throw an error because it can now make
+                non-parameterized vias entry to local tech  in  the  converted
+                library.
+
+              *
+
+                Add a cdsinifo.tag to legacy libraries created by earlier ver-
+                sions of Innovus.
+
+              *
+
+                Modify the compression level for the library.
+
+       If  you  run  the update_oa_lib command on a library that is not in at-
+       tached mode, a warning is displayed. However, the script  continues  to
+       run.  This  is  useful  if  you  want  to  make sure that libraries are
+       writable for new vias and the saveDesign command does not fail.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each update_oa_lib parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man update_oa_lib.
+
+       -compress_level <value>
+              Sets  the  compression  level of the specified library. New cel-
+              lviews written to the library follow the  specified  compression
+              level.  However, existing cellviews in the library are not modi-
+              fied. Use the oazip utility to modify the existing cellviews  in
+              the library.
+
+              Valid  compression  level values range from 0 to 9. A value of 0
+              indicates that compression is turned off.
+
+       -create_cdsinfo_tag
+              Adds a cdsinfo.tag file to the specified library.
+
+       <lib_name>
+              Specifies the name of the library to be updated.
+
+       -tech_attach_to_reference
+              Converts the specified library to use a tech reference from  the
+              attached tech so that new custom via definitions can be added to
+              the library.
+
+Examples
+              * The  following  command sets the compression level of the lib1
+                library to 9. However, it does not change the  compression  of
+                the existing cellviews in the library:
+
+                update_oa_lib lib1 -compress_level 9
+
+                The tool displays warning such as the following:
+
+                Changed  library compressLevel from '0 (uncompressed)' to '9'.
+                Cellviews within the library are not affected by changing  the
+                library's  compressLevel.  To  update  the  cellviews, use the
+                oazip utility.
+
+              * The following command turns off the compression for any  newly
+                created  cellviews  in  my_lib library, which previously is at
+                compression level 1:
+
+                update_oa_lib my_lib -compress_level 0
+
+Related Information
+              * setOaxMode
+
+              * Mixed Signal (MS) Interoperability Guide
+
+                * Static Timing Analysis for Mixed Signal Designs chapter
+
+                           Fri Apr 04 01:25:37 2025       update_oa_lib(25.10)

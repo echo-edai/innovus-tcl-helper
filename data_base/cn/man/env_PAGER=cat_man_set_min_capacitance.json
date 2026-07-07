@@ -1,0 +1,57 @@
+{
+  "command": "set_min_capacitance",
+  "is_cmd": true,
+  "summary": "设置最小电容限制",
+  "description": "此命令用于在顶层时序模块的指定端口和/或时钟波形上设置最小电容限制。当设置在端口上时，连接到该端口的网络总电容必须大于或等于指定限制。当设置在模块上时，该限制适用于该模块的所有网络，每个网络的总电容必须大于或等于指定限制。最小电容限制也来源于库对象（库的默认最小电容限制和库单元引脚上的最小电容限制），设计中的引脚会继承这些库限制。当在模块上设置限制且该限制继承自库时，将使用最严格的（最大的）限制。注意：设置在顶层时序模块上的限制适用于其端口。因此，如果在顶层时序模块及其端口上都设置了最小电容限制，则最严格的限制将适用于端口。使用 `report_ports -type port_cap_limit` 命令可查看端口上设置的最小电容限制。当在时钟波形上设置限制时，可以使用 `-clock_path`、`-data_path`、`-rise` 和 `-fall` 参数提供更详细的规格说明。设置在时钟对象上的 `set_min_capacitance` 约束仅由 `report_constraint` 命令用于报告 DRV 违规，不会用于优化。注意：此命令语法仅在流程兼容模式开启时适用。",
+  "usage": "set_min_capacitance [-help] <capacitance_limit> <object_list> [-clock_path] [-data_path] [-fall] [-override] [-rise]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<capacitance_limit>",
+      "description": "指定最小电容限制的值。该限制必须大于或等于零，单位为来自目标技术库的电容单位。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "<object_list>",
+      "description": "指定对象列表，包括端口、实例引脚、库单元引脚、模块和/或时钟波形。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-clock_path",
+      "description": "指定对象列表中特定时钟网络内的所有引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-data_path",
+      "description": "指定由对象列表中特定时钟触发的数据路径中的所有引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fall",
+      "description": "指定下降沿电容。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-override",
+      "description": "覆盖来自其他来源（例如库或约束）的最小电容限制。此参数可用于为指定的实例引脚/端口/库单元引脚列表强制设定特定的约束值，这将覆盖在此设置之前设定的最大/最小值。要启用此功能，需进行设置：`set timing_constraint_enable_drv_limit_override true`。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rise",
+      "description": "为所有选定的引脚指定上升沿电容。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

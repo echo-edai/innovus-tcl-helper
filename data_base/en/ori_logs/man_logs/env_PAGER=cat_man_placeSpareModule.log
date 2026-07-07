@@ -1,0 +1,160 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+placeSpareModule(25.10)                                placeSpareModule(25.10)
+
+Name
+       placeSpareModule  -  Instantiates  a  created  spare module, and places
+       spare modules across the design
+
+Syntax
+       placeSpareModule
+
+       -moduleName <moduleName>
+
+       {-numModules <integer |>-stepx <stepDistance> -stepy <stepDistance>}
+
+       [-area <llx lly urx ury>]
+
+       [-channel
+
+           {-maxWidth <maxWidth>}
+
+           {-minWidth <minWidth>}
+
+           {-minLen <minLength>}]
+
+       [-offsetx <offsetDistance>]
+
+       [-offsety <offsetDistance>]
+
+       [-powerDomain <powerDomainName>]
+
+       [-prefix <prefix>]
+
+       [-util <utilizationFactor>]
+
+       Instantiates a created spare module, and places  spare  modules  across
+       the  design.  You  can run this command before or after placement. How-
+       ever, if you run the command before placement  it  will  only  add  the
+       cells and mark all the added spare cells as unplaced. If you run it af-
+       ter placement, it calls ecoPlace.
+
+Parameters
+       -area <llx lly urx ury>
+              Specifies box coordinates (<llx, lly, urx, ury>) in micron.
+
+       -channel
+              Places  spare  modules in thin channels between placement block-
+              ages.
+
+       -maxWidth <maxWidth>
+              Specifies the maximum channel width, in microns. The  <maxWidth>
+              determines  whether  the placeable area between two macro blocks
+              is considered a channel.
+
+       -minLen <minLength>
+              Specifies the minimum channel  length,  in  microns.  The  <min-
+              Length> must be greater than the specified <maxWidth>.
+
+       -minWidth <minWidth>
+              Specifies  the minimum channel width, in microns. The <minWidth>
+              should be greater than the width of the largest-space cell  pro-
+              vided.
+
+       -moduleName <moduleName>
+              Specifies  the  name  of the spare module. This module must have
+              been created using the createSpareModule command.
+
+       -numModules <integer>
+              Specifies the total number of spare modules to add. The software
+              calculates how far apart to place the modules.
+
+       -offsetx <offsetDistance>
+              Specifies the offset along the x axis, in microns, from the left
+              core boundary.
+
+       -offsety <offsetDistance>
+              Specifies the offset along the y axis, in microns, from the bot-
+              tom core boundary.
+
+       -powerDomain <powerDomainName>
+              Specifies the power domain in which to place the spare modules.
+
+       -prefix <prefix>
+              Specifies a prefix to add to the automatically generated  prefix
+              for spare modules.
+
+              The software already uses the prefix spr_n for spare modules. If
+              you  specify  -prefix spareMod, the instances of this module are
+              named spareMod_spr_1, spareMod_spr_2, spareMod_spr_3, and so on.
+
+       -stepx <stepDistance>
+              Specifies the distance, in  microns,  between  the  instantiated
+              spare  modules  along  the  x  axis.  The <stepDistance> must be
+              greater than the spare module bounding box.
+
+       -stepy <stepDistance>
+              Specifies the distance, in  microns,  between  the  instantiated
+              spare  modules  along  the  y  axis.  The <stepDistance> must be
+              greater than the spare module bounding box.
+
+       -util <utilizationFactor>
+              Specifies the utilization factor of the spare modules.
+
+              Value Range: Greater than 0.0; less than 1.0.
+
+              If the value of util  is  low,  the  placeable  region  will  be
+              larger.  There  would  be more space for placing the spare cells
+              and they may not be tightly bound. Similarly, if the util  value
+              is  high,  the placeable region will be small and spares will be
+              tightly bound.
+
+              Note: If you specify a high util  value,  the  placeable  region
+              will  be small and as a result the tool might not be able to ac-
+              commodate all spare modules in the small region. In such  cases,
+              the tool will give the following message:
+
+              *INFO:  Some  spare  modules  might not contain all the provided
+              spare cells.
+
+       Note: The placeSpareModule command does not honor -util  when  -numMod-
+       ules switch is used.
+
+Command Order
+       Run this command after running createSpareModule.
+
+Examples
+       The following command instantiates module mod1 and places the instanti-
+       ations at intervals of 50 microns along the x and y axis. It places the
+       instantiations  at  an  offset of 5 microns from the left core boundary
+       and the bottom core boundary:
+
+       placeSpareModule -moduleName mod1 -stepx 50 -stepy 50 -offsetx 5  -off-
+       sety 5
+
+       The  following  commands  create spare module SPGM with cells DFFNSRX2,
+       INVX4, and NOR2X2 using clock net sysclk; then instantiates module SPG-
+       Mand places the instantiations between channels that are between 4.7 um
+       and 10.0 um wide and at least 11.0 um long. The step size is 10  um  in
+       the  x  direction and 10 um in the y direction and the maximum utiliza-
+       tion rate is 60 percent:
+
+       createSpareModule -moduleName SPGM -cell {DFFNSRX2 INVX4 \
+
+         NOR2X2} -clock sysclk
+
+       placeSpareModule -moduleName SPGM -channel -minWidth 4.7 -maxWidth 10 \
+
+         -minLength 11 -stepx 10 -stepy 10 -util 0.6
+
+Related Information
+              * createSpareModule
+
+              * deleteSpareModule
+
+              * ecoPlace
+
+              * Placing the Design chapter in the Innovus User Guide
+
+                * Placing Spare Cells and Spare Modules
+
+                           Fri Apr 04 01:25:37 2025    placeSpareModule(25.10)

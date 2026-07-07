@@ -1,0 +1,221 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+placePIO(25.10)                                                placePIO(25.10)
+
+Name
+       placePIO  - Places CLASS PAD AREA IO cells on the die boundary (periph-
+       ery) in random order
+
+Syntax
+       placePIO
+
+       [-help]
+
+       [-assignBump]
+
+       [-optIOs]
+
+       [-overflowMap]
+
+       [-maxIOHeight]
+
+       [-ioFile <fileName>]
+
+       [-rdlConstraintFile <fileName>]
+
+       [-noRandomPlacement]
+
+       [-extraConfig <fileName>]
+
+       [-cellList {<cellList>}]
+
+       [-instList {<instList>}]
+
+       [-powerDomain <powerDomainList>]
+
+       Places CLASS PAD AREA IO cells on the die boundary (periphery) in  ran-
+       dom order. Use this command after the design is loaded.
+
+              * The  command, by default, honors pre-placed or FIXED area I/Os
+                in the design and does not modify their  placement  when  exe-
+                cuted.
+
+              * The  command can place IO pads onto the IO rows that belong to
+                a power domain and optimize the locations of the IO  pads  for
+                the power domain.
+
+                placePIO  -powerDomain {VCCQ_MC0 VCCQ_U VCCQ2_E VCCQ_L VCCQ2_H
+                VCCQ_D VCCQ2_C}
+
+                placePIO -optIOs
+
+                The I/O row information is retrieved from the power domain it-
+                self.  IO rows need to be created and added  to  power  domain
+                before  the placement and optimization. Run placePIO -powerDo-
+                main {<powerDomainList>} for a random placement then use  pla-
+                cePIO -optIOs for optimized result.
+
+                You  can  use  this function to place IO pads in a design that
+                has multiple power domains with IO  pads.  Innovus  recognizes
+                the  relationship  between the IO pads, IO rows, and power do-
+                mains and so placement and optimization are automatic.
+
+              * The command reads options  specified  in  the  setFlipChipMode
+                command  before placing the CLASS PAD AREA IO cells on the die
+                boundary. It retrieves the rdlconstraintfile and sroute config
+                file information from the  setFlipChipMode-constraintFile  and
+                setFlipChipMode-extraConfig command options.
+
+              * During  bump  assignment,  the  command  uses  resistance con-
+                straints that  are  specified  in  the  rdlconstraintfile  for
+                net(s).  To  view  a constraint file, see "Examples and Report
+                Files" in Flip Chip Methodologies chapter of the Innovus  User
+                Guide.
+
+              * The   placePIO-optIos  -assignBump  command  also  reads  set-
+                FlipChipMode-routeWidth value before  reassigning  the  signal
+                bumps in the design.
+
+              * When  the I/O row flow is enabled (setIoFlowFlag1), the place-
+                PIO command restricts I/O placement in the rows created previ-
+                ously, instead of all possible locations. However, you need to
+                ensure that the I/O rows are created outside the I/O box.
+
+                Command flow:
+
+                setIoFlowFlag 1
+
+                createIoRow
+
+                placePIO
+
+       Note: IO cells must be defined as CLASS PAD on the boundary of the  de-
+       sign.  The peripheral I/O Library must be loaded when importing the de-
+       sign. Peripheral I/O rows are also required.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each placePIO parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand: man placePIO.
+
+       -assignBump
+              Allows  signal  bumps to be reassigned to improve routing if the
+              I/O cells have been fixed.
+
+              Data_type: bool, optional
+
+       -cellList {<instlist>}
+              Specifies which area I/O cell(s) must be placed on  the  periph-
+              ery.  Once you run placePIO -cellList to grab the area I/O cells
+              for placement on the periphery, you can  run  placeAIO  -ignore-
+              AIOByName  {<list>} to avoid the placement of these cells in the
+              core area.
+
+              Data_type: string, optional
+
+       -extraConfig <fileName>
+              Specifies a file containing user-defined placement options writ-
+              ten in sroute syntax. For more information, see "Extra  Configu-
+              ration File Options for fcroute" in fcroute.
+
+              Data_type: string, optional
+
+       -ioFile <fileName>
+              Specifies the name of a file to control the placement of the I/O
+              cells. It supports the version 3.0 I/O file format.
+
+              Data_type: string, optional
+
+       -instList {<instList>}
+              Specifies  which area I/O instance(s) must be grabbed for place-
+              ment on the periphery.
+
+              Once you run placePIO -instList to place the area I/O  instances
+              on the periphery, you can run placeAIO -ignoreAIOByName {<list>}
+              to avoid the placement of these instances in the core area.
+
+              Data_type: string, optional
+
+       -maxIOHeight
+              Specifies the maximum height for the I/O row.
+
+              Data_type: bool, optional
+
+       -noRandomPlacement
+              Without  options,  the  placePIO command randomly places all I/O
+              cells on the periphery. This option inhibits this  behavior  and
+              optimizes pads without initial placement.
+
+              Data_type: bool, optional
+
+       <->optIOs
+              Allows  I/O  cells  to  be moved to improve routing if the bumps
+              have been fixed, optimizing the initial placement.
+
+              Data_type: bool, optional
+
+       -overflowMap
+              Displays the congestion map using the width and spacing  parame-
+              ters  specified  in the extra configuration file. To display the
+              congestion map, run the following command to specify the options
+              for the extra configuration file:
+
+              placePIO    -noRandomPlacement     -overflowMap     -extraConfig
+              scripts/global.cfg
+
+              where:
+
+              scripts/global.cfg:
+
+              srouteBottomLayerLimit  8  /*  Assume the intended routing layer
+              range is M8 to M9 */
+
+              srouteTopLayerLimit 9
+
+              srouteRouteWidth 10000 /* n is the routing width, in db  unit  -
+              5u */
+
+              Data_type: bool, optional
+
+       -powerDomain <powerDomainName>
+              Specifies  the name of the power domain that consists of periph-
+              eral I/Os. The I/O row information can now be retrieved from the
+              power domain itself.
+
+              Data_type: string, optional
+
+       -rdlConstraintFile <fileName>
+              Specifies a file with constraints to control  the  placement  of
+              the I/O cells. The command uses resistance constraints specified
+              in this file, for cell placement. To view a constraint file, see
+              "Examples  and  Report Files" in Flip Chip Methodologies chapter
+              of the Innovus User Guide.
+
+              Data_type: string, optional
+
+Example
+              * The following command places  CLASS PAD AREA IO cells  on  the
+                die  boundary  (periphery) and allows I/O cells to be moved to
+                improve routing if the bumps have been fixed,  optimizing  the
+                initial placement:
+
+                placePIO <->optIOs
+
+Related Information
+              * placeAIO
+
+              * placePadIO
+
+              * setIoRowMargin
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+              * Flip Chip Methodologies chapter in the Innovus User Guide
+
+                * Useful Constraints for Flip Chip Routing
+
+              * Tools Menu chapter in the Innovus Menu Reference
+
+                * Flip Chip Route - Advanced - Routing Constraints GUI
+
+                           Fri Apr 04 01:25:37 2025            placePIO(25.10)

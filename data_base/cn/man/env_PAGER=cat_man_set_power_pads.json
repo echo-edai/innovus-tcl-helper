@@ -1,0 +1,93 @@
+{
+  "command": "set_power_pads",
+  "is_cmd": true,
+  "summary": "指定电源焊盘信息",
+  "description": "此命令用于指定电源焊盘信息。您可以为同一电源网络指定多种电源焊盘格式（xy坐标、焊盘单元或电源引脚），适用于基于网络和基于域的电源轨分析。注意：在基于域的分析中，电源焊盘位置文件中所有电压源名称对于域中的所有网络必须是唯一的。此外，电源焊盘位置文件中的电压源名称必须与DEF引脚部分中的名称不同。",
+  "usage": "set_power_pads -reset |{ [-auto_voltage_source_creation {true|false}] [-consider_partial_small_tiles_for_vsrc {true | false}] [-def_shape_only {true | false}] [-die_instance_name <dieinstname>] [-enable_switchnet_ploc_generation {true | false}] [-format {defpin | padcell | xy | boundary | xyiv}] [-layer <vialayername>] -net <net_name> [-number_of_voltage_source <value>] [-file <file>] [-region {<x1> <y1> <x2> <y2>}] [-short_pin_nodes {true | false}] [-tile {<x> <y>}] }",
+  "options": [
+    {
+      "name": "-reset",
+      "description": "重置所有先前的set_power_pads命令设置",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto_voltage_source_creation",
+      "description": "指定是否为所有网络（-net ALL）或特定网络（-net net_name）自动创建电压源。电压源将在用户指定的金属层或设计顶层金属层（默认）上的所有通孔切割的顶层金属上创建。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-consider_partial_small_tiles_for_vsrc",
+      "description": "指定是否在小瓦片上生成电压源。小瓦片指面积小于间距*间距面积1/3的区域。此参数与自动电压源创建功能（-auto_voltage_source_creation）一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-def_shape_only",
+      "description": "指定是否仅在DEF布线形状上生成电压源。此参数控制是否在单元实例内部的形状上生成电压源。当此参数设置为false时，电压源会为DEF布线形状和单元实例内部的形状创建。此参数与-auto_voltage_source_creation参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-die_instance_name",
+      "description": "为多芯片分析指定芯片实例名称。此选项仅在多芯片分析（set_rail_analysis_mode -die_mode multi-die）中可用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-enable_switchnet_ploc_generation",
+      "description": "指定是否在所有开关网络上生成电压源。此参数与-auto_voltage_source_creation参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "指定如何确定电压源。对于xy、padcell或boundary格式是必需的。defpin - 指定电压源由电源引脚确定。padcell - 指定电压源由焊盘单元确定。xy - 指定电压源由x y坐标确定。您还可以在电压源的X,Y位置上指定PWL函数。boundary - 指定电压源位置将用于设计中的实例。xyiv - （格式说明中提及但未详细描述）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定要在其上生成电压源的通孔层。如果未指定此参数，电压源将在设计的顶层通孔层上生成。此参数与-auto_voltage_source_creation参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定电源网络的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-number_of_voltage_source",
+      "description": "指定要生成的电压源数量。您可以调整-tile或-number_of_voltage_source来减少创建的电压源数量。此参数与-auto_voltage_source_creation参数一起指定。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-file",
+      "description": "指定包含电压源信息的文件名。对于-format defpin选项不是必需的。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-region",
+      "description": "在指定区域内生成电压源。如果未指定此参数，软件将使用整个设计/版图大小作为区域。此参数与-auto_voltage_source_creation参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-short_pin_nodes",
+      "description": "指定是否将焊盘单元引脚上的所有接口节点短路到单个节点并为该节点创建电压源。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tile",
+      "description": "为自动创建电压源定义X和Y方向的瓦片数量。指定-tile后，区域（-region或默认设计区域）将根据给定的瓦片大小（x*y）进行垂直和水平划分。对于每个瓦片，将在最大通孔阵列的顶层金属上创建一个电压源。如果未指定-tile，软件将在用户指定的通孔层或设计的顶层通孔层上的所有通孔切割的顶层金属上创建电压源。您可以调整-tile或-number_of_voltage_source来减少创建的电压源数量。此参数与-auto_voltage_source_creation参数一起指定。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

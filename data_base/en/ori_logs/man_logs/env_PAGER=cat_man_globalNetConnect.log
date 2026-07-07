@@ -1,0 +1,330 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+globalNetConnect(25.10)                                globalNetConnect(25.10)
+
+Name
+       globalNetConnect  -  The  globalNetConnect  command connects PG pins or
+       1'b0/1'b1 pins to the specified global net, which is either a power  or
+       ground net
+
+Syntax
+       globalNetConnect
+
+       [-help]
+
+       <globalNetName >
+
+       {{-type pgpin -pin <pinNamePattern> |
+
+       -type tiehi [-pin <pinNamePattern> ] |
+
+       -type tielo [-pin <pinNamePattern> ]}
+
+       {{-singleInstance | -singleInst | -sinst} <instName> |
+
+       [{-instanceBasename | -instBasename} <instBasenamePattern> ]
+
+       [{-hierarchicalInstance | -hierInst | -module} <hierInstName> |
+
+       -region <llx> <lly> <urx> <ury> |
+
+       -powerDomain powerDomainName | -all]} |
+
+       -type net -net <netBasenamePattern >
+
+       [{-hierarchicalInstance | -hierInst | -module} <hierInstName> |
+
+       -powerDomain powerDomainName | -all]}
+
+       [-override]
+
+       [-verbose]
+
+       [-autoTie]
+
+       [-disconnect]
+
+       [-netlistOverride]
+
+       [-nonHierarchical]
+
+       The  globalNetConnect command connects PG pins or 1'b0/1'b1 pins to the
+       specified global net, which is either a power or ground  net.  You  can
+       use the command in the following three scenarios:
+
+              * Connecting pins in a single instance.
+
+              * Connecting pins in multiple instances.
+
+              * Moving connections on a net to the specified global net, which
+                is typically higher in the design hierarchy.
+
+       Use the following command to report global nets of the complete design:
+
+       writeFplanScript -sections {globalNetConnect}
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each globalNetConnect parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man globalNetConnect
+
+       -all   Applies  the  global  net connection to all instances in the de-
+              sign.
+
+       -autoTie
+              Support supply/ground sensitivity. In a command for PG-pin  con-
+              nections,  the  option can only be specified together with -type
+              pgpin.
+
+              In addition to connecting power pin VDD to global  net  VDD  for
+              each  instance,  all  the  instance  tie-high pins whose related
+              power pin (as specified in CPF, .lib, or LEF) is VDD, will auto-
+              matically be tied to global net VDD. For example,
+
+              globalNetConnect VDD -type pgpin -pin VDD -autoTie
+
+       -disconnect
+              Disconnect p/g  net  connection.  The  option  works  only  with
+              -sinst, -type pgpin and -pin options.
+
+              Note: This option is mutually exclusive with globalNetName argu-
+              ment.
+
+       <globalNetName>
+              Specifies the name of the global net to which the specified pins
+              are connected.
+
+       -hierarchicalInstance <hierInstName>
+              Applies  the global net connection to instances under <hierInst-
+              Name>. Only the pins of the instances or the  local  nets  under
+              the specified module or hierarchical instance are connected.
+
+              This parameter is mutually exclusive with the -region parameter.
+
+              Note:  You  can  also  use the following spelling variations for
+              this argument:
+
+              * -hierInst
+
+              * -module
+
+       -instanceBasename <instBasenamePattern>
+              Specifies the names of leaf instances for which pins are  to  be
+              connected  to the global net. You can use the wildcard (*) char-
+              acter to specify a pattern of instance  basenames.  An  instance
+              basename  cannot  contain  the  "/" character. This parameter is
+              used in conjunction with the -type pgpin parameter, or with  the
+              -type tiehi or -type tielo parameters.
+
+              Note: You can also use the -instBasename spelling variations for
+              this argument.
+
+       -net <netBaseName>
+              Specifies  the  basenames  of nets to connect to the global net.
+              Use the wildcard (*) character to specify a pattern of net base-
+              names. A net basename cannot contain the "/" character. This pa-
+              rameter is used in conjunction with the -type net parameter.
+
+              Note: When this parameter is used without  the  -hierarchicalIn-
+              stance  parameter,  the  globalNetConnect  command  uses the top
+              hinst (top Verilog module), by default.
+
+       -netlistOverride
+              Overrides previous global net connections. The option is similar
+              to the option -override. However, in addition to overriding pre-
+              vious global net connections,  -netlistOverride  also  overrides
+              netlist-specified  P/G-pin  connections if applicable, which the
+              option -override can't do.
+
+       -nonHierarchical
+              Connections are made only for instances in the specified hierar-
+              chical instance, and not those in  its  descendant  hierarchical
+              instances. The option is of type boolean and is optional.
+
+       -override
+              Specifies  that  the  values that used with the globalNetConnect
+              command override global net connection values that have been set
+              previously.
+
+       -pin <pinNamePattern>
+              Specifies the pins to connect to the global net. You can use the
+              wildcard (*) character to specify a pattern of pin  names.  This
+              parameter is used in conjunction with the -type pgpin parameter,
+              or optionally with the -type tiehi or -type  tielo parameters.
+
+       -powerDomain <powerDomainName>
+              Applies the global net connection to instances within the speci-
+              fied power domain.
+
+       -region <llx lly urx ury>
+              Applies the global net connection to instances inside the speci-
+              fied  region. The region is specified by the x and y coordinates
+              of the lower left and upper right boundary.  This  parameter  is
+              mutually exclusive with the -module parameter.
+
+       -singleInstance <instName>
+              Connects pins in a single instance to a global net. <->singleIn-
+              stance is the instance's complete hierarchical name, without any
+              wildcard  characters.  Use  this  parameter at the Floorplanning
+              stage, while saving the FPlan file (or saveDesign).
+
+              The -singleInstance global net connect rule information  is  not
+              saved in the *.fp file, but in the *.pg file.
+
+              Note:  You  can  also  use the following spelling variations for
+              this argument:
+
+              * -sinst
+
+              * -singleInst
+
+       -type {net | pgpin | tielo | tiehi}
+              Specifies the type of connection to be made to the  global  net.
+              Use one of the following values:
+
+              * net: Specifies that the pins connected to nets listed with the
+                -net parameter are to be moved to the specified global net.
+
+              * pgpin:  Specifies  that  the power and ground pins listed with
+                the -pin parameter are to be connected.
+
+              * tielo: Specifies that tie low (1'b0) pins be connected. Before
+                tielo net is assigned, no actual net is connected to  the  tie
+                low pin.
+
+              * tiehi:  Specifies  that tie high (1'b1) pins be connected. Be-
+                fore tiehi net is assigned, no actual net is connected to  the
+                tie high pin.
+
+       -verbose
+              Specifies  that  connection  statistics and warning messages are
+              displayed in the console. This parameter can  be  useful  during
+              troubleshooting.
+
+Examples
+              * The following command connects the VSS pin of all instances to
+                VSS:
+
+                globalNetConnect VSS -type pgpin -pin VSS
+
+              * The  following  command moves all vdd! connections under u1/u2
+                to VDD:
+
+                globalNetConnect VDD -type net -hierInst u1/u2 -net vdd!
+
+                Note: You can also ignore polarity checking during  globalNet-
+                Connect  and  CPF/IEEE1801 operations through the global vari-
+                able init_ignore_pgpin_polarity_check that  allows  USE  POWER
+                pin to be connected to a USE GROUND net (or vice versa).
+
+              * The  following example shows how the power and ground nets are
+                defined in the .globals file, and while importing  the  design
+                data, the same .globals file is loaded:
+
+                set init_pwr_net {VDD PWRD PWRA PWRIO}
+
+                set init_gnd_net {VSS GNDD GNDA GNDIO}
+
+              * The following example presents how to remove all the power and
+                ground net connections from the Innovus database:
+
+                clearGlobalNets
+
+                #  For  instances or standard cells where LEF pin name is vdd!
+                for power and gnd! for ground,  the  net  names  VDD  and  GND
+                should have been already defined as power and ground net.
+
+                globalNetConnect VDD -type pgpin -pin vdd! -all
+
+                globalNetConnect GND -type pgpin -pin gnd! -all
+
+                #  For  tie pin connections to power and ground, the net names
+                VDD and VSS should have been  already  defined  as  power  and
+                ground  nets.In  below case, tiehi/tielo pins are directly as-
+                signed to the VDD/VSS nets.
+
+                globalNetConnect VDD -type tiehi
+
+                globalNetConnect VSS -type tielo
+
+                Note: The addTieHiLo command overrides the above  direct  con-
+                nection.
+
+                #  For  macro  single instance U1/rom1 as example making power
+                and ground pin connections to power and ground  net,  the  net
+                names PWRD GNDD PWRA and GNDA should have been already defined
+                as power and ground nets.
+
+                globalNetConnect  PWRD  -type pgpin -pin DIGPWR -sinst U1/rom1
+                -override
+
+                globalNetConnect GNDD -type pgpin -pin DIGGRND -sinst  U1/rom1
+                -override
+
+                globalNetConnect  GNDA  -type  pgpin  -pin AGND -sinst U1/rom1
+                -override
+
+                globalNetConnect PWRA -type pgpin  -pin  AVDD  -sinst  U1/rom1
+                -override
+
+                globalNetConnect  GNDA  -type  pgpin  -pin AVSS -sinst U1/rom1
+                -override
+
+                # For IO PAD single instance iopad_ring/RT5 making  power  and
+                ground  pin connections to power and ground net, the net names
+                PWRD GNDD PWRIO and GNDIO should have been already defined  as
+                power and ground nets.
+
+                globalNetConnect    PWRD   -type   pgpin   -pin   VDD   -sinst
+                iopad_ring/RT5 -override
+
+                globalNetConnect   GNDD   -type   pgpin   -pin   VSS    -sinst
+                iopad_ring/RT5 -override
+
+                globalNetConnect   PWRIO   -type   pgpin   -pin  VDDIO  -sinst
+                iopad_ring/RT5 -override
+
+                globalNetConnect  GNDIO  -type   pgpin   -pin   VSSIO   -sinst
+                iopad_ring/RT5 -override
+
+              * The following example presents how to disconnect and reconnect
+                the  existing  glbalNetConnection for specific instances (such
+                as         eng/ext_mgnt/dram1_sram/s1ram/sram_100          and
+                eng/ext_mgmt/vpp_sram/sram/sram_070):
+
+                globalNetConnect  -disconnect  -pin VDD -type pgpin -singleIn-
+                stance eng/ext_mgnt/dram1_sram/s1ram/sram_100
+
+                globalNetConnect VDD_BLOCK -pin  VDD  -type  pgpin  -singleIn-
+                stance engine/ext_mgnt/dram1_sram/s1ram/sram_100
+
+                globalNetConnect  -disconnect  -pin VDD -type pgpin -singleIn-
+                stance eng/ext_mgmt/vpp_sram/sram/sram_070
+
+                globalNetConnect VDD_BLOCK -pin  VDD  -type  pgpin  -singleIn-
+                stance eng/ext_mgmt/vpp_sram/sram/sram_070
+
+              * The  following  commands  connect  VDD  pins of instances that
+                match Module_LVT/p* to VDDL, VDD pins of instances that  match
+                Module_HVT/r*  to  VDDH,  and VDD pins of instances that match
+                Module_RVT/* to VDDR. (note that it is needed to specify hier-
+                archical instance name to -module, and not module name):
+
+                globalNetConnect VDDL -type pgpin -pin  VDD  -instBasename  p*
+                -module Module_LVT -verbose
+
+                globalNetConnect  VDDH  -type pgpin -pin VDD -instinstBasename
+                r* -module Module_HVT -verbose
+
+                globalNetConnect VDDR -type pgpin -pin VDD -module  Module_RVT
+                -verbose
+
+Related Information
+              * writeFplanScript
+
+              * Power Planning and Routing chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025    globalNetConnect(25.10)

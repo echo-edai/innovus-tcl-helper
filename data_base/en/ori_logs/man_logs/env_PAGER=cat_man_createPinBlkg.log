@@ -1,0 +1,179 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPinBlkg(25.10)                                      createPinBlkg(25.10)
+
+Name
+       createPinBlkg - Creates a pin blockage for a module
+
+Syntax
+       createPinBlkg
+
+       [-help] [-cell  <cell_name>] [-layer {<layer_id_list>}]
+
+       {  -area  <{x1  y1 x2 y2>} | [-edge <edge_number> [[-offset_start <dis-
+       tance>] [-offset_end <distance>]]] |
+
+       [-abutted_master_clone_channel_access_only     [-feedthru_blockage_file
+       <file_name>]] }
+
+       [ -name <blockage_name> [ -includePinPatterns {<pin_name_pattern_list>}
+       | -excludePinPatterns {<pin_name_pattern_list>} ]]
+
+       Creates  a  pin  blockage for a module. You can run this command on the
+       top-level module also. You can use this command during partition floor-
+       planning.
+
+Parameters
+       -abutted_master_clone_channel_access_only
+              Creates pin blockages on abutted  edges  of  master-clones  that
+              abut to its parent or other master-clones.
+
+              Data_type: bool, optional
+
+       -area <x1 y1 x2 y2>
+              Specifies  the lower left x coordinate, lower left y coordinate,
+              upper right x coordinate, and upper right y  coordinate  respec-
+              tively of the blockage area.
+
+              Note:  The values of x1, y1, x2, and y2 are relative to the top-
+              level coordinates.
+
+              Data_type: box, optional
+
+       -cell <cell_name>
+              Specifies the module for which the pin blockage will be created.
+
+              * If -cell option is not used, then the blockage applies to top-
+                level pins only.
+
+              * If -cell option is used,  then  only,  the  Partition/Blackbox
+                pins will be considered.
+
+              Data_type: string, optional
+
+       -edge <edge_number>
+              Specifies  the  integer  value  where edge numbering starts from
+              lower-left corner of a partition clock-wise. Edge 0 is the  edge
+              that has the smallest y value.
+
+              Data_type: int, optional
+
+       -excludePinPatterns {<pin_name_pattern_list>}
+              Specifies the pin-list on which the pin-blockage is not applica-
+              ble. Pins which are specified in this list can be placed in this
+              area legally.
+
+              Note:  The  -excludePinPatterns  and -includePinPatterns options
+              are mutually exclusive and cannot be used in a  single  command.
+              Both  these options require the use of the -name option to spec-
+              ify the name of the partition pin blockage.
+
+              Data_type: string, optional
+
+       -feedthru_blockage_file <file_name>
+              Outputs a file with coordinates of blocked edges for pin assign-
+              ment transformed into feedthru blockage_file format.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each createPinBlkg parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createPinBlkg
+
+       -includePinPatterns {<pin_name_pattern_list>}
+              Specifies  the pin-list on which the pin-blockage is applicable.
+              All other pins can be placed in this area legally.
+
+              Note: The -excludePinPatterns  and  -includePinPatterns  options
+              are  mutually  exclusive and cannot be used in a single command.
+              Both these options require the use of the -name option to  spec-
+              ify the name of the partition pin blockage.
+
+              Data_type: string, optional
+
+       -layer {<layer_id_list>}
+              Specifies  the  metal layer(s) for which pins are not to be cre-
+              ated.
+
+              Note: Layers can be specified using the LEF layer names or layer
+              ID numbers.
+
+              Default: If no layer number is specified, all metal  layers  are
+              blocked.
+
+              Data_type: string, optional
+
+       -name <blockage_name>
+              Specifies the name of the partition pin blockage.
+
+              Default: By default, the name is defPtnPinBlkName.
+
+              Data_type: string, optional
+
+       -offset_end <distance>
+              Specifies  the  distance,  in microns, from the ending corner of
+              the edge.
+
+              Minimum  Value: 0
+
+              Maximum Value: 65535
+
+              Data_type: float, optional
+
+       -offset_start <distance>
+              Specifies the distance, in microns, from the starting corner  of
+              the edge.
+
+              Minimum  Value: 0
+
+              Maximum Value: 65535
+
+              Data_type: float, optional
+
+Examples
+              * The following command creates a pin blockage named pinBlkg1 on
+                the  edge  0  of  layers  Metal5  and  Metal7  for  the module
+                PtnBlock1.
+
+                createPinBlkg -edge 0 -name pinBlkg1  -cell  PtnBlock1  -layer
+                {Metal5 Metal7}
+
+              * The following command creates a pin blockage named pinBlkg2 on
+                layers  Metal5 and Metal7 for the module PtnBlock2. The block-
+                age area is bounded by the lower-left coordinates 100, 200 and
+                the upper-right coordinates 300, 400.
+
+                createPinBlkg -area 100  200  300  400  -name  pinBlkg2  -cell
+                PtnBlock2 -layer {Metal5 Metal7}
+
+              *
+
+                The  following  command  creates a pin blockage named pinBlkg3
+                that only applies to partition pins that  match  pattern1  and
+                pattern2.  All other partition pins can be placed in this area
+                legally.
+
+                createPinBlkg  -includePinPatterns   {*pattern1*   *pattern2*}
+                -cell PtnBlock3 -area $area -name pinBlkg3
+
+              * The  following  command  creates a pin blockage named pinBlkg4
+                that only applies to all  partition  pins  except  those  that
+                match pattern1 and pattern2. Only pins that match pattern1 and
+                pattern2 can be placed at this edge legally.
+
+                createPinBlkg   -excludePinPatterns   {*pattern1*  *pattern2*}
+                -cell PtnBlock4 -edge 0 -name pinBlkg4
+
+Related Information
+              * deletePinBlkg
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Setting Pin Constraints
+
+                * Pin Blockage
+
+                           Fri Apr 04 01:25:37 2025       createPinBlkg(25.10)

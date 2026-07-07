@@ -1,0 +1,274 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setMultiCpuUsage(25.10)                                setMultiCpuUsage(25.10)
+
+Name
+       setMultiCpuUsage  -  Specifies  the number of threads to use for multi-
+       threading, or the maximum number of computers to  use  for  distributed
+       processing,  or  the  maximum  number  of  computers  and the number of
+       threads to use for Superthreading
+
+Syntax
+       setMultiCpuUsage
+
+       [-help]
+
+       [-acquireLicense <integer>]
+
+       [-autoPageFaultMonitor {0 1 2 3}]
+
+       [-cpuPerRemoteHost <integer>]
+
+       [-keepLicense {true false}]
+
+       [-licenseList <string>]
+
+       [-localCpu <string>]
+
+       [-releaseLicense]
+
+       [-remoteHost <integer>]
+
+       [-reset]
+
+       [-threadInfo {0 1 2}]
+
+       [-verbose]
+
+       Specifies the number of threads to use for multi-threading, or the max-
+       imum number of computers to use for distributed processing, or the max-
+       imum number of computers and the number  of  threads  to  use  for  Su-
+       perthreading. Optionally, reports usage information.
+
+       This  command  is required for multi-threading, distributed processing,
+       and Superthreading.
+
+       The setMultiCpuUsage command enables  multi-threaded  timing  reporting
+       under the following conditions:
+
+              * timing_report_group_based_mode global variable is set to true.
+                If  there  are multiple paths with the same slack then the se-
+                lection can change on multiple runs. This may result  in  some
+                changes in the report_timing output.
+
+              * report_analysis_coverage command is in non-verbose mode.
+
+              * check_timing -include clock_crossing parameter is specified.
+
+              *
+
+                -set_table_style -no_frame_fix_width parameter is specified.
+
+Parameters
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       -acquireLicense <integer>
+              Acquires  licenses  to  enable the specified number of CPUs. For
+              example, if you specify -acquireLicense 5, the  software  checks
+              out enough licenses to enable 5 CPUs.
+
+              After  the licenses are checked out, they can be used for multi-
+              threading, distributed processing, or super-threading.
+
+       -autoPageFaultMonitor {0 | 1 | 2 | 3}
+              Specifies to set a warning rank for performance issues caused by
+              major page faults.
+
+              The parameter supports the following values:
+
+              * 0 - specifies to disable the reporting of major page faults.
+
+              * 1 - specifies to set the warning rank as 1. This means  PF/to-
+                tal PF > 0.8, b > 10, and wa > 85%
+
+              * 2  - specifies to set the warning rank as 2. This means PF/to-
+                tal PF > 0.5, b > 5, and wa > 65%
+
+              * 3 - specifies to set the warning rank as 3. This means  PF/to-
+                tal PF > 0.2, b > 1, and wa > 40%
+
+              where  PF  is the number of major page faults from the software,
+              total PF is the total number of major page  faults  in  the  ma-
+              chine,  b  is  the  number  of blocked processors, and wa is CPU
+              waiting time.
+
+       -cpuPerRemoteHost <integer>
+              Specifies the number of CPUs used by clients  for  multi-thread-
+              ing.
+
+              Note:  For  super threading, you must use this parameter in con-
+              junction with the -remoteHost parameter.
+
+              Default: 1
+
+       -keepLicense {true | false}
+              Specifies whether to keep the acquired multiple CPU-licenses un-
+              til the current session ends.
+
+              Specify this parameter before running any commands that  require
+              multiple-CPU  applications. To release all multiple-CPU licenses
+              immediately, use the -releaseLicense option.
+
+              Default: true
+
+       -licenseList {tpsmp}
+              Specifies the list or order of licenses the software should  use
+              for checking out licenses during multiple-cpu processing.
+
+              The  parameter  does  not support an empty license list {}. This
+              parameter allows the tpsmp option.
+
+       -localCpu <string>
+              Specifies the number of CPUs on a local machine. When  the  -lo-
+              calcpu  parameter is set to 1 (default), the multi-threaded tim-
+              ing propagation mode is enabled. Also, both CPU  multi-threading
+              and distributed process are enabled.
+
+              The set_multi_cpu_usage -localCpu command automatically controls
+              the total number of threads used up to the specified number. The
+              number  of  specified  threads cannot be more than the number of
+              CPUs available in the local computer. Consider a computer having
+              8 CPUs, then the following command will issue a warning that the
+              number of specified local CPUs is greater than the actual number
+              of CPUs available:
+
+              set_multi_cpu_usage -localCpu 10
+
+              The local CPU count can be the maximum value that  is  shown  as
+              "processors" on the system under "/proc/cpuinfo". This value can
+              be  obtained  by  running  the  "checkSysConf"  utility  in  the
+              "tools/bin" folder.
+
+              $> tools/bin/checkSysConf
+
+              ============== checkSysConf: Version 3.53 ====================
+
+              OS Version .............: Red Hat Enterprise  Linux  Workstation
+              release 7.6 (Maipo)
+
+              Kernel Version .........: 3.10.0-957.5.1.el7.x86_64
+
+              Hardware Type ..........: x86_64
+
+              Memory .................: 2063415 Megabyte
+
+              CPU  model  ..............:  Intel(R)  Xeon(R)  Gold  6254 CPU @
+              3.10GHz
+
+              No. of CPUs ............: 72
+
+              Total Swap Space........: 131072 Megabyte
+
+              ==================================
+
+              $> cat /proc/cpuinfo | grep "processor" | tail -1 | awk  -F  ":"
+              '{print $2 + 1}'
+
+              72
+
+              Default: 1
+
+       -releaseLicense
+              Releases  all  multiple-CPU  license(s) immediately. By default,
+              the software holds multiple-CPU licenses until the  end  of  the
+              current session.
+
+              To specify that the software release multiple-CPU licenses after
+              every multiple-CPU command runs, use -keepLicense.
+
+       -remoteHost <integer>
+              Specifies  the number of clients. This parameter is required for
+              distributed processing and super threading.
+
+              Default: 0
+
+       -reset Resets the specified parameters back to default values.
+
+       -threadInfo {0 | 1 | 2}
+              Reports usage information.
+
+              Default: 0
+
+              Specify one of the following values:
+
+              0: Does not write messages to the log file.
+
+              1: Writes the final message to the log file.
+
+              For example,
+
+              All threaded jobs finished (10  elapsed  sec:  0  processor  sec
+              (parent),  0  system  sec (parent), 0 processor sec (threads), 0
+              system sec (threads)).
+
+              2:  Writes  additional  starting/ending  information  for   each
+              thread.
+
+              For example,
+
+              Starting threaded job 1...
+
+              Starting threaded job 2...
+
+              Starting threaded job 3...
+
+              Ending  threaded job 2 (1 elapsed sec, 0 processor sec, 0 system
+              sec, 1.160M).
+
+              Ending threaded job 3 (2 elapsed sec, 0 processor sec, 0  system
+              sec, 0.895M).
+
+              Ending threaded job 1 (10 elapsed sec, 0 processor sec, 0 system
+              sec, 1.172M).
+
+              All  threaded  jobs  finished  (10  elapsed sec: 0 processor sec
+              (parent), 0 system sec (parent), 0 processor  sec  (threads),  0
+              system sec (threads)).
+
+       -verbose
+              Displays messages when changing the multiple-CPU settings.
+
+       Examples
+       To  run  global placement with the maximum number of 4 threads, specify
+       the following commands:
+
+       setMultiCpuUsage -localCpu 4
+
+       place_design
+
+       To run global placement with the maximum number of  available  threads,
+       specify the following commands:
+
+       setMultiCpuUsage -localCpu max
+
+       place_design
+
+       To  run  detailed  routing  with the NanoRoute router in Superthreading
+       mode with two machines and six threads, using an LSF queue, specify the
+       following commands:
+
+       setDistributeHost -lsf -queue myLSFqueue
+
+       setMultiCpuUsage -remoteHost 2 -cpuPerRemoteHost 6
+
+       detailRoute
+
+Related Information
+              * Accelerating the Design  Process  by  Multiple-CPU  Processing
+                chapter in the Innovus System User Guide
+
+              * Using  the NanoRoute Router chapter in the Innovus System User
+                Guide
+
+                     * Accelerating  Routing  with  Multi-Threading  and   Su-
+                       perthreading
+
+              * "Tools Menu" chapter in the Innovus System Menu Reference
+
+                     * Set Multiple CPU Usage
+
+              * checkMultiCpuUsage
+
+              * getMultiCpuUsage
+
+                           Fri Apr 04 01:25:37 2025    setMultiCpuUsage(25.10)

@@ -1,0 +1,93 @@
+{
+  "command": "legalizePin",
+  "is_cmd": true,
+  "summary": "将引脚从其现有位置移动到合法位置",
+  "description": "此命令用于将引脚从其现有位置移动到最近的合法位置。它会在以下情况下移动引脚：引脚与其他对象或引脚重叠（考虑的对象包括条带、过孔、馈通缓冲器、布线阻塞、引脚阻塞）、引脚违反引脚间距约束、引脚位于非首选层、非保留层或Metal1层、引脚不在布线轨道上、引脚不遵循角点掩码设置。该命令支持嵌套分区，并跨层次结构校正非法引脚的位置。它遵循网络权重并据此合法化引脚。注意：引脚相关命令（editPin、checkPinAssignment和legalizePins）在放置I/O或分区引脚时，不考虑常规导线来检查和纠正DRC违规和重叠。",
+  "usage": "legalizePin [-help] [-auto_pairing] [-ignore {pin_spacing pin_spacing_constraint pin_spacing_routeBlk pin_width pin_depth pin_layer pin_min_area pin_on_track pin_abutment pin_non_nbr_abutment clones pin_color}] [-internalPin] [-keepLayer] [-keepOrder] [-moveFixedPin] [-pin {<pinName>| <pinNameList>}] [-ptn <ptnName>] [-snapToBoundary] [-verbose] [-ptn <ptnName>| {-pin_file <fileName>[-exclude_ptn <ptnName>]}] [-pin_file <fileName>| -exclude_pin_file <fileName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个legalizePin参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto_pairing",
+      "description": "自动计算设计中引脚之间的通道宽度或距离，用于配对考虑。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore",
+      "description": "通过考虑忽略类型的类别来合法化引脚。",
+      "required": false,
+      "type": "enum+"
+    },
+    {
+      "name": "-internalPin",
+      "description": "通过将内部引脚移动到首选布线层上的最近轨道来合法化它们。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepLayer",
+      "description": "在合法化引脚时保持引脚层。如果引脚位于不允许的分区层列表中的层上，则报告错误且引脚不被合法化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepOrder",
+      "description": "在合法化引脚时保持引脚顺序，无论层如何。注意：此选项仅适用于栅栏上的引脚，不适用于内部引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-moveFixedPin",
+      "description": "如果使用此参数，具有Fixed状态的指定引脚也可以被移动。注意：未指定但具有Fixed状态的引脚不会被移动。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ptn",
+      "description": "指定要检查引脚的分区。如果分区不是顶层模块，则此参数是必需的。注意：legalizePin命令也可以解决与电源条带重叠的I/O引脚；在这种情况下，ptnName指定块级设计名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定命令应仅在指定的引脚上运行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_file",
+      "description": "在文件中指定分区的引脚列表。在引脚文件中，引脚和网络按特定格式指定。注意：在pin_file中指定引脚列表时，必须给出“Partition”关键字后跟分区或块的名称。如果不指定，则不执行任何操作。可以在同一个pin_file中指定多个分区。pin_file不支持引脚名称的总线或通配符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-snapToBoundary",
+      "description": "将内部分区引脚捕捉到边界并合法化它们。注意：-snapToBoundary参数不能与-internalPin一起使用，因为两者都作用于内部引脚且结果不同。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "报告所有现有的引脚违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_ptn",
+      "description": "指定引脚文件中要排除的分区列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_pin_file",
+      "description": "指定文件中要排除的分区引脚列表。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

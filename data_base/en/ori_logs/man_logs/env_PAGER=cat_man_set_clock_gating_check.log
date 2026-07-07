@@ -1,0 +1,170 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_clock_gating_check(25.10)                    set_clock_gating_check(25.10)
+
+Name
+       set_clock_gating_check  -  Specifies or overrides the default setup and
+       hold values for clock gating checks
+
+Syntax
+       set_clock_gating_check
+
+       [-help]
+
+       [<object_list>]
+
+       [-fall]
+
+       [-hold <hold_value>]
+
+       [-rise]
+
+       [-setup <setup_value>]
+
+       [-high | -low]
+
+       Specifies or overrides the default setup and hold values for clock gat-
+       ing checks.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -high | -low
+              Specifies that the non-controlling value of the clock is high or
+              low. Timing analysis performs the check on  the  non-controlling
+              value of the clock. By default, the software determines the non-
+              controlling value of the clock using information from the gate's
+              logic.  For  example,  for OR gates the non-controlling value is
+              low. For complex gates, such as XOR and MUX, the clock is  never
+              controlling  and  it  does not perform checks unless you specify
+              either the -high option or the -low option. The specified  value
+              takes  precedence  over the default values. This option can only
+              be used with pins or instances.
+
+              Note: The clock pin value is controlling if it causes  the  gate
+              output to be a constant (0 or 1).
+
+       -hold hold_value
+              Specifies the hold value. The default is 0.0.
+
+       <object_list>
+              Specifies  a  list  of clocks, instances, or pins. If a clock is
+              specified, the check applies to all the clock gating gates  dri-
+              ven  by  this  clock. If an instance is specified, the check ap-
+              plies to all input pins of the instance.  If  the  <object_list>
+              argument  is not specified, the clock gating check is applied to
+              the current design.
+
+              Note: The SDC set_clock_gating_check asserts checks on ICG  (In-
+              tegrated  Clock  Gated) cell only if it is applied on either the
+              cell itself or pins. It does not assert checks on ICG  cells  if
+              set_clock_gating_check is applied on a design or clock object.
+
+       -rise | -fall
+              Applies  the  specified  setup (or hold) value to the rising (or
+              falling) signals on the specified pins. If the clock  is  speci-
+              fied  or  the <object_list> variable is not specified, the value
+              applies to rising or falling, setup or hold. If  neither  option
+              is specified, the default is both rising and falling.
+
+       -setup setup_value
+              Specifies the setup value. The default is 0.0.
+
+       Note:  The  clock  gating  constraint is not propagated along the clock
+       tree.
+
+       The setup check is performed with respect to the edge of the clock sig-
+       nal that changes the state of the clock pin from  controlling  to  non-
+       controlling.  For  example,  for AND and NAND gates, the setup check is
+       performed with respect to the rising edge of the clock  input.  For  OR
+       and  NOR  gates,  the  setup check is performed with respect to falling
+       edge of the clock input.
+
+       The hold check is performed with respect to the edge of the clock  sig-
+       nal  that  changes  the  state of the clock pin from non-controlling to
+       controlling. For example, for AND and NAND gates,  the  hold  check  is
+       performed  with  respect to the falling edge of the clock input. For OR
+       and NOR gates, the hold check is performed with respect to rising  edge
+       of the clock input.
+
+       If  the gate logic in unknown, setup and hold checks are performed with
+       respect to both the rising edge and the falling edge of the clock  sig-
+       nal and the timing analyzer uses the worst case values.
+
+Priority Rules for Determining Setup or Hold Values
+       Timing  analysis  uses  the  following  priority rules to determine the
+       setup (or hold) value to use for a particular clock gating check:
+
+              *
+                 Use the clock gating check assertion on the data  pin  if  it
+                exists
+
+              *
+                 Otherwise,  use the clock gating check assertion on the clock
+                pin if it exists
+
+              *
+                 Otherwise, use the clock gating check assertion on the  clock
+                waveform for the clock pin if it exists
+
+              *
+                 Otherwise,  use the global clock gating check assertion if it
+                exists
+
+              *
+                 If no clock gating check assertion is present,  use  the  de-
+                fault setup (or hold) value of 0.0.
+
+       These rules are demonstrated in the examples below.
+
+       Note:  This  command has no effect on a clock gating check defined as a
+       non-sequential setup or hold check  in  the  library  and  reported  as
+       ClockGatingSetup or ClockGatingHold.
+
+Examples
+              * The  following  example  shows the priority rules for multiple
+                clock gating check constraints for the gated  clock  shown  in
+                figure below.
+
+       Figure: Gated Clock
+
+       Example: Tcl Script for set_clock_gating_check
+
+       create_clock -name CLK1 -period 12 -waveform {0 6} clk
+
+       # clock-gating timing check assertions:
+
+       # On ideal clock waveform
+
+       set_clock_gating_check -setup 0.44 [get_clocks {CLK1}]
+
+       # On clock pin
+
+       set_clock_gating_check -hold 0.11 [get_pins {g1/A}]
+
+       # On data pin
+
+       set_clock_gating_check -setup 0.66 -rise [get_pins {g1/B}]
+
+       set_clock_gating_check -hold 0.22 -fall [get_pins {g1/B}]
+
+       Given  the  previous constraints, the following timing margins are used
+       for slack calculation:
+
+                     * SETUP g1/B rise: 0.66 -- from  assertion  on  data  pin
+                       g1/B (rule 1)
+
+                     * SETUP  g1/B fall: 0.44 -- from assertion on ideal clock
+                       CLK1 (rule 3)
+
+                     * HOLD g1/B rise: 0.11 -- from  assertion  on  clock  pin
+                       g1/A (rule 2)
+
+                     * HOLD g1/B fall: 0.22 -- from assertion on data pin g1/B
+                       (rule 1)
+
+Related Information
+              * create_clock
+
+              * reset_clock_gating_check
+
+                           Fri Apr 04 01:25:37 202s5et_clock_gating_check(25.10)

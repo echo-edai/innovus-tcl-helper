@@ -1,0 +1,57 @@
+{
+  "command": "create_bump_cluster",
+  "is_cmd": true,
+  "summary": "根据区域、层、间距和尺寸创建凸点簇",
+  "description": "根据指定的区域、金属层、间距和尺寸创建凸点簇。fcroute 可用于对凸点簇进行布线并连接到 IO 焊盘或探测焊盘，支持信号和电源/地网络。创建的簇由凸点层中具有单个引脚的专用导线定义，并具有子类名称 (bump_cluster_%d)，该簇是凸点层上的矩形金属。在以下情况下工具会报错：创建的凸点簇可能导致 DRC 违规；或凸点簇区域中存在不同的凸点单元。在布线前需要检查凸点簇，可以使用 editDelete -subclass 删除簇，或使用 editSelect -subclass 选择簇，也可以通过 GUI 进行删除或选择。",
+  "usage": "create_bump_cluster [-help] [-area {<x1 y1 x2 y2>}] [-enclosure {<a b>}] -layer <name> -pitch {<x y>} -size {<n m>} [[-type {signal | power | ground}] | [-nets {<net>+}]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "限制需要分组为凸点簇的凸点区域。工具在此区域内从左到右、从下到上创建凸点簇。默认使用整个版图区域。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-enclosure",
+      "description": "指定从凸点阵列边缘到簇金属边缘的距离，x方向为a，y方向为b。a和b在所有凸点簇组中统一。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-layer",
+      "description": "指定簇的金属层。默认层是凸点层。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-pitch",
+      "description": "指定簇中凸点的x间距和y间距。只有具有指定凸点间距的凸点才能分组到凸点簇中。",
+      "required": true,
+      "type": "point"
+    },
+    {
+      "name": "-size",
+      "description": "指定簇的n*m尺寸。一个簇中有n*m个凸点。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要包含在簇中的凸点的网络。只有具有相同网络的凸点才能分组到特定簇中。可以使用-type参数指定簇网络的类型。如果未指定-type和-nets，则所有信号和电源/地网络都被视为凸点簇网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-type",
+      "description": "指定凸点簇网络的类型。如果未指定-type和-nets，则所有信号和电源/地网络都被视为凸点簇网络。",
+      "required": false,
+      "type": "enum"
+    }
+  ]
+}

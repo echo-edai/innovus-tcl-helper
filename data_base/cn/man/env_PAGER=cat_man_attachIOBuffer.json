@@ -1,0 +1,87 @@
+{
+  "command": "attachIOBuffer",
+  "is_cmd": true,
+  "summary": "为模块的I/O引脚添加缓冲器/反相器并将其放置在I/O引脚附近",
+  "description": "该命令用于为模块的输入/输出引脚添加缓冲器或反相器，并将这些新增的单元放置在靠近I/O引脚的位置。当顶层输入（输出）连接到非默认电源域时，所添加的缓冲器会与目标（源）单元的层次结构匹配，并放置在该电源域内部。此命令支持电源域感知功能。若网表中包含电平转换器，建议在运行此命令前先加载转换器表以利用此特性。通过 -port 和 -suffix 参数，可以控制 attachIOBuffer 命令所创建的实例和网络名称。此命令可在加载设计后使用，在运行 place_design 前可使用 -status fixed 参数。",
+  "usage": "attachIOBuffer [-help] [-baseName <baseName>] [-dishonorUpfDomainBoundaryCheckForIsoLsStrategy] [-excNetFile <excNetFileName>] [-excludeClockNet] [-port] [-prePlace] [-selNetFile <selNetFileName>] [-skipRefinePlace] [-suffix <suffixName>] {[-in <cellNameList>] [-out <cellNameList>]} [-status {placed fixed softfixed}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-baseName",
+      "description": "指定新网络的基名称。对于具有相同基名称的网络，应考虑层次索引并加1。例如，如果有多个以 abc 为基名称的网络，最后一个为 abc98，那么第一个具有相同基名称的新网络将是 abc99。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dishonorUpfDomainBoundaryCheckForIsoLsStrategy",
+      "description": "忽略对隔离/电平转换器实例的电源域边界检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excNetFile",
+      "description": "指定包含要从缓冲器附加操作中排除的网络名称的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeClockNet",
+      "description": "不对时钟网络连接缓冲器。必须在运行 attachIOBuffer 之前，使用 timeDesign 命令触发时钟网络标记。要查询给定时钟网络是否被标记，请使用 dbIsNetClock <netName>。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port",
+      "description": "将端口名称前置到所创建的网络或实例名称前。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-prePlace",
+      "description": "指定合法放置连接到端口的反相器，并保持另一个反相器未放置状态。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selNetFile",
+      "description": "指定包含要包含在缓冲器附加操作中的网络名称的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skipRefinePlace",
+      "description": "跳过对新缓冲器/反相器的合法化（稍后需要运行增量布局以使其合法化）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-suffix",
+      "description": "将字符串附加到所创建的网络或实例名称后。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-in",
+      "description": "指定输入缓冲器的单元名称或单元名称列表。如果指定的单元是反相器，则 attachIOBuffer 命令会插入一对反相器。注意：如果同时指定了 -in 和 -out 参数，输入和输出引脚都将附加缓冲器/反相器。如果只指定了 -in（或 -out）选项，则只有输入（或输出）引脚会附加缓冲器。如果指定了单元列表，它将插入第一个符合 CPF 规范的单元。建议在列表中先给出非AO缓冲器/反相器，再给出AO缓冲器/反相器。",
+      "required": false,
+      "type": "cellNameList"
+    },
+    {
+      "name": "-out",
+      "description": "指定输出缓冲器的单元名称或单元名称列表。如果指定的单元是反相器，则 attachIOBuffer 命令会插入一对反相器。注意：如果同时指定了 -in 和 -out 参数，输入和输出引脚都将附加缓冲器/反相器。如果只指定了 -in（或 -out）选项，则只有输入（或输出）引脚会附加缓冲器。如果指定了单元列表，它将插入第一个符合 CPF 规范的单元。建议在列表中先给出非AO缓冲器/反相器，再给出AO缓冲器/反相器。",
+      "required": false,
+      "type": "cellNameList"
+    },
+    {
+      "name": "-status",
+      "description": "指定所添加缓冲器的布局状态为 placed/fixed/softfixed。",
+      "required": false,
+      "type": "enum"
+    }
+  ]
+}

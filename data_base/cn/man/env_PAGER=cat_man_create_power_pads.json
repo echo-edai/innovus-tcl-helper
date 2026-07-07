@@ -1,0 +1,147 @@
+{
+  "command": "create_power_pads",
+  "is_cmd": true,
+  "summary": "返回设计中直流电源列表的命令",
+  "description": "该命令用于从设计中获取直流电源列表。直流电源在LEF文件中被标识为CLASS PAD POWER，或在DEF文件中被标识为PIN且USE属性为POWER/GROUND。如果一个端口形状连接到N条导线，则会为该端口形状报告N个直流电源。用户可以通过三种方法之一将电压源提取到数据库中：提取所有电压源；在指定层、指定区域内，按指定的x/y间距提取电压源（可使用-snap_distance参数将电压源对齐到电源条带上）；或为指定的单元/单元引脚/实例/实例引脚提取电压源。提取的电压源可以在保存到电压源文件之前进行编辑。该命令支持TSV设计的层次化IR压降分析，当从LEF文件提取电压源时，不仅会搜索连接到指定电源/地网络的焊盘引脚，还会获取连接到该网络的引脚中定义的嵌入式凸块TSV属性。",
+  "usage": "create_power_pads [-append_to_vsrc_file] [-auto_fetch] [-cell {<cell_list>} ] [-cell_pin {{<cellname1> <pinname1}>...{<cellnamen> <pinnamen>}+} ] [-clear] [-display] [-format {padcell xy tsv}] [-honor_pin_connection] [-instance {<inst_list>} ] [-instance_pin {{<instname1> <pinname1}>...{<instnamen> <pinnamen>}+} ] [-layer {<layername>}] [-net <netname>] [-package_resistance <value> ] [-package_capacitance <value> ] [-package_inductance <value> ] [-region {<x1> <y1> <x2> <y2>}] [-region_pitch {<xpitch> <ypitch>}] [-snap_distance { true|false }] [-vsrc_file <vsrc_filename>] [[-add | -delete] -loc {x y}] [-list]",
+  "options": [
+    {
+      "name": "-append_to_vsrc_file",
+      "description": "将提取的电压源追加到现有的电压源文件中。可用于增量模式提取电压源。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto_fetch",
+      "description": "指定提取所有电压源。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定用于确定电压源的单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_pin",
+      "description": "指定用于确定电压源的单元及其引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clear",
+      "description": "清除在“编辑焊盘位置”表单中指定的直流电源的显示。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delete",
+      "description": "从内存中删除电压源的位置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-display",
+      "description": "从指定文件加载并显示焊盘位置数据。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-format",
+      "description": "指定保存的焊盘位置文件的格式。选项有Pad File (VoltageStorm)、XY File (xy坐标)和TSV。可以为电压源（VDD和VSS）创建并保存具有唯一名称的电压源位置文件。默认值为xy。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honor_pin_connection",
+      "description": "从电源焊盘提取电压源位置时，尊重引脚导线连接。指定此参数后，只有有导线连接的引脚才会作为电压源输出。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instance",
+      "description": "指定用于确定电压源的实例列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance_pin",
+      "description": "指定用于确定电压源的实例及其引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定LEF中要在其上生成电压源的工艺层。当与-region和-region_pitch参数一起使用时，此处设置的层是提取电压源的层。如果未与-region和-region_pitch参数一起使用，此处设置的层是最低对齐层（默认值为M5）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要列出直流电源的电源网络名称。默认：如果未指定网络名称，电源分析器会自动列出所有网络的直流电源。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-package_resistance",
+      "description": "指定封装电阻-电感-电容（RLC）模型的电阻值，单位为欧姆（Ohm）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-package_capacitance",
+      "description": "指定封装电阻-电感-电容（RLC）模型的电容值，单位为法拉（F）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-package_inductance",
+      "description": "指定封装电阻-电感-电容（RLC）模型的电感值，单位为亨利（H）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-region",
+      "description": "在指定区域内生成电压源。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-region_pitch",
+      "description": "指定电压源在x和y方向上的区域间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-snap_distance",
+      "description": "指定从I/O/焊盘引脚对齐的距离约束。如果未指定值，则不进行对齐。默认值为0。指定是否将I/O焊盘引脚的直流源对齐到电源结构上的某个位置。设置为true时，软件将执行带对齐的自动提取。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-vsrc_file",
+      "description": "指定保存自动提取结果所需的电压源文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add",
+      "description": "将新电压源的位置添加到内存中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-loc",
+      "description": "指定要添加或删除的电压源的位置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-list",
+      "description": "从内存中加载并显示所有电压源。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

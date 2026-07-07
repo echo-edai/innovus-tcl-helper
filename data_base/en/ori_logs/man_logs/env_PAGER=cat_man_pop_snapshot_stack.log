@@ -1,0 +1,102 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+pop_snapshot_stack(25.10)                            pop_snapshot_stack(25.10)
+
+Name
+       pop_snapshot_stack - Pops the metrics saved since the last push
+
+Syntax
+        pop_snapshot_stack
+
+       Pops the metrics saved since the last push.
+
+       The  pop_snapshot_stack  command  works  in conjunction with push_snap-
+       shot_stack to create metric hierarchies. Any metrics captured inside  a
+       push/pop  must  be  saved via create_snapshot (implicit or explicit) or
+       they will be lost.
+
+Parameters
+       None
+
+Example
+       The following code shows the usage of pop_snapshot_stack:
+
+       read_design ...
+
+       push_snapshot_stack
+
+       place_design
+
+       pop_snapshot_stack
+
+       create_snapshot -label place
+
+       push_snapshot_stack
+
+       opt_design -pre_cts
+
+       pop_snapshot_stack
+
+       create_snapshot -label prects
+
+       push_snapshot_stack
+
+       ccopt_design
+
+       time_design -post_cts
+
+       time_design -post_cts -hold
+
+       pop_snapshot_stack
+
+       create_snapshot -label cts
+
+       # --------------------------------------------------------------------
+
+       This will result in the following snapshot hierarchy:
+
+       place {
+
+        place_design {
+
+        <metrics>
+
+        }
+
+       }
+
+       prects {
+
+        opt_design -pre_cts {
+
+        <metrics>
+
+        }
+
+       }
+
+       cts {
+
+        ccopt_design {
+
+        <metrics>
+
+        }
+
+        time_design -post_cts {
+
+        <metrics>
+
+        }
+
+        time_design -post_cts -hold {
+
+        <metrics>
+
+        }
+
+       }
+
+Related Information
+              * push_snapshot_stack
+
+                           Fri Apr 04 01:25:37 2025  pop_snapshot_stack(25.10)

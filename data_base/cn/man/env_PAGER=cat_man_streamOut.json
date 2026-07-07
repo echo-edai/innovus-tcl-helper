@@ -1,0 +1,189 @@
+{
+  "command": "streamOut",
+  "is_cmd": true,
+  "summary": "将当前数据库导出为GDSII Stream或OASIS格式文件",
+  "description": "streamOut命令用于从当前Innovus数据库创建一个GDSII Stream或OASIS格式的输出文件。该命令通常在设计布线完成后使用，用于生成流片数据。它支持指定输出区域、层映射文件、合并外部GDS/OASIS文件、设置输出格式和分辨率等多种选项。命令执行后，会将错误和警告的摘要写入日志文件。",
+  "usage": "streamOut <gdsFileName> [-attachInstanceName <attributeNumber>] [-attachNetName <attributeNumber>] [-attachNetProp {{<prop_name1> <attr_num1>} {<prop_name2> <attr_num2>........}}] [-area {<x1 y1 x2 y2>} [-strict][-enclosed_instances_only]] [-dieAreaAsBoundary] [-extraMapFile <mapFile>] [-format {stream oasis}[-outputInstanceName <instName>] [-outputNetName <netName>]] [-help] [-ignoreSubtype {NETTYPE SHAPE}] [-libName <libraryName>] [-mapFile <mapFile>] [-mergeViaCellMapFile <cell_list>] [-merge {<listOfExternalGDSOASISFiles>} [-noTSV <tsv_name_list>][-uniquifyCellNames]] [-reportFile <file_name>] [-mode {ALL | FILLONLY | NOFILL | NOINSTANCES}] [-offset <x><y>] [-outputCriticalNetColorFromFileOnly <sideFile>] [-outputMacros] [-probe_pin_label <probeLabel>] [-signoff_fill] [-structureName <structureName> | -noStructureName] [-units {100 | 200 | 1000 | 2000 | 10000 | 20000}]",
+  "options": [
+    {
+      "name": "<gdsFileName>",
+      "description": "指定输出的GDSII Stream文件路径。可包含.gz扩展名以启用文件压缩。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-attachInstanceName",
+      "description": "指定一个属性编号（1-127），将实例名称作为属性添加到SREF上。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-attachNetName",
+      "description": "指定一个属性编号（1-127），将网络名称作为属性添加到常规和特殊网络线形状以及通孔SREF上（不包括PIN形状和引脚通孔）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-attachNetProp",
+      "description": "指定一个属性编号列表，用于在布线形状上存储设计网络中相关属性的值。格式为{{属性名1 属性编号1} {属性名2 属性编号2} ...}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-area",
+      "description": "定义要输出的设计区域坐标{x1 y1 x2 y2}。默认输出整个设计。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-strict",
+      "description": "与-area联用，严格截断指定区域外的对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enclosed_instances_only",
+      "description": "与-area联用，仅输出形状完全包含在指定区域内的实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dieAreaAsBoundary",
+      "description": "强制将芯片区域作为多边形（边界）写入，而不是矩形（方框）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extraMapFile",
+      "description": "指定额外的映射文件，其内容将附加到主映射文件中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "指定输出文件格式，可选stream或oasis。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outputInstanceName",
+      "description": "将实例名称写入OASIS文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outputNetName",
+      "description": "将网络名称写入OASIS文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-help",
+      "description": "输出streamOut命令各参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignoreSubtype",
+      "description": "忽略映射文件中包含指定子类型（如NETTYPE, SHAPE）的行，并在日志中打印警告。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-libName",
+      "description": "指定要转换为GDSII Stream格式的库名称。默认为DesignLib。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mapFile",
+      "description": "指定用于层映射的文件。成功输出需要此文件。如果未指定，软件会尝试读取streamOut.map文件，若不存在则创建一个通用的映射文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mergeViaCellMapFile",
+      "description": "指定需要从外部文件合并通孔单元的单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-merge",
+      "description": "指定要合并的外部GDS或OASIS文件列表。支持混合格式和通配符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noTSV",
+      "description": "指定一个不应被写出的TSV通孔名称列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-uniquifyCellNames",
+      "description": "在合并文件时，如果存在名称冲突，则创建唯一的单元名称。必须与-merge参数联用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reportFile",
+      "description": "将发生更改的单元名称输出到指定文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mode",
+      "description": "标识要写入的层。可选值：ALL（所有层）、FILLONLY（仅填充层）、NOFILL（仅非填充层）、NOINSTANCES（仅布线，不写出COMPONENT实例）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-offset",
+      "description": "指定设计在GDSII输出文件中的位置偏移量（单位：微米）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outputCriticalNetColorFromFileOnly",
+      "description": "通过一个辅助文件指定网络列表和层范围，streamOut命令将在指定层和网络上输出对象颜色，其他对象在GDS中保持灰色。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outputMacros",
+      "description": "写出LEF宏的抽象信息，如LEF引脚几何图形和障碍物。用于创建包含LEF宏结构的GDSII输出或调试LEF宏定义。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-probe_pin_label",
+      "description": "指定探针引脚标签字符串。默认为PROBE_PIN。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-signoff_fill",
+      "description": "将附加到当前数据库的签核填充数据合并到输出的GDS文件中，并在顶层设计单元的0,0 R0位置实例化签核顶层填充单元。填充格式必须为GDS。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-structureName",
+      "description": "指定由映射文件写出的所有几何图形组成的超级结构名称。默认为当前设计的顶层单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noStructureName",
+      "description": "当同时指定了-merge参数时，允许在不加载Innovus数据库的情况下合并文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-units",
+      "description": "指定GDSII文件中数值的分辨率。可选值：100, 200, 1000, 2000, 10000, 20000。默认为LEF文件中指定的单位。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

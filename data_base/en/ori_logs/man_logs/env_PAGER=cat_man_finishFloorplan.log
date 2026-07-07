@@ -1,0 +1,448 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+finishFloorplan(25.10)                                  finishFloorplan(25.10)
+
+Name
+       finishFloorplan  - Performs advanced placement-related refinements to a
+       floorplan, to produce a more polished floorplan
+
+Syntax
+        finishFloorplan
+
+       [-help]
+
+       [-mask <integer>]
+
+       { [-autoHalo | [-autoHaloBasedOnPitch  [-margin  <value>]]  |  -addHalo
+       <width> |
+
+       [-fillPlaceBlockage <blkgType> <maxGap>
+
+        [-density  <value>] [-excludeFlops] [-deadArea <float>] [-honor_place-
+       ment_density]] |
+
+       [-fillRouteBlockage <maxGap> [-layer <layerID>]
+
+       [-cutLayer <cutLayerID>]
+
+       [-fills | -exceptFill ]
+
+       [-exceptpgnet ]
+
+       [-spacing   <spaceValue>   |   -designRuleWidth   <width>]   [-deadArea
+       <maxDeadArea>]] |
+
+       -addCornerBlockage <string> |
+
+       [-drcRegionLayer <layer+> [-edgeExtend {<x y>}] [-edgeShrink {<x y>}]]|
+       -addCoreEOLBlockage  |  -addBoundaryBlockage | -addRowBasedRegionBlock-
+       age| -undo ]
+
+       [-area {<x1 y1 x2 y2>}]
+
+       [-namePrefix <name>] }
+
+       Performs advanced placement-related refinements to a floorplan, to pro-
+       duce a more polished floorplan. The  finishFloorplan  command,  can  be
+       used  on any floorplan, including third-party generated floorplans. You
+       can use the setFinishFPlanMode command to set the  active  objects  and
+       specify  the  channel direction for the finishFloorplan command to use.
+       The setFinishFPlanMode parameters affects the behavior the finishFloor-
+       plan command.
+
+       Note: You can access the functionality of the  finishFloorplan  command
+       using the finishFPlan alias.
+
+       Note:   The   finishFloorplan   command  honors  the  settings  of  the
+       -no_cut_row parameter of the  setFPlanMode command  that  specifies  if
+       rows  are  not  required  to  be  cut before other operations. When the
+       -no_cut_row parameter is disabled,  the  finishFloorplan  command  adds
+       blockages  around  the  current row/non-row area in the design when the
+       "-activeObj row" or "-drcRegionObj nonRowArea" options of  the  setFin-
+       ishFPlanMode  command  are set. If rows are not cut before other opera-
+       tions but the -no_cut_row parameter  is  enabled,  the  finishFloorplan
+       command  can  work  as cut row flow to add blockages around row/non-row
+       area which satisfy row constraints.
+
+Parameters
+       -addBoundaryBlockage
+              Adds boundary routing blockages with "BOUNDARYBLOCKAGE" property
+              around active object boundary. This parameter can only work with
+              die as an active object. For each layer,  boundary  blockage  is
+              perpendicular to the preferred routing direction.
+
+              Data_type: bool, optional
+
+       -addCoreEOLBlockage
+              Adds  end-of-line(EOL)  routing blockages with "COREEOLBLOCKAGE"
+              property around active object boundary. This parameter can  only
+              work  with  rows  as active objects. For each layer, EOL routing
+              blockage is perpendicular to the preferred routing direction.
+
+              Note: A Core EOL blockage  rule  is  used  to  specify  line-end
+              blockages  formed  from  the core edges. The EOL Blockage is de-
+              fined in LEF as below:
+
+              PROPERTY LEF58_COREEOLBLOCKAGE "COREEOLBLOCKAGE <outwardSize in-
+              wardSize> [SIDEEXTENSION <sideExtension>] ;" ;
+
+              COREEOLBLOCKAGE <outwardSize inwardSize> SIDEEXTENSION  <sideEx-
+              tension>
+
+              Defines the line-end blockages formed from the core edges in the
+              orthogonal  direction  of the preferred routing direction of the
+              layer of a design. The blockage is formed by going outward  from
+              the  core by outwardSize and inward by inwardSize. If SIDEEXTEN-
+              SION is defined, the blockage is extended by sizeExtension along
+              the direction of the core edge on both  sides.  These  blockages
+              prevent  any  line-end  of  a wire end inside it. If a wire goes
+              through the blockage and just touches the far end  edge,  it  is
+              still  a  violation.  If a wire just touches an edge without ex-
+              tending inside the blockage, it is fine. .
+
+              Data_type: bool, optional
+
+       -addCornerBlockage <x y>
+              Specifies the width and height of the  hard  placement  blockage
+              that is automatically added around the corner.
+
+              Example: finishFloorplan -addCornerBlockage 50 50
+
+              Before
+
+              After
+
+              Data_type: string, optional
+
+       -addHalo <width>
+              Adds placement halo with the specified width.
+
+              Note:  The -addHalo parameter does not add routing halos.
+
+              Data_type: float, optional
+
+       -addRowBasedRegionBlockage
+              When specified, it adds row based region blockages. This parame-
+              ter adds region layer blockages with "ROWBASED" property in some
+              row areas.
+
+              Note:  The  row  area  is determined by standard cells with both
+              such row sites and OBS on the region layer.
+
+              Data_type: bool, optional
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the lower left x coordinate, lower left y  coordinate,
+              upper  right  x coordinate, and upper right y coordinate respec-
+              tively of the blockage area.
+
+              Data_type: box, optional
+
+       -autoHalo
+              Automatically adds halos around every macro in design. For  each
+              macro edge, the halo thickness is proportional to pin density on
+              that edge.
+
+              Example: finishFloorplan -autoHalo
+
+              Before
+
+              After
+
+              Data_type: bool, optional
+
+       -autoHaloBasedOnPitch
+              Automatically  add  halos  based  on the number of pins, routing
+              layer, and layer pitch on the edge.
+
+              Example: finishFloorplan -autoHaloBasedOnPitch
+
+              Before
+
+              After
+
+              Data_type: bool, optional
+
+       -cutLayer <cutLayerID>
+              Specifies the cut layer ID on which the routing blockage  is  to
+              be applied.
+
+              Data_type: string, optional
+
+       -deadArea <float>
+              Specifies the maximum value of dead area.
+
+              Note:  A  dead  area is an island with placeable rows that has a
+              narrow channel connect to  main  core  area.  For  example,  the
+              placeable rows surrounded by macros.
+
+              Example
+
+              finishFloorplan -fillPlaceBlockage hard 300
+
+              finishFloorplan -fillPlaceBlockage hard 300 -deadArea 90000
+
+              Data_type: float, optional
+
+       -density <value>
+              Specifies the density of the partial placement blockage.
+
+              Data_type: string, optional
+
+       -designRuleWidth <width>
+              Specifies the effective width of the routing blockage. The value
+              is a real number greater than 0.
+
+              Data_type: float, optional
+
+       -drcRegionLayer <layer+>
+              Specifies the region layer name list.
+
+              Data_type: string, optional
+
+       -edgeExtend {<x y>}
+              Specifies that the DRC region can be extended from the specified
+              edge.  The -edgeExtend parameter is used for creating DRC region
+              blockages by extending from the specified drcRegion objects.
+
+              Note:
+
+              * The specified value for option -edgeExtend should be equal  to
+                or  greater  than  zero.  If  the specified value is less than
+                zero, treat it as zero.
+
+              * For X/Y direction, if the -edgeExtend and -edgeShrink  options
+                are  specified  at  the  same  time, then Innovus compares the
+                value first and then extends or shrinks. Example,  -edgeExtend
+                {3  4}  and  -edgeShrink {2 5} are specified at the same time,
+                tool will extend 1(3-2) in X-direction and Shrink 1(5-4) in Y-
+                direction.
+
+              Example: setFinishFPlanMode -drcRegionObj hardBlkg
+
+                     finishFloorplan -drcRegionLayer R1 -edgeExtend {50 100}
+
+              Data_type: point, optional
+
+       -edgeShrink {<x y>}
+              Specifies that the DRC region can be shrunk from  the  specified
+              edge.  The -edgeShrink parameter is used for creating DRC region
+              blockages by shrinking the specified drcRegion objects.
+
+              Note:
+
+              * The specified value for option -edgeShrink should be equal  to
+                or  greater  than  zero.  If  the specified value is less than
+                zero, treat it as zero.
+
+              * For X/Y direction, if the -edgeExtend and -edgeShrink  options
+                are  specified  at  the  same  time, then Innovus compares the
+                value first and then extends or shrinks. Example,  -edgeExtend
+                {3  4}  and  -edgeShrink {2 5} are specified at the same time,
+                tool will extend 1(3-2) in X-direction and Shrink 1(5-4) in Y-
+                direction.
+
+              Example: setFinishFPlanMode -drcRegionObj hardBlkg
+
+                      finishFloorplan -drcRegionLayer R1 -edgeShrink {50 100}
+
+              Data_type: point, optional
+
+       -exceptFill
+              Specifies that the routing blockage is  to  be  applied  to  all
+              other net routings except for metal fills.
+
+              Data_type: bool, optional
+
+       -exceptpgnet
+              Specifies that the routing blockage is to be applied on a signal
+              net routing and not on power or ground net routing.
+
+              Data_type: bool, optional
+
+       -excludeFlops
+              Specifies  that flops and latches will be excluded from the par-
+              tial placement blockage.
+
+              Note: The -density and -excludeFlops options must be  used  with
+              the -fillPlaceBlockage parameter.
+
+              Data_type: bool, optional
+
+       -fillPlaceBlockage <blkgType maxGap>
+              Adds  placement  blockages of the specified blockage type (blkg-
+              Type) to fill macro-to-macro, macro-to-boundary,
+
+              macro-to-OBS, OBS-to-OBS, and boundary-to-OBS gaps up to a spec-
+              ified size (maxGap).
+
+              * For blkgType, you can specify soft, hard, or partial.
+
+              * For maxGap, specify a positive value, in microns.
+
+              Default: -autoPlaceBlockage
+
+              Example1: finishFloorplan -fillPlaceBlockage hard 50
+
+              Example2: setFinishFPlanMode -activeObj {macro hardblkg}
+
+                      finishFloorplan -fillPlaceBlockage hard 300
+
+              Before:
+
+              After:
+
+              Data_type: string, optional
+
+       -fillRouteBlockage <maxGap>
+              Adds routing blockage upto a specified size (maxGap)
+
+              Example: finishFloorplan -fillRouteBlockage 50
+
+              Data_type: float, optional
+
+       -fills Specifies that the routing blockage is to be applied  on  metal-
+              fills.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each finishFloorplan parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man finishFloorplan.
+
+       -honor_placement_density
+              Adds standard cell density check when  adding  placement  block-
+              ages.
+
+              Note:
+
+              * If  option  the  -density  parameter is not specified with the
+                "finishFloorplan -fillPlaceBlockage soft" command, the density
+                of the created soft blockage is 100.
+
+              * If there are standard cells in the channel, partial  blockages
+                will  be created with the density of the current standard cell
+                in the channel when the following command is used:
+
+                finishFloorplan  -fillPlaceBlockage  hard/soft   -honor_place-
+                ment_density
+
+              * If  there  are standard cells in the channel and the specified
+                density for the partial blockage is less than the  density  of
+                the  current  standard  cell in the channel, partial blockages
+                will be created with the density of the current standard  cell
+                in  the  channel  with the "finishFloorplan -fillPlaceBlockage
+                partial -density" command.
+
+              * If there are standard cells in the channel and  the  specified
+                density for partial blockage is larger than the density of the
+                current  standard  cell in the channel, partial blockages will
+                be created with the specified density when  the  "finishFloor-
+                plan -fillPlaceBlockage partial -density" command is called.
+
+              Data_type: bool, optional
+
+       -layer <layerID>
+              Specifies the layer ID of the route blockage.
+
+              Data_type: string, optional
+
+       -margin <value>
+              Specifies  the  pitch  margin  when halos are added using -auto-
+              HaloBasedOnPitch.
+
+              Default: 0.1
+
+              Data_type: float, optional
+
+       -mask <integer>
+              Specifies the mask number used when adding routing blockages and
+              creating DRC region.
+
+              * The -mask parameter enables  the  finishFloorplan  command  to
+                block  routing layers with specified masks when adding routing
+                blockages and creating DRC region. Layers with other masks can
+                still be routed through the blockage.
+
+              * The -mask parameter must be used with one or more  of  -layer,
+                -cutLayer and -drcRegionLayer parameters.
+
+              * Only one mask can be specified. The default value of the -mask
+                parameter  is  0.  This  implies that all the specified layers
+                will be blocked. Uncolored routes are always blocked.
+
+              * If the -mask parameter is  specified  with  an  integer  value
+                greater  than  0, then both layers with specified mask and un-
+                colored layers are blocked.
+
+                Example. If -mask 1 is specified, it blocks mask 1 and  uncol-
+                ored routes.
+
+              * If  more than one layers are associated  with a mask, the mask
+                is applied to all of them.
+
+              * If the -mask parameter is specified, the tool  checks  if  the
+                mask  is  suitable for all of the specified layers. If not, it
+                displays an ERROR message and no blockages are  created.   The
+                number of arguments specified with the -mask parameter must be
+                same  as  the  number of arguments specified with the  -layer,
+                -cutLayer and -drcRegionLayer parameters.
+
+              * The setNanoRouteMode and verify_drc commands honor  the  -mask
+                parameter.
+
+              Example:
+
+              * The  following  command creates routing blockages for blocking
+                mask 2 of M1 layer.
+
+                finishFloorplan -layer M1 -mask 2 -fillRouteBlockage 400
+
+              * The following command(s) DRC region for mask 1 of PIO layer in
+                core to die area.
+
+                setFinishFPlanMode -drcRegionObj {coreSpacing}
+
+                finishFloorplan -drcRegionLayer PIO -mask 1 -edgeExtend {0.083
+                0}
+
+              Default: 0
+
+              Data_type: int, optional
+
+       -namePrefix <name>
+              Specifies the name prefix for the added blockage to avoid naming
+              conflict with the existing one.
+
+              Data_type: string, optional
+
+       -spacing <spaceValue>
+              Specifies the minimum spacing between layers within the  routing
+              blockage. The value is a real number greater than or equal to 0.
+
+              Data_type: float, optional
+
+       -undo  Reverses the previous run of finishFloorplan.
+
+              Data_type: bool, optional
+
+       Example
+              * The  following command creates a dead area with partial place-
+                ment blockage of gap of 5 microns and density 60:
+
+                finishFloorplan -deadArea  100  -fillPlaceBlockage  partial  5
+                -density 60
+
+Related Information
+              * getFinishFPlanMode
+
+              * setFinishFPlanMode
+
+              * Floorplanning the Design chapter in the Innovus User Guide.
+
+                * Finishing the Floorplan
+
+                           Fri Apr 04 01:25:37 2025     finishFloorplan(25.10)

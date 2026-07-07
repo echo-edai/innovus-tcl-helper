@@ -1,0 +1,128 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+checkFPlan(25.10)                                            checkFPlan(25.10)
+
+Name
+       checkFPlan  -  Checks  the quality of the floorplan to detect potential
+       problems before the design is passed on to other tools
+
+Syntax
+        checkFPlan
+
+       [-help]
+
+       [-keep_out_distance <value>]
+
+       [-outFile <fileName>]
+
+       [-reportUtil]
+
+       Checks the quality of the floorplan to detect potential problems before
+       the design is passed on to other tools. This highlights  the  cells  in
+       the  design  display area with violation markers, where applicable. Use
+       this command after specifying the floorplan data or running an  initial
+       floorplan. Run checkFPlan on your final floorplan file.
+
+       Notes:
+
+              * Parameters  that you specify with the setFPlanMode command are
+                used automatically whenever you run the checkFPlan command.
+
+              * Innovus honors the FinFET grid and  automatically  checks  for
+                the  FinFET  definition.  If it detects a FinFET definition it
+                enables support and sets the placement grid as FinFET grid  by
+                default.  Since  the height of all placeable objects must be a
+                multiple of FinFET grid and the origin of these  objects  must
+                be  snapped  to the FinFET grid. The checkFPlan command checks
+                if all the supported objects (die box, core box, standard cell
+                rows, I/O rows, blocks,  IO  pads,  and  standard  cells)  are
+                aligned with FinFET grid and reports DRC violations.
+
+              * The  checkFPlan  command can check if the row's orientation is
+                correct according to related tech site's SYMMETRY  definition.
+                It flags when Y SYMMETRY is missing from techlef CORE site de-
+                finition.
+
+              * The checkFPlan command checks the pin snapping result.
+
+                * For  min  width  pins,  it  checks whether the pin center is
+                  snapped to the routing track with the same color.
+
+                * For fat pins, it checks whether the pin center is snapped to
+                  the routing track and decides if the pin center should  snap
+                  to the same or opposite colored routing track.
+
+              * The  checkFPlan command checks if power stripes are on routing
+                track for 10nm DPT layers (Metal1, Metal2,  Metal3).  It  also
+                checks power vias upper and lower metal shapes if they are not
+                entirely  covered  by  other power stripes on the same layers.
+                Additionally it also checks if multi-height rows conflict with
+                PG rails. In case of a conflict, a violation is reported.
+
+              * You can use the checkFPlan command to check if there  are  any
+                existing  overlaps  between group boxes and power domain boxes
+                as the box for a group should not physically overlap with  the
+                box for a power domain.
+
+              * The  checkFPlan command checks when rows are continuous across
+                power domains and displays a violation message.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each  checkFPlan parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command:
+
+              man checkFPlan
+
+       -keep_out_distance <value>
+              Specifies the keep out distance for TSV check. It enables you to
+              specify the value for checking the area on four sides (top, bot-
+              tom, left, right). A positive value extends the check area and a
+              negative value shrinks the check area.
+
+              Note:  This option is only used when tsv is set as the check ob-
+              ject (setFPlanMode -checkTypes tsv).
+
+              Default: 0
+
+              Note: The default value is defined on LAYER  TSV  in  technology
+              LEF,  which  applies the spacing rule between objects on the TSV
+              layer and objects on the OVERLAP layer.  OVERLAP  layer  is  the
+              Layer used for overlap checking.
+
+              SPACING 2.0 LAYER OVERLAP ;
+
+              If  this  value is not defined in tech LEF, the default value is
+              0.
+
+              Data_type: float, optional
+
+       -outFile <fileName>
+              Outputs detailed information for the specified checks.
+
+              Data_type: string, optional
+
+       -reportUtil
+              Reports target utilization (TU) and effective  utilization  (EU)
+              for  the  entire  design, fences, and regions (partitions, power
+              domains, and regular fences).
+
+              Data_type: bool, optional
+
+Example
+              * The following command checks the floorplan and writes the  de-
+                tailed  information  to  the details.txt file. It also reports
+                the final core utilization:
+
+                checkFPlan -outFile details.txt -reportUtil
+
+Related Information
+              * setFPlanMode
+
+              * check_design
+
+              * checkFPlanSpace
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025          checkFPlan(25.10)

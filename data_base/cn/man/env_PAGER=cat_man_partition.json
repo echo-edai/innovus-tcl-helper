@@ -1,0 +1,111 @@
+{
+  "command": "partition",
+  "is_cmd": true,
+  "summary": "将指定的模块围栏转换为分区，并将物理单元或电源布线信息下推至分区层级设计。",
+  "description": "此命令用于将指定的模块围栏（fences）转换为分区（partitions），并将物理单元或电源布线信息下推至分区层级的设计中。它还会复制与分区边界重叠的条带（strips）并保持其原始宽度。该命令通常在指定分区后使用。其功能包括处理错位的行（rows）、金属填充（metal fills）、路由阻塞（route blockages）、总线引导约束（bus guide constraints）、单元填充（cell padding）信息以及网络属性的继承。在自上而下的流程中，它仅提升由 setPromotedMacroPin 命令指定的电源/地（P/G）引脚。该命令支持具有灵活模型（flexmodels）和结构化数据路径（structured data paths）的分区。",
+  "usage": "partition [-help] [<partitionName> {list}] [-addPinForPGWireLayersInDistance {{<layer_name1 distance1>} {<layer_name2 distance2>}}] [-inputNetsForWireDistribution <filename>] [-noTopPushDown] [-noViaCutSpace] [-pgPushDownHonorUPF] [-pushAllRoutes] [-pushDownHonorInsidePinForSpecialNet] [-pushDownSelectedPGWiresAsRouteBlockage] [-pushDownSpecialNetAsObs {<SNet list>}] [-skipRouteBlockagesOutsidePartition] [-pinCutSpace] [-noInheritPhysical] [-pushRoute] [-pushdownAllBumps | -pushDownSelectedPGBump]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个分区参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<partitionName>",
+      "description": "指定要提交（commit）的分区名称列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-addPinForPGWireLayersInDistance",
+      "description": "指定层和距离，用于在距离分区边界指定范围内的电源/地（PG）条带上创建引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inputNetsForWireDistribution",
+      "description": "指定包含用于线网分布（wire distribution）的线网名称的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noTopPushDown",
+      "description": "指定顶层电源布线不会从顶层设计下推到分区块中（在未为分区保留的层上）。在为顶层设计保留的层上，不会下推任何内容。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noViaCutSpace",
+      "description": "指定通孔（via）周围的障碍物（obstructions）中没有切割（cuts）。当需要确保顶层布线可以连接通孔而不使用通孔与相应覆盖阻塞（cover blockages）之间的空间时，可使用此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pgPushDownHonorUPF",
+      "description": "启用时，将统一电源格式（UPF）信息下推到分区。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushAllRoutes",
+      "description": "下推所有信号布线，包括分区内布线、顶层-分区布线和违规布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushDownHonorInsidePinForSpecialNet",
+      "description": "在顶层保留线网段直至分区引脚，而超出分区引脚的线网段仍按原样下推。启用此选项后，Innovus会自动检测在分区上具有固定状态内部引脚的线网列表以及所有跨越分区边界的顶层线网。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushDownSelectedPGWiresAsRouteBlockage",
+      "description": "将选定的电源/地（PG）布线作为路由阻塞下推到分区中。此参数允许您选择希望保留在顶层设计的线网段。这些未下推的线网必须是特殊的电源/地布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushDownSpecialNetAsObs",
+      "description": "指定一个特殊线网列表，这些线网将作为路由阻塞下推。它支持所有类型的特殊线网，包括电源/地线网。指定线网名称时可以使用通配符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skipRouteBlockagesOutsidePartition",
+      "description": "跳过下推靠近分区围栏的对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pinCutSpace",
+      "description": "指定引脚周围的障碍物中有切割。默认情况下，引脚周围的障碍物中没有切割，以便顶层布线可以连接引脚而不使用引脚与相应覆盖阻塞之间的空间。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noInheritPhysical",
+      "description": "指定物理专用（填充）单元不下推到分区中；它们保留在顶层。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushRoute",
+      "description": "在对设计进行分区时下推信号布线。注意：如果一个线网的任何一条线网段存在层次违规，则该层次违规线网的所有连线都将被丢弃。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushdownAllBumps",
+      "description": "指定所有电源/地（PG）凸块（bumps）都应下推到分区中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pushDownSelectedPGBump",
+      "description": "指定仅选定的电源/地（PG）凸块应下推到分区中。未选定的凸块将作为路由阻塞出现。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

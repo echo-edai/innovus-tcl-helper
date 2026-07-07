@@ -1,0 +1,99 @@
+{
+  "command": "defComp",
+  "is_cmd": true,
+  "summary": "比较DEF文件与Innovus数据库中的物理设计数据并报告差异",
+  "description": "该命令用于将一个DEF文件与Innovus数据库中的物理设计数据进行比较，并报告任何差异。通常在导入设计后使用，例如在执行工程变更指令（ECO）并对DEF文件进行修改后，可以使用此命令将新文件与Innovus数据库中存储的信息进行比较。生成的报告文件包含版本、单位、实例的增删改、移动、网络、引脚、布线（包括电源布线）和区域变化等详细信息。",
+  "usage": "defComp [-help] <fileName> [-bump] [-defAsGolden] [-ignoreLayerFrom <layer>] [-ignoreLayerTo <layer>] [-ignoreLogicChange] [-metalShapeDiff] [-placeBlockage] [-reportFile <reportFile>] [-row] [-snetPin] [-unit <units_value>] [-ignoreCellPlace <lef_macro_classes_list> [-checkCellPrefix<prefix_list>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个defComp参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定要与数据库中物理设计数据进行比较的DEF文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-bump",
+      "description": "仅检查与凸块相关的对象，例如COMPONENTS部分中的凸块和areaio实例、凸块分配以及SPECIALNETS部分中的特殊布线。报告内容包括凸块的增删改、布线的增删改以及网络分配的增删改。指定此选项后，defComp将抑制对默认对象（如标准单元和模块）的检查，仅检查凸块相关对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-defAsGolden",
+      "description": "将DEF文件视为黄金文件进行比较。默认情况下，软件将DEF文件与数据库数据进行比较，并报告相对于数据库的差异。使用此选项后，软件将报告相对于DEF文件的差异。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignoreLayerFrom",
+      "description": "忽略指定的金属层或切割层，以及其上方的所有金属层和切割层。可与-ignoreLayerTo参数结合使用以选择层范围。金属层必须指定为Metal1、Metal2等，切割层必须指定为V1、V2等。默认比较所有层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignoreLayerTo",
+      "description": "忽略指定的金属层或切割层，以及其下方的所有金属层和切割层。可与-ignoreLayerFrom参数结合使用以选择层范围。金属层必须指定为Metal1、Metal2等，切割层必须指定为V1、V2等。默认比较所有层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignoreLogicChange",
+      "description": "在比较DEF文件与Innovus数据库中的物理设计数据时忽略逻辑变化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-metalShapeDiff",
+      "description": "默认情况下，如果数据库和DEF文件之间的布线线段或通孔位于不同的网络上，或其布线类型在特殊和常规之间发生了变化，命令将在报告文件中报告一对差异行（ADDWIRE/ADDVIA和DELWIRE/DELVIA）。使用此选项后，命令将不在报告文件中报告此类差异。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-placeBlockage",
+      "description": "比较布局障碍和模块光环的等效性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reportFile",
+      "description": "指定包含比较结果的报告文件的名称。默认文件名为defPhyDiff.rpt。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-row",
+      "description": "比较行和站点的等效性、名称、位置和方向。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snetPin",
+      "description": "报告NETS和SPECIALNETS部分之间发生变化的任何引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unit",
+      "description": "使用指定的UNITS值（通常是DEF文件中的UNITS值）来缩放报告文件中的所有距离值。默认使用数据库中从LEF信息派生的当前数据库单位（DBU）值来缩放距离值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-ignoreCellPlace",
+      "description": "忽略指定的单元类别，例如{CORE PAD}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-checkCellPrefix",
+      "description": "检查实例名称以指定前缀开头的实例。仅当同时指定-ignoreCellPlace参数时才能使用此参数。如果指定多个前缀，必须用大括号括起来，例如{CORE PAD}。默认忽略由-ignoreCellPlace参数指定的所有LEF MACRO类别。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setSdpMode(25.10)                                            setSdpMode(25.10)
+
+Name
+       setSdpMode - Sets SDP-related sticky options before using commands like
+       placeSdpGroup and place_design
+
+Syntax
+       setSdpMode
+
+       [-help]
+
+       [-clock_location {bottom|center}]
+
+       [-disable_extended_core {true|false}]
+
+       [-honor_dont_use {true|false}]
+
+       [-honor_orient {true|false}]
+
+       [-legalization {NONE|SW|SE|NW|NE|AUTO}]
+
+       [-legalization_effort {low|medium|high}]
+
+       [-max_move_distance <value>]
+
+       [-num_column <numberOfCol>]
+
+       [-place_report <file_name>]
+
+       [-pre_fixed_cells_blockage_direction {NONE|X|Y}]
+
+       [-reset]
+
+       Sets  SDP-related  sticky  options before using commands like placeSdp-
+       Group and place_design. You can use the setSdpMode command  to  disable
+       extension  of  core  boundary before running the placeSdpGroup command.
+       You can also use this command to generate a detailed SDP placement  re-
+       port.
+
+       Before setting SDP options with setSdpMode, you should have:
+
+              * Imported the design
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each setSdpMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setSdpMode.
+
+       -clock_location {bottom | center}
+              Specifies  where  the Integrated Clock Gating (ICG) cell will be
+              placed in an SDP register column.
+
+              Default: center
+
+       -disable_extended_core {true | false}
+              Disables extension of the core boundary. If you set -disable_ex-
+              tended_core to true before running  the  placeSdpGroup  command,
+              the  software  does  not adjust the core boundary to accommodate
+              all SDP placements. Instead, the software places  the  SDP  ele-
+              ments  outside  the  core boundary if they do not fit within the
+              boundary.
+
+              Default: true
+
+       -honor_dont_use {true|false}
+              Specifies whether the dont_use attribute on base cells should be
+              honored by the placeSdpGroup command during EEQ swapping in  SDP
+              legalization. By default, placeSdpGroup takes all cells into ac-
+              count.  If -honor_dont_use is set to true, placeSdpGroup ignores
+              cells with the dont_use attribute.
+
+              Default: false
+
+       -honor_orient {true|false}
+              Honors user-specified orientation during legalization.
+
+              User-specified orientation can be set using  the  setSdpGroupAt-
+              tribute command. You can use the getSdpGroupAttribute command to
+              check  the current orientation setting. Note that the SDP writer
+              writes out orientation information only if its value is  defined
+              by the user through the SDP file or TCL command.
+
+              Default: false
+
+       -legalization {NONE|SW|SE|NW|NE|AUTO}
+              Specifies  the  corner  of  the  SDP box that will be kept fixed
+              while legalizing an SDP instance.
+
+              Default: NONE
+
+       -legalization_effort {low|medium|high}
+              Specifies the legalization effort in placing SDP groups.
+
+              When you run placeSdpGroup, the SDP groups are legalized on  the
+              basis  of their order, which is determined by their size. Bigger
+              SDP groups are placed first, and multiple iterations are used to
+              place and align the remaining SDP groups. You can  also  control
+              the  legalization  effort applied by using the -legalization_ef-
+              fort parameter. The higher the setting of  this  parameter,  the
+              more the number of iterations attempted to try and place the SDP
+              groups legally.
+
+              Default: low
+
+       -max_move_distance <value>
+              Specifies how far an SDP can be moved from its original cluster-
+              ing location to resolve overlaps. By default, this value is half
+              the  perimeter  of  the core box. The Manhattan distance between
+              the new and original locations of the SDP must be less than  the
+              value of the -max_move_distance option.
+
+              The -max_move_distance option is honored by the refinePlace com-
+              mand.  SDP  columns start at the center-of-mass of the instances
+              and then try to find a legal location without overlaps.
+
+              Default: 0
+
+       -num_column <numberOfCol>
+              Specifies the number of flip flop columns for each SDP group.
+
+              Default: 2
+
+       -place_report <file_name>
+              Generates a detailed SDP placement report when placeSdpGroup  is
+              run.
+
+              Default:  If setSdpMode -place_report has not been specified be-
+              fore running placeSdpGroup, this report is not generated.
+
+              Note: To disable the -place_report option once it has been spec-
+              ified, specify <file_name> as a null string ("").  The  detailed
+              SDP placement report will not be generated subsequently.
+
+       -pre_fixed_cells_blockage_direction {NONE|X|Y}
+              Creates  temporary  placement blockage internally over pre-fixed
+              cells (that is, well tap or power switch cells) in X or Y direc-
+              tion to prevent SDP cells to be placed in the horizontal or ver-
+              tical empty spaces when resolving overlapping.
+
+              The illustration below shows the difference between  SDP  place-
+              ment without this setting and with -pre_fixed_cells_blockage_di-
+              rection set to Y.
+
+              Default: NONE
+
+       -reset Resets all or specified options to default value
+
+Examples
+              * The  following command disables extension of the core boundary
+                if the boundary cannot accommodate all SDP placements:
+
+                setSdpMode -disable_extended_core true
+
+              * The following commands place elements or instances of all  de-
+                fined  SDP groups and generate a detailed SDP placement report
+                named dtmf_chip.sdp.rpt:
+
+                setSdpMode -place_report dtmf_chip.sdp.rpt
+
+                placeSdpGroup
+
+              * The following commands control SDP movement from its  original
+                cluster location to resolve overlaps:
+
+                setSdpMode -max_move_distance 30
+
+                place_design -sdp
+
+Related Information
+              * getSdpGroupAttribute
+
+              * getSdpMode
+
+              * placeSdpGroup
+
+              * place_design
+
+              * proto_design
+
+              * setSdpGroupAttribute
+
+              * sdp object in Innovus Database Object Information
+
+              * Using Structured Data Paths chapter of the User Guide
+
+              * Floorplan Menu chapter of the Menu Reference
+
+                * Structured Data Path
+
+                           Fri Apr 04 01:25:37 2025          setSdpMode(25.10)

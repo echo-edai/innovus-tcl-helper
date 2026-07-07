@@ -1,0 +1,177 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createInstGroup(25.10)                                  createInstGroup(25.10)
+
+Name
+       createInstGroup  -  Creates a new instance group, even outside the core
+       boundary
+
+Syntax
+        createInstGroup
+
+       [-help]
+
+       <group_name>
+
+       [<box>]
+
+       [-isPhyHier]
+
+       [-guide <box >| -region | -fence| -softGuide ]
+
+       [[-ar <num>] -density <num> ]
+
+       [-softGuide ]
+
+       [-floating | -softGuide ]
+
+       [-floating | -guide <box >]
+
+       Creates a new instance group, even outside the core boundary. Use  this
+       command after importing the design.
+
+       Note:  Instance groups are used to create a new logical hierarchy unit,
+       and normally all power domains will associate with  an  instance  group
+       which  always have a constraint fence. The constraint fence means stan-
+       dard cell belonging to this group cannot be  placed  outside  and  only
+       standard cell belong to this group can be placed inside. Cadence recom-
+       mends  that this physical-logical coherence should not be violated. The
+       coherence requirement does not only apply for instance groups, but also
+       pertains to all hinsts and instance groups as long as  they  have  con-
+       straint fence.
+
+       In other words, if fence A  belongs to fence B in logical, then fence A
+       must be placed inside fence B.
+
+Parameters
+       -ar <num>
+              Specifies  the  aspect ratio. If this is not specified, 1 is the
+              default.
+
+              Data_type: float, optional
+
+       <box>  Specifies the coordinates of the box (x1 y1 x2 y2) for  creating
+              a new instance group.
+
+              * x1: Specifies the lower left x coordinate of the box.
+
+              * y1: Specifies the lower left y coordinate of the box.
+
+              * x2: Specifies the upper right x coordinate of the box.
+
+              * y2: Specifies the upper right y coordinate of the box.
+
+       -density <num>
+              Specifies  a  placement density percentage. Use the decimal for-
+              mat, where 0.75 is for 75% density.
+
+              Data_type: float, optional
+
+       -fence Specify to create a group of fences.
+
+              Note: Since a fence should not cross multiple power domains, the
+              createInstGroup command should only be used to group objects  in
+              the  same power domain (otherwise the design may become unplace-
+              able).
+
+              Data_type: box, optional
+
+       -floating
+              Creates a floating instance group.
+
+              Note: It does not support rectilinear shapes.
+
+              Note: You can use the -floating parameter  with  the  -fence  or
+              -region parameters only.
+
+              Data_type: bool, optional
+
+       <group_name>
+              Specifies  the  name of the created group. A group is a user-de-
+              fined group name and is  created  to  contain  hierarchical  in-
+              stances, instances (leaf instances), or other groups.
+
+              Note:  In  the nested partitions scenario, to add a module to be
+              within a module, you must include the hinst name of  the  module
+              in  which  you  want  the  new module to be in, within the group
+              name.
+
+              For example,
+
+              createInstGroup i_a/bc
+
+              addInstToInstGroup i_a/bc i_a/b
+
+              addInstToInstGroup i_a/bc i_a/c
+
+              Note: Incorrect groupings can cause violations.
+
+              Data_type: string, required
+
+       -guide <box>
+              Specifies the coordinates of the box (x1 y1 x2 y2) for a guide.
+
+              * x1: Specifies the lower left x coordinate of the box.
+
+              * y1: Specifies the lower left y coordinate of the box.
+
+              * x2: Specifies the upper right x coordinate of the box.
+
+              * y2: Specifies the upper right y coordinate of the box.
+
+              Data_type: box, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each createInstGroup parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man createInstGroup
+
+       -isPhyHier
+              Specifies that the created group is a physical hierarchy. By de-
+              fault, the created group is not saved back to the netlist.
+
+              Data_type: bool, optional
+
+              -region" Specify to create a group of regions.
+
+              Data_type: box, optional
+
+       -softGuide
+              Specifies that the created group is a soft guide constraint.
+
+              Data_type: bool, required
+
+Examples
+              * The following command creates group adder1:
+
+                createInstGroup adder1
+
+              * The following command creates group gusher_4 and its placement
+                guide at the above area location:
+
+                createInstGroup gusher_4 -guide 2345.3 9962.1 4930.0 18244.8
+
+              * The  following  command  creates  group adder2 with 80% of the
+                area occupied by the instance area with an aspect ratio of 2:
+
+                createInstGroup adder2 -density .8 -AR 2
+
+Related Information
+              * addInstToInstGroup
+
+              * deleteAllInstGroups
+
+              * deleteInstFromInstGroup
+
+              * deleteInstGroup
+
+              * setInstGroupPhyHier
+
+              * createExclusiveGroups
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                * Grouping Instances
+
+                           Fri Apr 04 01:25:37 2025     createInstGroup(25.10)

@@ -1,0 +1,431 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportUnalignedNets(25.10)                          reportUnalignedNets(25.10)
+
+Name
+       reportUnalignedNets  - Reports the names of the nets where the pins are
+       not aligned
+
+Syntax
+       reportUnalignedNets
+
+       [-help]
+
+       [-alignDistance <distance>]
+
+       [-alignFeedThruPins]
+
+       [-considerMacroPinWithinDistance <distance>]
+
+       [-ignoreLength <length>]
+
+       [-noHighlight]
+
+       [-reportAllWithinChannelWidth <width>]
+
+       [-rptFile <filename>]
+
+       [-statistics]
+
+       [-steinerBox]
+
+       [-verbose]
+
+       [[ -ptnToPtn {aligned unaligned  layerMismatch  samePtn  nonNbr  multi-
+       Fanout all unplaced none} ]
+
+       [ -topToPtn {aligned unaligned layerMismatch samePtn nonNbr multiFanout
+       all unplaced none} ]]
+
+       [-pin_file <filename >| -exclude_pin_file <filename>]
+
+       Reports  the  names  of the nets where the pins are not aligned. It re-
+       ports the nets in the following cases:
+
+              * nets that have two pins on  two  different  partitions  and/or
+                clones and are not connected to top level hard-macro or I/O.
+
+              * nets  that have two pins that are connected to the same parti-
+                tion.
+
+              * nets that have one pin connected to top  level  hard-macro  or
+                I/O and the other pin connected to a partition or a clone.
+
+       Notes:
+
+              * The  nets reported by this command are also highlighted in the
+                artwork window.
+
+              * The assignPtnPin command internally calls the reportUnaligned-
+                Nets command to generate the summary  report  at  the  command
+                line.
+
+              * The reportUnalignedNets command measures the average misalign-
+                ment with standard deviation for multi-partition nets.
+
+              * The  reportUnalignedNets command detects and reports pins that
+                are placed on non-facing edges.
+
+              * The reportUnalignedNets command  ignores  top  level  standard
+                cells by default.
+
+Parameters
+       -alignDistance <distance>
+              Specifies the distance, in microns, up to which the pins are as-
+              sumed to be aligned. With this parameter specified, the reportU-
+              nalignedNets  command  assumes  that the pins are aligned within
+              the specified distance  even  though  they  are  not  physically
+              aligned.
+
+              Data_type: float, optional
+
+       -alignFeedThruPins
+              Reports the deviation of partition pins from chain's source-tar-
+              get box.
+
+              Data_type: bool, optional
+
+       -considerMacroPinWithinDistance <distance>
+              Reports  nets  connected to macro-pin which are within specified
+              distance from nearest partition boundary.
+
+              Default: 3 microns
+
+              Data_type: float, optional
+
+       -exclude_pin_file <filename>
+              Specifies the pin list to be excluded for a partition in a file.
+              In the pin file, the pins and nets are specified in the  follow-
+              ing format:
+
+              Partition: <PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Partition:< PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Nets:< ><netA ><netB ..netN>
+
+              Note:  While specifying the pin list in the pin_file, it is nec-
+              essary to give the "Partition" keyword followed by the  name  of
+              the  partition or block. If this is not specified, no operations
+              are performed.  You can specify multiple partitions in the  same
+              pin_file.  The pin_file does not support buses or wild cards for
+              pin names. If a pin specified in the list or a partition is  not
+              present in the design, a warning is displayed.
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reportUnalignedNets command parameter. For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command: man reportUnalignedNets
+
+       -ignoreLength <length>
+              Specifies the length, in  microns.  It  ignores  the  nets  from
+              checking  unalignment  whose  length  is  greater  the specified
+              length value.
+
+              Default: 5000
+
+              These ignored nets will be reported in the ignored  category  in
+              the output report file.
+
+              Data_type: float, optional
+
+       -steinerBox
+              Report the deviation of partition pins from the connectivity box
+              of the partition.
+
+              Data_type: bool, optional
+
+       -noHighlight
+              Disables the highlight capability.
+
+              Data_type: bool, optional
+
+       -rptFile <fileName>
+              Specifies an output report file.
+
+              Note: Default name for report file is <designName>_unaligned.rpt
+
+              Data_type: string, optional
+
+       -ptnToPtn {aligned unaligned layerMismatch samePtn nonNbr multiFanout
+       all unplaced none}
+              Reports  nets  that  have  two  pins on two different partitions
+              and/or clones and are not connected to top level  hard-macro  or
+              I/O.
+
+              * aligned: Reports nets that have aligned pins.
+
+              * all: Reports all categories of unaligned pins.
+
+              * layerMismatch: Reports nets that have pins at an aligned loca-
+                tion but different layers.
+
+              * multiFanout: Reports nets that have multiple fanouts
+
+              * none: Disables reporting of nets.
+
+              * nonNbr:  Reports nets that have two pins on two different par-
+                titions that are not adjacent.
+
+              * samePtn: Reports nets that have two pins that are connected to
+                the same partition.
+
+              * unaligned: Reports nets that have unaligned pins.
+
+              * unplaced: Reports nets that have unplaced pins.
+
+              Data_type: (enum)+, optional
+
+       -pin_file <filename>
+              Specifies the pin list for a partition in a  file.  In  the  pin
+              file, the pins and nets are specified in the following format:
+
+              Partition: <PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Partition:< PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Nets:< ><netA ><netB ..netN>
+
+              Note:  While specifying the pin list in the pin_file, it is nec-
+              essary to give the "Partition" keyword followed by the  name  of
+              the  partition or block. If this is not specified, no operations
+              are performed.  You can specify multiple partitions in the  same
+              pin_file.  The pin_file does not support buses or wild cards for
+              pin names. If a pin specified in the list or a partition is  not
+              present in the design, a warning is displayed.
+
+              Data_type: string, optional
+
+       -reportAllWithinChannelWidth <width>
+              Reports  all  the  unaligned  nets  within the specified channel
+              width even if the -ignoreLength parameter has been specified.
+
+              Data_type: float, optional
+
+       -statistics
+              Reports average misalignment with standard deviation  and  layer
+              difference  count  for  aligned, layer mismatched, and unaligned
+              ptnToPtn 2-pin nets of partitions. It is also used for reporting
+              pin QOR.
+
+              Data_type: bool, optional
+
+       -topToPtn {aligned unaligned layerMismatch samePtn nonNbr multiFanout
+       all unplaced none}
+              Reports nets that have one pin connected to top level hard-macro
+              or I/O and the other pin connected to a partition or a clone.
+
+              * aligned: Reports nets that have aligned pins.
+
+              * all: Reports all categories of unaligned pins.
+
+              * layerMismatch: Reports nets that have pins at an aligned loca-
+                tion but different layers.
+
+              * multiFanout: Reports nets that have multiple fanouts
+
+              * none: Disables reporting of nets.
+
+              * nonNbr: Reports nets that have two pins on two different  par-
+                titions that are not adjacent.
+
+              * samePtn: Reports nets that have two pins that are connected to
+                the same partition.
+
+              * unaligned: Reports nets that have unaligned pins.
+
+              * unplaced: Reports nets that have unplaced pins.
+
+              Data_type: (enum)+, optional
+
+       -verbose
+              Reports  all  categories in log file. By default, this parameter
+              is not enabled and only the nets that have  unaligned  pins  are
+              reported in the log file.
+
+              Note:  There  will  be  no change in the report file with use of
+              verbose parameter.
+
+              Data_type: bool, optional
+
+       The following are some of the attributes specified in the output report
+       file to report the names of nets where the pins are not aligned:
+
+              * layer mismatch: Specifies nets that have pins  at  an  aligned
+                location but different layers.
+
+              * non-neighbor: Specifies nets that have two pins on two differ-
+                ent partitions that are not adjacent.
+
+              * ptnToPtn:  Specifies  nets that have two pins on two different
+                partitions and/or clones.
+
+              * topToPtn: Specifies nets that have one pin  connected  to  top
+                level  hard-macro or I/O and the other pin connected to a par-
+                tition or a clone.
+
+              * unAligned: Specifies nets that have unaligned pins.
+
+Example
+       The following command reports all nets which are placed  in  a  channel
+       equal to or narrower than 7.5 microns irrespective of the -ignoreLength
+       parameter.
+
+       reportUnalignedNets  -ptnToPtn  unaligned -rptFile a -ignoreLength 10.0
+       -reportAllWithinChannelWidth 7.5
+
+       The following command creates an a.out report file:
+
+       reportUnalignedNets rptFile a.out -noHighlight -ptnToPtn all  -topToPtn
+       all
+
+       A  summary  of the reported unaligned nets displays on the Innovus con-
+       sole and in the Innovus log file.
+
+       The following is a sample of the resulting a.out report file.
+
+       ###############################################################
+
+       #  Generated by:      Cadence Innovus
+
+       #  OS:                     Linux x86_64(Host ID nofclo110)
+
+       #  Generated on:      Wed Feb 27 16:50:02 2013
+
+       #  Design:                NESTED_TOP
+
+       #  Command:           reportUnalignedNets -ptnToPtn all  -topToPtn  all
+       -rptFi...
+
+       ###############################################################
+
+       ====================
+
+       Net Specific report:
+
+       ====================
+
+       pin_i_TOP_A0__A1__A2forPorts_BB_[3] | nested-2-pin | aligned 3/4
+
+       pin_i_A1__A2forPorts_BB_[3]    (I_K2/I_K2)    |    pin_i_A0__A1__A2for-
+       Ports_BB_[3] (I_K2) | ptnToPtn | aligned
+
+       pin_i_A2forPorts_BB_[3] (I_K2/I_K2/I_K2) |  pin_i_A1__A2forPorts_BB_[3]
+       (I_K2/I_K2) | ptnToPtn | aligned
+
+       input_bus[3]  (I_K2/I_K2/I_K2/I_A2_K4/BBOX)  |  pin_i_A2forPorts_BB_[3]
+       (I_K2/I_K2/I_K2) | ptnToPtn | aligned
+
+       pin_i_A0__A1__A2forPorts_BB_[3]   (I_K2)   |   pin_i_TOP_A0__A1__A2for-
+       Ports_BB_[3] (NESTED_TOP) | topToPtn | unaligned
+
+       pin_i_TOP_A0__A1__A2forPorts_BB_[2] | nested-2-pin | aligned 1/4
+
+       pin_i_A2forPorts_BB_[2]  (I_K2/I_K2/I_K2) | pin_i_A1__A2forPorts_BB_[2]
+       (I_K2/I_K2) | ptnToPtn | aligned
+
+       pin_i_A0__A1__A2forPorts_BB_[2]   (I_K2)   |   pin_i_TOP_A0__A1__A2for-
+       Ports_BB_[2] (NESTED_TOP) | topToPtn | unaligned
+
+       pin_i_A1__A2forPorts_BB_[2]    (I_K2/I_K2)    |    pin_i_A0__A1__A2for-
+       Ports_BB_[2] (I_K2) | ptnToPtn | unaligned
+
+       input_bus[2]  (I_K2/I_K2/I_K2/I_A2_K4/BBOX)  |  pin_i_A2forPorts_BB_[2]
+       (I_K2/I_K2/I_K2) | ptnToPtn | unaligned
+
+       I_K3/net15_OP_B1_0_And_IP_B1_2_SC[3] | 2-pin | aligned 0/1
+
+       pin_o_B1_0_III_SC_[0] (I_K3/I_K4) | pin_i_B1_2_SC_[0] (I_K3/I_K2) | pt-
+       nToPtn | nonNbr
+
+       I_K3/net16_OP_B1_0_And_IP_B1_2_SC | 2-pin | aligned 0/1
+
+       pin_o_B1_0_III_SC_4  (I_K3/I_K4)  |  pin_i_B1_2_SC_4  (I_K3/I_K2) | pt-
+       nToPtn | nonNbr
+
+       ===================
+
+       Net Summary report:
+
+       ===================
+
+       There are 54 ptnToPtn 2-pin net(s)
+
+       There are 0 topToPtn 2-pin net(s)
+
+       There are 200 nested ptnToPtn 2-pin net(s) with multiple partition pins
+       between source and sink
+
+       There are 34 nested topToPtn 2-pin net(s) with multiple partition  pins
+       between source and sink
+
+       ================================================================================
+
+       Summary of pin pairs on above nets
+
+       ===========================================================================+======================
+
+                |aligned|unaligned|layerMismatch|samePtn|nonNeighbor|multi-
+       Fanout|unplaced|ignored|Total
+
+       ==================================================================================================
+
+       topToPtn  |     11  |       22  |            1  |      0  |         0 |
+       0 |      0 |     0 |  34
+
+       ptnToPtn |   590  |      220  |           16  |      0  |         58  |
+       0 |      0 |     0 | 884|
+
+       ==================================================================================================
+
+       Total     |    601  |      242  |           17  |      0  |        58 |
+       0 |      0 |     0 | 918
+
+       ==================================================================================================
+
+       ==================================================================================================
+
+                        Level based partition net summary
+
+       ================================================================================================================
+
+                               |aligned|unaligned|layerMismatch|samePtn|non-
+       Neighbor|multiFanout|unplaced|ignored|Total|
+
+       ================================================================================================================
+
+       NESTED_TOP (level-0)    |   121 |       30  |            1  |      0  |
+       0 |         0 |      0 |     0 | 152 |
+
+       I_K2  (level-1)           |    161  |       18  |           7 |     0 |
+       0 |         0 |      0 |     0 | 186 |
+
+       I_K3 (level-1)          |    52 |       42  |            0  |      0  |
+       58 |         0 |      0 |     0 | 152 |
+
+       I_K2/I_K2  (level-2)      |    184  |       35  |           1 |     0 |
+       0 |         0 |      0 |     0 | 220 |
+
+       I_K3/I_K2 (level-2)     |    10 |        6  |            0  |      0  |
+       0 |         0 |      0 |     0 |  16 |
+
+       I_K3/I_K3  (level-2)      |     16  |       16  |           0 |     0 |
+       0 |         0 |      0 |     0 |  32 |
+
+       I_K3/I_K4 (level-2)     |    12 |       32  |            4  |      0  |
+       0 |         0 |      0 |     0 |  48 |
+
+       I_K2/I_K2/I_K2  (level-3)|     45  |       63  |            4 |     0 |
+       0 |         0 |      0 |     0 | 112 |
+
+       ================================================================================================================
+
+Related Information
+              * alignPtnClone
+
+              * assignPtnPin
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025 reportUnalignedNets(25.10)

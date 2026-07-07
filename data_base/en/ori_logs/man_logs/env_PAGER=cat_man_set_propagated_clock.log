@@ -1,0 +1,86 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_propagated_clock(25.10)                        set_propagated_clock(25.10)
+
+Name
+       set_propagated_clock - Puts the propagated_clock assertion on the spec-
+       ified pin, port, or clock object
+
+Syntax
+        set_propagated_clock
+
+       <pin_clock_list>
+
+       Puts  the  propagated_clock  assertion  on  the specified pin, port, or
+       clock object. This will cause all clock endpoints in the fanout of  the
+       specified  object  to receive propagated clock timing unless there is a
+       set_clock_latency  with  higher  precedence.  If  there  are   multiple
+       set_clock_latency and set_propagated_clock assertions between the clock
+       waveform,  clock  root and clock endpoint, the closest assertion to the
+       clock endpoint takes precedence.
+
+       There are two methods of clock propagation: depending  on  whether  the
+       clock is ideal or propagated.
+
+              * When a clock is ideal, the delay from a clock port to a regis-
+                ter clock pin (network insertion delay) comes from design con-
+                straints using the set_clock_latency command.
+
+              * When  a  clock  is  propagated, the network insertion delay is
+                computed from the actual gates and interconnects in the  clock
+                network.
+
+       To set the propagated_clock property on all clock waveform objects, use
+       the following command:
+
+       set_propagated_clock [all_clocks]
+
+       When  set_propagated_clocks  [all_clocks]  command is asserted, it will
+       apply to all the currently defined clock waveform objects. This setting
+       will not apply to clocks created later in the script. Whether  all  the
+       clock  endpoints  receive  propagated  or  ideal  timing depends on the
+       precedence of set_clock_latency in the fanout.
+
+       The set_propagated_clock [all_clocks] command puts the propagated_clock
+       assertion on all clocks except virtual clocks. When you put the  asser-
+       tion  on  a  real clock that is used to define I/O timing (with set_in-
+       put_delay -clock or set_output_delay  -clock), the  software  does  not
+       take  the specified network latency into account. Instead, the software
+       calculates the network latency, which changes the I/O timing.  You  can
+       change this behavior by using the following global variable:
+
+       set_global timing_io_use_clock_network_latency always
+
+       You can use this command after creating the clock with the create_clock
+       command.
+
+Parameters
+       <pin_clock_list>
+              Specifies  the  objects  on  which  you  want  to put the propa-
+              gated_clock assertion. The <pin_or_clock_list> argument can be a
+              collection. When a pin is specified, it affects the  propagation
+              mode for all the registers in the transitive fanout (TFO) of the
+              pin.
+
+Examples
+              * The  following  command puts the propagated_clock assertion on
+                the clock waveform CLK1:
+
+                set_propagated_clock CLK1
+
+              * The following command puts the propagated_clock  assertion  on
+                all clock waveforms:
+
+                set_propagated_clock [all_clocks]
+
+Related Information
+              * all_clocks
+
+              * get_propagated_clock
+
+              * report_clocks
+
+              * set_clock_latency
+
+              * set_clock_uncertainty
+
+                           Fri Apr 04 01:25:37 2025set_propagated_clock(25.10)

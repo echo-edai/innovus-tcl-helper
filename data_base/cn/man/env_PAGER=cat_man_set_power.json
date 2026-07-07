@@ -1,0 +1,201 @@
+{
+  "command": "set_power",
+  "is_cmd": true,
+  "summary": "为整个设计或部分设计指定功耗值",
+  "description": "set_power 命令用于定义用户指定的单元和实例的功耗。此命令必须在 report_power 命令之前指定。它可以为整个设计或部分设计指定功耗值，支持静态和动态分析。命令可以接受使用 get_cells/get_lib_cells 命令创建的单元/实例列表，提供通过正则过滤模式提供列表的灵活性。",
+  "usage": "set_power [<value>] [-cap <value>] [-fanout_limit <value>] [-reset] [-leakage <value>] [-pg_pin {<pg_pin>}] [-pg_net <railname>] [-pwl] [-sticky] [-dynamic_async_mode { <mode_name> }] [-dynamic_switch_pattern <pattern>] [-dynamic_switch_event { switching_<events> }] [-scale_factor <value>] [-include_ddv_modes {<pattern_list>}] [-internal] [-switching <value>] [-clock {all|<clock_name>}] [-exclude_clock] [-exclude_ddv_modes {<pattern_list>}] [-cell <cell_name><value>] [-instance <inst_list><value>] [-pin <pin_name> <pin_power>] [-force] [-custom_macro_pwl <filename>] [-repeat] [-ascii_power_file<filename>] [-trigger_time_adjustment <time>] [-no_propagation] [-static_mode { <custom_label_name> | <mode_name> }] [-slew <value>] [-signal_net <netname>] [-default_dynamic_pgv_mode { <mode_name> }]",
+  "options": [
+    {
+      "name": "<value>",
+      "description": "指定静态功耗计算时的功耗值（单位毫瓦），或动态功耗计算时单元/实例的PWL（分段线性）电流波形。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cap",
+      "description": "为所有网络扇出大于或等于扇出限制（-fanout_limit）的实例指定电容值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fanout_limit",
+      "description": "指定网络的扇出限制。如果实例的网络扇出大于或等于此限制，其开关/内部/漏电功耗将被视为零。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "忽略之前所有的 set_power 命令。可以配合 get_cells/get_lib_cells 命令选择性重置对象列表的单元/实例规格。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-leakage",
+      "description": "指定设计、单元、实例或电源网络的漏电功耗目标。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pg_pin",
+      "description": "为实例的特定电源地（PG）引脚指定开关模式。必须与 -dynamic_switch_pattern 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pg_net",
+      "description": "可选项。为单元、实例或设计指定的功耗或PWL波形将应用于指定的电源轨。未指定时，将应用于实例关联的所有电源轨。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pwl",
+      "description": "指定功率参数（power | pwl）是一个波形，而非功率数值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sticky",
+      "description": "将基于仿真的PWL波形按原样应用于指定的单元/实例进行动态功耗分析。仅当指定了 -pwl 时才使用此选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dynamic_async_mode",
+      "description": "根据PWL波形的长度触发异步宏，以创建单个连续波形。允许为实例或单元指定异步模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dynamic_switch_pattern",
+      "description": "在动态模式下，为实例和单元的引脚指定激励模式。它是一个由0、1、r、f值组成的字符串，表示开关模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dynamic_switch_event",
+      "description": "为单元、实例和引脚指定开关事件及其上升/下降时间。是一个由切换时间后跟'r'或'f'组成的字符串。不应与 -repeat 参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scale_factor",
+      "description": "按指定的缩放因子缩放功耗值。允许在触发文件中设置用户定义的缩放因子来缩放PGV的动态电流。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_ddv_modes",
+      "description": "仅包含与指定模式匹配的电流表征（或DDV）模式。用于控制要切换的模式，而不是切换电源网格视图中定义的所有电流表征模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-internal",
+      "description": "指定设计、单元或实例的目标内部功耗。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-switching",
+      "description": "指定设计、单元或实例的目标开关功耗。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock",
+      "description": "为时钟网络指定功耗值。可以指定特定时钟网络或整个设计的时钟网络功耗值。不能与 -cell、-instance 和 -pg_net 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_clock",
+      "description": "为整个设计指定缩放因子或功耗规格时，排除时钟网络。不能与 -cell、-instance 和 -pg_net 参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_ddv_modes",
+      "description": "排除与指定模式匹配的电流表征（或动态详细视图）模式。用于控制要切换的模式，而不是切换电源网格视图中定义的所有电流表征模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定单元名称。如果未指定单元或实例名称，功耗将分配给所有电源轨。可以接受 get_cells/get_lib_cells 命令来创建匹配模式列表的单元/实例集合。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance",
+      "description": "指定实例名称。如果未指定单元或实例名称，功耗将分配给所有电源轨。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "为特定实例指定引脚级别的功耗数值。允许控制分配给实例电源地引脚的功耗。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "即使存在Verilog不匹配，也应用 set_power 命令。对于动态或基于DEF的静态分析，允许将 set_power 应用于Verilog中不存在的DEF实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-custom_macro_pwl",
+      "description": "指定使用自定义触发文件来应用实例或单元的PWL波形。必须与 set_power -dynamic_switch_pattern 在无向量流程中一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-repeat",
+      "description": "在仿真周期内重复所有时钟周期的动态开关模式。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ascii_power_file",
+      "description": "指定实例列表文件的名称。该文件包含实例列表，格式为：<instance_name> <power_value> <<pin_name>>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-trigger_time_adjustment",
+      "description": "调整自定义宏各种功能模式（读/写/空闲）电流波形的触发时间。允许在触发时间之前启动波形（支持负时间）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-no_propagation",
+      "description": "指定用户定义的开关模式仅在状态传播完成后应用。必须与 -dynamic_switch_pattern 参数一起指定。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-static_mode",
+      "description": "为具有静态多电压多频率（MvMf）模式的PGV中的单元或实例指定模式名称或自定义标签名称，用于计算实例电流。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-slew",
+      "description": "为所有网络扇出大于或等于扇出限制（-fanout_limit）的实例指定转换时间值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-signal_net",
+      "description": "指定用于功耗分配的信号网络名称。指定后，连接到该信号网络的驱动实例将被分配用户定义的功耗值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-default_dynamic_pgv_mode",
+      "description": "指定在动态功耗和抖动分析期间使用的电流表征模式。当使用具有多个功能模式的PGV时可以指定。与 -dynamic_switch_pattern 参数互斥。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

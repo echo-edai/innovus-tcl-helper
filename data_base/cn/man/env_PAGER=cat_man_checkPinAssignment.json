@@ -1,0 +1,99 @@
+{
+  "command": "checkPinAssignment",
+  "is_cmd": true,
+  "summary": "检查生成的分区引脚和I/O引脚是否符合各种设计规则约束。",
+  "description": "该命令用于检查分区引脚和I/O引脚的分配情况，验证其是否符合一系列物理设计规则。检查内容包括：引脚是否分配到正确的金属层（取决于分区边）、引脚是否在分区预留的层范围内、同一布线层上的特定位置是否只分配了一个引脚、引脚是否放置在布线轨道上、引脚与布线障碍物/电源地引脚是否有有效间距、引脚尺寸/状态/类型是否正确、引脚分配是否符合最小面积规则、引脚是否遵循引脚组或网络组的禁止间距约束、以及报告主克隆设计中的克隆引脚违规。命令会生成摘要报告，包含穿通引脚信息以及分区、黑盒和顶层模块的所有引脚摘要。",
+  "usage": "checkPinAssignment [-help] [-outFile <fileName>] [-reportSameNetPinAsOverlap] [-reportUncoloredViolation] [<topCellName> | -ptn <partitionName list> ] [-ptn <partitionName list> | {-pin_file <fileName> [-exclude_ptn <fileName>]} | -exclude_pin_file <fileName>] [ -report_violating_pin ] [-ignore   {bus_guide   net_group   pin_abutment   pin_depth  pin_group pin_guide pin_layer pin_min_area pin_on_fence pin_on_track  pin_spacing pin_spacing_constraint   pin_spacing_routeBlk  pin_width  clones  logical_pin pin_color unplaced} ] [ [-preCheck [-skipCheck {overlap layer  spacingConstraint  fixedIoPins multiTermNet  masterClone  netGroup  connection  relativeOrientRelation gridTrackAlignment symmetryOffset masterCloneSize alignZone}] [-excludeNetFile <fileName>] ] | { [-ptn <partitionName list]> [-pin {<pinName list>}] [-pin_file <fileName>] [-exclude_pin_file <fileName>] [-ignore  {bus_guide   net_group   pin_abutment   pin_depth   pin_group pin_guide  pin_layer pin_min_area pin_on_fence pin_on_track pin_spacing pin_spacing_constraint  pin_spacing_routeBlk  pin_width  clones   logical_pin pin_color unplaced}] [-report_violating_pin ] [-exclude_ptn <fileName>]}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outFile",
+      "description": "指定输出报告的文件名，除了屏幕显示外，还将结果打印到指定文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reportSameNetPinAsOverlap",
+      "description": "将连接到同一网络且位于相同位置和层上的引脚报告为重叠违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reportUncoloredViolation",
+      "description": "检查未着色的引脚并将其报告为违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-report_violating_pin",
+      "description": "报告所有存在违规的引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore",
+      "description": "忽略指定类别的检查和报告。可忽略的类别包括：bus_guide, net_group, pin_abutment, pin_depth, pin_group, pin_guide, pin_layer, pin_min_area, pin_on_fence, pin_on_track, pin_spacing, pin_spacing_constraint, pin_spacing_routeBlk, pin_width, clones, logical_pin, pin_color, unplaced。",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-preCheck",
+      "description": "检查引脚分配的可行性，主要用于找出完全对接设计中未放置引脚的原因。注意：如果使用此参数，则不能使用其他checkPinAssignment命令参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipCheck",
+      "description": "与-preCheck参数一起使用，跳过指定类别的检查。可跳过的类别包括：overlap, layer, spacingConstraint, fixedIoPins, multiTermNet, masterClone, netGroup, connection, relativeOrientRelation, gridTrackAlignment, symmetryOffset, masterCloneSize, alignZone。",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-excludeNetFile",
+      "description": "指定一个文件，其中包含在检查引脚分配时要排除的网络列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_ptn",
+      "description": "指定要排除的引脚文件中的分区列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_pin_file",
+      "description": "指定一个文件，其中包含要为分区排除的引脚列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定命令仅对指定的引脚运行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_file",
+      "description": "指定一个文件，其中包含分区的引脚列表。文件格式需包含'Partition:'关键字和分区/模块名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ptn",
+      "description": "指定要检查引脚的分区。如果分区不是顶层模块，则需要此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<topCellName>",
+      "description": "指定顶层单元名称。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

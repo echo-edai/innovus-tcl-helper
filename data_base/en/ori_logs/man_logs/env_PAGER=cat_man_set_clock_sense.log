@@ -1,0 +1,148 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_clock_sense(25.10)                                  set_clock_sense(25.10)
+
+Name
+       set_clock_sense  -  Defines  the phases of a clock or clock source that
+       can propagate beyond a port or instance pin
+
+Syntax
+        set_clock_sense
+
+       [-help]
+
+       <pin_or_port_list>
+
+       [-clocks <clock_list>]
+
+       {-positive | -negative | -stop_propagation |  -logical_stop_propagation
+       | -stop <type_list>}
+
+       Defines the phases of a clock or clock source that can propagate beyond
+       a  port  or  instance  pin.   The clocks can be selectively or entirely
+       blocked through the pin to all downstream  logic.   Additionally,  data
+       relating to clocks can be blocked through the pin.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clocks <clock_list>
+              Specifies  a list of clocks passing through a specified point to
+              which the constraint applies.
+
+              When this parameter is not specified,  the  filtering  of  clock
+              phase  will be applicable to all the clocks passing through that
+              specified point.
+
+              This parameter must be used with a specified pin name and one of
+              the parameters : -positive, -negative, -stop_propagation, -logi-
+              cal_stop_propagation, or -stop.
+
+       -logical_stop_propagation
+              Stops the propagation of specified clocks  passing  through  the
+              specified pins.
+
+       -negative
+              Specifies  that positive phase filtered clocks pass through pins
+              in the <pin_list>.
+
+       <pin_or_port_list>
+              Specifies the list or collection of cell output pins. The unate-
+              ness specified by the  set_clock_sense  command  is  applied  to
+              clocks propagating through the specified point.
+
+       -positive
+              Specifies  that negative phase filtered clocks pass through pins
+              in the <pin_list>.
+
+       -stop_propagation
+              Stops the propagation of specified clocks and clock source  data
+              paths passing through the specified pins.
+
+       -stop <type_list>
+              Applies   clock   sense   to   object  types  specified  in  the
+              <type_list>. The type list  options  are  -  all,  clock,  data,
+              clock_source_data, default_data.
+
+              These are explained below:
+
+              * all:  Stops all phases from propagating. This is equivalent to
+                specifying both the clock and data options.
+
+              * clock: Stops clock phases launched by  clock(s)  specified  in
+                the  <clock_list>from propagating, and is equivalent to exist-
+                ing -logical_stop_propagation.
+
+              * data: Stops all data phases launched by clock(s) specified  in
+                <clock_list>,   starting  from  the  pins/ports  specified  in
+                <pin_or_port_list>. The objects in the pin_or_port_list can be
+                selected anywhere in the design - clock/data network.
+
+              * clock_source_data: Stops only clock source  data  phases  from
+                propagating. The combination of clock_source_data and clock is
+                equivalent to the existing -stop_propagation option.
+
+              * default_data:  Stops  only  default  data phases (representing
+                constrained paths) from propagation.  This  option  cannot  be
+                specified along with the <-clock clock_list>.
+
+              The    -stop   parameter   extends   the   capability   of   the
+              set_clocks_sense  command  to  selectively  block  data   timing
+              phases. This parameter provides a more generalized use model for
+              selecting among all types of paths that should be filtered.
+
+              The  -stop  parameter  is mutually exclusive with the -positive,
+              -negative, -stop_propagation, and -logical_stop_propagation  op-
+              tions.
+
+Examples
+              * The  following  command  stops  the  propagation of clock CLK1
+                through the pin CLKBUF1/Z:
+
+                set_clock_sense -logical_stop_propagation  -clocks  CLK1  CLK-
+                BUF1/Z
+
+              * The  following command allows the positive phase clock CLK1 to
+                pass through CLKBUF1/Z but  filters  out  the  negative  phase
+                clock CLK1:
+
+                set_clock_sense -positive -clocks CLK1 CLKBUF1/Z
+
+              *
+
+                The following command stops clock phases starting from pin1:
+
+                set_clock_sense pin1 -stop {clock}
+
+                or
+
+                set_clock_sense pin1 -logical_stop_propagation
+
+              *
+
+                The  following command stops data phases based only on CK1 and
+                CK2 starting from pin1:
+
+                set_clock_sense pin1 -stop {data} -clocks {CK1 CK2}
+
+              *
+
+                The following command stops only the clock source data  phases
+                starting from pin1:
+
+                set_clock_sense pin1 -stop {clock_source_data}
+
+              *
+
+                The  following  command  stops the clock and clock source data
+                from pin1:
+
+                set_clock_sense pin1 -stop {clock clock_source_data}
+
+                or
+
+                set_clock_sense pin1 -stop_propagation
+
+Related Information
+              * reset_clock_sense
+
+                           Fri Apr 04 01:25:37 2025     set_clock_sense(25.10)

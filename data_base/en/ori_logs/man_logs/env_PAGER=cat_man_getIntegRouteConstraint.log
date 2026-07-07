@@ -1,0 +1,303 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+getIntegRouteConstraint(25.10)                  getIntegRouteConstraint(25.10)
+
+Name
+       getIntegRouteConstraint - Displays the settings needed for the setInte-
+       gRouteConstraint command
+
+Syntax
+       getIntegRouteConstraint
+
+       [-help]
+
+       [-net <net_name> | -name <constraint_name>  | -additional]
+
+       Displays the settings needed for the setIntegRouteConstraint command.
+
+       If  mixed-signal  constraints  have  not yet been defined, the getInte-
+       gRouteConstraint command does not return anything.
+
+       If you run the getIngegRouteConstraint command without any option,  all
+       nets  with  all  constraint names and the maximum resistance constraint
+       (if already set) are displayed on the console window.
+
+       Note: The output is displayed only on the console  window  and  is  not
+       written  to the log file. You cannot use > to write to a file. The only
+       way to send the output to a file is to run the following:
+
+       redirect {puts [getIntegRouteConstraint <xxxx>]} > <filename>
+
+       Alternatively, use the command writeIntegRouteConstraint.
+
+       Note: Integration constraints are used to convey the design intent in a
+       mixed-signal design. These constraints are fully interoperable  between
+       the digital and custom environments.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each getIntegRouteConstraint parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+              man getIntegRouteConstraint.
+
+       -additional
+              Returns the path to the additional constraint file,  which  con-
+              tains the maximum resistance target values for nets.
+
+       -name <constraint_name>
+              Returns  a specific constraint by name. You can specify multiple
+              constraint names, enclosed in braces.
+
+       -net <net_name>
+              Specifies the net for which the constraints will be returned. If
+              the net is part of a netClass, the constraints for the  netClass
+              is  returned.  You  can  specify multiple net names, enclosed in
+              braces.
+
+Example
+              *
+
+                The following command returns the  constraint(s)  defined  for
+                the net scan_out_1:
+
+                getIntegRouteConstraint -net scan_out_1
+
+                The output of the command is:
+
+                {-type shield  -shieldNet { VSS } -shieldType side -shieldTol-
+                erance 30.0 -net { scan_out_1 }
+
+                }
+
+              *
+
+                The  following command returns details of the constraint named
+                Constr_13__analogSW__DTMF_INST/analogSW_INST:
+
+                getIntegRouteConstraint               -name               Con-
+                str_13__analogSW__DTMF_INST/analogSW_INST
+
+                The output of the command is:
+
+                {-type             netClass             -name             Con-
+                str_13__analogSW__DTMF_INST/analogSW_INST    -shieldNet    VSS
+                -shieldType  side  -connectSupply  anyPoint  -rule  NDR8  -net
+                {analogW4I}
+
+                }
+
+              *
+
+                The following command returns the constraints on the specified
+                nets:
+
+                getIntegRouteConstraint       -net       {DTMF_INST/cntrlxo[3]
+                DTMF_INST/cntrlxo[0]}
+
+                The output of the command is:
+
+                {-type             diffPair             -name             Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST -tolerance  20  -rule
+                default -net {DTMF_INST/cntrlxo[3] DTMF_INST/cntrlxo[2]}
+
+                }          {-type          diffPair         -name         Con-
+                str_1__analogNW__DTMF_INST/analogNW_INST  -tolerance  5  -rule
+                default -net {DTMF_INST/cntrlxo[0] DTMF_INST/cntrlxo[1]}
+
+                }
+
+              *
+
+                The  following  command returns all the constraints on all the
+                nets in the design and the maximum resistance  constraint  (if
+                already set):
+
+                getIntegRouteConstraint
+
+                A sample output of the command is displayed below:
+
+                {-type             diffPair             -name             Con-
+                str_3__analogNL__DTMF_INST/analogNL_INST  -tolerance 20
+
+                 -rule default -net {DTMF_INST/digsyncc DTMF_INST/digsyncd}
+
+                }         {-type         diffPair          -name          Con-
+                str_2__analogNL__DTMF_INST/analogNL_INST  -tolerance
+
+                20 -rule default -net {DTMF_INST/digsynca DTMF_INST/digsyncb}
+
+                }          {-type          diffPair         -name         Con-
+                str_1__analogNW__DTMF_INST/analogNW_INST  -tolerance
+
+                5 -rule  default  -net  {DTMF_INST/cntrlxo[0]  DTMF_INST/cntr-
+                lxo[1]}
+
+                }          {-type          diffPair         -name         Con-
+                str_2__analogNW__DTMF_INST/analogNW_INST  -tolerance
+
+                20 -rule default  -net  {DTMF_INST/cntrlxo[3]  DTMF_INST/cntr-
+                lxo[2]}
+
+                }         {-type         matchLength         -name        Con-
+                str_4__analogNL__DTMF_INST/analogNL_INST  -toleran
+
+                ce 20 -matchStyle accordion -rule default -net {DTMF_INST/dig-
+                sync3 DTMF_INST/dig
+
+                sync4}
+
+                }        {-type         matchLength         -name         Con-
+                str_5__analogNL__DTMF_INST/analogNL_INST  -toleran
+
+                ce 20 -matchStyle accordion -shieldNet VSS -shieldType unspec-
+                ified -connectSuppl
+
+                y  anyPoint -shieldWidth { Metal1 0.56 Metal2 0.56 Metal3 0.56
+                Metal4 0.56 Metal5
+
+                 0.88 Metal6  0.88}  -rule  default  -net  {DTMF_INST/digsync2
+                DTMF_INST/digsync1} ha
+
+                sUnknownConstraint
+
+                }          {-type          netClass         -name         Con-
+                str_10__analogSW__DTMF_INST/analogSW_INST  -shieldNet
+
+                 VSS -shieldType side -connectSupply anyPoint -rule NDR8  -net
+                {analogW1I} hasUnk
+
+                nownConstraint
+
+                }          {-type          netClass         -name         Con-
+                str_11__analogSW__DTMF_INST/analogSW_INST  -shieldNet
+
+                 VSS -shieldType side -connectSupply anyPoint -rule NDR8  -net
+                {analogW2I}
+
+                }          {-type          netClass         -name         Con-
+                str_12__analogSW__DTMF_INST/analogSW_INST  -shieldNet
+
+                 VSS -shieldType side -connectSupply anyPoint -rule NDR8  -net
+                {analogW3I}
+
+                }          {-type          netClass         -name         Con-
+                str_13__analogSW__DTMF_INST/analogSW_INST  -shieldNet
+
+                 VSS -shieldType side -connectSupply anyPoint -rule NDR8  -net
+                {analogW4I}
+
+                }  {-type  shield   -shieldNet { VSS } -shieldType side -net {
+                analogS4I } hasUnkno
+
+                wnConstraint
+
+                } {-type shield  -shieldNet { VSS } -shieldType  side  -net  {
+                analogS3I } hasUnkno
+
+                wnConstraint
+
+                }  {-type  shield   -shieldNet { VSS } -shieldType unspecified
+                -net { analogS2I }
+
+                } {-type shield  -shieldNet { VSS } -shieldType  side  -net  {
+                analogS1I }
+
+                }  {-type  shield  -rule NDR0.6__analogNE  -shieldNet { AVSS }
+                -shieldType coaxial
+
+                -connectSupply anyPoint -shieldWidth { Metal1 0.23 Metal2 0.28
+                Metal3 0.28 Metal
+
+                4 0.28 Metal5 0.28 Metal6  0.44}  -tandemWidth  {  Metal1  1.4
+                Metal2 1.4 Metal3 1.4
+
+                Metal4  1.4  Metal5  1.4  Metal6 1.4} -shieldGap { Metal1 0.23
+                Metal2 0.28 Metal3 0.
+
+                28 Metal4 0.28 Metal5 0.28 Metal6 0.46} -net { analogE1I } ha-
+                sUnknownConstraint
+
+                } {-type shield  -shieldNet { AVSS } -shieldType coaxial -con-
+                nectSupply anyPoint
+
+                 -shieldWidth { Metal1 0.23 Metal2  0.28  Metal3  0.28  Metal4
+                0.28 Metal5 0.28 Meta
+
+                l6  0.44}  -tandemWidth  {  Metal1  1.4  Metal2 1.4 Metal3 1.4
+                Metal4 1.4 Metal5 1.4 M
+
+                etal6 1.4} -shieldGap { Metal1 0.23 Metal2  0.28  Metal3  0.28
+                Metal4 0.28 Metal5 0
+
+                } {-type shield  -shieldNet { AVSS } -shieldType coaxial -con-
+                nectSupply anyPoint
+
+                 -shieldWidth  {  Metal1  0.23  Metal2 0.28 Metal3 0.28 Metal4
+                0.28 Metal5 0.28 Meta
+
+                l6 0.44} -tandemWidth {  Metal2  1.4  Metal3  1.4  Metal4  1.4
+                Metal5 2.24 Metal6 1.4}
+
+                 -shieldGap  { Metal1 0.23 Metal2 0.28 Metal3 0.28 Metal4 0.28
+                Metal5 0.28 Metal6
+
+                 0.46} -net { analogN3I } hasUnknownConstraint
+
+                } {-type shield  -shieldNet { AVSS } -shieldType coaxial -con-
+                nectSupply anyPoint
+
+                 -shieldWidth { Metal1 0.23 Metal2  0.28  Metal3  0.28  Metal4
+                0.28 Metal5 0.28 Meta
+
+                l6  0.44}  -tandemWidth  {  Metal1  1.4  Metal2 1.4 Metal3 1.4
+                Metal4 1.4 Metal5 1.4 M
+
+                etal6 1.4} -shieldGap { Metal1 0.23 Metal2  0.28  Metal3  0.28
+                Metal4 0.28 Metal5 0
+
+                }  {-type  shield  -rule NDR0.6__analogNE  -shieldNet { AVSS }
+                -shieldType coaxial
+
+                -connectSupply anyPoint -shieldWidth { Metal1 0.23 Metal2 0.28
+                Metal3 0.28 Metal
+
+                4 0.28 Metal5 0.28 Metal6  0.44}  -tandemWidth  {  Metal1  1.4
+                Metal2 1.4 Metal3 1.4
+
+                Metal4  1.4  Metal5  1.4  Metal6 1.4} -shieldGap { Metal1 0.23
+                Metal2 0.28 Metal3 0.
+
+                28 Metal4 0.28 Metal5 0.28 Metal6 0.46} -net { analogN1I } ha-
+                sUnknownConstraint
+
+                }
+
+              * The following command returns the path to the additional  con-
+                straint  file,  which  contains  the maximum resistance target
+                values for nets:
+
+                getIntegRouteConstraint -additional
+
+                A sample output of the command is displayed below:
+
+                {-type additional -file 1.txt
+
+                }
+
+Related Information
+              * deleteIntegRouteConstraint
+
+              * setIntegRouteConstraint
+
+              * writeIntegRouteConstraint
+
+              * Routing Constraint Interoperability chapter in the Mixed  Sig-
+                nal Interoperability Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Mixed Signal -> Integration Constraint Editor
+
+                           Fri Apr 04 01:25:37 20g2e5tIntegRouteConstraint(25.10)

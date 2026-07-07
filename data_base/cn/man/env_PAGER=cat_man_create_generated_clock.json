@@ -1,0 +1,93 @@
+{
+  "command": "create_generated_clock",
+  "is_cmd": true,
+  "summary": "从指定源引脚的时钟波形创建一个新的时钟信号，并将其与目标引脚列表绑定。",
+  "description": "该命令用于在设计中创建一个新的生成时钟信号，该信号源自给定引脚的时钟波形，并与<target_pin_list>参数中的引脚或层次化引脚绑定。当源时钟发生变化时，派生时钟会自动改变。可以通过三种方式生成新的时钟波形：乘以源时钟频率、除以源时钟频率或选择源时钟的边沿映射到新时钟的边沿。如果指定了不正确的时钟定义，将发生错误且时钟不会被生成。当在引脚上设置此约束时，软件将停止所有上游时钟（包括生成时钟自身的主时钟）的时钟相位传播。注意：引脚上的create_generated_clock断言会覆盖任何具有相同源引脚的现有create_generated_clock断言，除非使用-add参数。",
+  "usage": "create_generated_clock [-help] <target_pin_list> [-add] [-comment <string>] [-duty_cycle <percent>] [-edge_shift <edge_shift_list>] [-invert] [-master_clock <source_clock_name>] [-name <<clock_name>>] -source <source_pin> {[-multiply_by <factor>] [-divide_by <factor>] [-edges <edge_list>] [-combinational]}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<target_pin_list>",
+      "description": "指定应用生成时钟断言的引脚列表。从这些引脚向下游传播的时钟信号将与生成时钟关联。",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-add",
+      "description": "当多个时钟必须扇入源引脚时，在同一源上建模多个生成时钟。理想情况下，应为每个扇入主引脚的时钟指定一个生成时钟。与-name和-master_clock参数一起指定此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-comment",
+      "description": "允许插入注释。注释会被读取但会被忽略（伴随一次性警告消息）。它们不用于时序分析报告，也不会在保存约束时写出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-duty_cycle",
+      "description": "设置占空比（高脉冲宽度占时钟周期的百分比）。数字（<percent>）介于0到100之间。例如，如果<percent=50>，则新时钟波形的高脉冲宽度与其低脉冲宽度相同。注意：-duty_cycle选项只能与-multiply_by选项一起使用，否则将被忽略并发出警告。",
+      "required": false,
+      "type": "percent"
+    },
+    {
+      "name": "-edge_shift",
+      "description": "指定<edge_list>选项中每个边的偏移量。偏移量将以库时间单位表示。",
+      "required": false,
+      "type": "edge_shift_list"
+    },
+    {
+      "name": "-invert",
+      "description": "反转源时钟。与-source选项以及-multiply_by或-divide_by选项一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-master_clock",
+      "description": "从指定的时钟名称生成目标时钟。如果指定了-master_clock选项且多个信号到达源引脚，则使用此选项指定的时钟来生成目标时钟。与-master_clock参数一起使用-add参数，以便在希望在同一源上指定多个时钟进行同时分析时，将时钟添加到现有时钟。",
+      "required": false,
+      "type": "source_clock_name"
+    },
+    {
+      "name": "-name",
+      "description": "指定生成时钟的名称。默认：系统为您创建名称。始终为生成时钟指定一个名称。某些命令在使用系统生成的名称时会报错。",
+      "required": false,
+      "type": "clock_name"
+    },
+    {
+      "name": "-source",
+      "description": "指定从中派生生成时钟的源引脚名称 - 相对于包含主时钟以及生成时钟定义的主时钟。",
+      "required": true,
+      "type": "source_pin"
+    },
+    {
+      "name": "-multiply_by",
+      "description": "通过将源时钟频率乘以<mfactor>来确定新时钟的频率。例如，如果<mfactor=4>，则新频率是源频率的4倍，新时钟周期是源时钟周期的1/4。",
+      "required": false,
+      "type": "integer"
+    },
+    {
+      "name": "-divide_by",
+      "description": "通过将源时钟频率除以<dfactor>来确定新时钟的频率。例如，如果<dfactor=5>，则新频率是源频率的1/5，新时钟周期是源时钟周期的5倍。",
+      "required": false,
+      "type": "integer"
+    },
+    {
+      "name": "-edges",
+      "description": "从源时钟中选择一个边沿列表，这些边沿构成派生时钟的边沿。",
+      "required": false,
+      "type": "edge_list"
+    },
+    {
+      "name": "-combinational",
+      "description": "将延迟的路径搜索限制为仅不跨越顺序器件或其他生成时钟源引脚的路径。当指定-combinational时，如果同时存在顺序和组合延迟路径，软件仅考虑生成时钟的组合路径。如果生成时钟没有组合延迟路径，则生成时钟不会从其父时钟层次结构继承延迟。默认情况下，在计算生成时钟的延迟时，软件会搜索从父波形到生成时钟点的最长（和最短）路径。所有路径都会被考虑，包括那些穿越顺序元件（如触发器、寄存器和锁存器）的路径。默认行为适用于存在生成时钟级联且某些时钟未明确定义的情况。-combinational选项可与-multiply_by、-divide_by或-edges选项结合使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

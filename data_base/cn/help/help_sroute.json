@@ -1,0 +1,237 @@
+{
+  "command": "sroute",
+  "is_cmd": true,
+  "summary": "特殊布线命令，用于连接电源地网络到特定的物理对象，如模块引脚、焊盘引脚、电源环等。",
+  "description": "sroute 是 Innovus 工具中用于执行特殊布线的命令，主要用于电源和地网络的连接。它可以将指定的网络连接到各种目标对象，包括模块引脚（Block Pin）、核心单元引脚（Core Pin）、焊盘引脚（Pad Pin）、电源环（Pad Ring）、浮动条带（Floating Stripe）以及次级电源引脚（Secondary Power Pin）。该命令提供了丰富的选项来控制连接的范围、层、宽度、目标类型以及布线行为（如是否允许绕线、层切换、删除现有布线等），是完成电源网络布线（PG Routing）和芯片级连接的关键步骤。",
+  "usage": "sroute [-help] [-allowJogging <0|1>] [-allowLayerChange <0|1>] [-area {x1 y1 x2 y2}] [-blockPin {useLef all onBoundary leftBoundary rightBoundary topBoundary bottomBoundary abutPins}] [-blockPinLayerRange {minLayerName maxLayerName}] [-blockPinTarget {nearestTarget boundaryWithPin farthestPadRing blockring ring stripe padring ringpin blockpin}] [-blockPinWidthRange {min max}] [-connect [blockPin corePin padPin padRing floatingStripe secondaryPowerPin]] [-connectAlignedBlockAndPadPin {padPinAsTarget blockPinAsTarget}] [-connectInsideArea] [-corePinCheckStdcellGeoms] [-corePinLayer <layerNameList>] [-corePinTarget {firstAfterRowEnd boundaryWithPin farthestPadRing none blockring ring stripe padring ringpin blockpin}] [-corePinWidth <real>] [-crossoverViaLayerRange <bot top>] [-deleteExistingRoutes] [-detailed_log] [-floatingStripeTarget {blockring ring stripe padring ringpin blockpin followpin}] [-inst {block/pad insts}] [-layerChangeRange {bottomLayerName topLayerName}] [-nets {net_list}] [-noBlockPinOneAmongOverlappedPins] [-padCellSkipRoutingOnPadSide {top bottom left right}] [-padPinLayerRange {minLayerName maxLayerName}] [-padPinPortConnect {onePort allPort oneGeom allGeom preferLayer}] [-padPinTarget {nearestTarget blockring ring stripe ringpin blockpin followpin}] [-padPinWidth <real>] [-padRingLayer {layerNameList}] [-padRingWidth <real>] [-powerDomains <powerDomainName>] [-secondaryPinNet <net>+] [-secondaryPinRailLayer <layerName>] [-secondaryPinRailVerticalStripeGrid {layerName width pitch}] [-stripeLayerRange {minLayerName maxLayerName}] [-targetObjListFile <objectListFileName>+] [-targetViaLayerRange <bot top>] [-uda <subclass_string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowJogging",
+      "description": "是否允许布线时进行绕线（打弯）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-allowLayerChange",
+      "description": "是否允许布线时切换金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-area",
+      "description": "指定一个矩形区域坐标 {x1 y1 x2 y2}，仅在此区域内进行连接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPin",
+      "description": "指定要连接的模块引脚类型（如使用LEF定义的全部引脚、在边界上的引脚等）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPinLayerRange",
+      "description": "指定模块引脚所在的金属层范围 {最小层名 最大层名}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPinTarget",
+      "description": "指定模块引脚连接的目标对象类型（如最近的电源环、条带等）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPinWidthRange",
+      "description": "指定模块引脚的宽度范围 {最小值 最大值}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connect",
+      "description": "指定要进行连接的对象类型列表（如模块引脚、核心引脚、焊盘引脚、电源环等）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connectAlignedBlockAndPadPin",
+      "description": "指定当模块引脚和焊盘引脚对齐时，谁作为连接目标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connectInsideArea",
+      "description": "仅连接到指定区域内部的目标对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-corePinCheckStdcellGeoms",
+      "description": "检查标准单元几何形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-corePinLayer",
+      "description": "仅连接到指定金属层上的标准单元引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-corePinTarget",
+      "description": "指定标准单元引脚（Followpin）连接的目标对象类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-corePinWidth",
+      "description": "仅连接到指定宽度的标准单元引脚。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-crossoverViaLayerRange",
+      "description": "指定交叉堆叠通孔（Crossover Via）的金属层范围 {底层 顶层}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-deleteExistingRoutes",
+      "description": "删除现有的连接布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-detailed_log",
+      "description": "生成详细的日志文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-floatingStripeTarget",
+      "description": "指定浮动条带（Stripe）连接的目标对象类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst",
+      "description": "指定要连接的模块（Block）或焊盘（Pad）实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerChangeRange",
+      "description": "指定布线时允许的金属层范围 {底层名 顶层名}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要进行布线的网络列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noBlockPinOneAmongOverlappedPins",
+      "description": "对所有引脚进行布线，包括那些相互重叠的引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-padCellSkipRoutingOnPadSide",
+      "description": "在焊盘单元的指定侧（如上、下、左、右）跳过布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinLayerRange",
+      "description": "指定焊盘引脚所在的金属层范围 {最小层名 最大层名}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinPortConnect",
+      "description": "指定连接到焊盘引脚上多个端口（Port）或几何形状（Geometry）的数量和方式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinTarget",
+      "description": "指定焊盘引脚连接的目标对象类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinWidth",
+      "description": "仅连接到指定宽度的焊盘引脚。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-padRingLayer",
+      "description": "仅连接到指定金属层上的电源环（Pad Ring）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padRingWidth",
+      "description": "仅连接到指定宽度的电源环（Pad Ring）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-powerDomains",
+      "description": "指定电源域（Power Domain）进行选择。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-secondaryPinNet",
+      "description": "指定次级电源引脚（Secondary Power Pin）的网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-secondaryPinRailLayer",
+      "description": "指定次级电源引脚轨道（Rail）所在的金属层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-secondaryPinRailVerticalStripeGrid",
+      "description": "按层名、宽度和间距指定次级电源引脚的垂直条带网格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripeLayerRange",
+      "description": "指定浮动条带（Floating Stripe）所在的金属层范围 {最小层名 最大层名}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-targetObjListFile",
+      "description": "指定包含目标对象列表的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-targetViaLayerRange",
+      "description": "指定目标堆叠通孔（Target Stack Via）的金属层范围 {底层 顶层}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-uda",
+      "description": "为布线生成的导线指定用户自定义属性（UDA）的子类。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

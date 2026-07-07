@@ -1,0 +1,98 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbSet(25.10)                                                      dbSet(25.10)
+
+Name
+       dbSet - Changes the specified attribute value for a database object
+
+Syntax
+       dbSet
+
+       [-d]
+
+       {<objList> | head | top | selected}
+
+       [.<objType>]*.<attrName><attrValue>
+
+       [-help]
+
+       Changes  the specified attribute value for a database object. The dbSet
+       command takes an object or object list as a starting point, then uses a
+       period to traverse to other related objects, or access attributes.  Ad-
+       ditional  periods  can  be  used  to  continue  traversing the database
+       schema.
+
+       The dbGet command also helps in finding out the settable  objects.  For
+       example,  after  selecting  an instance and querying its pt* attributes
+       with dbGet selected.?h pt*, the software gives displays:
+
+              * pt(settable): pt, location of the instance
+
+              * pt_x(settable): x coordinate of location of the instance
+
+              * pt_y(settable): y coordinate of location of the instance.
+
+       The pt, pt_x, and pt_y attributes of an instance can  also  be  changed
+       using  dbSet.  In  the following example, the name attribute of the se-
+       lected instance cannot be changed with dbSet:
+
+        dbget selected.?h name
+
+       Following is the output of the above command:
+
+       name: string, Fully qualified (path) name of the instance
+
+       The dbSet command does not create  or  delete  objects.  You  may  also
+       change  the  mask  of the multi-color pillar via through the dbSet com-
+       mand, as shown below:
+
+       dbSet $via.cutMasks $mask
+
+       Use the dbGet command with the .?h operator, or  see  Innovus  Database
+       Object Information, to find out which object attributes can be set.
+
+Parameters
+       -d     Specifies values in database units, specified in integers.
+
+              Default: Specifies values in user units, in microns.
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each dbSet parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command: man dbSet.
+
+       <objList>
+              Specifies  one or more object pointers. The list must be homoge-
+              neous.
+
+       head   Specifies the pointer for the root, or head of the design as the
+              starting point (also known as dbgHead).
+
+       top    Specifies the pointer to the top  cell  in  the  design  as  the
+              starting point (also known as dbgTopCell).
+
+       selected
+              Specifies  that the selected object (or objects) is the starting
+              point.
+
+       <.objType>
+              Specifies the object type.
+
+       <.attrName>
+              Specifies the object attribute to change.
+
+       <attrValue>
+              Specifies the new attribute value.
+
+Examples
+              * The following command changes the placement status of the  top
+                cell instances to fixed:
+
+                dbSet top.insts.pStatus fixed
+
+              * The following command sets all the pad instances to the place-
+                ment status fixed:
+
+                dbSet [dbGet top.insts.cell.baseClass pad -p2].pstatus fixed
+
+                           Fri Apr 04 01:25:37 2025               dbSet(25.10)

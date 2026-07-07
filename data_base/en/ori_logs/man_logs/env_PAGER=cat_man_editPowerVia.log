@@ -1,0 +1,349 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editPowerVia(25.10)                                        editPowerVia(25.10)
+
+Name
+       editPowerVia  -  Modifies  or  deletes  existing power vias or adds new
+       power vias to the design
+
+Syntax
+          editPowerVia
+
+       [-help]
+
+       {-add_vias {0 | 1}
+
+           | -modify_vias {0 | 1}
+
+           | -delete_vias {0 | 1}}
+
+       [-area {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}]
+
+       [-between_selected_wires {0 | 1}
+
+           | -selected_blocks {0 | 1}
+
+           | -selected_wires {0 | 1}
+
+           | -selected_vias {0 | 1} ]
+
+       [-bottom_layer <layername>]
+
+       [-cell_pins {<cell1>:<pin1> <cell2>:<pin2> ...}]
+
+       [-create_via_on_merged_target_on_layer <layerName>]
+
+       [-create_via_on_merged_target_within micron]
+
+       [-create_via_on_signal_pins {0 | 1}]
+
+       [-exclude_stack_vias {0 | 1}]
+
+       [-followpin_via_stapling {<cutclass1 weight1 cutclass2 weight2>}]
+
+       [-nets <net_list>]
+
+       [-orthogonal_only {0 | 1}]
+
+       [-split_long_via {<threshold step offset length>}]
+
+       [-split_vias {0 | 1}
+
+       [-same_sized_stack_vias {0 | 1}
+
+       [-skip_via_on_wire_shape {[Blockring] [Stripe] [Followpin]
+
+           [Corewire]  [Blockwire]  [Iowire]   [Padring]   [Ring]   [Fillwire]
+       [Noshape]}
+
+       [-skip_via_on_pin {[Pad] [Block] [Cover] [Standardcell] [Physicalpin]}]
+
+       [-skip_via_on_wire_status {[routed] [fixed] [cover] [shield]}]
+
+       [-top_layer <layername>]
+
+       [-uda]
+
+       [{-via_scale_height integer -via_scale_width <integer>
+
+           | -via_rows <integer> -via_columns <integer>
+
+           | -via_height real_number -via_width <real_number>}]
+
+       [-via_using_exact_crossover_size {0 | 1} ]
+
+       Modifies  or  deletes existing power vias or adds new power vias to the
+       design.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each editPowerVia parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man editPowerVia
+
+       -add_vias {0 | 1}
+              When set to 1, adds power vias to the design.
+
+              Default: 0
+
+       -area {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}
+              Adds, modifies, or deletes power vias within  the  area  regions
+              enclosed by the specified coordinates.
+
+              Note:  If  you  need to add power vias within the specified area
+              only, run setViaGenMode -area_only 1 before editPowerVia.
+
+       -between_selected_wires {0 | 1}
+              When set to 1, adds, modifies, or deletes power vias between se-
+              lected wires only.
+
+              You can select the wires interactively  in  the  design  display
+              area or by using the select_obj command.
+
+              Default: 0
+
+       -bottom_layer layername
+              Specifies the lowest layer to which vias can connect.
+
+              Default: The lowest metal layer in the design.
+
+       -cell_pins {<cell1>:<pin1> <cell2>:<pin2> ...}
+              Specifies  the  PG  terminals  or  pins on which vias need to be
+              dropped.
+
+       -create_via_on_merged_target_within micron
+              Helps viaGen merge the targets within the halo distance  on  the
+              specified layer.
+
+       -create_via_on_merged_target_on_layer <layerName>
+              Helps  viaGen add a virtual target internally, ignore the origi-
+              nal targets, and drop vias to the virtual target instead.
+
+       -create_via_on_signal_pins {0 | 1}
+              When set to 1, allows generation of vias from  special  wire  to
+              signal  pins.  editPowerVia drops vias between special route and
+              PG/signal pins, including the flipchip route.
+
+              Default: 0
+
+              Note: This parameter can be used with  the  -area  parameter  to
+              specify  the  area for adding vias. It mainly occurs at the tie-
+              high and tie-low cell pins.
+
+       -delete_vias {0 | 1}
+              Deletes power vias from your design.
+
+              Default: 0
+
+       -exclude_stack_vias {0 | 1}
+              Avoids generation of stack vias between two non-adjacent  layers
+              to  handle  the intersection cases of cross multiple layers. See
+              the examples below to understand the behavior of this  parameter
+              with different values:
+
+              * editPowerVia -exclude_stack_vias 0
+
+                -add_vias 1     ...
+
+              * editPowerVia -exclude_stack_vias 1
+
+                -add_vias 1     ...
+
+              Default: 0
+
+       -followpin_via_stapling {<cutclass1 weight1 cutclass2 weight2>}
+              Defines two cut classes to be tried in priority in the followpin
+              via  stapling  to  maximize  the  effective  number of cuts. The
+              weight value is for via insertion ratio calculation.
+
+       -modify_vias
+              Modifies vias in the design.
+
+       -nets <net_list>
+              Specifies the list of nets on which  to  add,  delete,  or  edit
+              vias.
+
+       -orthogonal_only {0 | 1}
+              When  set  to  1, creates vias only for orthogonal wires and pin
+              intersections.
+
+              Default: If you do not specify this parameter or if you  specify
+              it  with  a value of 1, the software creates vias for orthogonal
+              wires and pin intersections.
+
+       -same_sized_stack_vias {0 | 1}
+              When set to 1, the software only  generates  same-sized  stacked
+              vias. If set to 0, the software trims the vias as needed to meet
+              the DRC rules.
+
+              Default: 0
+
+       -selected_blocks {0 | 1}
+              Specifies  whether  vias  in  the selected blocks only should be
+              looked up.
+
+       -selected_vias {0 | 1}
+              When set to 1, modifies or deletes the selected vias  only.  You
+              can select the wires interactively in the design display area or
+              by using the  select_obj command.
+
+       -selected_wires {0 | 1}
+              When  set  to  1, drops vias between selected wires and all same
+              net objects across the selected wires. You can select the  wires
+              interactively  in  the  design display area or by using the  se-
+              lect_obj command.
+
+       -skip_via_on_pin {[Pad] [Block] [Cover] [Standardcell] [Physicalpin]}
+              Prevents vias from being generated on  the  specified  types  of
+              pins.
+
+              If  you specify -skip_via_on_pin {}, the power planning software
+              makes connections to all five categories of pins.
+
+              Default: If you do not specify this parameter, vias  are  gener-
+              ated for block pins, pad pins, and cover macro pins, but not for
+              standard cell pins.
+
+       -skip_via_on_wire_shape {[Blockring] [Stripe] [Followpin] [Corewire]
+       [Blockwire] [Iowire] [Padring] [Ring] [Fillwire] [Noshape]}
+              Prevents  vias  from  being  generated  for  the  specified wire
+              shapes.
+
+              Default: If you do not specify this parameter, vias  are  gener-
+              ated for all wire shapes.
+
+       -skip_via_on_wire_status {[routed] [fixed] [cover] [shield]}
+              Prevents vias between wires with routed, cover, fixed, or shield
+              status and other power wires.
+
+              Default:  If  you do not specify this parameter, vias are gener-
+              ated for any wire status.
+
+       -split_long_via {<threshold step offset length>}
+              Splits vias longer than the specified length (threshold, in  mi-
+              crometers)  into  smaller  vias  with specified center-to-center
+              spacing (step, in micrometers), left/bottom end offset  (offset,
+              in  micrometers)  and vertical/horizontal length (length, in mi-
+              crometers)  values  .  This  is  independent   of   the   option
+              -split_via.
+
+              Default: If you do not specify this parameter, the software does
+              not split vias.
+
+              Note:  If  the  offset  is  given  as negative, the vias will be
+              placed symmetrically on both ends. The default value  of  offset
+              is -1.
+
+       -split_vias {0 | 1}
+              When  set  to  1, two or more partial vias can be created at the
+              crossover between a stripe and any target (pin or  wire)  if  an
+              obstruction  (macro obstruction; wire or pin on a different net)
+              prevents the creation of a full-size via. This  can  be  useful,
+              for  example,  if several metal blockages partially obstruct the
+              area where a full-size via would normally be placed.
+
+              This parameter permits the creation of partial vias  that  would
+              not  violate  the process rules, in the open areas. A value of 1
+              allows multiple partial vias to be created. A value  of  0  pre-
+              vents multiple partial vias from being created.
+
+              Default: 0
+
+       -top_layer <layername>
+              Specifies the highest layer to which vias can connect.
+
+              Default: The highest metal layer in the design.
+
+       -uda   Indicates  the  user  defined  attribute  subclass  for wires to
+              route. This option is of type string and is optional.
+
+       -via_height <real_number>
+              Specifies the absolute height of the  added  or  modified  power
+              vias.  You  can  use  this  parameter  only  if  you  choose the
+              -add_vias or -modify_vias parameter.
+
+              Default: 0.0
+
+       -via_width r<eal_number>
+              Specifies the absolute width of  the  added  or  modified  power
+              vias.  You  can  use  this  parameter  only  if  you  choose the
+              -add_vias or  -modify_vias parameter.
+
+       -via_rows <integer>
+              Specifies the number of cuts to make in the power vias (for both
+              stack and non-stack). You can use this  parameter  only  if  you
+              choose the -add_vias or -modify_vias parameter.
+
+              Default: 0
+
+       -via_columns <integer>
+              Specifies the number of cuts to make in the power vias (for both
+              stack  and  non-stack).  You  can use this parameter only if you
+              choose the -add_vias or -modify_vias parameter.
+
+              Default: 0
+
+       -via_scale_height <integer>
+              Specifies the percentage to scale the power via height. You  can
+              use  this  parameter  only  if  you  choose  the -modify_vias or
+              -add_vias parameter.
+
+       -via_scale_width <integer>
+              Specifies the percentage to scale the power via width.  You  can
+              use  this  parameter  only  if  you  choose  the -modify_vias or
+              -add_vias parameter.
+
+       -via_using_exact_crossover_size {0| 1}
+              When set to 1, generates partial vias  of  the  exact  crossover
+              size.  A value of 1 allows partial vias to be generated. A value
+              of 0 prevents partial vias, and the  software  always  generates
+              full-size vias.
+
+              Default: 1
+
+Examples
+              * The  following  command creates a power via with the specified
+                area and for the FB1_TEST:VDD PG pin:
+
+                editPowerVia -bottom_layer M1 -area  {49.59 51.48 52.14 52.63}
+                -add_vias 1 -top_layer M2 -cell_pins {FB1_TEST:VDD}
+
+              * The following command creates a  power  via  between  selected
+                wires with a cut pattern of 3 by 3:
+
+                editPowerVia -add_vias 1 -between_selected_wires 1 -via_rows 3
+                -via_columns 3
+
+              * The  below  command deletes all power vias in the area defined
+                by {0 0 500 600}:
+
+                editPowerVia -delete_vias 1 -area {0 0 500 600}
+
+              * The following command adds power vias on the VDD net,  in  the
+                area defined by {0 0 100 100}:
+
+                editPowerVia -add_vias 1 -net VDD -area {0 0 100 100}
+
+Related Information
+              *
+
+                Power Planning and Routing chapter in the Innovus User Guide.
+
+              * setViaGenMode
+
+              *
+
+                setPreference  (see  SelectByArea in Preference Variables sec-
+                tion)
+
+              * editSelect
+
+              * addSplitPowerVia
+
+              * verifyPowerVia
+
+              * select_obj
+
+                           Fri Apr 04 01:25:37 2025        editPowerVia(25.10)

@@ -1,0 +1,286 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+moveSdpObject(25.10)                                      moveSdpObject(25.10)
+
+Name
+       moveSdpObject  - Moves specified SDP objects before or after the speci-
+       fied reference object
+
+Syntax
+       moveSdpObject
+
+       [-help]
+
+       <moveObject >{<objName> <s>}
+
+       {-before <refObject> | -after <refObject>}
+
+       Moves specified SDP objects before or after the specified reference ob-
+       ject. Use this command to:
+
+              * Move a subgroup or member to a different position  within  the
+                current SDP group
+
+              * Move a subgroup or member to a different group to improve con-
+                gestion and/or timing.
+
+              * Move multiple instances, SDP groups, or a mix of instances and
+                SDP groups to the specified location.
+
+       In  the  traditional  SDP flow, this command can be used while defining
+       SDP constraints or while analyzing SDP alignment.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each moveSdpObject parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man moveSdpObject.
+
+       -after <refObject>
+              Indicates  that  the specified SDP objects should be moved after
+              the reference object:
+
+              * For column with justifyBy SW/SE, after means the specified SDP
+                objects are placed above the reference object.
+
+              * For column with justifyBy NW/NE, after means the specified SDP
+                objects are placed below the reference object.
+
+              * For row with justifyBy SW/NW, after means that  the  specified
+                SDP  objects are placed on the right side of the reference ob-
+                ject.
+
+              * For row with justifyBy SE/NE, after means that  the  specified
+                SDP  objects  are placed on the left side of the reference ob-
+                ject.
+
+       -before <refObject>
+              Indicates that the specified SDP objects should be moved  before
+              the reference object:
+
+              * For  column  with  justifyBy SW/SE, before means the specified
+                SDP objects are placed below the reference object.
+
+              * For column with justifyBy NW/NE, before  means  the  specified
+                SDP objects are placed above the reference object.
+
+              * For  row with justifyBy SW/NW, before means that the specified
+                SDP objects are placed on the left side of the  reference  ob-
+                ject.
+
+              * For  row with justifyBy SE/NE, before means that the specified
+                SDP objects are placed on the right side of the reference  ob-
+                ject.
+
+       <moveObject> {<objNames>}
+              Specifies  the names of the SDP objects to be moved. The objects
+              can be SDP groups, instances, or a mix of both.
+
+              If multiple SDP objects are specified, the option works as  fol-
+              lows:
+
+              *
+
+                If  both  the objects being moved and the reference object are
+                instances, the instances being moved will  become  members  of
+                the SDP group to which the reference instance belongs.
+
+              * If  both  the objects being moved and the reference object are
+                SDP groups, the SDP groups being moved will become members  of
+                the SDP group to which the reference SDP group belongs.
+
+              *
+
+                If  the  objects  being moved are SDP groups and the reference
+                object is an instance, the SDP groups being moved will  become
+                members  of  the SDP group to which the reference instance be-
+                longs.
+
+              * If the objects being moved are instances and the reference ob-
+                ject is an SDP group, the instances being  moved  will  become
+                members  of the SDP group to which the reference SDP group be-
+                longs.
+
+              *
+
+                If the objects being moved are a  mix  of  instances  and  SDP
+                groups  and the reference object is an instance, the instances
+                and SDP groups being moved will  become  members  of  the  SDP
+                group  to  which the reference instance belongs and the result
+                is based on the input sequence.
+
+              *
+
+                If the objects being moved are a  mix  of  instances  and  SDP
+                groups and the reference object is an SDP group, the instances
+                and  SDP  groups  being  moved  will become members of the SDP
+                group to which the reference SDP group belongs and the  result
+                is based on the input sequence.
+
+Examples
+              * The following command moves the SDP group sdpGrp1, which is an
+                SDP  group of type row with justifyBy SE, to the right side of
+                the group sdpGrp3:
+
+                moveSdpObject sdpGrp1 -before sdpGrp3
+
+              * The following command moves the SDP group SDP_col145, which is
+                an SDP group of typecolumn with justifyBy NE, to the  position
+                below SDP_col170.
+
+                moveSdpObject SDP_col145 -after SDP_col170
+
+              * Consider the SDP group structure given below:
+
+                column group1 {
+
+                   justifyBy SW
+
+                    row selInstGrp_9 {
+
+                       justifyBy SW
+
+                       inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_1
+
+                       inst   DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_13
+                orient MX
+
+                       inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_12
+
+                       inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_3
+
+                       inst   DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar0_reg_12
+                orient R0
+
+                       inst   DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar0_reg_13
+                orient MX
+
+                       inst
+                DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/data_out_reg_8
+
+                       inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_14
+
+                    }
+
+                   .....
+
+                }
+
+                *
+
+                  The following command moves the specified  instances  before
+                  selInstGrp_9:
+
+                  moveSdpObject                 {DTMF_INST/TDSP_CORE_INST/EXE-
+                  CUTE_INST/acc_reg_30           DTMF_INST/TDSP_CORE_INST/EXE-
+                  CUTE_INST/acc_reg_32} -before selInstGrp_9
+
+                  The resulting structure is as follows:
+
+                  column group1 {
+
+                      justifyBy SW
+
+                      inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/acc_reg_30
+
+                      inst DTME_INST/TDSP_CORE_INST/EXECUTE_INST/acc_reg_32
+
+                      row selInstGrp_9 {
+
+                         justifyBy SW
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_1
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_13
+                  orient MX
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_12
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_3
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar0_reg_12
+                  orient R0
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar0_reg_13
+                  orient MX
+
+                         inst
+                  DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/data_out_reg_8
+
+                         inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_14
+
+                      }
+
+                     .....
+
+                  }
+
+                *
+
+                  The  following  command  moves the specified instances after
+                  selInstGrp_9:
+
+                  moveSdpObject                 {DTMF_INST/TDSP_CORE_INST/EXE-
+                  CUTE_INST/acc_reg_30           DTMF_INST/TDSP_CORE_INST/EXE-
+                  CUTE_INST/acc_reg_32} -after selInstGrp_9
+
+                  The resulting structure is as follows:
+
+                  column group1 {
+
+                     justifyBy SW
+
+                     row selInstGrp_9 {
+
+                        justifyBy SW
+
+                        inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_1
+
+                        inst  DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_13
+                  orient MX
+
+                        inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_12
+
+                        inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_3
+
+                        inst  DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar0_reg_12
+                  orient R0
+
+                        inst  DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar0_reg_13
+                  orient MX
+
+                        inst
+                  DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/data_out_reg_8
+
+                        inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/ar1_reg_14
+
+                     }
+
+                     inst DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/acc_reg_30
+
+                     inst DTME_INST/TDSP_CORE_INST/EXECUTE_INST/acc_reg_32
+
+                     .....
+
+                  }
+
+Related Information
+              * addSdpObject
+
+              * createSdpGroup
+
+              * deleteSdpObject
+
+              * flipSdpObject
+
+              * setSdpObjectStatus
+
+              * sdp object in Innovus Database Object Information
+
+              * Using Structured Data Paths chapter of the User Guide
+
+              * Floorplan Menu chapter of the Menu Reference
+
+                * Structured Data Path
+
+                           Fri Apr 04 01:25:37 2025       moveSdpObject(25.10)

@@ -1,0 +1,51 @@
+{
+  "command": "set_pll_timing",
+  "is_cmd": true,
+  "summary": "识别锁相环(PLL)插入延迟及需要调整的相关生成时钟",
+  "description": "此命令用于识别锁相环(PLL)的插入延迟以及需要调整的相关生成时钟。为了消除时钟树延迟的影响，可以使用PLL来调整其输出时钟波形的延迟，从而使时钟树末端的有效时钟边沿与输入到PLL的参考时钟边沿对齐。使用此命令后，软件将根据设置自动计算并应用一个延迟偏移到PLL输出时钟，以补偿内部时钟树延迟。该命令需与生成时钟定义结合使用，以确保PLL输出端的正确时钟时序。使用前，必须在set_pll_timing命令的-output_pin上断言一个生成时钟，并且create_generated_clock命令的-source选项必须与set_pll_timing命令指定的-reference_pin相匹配。",
+  "usage": "set_pll_timing [-help] <inst_name> -feedback_pin <feedback pin name> -output_clock <clock name> -output_pin <output pin name> [-reference_edge {rise | fall | both}] -reference_pin <reference pin name>",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<inst_name>",
+      "description": "指定PLL单元的实例名称或对象ID，基于此搜索参考引脚、反馈引脚或输出引脚",
+      "required": true,
+      "type": "inst+"
+    },
+    {
+      "name": "-feedback_pin",
+      "description": "指定PLL反馈引脚的名称",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-output_clock",
+      "description": "指定PLL输出上的生成时钟",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-output_pin",
+      "description": "指定PLL时钟输出引脚的名称",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-reference_edge",
+      "description": "定义需要调整的边沿。指定后，软件将选择参考引脚和反馈引脚上需要对齐的时钟边沿。如果指定rise或fall，则使用从该参考边沿到反馈引脚相关边沿的时钟延迟。如果指定both，则软件将分别测量上升沿和下降沿的延迟调整。默认值为rise。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reference_pin",
+      "description": "指定PLL参考引脚的名称",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

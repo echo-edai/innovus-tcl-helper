@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+all_fanout(25.10)                                            all_fanout(25.10)
+
+Name
+       all_fanout  -  Returns a collection of pins, ports, or cells that exist
+       in the fanout cone of the specified objects
+
+Syntax
+       all_fanout
+
+       [-help]
+
+       [-endpoints_only]
+
+       [-hpin]
+
+       [-only_cells]
+
+       [-trace_through  {case_disable  |  user_disable  |  all  |   clocks   |
+       loop_snipped | latches}]
+
+       [-view <view_name>]
+
+       [-levels <value> | -pin_levels <value>]
+
+       {-from {collection | <object_list>} }
+
+       [ > | >> ]
+
+       Returns  a collection of pins, ports, or cells that exist in the fanout
+       cone of the specified objects.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -endpoints_only
+              Returns a collection of valid endpoints (sequential elements  or
+              output ports) in the fanout cone.
+
+       -hpin  Returns hierarchical pins along with the flat pins.
+
+        > | >>
+              Writes  a list of the returned collection elements to the speci-
+              fied file.
+
+              You can add the .gz extension to the file  name  to  generate  a
+              compressed report.
+
+              Note: The file name must be the last parameter specified.
+
+       -from {<collection> | <object_list>}
+              Specifies  the  objects  for which to return the collection. You
+              can specify a list of objects, or a collection of objects.
+
+       -levels <value>
+              Specifies the number of gate levels to go forward  from  a  spe-
+              cific pin object to create the collection.
+
+       -only_cells
+              Returns a collection only of the cells in the fanout zone.
+
+       -pin_levels <value>
+              Specifies  the  number  delay arcs to go forward from a specific
+              pin object to create the collection.
+
+       -trace_through {case_disable |user_disable | all | clocks |
+       loop_snipped | latches}
+              Allows traversal through disabled arcs. You can specify  one  of
+              the following options:
+
+              * case_disable:    Arcs    which    are   disabled   using   the
+                set_case_analysis command and through  physical  constant  are
+                traversed.  The arcs disabled using set_disable_timing are not
+                traversed.
+
+              * user_disable: Arcs disabled using  set_disable_timing  command
+                are  traversed but those disabled using set_case_analysis com-
+                mand are not traversed.
+
+              * all: Enables trace through all arcs
+
+              * clocks: Allows traversal through pins  for  which  clock  con-
+                straints  (such  as, create_clock, create_generated_clock) are
+                applied. The pins that are disabled using the  set_case_analy-
+                sis and set_disable_timing commands are not traversed.
+
+              * loop_snipped: Allows trace through the loop snipped arcs.
+
+              * latches: Allows traversal of arcs of the latch cells.
+
+       -view <view_name>
+              Specifies  the  view  name for which fan cone traversal is to be
+              performed.
+
+Examples
+              * The following command returns the collection of cells  in  the
+                fanout zone of the input port IN1:
+
+                all_fanout -from IN1 -only_cells
+
+              * The following command returns all the valid endpoints (sequen-
+                tial  elements  and/oroutput ports) in the fanout zone of IN1,
+                allowing   the   traversal   through    arcs    disabled    by
+                set_case_analysis and set_disable_timing:
+
+                all_fanout -from IN1 -endpoints_only -trace_through all
+
+Related Information
+              * all_fanin
+
+                           Fri Apr 04 01:25:37 2025          all_fanout(25.10)

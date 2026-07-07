@@ -1,0 +1,336 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_default_switching_activity(25.10)    set_default_switching_activity(25.10)
+
+Name
+       set_default_switching_activity  -  Specifies the switching activity for
+       all primary inputs, nets, and other devices in the design whose  activ-
+       ity has not been previously defined through user attributes, the toggle
+       count format (TCF) file, the value change dump (VCD) file, or the trac-
+       ing of the clock network
+
+Syntax
+       set_default_switching_activity
+
+       [-black_box_density <value>]
+
+       [-black_box_duty <value>]
+
+       [-block <master_cell_name>]
+
+       [-duty <value>]
+
+       [-global_activity <factor>]
+
+       [-hier<hierarchy_name>]
+
+       [-input_activity <factor>]
+
+       [-period <value>]
+
+       [-seq_activity <factor>]
+
+       [-reset]
+
+       [-reset_type { global_activity | seq_activity ... }]
+
+       [-clock_gates_enable {<activity_factor>}]
+
+       [-icg_ratio <num>]
+
+       [-comb_clockgate_ratio <num>]
+
+       [-clock_gates_output {<activity_factor>}]
+
+       [-clock_gates_output_ratio <num>]
+
+       [-clip_activity_to_domain_freq {true | false}]
+
+       [-name <activity_name>]
+
+       [-macro_activity <factor>]
+
+       Specifies  the  switching  activity  for  all primary inputs, nets, and
+       other devices in the design whose activity has not been previously  de-
+       fined  through user attributes, the toggle count format (TCF) file, the
+       value change dump (VCD) file, or the tracing of the clock network.
+
+       You can use this command to specify user-defined activities at the  de-
+       sign level.
+
+Parameters
+       -black_box_density <value>
+              Specifies  to set the default transition density on all the out-
+              put pins of all blackboxes in the design.
+
+              The -black_box_density and -black_box_duty  parameters  must  be
+              used together. If one or both of these parameters are not speci-
+              fied,  then the software will use the average transition density
+              from all the input pins of the blackboxes.
+
+       -black_box_duty <value>
+              Specifies to set the default duty on all the output pins of  all
+              blackboxes in the design.
+
+              The  -black_box_density  and  -black_box_duty parameters must be
+              used together. If one or both of these parameters are not speci-
+              fied, then the software will use the average transition  density
+              from all the input pins of the blackboxes.
+
+       -block <master_cell_name>
+              Specifies  the name of the master cell for activity setting. The
+              parameter allows you to define the user-defined switching activ-
+              ity for a block partition. This parameter is useful for  assign-
+              ing block-based activity.
+
+              The  -block parameter is applicable only to the block-based dis-
+              tributed power flow.
+
+       -clip_activity_to_domain_freq {true | false}
+              Specifies to perform domain-based activity clipping. This  para-
+              meter  clips  data  paths to 1x frequency whereas the clock net-
+              works are still at 2x frequency. This parameter  allows  you  to
+              have more control to determine the rate of clipping with respect
+              to frequency.
+
+       -clock_gates_enable {<activity_factor>}
+              Specifies  the activity at the enable pin(s) of the clock gating
+              cells.
+
+       -clock_gates_output {<activity_factor>}
+              Specifies the activity at the output pin(s) of the clock  gating
+              cells.  This  works for both ICGs as well as combinational clock
+              gating cells.
+
+              Example:
+
+              set_default_switching_activity       -global_activity       0.02
+              -clock_gates_output 2.0 (clock is transparent)
+
+              Transition density at the output pin(s) of clock gating cells is
+              calculated by:
+
+              transition_density  =  clock_domain_frequency * clock_gates_out-
+              put_value
+
+              If the fastest clock frequency is 1 GHz for a clock gating cell,
+              then:
+
+              transition_density = (1e9) * 2.0 = 2,000,000,000
+
+       -clock_gates_output_ratio <num>
+              Specifies to control transition density at the output pin(s)  of
+              the  integrated and combinational clock gating cells. This para-
+              meter is equivalent to specifying the parameters -icg_ratio  and
+              -comb_clockgate_ratio together with the same value.
+
+              For       example,       the      set_default_switching_activity
+              -clock_gates_output_ratio   0.6   is   equivalent   to   set_de-
+              fault_switching_activity  -icg_ratio  0.6  -comb_clockgate_ratio
+              0.6.
+
+              Note: This parameter has a cascading effect when there are  mul-
+              tiple  levels  of ICG cells on the clock path. For example, when
+              -clock_gates_output_ratio is set to 0.5,  the  first  level  ICG
+              cell will have 0.5 ratio of the root clock's toggle density, the
+              second  level  ICG cell will have 0.5*0.5=0.25 ratio of the root
+              clock's toggle density, and the third level ICG cell  will  have
+              0.5*0.5*0.5=0.125  ratio of the root clock's toggle density, and
+              so on.
+
+              Note: For dynamic power analysis, fastest clock on the  path  is
+              used  for calculating output toggle density. However, for static
+              power analysis, weighted averaging of input toggle densities  is
+              used.
+
+              Example for static power analysis:
+
+              set_default_switching_activity       -global_activity       0.02
+              -clock_gates_output_ratio 1.0
+
+              Transition density for either a combinational or  an  integrated
+              clock gating cell with 'N' inputs is calculated by:
+
+              output_pin_transition_density = (summation) weighted_input_tran-
+              sition_density  = clock_gates_output_ratio * [(duty_input_pin1 *
+              Td_input_pin1) +  (duty_input_pin2  *  Td_input_pin2)  +  ...  +
+              (duty_input_pinN * Td_input_pinN)]
+
+              Given  a  2:1  clock  Mux and assuming duty of 0.5 for all input
+              pins:
+
+              Td is the toggle density for each  input  pin  of  the  instance
+              (Td_pinSe1 , Td_pinI0 , Td_pinI1).
+
+              output_pin_transition_density  =  1.0 * [0.5 * Td_pinSe1 + 0.5 *
+              Td_pinI0 + 0.5 * Td_pinI1]
+
+       -comb_clockgate_ratio <num>
+              Specifies to set the propagation ratio for  combinational  clock
+              gate  cell outputs. When specified, this parameter sets the out-
+              put activity of any instance that is identified  as  a  combina-
+              tional  clock  gating cell to <num> times the fastest transition
+              density arriving on the instance's clock inputs. This  parameter
+              cannot be specified with the -hier parameter.
+
+              Notes:
+
+              * This parameter does not apply to combinational clockgates with
+                a constant data input, that is, a select pin tied low.
+
+              * For  dynamic power analysis, fastest clock on the path is used
+                for calculating output toggle  density.  However,  for  static
+                power  analysis,  weighted averaging of input toggle densities
+                is used. For a detailed static power analysis  example,  refer
+                to  `-clock_gates_output_ratio', limiting calculations only to
+                combinational clock gates.
+
+       -duty <value>
+              Specifies the duty cycle, which is the probability that the sig-
+              nal is a logical 1.
+
+              Note: You must specify the -period parameter  when  assigning  a
+              duty.
+
+              Default: 0.5 (equivalent to a 50 percent duty cycle)
+
+       -global_activity <factor>
+              Specifies  the  average  number  of  times  that all unset nodes
+              switch in a clock cycle. If not  specified  the  fastest  domain
+              frequency will be used unless one turns off clock domains.
+
+              Note:  Due  to  activity  precedence,  the  -global_activity and
+              -seq_activity parameters of  the  set_default_switching_activity
+              command are mutually exclusive. If both the parameters are spec-
+              ified, -global_activity takes precedence.
+
+       -hier <hierarchy_name>
+              A  hierarchical  name that the global activity is being assigned
+              to. If not provided, the whole design is assumed.
+
+       -icg_ratio <num>
+              Specifies to set the propagation ratio for integrated clock gate
+              (ICG) cell outputs. When specified, this parameter sets the out-
+              put pin of all identified  ICG  instances  to  <num>  times  the
+              fastest  transition  density arriving on clock inputs of the in-
+              stance.
+
+              This parameter cannot be specified with the -hier parameter.
+
+       -input_activity <factor>
+              Specifies the average number  of  times  that  a  primary  input
+              switches in a clock cycle. It can be any positive number.
+
+              Default: 0.2 (Switches once every five clock cycles.)
+
+       -macro_activity <factor>
+              Specifies  the  activity  factor for macros in a design. The al-
+              lowed values for this parameter are between 0 to 1.
+
+              If you set the macro activity to .30, 30% of macros in  the  de-
+              sign would be selected for switching in a given cycle during dy-
+              namic simulation. When -macro_activity is specified for the sta-
+              tic  power  analysis, all output pins of the macros are assigned
+              the specified activity.
+
+              Default: 0.2
+
+       -name <activity_name>
+              Allows you to set the activity level for  the  specified  jitter
+              activity name. You can define a low/high activity level for jit-
+              ter analysis.
+
+              Examples:
+
+              set_default_switching_activity
+                   -name low -clock_gates_output 0 -global_activity 0.01
+
+              set_default_switching_activity
+                   -name high -clock_gates_output 2 -global_activity 0.2
+
+       -period <value>
+              Specifies  the default operating period (1/frequency). It is the
+              period that the activity is referenced to. If not specified, the
+              software uses the dominant clock in the  design.  The  specified
+              period  will  only be applied to nets that do not have reference
+              clock (ref_clock) associated with the net.
+
+              If no clock is specified, the software generates  an  error  and
+              prompts  you  to  enter  one. Units in seconds (s), milliseconds
+              (ms), microseconds (us), nanoseconds (ns), or picoseconds (ps).
+
+              Note: If you enter the period as a negative number, the software
+              reverts back to using the default frequency.
+
+              Default: The time unit is defined in the first  .lib  file  read
+              during design import.
+
+       -seq_activity <factor>
+              Specifies  the activity of outputs of the sequential logic. This
+              value will be used at the output ports of flops for  propagating
+              activity.
+
+              If the sequential activity is not specified, propagation will be
+              done for the full design starting from the input ports.
+
+       -reset Resets all specified options back to default values.
+
+       -reset_type { global_activity | seq_activity ... }
+              Specifies to selectively reset the global specifications.
+
+              Note: You must use the -reset_type parameter in conjunction with
+              the -reset parameter.
+
+Activity Precedence
+       See "Activity Precedence" in read_activity_file.
+
+Examples
+              * The following command specifies that the primary inputs in the
+                design  will  switch once every ten clock cycles, with a clock
+                period of 7520 ns and a duty cycle of 50 percent:
+
+                set_default_switching_activity  -input_activity  0.10  -period
+                7520ns -duty .5
+
+              * The  following  command specifies that all unswitched nodes in
+                the design will switch once every ten  clock  cycles,  with  a
+                clock period of 7520 ns and a duty cycle of 50 percent:
+
+                set_default_switching_activity  -global_activity  0.10 -period
+                7520ns -duty .5
+
+              * The next example defines the  switching  activity,  sequential
+                activity, and the period:
+
+                set_default_switching_activity  -input_activity 0.2 -period 10
+                \
+
+                    -seq_activity 0.1
+
+              * The next example sets the default global activity to  0.5  for
+                the hierarchy dma_dut:
+
+                set_default_switching_activity   -global_activity   0.5  -hier
+                dma_dut
+
+              * The following command resets the sequential and global  activ-
+                ity specification:
+
+                set_default_switching_activity -reset -reset_type
+
+                {seq_activity,global_activity}
+
+              * The  following command will define the input activity, sequen-
+                tial activity and macro activity for the design block A:
+
+                set_default_switching_activity -input_activity 0.1 -seq_activ-
+                ity 0.1 -macro_activity 0.1 -block A
+
+Related Information
+              * read_activity_file
+
+              * set_switching_activity
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:2s5e:t3_7de2f0a2u5lt_switching_activity(25.10)

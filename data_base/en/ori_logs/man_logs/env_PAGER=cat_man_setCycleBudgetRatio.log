@@ -1,0 +1,190 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setCycleBudgetRatio(25.10)                          setCycleBudgetRatio(25.10)
+
+Name
+       setCycleBudgetRatio  - Sets the budgeting constraint based on the clock
+       cycle, which ensures that budgeting is done in minimum time and  memory
+       by deriving partition block delays from the total clock cycle time
+
+Syntax
+       setCycleBudgetRatio
+
+       [-help]
+
+       {[[[{-fromTop  |  -fromPtn  {hinst  ratio}} {-toTop | -toPtn {hinst ra-
+       tio}}] ] [-clock <string>]] | [-reset ]}
+
+       Sets the budgeting constraint based on the clock cycle,  which  ensures
+       that budgeting is done in minimum time and memory by deriving partition
+       block delays from the total clock cycle time. This command supports:
+
+              * Different top-level ratios based on critical partition to par-
+                tition connections
+
+              * Different ratios between the partitions with different sources
+                and sinks
+
+              * Clock-based segment control
+
+       Note:  This command (cycle-based budget) does not support nested parti-
+       tion.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each  setCycleBudgetRatio parameter. For a de-
+              tailed description of the command and all  its  parameters,  use
+              the man command:
+
+              man setCycleBudgetRatio
+
+       -clock <string>
+              Presents the clock name for which the ratio is to be applied. If
+              specified,  the  cycle  time  ratio is applied to the paths only
+              from the specific clock. If not specified, all clocks  path  are
+              impacted with same percentage of cycle time.
+
+       -fromPtn {hinst ratio}
+              Specifies  that the start of a timing path segment is inside the
+              mentioned hierarchical instance, which should get the  mentioned
+              cycle ratio for budgeting.
+
+       -fromTop
+              Specifies  that the start of a timing path segment is at the top
+              level.
+
+       -reset Resets all the previously declared ratio budgets/contraints.
+
+       -toPtn {hinst ratio}
+              Specifies that the end of a timing path segment  is  inside  the
+              mentioned  hierarchical instance, which should get the mentioned
+              cycle ratio for budgeting.
+
+       -toTop Specifies that the end of a timing path segment is  at  the  top
+              level.
+
+Examples
+              * The  following  commands  present an example of the TOP to PTN
+                path:
+
+                setCycleBudgetRatio -fromTop -toPtn {* 0.6}
+
+                setCycleBudgetRatio -fromTop -toPtn {ptn1_hinst 0.7}
+
+                Note: * matches with any partition hinst. However, it does not
+                matches with TOP.
+
+                Following is the output:
+
+              * The following commands present an example of the  PTN  to  TOP
+                path:
+
+                setCycleBudgetRatio -fromPtn {* 0.6} -toTop
+
+                setCycleBudgetRatio -fromPtn {ptn1_hinst 0.7} -toTop
+
+                Note: * matches with any partition hinst. However, it does not
+                matches with TOP.
+
+                Following is the output:
+
+              * The  following  commands  present  an example of reserving TOP
+                percentage:
+
+                setCycleBudgetRatio -fromPtn {* 0.6} -toTop
+
+                setCycleBudgetRatio -fromTop -toPtn {* 0.6}
+
+                setCycleBudgetRatio -fromPtn {* 0.3} -toPtn {* 0.3}
+
+                Note: * matches with any partition hinst. However, it does not
+                matches with TOP.
+
+                Following is the output:
+
+              * The following command presents an example of the  PTN  to  PTN
+                path:
+
+                setCycleBudgetRatio    -fromPtn    {ptn1_hinst   0.6}   -toPtn
+                {ptn2_hinst 0.3}
+
+                Following is the output:
+
+              * The following command presents an example of the  PTN  to  PTN
+                Abutted path:
+
+                setCycleBudgetRatio    -fromPtn    {ptn1_hinst   0.6}   -toPtn
+                {ptn2_hinst 0.3}
+
+                Path is over-constrained by 10% of clock cycle.  Following  is
+                the output:
+
+              * The following command presents an example of how the top level
+                budget is split into top and FT segments of the paths:
+
+                setCycleBudgetRatio    -fromPtn    {ptn1_hinst   0.4}   -toPtn
+                {ptn2_hinst 0.3}
+
+                Note: FT segment is over-constrined and given 0% budget.
+
+                Following is the output:
+
+              * Following are two examples of actual delay-based cycle ratio:
+
+                Example 1:
+
+                Suppose PhaseShift = 10nssetCycleBudgetRatio -fromPtn {P1 0.4}
+                -toPtn {P3 0.4}setFixedBudget -through {P2} -slack  0  ;#  im-
+                plies that the budget of P2 is "as is"
+
+                Then,P2  budget  = 1ns (assuming that the actual delay through
+                P2 is 1ns)AvailableTime = 10ns - 1ns = 9nsP1 budget  =  0.4  *
+                AvailableTime  = 0.4 * 9ns = 3.6nsP3 budget = 0.4 * Available-
+                Time = 0.4 * 9ns = 3.6nsTOP budget = 9ns -  3.6ns  -  3.6ns  =
+                1.8ns
+
+                So each of the two TOP segments get 0.9ns.
+
+                Following is the output:
+
+                Example 2:
+
+                Suppose PhaseShift = 10nssetCycleBudgetRatio -fromPtn {P1 0.5}
+                -toPtn  {P3  0.5}setFixedBudget  -through {P2} -slack 0 ;# im-
+                plies budget of P2 is "as is"
+
+                Then,P2 budget = 1ns (assuming that the actual  delay  through
+                P2  is  1ns)AvailableTime  = 10ns - 1ns = 9nsP1 budget = 0.5 *
+                AvailableTime = 0.5 * 9ns = 4.5nsP3 budget = 0.5 *  Available-
+                Time = 0.5 * 9ns = 4.5nsTOP budget = 9ns - 4.5ns - 4.5ns = 0ns
+
+                So each of the two TOP segments get 0ns.
+
+                Following is the output:
+
+Related Information
+       The  following  sections  in  the  Timing Budgeting chapter of the User
+       Guide document:
+
+              * "Deriving Timing Budgets"
+
+              * "Budgeting Using Text Commands"
+
+              * "Top-Level Budgets Derived by Using Active Logic View"
+
+              * "Deriving Preliminary Budgets in Early Design Phase"
+
+              * "Budgeting Output Files for MMMC Designs"
+
+              * "Analyzing Timing Budgets"
+
+              * "Resolving Conflicts with Path-Based Exceptions"
+
+              * "Customizing Budget Generation"
+
+              * "Verifying Timing Budgets"
+
+              * "Reading the Justify Budget Report"
+
+              * "Warning Report"
+
+                           Fri Apr 04 01:25:37 2025 setCycleBudgetRatio(25.10)

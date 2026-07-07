@@ -1,0 +1,70 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+delete_cell_obs(25.10)                                  delete_cell_obs(25.10)
+
+Name
+       delete_cell_obs
+
+Syntax
+       delete_cell_obs
+
+       [-help]
+
+        -cells {base_cell | design | module}+
+
+       {-obs_shapes  <shape>+  | [{-rects {{<llx1 lly1 urx1 ury1>} {<llx2 lly2
+       urx2 ury2>}...} | -polygon {<x1 y1 x2 y2 x3 y3> ...}] -layers <layer>+}
+
+       Helps in deleting an obstruction geometry or library obstruction for  a
+       cell on the specified layer. This command deletes the obstruction geom-
+       etry  added by the add_cell_obs command or library obstruction (SPACING
+       0 OBS).
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each delete_cell_obs parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man delete_cell_obs
+
+       -cells {base_cell | design | module}+
+              Specifies the cell name or pointer.
+
+       -layers <layer>+
+              Specifies the layer name or pointer.
+
+       -obs_shapes <shape>+
+              Specifies the cell obstruction shape pointers.
+
+              Note: This parameter must be used with the -cells parameter, and
+              cannot be specified with any other parameter except than -help.
+
+       -polygon {<x1 y1 x2 y2 x3 y3> < ...>}
+              Specifies the polygon shape.
+
+       -rects {{<llx1 lly1 urx1 ury1>} {<llx2 lly2 urx2 ury2>}...}
+              Specifies the Obs rect list for deleting obstruction geometries.
+
+Examples
+       Following is an example of using the -obs_shapes parameter for specify-
+       ing the cell obstruction shape pointer:
+
+              * The BUFX1 cell has multiple obs shapes on different layers:
+
+                dbget   [dbget   top.insts.cell.name   BUFX1   -p].allObstruc-
+                tions.shapes
+
+                 0x7fd9ee9941e0  0x7fd9ee9941c0  0x7fd9ee9941a0 0x7fd9ee994180
+                0x7fd9ee994160
+
+              * The following command deletes the  first  two  shapes  in  the
+                list:
+
+                delete_cell_obs  -obs_shapes  {0x7fd9ee9941e0  0x7fd9ee9941c0}
+                -cells BUFX1
+
+Related Information
+       add_cell_obs
+
+                           Fri Apr 04 01:25:37 2025     delete_cell_obs(25.10)

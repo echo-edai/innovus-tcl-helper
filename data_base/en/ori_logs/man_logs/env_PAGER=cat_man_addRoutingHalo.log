@@ -1,0 +1,216 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addRoutingHalo(25.10)                                    addRoutingHalo(25.10)
+
+Name
+       addRoutingHalo  -  Adds  a routing halo for blackboxes, hard macros, or
+       block-level designs
+
+Syntax
+        addRoutingHalo
+
+       [-help]
+
+       [-orientation <string>]
+
+       { {-bottom {auto |  <bottom_layer_name>}  -space  {<left  bottom  right
+       top>} -top {auto | <top_layer_name>}} | -lithoHalo }
+
+       {-allBlocks | -block <block_name_list> | -cell <cell_name_list> | -inst
+       <instance_name> | -designHalo }
+
+       Adds  a  routing  halo  for blackboxes, hard macros, or block-level de-
+       signs. A routing halo significantly reduces  the  possibility  of  long
+       wire  routing within the specified area, thus helping reduce signal in-
+       tegrity violations at the top- and/or block-level  designs.  A  routing
+       halo  is  honored  only  by the signal router. The signal router treats
+       routing on the specific routing layers in the routing halo area as very
+       high cost routing. However, perpendicular routing or  straight  connec-
+       tions to pins are acceptable. The special router does not honor routing
+       halos. To block special routing, use routing blockages instead. You can
+       specify a routing halo for:
+
+              * hard macros or blackboxes
+
+              * block-level designs
+
+              * partitions
+
+       For  the bottom-up hierarchical flow, use this command to specify rout-
+       ing halo for a block at the top-level design or at the block-level  de-
+       sign. The routing halo can be stored as an instance and/or design prop-
+       erty  and  can  be viewed through the attribute editor for the instance
+       block. The routing halo can be saved to or restored  from  a  floorplan
+       file. Use this command after importing a design.
+
+       Notes:
+
+              * For  top-down  hierarchical  flow,  specify routing halo for a
+                partition through the definePartition command or  through  the
+                Specify Partition form.
+
+              * A  halo  is  not  allowed  on std-cells (cells with CLASS CORE
+                SITE) and is written out as ROUTEHALO in DEF. A design halo is
+                written out as a DEF design  FE_ROUTING_HALO  property  and  a
+                litho  halo  is written out as a DEF component LITHOHALO prop-
+                erty.
+
+Parameters
+       -allBlocks
+              Specifies that the routing halo should be added to all blocks in
+              the design.
+
+              Data_type: bool, required
+
+       -block <block_name_list>
+              Specifies that the routing halo should be added to the specified
+              blocks. A block name must be an instance name  and  not  a  cell
+              master  name.  The  specified  blocks  should  be separated by a
+              space.
+
+              Note: A halo is not allowed on std-cells (cells with CLASS  CORE
+              SITE)  and  is written out as ROUTEHALO in DEF. A design halo is
+              written out as a DEF design FE_ROUTING_HALO property and a litho
+              halo is written out as a DEF component LITHOHALO property.
+
+              Data_type: list, required
+
+       -bottom {auto | <bottom_layer_name>}
+              Specifies the bottom layer for the routing halo.
+
+              * auto: Auto detects layers  for  blackboxes,  hard  macros,  or
+                block-level designs. It considers the bottom-most backside (if
+                it  has  backside  pins) or the bottom-most frontside (of type
+                ROUTING) PIN layer as the bottom layer.
+
+              * <bottom_layer_name>: Specify the name of the bottom layer.
+
+              Note: The route halo is created for all layers  between  -bottom
+              and -top layers
+
+              Data_type: string, required
+
+       -cell <cell_name_list>
+              Specifies  that the routing halo should be added to all insts of
+              the specified cell names.
+
+              Data_type: list, required
+
+       -designHalo
+              Specifies that the routing halo should be  added  inside  design
+              boundary.
+
+              Note:  The  -designHalo  parameter  cannot be specified with the
+              -lithoHalo parameter. These parameters are mutually exclusive.
+
+              Data_type: bool, required
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each  addRoutingHalo parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man addRoutingHalo
+
+       -inst <instance_name>
+              Specifies that the routing halo should be added to the specified
+              instance.  This  parameter can be useful for adding halo for I/O
+              cells.
+
+              Data_type: list, required
+
+       -lithoHalo
+              Adds a litho halo to the instances on each  routing  layer  with
+              LEF LITHOMACROHALO defined.
+
+              Notes:
+
+              * The -lithoHalo parameter cannot be specified with the -design-
+                Halo parameter. These parameters are mutually exclusive.
+
+              * The -lithoHalo parameter requires some LEF LITHOMACROHALO val-
+                ues to be set.
+
+              * A  halo  is  not  allowed  on std-cells (cells with CLASS CORE
+                SITE) and is written out as ROUTEHALO in DEF. A design halo is
+                written out as a DEF design  FE_ROUTING_HALO  property  and  a
+                litho  halo  is written out as a DEF component LITHOHALO prop-
+                erty.
+
+              * Data_type: bool, required
+
+       -orientation <string>
+              Specifies the orientation value of the instances  to  which  the
+              halo  values  are applied. The orientation value can be R0, R90,
+              R180, R270, MX, MX90, MY, or MY90.
+
+              Note:
+
+              * If the orientation is not set, the halo will be added with the
+                current orientation of the instances.
+
+              * Halo deltas are specified in relation to a block in R0  orien-
+                tation  (left  is  applied  to the left edge of block oriented
+                R0). For non-R0, the halo deltas are rotated/flipped according
+                to the orientation of the block (for block  oriented  MY,  the
+                left  halo  delta  specifies  the  width of the halo along the
+                right side of the inst in the floorplan).
+
+              Data_type: string, optional
+
+       -space {<left bottom right top>}
+              Specifies different spaces for different edges.  You can specify
+              the routing halo values, in microns, for different directions  -
+              left, bottom,  right, and top.
+
+              For example,
+
+              addRoutingHalo -cell cell_1 -space {10 20 30 40} -orientation MY
+              -bottom auto -top auto
+
+              Minimum: 0
+
+              Maximum: 1.79769313486232e+308
+
+              Data_type: float, required
+
+       -top {auto | <top_layer_name>}
+              Specifies the top layer for the routing halo.
+
+              * auto:  Auto  detects  layers  for  blackboxes, hard macros, or
+                block-level designs. It considers the top-most  frontside  PIN
+                layer as the top layer.
+
+              * <top_layer_name>: Specify the name of the top layer.
+
+              Note:  The  route halo is created for all layers between -bottom
+              and -top layers
+
+              Data_type: string, required
+
+Examples
+              * The following command adds a routing halo of 10 microns to all
+                blocks and specifies that the top and the  bottom  layers  for
+                the routing halo are Metal7 and Metal1, respectively.
+
+                addRoutingHalo -space 10 -top Metal7 -bottom Metal1 -allBlocks
+
+              * The  following command adds a routing halo of 5 microns to the
+                specified blocks and specifies that the  top  and  the  bottom
+                layers  for  the  routing  halo are Metal2 and Metal1, respec-
+                tively.
+
+                addRoutingHalo                                          -block
+                DTMF_INST/RAM_256x16_TEST_INST/RAM_256x16_INST
+                DTMF_INST/RAM_128x16_TEST_INST/RAM_128x16_INST  -space  5 -top
+                Metal2 -bottom Metal1
+
+Related Information
+              * deleteRoutingHalo
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+              * Floorplan Menu chapter in the Innovus Menu Reference
+
+                * Edit Halo - Routing Halo
+
+                           Fri Apr 04 01:25:37 2025      addRoutingHalo(25.10)

@@ -1,0 +1,260 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+read_sdf(25.10)                                                read_sdf(25.10)
+
+Name
+       read_sdf  - Reads an OVI Standard Delay Format (SDF) file and annotates
+       user-specified delay information from the SDF file into the timing sys-
+       tem
+
+Syntax
+       read_sdf
+
+       [-help]
+
+       <sdf_file_name>
+
+        [-continue_on_error]
+
+        [-ilm_filter]
+
+        [-increment]
+
+        [-overwrite_incremental_delay]
+
+       [-path <instanceName>]
+
+        [-persistent]
+
+       [-print_summary]
+
+        [-scale <float>]
+
+        [-strict_cond_matching]
+
+       [-view <viewName>]
+
+        [-sdf_field   {min|typ|max}   |    [-early_sdf_field    {min|typ|max}]
+       [-late_sdf_field {min|typ|max}]]
+
+       Reads an OVI Standard Delay Format (SDF) file and annotates user-speci-
+       fied  delay  information  from the SDF file into the timing system. You
+       can use the read_sdf command to supply pre-calculated delays and timing
+       check values from an external delay calculator, or from a previous  In-
+       novus session.
+
+       The read_sdf command can read version 2.1 and 3.0 of the SDF files, and
+       can read both plain-text and GNU zipped (.gz) format files. The command
+       and  the Innovus software do not support the Timing Environment section
+       of the SDF specification.
+
+       The SDF file can provide one, two, or three different values  for  each
+       timing  arc delay or timing check value. These values are passed in the
+       min, typ, or max SDF delay fields, represented as min:typ:max.
+
+       Innovus provides multiple delay place holders to store  the  calculated
+       or annotated delay information:
+
+              * In single-corner (setAnalysisMode -analysisType single) analy-
+                sis mode, only max delays are available.
+
+              * In  best-case  worst-case (setAnalysisMode -analysisType bcwc)
+                mode, a min delay slot is provided for storing min delays used
+                for hold analysis. A max delay slot  stores  delays  used  for
+                setup analysis.
+
+              * In  on-chip  variation  (setAnalysisMode -analysisType onChip-
+                Variation) mode, the early delay slots store delays  used  for
+                calculated early arrival times. The late delay slot stores de-
+                lays used for calculated late arrival times.
+
+              * In  multi-corner mode, an early and a late delay slot are pro-
+                vided for each multi-mode multi-corner analysis view.
+
+       The read_sdf command provides parameters for controlling  how  the  SDF
+       min:typ:max triplet values are mapped into the Innovus software's delay
+       slots.  The correct mapping depends on how the delay information in the
+       SDF file was created, and what type of analysis you are performing.
+
+       The timing system provides special handling for annotating  incremental
+       delays.  These  delays typically represent plus or minus offsets due to
+       crosstalk effects. Incremental delay annotation to the Innovus software
+       can be done by:
+
+              * Importing an incremental SDF file (SDF has an internal  INCRE-
+                MENT keyword) using the read_sdf command.
+
+              * Tcl  sourcing  a  file of set_annotated_delay -net -delta_only
+                constraints.
+
+       The incremental delay annotations can be viewed  in  the  report_timing
+       report  by  adding  the  incr_delay option to the report_timing -format
+       list, or to the report_timing_format global variable.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -continue_on_error
+              Continues to read the file if an error occurs. By default,  when
+              an  error  occurs,  the read_sdf command stops reading the file.
+              Use this parameter to attempt to continue reading the  file,  if
+              possible.
+
+              Note: If you continue some annotations may be missing due to the
+              errors. You can use the
+
+              report_annotated_parasitics  command to find the missing annota-
+              tions. If the SDF file is corrupted, you can obtain a file.
+
+       -early_sdf_field {min | typ | max}
+              Annotates the early delay from the specified SDF field.
+
+              In single-corner mode, all setup and hold analysis  use  maximum
+              delays. The software ignores any minimum or early delay informa-
+              tion.
+
+              In  best-case  worst-case  mode,  use  this parameter to specify
+              which SDF field to use for hold analysis.
+
+              In on-chip variation mode, the software uses the early delay for
+              calculation of fast paths.
+
+       -ilm_filter
+              Ignores ILM-related errors. By  default,  the  read_sdf  command
+              does not ignore errors reported due to missing arcs in core ILM.
+
+       -increment
+              Increments the total delay without affecting the delta delay.
+
+              By default, when the SDF file contains the INCREMENT delay type,
+              the read_sdf command will perform an adjustment on the delta de-
+              lay  slot  which  models SI cross-talk push-out/pull-in effects.
+              When this option is used, the INCREMENT delays will  be  applied
+              against the static base delay values instead.
+
+       -late_sdf_field {min | typ | max}
+              Annotates the late delay from the specified SDF field.
+
+              In  single-corner  mode,  use this parameter to specify which of
+              the SDF triplet values to  annotate  for  both  setup  and  hold
+              checks.
+
+              In  best-case  worst-case  mode,  use  this parameter to specify
+              which SDF field to use for setup analysis.
+
+              In on-chip variation mode, the software uses the late delay  for
+              the calculation of slow paths.
+
+       -overwrite_incremental_delay
+              When annotating an incremental SDF file, replaces any pre-exist-
+              ing  delta  delays with the new SDF values. The total delay will
+              be equivalent to the original base delay, plus the new delta de-
+              lay.
+
+              If the delays in the incremental SDF  file  represent  crosstalk
+              delay push-outs from a signal integrity analysis, use the -over-
+              write_incremental_delay  parameter to ensure that any stale data
+              from a previous analysis is removed.
+
+              By default, when an incremental SDF file (SDF  has  an  internal
+              INCREMENT  keyword)  is  annotated,  the delays are added to the
+              base delay, and also stored separately as delta  delays.  If  an
+              additional  incremental SDF file is annotated, the software adds
+              the existing base and delta delays with the new values.
+
+       -path <instanceName>
+              Specifies the instance in the design to which the specified  SDF
+              file should be applied.
+
+       -persistent
+              Keeps the delays from certain SDF files persistently in use dur-
+              ing  various steps of the timing optimization . Use this parame-
+              ter to support pre-timed structures, such as clock meshes.
+
+       -print_summary
+              Outputs the summary information of annotated delays.
+
+       -scale <float>
+              Overrides the automatic scaling of SDF  delays  to  the  library
+              units by the value given. To disable all scaling, use a value of
+              1.0.
+
+       -sdf_field {min | typ | max}
+              Annotates the delay from the specified SDF slot.
+
+              In  single-corner  and  best-case worst-case modes, the software
+              uses this value for both setup and hold analysis.
+
+              In on-chip variation mode, the software uses the same value from
+              the specified SDF slot for both the early and late delays of the
+              specified arc.
+
+       <sdf_filename>
+              Specifies the name of the SDF file that has the back  annotation
+              data.
+
+       -strict_cond_matching
+              Annotates only the conditions that are an exact syntax-to-syntax
+              match between the SDF file and the .lib file.
+
+              Default: Uses looser conditional matching rules between the .lib
+              and SDF arc specifications.
+
+       -view <viewName>
+              Annotates  the  specified  analysis view(s) with the delays from
+              the SDF file. You can use this parameter only when  you  are  in
+              multi-mode multi-corner analysis mode.
+
+Examples
+              * The following command annotates delay information from the SDF
+                min  field  to the min/early slots, and maps the SDF max field
+                data to the max/late delay slots:
+
+                read_sdf <sdf_filename>
+
+                Given the following SDF, the default annotation would be:
+
+                (INTERCONNECT       C1/Y       RS/CK       (0.123:0.456:0.789)
+                (0.123:0.456:0.789))
+
+                     * In  single-corner analysis mode, a delay of 0.789 ns is
+                       annotated to the max delay slot.
+
+                     *
+
+                       In best-case worst-case mode, a delay of  0.123  ns  is
+                       annotated  to  the min delay slot, and a value of 0.789
+                       ns is placed in the max delay slot.
+
+                     * In on-chip variation mode, a delay of 0.123 is used for
+                       early delays, and a value of 0.789 ns is used for  late
+                       delays.
+
+              * The  following command annotates the SDF typ field to both the
+                early and late delay slots:
+
+                read_sdf -sdf_field typ <sdf_filename>
+
+              * The following command annotates the SDF typ field to the early
+                delay slot, and the SDF max field to the late delay slot:
+
+                read_sdf -early_sdf_field typ -late_sdf_field  max  <sdf_file-
+                name>
+
+              * The  following command annotates the SDF typ field to the late
+                delay slot. The early delay slot is annotated with the default
+                min SDF field:
+
+                read_sdf -late_sdf_field typ <sdf_filename>
+
+Related Information
+              * write_sdf
+
+              * set_annotated_delay
+
+              * report_timing
+
+              * report_annotated_parasitics
+
+              * setAnalysisMode
+
+                           Fri Apr 04 01:25:37 2025            read_sdf(25.10)

@@ -1,0 +1,172 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setTieHiLoMode(25.10)                                    setTieHiLoMode(25.10)
+
+Name
+       setTieHiLoMode  -  Controls certain aspects of how the software adds or
+       deletes tie-high and tie-low cells
+
+Syntax
+       setTieHiLoMode
+
+       [-help]
+
+       [-reset]
+
+       [-cell {{tieHi1 tieLo1} {tieHi2 tieLo2} ...}]
+
+       [-createHierPort {true | false}]
+
+       [-honorDontTouch {true | false}]
+
+       [-honorDontUse {true|false}]
+
+       [-maxDistance <distanceValue>]
+
+       [-maxFanout <fanOutValue>]
+
+       [-modulePrevention {true | false}]
+
+       [-prefix <prefixName>]
+
+       [-reportHierPort {true | false}]
+
+       Controls certain aspects of how the software adds or  deletes  tie-high
+       and tie-low cells.
+
+       See  getTieHiLoMode  to  query  current settings for the setTieHiLoMode
+       command.
+
+       The parameters of the setTieHiLoMode command affect the behavior of the
+       following commands:
+
+              * addTieHiLo
+
+              * deleteTieHiLo
+
+                Note: Parameters specified by addTieHiLo  and  deleteTieHighLo
+                supersede those specified by the setTieHiLoMode command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setTieHiLoMode parameter. For a detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:
+
+              man setTieHiLoMode
+
+       -cell {{tieHi1 tieLo1} {tieHi2 tieLo2} ...}
+              Specifies the pairs of tie cells to be used  by  the  addTieHiLo
+              command.
+
+              You can specify a maximum of two tie-cells in a cell list, where
+              one cell must be a tie-high driver, and the other a tie-low dri-
+              ver.  If the current tie cell type does not have enough location
+              to  place,  the  tool picks the next tie cell type in order from
+              the pair list for connection and placement. If the last pair  of
+              the  tie  cells  is not legal to be placed, it will still be in-
+              serted. However, there will be overlapping with other  instance,
+              and in such cases the tool will give an error message mentioning
+              the need to run refinePlace.
+
+              A  single  cell  with both tie connections, high and low, can be
+              specified as below.
+
+              setTieHiLoMode -cell {{TieHiLo1} {TieHiLo2} {TieHiLo3} ....}
+
+              The software selects the nearest cell pair to make new tie  con-
+              nections during the postMask flow.
+
+              Default: "" (empty string)
+
+       -createHierPort {true | false}
+              Allows the added tie cells to connect to tie pins across hierar-
+              chical  boundaries  if other constraints, such as maximum fanout
+              and maximum distance, allow it.
+
+              Default: false
+
+       -honorDontTouch {true | false}
+              Allows both addTieHiLo and deleteTieHiLo commands to  honor  the
+              dont_touch property set on instances, nets, cells, and modules.
+
+              Default: false
+
+       -honorDontUse {true|false}
+              Honors dont_use attribute on cells.
+
+              Default: false
+
+       -maxFanout <fanOutValue>
+              Specifies the number of tie-pins a tie-net can drive. A value of
+              0 implies no fanout constraint.
+
+              Default: 0
+
+       -maxDistance <distanceValue>
+              Specifies  the  maximum  Manhattan distance, in microns, between
+              the tie-cell driver and the tie-pins. A value of  0  implies  no
+              distance constraint.
+
+              Default: 0
+
+       -modulePrevention {true|false}
+              When  this parameter is set to true, the addTieHiLo command adds
+              tie-cells for module instantiation port. Tie-cells may  also  be
+              added  inside the module to tie the output port of the module so
+              that module function can be prevented.
+
+              Default: false
+
+       -prefix <prefixName>
+              Specifies a prefix for the added tie-cell instances.
+
+              Default: ""
+
+       -reportHierPort {true | false}
+              When the value of -createHierPort is true, reports created  port
+              connections to a file named tiehilo.rpt.
+
+              Default: false
+
+       -reset Resets  parameters to their default values. The -reset parameter
+              must be the first parameter specified. If you specify -reset  by
+              itself,  the  software  resets  all setTieHiLoMode parameters to
+              their default values. If you specify  parameters  after  -reset,
+              the  software resets only those parameters to their default val-
+              ues.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+Example
+              * The  following  command  sets  TIEHI and TIELO cells a maximum
+                distance of 20 microns between the tie-cell pin and  the  tie-
+                off input pins and a tie-net can drive up to 10 tie-pins:
+
+                setTieHiLoMode  -maxFanout  10  -maxDistance  20  -cell "TIEHI
+                TIELO"
+
+              * The following command resets the -maxDistance parameter to its
+                default value:
+
+                setTieHiLoMode -reset -maxDistance
+
+              * The following command resets all setTieHiLoMode parameters  to
+                their default values:
+
+                setTieHiLoMode -reset
+
+Related Information
+              * addTieHiLo
+
+              * deleteTieHiLo
+
+              * getTieHiLoMode
+
+              * verifyTieCell
+
+              * The following topic in the Innovus User Guide
+
+                * Adding Logical Tie-Off Cells
+
+                           Fri Apr 04 01:25:37 2025      setTieHiLoMode(25.10)

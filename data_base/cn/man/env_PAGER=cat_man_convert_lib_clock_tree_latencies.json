@@ -1,0 +1,57 @@
+{
+  "command": "convert_lib_clock_tree_latencies",
+  "is_cmd": true,
+  "summary": "将Liberty库中的最大/最小时钟树路径数据转换为针对每个引脚的时钟延迟调整",
+  "description": "该命令用于转换Liberty库中的max_clock_tree_path和min_clock_tree_path数据，将其转换为针对每个时钟端点的引脚级延迟调整。转换过程会考虑所有分析视图中具有MCTP数据的实例引脚。默认情况下，对于已存在网络延迟（且与对应时钟网络延迟不同）的引脚，转换过程会跳过，以避免干扰SDC指定的引脚延迟。用户也可以选择对现有延迟偏移进行求和或覆盖。建议在运行create_ccopt_clock_tree_spec命令之前执行此命令，以确保转换结果影响所创建的时钟树规范。执行前需确保分析模式已设置为onChipVariation。",
+  "usage": "convert_lib_clock_tree_latencies [-help] [-latency_file_prefix <prefix_name>] [-pins <pin_list>] [-views <view_list>] [-override_existing_latencies | -sum_existing_latencies] [-sum_existing_latencies | -sum_existing_latencies_pins <pin_list>] [-override_existing_latencies | -override_existing_latencies_pins <pin_list>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-latency_file_prefix",
+      "description": "指定后，软件将不直接应用更改，而是将set_clock_latency命令写入每个分析视图对应的一个延迟文件中。任何已存在的文件将被覆盖。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins",
+      "description": "指定要考虑的时钟端点引脚列表。默认情况下，软件会考虑所有具有库max/min_clock_tree_path属性的时钟端点。",
+      "required": false,
+      "type": "pin_list"
+    },
+    {
+      "name": "-views",
+      "description": "指定要操作的分析视图。默认情况下，软件对所有活动的分析视图进行操作。",
+      "required": false,
+      "type": "view_list"
+    },
+    {
+      "name": "-override_existing_latencies",
+      "description": "指定后，将包含所有具有现有延迟偏移的引脚，并覆盖这些现有的延迟偏移。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-override_existing_latencies_pins",
+      "description": "仅包含指定引脚列表中具有现有延迟偏移的引脚，并覆盖这些现有的延迟偏移。",
+      "required": false,
+      "type": "pin_list"
+    },
+    {
+      "name": "-sum_existing_latencies",
+      "description": "指定后，将包含所有具有现有延迟偏移的引脚，并将现有延迟偏移与库指定的偏移求和。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sum_existing_latencies_pins",
+      "description": "仅包含指定引脚列表中具有现有延迟偏移的引脚，并将现有延迟偏移与库指定的偏移求和。",
+      "required": false,
+      "type": "pin_list"
+    }
+  ]
+}

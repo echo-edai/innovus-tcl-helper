@@ -1,0 +1,75 @@
+{
+  "command": "set_pg_nets",
+  "is_cmd": true,
+  "summary": "指定电源网格网络，用于设置电源/地网络的电压值，以支持静态/动态功耗分析和IR压降分析流程。",
+  "description": "此命令用于指定电源网格网络。通过该命令，用户可以在静态和动态功耗分析流程以及IR压降分析流程中定义电源和地网络的电压。在功耗分析流程中，必须在执行report_power命令之前指定set_pg_nets命令。注意：当为地网络指定非零标称工作电压值时，必须指定一个大于地电压的阈值，该网络才会被当作地网络处理。",
+  "usage": "set_pg_nets -reset | [-help] -net <net_name> -voltage <value> [-threshold <value>] -tolerance <value> -force [-die_instance_name <dieinstname>] [-pkg_net_name<package_net_name>] [-lib_binding_voltage<value>] [-vu_limit <value>]",
+  "options": [
+    {
+      "name": "-reset",
+      "description": "清除此命令所有先前指定的值。此参数可用于遵循Innovus数据库中定义的电源和地电压，而不影响常规的EM-IR分析。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-help",
+      "description": "输出包含每个set_pg_nets参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定要分析的电源或地网络的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-voltage",
+      "description": "指定要分析的电源轨上的电压值。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-threshold",
+      "description": "根据-voltage参数的设置，指定电源网络上允许的最小电压或地网络上允许的最大上升电压。该参数用于验证电源网格是否通过限值检查，并设置IR压降图的过滤器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tolerance",
+      "description": "指定电压值的容差范围。指定一个0到1（不包括1）的值。值为0.2表示范围为“电压+20%”到“电压-20%”。默认值：0.3。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "跳过对电源网络的有效性检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-die_instance_name",
+      "description": "为多芯片分析指定芯片实例名称。此选项仅在多芯片分析（set_rail_analysis_mode -die_mode multi-die）中可用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pkg_net_name",
+      "description": "指定封装侧的网表名称。默认情况下，封装网络名称与网表名称相同。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lib_binding_voltage",
+      "description": "指定用于功耗分析中库绑定的电压。此参数将实例绑定到最接近用户指定的库绑定电压的库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vu_limit",
+      "description": "指定网络的电压降限值。此参数允许您为每个网络单独指定电压阈值。指定的阈值用于IR压降报告、直方图和绘图。如果未为某些被分析的网络指定阈值，则将对这些网络应用默认范围。默认范围：0mV 至最大VU。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

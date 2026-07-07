@@ -1,0 +1,630 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setAttribute(25.10)                                        setAttribute(25.10)
+
+Name
+       setAttribute - Attaches attributes to nets and subnets
+
+Syntax
+       setAttribute
+
+       [-help]
+
+       [-max_fanout <integer>]
+
+       [-reset]
+
+       [-stripe_layer_range <minLayer>:<maxLayer>]
+
+       {-net <netName> | -cell_pin <cell_name>:<pin_name>}
+
+       [-sub_net <sub_net_name> [-comp_pin <comp>:<pin_name> <list>][-inst_pin
+       <instance:pin_name> list]]
+
+       [-weight <integer>]
+
+       [-non_default_rule <rule_name> ]
+
+       [-non_default_rule_effort {auto|soft|hard|no_taper}]
+
+       [-shield_net <special_net_name> ]
+
+       [-shield_side {one_side | two_sides}]
+
+       [[[-em_ndr_rule  <ruleName>] [-em_ndr_dist <double>]] | [-em_width_rule
+       <layer> <width:dist pairs>]]
+
+       [-ndr_si_length_limit <layer:distance list>]
+
+       [-coaxial_shielded_layers <layer_number>:<layer_number>]
+
+       [-coaxial_shield_limit <layer_number:layer_number>]
+
+       [-coaxial_shield_interval               <tracks_number               >|
+       <metal_layer_name>:<tracks_number ...>]
+
+       [-pattern {steiner|trunk}]
+
+       [-top_preferred_routing_layer <layer_number>]
+
+       [-bottom_preferred_routing_layer <layer_number>]
+
+       [-top_preferred_shielding_layer <layer_number>]
+
+       [-bottom_preferred_shielding_layer <layer_number>]
+
+       [-preferred_routing_layer_effort {low|medium|high|hard}]
+
+       [-preferred_extra_space <integer>]
+
+       [-avoid_detour {true|false}]
+
+       [-skip_routing {true|false}]
+
+       [-skip_antenna_fix {true|false}]
+
+       [-multi_cut_via_effort {low|medium|high}]
+
+       [-si_post_route_fix {true|false}]
+
+       [-min_stack_layer <layer_number>]
+
+       [-stack_distance <distance>]
+
+       [-mask <mask_number>]
+
+       [-layer_mask <bottomLayerNum:topLayerNum>]
+
+       [-one_side_spacing <bottomLayerNum:topLayerNum>]
+
+       Attaches  attributes  to nets and subnets. Attaching the attributes al-
+       lows the NanoRoute routing commands (routeDesignand  setNanoRouteMode),
+       and  the  earlyGlobalRoute command to route the nets following specific
+       requirements. Attributes are persistent; that is, throughout the  rout-
+       ing process, from global routing to optimization, the routers honor the
+       attributes. The attributes are saved in the Innovus System database. If
+       you  save  the database and exit, the attributes remain attached to the
+       nets when you re import the database.
+
+       Note:  Attributes are not saved in the DEF file.
+
+       To see the current attribute settings, use the getAttribute command. If
+       you attempt to run the setAttribute command on any net that is part  of
+       a  diffPair, matchLength, or complex shield constraint group, or a sim-
+       ple or complex netClass, the command reports an error stating that  the
+       command cannot be run on nets with integration constraints.
+
+       Tip:  To  revert  to the default value of an attribute, specify default
+       for the attribute.
+
+Parameters
+       -avoid_detour {true | false}
+              Avoids detours of roughly more than a few  gcell  grids  on  the
+              specified nets. This attribute affects global routing only.
+
+              Note:  Cadence  recommends  that  you  use caution with this at-
+              tribute, as it adds congestion to the design.
+
+              Data_type: string, optional
+
+       -bottom_preferred_routing_layer <layer_number>
+              Specifies the preferred lowest routing layer. This attribute  is
+              a  soft  limit;  that  is, NanoRoute might use a layer below the
+              specified layer if necessary to complete routing.
+
+              Range: 0-15
+
+              Note: Layers can only be specified using their layer ID numbers.
+              Use of LEF layer names is not supported by this parameter.
+
+              Note:  If the top routing layer is equal to or  greater  than  4
+              and  no  bottom  preferred  routing layer is specified for clock
+              nets, the router automatically sets the bottom preferred routing
+              layer for clock nets to 3, to prevent the clock nets from block-
+              ing other nets.
+
+              Data_type: string, optional
+
+       -bottom_preferred_shielding_layer <layer_number>
+              Specifies the preferred lowest shielding layer.
+
+              Note: Layers can only be specified using their layer ID numbers.
+              Use of LEF layer names is not supported by this parameter.
+
+              Data_type: string, optional
+
+       -cell_pin <cell_name>:<pin_name>
+              Specifies attributes for all the nets connected to pins  of  in-
+              stances having the same master cells. You can use: or / as a de-
+              limiter when you specify the cell name and the corresponding pin
+              name.
+
+              Note:  If the specified setAttribute commands conflict, then the
+              last setting takes precedence over all the previous setAttribute
+              settings.
+
+              Data_type: string, optional
+
+       -coaxial_shield_interval tracks_number | metal_layer_name:tracks_number
+       ...
+              Specifies the interval of crossties by routing track.
+
+              Range: 0-63
+
+              Default: 0. Every track could be used by crosstie.
+
+              For  example,  when -coaxial_shield_interval 2 is specified, two
+              tracks between two crossties will be empty.
+
+              Data_type: string, optional
+
+       -coaxial_shield_limit <layer_number:layer_number>
+              Specifies the bottom and top routing layer  limits  for  coaxial
+              shields.
+
+              Data_type: string, optional
+
+       -coaxial_shielded_layers <layer_number>:<layer_number>
+              Specifies the bottom and top routing layer for coaxial shields.
+
+              Data_type: string, optional
+
+       -comp_pin <comp>:<pin_name> <list>
+              Specifies attributes for all nets and sub-nets connected to pins
+              of  instances  having the same component. You can specify a list
+              of pins. You can use  :  or / as a delimiter  when  you  specify
+              the component names and the corresponding pin names.
+
+              Data_type: string, optional
+
+       -em_ndr_dist <double>
+              Specifies the distance from source to sink where it is needed to
+              be applied with the EM ndr rule
+
+              Default: 0
+
+              Data_type: string, optional
+
+       -em_ndr_rule <ruleName>
+              Specifies  the  non-default rule name which is used for EM issue
+              fixing.
+
+              Default: " " empty
+
+              Data_type: string, optional
+
+       -em_width_rule <layer width:dist pairs>
+              Specifies the table of layer  width:distance  pairs.  The  layer
+              width  pair  denotes  the width for any layer to be changed from
+              default width for EM fixing in distance X from driver.
+
+              For example, Metal1 1.0:0.5, Metal2 2.0:1.0
+
+              Note:  The  -em_width_rule  parameter  must  be  used  with  the
+              -em_ndr_dist parameter. It can not be used with the -em_ndr_rule
+              parameter  as  only  one  parameter  can specify the non default
+              width to apply.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each setAttribute parameter.For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command:
+
+               man setAttribute.
+
+       -inst_pin  <instance:pin_name><list>
+              Specifies attributes for all nets and sub-nets connected to pins
+              of  the  same  instance. You can specify a list of pins. You can
+              use  :  or / as a delimiter when you specify the pin  names  and
+              the corresponding instance names.
+
+              Data_type: string, optional
+
+       -layer_mask <bottomLayerNum:topLayerNum>
+              Specifies the layer range to which the mask constraint should be
+              applied. For example, if you specify 3:4, it means that the con-
+              straint should be applied on layers, Metal3 and Metal4.
+
+              Data_type: string, optional
+
+       -mask <mask_number>
+              Masks constraint setting for the net. Legal values are from 0 to
+              the  mask  number  for  the  layers. A value of 0 indicates that
+              there is no mask constraint on the net. A non-zero  value  indi-
+              cates that all wiring on the net should be created on the speci-
+              fied  mask.  Layers that do not support the specified value will
+              be treated as unconstrained.
+
+              Data_type: string, optional
+
+       -max_fanout <integer>
+              Specifies the maximum fanout value for nets and subnets.
+
+              Specifying setAttribute -net <netname> -max_fanout <value>  pro-
+              vides per net based max_fanout constraint/control for a net.
+
+              *
+
+                * If  -max_fanout value of a net is 0, and the -pattern of the
+                  net is trunk, the NanoRoute router honors the value of  get-
+                  NanoRouteMode  -routeTrunkWithClusterTargetSize  as  the max
+                  fanout.
+
+                * If -max_fanout value of a net is  larger  than  0,  and  the
+                  -pattern  of  the net is trunk, the -max_fanuout value over-
+                  rides the value of getNanoRouteMode  -routeTrunkWithCluster-
+                  TargetSize for the net.
+
+              Default: 0
+
+              Data_type: string, optional
+
+       -min_stack_layer <layer_number>
+              Specifies  the minimum stacking layer. It indicates that stacked
+              vias should be added to the specified layer on output pin  only.
+              If  a  pin  already has pre-defined custom stacked vias, and the
+              uppermost layer of the vias is still below the specified  layer,
+              additional  stack  vias  should be added to the specified layer.
+              Then, regular routing would start from the  specified  layer  of
+              the stacked vias.
+
+              Data_type: string, optional
+
+       -multi_cut_via_effort {low|medium|high}
+              Specifies the multi-cut via effort. The effort level can be low,
+              medium, or high.
+
+              Data_type: string, optional
+
+       -ndr_si_length_limit {<layer:distance >list}
+              Specifies  the  table  of parallel run length on each layer. For
+              example, Metal1 1.0, Metal2 2.0. It relaxes a hard  NDR  into  a
+              soft  NDR  whenever the parallel run length between the NDR wire
+              and an other wire is smaller than the specified value
+
+              For example,
+
+              setNanoRouteMode -route_strict_honor_route_rule true
+
+              setAttribute  -net  {xgxs_tx_rdy_lane[1]}   -ndr_si_length_limit
+              {metal3:0.054}
+
+              Where,  xgxs_tx_rdy_lane[1] is the net name, metal3:0.054 is the
+              prl limit 0.054 in Metal3 layer.
+
+              This setting is for, if parallel run length is  less  than  dis-
+              tance(0.054)  in the layer(Metal3) for the specified net, no NDR
+              spacing is needed for this net (wire segment).
+
+              Data_type: string, optional
+
+       -net <netName>
+              Specifies the net for which to set attributes. Do not enter more
+              than one net name.
+
+              * To specify more than one net, use * and ? wildcard characters.
+
+              * To specify nondefault rule nets, use @RULE.
+
+              * To specify clock nets, use @CLOCK. (To select clock  nets  use
+                selectNet -allDefClock.)
+
+              * To specify prerouted nets, use @PREROUTED.
+
+              Note: Remove an attribute from a net by specifying none. For ex-
+              ample,  to remove the - shield_net attribute from net_1, specify
+              the following command:
+
+              setAttribute -net net_1 -shield_net none
+
+              Data_type: string, optional
+
+       -non_default_rule <rule_name>
+              Identifies the nondefault routing rule to use with the specified
+              net. Use this attribute for critical nets, such as  clock  nets,
+              that  might need to have wider wires or wider spacing than other
+              nets. The NanoRoute router treats nondefault rule spacing  as  a
+              soft  attribute;  that is, when routing resources are available,
+              it honors the nondefault rule. If the area is too congested, and
+              resources are not available, the router might not  honor  nonde-
+              fault  spacing rules. You can override this behavior by specify-
+              ing setNanoRouteMode -route_strict_honor_route_rule  true.  When
+              you specify this parameter, the router uses the nondefault spac-
+              ing rules.
+
+              You define nondefault routing rules in the NONDEFAULTRULE state-
+              ment of the LEF file.
+
+              Data_type: string, optional
+
+       -non_default_rule_effort {auto|soft|hard|no_taper}
+              Specifies  the non-default rule effort to use with the specified
+              net. You can set any one of the options:
+
+              * auto: follows the HARDSPACING for the NDR in the LEF file.
+
+              * hard: makes the NDR hard even if HARDSPACING is not set in the
+                LEF file.
+
+              * soft: makes the NDR soft even if HARDSPACING is set in the LEF
+                file.
+
+              * no_taper: follows the HARDSPACING for the NDR in the LEF  file
+                and does not allow tapering at all pins.
+
+              Default: auto
+
+              Data_type: string, optional
+
+       -one_side_spacing <bottomLayerNum:topLayerNum>
+              Specifies  the  layer range that the one_side_spacing constraint
+              should be applied on. This constraint means that spacing is  re-
+              served  on  any  one  side. For example, 3:4 means that the con-
+              straint should be applied on layers, Metal3 and Metal4.
+
+              Data_type: string, optional
+
+       -pattern {steiner | trunk}
+              Specifies the routing pattern. Select one of the following:
+
+              * steiner: Routes all pins with a single steiner tree.
+
+              * trunk: Routes pins to the nearest  special  net  of  the  same
+                name.  Creates multiple steiner trees and connects them to the
+                trunk.
+
+              * Data_type: string, optional
+
+       -preferred_extra_space  <integer>
+              Specifies the preferred extra spacing for nets. Gives additional
+              pitch spacing to the specified net. Use this attribute  to  give
+              critical  nets  extra  space  to  reduce coupling. Specify -pre-
+              ferred_extra_space 1 to give a net 1 extra pitch  spacing,  com-
+              pared  to other nets. This parameter creates a soft rule and, if
+              the design is congested, might not give the extra space  to  the
+              net.
+
+              Range: 0-3
+
+              Note:   If  you  specify this attribute, Early Global Route also
+              gives additional space to the specified nets.
+
+              Data_type: string, optional
+
+       -preferred_routing_layer_effort {low | medium | high | hard}
+              Determines how flexible the NanoRoute  router  is  when  setting
+              layer limits for routing specified nets. Use this attribute with
+              the   -top_preferred_routing_layer  and  -bottom_preferred_rout-
+              ing_layer attributes. Specify medium,  high,  or  hard  to  make
+              NanoRoute  less  flexible  (that  is, to make NanoRoute obey the
+              preferred routing layer range more strictly). When set to  hard,
+              NanoRoute  prevents  the  nets  from  going to the non-preferred
+              routing layers by setting large costs.
+
+              Default: low (more flexible)
+
+              Data_type: string, optional
+
+       -reset Currently you cannot reset all the attributes of a net. You  can
+              reset  each   attribute  of  a net by using the -reset parameter
+              with the attribute or you can use the "default" keyword for  the
+              value of each attribute.
+
+              For example:
+
+              * The  following  command  sets  the weight attribute of the net
+                (scan_in_1) to 3 and the mask attribute to 2:
+
+                setAttribute -net scan_in_1 -weight 3 -mask 2
+
+              * The following command resets the weight attribute of the net:
+
+                setAttribute -net scan_in_1 -reset -weight -mask 2
+
+              * The following command resets the mask attribute of the net:
+
+                setAttribute -net scan_in_1 -weight 3 -mask default
+
+              Data_type: string, optional
+
+       -shield_net <special_net_name>
+              Specifies a special net to use as a shield  for  a  critical  or
+              high-speed  net. Typically, you route shielded nets before rout-
+              ing other nets. You can specify one or two shield nets, however,
+              you cannot control which side is used by the special net that is
+              routed on the same layer as the signal routing. The shield  ter-
+              minates  near the pin. Shielding information is saved in the DEF
+              file.
+
+              Note:  The router does not support shielding nets that  are  de-
+              fined in the SPECIALNET section of the DEF file. This limitation
+              extends  to  nets that are defined partly in the SPECIALNET sec-
+              tion and partly in the regular NET section of the file, such  as
+              some  clock  nets.  If  you set the shielding attribute on these
+              nets, the router automatically sets the - skip_routing attribute
+              on them as well. As a result, the nets are not modified  by  the
+              router  and,  if  they  are  not  completely routed already, the
+              router does not try to finish the connections. The  router  does
+              not delete the shielding wires.
+
+              Data_type: string, optional
+
+       -shield_side {one_side | two_sides}
+              Specifies the number of sides to route shield.
+
+              Default: two_sides
+
+              Data_type: string, optional
+
+       -si_post_route_fix {true | false}
+              Repairs crosstalk violations on specified nets.
+
+              Data_type: string, optional
+
+       -skip_antenna_fix {true | false}
+              Prevents  the router from repairing violations on specified nets
+              with process antenna violations. This  attribute  is  useful  on
+              nets  that  will  have  antenna  violations repaired at the next
+              level of hierarchy.
+
+              Data_type: string, optional
+
+       -skip_routing {true | false}
+              Prevents the NanoRoute router from routing or rerouting unrouted
+              or partially routed nets. When you specify -skip_routing  for  a
+              net,  the  router treats the net as if you had marked it + FIXED
+              in the DEF file and it becomes an obstruction for other nets. If
+              the net is partially routed, the router does  not  complete  the
+              routing.
+
+              Note:  The  value you specify for this attribute also applies to
+              Early Global Route.
+
+              Note: To skip routing on prerouted nets, specify setAttribute
+
+              Data_type: string, optional
+
+       -stack_distance <distance>
+              Specifies the stacking distance in microns.
+
+              Default: 0
+
+              Data_type: string, optional
+
+       -stripe_layer_range <minLayer>:<maxLayer>
+              Specifies the layer range that accommodates different StripeLay-
+              erRanges for different nets and subnets. You need to specify the
+              following values with this parameter:
+
+              * maxLayer: Specifies the top-most floating stripe layer allowed
+                for connection.
+
+              *
+
+                minLayer: Specifies the bottom-most floating stripe layer  al-
+                lowed for connection
+
+              For  example, 3:4 means that the constraint should be applied on
+              M3 and M4.
+
+              Data_type: string, optional
+
+       -sub_net <sub_net_name>
+              Specifies the subnet for which to set attributes. This parameter
+              is used with the -net parameter.
+
+              For example:
+
+              setAttribute -net <netName> -sub_net <sub_net_name>
+
+              Note: Cadence recommends you to use the dbSet command for chang-
+              ing the specified attribute value for a database object. The db-
+              Set command takes an object or object list as a starting  point,
+              then  uses a period to traverse to other related objects, or ac-
+              cess attributes. Additional periods can be used to continue tra-
+              versing the database schema.
+
+              For example, to specify the top preferred routing layer and bot-
+              tom preferred routing layers attributes for a subnet,   you  can
+              use the following dbSet commands:
+
+              dbSet     [dbGet     [dbGet     head.libcells.name    $cell_name
+              -p].pgTerms.name   $pg_pin_name   -p].topPreferredLayer   [dbGet
+              head.layers.num 3 -p]
+
+              dbSet     [dbGet     [dbGet     head.libcells.name    $cell_name
+              -p].pgTerms.name  $pg_pin_name  -p].bottomPreferredLayer  [dbGet
+              head.layers.num 2 -p]
+
+              instead of using the setAttribute -sub_net command.
+
+              setAttribute  -net VDD1 -sub_net VDD1_2 -inst_pin iA/FEAOB*:TVDD
+              -top_preferred_routing_layer 3 -bottom_preferred_routing_layer 2
+
+              Data_type: string, optional
+
+       -top_preferred_routing_layer <layer_number>
+              Specifies the preferred highest layer for routing specified sig-
+              nal nets. This attribute is a soft  limit;  that  is,  NanoRoute
+              might use a layer above the specified layer if necessary to com-
+              plete routing. Use this attribute to improve timing by restrict-
+              ing the routing layers available for critical nets, while simul-
+              taneously routing other nets on all routing layers.
+
+              Range: 0-15
+
+              Note: Layers can only be specified using their layer ID numbers.
+              Use of LEF layer names is not supported by this parameter.
+
+              Data_type: string, optional
+
+       -top_preferred_shielding_layer <layer_number>
+              Specifies the preferred highest shielding layer.
+
+              Note: Layers can only be specified using their layer ID numbers.
+              Use of LEF layer names is not supported by this parameter.
+
+              Data_type: string, optional
+
+       -weight <integer>
+              Specifies  a relative weight for the nets. This value is honored
+              by placement and not by the router.
+
+              Default: 2
+
+              Data_type: string, optional
+
+Examples
+              * The following command sets the net weight for net1 to 4:
+
+                setAttribute -net net1 -weight 4
+
+                Setting the weight to 4 forces the router to route net1 before
+                it routes nets whose net weight is less than 4.
+
+              * The following command sets the net weight for all  nets  whose
+                net name starts with net1 to 4:
+
+                setAttribute -net net1* -weight 4
+
+              * The following command limits routing for net1 to layers Metal4
+                and Metal5 if possible:
+
+                setAttribute -net net1 -top_preferred_routing_layer Metal5\
+
+                -bottom_preferred_routing_layer Metal4
+
+              * The  following  command  adds two additional grid units around
+                net1. The additional grid units do not have any routing.
+
+                setAttribute -net net1 -preferred_extra_space 2
+
+              * The following command uses the nondefault rule wide_wire1  for
+                routing net1:
+
+                setAttribute -net net1 -non_default_rule wide_wire1
+
+              * The following command uses the default rule for routing net1.
+
+                setAttribute -net net1 -non_default_rule default
+
+              * The  following  commands  show  how to shield two nets (do not
+                shield more than one net with the same command):
+
+                setAttribute -net net1 -shield_net abc_gnd
+
+                setAttribute -net net2 -shield_net abc_gnd
+
+Related Information
+              * earlyGlobalRoute
+
+              * getAttribute
+
+              * routeDesign
+
+              * setNanoRouteMode
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025        setAttribute(25.10)

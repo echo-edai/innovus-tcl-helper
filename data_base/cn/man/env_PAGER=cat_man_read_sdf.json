@@ -1,0 +1,99 @@
+{
+  "command": "read_sdf",
+  "is_cmd": true,
+  "summary": "读取标准延迟格式（SDF）文件并将延迟信息标注到时序系统中",
+  "description": "该命令用于读取OVI标准延迟格式（SDF）文件，并将用户指定的延迟信息从SDF文件标注到EDA工具的时序系统中。它可以从外部延迟计算器或之前的Innovus会话提供预计算的延迟和时序检查值。该命令支持读取SDF 2.1和3.0版本的文件，包括纯文本和GNU压缩（.gz）格式，但不支持SDF规范中的时序环境部分。SDF文件可以为每个时序弧延迟或时序检查值提供一、二或三个不同的值（min、typ、max）。该命令提供了参数来控制SDF的min:typ:max三元组值如何映射到工具的不同延迟槽（如单角模式、BCWC模式、OCV模式、多角模式），并支持处理增量延迟标注（如串扰效应）。",
+  "usage": "read_sdf [-help] <sdf_file_name> [-continue_on_error] [-ilm_filter] [-increment] [-overwrite_incremental_delay] [-path <instanceName>] [-persistent] [-print_summary] [-scale <float>] [-strict_cond_matching] [-view <viewName>] [-sdf_field {min|typ|max} | [-early_sdf_field {min|typ|max}] [-late_sdf_field {min|typ|max}]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<sdf_file_name>",
+      "description": "指定包含反标数据的SDF文件名",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-continue_on_error",
+      "description": "发生错误时继续读取文件（默认会停止）。注意：错误可能导致部分标注缺失，可使用report_annotated_parasitics命令查找缺失。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ilm_filter",
+      "description": "忽略与ILM（接口逻辑模型）相关的错误。默认情况下，read_sdf命令不会忽略因核心ILM中缺失弧而报告的错误。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-increment",
+      "description": "增加总延迟而不影响增量延迟。默认情况下，当SDF文件包含INCREMENT延迟类型时，read_sdf命令会对建模SI串扰推入/拉出效应的增量延迟槽进行调整。使用此选项时，INCREMENT延迟将应用于静态基础延迟值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-overwrite_incremental_delay",
+      "description": "标注增量SDF文件时，替换任何已存在的增量延迟值。总延迟将等于原始基础延迟加上新的增量延迟。如果增量SDF文件中的延迟代表信号完整性分析中的串扰延迟推入，使用此参数可确保移除先前分析的陈旧数据。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-path",
+      "description": "指定设计中的实例，SDF文件应应用于该实例",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-persistent",
+      "description": "在时序优化的各个步骤中持续使用某些SDF文件的延迟。此参数用于支持预定时序结构，如时钟网格。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-print_summary",
+      "description": "输出标注延迟的摘要信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-scale",
+      "description": "按给定值覆盖SDF延迟到库单位的自动缩放。要禁用所有缩放，请使用值1.0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-strict_cond_matching",
+      "description": "仅标注SDF文件和.lib文件之间语法完全匹配的条件。默认：使用.lib和SDF弧规范之间更宽松的条件匹配规则。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "将SDF文件的延迟标注到指定的分析视图。仅当处于多模式多角分析模式时才能使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sdf_field",
+      "description": "从指定的SDF槽（min、typ或max）标注延迟。在单角和BCWC模式中，软件将此值用于建立和保持分析。在OCV模式中，软件将指定SDF槽的相同值用于指定弧的早期和晚期延迟。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-early_sdf_field",
+      "description": "从指定的SDF字段（min、typ或max）标注早期延迟。在单角模式中，所有建立和保持分析使用最大延迟，软件忽略任何最小或早期延迟信息。在BCWC模式中，使用此参数指定用于保持分析的SDF字段。在OCV模式中，软件使用早期延迟计算快速路径。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-late_sdf_field",
+      "description": "从指定的SDF字段（min、typ或max）标注晚期延迟。在单角模式中，使用此参数指定用于建立和保持检查的SDF三元组值。在BCWC模式中，使用此参数指定用于建立分析的SDF字段。在OCV模式中，软件使用晚期延迟计算慢速路径。",
+      "required": false,
+      "type": "enum"
+    }
+  ]
+}

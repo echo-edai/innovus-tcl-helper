@@ -1,0 +1,167 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_annotated_delay(25.10)                          set_annotated_delay(25.10)
+
+Name
+       set_annotated_delay - Annotates delay to timing arcs
+
+Syntax
+       set_annotated_delay
+
+       [-help]
+
+       <delay_value>
+
+       [-cond <expression>]
+
+       [-delta_only]
+
+       [-fall]
+
+       [-increment]
+
+       [-max]
+
+       [-min]
+
+       [-rise]
+
+       {-net | -cell }
+
+       {[-from <from_pins>] [-to <to_pins>]}
+
+       Annotates  delay to timing arcs. If you specify the set_annotated_delay
+       command without any parameters, the delay value specified is assumed to
+       include both the base delay and any delta (cross-talk) delay.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -cond <expression>
+              Specifies the sdf condition of the selected timing arcs.
+
+              Default: The delay applies to all the timing arcs selected using
+              the -from and the -to options. The expression is ignored for net
+              arcs.
+
+              Note: You cannot specify the -cond parameter with -net. If spec-
+              ified, an error is displayed.
+
+       <delay_value>
+              Specifies the delay value to be annotated to the selected timing
+              arcs.
+
+       -delta_only
+              Populates the incremental delay slot with the  delay  value,  so
+              that  you can differentiate between the base net delay and a de-
+              lay offset that is due to cross talk. The software  reports  the
+              incremental  (or delta) delay value separately in the timing re-
+              port using report_timing -format incr_delay, and  maintains  the
+              separate value for CPPR calculations.
+
+              If  the  base  delay was previously calculated or annotated from
+              the SDF, the -delta_only parameter adds the specified  delay  to
+              the existing base delay.
+
+              Note:  This  parameter only can be used with the -net parameter;
+              you cannot specify it with the -cell parameter.
+
+       -from <from_pins>
+              Specifies timing arcs to which the delay applies.  The  selected
+              timing  arcs are those that have their source pins specified us-
+              ing this option and the sink pins specified using  the  -to  op-
+              tion.  If  this  option is not specified, only timing arcs whose
+              sink pins are specified using the -to option are selected.
+
+              Note: You cannot specify hierarchical pins. If specified, an er-
+              ror message is displayed.
+
+       -increment
+              Increments the specified delay value on top of the existing base
+              delay value.
+
+       -min | -max
+              Specifies the annotated delay for a particular operating corner.
+              You can apply the -min parameter to the minimum operating corner
+              and the -max parameter to the maximum operating corner.
+
+       -net | -cell
+              Specifies whether the delay should be annotated to cell arcs  or
+              net arcs.
+
+       -rise/-fall
+              Specifies  the  transition  to which the delay applies. For cell
+              arc, this is the output transition.
+
+              Default: The delay applies to both transitions.
+
+       -to <to_pins>
+              Specifies timing arcs to which the delay applies.  The  selected
+              timing  arcs are those that have their sink pins specified using
+              this option and the source pins specified using  the  -from  op-
+              tion.  If  this  option is not specified, only timing arcs whose
+              source pins are specified using the -from option are selected.
+
+              Note: You cannot specify hierarchical pins. If specified, an er-
+              ror message is displayed.
+
+Examples
+              * The following example shows the usage of -cell  and  -net  op-
+                tions:
+
+                Example Figure to Show How to Use the -cell and -net Options
+
+                     * Use the -cell option to select the cell arc carc2 only:
+
+                       set_annotated_delay 3.0 -cell -from {I1/IO}
+
+                     * Use  the  -net  arc option to select net arcs narc1 and
+                       narc2 only:
+
+                       set_annotated_delay 3.0 -net -from {I1/IO}
+
+              * This TLF description is used for the following examples:
+
+                CELL (NAND3 . . . . // arc 1
+
+                Path( A => Z 10  01  DELAY(ioDelayRiseModel0)  SLEW(SlopeRise-
+                Model0)   )  Path(  A  =>  Z  01  10  DELAY(ioDelayFallModel0)
+                SLEW(SlopeFallModel0) ) // arc2 Path( A => Z 10 01 COND(B & C)
+                SDF_COND(B & C) DELAY(ioDelayRiseModel1) SLEW(SlopeRiseModel1)
+                ) Path( A => Z 01 10 COND(B & C) SDF_COND(B &  C)  DELAY(ioDe-
+                layFallModel1) SLEW(SlopeFallModel1) ) arc3 Path( A => Z 10 01
+                COND(~B  |  ~C)  SDF_COND(!B  |  !C)  DELAY(ioDelayRiseModel2)
+                SLEW(SlopeRiseModel2) ) Path( A =>  Z  01  10  COND(~B  |  ~C)
+                SDF_COND(!B   |   !C)   DELAY(ioDelayFallModel2)   SLEW(Slope-
+                FallModel2) ) . . . }
+
+                Example Figure to Show How to Use the -from and -to Options
+
+              * The following command annotates a delay of 3.0 to  arcs  arc1,
+                arc2,  and  arc3  for  the rise and fall transition at the pin
+                I1/Z, for the two corners {min typ max}:   set_annotated_delay
+                3.0 -from A -to Z -cell
+
+              * The following command annotates a delay of 2.5 to net arc arc4
+                for both the rising and the falling transition and for the two
+                corners  {min typ max}: set_annotated_delay 2.5 -from I1/Z -to
+                I2/A -net
+
+              * The following command annotates a delay of 1.5 to arc2 for the
+                rising transition and the min corner: set_annotated_delay  1.5
+                -from I1/A -to I1/Z -rise -min -cond "B & C" -cell
+
+              * The  following  commands  annotate  a delay of 3.0 to arc1 and
+                arc2, and a delay of 2.4 to the arc3: set_annotated_delay  3.0
+                -from  I1/A  -to I1/Z -cell set_annotated_delay 2.4 -from I1/A
+                -to I1/Z -cond {!B | !C} -cell
+
+              * The following commands first annotate a delay of 3.0 to  arc1,
+                arc2  and  arc3,  then  overwrite  the  value set by the first
+                set_annotated_delay  command:  set_annotated_delay  2.4  -from
+                I1/A  -to  I1/Z  -cond {!B | !C} -cell set_annotated_delay 3.0
+                -from I1/A -to I1/Z -cell
+
+Related Information
+              * reset_annotated_delay
+
+                           Fri Apr 04 01:25:37 2025 set_annotated_delay(25.10)

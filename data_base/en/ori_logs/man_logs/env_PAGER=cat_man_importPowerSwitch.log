@@ -1,0 +1,105 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+importPowerSwitch(25.10)                              importPowerSwitch(25.10)
+
+Name
+       importPowerSwitch - Imports power switch databases
+
+Syntax
+       importPowerSwitch
+
+       [-help]
+
+       [-powerDomain <powerDomainName>]
+
+       [-file <fileName>]
+
+       Imports  power  switch  databases. The need for this commands arises in
+       case of defIn-based flows where  power  switch  database  required  for
+       power switch related operations is not loaded through defOut.
+
+       So, using exportPowerSwitch a user can save power switch database after
+       power switch insertion using addPowerSwitch for later use and it can be
+       loaded back using importPowerSwitch.
+
+       Note:  The  enable net IN and OUT connections should remain the same in
+       the netlist in power switch database export/import process and the com-
+       mands need not be run when saveDesign and defOut are  run  because  the
+       power switch database is automatically saved and restored.
+
+PSO File Generation and Usage
+       A  PSO  file  gets generated as an output of the exportPowerSwitch com-
+       mand, which can be used in a future session, if  needed.  One  scenario
+       where  this  file  can  be needed is when a DEF file containing a power
+       switch chain is not used in the power switch synthesis  and  hence  the
+       incoming  netlist  to  Innovus  would  not have any power switches. The
+       power switch chain is then created at the init stage of  Innovus  using
+       the  addPowerSwitch  command  in  such  a  run.  A database saved using
+       write_db after running the addPowerSwitch command, will have the  power
+       switch chain saved in a <design.pso> file. When restored, this database
+       can also be used to write out the saved PSO file using the exportPower-
+       Switch  command.  When the power switches are added using the addPower-
+       Switch command, the reportPowerSwitch command can be used  to  validate
+       their addition.
+
+       To  avoid  regenerating  power  switches in future implementation runs,
+       save the power switch chain using the exportPowerSwitch  command  along
+       with  the  floorplan DEF. Ensure that the -routing parameter of the de-
+       fOut command is also used along with -floorplan and -noStdCells to save
+       the power switch network under the NETS section of the DEF.
+
+       Refer to the following flows to understand the usage of the PSO file:
+
+       Innovus Session 1:
+
+       <init Design1 - incoming design has no power switches>
+
+       addPowerSwitch
+
+       exportPowerSwitch test.pso
+
+       defOut -floorplan -noStdCells -routing test.def
+
+       Innovus Session 2:
+
+       <init Design2 - incoming design has no power switches>
+
+       importPowerSwitch -file test.pso
+
+       defIn test.def
+
+       While reading the DEF file, you can identify the power  switches  using
+       the  database  commands,  such  as get_db and dbIsCellPowerSwitch, even
+       without using the importPowerSwitch command.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each importPowerSwitch parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man importPowerSwitch.
+
+       -powerDomain <powerDomainName>
+              Specifies the power domain whose power switch information is  to
+              be imported.
+
+       -file <fileName>
+              Specifies the name of the import file.
+
+Related Information
+              * deletePowerSwitch
+
+              * exportPowerSwitch
+
+              * movePowerSwitch
+
+              * rechainPowerSwitch
+
+              * replacePowerSwitch
+
+              * verifyPowerSwitch
+
+              * Low Power Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025   importPowerSwitch(25.10)

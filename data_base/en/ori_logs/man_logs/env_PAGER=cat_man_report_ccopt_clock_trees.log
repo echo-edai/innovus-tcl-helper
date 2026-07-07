@@ -1,0 +1,351 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_ccopt_clock_trees(25.10)                report_ccopt_clock_trees(25.10)
+
+Name
+       report_ccopt_clock_trees  -  This  command reports a summary of all de-
+       fined clock trees
+
+Syntax
+       report_ccopt_clock_trees
+
+       [-help]
+
+       [-clock_trees {<list_of_clock_trees>}]
+
+       [-delay_corners {<list_of_delay_corners>} | -views {<list_of_views>}]
+
+       [-file <file_name>]
+
+       [-histograms]
+
+       [-list_special_pins]
+
+       [-no_invalidate]
+
+       [-num_cap_violating_pins <number_of_pins>]
+
+       [-num_fanout_violating_nets <number_of_nets>]
+
+       [-num_length_violating_nets <number_of_nets>]
+
+       [-num_resistance_violating_nets <number_of_nets>]
+
+       [-num_slew_violating_pins <number_of_pins>]
+
+       [-skip_timing_update]
+
+       [-summary]
+
+       [-tcl_list]
+
+       [-early | -late]
+
+       This command reports a summary of all defined clock trees. In  particu-
+       lar,  this  report provides a summary of numbers of clock gates at dif-
+       ferent depths in each clock tree. Use the report_ccopt_clock_trees com-
+       mand to monitor the amount of clock gating used in the design  and  the
+       buffering used in the clock tree. You can run this command any time af-
+       ter defining or extracting clock trees.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each report_ccopt_clock_trees parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+               man report_ccopt_clock_trees
+
+       -clock_trees {list_of_clock_trees}
+              Specifies that the report will be restricted  to  the  specified
+              clock trees.
+
+       -delay_corners  {<list_of_delay_corners>}
+              Specifies  that  the  report will be restricted to the specified
+              delay corners.
+
+              Note: The -delay_corners and -views parameters are mutually  ex-
+              clusive.
+
+       -early Specifies  that only the early half of the delay corners will be
+              reported.
+
+       -file <file_name>
+              Specifies that a copy of  the contents of  the  report  will  be
+              saved to the specified file name.
+
+       -histograms
+              Specifies that histograms of key information will be displayed.
+
+       -late  Specifies  that  only the late half of the delay corners will be
+              reported.
+
+       -list_special_pins
+              Specifies that the report will list  individual  pins  that  are
+              stop, ignore, min, or other special type of pins.
+
+       -no_invalidate
+              Specifies  that the timing engine should not be invalidated. The
+              timing engine is used to calculate the timing data that is  dis-
+              played  in  the report. By default, this is invalidated when you
+              generate the report, so all the  timing  data  is  recalculated.
+              This  increases  the  time taken to generate the report. Use the
+              -no_invalidate option to reuse the existing timing data for  the
+              report.
+
+       -num_cap_violating_pins <number_of_pins>
+              Specifies  the  maximum number of capacitance violating pins re-
+              ported in the "Max  capacitance  violation  summary  across  all
+              clock trees" table of the report.
+
+              By default, the software reports the top 10 violations.
+
+       -num_fanout_violating_nets <number_of_nets>
+              Specifies  the  maximum number of violating fanout nets reported
+              in the "Max fanout violation summary across all clock trees" ta-
+              ble of the report.
+
+              By default, the software reports the top 10 violations.
+
+       -num_length_violating_nets <number_of_nets>
+              Specifies the maximum  number  of  max_source_to_sink_net_length
+              violating  nets  reported  in  the "Max length violation summary
+              across all clock trees" table of the report.
+
+              By default, the software reports the top 10 violations.
+
+       -num_resistance_violating_nets <number_of_nets>
+              Specifies the maximum  number  of  max_source_to_sink_net_resis-
+              tance  violating  nets reported in the "Max resistance violation
+              summary across all clock trees" table of the report.
+
+              By default, the software reports the top 10 violations.
+
+       -num_slew_violating_pins <number_of_pins>
+              Specifies the maximum number of worst slew violating  pins  that
+              are  reported  in  the  "Slew violation summary across all clock
+              trees" table.
+
+              By default, the software reports the top 10 violations.
+
+       -skip_timing_update
+              Specifies that the timing engine should not be updated. The tim-
+              ing engine is used to calculate the timing  data  that  is  dis-
+              played  in the report. By default, when you generate the report,
+              the timing data is recalculated. This increases the  time  taken
+              to  generate the report. Specify this parameter to skip calcula-
+              tion of timing data.
+
+       -summary
+              Specifies that just the summary table should be displayed in the
+              report.
+
+       -tcl_list
+              Specifies that the report will be created as Tcl data instead of
+              a text report.
+
+       -views {<list_of_views>}
+              Restricts the report to the delay corners  associated  with  the
+              specified views.
+
+              Note:  The -delay_corners and -views parameters are mutually ex-
+              clusive.
+
+Examples
+       Example1: Clock Timing Summary table
+
+       Clock Timing Summary:
+
+       =====================
+
+       Target and measured clock slews (in ns):
+
+       * - indicates that target was not met.
+
+       auto extracted - target was extracted from SDC.
+
+       auto computed - target was computed when balancing trees.
+
+       auto scaled - target was computed by scaling the  primary  corner  skew
+       target when balancing trees.
+
+       Example2:  Slew  violation summary table across all clock trees for top
+       10 violations
+
+       Slew violation summary across all clock trees - Top 10 violating pins:
+
+       ======================================================================
+
+       Target and measured clock slews (in ns):
+
+       -----------------------------------------------------------------------------------------------------
+
+       Half corner                  Violation  Slew    Slew      Dont    Ideal
+       Target            Pin
+
+                                    amount      target   achieved  touch  net?
+       source
+
+                                                                 net?
+
+       -----------------------------------------------------------------------------------------------------
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0336/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0358/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0382/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0386/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0400/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0440/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0447/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0461/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0481/CK
+
+       delay_corner_typ:hold.early     4.157     1.020     5.177     N       N
+       liberty explicit  flop0501/CK
+
+       -----------------------------------------------------------------------------------------------------
+
+       Target sources:
+
+       auto extracted - target was extracted from SDC.
+
+       auto computed - target was computed when balancing trees.
+
+       auto scaled - target was computed by scaling the  primary  corner  skew
+       target when balancing trees.
+
+       explicit - target is explicitly set via target_max_trans property.
+
+       pin  explicit  -  target  is  explicitly  set for this pin via pin_tar-
+       get_max_trans property.
+
+       liberty explicit - target is explicitly  set  via  max_transition  from
+       liberty library.
+
+       Found 0 pins on nets marked dont_touch that have slew violations.
+
+       Found  0  pins  on  nets marked dont_touch that do not have slew viola-
+       tions.
+
+       Found 0 pins on nets marked ideal_network that have slew violations.
+
+       Found 0 pins on nets marked ideal_network that do not have slew  viola-
+       tions.
+
+       Example3: Max capacitance violation summary table for top 1 violation
+
+       Max capacitance violation summary across all clock trees - Top 1 viola-
+       tion:
+
+       ===========================================================================
+
+       Target and measured capacitances (in pF):
+
+       -----------------------------------------------------------------------------------------------
+
+       Half corner                   Violation  Capacitance  Capacitance  Tar-
+       get                  Pin
+
+                                     amount          target           achieved
+       source
+
+       -----------------------------------------------------------------------------------------------
+
+       delay_corner_slow:setup.late     3.330     0.085         3.415      li-
+       brary_or_sdc_constraint  clk
+
+       -----------------------------------------------------------------------------------------------
+
+       Target sources:
+
+       target_max_capacitance_property  -  the  target  was  set  in  the tar-
+       get_max_capacitance property
+
+       library_or_sdc_constraint - the non-frequency-dependent target was  set
+       in a library file or by an SDC constraint
+
+       frequency_dependent_library_or_sdc_constraint - the frequency-dependent
+       target was set in a library file or by an SDC constraint
+
+       computed_from_slew_target - the target was calculated based on the slew
+       target at a clock root
+
+       clock_root_forced - the target was forced to be zero at a clock root
+
+       Found a total of 0 clock tree nets with max resistance violations.
+
+       Found a total of 0 clock tree nets with max length violations.
+
+       Found a total of 1 clock tree net with max fanout violations.
+
+       Example4: Count of violations table
+
+       Count of violations across all clock trees:
+
+       ===========================================
+
+       ---------------------------------------------------------------------------------------
+
+       Clock  Tree   #  Max capacitance  # Max resistance  # Max length  # Max
+       fanout  # Slew
+
+       Name        violations         violations         violations     viola-
+       tions    violations
+
+       ---------------------------------------------------------------------------------------
+
+       clk                  1                  0               0             1
+       1470
+
+       ---------------------------------------------------------------------------------------
+
+       Total               1                 0                0              1
+       1470
+
+       ---------------------------------------------------------------------------------------
+
+       Note  the above table per clock tree is based on CCOpt clock tree view.
+       The violations are counted across half corners.
+
+       Found a total of 1 clock tree pin with max capacitance violations.
+
+       Found a total of 1 max capacitance violation.
+
+       Total violation amount 3.330pF.
+
+       Example5: Clock Sink Summary Report
+
+Related Information
+              * ccopt_design
+
+              * clock_opt_design
+
+              * create_ccopt_clock_tree
+
+              * delete_ccopt_clock_trees
+
+              * get_ccopt_clock_trees
+
+              * update_ccopt_clock_tree
+
+              * The following topic in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                           Fri Apr 04 01:25:37 2r0e2p5ort_ccopt_clock_trees(25.10)

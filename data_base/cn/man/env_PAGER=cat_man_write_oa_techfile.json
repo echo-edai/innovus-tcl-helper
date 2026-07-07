@@ -1,0 +1,33 @@
+{
+  "command": "write_oa_techfile",
+  "is_cmd": true,
+  "summary": "将当前技术信息写入一个DFII格式的ASCII技术文件，用于创建等效的OpenAccess技术数据库。",
+  "description": "该命令用于创建和验证与LEF技术文件匹配的OpenAccess技术文件。默认情况下，write_oa_techfile仅输出DRC信息，不包含LDRS或VIA信息。典型的新工艺流程包括：通过init_design将LEF文件读入Innovus；使用write_oa_techfile写出技术(.tf)文件；使用该.tf文件运行techLoadDump；使用lef2oa -pnrLibDataOnly创建LDRS和通孔。更多详细信息请参考《Virtuoso Technology Data ASCII Files Reference》中的“Technology File Layer Attributes”章节。",
+  "usage": "write_oa_techfile [-help] [<fileName>] [-include_rules] [-process_node <coord>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个write_oa_techfile参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定输出的ASCII文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_rules",
+      "description": "在输出的技术文件中包含LDRS和VIA信息。此选项应仅在LEF默认规则和NDR不使用固定通孔时使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-process_node",
+      "description": "以纳米为单位指定工艺节点值。当指定此参数时，write_oa_techfile会为使用MASK构造的工艺在技术文件中创建一个processNode条目。例如，指定-process_node 20表示20nm工艺，将在技术文件的control()部分包含processNode(0.020)条目。如果未指定-process_node且命令检测到任何层上存在MASK构造，则会返回错误。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

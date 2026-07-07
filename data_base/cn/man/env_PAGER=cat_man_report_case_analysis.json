@@ -1,0 +1,63 @@
+{
+  "command": "report_case_analysis",
+  "is_cmd": true,
+  "summary": "生成用户案例分析表，报告具有 set_case_analysis 约束的端口和引脚。",
+  "description": "生成一个用户案例分析表，用于报告那些具有 set_case_analysis 约束的端口和引脚。这些端口和引脚仅在时序分析中保持恒定值。该命令还可以选择性地生成一个逻辑恒定值表，报告设计中恒定状态为固有部分的端口和引脚。此表信息包括具有 set_logic 约束（set_logic_zero 和 set_logic_one）的端口或引脚、网表中显式定义的常量，以及具有恒定输出功能的输出引脚。",
+  "usage": "report_case_analysis [-all] [-nosplit] [-dir] [-view <view_name>] [-propagated] [-verbose] [<pins_and_ports_list>] [{> | >>}<filename> | -tcl_list]",
+  "options": [
+    {
+      "name": "-all",
+      "description": "指定报告逻辑恒定值表，其中包含具有 set_logic 约束的引脚或端口、网表中的常量以及具有恒定功能的输出引脚。这些输出引脚来自库单元或网表模块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nosplit",
+      "description": "指定报告中的长名称不会被分割成多行。注意：此参数仅在 set_table_style -no_frame_fix_width 命令被指定时才有效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dir",
+      "description": "指定报告中包含引脚或端口的方向，报告为输入、输出或双向（内部引脚可能没有恒定约束）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "仅为指定的分析视图生成用户案例分析表。要使用此参数，软件必须处于多模式多角（MMMC）分析模式。默认：在 MMMC 分析模式下，为所有活动分析视图生成表格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-propagated",
+      "description": "生成一个包含所有恒定引脚的报告，包括具有传播常量的引脚。指定后，报告常量值的列标题将更改为“Constant value”。默认：生成仅包含具有 set_case_analysis 约束的引脚的报告。（常量值的列标题标记为“User case analysis value”。）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "生成一个报告，其中每个引脚单独一行列出，并附有原因。如果引脚是传播常量，则包含一个表格，报告从原始原因到报告引脚的常量链。默认：所有引脚在表格中报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<pins_and_ports_list>",
+      "description": "仅为指定列表中的引脚和端口生成报告。默认：为设计中的所有引脚和端口生成报告。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "{> | >>}<filename>",
+      "description": "当指定 > 时，将报告写入指定的文件名。如果文件已存在，软件将覆盖它。当指定 >> 时，将报告写入指定的文件名。如果文件已存在，软件将报告追加到文件末尾。<filename> 参数必须是列表中的最后一个参数。<filename> 和 -tcl_list 参数互斥；不能同时指定它们。注意：要写入压缩报告，请在文件名后添加 .gz 扩展名。默认：报告显示在标准输出上，不保存。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "以 Tcl 列表格式生成报告，而不是表格格式。这对于将时序与自定义 Tcl 函数集成以及自定义报告生成很有用。-tcl_list 和 <filename> 参数互斥；不能同时指定它们。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

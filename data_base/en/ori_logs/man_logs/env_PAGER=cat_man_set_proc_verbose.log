@@ -1,0 +1,104 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_proc_verbose(25.10)                                set_proc_verbose(25.10)
+
+Name
+       set_proc_verbose  -  Makes  a  procedure verbose, when the procedure is
+       called for execution
+
+Syntax
+       set_proc_verbose
+
+       [-help]
+
+       {[<procedure_name> [-quiet ]] | [-report ]}
+
+       Makes a procedure verbose, when the procedure is called for execution.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each set_proc_verbose parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man set_proc_verbose.
+
+       <procedure_name>
+              Specifies the name of the procedure to be made verbose.
+
+              Data_type: string, required
+
+       -quiet Reverts the procedure back from being verbose.
+
+              Data_type: bool, optional
+
+       -report
+              Reports procedures that are verbose.
+
+              Data_type: bool, optional
+
+Examples
+              *
+
+                The  following commands show the usage of the set_proc_verbose
+                command and its options for the fplan_boxes procedure.
+
+                The code within the fplan_boxes procedure is given below:
+
+                innovus 1> proc fplan_boxes {} {
+
+                + puts "Floor Plan Boxes:"
+
+                + puts [dbGet top.fplan.boxes]
+
+                + }
+
+                The following  command  executes  the  fplan_boxes  procedure.
+                Please note that the execution result simply shows the coordi-
+                nates of the floor plan boxes.
+
+                innovus 2> fplan_boxes
+
+                Floor Plan Boxes:
+
+                {{0.0 0.0 1511.96 1512.12}}
+
+                The  following  commands  makes the fplan_boxes procedure ver-
+                bose:
+
+                innovus 3> set_proc_verbose fplan_boxes
+
+                fplan_boxes
+
+                After the fplan_boxes procedure is made verbose  and  is  exe-
+                cuted, the code of the fplan_boxes procedure is displayed:
+
+                innovus 5> fplan_boxes
+
+                #@ Begin verbose proc fplan_boxes
+
+                @proc(fplan_boxes) 1: puts "Floor Plan Boxes:"
+
+                Floor Plan Boxes:
+
+                @proc(fplan_boxes) 2: dbGet top.fplan.boxes
+
+                @proc(fplan_boxes) 3: puts [dbGet top.fplan.boxes]
+
+                {{0.0 0.0 1511.96 1512.12}}
+
+                #@ End verbose proc fplan_boxes
+
+                You can use the -report option to see the verbose procedures:
+
+                innovus 7> set_proc_verbose -report
+
+                innovus 8> fplan_boxes
+
+                If  you  have  made your procedure verbose and now you want to
+                make it non-verbose, you can use the -quite option.  The  com-
+                mand below makes the fplan_boxes procedure non-verbose:
+
+                innovus 6> set_proc_verbose fplan_boxes -quiet
+
+                fplan_boxes
+
+                           Fri Apr 04 01:25:37 2025    set_proc_verbose(25.10)

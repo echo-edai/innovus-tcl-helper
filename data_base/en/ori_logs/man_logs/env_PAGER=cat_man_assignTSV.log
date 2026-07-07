@@ -1,0 +1,126 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+assignTSV(25.10)                                              assignTSV(25.10)
+
+Name
+       assignTSV  -  Assigns nets to TSVs and/or frontside and backside bumps,
+       and/or feedthrus
+
+Syntax
+       assignTSV
+
+       [-help]
+
+       [-write_down_level_bump]
+
+       [-selected <netName> | [[-signal | -pgpad ] [-feedthru | -nonFeedthru ]
+       [-net <netlist> | -exclude_net <excludeNetList>] [-area  <llx  lly  urx
+       ury ...>] [-exclude_region <llx lly urx ury ...>] [-tsvViaName <tsvVia-
+       CellName>] [-interposer ] ] ]
+
+       [{[-backBump ] [-frontBump ]} [-force_current_die ]]
+
+       Assigns  nets  to  TSVs  and/or  frontside  and  backside bumps, and/or
+       feedthrus. The command considers all dies in the 3D IC System by  using
+       the  die  abstract  files, and optimizes bump assignment for the global
+       nets which connect these dies. If you run the  readDieAbstract  command
+       to import die abstract files of other chips inside the 3D IC System be-
+       fore  running  the  assignTSV command, assignTSV will optimize TSV/bump
+       assignment by considering the whole system.
+
+       Note: Use this command after the TSVs and bumps are created and the in-
+       stances connected with the IO pins are placed.
+
+Parameters
+       -help  Print out the command usage.
+
+       -backBump
+              Declares that the back side bumps and the TSVs will be  assigned
+              automatically.
+
+       -force_current_die
+              Assigns all IO pins to backside bumps or frontside bump directly
+              without checking the XML file and the top level netlist.
+
+              You  can  use -force_current_die only if -backBump or -frontBump
+              is specified.
+
+       -frontBump
+              Declares that the front side bumps will be assigned with the  IO
+              pins automatically.
+
+       -tsvViaName <tsvViaCellName>
+              If  this  option  is  specified,  only the TSV with the VIA cell
+              tsvViaCellName will be assigned. Others will be ignored.
+
+       -selected <netName>
+              Assigns the selected TSVs and bumps with a specified net.
+
+              Note: If the selected TSV  belongs  to  a  feedthru,  the  whole
+              feedthru will be assigned with the net.
+
+              This  option  is  used for manual assignment and is exclusive to
+              any other options for auto assignment.
+
+       -signal
+              Declares that only signal will be assigned.
+
+       -pgpad Declares that only power/ground net will be assigned.
+
+       -feedthru
+              Declares that the command assigns only the feedthru net.
+
+       -nonFeedthru
+              Declares that the command assigns only the nonfeedthru signal or
+              power/ground net.
+
+       -net <netlist>
+              Assigns the specified nets to the near TSV/bumps.
+
+       -exclude_net <excludenetlist>
+              Excludes the nets in the specified boxes.
+
+       -area {<llx lly urx ury> ...}
+              Assigns the TSV/bump within the box only.
+
+       -exclude_region {<llx lly urx ury> ...}
+              Excludes the TSV/bumps in the specified boxes.
+
+       -interposer
+              Declares that the assignment is done in silicon interposer with-
+              out any instance.
+
+       -write_down_level_bump
+              Writes down the level bump file for each hierarchical instance.
+
+       Notes:
+
+              * If neither -signal nor -pgpad is specified,  both  signal  and
+                pgpad will be assigned.
+
+              * If  neither  -feedthru  nor  -nonFeedthru  is  specified, both
+                feedthru and non-feedthru net will be assigned.
+
+              * If neither -frontBump nor -backBump is selected, none  of  the
+                bumps  will  be  assigned.  However, the TSV will still be as-
+                signed.
+
+Examples
+              * The following command  assigns  the  signal  IO  pins  to  the
+                frontside bump:
+
+                assignTSV -frontBump -signal
+
+              * The following command assigns the selected TSV with net VDD:
+
+                addTSV -selected VDD
+
+Related Information
+              * addTSV
+
+              * deleteTSV
+
+              * readDieAbstract
+
+              * unassignTSV
+
+                           Fri Apr 04 01:25:37 2025           assignTSV(25.10)

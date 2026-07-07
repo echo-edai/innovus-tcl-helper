@@ -1,0 +1,249 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_ccopt_skew_group(25.10)                  create_ccopt_skew_group(25.10)
+
+Name
+       create_ccopt_skew_group - Creates a new skew group within the design
+
+Syntax
+       create_ccopt_skew_group
+
+       [-help]
+
+       [-constrains none | default | all]
+
+       [-from_clocks <clock_names>]
+
+       [-from_constraint_modes <constraint_mode_names>]
+
+       [-from_delay_corners <delay_corner_names>]
+
+       -name <skew_group_name>
+
+       [-rank <rank>]
+
+       [-sinks   <pins>   |  -shared_sinks  pins  |  -exclusive_sinks  pins  |
+       -auto_sinks  |  -filtered_auto_sinks  <pins>   |   -balance_skew_groups
+       <skew_groups>]
+
+       [-sources <pins> | -balance_skew_groups <skew_groups>]
+
+       [-target_insertion_delay <value>]
+
+       [-target_skew <value>]
+
+       Creates  a new skew group within the design. CCOpt balances clock trees
+       according to skew group requirements. Balancing between multiple  trees
+       can  be achieved using the -sources parameter. The sinks to be balanced
+       can either be specified explicitly using the -shared_sinks  or  -exclu-
+       sive_sinks  parameters  or  can  be automatically inferred by using the
+       -auto_sinks parameter.
+
+       Every skew group is assigned a  rank,  accessible  through  the  exclu-
+       sive_sinks_rank property:
+
+              * Shared  skew  groups always have an exclusive_sinks_rank value
+                of zero.
+
+              * Exclusive skew  groups  always  have  an  exclusive_sinks_rank
+                value  greater than zero. When an exclusive skew group is cre-
+                ated, CCOpt assigns that  exclusive  skew  group  a  rank  one
+                greater than the highest existing skew group.
+
+       The  rank  of a skew group determines whether a member pin is an active
+       sink in that skew group or not. A pin is only an  active  sink  in  the
+       skew  group(s)  with  the  highest  rank, out of all the skew groups to
+       which the pin belongs. An active sink is a pin that  will  be  balanced
+       against other active sinks in the same skew group.
+
+       For example, consider the following sequence of commands:
+
+              *
+
+                create_ccopt_skew_group  -name  SG1 -sources top -shared_sinks
+                [get_ccopt_clock_tree_sinks */CK]
+
+              *
+
+                create_ccopt_skew_group  -name  SG2   -sources   top   -exclu-
+                sive_sinks [get_ccopt_clock_tree_sinks *XYZ*/CK]
+
+              *
+
+                create_ccopt_skew_group   -name   SG3   -sources  top  -exclu-
+                sive_sinks [get_ccopt_clock_tree_sinks *XYZ_01*/CK]
+
+       After running the first command, a single skew group  SG1  is  created.
+       This  is  a  shared skew group, so has an exclusive_sinks_rank value of
+       zero. All the "CK" pins in the design are members of this  skew  group.
+       In addition, all the "CK" pins are active sinks in skew group SG1. This
+       is  because SG1 is the highest ranked skew group so far, even though it
+       has a rank of zero.
+
+       The second command defines an exclusive skew group SG2. This  is  given
+       an  exclusive_sinks_rank  value of 1, which is one higher than the cur-
+       rent highest rank of 0. Sinks that match the pattern *XYZ*/CK  are  now
+       members  of  both  SG1  and SG2. However, they are only active sinks in
+       SG2, which is the highest ranked parent skew group till now. Sinks that
+       don't match this pattern remain active pins in SG1.
+
+       The third command defines another exclusive skew group,  SG3.  This  is
+       given  an exclusive_sinks_rank value of 2, which is one higher than the
+       current highest rank of 1. Sinks that  match  the  pattern  *XYZ_01*/CK
+       (which  must also be members of SG2, since those sinks would also match
+       the pattern *XYZ*/CK) are now members of skew groups SG1, SG2, and SG3.
+       However, they are only active sinks in SG3, which is the highest ranked
+       parent skew group. Sinks that matched  the  pattern  *XYZ*/CK  but  not
+       *XYZ_01*/CK  are  members  of both SG1 and SG2 but only active sinks of
+       SG2. Sinks that don't match the pattern *XYZ*/CK are members of SG1 and
+       active sinks in SG1.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each create_ccopt_skew_group parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:  man create_ccopt_skew_group.
+
+       -auto_sinks
+              When specified, determines the target sinks for the  skew  group
+              based on the input pins reachable from the source.
+
+       -balance_skew_groups <skew_groups>
+              Specifies  that the new skew groups should be created by merging
+              the specified skew groups in order to balance them together as a
+              single skew group.
+
+              Note: The  sources  of  skew  groups  are  specified  using  the
+              -sources  parameter.  However,  if the -sources parameter is not
+              specified and you are using the -balance_skew_groups  parameter,
+              then  the  sources  are  the sources of the skew groups that are
+              specified using this parameter.
+
+       -constrains none | default | all
+              Specifies whether the created skew group should constrain  none,
+              default, or all.
+
+              *
+
+                default:  The  created  skew group will constrain sinks during
+                ccopt_design -cts and during the initial global balancing step
+                of a regular ccopt_design run.
+
+              *
+
+                all: The created skew group will constrain  both  ccopt_design
+                -cts and the whole of ccopt_design.
+
+              *
+
+                none:  The created  skew group will only be used for reporting
+                purposes.
+
+              Default: default
+
+       -exclusive_sinks <pins>
+              Specifies the input pins in the design that  CCOpt  should  con-
+              sider  as  members of the new skew group. This will give the new
+              skew_group an exclusive_sinks_rank 1 greater than any other cur-
+              rently defined skew group, effectively removing  the  pins  from
+              all   skew_groups   that  they  currently  belong  to.  If  both
+              "shared_sinks" and "exclusive_sinks" are  not  specified,  CCOpt
+              will  use  the  set  of  sinks  reachable from the source if the
+              auto_sinks switch is provided, or no sinks otherwise.
+
+       -filtered_auto_sinks <pins>
+              Specifies that the target sinks should be  determined  automati-
+              cally  from  the  subset provided. The target sinks for the skew
+              group are determined based on the input pins reachable from  the
+              source. However, of these pins, only those are selected that are
+              also present in the list of pins provided as a filter.
+
+       -from_clocks <clock_names>
+              Specifies  the  name  of the clock for which this skew group was
+              extracted.
+
+       -from_constraint_modes <constraint_mode_names>
+              Specifies the constraint mode for which this skew group was  ex-
+              tracted.
+
+       -from_delay_corners <delay_corner_names>
+              Specifies the delay corners associated with the constraint modes
+              for which this skew group was extracted.
+
+       -name <skew_group_name>
+              Specifies the user-defined name for the new skew group. The name
+              must be unique.
+
+       -rank <rank>
+              Specifies the exclusive_sinks_rank for this skew group.
+
+       -shared_sinks <pins>
+              Specifies  the  input  pins in the design that CCOpt should con-
+              sider as members of the new skew group but are also shared  with
+              other  skew  groups. These pins are members of both the original
+              skew group and  the  new  skew  group.  This  implies  a  exclu-
+              sive_sinks_rank of 0.
+
+       -sinks <pins>
+              Specifies  the  input  pins in the design that CCOpt should con-
+              sider as members of the new skew group.
+
+       -sources <pins>
+              Specifies the source pins of the skew group.
+
+       -target_insertion_delay <value>
+              Specifies the target insertion delay to be  used  for  the  skew
+              group.  CCOpt  attempts  to keep the latency of all sinks within
+              half the target skew on either side of this delay. For example,
+
+              create_ccopt_skew_group -name b1  -sources  b1  -exclusive_sinks
+              {A/CK  B/CK  G/CK}  -target_insertion_delay  0.3ns  -target_skew
+              0.1ns
+
+       -target_skew <value>
+              Specifies the skew that the clock tree synthesis should aim for.
+              It sets the target_skew property  for  the  created  skew  group
+              (set_ccopt_property  target_skew <value>).  If this parameter is
+              not set, the software will use the default value  that  it  gets
+              from get_ccopt_property target_skew.
+
+              For example:
+
+              get_ccopt_property target_skew
+
+              The software returns the following value:
+
+              2
+
+Example
+              * The  following  command  creates  the  specified  skew  group,
+                clk_disable, for the specified source and exclusive sinks:
+
+                create_ccopt_skew_group -name clk_disable -sources clk -exclu-
+                sive_sinks {mod/ff1/CK mod/icg/CK}
+
+Related Information
+              * get_ccopt_property
+
+              * get_ccopt_skew_groups
+
+              * get_ccopt_skew_group_delay
+
+              * get_ccopt_skew_group_path
+
+              * delete_ccopt_skew_groups
+
+              * modify_ccopt_skew_group
+
+              * report_ccopt_skew_groups
+
+              * set_ccopt_property
+
+              * The following topics in the Innovus User Guide
+
+                * Clock Trees and Skew Groups
+
+                * Automatic Clock Tree Specification Creation
+
+                * Manual Setup and Adjustment of the Clock Tree Specification
+
+                           Fri Apr 04 01:25:37 20c2r5eate_ccopt_skew_group(25.10)

@@ -1,0 +1,57 @@
+{
+  "command": "report_double_clocking",
+  "is_cmd": true,
+  "summary": "报告时钟网络上的噪声影响，生成关于双时钟、转换类型和反向斜率的信息。",
+  "description": "该命令用于分析噪声对时钟网络的影响，报告双时钟现象、信号转换类型以及反向斜率。输出按斜率的绝对值排序，负值表示存在反向斜率。注意：使用此命令前，必须已定义时钟并在考虑信号完整性的时序分析（如update_timing或report_timing）中应用。该命令不适用于仅考虑毛刺的流程（update_glitch）。双时钟发生在噪声毛刺攻击正在转换的信号时，它补充了静态时序分析中的转换时间检查。对于时钟等特殊信号，分析电压阈值间的波形形状至关重要，因为信号可能缓慢转换或反向转换（即使时间很短），导致多个时钟边沿。该命令报告信号在电压阈值间转换时的最坏情况斜率（上升信号为dV/dt，下降信号为-dV/dt），单位为V/ns。斜率为正表示信号未改变方向，0表示信号平坦，负值表示信号即使短时间内也改变了方向。报告包含双时钟、上升斜率(V/ns)、下降斜率(V/ns)、受害网络、实例引脚、转换类型和反向斜率等部分。",
+  "usage": "report_double_clocking [-help] [-file <string>] [-max_delta_delay <float>] [-max_slew <float>] [-nworst <integer>] [-reverse_slope_limit <float>] [-reverse_voltage_change_threshold <float>] [-view <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-file",
+      "description": "指定输出文件名。默认：{$parm_filename_prefix}_clock.text",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_delta_delay",
+      "description": "报告因噪声导致的延迟变化超过指定数值的时钟网络。默认：0",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-max_slew",
+      "description": "报告转换时间（包括SI影响）超过指定数值的时钟网络。默认：0",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-nworst",
+      "description": "指定每个类别中要报告的时钟网络数量。默认：1",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-reverse_slope_limit",
+      "description": "报告斜率低于指定数值的时钟网络。默认：0",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-reverse_voltage_change_threshold",
+      "description": "通过允许您提供最小电压变化（作为VDD的百分比）来控制反向斜率失败标准。反向斜率必须持续才能被视为失败。默认：0.1",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-view",
+      "description": "指定要生成报告的视图名称。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

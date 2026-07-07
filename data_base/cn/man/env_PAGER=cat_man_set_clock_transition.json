@@ -1,0 +1,45 @@
+{
+  "command": "set_clock_transition",
+  "is_cmd": true,
+  "summary": "设置理想时钟网络在时序端点（如寄存器时钟引脚）的转换时间（压摆时间）",
+  "description": "此命令用于指定理想时钟网络在时序端点（通常是寄存器时钟引脚）的转换时间（压摆时间）。它仅影响理想时钟网络，通常在时钟网络实现前使用。如果未为理想时钟明确指定转换时间，则使用系统默认值（通常接近0.0）。对于传播时钟，将使用计算出的转换时间，因此只能在最终时钟树构建后才能设置传播时钟。该命令仅影响时序时钟端点（寄存器时钟引脚），不影响同一时钟组合扇出中的数据端点。软件将始终使用传播的转换时间。在时钟树构建完成前，可以考虑关闭时钟源数据路径，或使用 set_ideal_network 命令进行额外控制。",
+  "usage": "set_clock_transition [-rise] [-fall] [-min] [-max] <slew_time> <clock_list>",
+  "options": [
+    {
+      "name": "-rise",
+      "description": "指定在寄存器时钟引脚的上升沿应用该压摆时间",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fall",
+      "description": "指定在寄存器时钟引脚的下降沿应用该压摆时间",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-min",
+      "description": "指定用于最小工艺角（min corner）的时钟压摆时间",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max",
+      "description": "指定用于最大工艺角（max corner）的时钟压摆时间",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<slew_time>",
+      "description": "指定时钟引脚的压摆时间（转换时间）",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "<clock_list>",
+      "description": "指定一个仅包含设计中理想模式时钟的列表，该设置会影响指定时钟传递扇出中所有寄存器时钟引脚的压摆时间。对于具有传播延迟的时钟扇出中的寄存器时钟引脚，其指定的 set_clock_transition 值将被忽略。",
+      "required": true,
+      "type": "clock_list"
+    }
+  ]
+}

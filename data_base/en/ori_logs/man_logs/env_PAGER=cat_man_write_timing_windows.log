@@ -1,0 +1,239 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_timing_windows(25.10)                        write_timing_windows(25.10)
+
+Name
+       write_timing_windows - Generates a timing window file (TWF)
+
+Syntax
+       write_timing_windows
+
+       [-help]
+
+       [-pin]
+
+       [-power_compatible]
+
+       [-view <string>]
+
+       [-ssta_sigma_multiplier <float>]
+
+       [-voltage_threshold <string>]
+
+       <output_file>
+
+       Generates  a timing window file (TWF). The TWF file mainly contains the
+       earliest and the latest possible arrival times that a signal may arrive
+       on a net or a pin.
+
+       The format of a timing window file consists of eight pairs of  data  as
+       given below:
+
+       (NET <netname>
+
+       minRTW:maxRTW  minRt:maxRt  minRDr:maxRDr minRSlk:maxRSlk minFTW:maxFTW
+       minFt:maxFt minFDr:maxFDr minFSlk:maxFSlk)
+
+       Where:
+
+              * minRTW: Minimum rise arrival time
+
+              * maxRTW: Maximum rise arrival time
+
+              * minRt: Minimum rise transition time
+
+              * maxRt: Maximum rise transition time
+
+              * minRDr: Minimum rise source resistance
+
+              * maxRDr: Maximum rise source resistance
+
+              * minRSlk: Minimum rise slack time
+
+              * maxRSlk: Maximum rise slack time
+
+              * minFTW: Minimum fall timing window
+
+              * maxFTW: Maximum fall timing window
+
+              * minFt: Minimum fall transition time
+
+              * maxFt: Minimum fall transition time
+
+              * minFDr: Minimum fall source resistance
+
+              * maxFDr: Maximum fall source resistance
+
+              * minFSlk: Minimum fall slack time
+
+              * maxFSlk: Maximum fall slack time
+
+Parameters
+       -help  Prints out command usage.
+
+       <output_file>
+              Writes the TWF file to the specified file name.
+
+              The <filename> parameter must be the last argument in the list.
+
+              Note: To write a compressed file, add the .gz extension  to  the
+              file name.
+
+       -pin   Generates a TWF for each pin instead of each net.
+
+              Default:  Generates a TWF for the crosstalk analysis tool, which
+              contains timing windows on each net.
+
+       -power_compatible
+              Generates a timing window file that is suitable for power analy-
+              sis.
+
+       -ssta_sigma_multiplier <float>
+              Specifies a sigma multiplier between 0 and 3. The value that you
+              specify increases the arrival window by that  amount  and  worst
+              slack  value  is  generated. The transition and impedance values
+              are not impacted.
+
+       -view <string>
+              Generates a TWF for the specified multi-mode  multi-corner  view
+              only.  You  must be multi-mode multi-corner analysis mode to use
+              this parameter.
+
+              If the -view parameter is not specified,  then  by  default  the
+              first active view will be used to generate timing windows.
+
+       -voltage_threshold <string>
+              Specifies  voltage threshold values for generating a Timing Win-
+              dow File (TWF). All the slews in the TWF  file  will  be  scaled
+              with  these  values. The lower threshold value must be less than
+              the higher threshold value.
+
+              Value range: 0 to 100
+
+Examples
+              * The write_timing_windows -voltage_threshold  {20  80}  command
+                outputs the following in the TWF file:
+
+                (VOLTAGE_THRESHOLD 20 80)
+
+              * When  active  clocks  are set using the set_active_clocks com-
+                mand, the write_timing_windows command will not  display  win-
+                dows  for inactive clocks in the output. The example report is
+                shown below:
+
+       (TIMING_WINDOWS
+
+        (HEADER
+
+        (VERSION "0.1")
+
+        (DATE "Tue Apr 2 23:07:58 2013")
+
+        (DESIGN "top")
+
+        (DELIMITERS "/[]")
+
+        (VOLTAGE_THRESHOLD 20 80)
+
+        (PROCESS 1.000 1.000 1.000)
+
+        (VOLTAGE 1.012 1.012 1.012)
+
+        (TEMPERATURE 125.000 125.000 125.000)
+
+        (OPERATING_CONDITIONS DEFAULT DEFAULT DEFAULT)
+
+        (TIME_SCALE 1.000E-12)
+
+        (CAP_SCALE 1.000E-12)
+
+        (RESISTANCE_SCALE 1.000E+00)
+
+        (DEFAULT_INPUT_SLEW 0.000000 0.000000 0.000000 0.000000)
+
+        (PROGRAM "Innovus" "v13.10-dev.festa ((64bit) 04/02/2013 23:24  (Linux
+       2.6))" "Cadence")
+
+        )
+
+        (WAVEFORM    "Iclk1"    10000.000000   (POSEDGE   0.000000)   (NEGEDGE
+       5000.000000))
+
+        (WAVEFORM   "Iclk2"   15000.000000   (POSEDGE    0.000000)    (NEGEDGE
+       7500.000000))
+
+        (WAVEFORM    "Iclk3"    15000.000000   (POSEDGE   0.000000)   (NEGEDGE
+       7500.000000))
+
+        (WAVEFORM   "Iclk4"   10000.000000   (POSEDGE    0.000000)    (NEGEDGE
+       5000.000000))
+
+        (CAUSED_BY "Iclk1" RISE
+
+        (NET "in1" 0:200 120:120 * 9200 0:200 120:120 * 9200 D)
+
+        )
+
+        (CAUSED_BY NULL
+
+        (NET "sel" 0:200 120:120 * * 0:200 120:120 * * D)
+
+        )
+
+        (CAUSED_BY "Iclk4" RISE
+
+        (NET "clk1" 0:200 120:120 * * * 120:120 * * D)
+
+        )
+
+        (CAUSED_BY "Iclk4" FALL
+
+        (NET "clk1" * 120:120 * * 5000:5200 120:120 * * D)
+
+        )
+
+        (CAUSED_BY "Iclk1" RISE
+
+        (NET "clk1" 0:200 120:120 * * * 120:120 * * D)
+
+        )
+
+        (CAUSED_BY "Iclk1" FALL
+
+        (NET "clk1" * 120:120 * * 5000:5200 120:120 * * D)
+
+        )
+
+        (CAUSED_BY "Iclk1" RISE
+
+        (NET "clk1" 0:200 120:120 * * 5000:5200 120:120 * * C)
+
+        )
+
+        (CAUSED_BY "Iclk4" RISE
+
+        (NET "clk1" 0:0 120:120 * * 5000:5000 120:120 * * C)
+
+        )
+
+        (CAUSED_BY NULL
+
+        (NET "clk2" 0:200 120:120 * * 0:200 120:120 * * D)
+
+        )
+
+        (CAUSED_BY "Iclk1" RISE
+
+        (NET  "out1"  1200:2600  12.7:12.7  *  1300:7400 1200:2600 10.8:10.8 *
+       1300:7400 D)
+
+        )
+
+        (CAUSED_BY "Iclk4" RISE
+
+        (NET "out1" 300:800 12.7:12.7 * 400:9200 300:800 10.8:10.8 *  400:9200
+       D)
+
+Related Information
+              * read_twf
+
+                           Fri Apr 04 01:25:37 2025write_timing_windows(25.10)

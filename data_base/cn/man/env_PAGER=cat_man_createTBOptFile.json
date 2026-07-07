@@ -1,0 +1,63 @@
+{
+  "command": "createTBOptFile",
+  "is_cmd": true,
+  "summary": "创建用于后布线目标优化的目标优化文件",
+  "description": "该命令创建一个目标优化文件，用于后布线目标优化。创建后，该文件通过 setOptMode -opt_target_based_opt_file 命令使用。用户可以通过 -timingFile 参数提供用于关键实例分析的二进制时序报告文件名，或者通过指定 -min_slack、-max_slack 和 -max_paths 参数的值（或使用这些参数的内部默认值）让命令内部生成时序报告。基于此报告，执行瓶颈分析，并将关键实例存储在使用 -outFile 参数指定的文件中。该文件使用带有 INSTS 标记的 TBOpt 格式。瓶颈分析计算实例出现的次数（默认仅基于违例路径），并为出现次数最多的实例创建“n”个路径类别，其中“n”由 -bottleneckInstanceNumber 参数指定。默认情况下，允许每条路径存在多个实例，这意味着如果一条路径上有多个关键实例，它们都将被返回，从而生成最准确的关键实例列表。",
+  "usage": "createTBOptFile [-help] -bottleneckInstanceNumber <integer> [-early] [-max_paths <integer>] [-max_slack <float>] [-min_slack <float>] -outFile <filename> [-path_group <groupname_list>] [-timingFile <filename>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bottleneckInstanceNumber",
+      "description": "指定要生成的关键瓶颈实例数量。这是一个必需参数。",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "-early",
+      "description": "指定将基于保持时序的关键节点创建 TBOpt 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max_paths",
+      "description": "指定要考虑的最差路径数量，不考虑端点。默认值为 100,000。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_slack",
+      "description": "指定仅考虑裕量小于或等于指定浮点值（单位：ns）的路径。默认值为 0.0，以确保仅考虑负裕量路径。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-min_slack",
+      "description": "指定仅考虑裕量大于指定浮点值（单位：ns）的路径。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-outFile",
+      "description": "指定将生成的 TBOpt 文件的名称。这是一个必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-path_group",
+      "description": "指定仅考虑来自指定路径组的路径，这些路径组将作为关键实例分析的基础。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-timingFile",
+      "description": "指定用于关键实例分析的二进制时序报告文件名。如果未指定此参数，命令将使用 -max_slack 值为 0.0 和 -max_paths 值为 100,000 生成自己的文件。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

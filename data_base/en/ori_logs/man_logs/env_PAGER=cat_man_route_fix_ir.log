@@ -1,0 +1,121 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+route_fix_ir(25.10)                                        route_fix_ir(25.10)
+
+Name
+       route_fix_ir  -  Fixes  IR  Drop  (voltage  drop)  violations  with the
+       NanoRoute engine
+
+Syntax
+       route_fix_ir
+
+       [-help]
+
+       [-concurrent_pg_and_signal {0 1}]
+
+       -ground_net <string>
+
+       [-hotspot_boxes {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}]
+
+       [-irdrop_threshold <float>]
+
+       -power_net <string>
+
+       [-rail_path <string>]
+
+       -top_layer <string>
+
+       Fixes IR Drop (voltage drop) violations with the NanoRoute  engine.  It
+       creates  additional  PG connection paths from top layer PG stripes down
+       to low layer PG rail shapes based on rail analysis results. This method
+       also makes it possible to concurrently route signal nets  and  IR  drop
+       fixing PG nets. It has congestion driven and timing aware capabilities.
+
+       You can use the route_fix_ir command after postroute.
+
+Parameters
+       -concurrent_pg_and_signal {0 1}
+              When  set  to 1, the NanoRoute router routes the signal nets and
+              pg nets for  IR  drop  fixing  together.  When  set  to  0,  the
+              NanoRoute router routes the PG net wires only and does not touch
+              the signal nets.
+
+              Default: 0
+
+              Data_type: enum, optional
+
+       -ground_net <string>
+              Specifies the ground net name for IR drop fixing.
+
+              Data_type: string, required
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each route_fix_ir parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+              man route_fix_ir.
+
+       -hotspot_boxes {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}
+              Specifies coordinates of the hotspot boxes.
+
+              Note: When this option is specified, the  -rail_path  option  is
+              ignored.
+
+              Data_type: box_list, optional
+
+       -irdrop_threshold <float>
+              Specifies the minimum allowed voltage IR drop for the domain be-
+              ing analyzed.
+
+              Note: This option works with the -rail_path option.
+
+              Data_type: float, optional
+
+       -power_net <string>
+              Specifies the power net name for IR drop fixing.
+
+              Data_type: string, required
+
+       -rail_path <string>
+              Specifies  the  path of the rail analysis results. The NanoRoute
+              router then calls the debug  IR  drop  functionality  to  create
+              hotspot files.
+
+              Note:  If the rail analysis path directory is not specified, the
+              NanoRoute router automatically calls the  power  analysis,  rail
+              analysis,  and  debug  IR drop functionalities to create hotspot
+              files.
+
+              Note: This option works with the -irdrop_threshold option.
+
+              Data_type: string, optional
+
+       -top_layer <string>
+              Specifies the top stripe layer to connect the  PG  nets  for  IR
+              drop fixing.
+
+              Data_type: string, required
+
+Examples
+              * The  following  command  uses the rail analysis results for IR
+                drop fixing.
+
+                route_fix_ir  -rail_path rail_static/ALL_85C_avg_1  -top_layer
+                M15 -irdrop_threshold 0.08 -power_net VDD -ground_net VSS
+
+              * The following command specifies the hotspot boxes.
+
+                route_fix_ir -hotspot_boxes {{box1} {box2} ...} -top_layer M15
+                -power_net VDD -ground_net VSS
+
+Related Information
+              * analyze_rail
+
+              * debug_irdrop
+
+              * report_power
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025        route_fix_ir(25.10)

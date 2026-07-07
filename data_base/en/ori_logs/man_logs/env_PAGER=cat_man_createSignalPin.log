@@ -1,0 +1,100 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createSignalPin(25.10)                                  createSignalPin(25.10)
+
+Name
+       createSignalPin  - Promotes signal pins in the IO pad/block to the top-
+       level design as a physical pin for specified instances or pins
+
+Syntax
+       createSignalPin
+
+       [-help]
+
+       [-ignore_floating_pins]
+
+       {-inst <inst_name_list> | -pins <pin_name_list>}
+
+       Promotes signal pins in the IO pad/block to the top-level design  as  a
+       physical  pin for specified instances or pins. The instance's cell type
+       should be either CLASS PAD AREAIO or CLASS BLOCK. The pins to  be  pro-
+       moted  should  have geometry on the top layer. You can choose to ignore
+       floating pins.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each createSignalPin parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createSignalPin
+
+       -ignore_floating_pins
+              Ignores the floating pins. If this parameter  is  not  specified
+              when  promoting  pins  to  the  top level, the tool converts the
+              floating pins in the instance to pgTerms because these pins  are
+              not logically connected to any terminal on the top level.
+
+       -inst <inst_name_list>
+              Specifies  the names of instances for which pins need to be cre-
+              ated.
+
+              Note: This option cannot be used with -pins.
+
+       -pins <pin_name_list>
+              Lists specific pins that are to be promoted to  the  top  level.
+              The specified pins should be hierarchical.
+
+              Note: This option cannot be used with -inst.
+
+Examples
+              * The instance lna_inst has a signal pin called data1_i. The pin
+                data1_i  has  a  port geometry shape on the top layer. The lef
+                for the lna cell is as follows:
+
+                MACRO lna
+
+                CLASS BLOCK ;
+
+                ......
+
+                  PIN data1_i
+
+                    DIRECTION INPUT ;
+
+                    USE SIGNAL ;
+
+                    PORT
+
+                        CLASS BUMP ;
+
+                        LAYER METAL8 ;
+
+                        RECT   10.00 10.00   20.00 100.00 ;
+
+                    END
+
+                  END data1_i
+
+                ....
+
+                END lna
+
+                The following command creates a signal pin  for  the  instance
+                lna_inst:
+
+                createSignalPin -inst lna_inst
+
+                *
+
+                  Before this command is run, the pin is local to lna_inst:
+
+                * After the command is run, the pin is promoted:
+
+              * The  following  command promotes the specified pins to the top
+                level:
+
+                createSignalPin   -pins   {lna_inst/data1_i   lna_inst/data2_i
+                phy/QS_PADP}
+
+                           Fri Apr 04 01:25:37 2025     createSignalPin(25.10)

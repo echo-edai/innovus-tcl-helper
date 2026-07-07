@@ -1,0 +1,117 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+calculate_noise_margin(25.10)                    calculate_noise_margin(25.10)
+
+Name
+       calculate_noise_margin  -  Specifies  to  calculate  noise margins with
+       worst voltages on the driver-receiver pins
+
+Syntax
+       calculate_noise_margin
+
+       [-help]
+
+       -noise_limit_file <input_file>
+
+       -power_directory <dir>
+
+       -state_directory <dir>
+
+       Specifies to calculate noise margins with worst voltages on the driver-
+       receiver pins. To run this command, you need to specify the default  or
+       cell-specific noise limit, signal noise, guardband, rail directory, and
+       power directory. Before running the calculate_noise_margin command, you
+       need  to specify the set_power_analysis_mode -create_driver_db true pa-
+       rameter to generate the driver-receiver database.
+
+       The use model of the command is:
+
+       set_power_analysis_mode ... -create_driver_db true
+
+       calculate_noise_margin -noise_limit_file <input_file>  -state_directory
+       <dir> -power_directory <file>
+
+       The  command generates the noise margin output file in the state direc-
+       tory. The format of the noise margin output file (<powernetname_ground-
+       netname>.noise_margin) is:
+
+       NMH - signal noise - guardband
+              NMI - signal noise - guardband
+
+              Voh - Vih
+
+              Vil - Vol
+
+              VDD_driver - VSS_receiver
+
+              VSS_driver - VSS_receiver
+
+              (1-noise_limit)*(VDD_receiver - VSS_receiver)
+
+              noise_limit is the noise limit  value  specified  in  the  noise
+              limit file
+
+              noise_limit*(VDD_receiver - VSS_receiver)
+
+              noise_limit  is  the  noise  limit  value specified in the noise
+              limit file Signal noise value specified in the noise limit file
+
+              Guardband value specified in the noise limit file
+
+              Driver pin name
+
+              Receiver pin name
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each calculate_noise_margin parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man calculate_noise_margin
+
+       -noise_limit_file <input_file>
+              Specifies  the  name of the input noise limit file that contains
+              the default or cell-specific  noise  limit,  signal  noise,  and
+              guardband. The format of the noise limit file is:
+
+              default_noise_limit <<value>>
+
+              default_signal_noise <<value>>
+
+              default_guard_band <<value>>
+
+              <<cell_name>> <<noise_limit>> <<signal_noise>> <<guard_band>>
+
+              The following is a snippet of the noise limit file:
+
+              default_noise_limit 0.46
+
+              default_signal_noise 0.1
+
+              default_guard_band 0.05
+
+       -power_directory <dir>
+              Specifies  the  path to the power directory to access driver-re-
+              ceiver pairs.
+
+       -state_directory <dir>
+              Specifies the path to the  state  directory  generated  by  rail
+              analysis to access EIV database.
+
+Examples
+              * The following command calculates noise margin:
+
+                calculate_noise_margin      -noise_limit_file     ./noiselimit
+                -state_directory  dynamic_rail/core_105C_dynamic_1  -power_di-
+                rectory dynamic_power
+
+Related Information
+              * set_rail_analysis_mode
+
+              * calculate_differential_voltage
+
+              * "Static  Power, IRdrop and EM Analysis" in the Voltus IC Power
+                Integrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 202c5alculate_noise_margin(25.10)

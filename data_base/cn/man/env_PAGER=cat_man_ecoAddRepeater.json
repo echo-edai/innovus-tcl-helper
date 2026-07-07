@@ -1,0 +1,123 @@
+{
+  "command": "ecoAddRepeater",
+  "is_cmd": true,
+  "summary": "在指定网络上添加单个缓冲器或一对反相器",
+  "description": "该命令用于在指定的网络上插入一个缓冲器或一对反相器作为中继器。用户可以指定插入位置、半径、相对于接收端引脚的位置以及基于时序裕量的缓冲器插入。该命令默认会切断导线，并会根据指定的实例名称和位置检查并遵循电源域。如果设置了 setEcoMode -honorDontTouch 为 true，则不会修改标有 dont_touch 的网络。该命令支持同时考虑建立/保持时间分析和多模式多角（MMMC）分析。",
+  "usage": "ecoAddRepeater [-help] {-net <netName> | -term <term1 term2>... } [-hinstGuide <hinstName> | -spreadDist <distance> | -spreadCount <number> ] [-name <instName> | -spreadDist <distance> | -spreadCount <number> ] [-spreadDist <distance> | -spreadCount <number> ] [-newNetName <netName> | -spreadDist <distance> | -spreadCount <number> ] [-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc} | -offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....} | { xLoc yLoc  inv_xLoc  inv_yLoc}  | -offLoadSlack  <slack> | -spreadDist <distance> | -spreadCount <number> ] [-radius <mu>m | -logicalChangeOnly | -spreadDist <distance> | -spreadCount <number> ] [-offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....}  |  {  xLoc  yLoc inv_xLoc  inv_yLoc}  | -offLoadSlack <slack> | -spreadDist <distance> | -spreadCount <number> ] [{[-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc}] [-relativeDistToSink <sinkWeight>] [-offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....}  |  {  xLoc  yLoc inv_xLoc inv_yLoc}]} [ -radius <mu>m ] ] [-loc  {xLoc  yLoc}  | { xLoc yLoc inv_xLoc inv_yLoc} [-bufOrient {R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90}]] [-net <netName> [-spreadDist <distance>]] [-spreadPrefix  <prefix>]]  [-spreadDist  <distance>  [-firstSpreadDist <distance>]] [-cell <cell1 cell2>] [-relativeDistToSink  <sinkWeight> | -offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....} | { xLoc  yLoc  inv_xLoc  inv_yLoc}  |  -offLoadSlack <slack> | -spreadDist <distance> | -spreadCount <number> ] [-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc} | -noPlace ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出 ecoAddRepeater 命令的简要描述，包括参数类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定要插入缓冲器的网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-term",
+      "description": "指定一个连接到公共网络的终端列表，工具将在该公共网络上添加缓冲器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hinstGuide",
+      "description": "指示模块层次结构，以便 Innovus 能够在后续 ECO 命令的 -termList 选项中出现该实例时建立关联。仅在指定 setEcoMode -batchMode true 时可用。需要与 -name 选项一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spreadDist",
+      "description": "指定从驱动器开始，每隔指定距离添加一个中继器。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-spreadCount",
+      "description": "指定要为缓冲添加的中继器数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-name",
+      "description": "指定要插入的中继器的基本名称。当 -cell 是反相器时，可以为反相器对指定两个名称，用 {{ }} 括起来。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-newNetName",
+      "description": "指定为中继器插入创建的新网络的基本名称。当 -cell 是反相器时，可以为反相器对指定两个名称，用 {{ }} 括起来。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-loc",
+      "description": "指定要插入的缓冲器或反相器对的 x 和 y 坐标位置。如果未指定位置，工具将自动确定位置。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-offLoadAtLoc",
+      "description": "指定缓冲器（或反相器对）应插入的位置，以驱动该位置下游的接收端。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-offLoadSlack",
+      "description": "插入一个缓冲器，以卸载时序裕量小于指定阈值的路径。如果提供了 <term> 选项，此选项会忽略它。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-radius",
+      "description": "指定添加的实例可以自由移动的半径范围。如果在指定半径内找不到合法位置，单元将被放置在指定位置，可能导致与其他单元重叠。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-logicalChangeOnly",
+      "description": "指定缓冲器/反相器的添加应在仅逻辑模式下进行。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-relativeDistToSink",
+      "description": "根据缓冲器距离接收端或驱动器引脚的远近指定其位置。值在 0 到 1 之间。低值（0.1）将缓冲器放置在靠近接收端的位置；高值（0.9）将缓冲器放置在靠近驱动器的位置。该分数基于导线长度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-spreadPrefix",
+      "description": "指定在分散缓冲期间添加的新实例和网络使用的前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-firstSpreadDist",
+      "description": "指定从驱动器开始，第一个中继器应添加的距离。使用此选项时必须指定 -spreadDist。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要作为中继器插入的单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bufOrient",
+      "description": "指定实例的合法化方向。有效方向值为：R0, R90, R180, R270, MX, MX90, MY, MY90。需要与 -loc 选项一起使用。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-noPlace",
+      "description": "指定插入的单元不应被放置。仅进行连接性的逻辑更改。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

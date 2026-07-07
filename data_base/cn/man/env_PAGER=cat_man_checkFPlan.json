@@ -1,0 +1,33 @@
+{
+  "command": "checkFPlan",
+  "is_cmd": true,
+  "summary": "检查版图规划质量，在将设计传递给其他工具之前检测潜在问题",
+  "description": "该命令用于检查版图规划的质量，以检测在将设计传递给其他工具之前可能存在的问题。它会在设计显示区域中高亮显示存在违规的单元（如适用）。此命令应在指定版图规划数据或运行初始版图规划后使用。建议在最终的版图规划文件上运行checkFPlan。\n\n注意事项：\n* 使用setFPlanMode命令设置的参数会在运行checkFPlan命令时自动生效。\n* Innovus遵循FinFET网格并自动检查FinFET定义。如果检测到FinFET定义，它会启用支持并默认将布局网格设置为FinFET网格。由于所有可放置对象的高度必须是FinFET网格的倍数，并且这些对象的原点必须对齐到FinFET网格，因此checkFPlan命令会检查所有支持的对象（芯片框、核心框、标准单元行、I/O行、模块、IO焊盘和标准单元）是否与FinFET网格对齐，并报告DRC违规。\n* checkFPlan命令可以根据相关技术站点的SYMMETRY定义检查行的方向是否正确。当技术LEF的CORE站点定义中缺少Y SYMMETRY时，它会进行标记。\n* checkFPlan命令检查引脚对齐结果。\n  - 对于最小宽度引脚，检查引脚中心是否对齐到相同颜色的布线轨道。\n  - 对于宽引脚，检查引脚中心是否对齐到布线轨道，并决定引脚中心应对齐到相同还是相反颜色的布线轨道。\n* checkFPlan命令检查10nm DPT层（Metal1, Metal2, Metal3）上的电源条是否在布线轨道上。它还检查电源通孔的上层和下层金属形状是否未被同一层上的其他电源条完全覆盖。此外，它还检查多高度行是否与PG轨道冲突。如果存在冲突，则报告违规。\n* 您可以使用checkFPlan命令检查组框和电源域框之间是否存在任何现有重叠，因为组的框不应与电源域的框物理重叠。\n* checkFPlan命令检查行是否跨电源域连续，并显示违规消息。",
+  "usage": "checkFPlan [-help] [-keep_out_distance <value>] [-outFile <fileName>] [-reportUtil]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出简要描述，包括每个checkFPlan参数的类型和默认信息。如需命令及其所有参数的详细描述，请使用man命令：man checkFPlan",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_out_distance",
+      "description": "指定TSV检查的禁止距离。它允许您指定用于检查四个方向（上、下、左、右）区域的值。正值会扩大检查区域，负值会缩小检查区域。\n注意：此选项仅在将tsv设置为检查对象时使用（setFPlanMode -checkTypes tsv）。\n默认值：0\n注意：默认值在技术LEF的TSV层上定义，它应用TSV层上的对象与OVERLAP层上的对象之间的间距规则。OVERLAP层是用于重叠检查的层。\n如果技术LEF中未定义此值，则默认值为0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-outFile",
+      "description": "将指定检查的详细信息输出到文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reportUtil",
+      "description": "报告整个设计、围栏和区域（分区、电源域和常规围栏）的目标利用率（TU）和有效利用率（EU）。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

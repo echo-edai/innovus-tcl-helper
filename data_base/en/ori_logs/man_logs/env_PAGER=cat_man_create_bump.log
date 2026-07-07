@@ -1,0 +1,916 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_bump(25.10)                                          create_bump(25.10)
+
+Name
+       create_bump  -  Creates  bumps and instances of bump cells based on the
+       specified pattern
+
+Syntax
+           create_bump
+
+       [-help]
+
+       [-allow_outside_of_die]
+
+       [-allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}]
+
+       -cell <bumpcell_name>
+
+       [-check_drc]
+
+        [-edge_spacing {<left bottom right top>}]
+
+       [-exclude_bump_area {<rect_list>}]
+
+       [ [-keep_out_region <width height>] | [-keep_out_pitch <value>] ]
+
+       [-loc <x y>]
+
+        [-loc_type {cell_center | cell_lowerleft |  geometry_center  |  geome-
+       try_lowerleft}]
+
+        [-name_format {<string>, %i, %r, %c}]
+
+        [-orientation {R0 R90 R180 R270 MX MX90 MY MY90}]
+
+       [-respect_placement_blockage]
+
+       [-return_bumps_name]
+
+       [-start_index <index>]
+
+       [-pitch  <x  y>  [-pattern_full_chip  |  -pattern_side {<side width>} |
+       -pattern_array {<row column>} | -pattern_ring <width> | -pattern_center
+       {<row column>}]]
+
+       [-stagger_type <type> [-stagger_offset <value>]]
+
+       [-relative_type {embedded_bump inst_pin_port block}
+
+         [[-relative_object {<inst_pin_port_list>}]
+
+          [-relative_block <inst>+] [-relative_block_constraint <fileName>]
+
+          [-relative_assignment] [-relative_offset <x y>]]]
+
+       [{-pattern_full_chip  | -pattern_array {<row column>} | -pattern_center
+       {<row column>}} [-start_from  {lower_left  upper_left  lower_right  up-
+       per_right}]]
+
+       Creates  bumps  and instances of bump cells based on the specified pat-
+       tern. Use one of the following parameters to specify the  bump  pattern
+       in the chip:
+
+              * -pattern_full_chip
+
+              * -pattern_side {<side width>}
+
+              * -pattern_array {<row column>}
+
+              * -pattern_ring <width>
+
+              * -pattern_center {<row column>}
+
+       If  none of the above patterns is specified, create_bump creates a sin-
+       gle bump at the specified location.
+
+       create_bump also enables you to create bumps based on pin location.
+
+       Note - During bump placement trials, if you click the Undo  button  (or
+       use  the  undo  command)  after running create_bump, the bump floorplan
+       will return to the state it was in  before  create_bump.  If  you  then
+       click  the  Redo  button  (or use the redo command), the bump floorplan
+       will reapply the changes made by create_bump.
+
+Embedded Bumps
+       Bumps are usually placed in the top design. However,  some  blocks  may
+       also  include  bumps. Such bumps are called embedded bumps. When imple-
+       menting the block design, use the following special keywords in the LEF
+       definition for embedded bumps.
+
+              * Add following property keywords in the head of tech LEF file
+
+                PROPERTYDEFINITION
+
+                    LAYER LEF58_TYPE STRING ;
+
+                END PROPERTYDEFINITIONS
+
+              * Add PASSIV LAYER definition after AP(top) layer
+
+                LAYER PASSIV
+
+                  TYPE CUT ;
+
+                  PROPERTY LEF58_TYPE "TYPE PASSIVATION ; " ;
+
+                END PASSIV
+
+              * Add a same geometry on PASSIV layers with the bump pins
+
+                MACRO BUMP
+
+                CLASS COVER BUMP ;
+
+                  ...
+
+                    PIN A
+
+                  ...
+
+                      PORT
+
+                        LAYER PASSIV ;
+
+                        POLYGON 27.985 0 67.565 0 95.55  27.985  95.55  67.565
+                67.565 95.55 27.985 95.55 0 67.565 0 27.985 ;
+
+                        LAYER AP ;
+
+                        POLYGON  27.985  0  67.565 0 95.55 27.985 95.55 67.565
+                67.565 95.55 27.985 95.55 0 67.565 0 27.985 ;
+
+                      END
+
+                    END A
+
+                 END BUMP
+
+       After the block design is finished, the bumps are  dumped  out  as  one
+       port  of the pin with PASSIV layer and top layer (AP) as similar as be-
+       low, tool could check if the port is the embedded bump by PASSIV  layer
+       from the top design.
+
+       PIN DQ0
+
+           DIRECTION INOUT ;
+
+           USE SIGNAL ;
+
+           PORT
+
+             LAYER AP ;
+
+             POLYGON 759.9810 366.7830 799.5610 366.7830
+
+                     827.5460 338.7980 827.5460 299.2180
+
+                     799.5610 271.2330 759.9810 271.2330
+
+                     731.9960 299.2180 731.9960 338.7980 ;
+
+             LAYER PASSIV ;
+
+             POLYGON 759.9810 366.7830 799.5610 366.7830
+
+                     827.5460 338.7980 827.5460 299.2180
+
+                     799.5610 271.2330 759.9810 271.2330
+
+                     731.9960 299.2180 731.9960 338.7980 ;
+
+       END
+
+           PORT
+
+       ...
+
+       END
+
+       ...
+
+       END DQ0
+
+       If you are creating an embedded bump, create_bump automatically creates
+       a  bump  in  the top design with the correct net assignment at the same
+       location as the embedded bump.
+
+Dummy Bumps
+       You can also use create_bump to  create  mechanical  dummy  bump  cells
+       without pin shapes. For details, see the Dummy Bump Creation section in
+       the Innovus User Guide.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each create_bump parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man create_bump
+
+       -allow_outside_of_die
+              Allows bumps to be created outside of die area. When this option
+              is specified, the tool ignores floorplan constraints when creat-
+              ing  a bump array pattern. This option can be used only if -pat-
+              tern_array and -location are also specified.
+
+              Data_type: bool, optional
+
+       -allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}
+              Specifies the overlap control type. The allowed values  for  the
+              -allow_overlap_control parameter are:
+
+              * keep_all - Keeps all overlapping bumps.
+
+              * keep_existing_bumps  - Keeps the existing bumps before calling
+                create_bump if there is an overlap. If this option  is  speci-
+                fied, create_bump skips creating a bump if there is an overlap
+                and  continues creating the remaining bumps. A warning message
+                is displayed when bump creation is skipped to avoid overlap.
+
+              * keep_new_bumps - Removes the  existing  bumps  before  calling
+                create_bump,  places  the newly created bump if there is over-
+                lap, and then continues creating the remaining bumps. A  warn-
+                ing  message  is displayed when deleting the existing bumps to
+                avoid overlap. If the status  of  the  existing  bumps  to  be
+                deleted  is  covered  or fixed, a warning is displayed and the
+                new bumps overlapping with the covered or fixed old bumps  are
+                not kept.
+
+              create_bump:
+
+              * Checks  overlaps  between  regular  bumps  by checking for pin
+                overlaps on bumps.
+
+              * Checks overlaps between dummy bumps by checking for OBS  over-
+                lap.
+
+              * Checks  overlaps  between  dummy  bumps  and  regular bumps by
+                checking for OBS and bump pin overlap.
+
+       -check_drc
+              Checks DRC rules and does not create  a  bump  at  any  location
+              where  there  is a violation. A suitable warning message is also
+              issued.
+
+              For example, as indicated in the following diagram, no  bump  is
+              created at the location where a short violation is detected when
+              -check_drc is specified with create_bump.
+
+              In addition, a warning such as the following is displayed:
+
+              **WARN:  (IMPSIP-9068):   New  bump at (0.000, 75.000) has short
+              violation and skipped.
+
+              Currently, create_bump -check_drc checks for the following types
+              of violations:
+
+              *
+
+                Short violation
+
+              *
+
+                Min spacing violation
+
+              *
+
+                Cut spacing violation
+
+              *
+
+                EOL (end of line) violation
+
+       -cell <bumpcell_name>
+              Specifies the name of the bump cell, which  is  used  to  create
+              bumps.
+
+       -edge_spacing {<left bottom right top>}
+              Specifies  the  minimum  distances in microns to the edge of the
+              chip from the lower left or center of the outermost  bumps.  The
+              -loc_type  value  determines which point of the bump (lower-left
+              or center of the cell or geometry) is used to compute  the  dis-
+              tance to the edge. The arrays start at the left, bottom location
+              and extend to the right and top.
+
+       -exclude_bump_area {<rect_list>}
+              Specifies  the  area to be excluded from bump placement. No bump
+              geometry is allowed inside the specified area. It supports  mul-
+              tiple  rectangles,  such  as -exclude_bump_area {<llx1 lly1 urx1
+              ury1 llx2 lly2 urx2 ury2> ...}.
+
+       -keep_out_pitch <value>
+              Defines a circular keep-out area with the  bump  center  as  the
+              center  and the specified pitch value as the radius. By default,
+              the tool will not create a bump at a  location  if  an  existing
+              bump  violates  the  center-to-center pitch at that location, as
+              shown below.
+
+              If the bump-center-to-bump-center pitch at a location is smaller
+              than the specified keep-out pitch value,  the  tool  displays  a
+              warning. Whether the tool then retains the existing bumps in the
+              overlap  region  or  replaces them with the new bumps depends on
+              the -allow_overlap_control parameter setting:
+
+              * If -keep_out_pitch is specified but -allow_overlap_control  is
+                not  specified, the tool keeps the existing bumps and does not
+                add new bumps in the overlap region. This is the same behavior
+                as when -keep_out_pitch is specified along  with  -allow_over-
+                lap_control keep_existing_bumps.
+
+              * If -keep_out_pitch is specified along with -allow_overlap_con-
+                trol  keep_new_bumps, the tool keeps the newly added bumps and
+                deletes the existing bumps.
+
+              If the bump-center-to-bump-center  pitch  equals  the  specified
+              keep-out  pitch value, the tool creates bumps without any viola-
+              tions.
+
+       -keep_out_region <width height>
+              Defines a dynamic, keep-out region where bumps are not going  to
+              be created if there are existing bumps in that region. The keep-
+              out  region is a box area of the specified width and height, and
+              its center is the same as the bump center.
+
+              By default, if you specify -keep_out_region and there are exist-
+              ing bumps in the region, the tool displays a warning  and  keeps
+              the  existing  bumps  in  the overlap area. Specify -allow_over-
+              lap_control keep_new_bumps if you want to keep the new bumps and
+              delete existing ones in the case of  overlap  in  the  specified
+              keep-out region.
+
+       -loc <x y>
+              Specifies  the  <x>  and  <y> coordinates of the start point for
+              bump creation based on location type. The unit is micron.
+
+              For different bump patterns, the -loc coordinates have different
+              meanings for the start point:
+
+              *
+
+                For -pattern_full_chip, -pattern_side {bottom <width>},  -pat-
+                tern_side {left <width>}, -pattern_array {<row column>}, -pat-
+                tern_ring  <width>,  the  start  point  is the location of the
+                lower-left bump in the bump pattern.
+
+              * For -pattern_side {top <width>}, the start point is the  loca-
+                tion of the upper-left bump in the bump pattern.
+
+              * For  -pattern_side {right <width>}, the start point is the lo-
+                cation of the lower-right bump in the bump pattern.
+
+              * For -pattern_center {<row column>}, the  start  point  is  the
+                center of the bump pattern.
+
+              If  the location violates the spacing rule defined by the option
+              -edge_spacing, the tool issues a warning but still uses the -loc
+              value for the start point.
+
+       -loc_type {cell_center | cell_lowerleft | geometry_center | geome-
+       try_lowerleft}
+              Specifies the location type for bump creation.
+
+              The default type is cell_center.
+
+       -name_format {<string>, %i, %r, %c}
+              Specifies the format for the bump name like a printf format, ex-
+              cept that it uses %i for index, %r for row number,  and  %c  for
+              column  number.  The index starts at one more than the number of
+              existing bumps in the design, unless -start_index  is  specified
+              and increments for each bump created. This means if there are no
+              bumps  in the design, the index starts at 1 and if there are 100
+              bumps in the design, the index starts at 101.
+
+              The default name format is Bump_%i. Therefore, if there  are  no
+              bumps  in  the  design,  the  tool generates bumps named Bump_1,
+              Bump_2, and so on, by default.
+
+              Some examples of the possible format are:
+
+              * -name_format <prefix>_%i_<string>_%r_%c_<suffix>
+
+              * -name_format %i
+
+              * -name_format <bumpname>
+
+              If there are any name collisions, an ERROR occurs and  the  bump
+              pattern is not created.
+
+       -orientation {R0 R90 R180 R270 MX MX90 MY MY90}
+              Specifies the orientation of the bump for bump generation.
+
+              Use this option if you are creating a pillar bump. A pillar bump
+              can  be  rectangular  and  you  may  rotate  the  pillar bump by
+              90/180/270 degrees to alleviate package and chip  routing  prob-
+              lem.
+
+              Default: R0
+
+              Note: If you are creating a regular C4 bump, which is either oc-
+              tagonal  or  square in shape, rotation does not change its foot-
+              print in silicon.
+
+       -pattern_array {<row column>}
+              Creates an array of bumps. The bump starts  at  the  coordinates
+              specified  with  -loc,  and  extends  to the number of <row> and
+              <column> values given from  the  start  corner  specified  using
+              -start_from.
+
+       -pattern_center {<row column>}
+              Creates  an array of bumps that is centered on the center of the
+              chip and that extends for the <row> and <column>  values  given.
+              The  center  point can optionally be set directly with -loc. The
+              starting  corner  of  the  array  can  be  specified  using  the
+              -start_from parameter.
+
+       -pattern_full_chip
+              Creates an array of bumps covering the chip. The array starts at
+              the closest to boundary point set by -edge_spacing at the corner
+              specified  by -start_from and extends until within -edge_spacing
+              of the chip boundary for the opposite sides. You can  optionally
+              directly specify the -loc value for the starting point, in which
+              case  -edge_spacing  affects  only the two opposite edges of the
+              array.
+
+              For examples, see the Examples section below.
+
+       -pattern_ring <width>
+              Creates a ring of bumps around the boundary  of  the  chip  that
+              is<width>bumps wide, where <width> is an integer value. The ring
+              extends  until within -edge_spacing of the chip boundary, start-
+              ing at the lower-left value allowed by  -edge_spacing.  You  can
+              optionally  directly  specify  the -loc value for the lower-left
+              bump location, in which  case  -edge_spacing  only  affects  the
+              right  and  top  edges of the array. The -pitch <x> value is the
+              spacing between bumps inside one ring, and the -pitch y value is
+              the spacing between two rings.
+
+              For examples, see the Examples section below.
+
+       -pattern_side {<side> <width>}
+              Creates an array of bumps along one side of the chip. The  array
+              is the length of the side, and <width> bumps wide, where <width>
+              is  an  integer  value.  The  legal <side> names are: left, top,
+              right, bottom. The array starts at the left/bottom controlled by
+              -edge_spacing, and extends until  within  -edge_spacing  of  the
+              top/right  sides.  You  can optionally directly specify the -loc
+              value for the lower-left bump location  for  bottom/left  sides,
+              the  upper-left  bump  for  the top side, or lower-right for the
+              right side.
+
+              For examples, see the Examples section below.
+
+       -pitch <x y>
+              Specifies the distance between bump centers in  microns.  -pitch
+              {x  y}  is interpreted in different ways for different bump pat-
+              terns.
+
+              * For full_chip, bottom_side row, top_side row,  left_side  col-
+                umn,  right_side  column,  array {row column}, and center {row
+                column}:
+
+                * -pitch <x> means the distance between the bump centers in  a
+                  row or horizontal.
+
+                * -pitch y means the distance between the bump centers in col-
+                  umn or vertical.
+
+              * For ring <ring_number>:
+
+                * -pitch  <x>  means  the distance between the bump centers in
+                  the ring.
+
+                * -pitch <y> means the distance between rings  from  the  bump
+                  center.
+
+       -relative_assignment
+              Assigns the corresponding net of the relative object to the bump
+              being created. This option can be used only if -relative_type is
+              specified.
+
+              If relative_assignment is specified and -relative_type is:
+
+              * embedded_bump:  create_bump  searches  the top netlist for the
+                net connected to the pin of the embedded bump and  assigns  it
+                to the created bump.
+
+              * inst_pin_port:   You   must   also   specify  -relative_object
+                {<inst_pin_port_list>}.  create_bump  then  searches  the  top
+                netlist for the net connected to the specified pin and assigns
+                it to the created bump.
+
+              * block:  You  must  also  specify -relative_block {inst+}. cre-
+                ate_bump then searches the top netlist for the  net  connected
+                to  the  top layer pins of the specified blocks and assigns it
+                to the created bump.
+
+              Note: This option is used with -cell,  -start_index,  -name_for-
+              mat, -orientation, -allow_overlap_control, -relative_type, -rel-
+              ative_object and -relative_offset. An error message is displayed
+              if it is used with any other option.
+
+       -relative_block <inst>+
+              Specifies  the  block list for creating top-level bumps based on
+              block pins on the top layer. The -relative_block parameter  must
+              be  specified when  -relative_type is set to  block. The  -rela-
+              tive_block parameter supports wildcards. For  example,  you  can
+              specify  -relative_block *.
+
+       -relative_block_constraint <fileName>
+              Specifies  the  filename  of the block constraint to be used for
+              creating top-level bumps based on block pins on the  top  layer.
+              The  -relative_block_constraint parameter is optional and can be
+              used only when -relative_type block is specified.
+
+              create_bump parses the constraint  file  specified  with  -rela-
+              tive_block_constraint  and  creates  bumps based on the instance
+              pins specified with -relative_block. The top-level bump is  cre-
+              ated  at the center of the block pin geometries. Note that bumps
+              are created on a block pin only if it is on the top layer  of  a
+              design.
+
+              The  constraint format for bumps based on a block pin is as fol-
+              lows:
+
+              BUMP_ON_BLOCK_PIN
+
+                  MACRO <marco_name_list>
+
+                  PIN [<pin_name_list>] [SINGLE|MULT]
+
+                  PORT [SINGLE|MULT]
+
+                      GEOMETRY_SHAPE RECT/POLY
+
+                      GEOMETRY_SHORT_EDGE <min_value> [:<max_value>]
+
+                      GEOMETRY_LONG_EDGE <min_value> [:<max_value>]
+
+                  NET <net_list_name>
+
+              END BUMP_ON_BLOCK_PIN
+
+              Note: If a constraint file is specified, the tool creates  bumps
+              only  on  the  block  pins  that are specified in the constraint
+              file. If you do not specify a constraint file, the tool  creates
+              a single bump for each block pin on the top layer for the speci-
+              fied blocks. If a constraint file is specified but is empty, the
+              tool does not create any bumps because no block pin is specified
+              in the constraint file.
+
+              To  see the use model and examples of the BUMP_ON_BLOCK_PIN con-
+              straint, refer to the "Bump Creation" section in the  Flip  Chip
+              Methodologies chapter in the User Guide.
+
+       -relative_object {<inst_pin_port_list>}
+              Specifies  the  inst_pin_port  list and supports wild cards. The
+              format is {<inst>:<pin>:<port> ...} and <port> is of type  inte-
+              ger.
+
+              When the -relative_object option is specified, bumps are created
+              by  default  at  the geometry center of the specified ports. The
+              bump   is   named<$blockName-$pinName-Port_$portNumber-embedded-
+              Bump_$index>, where:
+
+              * $blockName  is  the  name of the block in the top design which
+                has the corresponding embedded bump.
+
+              * <$pinName> is the name of the pin in LEF which has the  corre-
+                sponding embedded bump.
+
+              * $portNumber  is  the  number  of the port on which the created
+                bump is based.
+
+              Example: Avd_test_1-DQ0-Port_1-embeddedBump_1
+
+              You can reset the default settings by using the -start_index and
+              -name_format options.
+
+              Note: This option is used with -cell,  -start_index,  -name_for-
+              mat, -orientation, -allow_overlap_control, -relative_type, -rel-
+              ative_assignment  and -relative_offset. An error message is dis-
+              played if it is used with any other option.
+
+       -relative_offset <x y>
+              Specifies the offset of bump location compared with the relative
+              object. The geometry center of the created bump is the  geometry
+              center  of  the relative object plus the offset. This option can
+              be used only if -relative_type is specified.
+
+              Note: This option is used with -cell,  -start_index,  -name_for-
+              mat, -orientation, -allow_overlap_control, -relative_type, -rel-
+              ative_object  and -relative_assignment. An error message is dis-
+              played if it is used with any other option.
+
+       -relative_type {embedded_bump inst_pin_port block}
+              Specifies the type of the relative object:
+
+              * embedded_bump: When the embedded_bump type is specified,  cre-
+                ate_bump  automatically creates a bump at the same location as
+                the embedded bump. The bump is  named  $blockName/$pinName/em-
+                beddedBump_$index, where:
+
+                *
+
+                  $blockName  is  the name of the block in the top design that
+                  has the corresponding embedded bump.
+
+                *
+
+                  <$pinName> is the name of the pin in LEF that has the corre-
+                  sponding embedded bump.
+              You can reset the default settings by using the -start_index and
+              -name_format options.
+
+              If there are already overlapping bumps for some embedded  bumps,
+              create_bump  skips  creating  bumps for those embedded bumps but
+              continues to create bumps for remaining embedded bumps  and  is-
+              sues the following warning message.
+
+              WARNING  (#):  There  is(are)  overlap bump(s) with the embedded
+              bump $blockName/$pinName located at {x2 y2} with relative offset
+              {x y}. Skip creating bump for it.After all  bumps  are  created,
+              checkBump displays a summary of the number of embedded bumps for
+              which the tool failed to create bumps.
+
+              *
+
+                inst_pin_port:  When the inst_pin_port type is specified, cre-
+                ate_bump creates bumps as per the inst_pin_port_list you spec-
+                ify with -relative_object. Therefore, if  you  specify  -rela-
+                tive_type as inst_pin_port, you must specify the -relative_ob-
+                ject {<inst_pin_port_list>} option.
+
+              *
+
+                block: When the block type is specified, create_bump automati-
+                cally creates bumps at the same location as that of the speci-
+                fied  block pin, which must be on the top routing layer of the
+                design. The -relative_block parameter must be  specified  when
+                -relative_type is set to block.
+
+       -respect_placement_blockage
+              Specifies  that  the bumps being created, including dummy bumps,
+              should not overlap any placement blockages.
+
+       -return_bumps_name
+              Returns the names of the bumps generated. If  create_bump  fails
+              to generate any bumps, the tool returns an empty string.
+
+       -stagger_offset <value>
+              Specifies  the  offset  of  bumps between rows or columns in the
+              generated bump pattern. Its value is specified in microns.  This
+              option is used with -stagger_type.
+
+       -stagger_type {odd_rows odd_columns even_rows even_columns trapezoid}
+              Specifies  the stagger type pattern. The  -stagger_type  parame-
+              ter cannot be used with  -pattern_ring .
+
+              You can use the  -stagger_offset  parameter  along  with  -stag-
+              ger_type  to specify the offset of bumps between rows or columns
+              in the generated bump pattern.
+
+              The allowed values for the -stagger_type parameter are:
+
+              * odd_rows - Creates a bump array with the odd rows  shifted  to
+                the right by the specified stagger offset value.
+
+              * odd_columns  -  Creates  a  bump  array  with  the odd columns
+                shifted up by the specified stagger offset value.
+
+              * even_rows - Creates a bump array with the even rows shifted to
+                the right by the specified stagger offset value.
+
+              * even_columns - Creates a bump  array  with  the  even  columns
+                shifted up by the specified stagger offset value.
+
+              * trapezoid  - Creates bumps are created in a trapezium pattern.
+                This stagger type is supported only with -pattern_side.
+
+              For examples of how  -stagger_offset  affects  different  -stag-
+              ger_type patterns, refer to the Examples section below.
+
+       -start_from {lower_left upper_left lower_right upper_right}
+              Specifies  the  starting  corner for creating an array of bumps.
+              This option can be used only if -pattern_array, -pattern_center,
+              or -pattern_full_chip is specified.
+
+              Note: Bumps are always indexed by row first, irrespective of the
+              -start_from value.
+
+               For examples of using -start_from, refer to the  Examples  sec-
+              tion below.
+
+              Default: lower_left
+
+       -start_index <index>
+              Specifies  the starting number of the index for bumps to be cre-
+              ated.
+
+Examples
+              * The following command creates a single bump at the  lower-left
+                corner of the bump cell box:
+
+                create_bump -cell BUMPCELL -loc_type cell_lowerleft -loc {0 0}
+
+              *
+
+                The  following  command uses the default location type setting
+                and creates an array of bumps with bump cell that has the same
+                size as the bump bounding box for the macro BUMPCELL.
+
+                create_bump -cell BUMPCELL -pitch {<x y>}  -edge_spacing  {<x1
+                y1 x2 y2>} -pattern_full_chip
+
+              *
+
+                The  following  command creates a full bump matrix on the chip
+                with the spacing constraint {400 500 450 600} and  bump  pitch
+                {80  120}.  The  names  of the created bumps honor the default
+                naming format Bump_%i, where %i means the index:
+
+                create_bump -cell BUMPCELL -pitch {80 120} -edge_spacing  {400
+                500 450 600} -pattern_full_chip
+
+              *
+
+                The  following  command  creates  a  ring  of bumps around the
+                boundary of the chip that is 3 bumps wide:
+
+                create_bump -cell BUMPCELL -pitch {<X Y>}  -edge_spacing  {<x1
+                y1 x2 y2>} -pattern_ring 3
+
+              * The  following  command  creates  a 4x4 array of bumps that is
+                centered on the point defined by -loc:
+
+                create_bump -cell BUMPCELL -pitch {<X Y>} -loc {<X  Y>}  -pat-
+                tern_center {4 4}
+
+              *
+
+                The following example shows how -stagger_offset can be used to
+                create  a 5X5 array of bumps in -stagger_type odd_rows stagger
+                pattern:
+
+                create_bump  -cell   BUMPCELL   -loc{<loc_x   loc_y>}   -pitch
+                {<pitch_x   pitch_y>}   -pattern_array   {5  5}  -stagger_type
+                odd_rows -stagger_offset <value>
+
+              * The following example shows how -stagger_offset can be used to
+                create a 5X5 array of bumps in -stagger_type odd_columns stag-
+                ger pattern:
+
+                create_bump  -cell   BUMPCELL   -loc{<loc_x   loc_y>}   -pitch
+                {<pitch_x   pitch_y>}   -pattern_array   {5  5}  -stagger_type
+                odd_columns -stagger_offset <value>
+
+              * The following example shows how -stagger_offset can be used to
+                create a 5X5 array of bumps in -stagger_type even_rows stagger
+                pattern:
+
+                create_bump  -cell   BUMPCELL   -loc{<loc_x   loc_y>}   -pitch
+                {<pitch_x   pitch_y>}   -pattern_array   {5  5}  -stagger_type
+                even_rows -stagger_offset <value>
+
+              * The following example shows how -stagger_offset can be used to
+                create a 5X5 array  of  bumps  in  -stagger_type  even_columns
+                stagger pattern:
+
+                create_bump   -cell   BUMPCELL   -loc{<loc_x   loc_y>}  -pitch
+                {<pitch_x  pitch_y>}  -pattern_array   {5   5}   -stagger_type
+                even_columns -stagger_offset <value>
+
+              *
+
+                The  following  example  shows how -stagger_offset can be used
+                with -stagger_type trapezoid stagger pattern to create a 3-row
+                bump pattern on the bottom side:
+
+                create_bump -cell BUMPCELL -edge_spacing {<left  bottom  right
+                top>}  -pitch  {<pitch_x  pitch_y>}  -pattern_side  {bottom 3}
+                -stagger_type trapezoid -stagger_offset <value>
+
+              *
+
+                The following command creates a 3X4 array of  bumps  but  does
+                not place bumps in the:
+
+                * rectangular area with lower left corner at {x1 y1} and upper
+                  right corner at {x2 y2}
+
+                * rectangular area with lower left corner at {x3 y3} and upper
+                  right corner at {x4 y4}
+
+              create_bump  -cell BUMPCELL -loc {x y} -pattern_array {3 4} -ex-
+              clude_bump_area {x1 y1 x2 y2 x3 y3 x4 y4}
+
+              *
+
+                The following command creates a 3X3 array of  bumps  with  the
+                upper-right  corner  of  the  array  starting  at point (1000,
+                1000):
+
+                create_bump -pattern_array {3 3} -loc  1000  1000  -cell  BUMP
+                -pitch 200 200 -start_from upper_right
+
+                The  array  starts  from the upper right and continues towards
+                lower left.
+
+              *
+
+                The following command creates a 3X3 array of  bumps  with  the
+                lower-right corner of the array starting at point (1000, 0):
+
+                create_bump -pattern_array {3 3} -loc 1000 0 -cell BUMP -pitch
+                200 200 -start_from lower_right
+
+                The  array  starts  from the lower right and continues towards
+                upper left.
+
+              *
+
+                The following command creates a 3X3  array  of  bumps  at  the
+                specified  location  and returns the names of the bumps gener-
+                ated:
+
+                create_bump -pattern_array  {3  3}  -loc  0  1000  -cell  BUMP
+                -pitch 200 200 -return_bumps_name
+
+                >  bump_1  bump_2  bump_3  bump_4  bump_5 bump_6 bump_7 bump_8
+                bump_9
+
+              * The following command creates a 3X3 bump array  and  does  not
+                add  new bumps in the specified keep-out region in the case of
+                an overlap:
+
+                create_bump -pattern_array {3  3}  -loc  200  200  -cell  BUMP
+                -pitch 200 200 \
+
+                            -keep_out_region {200 200}
+
+              *
+
+                The  following  command  creates a 3X3 bump array and adds new
+                bumps in the specified keep-out region in the case of an over-
+                lap:
+
+                create_bump -pattern_array {3  3}  -loc  200  200  -cell  BUMP
+                -pitch 200 200 \
+
+                            -keep_out_region  {200 200} -allow_overlap_control
+                keep_new_bumps
+
+              *
+
+                The following command creates a  5X5  bump  array  and  allows
+                bumps to be created outside of the die area:
+
+                create_bump  -cell  BUMPCELL  -start_from upper_right -loc 0 0
+                -pitch 100 100  -pattern_array {5 5} -allow_outside_of_die
+
+              *
+
+                The following command parses the 1.const constraint  file  and
+                creates bumps based on the specified instance pins:
+
+                create_bump   -cell   BUMPCELL   -relative_type  block  -rela-
+                tive_block {<BLOCK_LIST>}  -relative_block_constraint  1.const
+                -relative_assignment
+
+              * The  following  command  creates a 3X3 bump array and does not
+                add new bumps in the circular area defined  by  the  specified
+                keep-out pitch in the case of an overlap:
+
+                create_bump  -pattern_array  {3  3}  -loc  200  200 -cell BUMP
+                -pitch 200 200 -keep_out_pitch 200
+
+              *
+
+                The following command creates a 3X3 bump array  and  adds  new
+                bumps  in  the circular area defined by the specified keep-out
+                pitch in the case of an overlap:
+
+                create_bump -pattern_array {3  3}  -loc  200  200  -cell  BUMP
+                -pitch 200 200 \
+
+                 -keep_out_pitch 200 -allow_overlap_control keep_new_bumps
+
+Related Information
+              * assignBump
+
+              * changeBumpMaster
+
+              * checkBump
+
+              * copy_bump
+
+              * deleteBumps
+
+              * deselect_bump
+
+              * redo
+
+              * select_bump
+
+              * unassignBump
+
+              * undo
+
+              * Flip Chip Methodologies chapter in the User Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Flip Chip
+
+                           Fri Apr 04 01:25:37 2025         create_bump(25.10)

@@ -1,0 +1,370 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ir_insight(25.10)                                    get_ir_insight(25.10)
+
+Name
+       get_ir_insight
+
+Syntax
+       get_ir_insight
+
+       [-help]
+
+       -domain <domainname>
+
+       -domain_threshold <value>
+
+       [-eco_list <list_of_instances> ]
+
+       [-eco_mode {violation | aggressor | both}]
+
+       [-ir_drop_histogram_bin_size <absolute_value_in_volts>]
+
+       [-ir_drop_histogram_lower_limit <absolute_value_in_volts>]
+
+       [-ir_drop_histogram_upper_limit <absolute_value_in_volts>]
+
+       [-mode  summary_only | report_by_region | predict_ir | report_aggressor
+       | eco_report]
+
+       [-nregion <value>]
+
+       [-nworst_aggressors <value>]
+
+       [-nworst_instances <value>]
+
+       -output_directory <directoryname>
+
+       [-pdn_model <directoryname>]
+
+       [-reset_predict]
+
+       -state_directory <directoryname>
+
+       [-watch_box <filename>]
+
+       [-watch_inst <filename>]
+
+       The get_ir_insight command allows you do the following:
+
+              * IR drop distribution and summary reporting by the specified IR
+                threshold - Worst Instance Voltage Drop (WIV), Total  Instance
+                Voltage  Drop  (TIV), and Number of Violation Instance Voltage
+                Drop (NVIV)
+
+              * Aggressor IR impact analysis and reporting  by  the  specified
+                violation and aggressor limits
+
+              * Support  various  Tempus IR-ECO flows (violation or aggressor-
+                based flow with aggressor IR impact analysis and ECO IR  esti-
+                mation)
+
+              * IR drop prediction/estimation on input ECO changes
+
+              * IR violation reporting by regions
+
+       You must specify this command after running the analyze_rail command.
+
+       The get_ir_insight command requires the invs_vi (Innovus Voltus Insigh-
+       tAI Option) license.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each get_ir_insight parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man get_ir_insight.
+
+       -domain <domainname>
+              Specifies the name of the power domain.
+
+       -domain_threshold <value>
+              Specifies the minimum allowed voltage for the domain being  ana-
+              lyzed.  The value will be in percentage. This parameter behavior
+              is same as the set_rail_analysis_domain -threshold parameter.
+
+       -eco_list <list_of_instances>
+              Specifies the list of instances which  were  changed  for  -mode
+              predict_ir. The format of the file is:
+
+              <original   x>,<original   y>,<original   orientation>,<original
+              cell>,<x>,<y>,<orientation>,<cell>,<instance>
+
+       -eco_mode {violation | aggressor | both}
+              Default: violation
+
+              Specifies the mode to be used for generating the ECO report with
+              the -mode eco_report parameter. The possible options are:
+
+              * violation: Generates a list of violations in the report.
+
+              * aggressor: Generates a list of aggressors in the report.
+
+              * both: Generates a report that includes both the violations and
+                aggressors.
+
+       -ir_drop_histogram_bin_size<absolute_value_in_volts>
+              Allows you to control the EIV histogram bin  size.  The  default
+              value is 0.005.
+
+              In the following example, each histogram bin size is of 1mV:
+
+              get_ir_insight -eiv_histogram_bin_size 0.001
+
+       -ir_drop_histogram_lower_limit<absolute_value_in_volts>
+              Specifies the lower limit of the EIV histogram range. This para-
+              meter must be used with -mode summary_only.
+
+       -ir_drop_histogram_upper_limit<absolute_value_in_volts>
+              Specifies the upper limit of the EIV histogram range. This para-
+              meter must be used with -mode summary_only.
+
+       -mode {eco_report | predict_ir | report_aggressor | report_by_region |
+       summary_only}
+              Default: summary_only
+
+              Specifies  the  mode  of operation for the command. The possible
+              options are:
+
+              * eco_report: Generates a file (eco.ird) that  is  used  by  the
+                Tempus-ECO flow to fix the IR drop violations in a design. The
+                eco.ird  file  is  located at: /output_directory/eco.ird. When
+                this option is specified, it is  recommended  to  specify  the
+                -eco_mode  and  -pdn_model  parameters to support the intended
+                ECO flow.
+
+              * predict_ir: Specifies to generate the IR  prediction  for  the
+                ECO  changes  specified with the -eco_list parameter. Based on
+                the list of instances specified with -eco_list, the tool  per-
+                forms IR prediction. You can also choose to use the -watch_box
+                and  -watch_inst  parameters to specify either the area or in-
+                stance you want to observe and predict. You can specify multi-
+                ple ECO change lists, and all  the  previous  accumulated  ECO
+                changes  will  be  saved  until  you reset them using the -re-
+                set_predict parameter. This  option  is  associated  with  the
+                -eco_list,   -watch_box,   -watch_inst,   -reset_predict,  and
+                -pdn_model parameters.
+
+                The format of prediction output is:
+
+                <instance_name1> <predicted_eiv_value1>
+
+                <instance_name2> <predicted_eiv_value2>
+
+              * report_aggressor : Reports the impact  of  the  user-specified
+                aggressor  instances.  The  report  file  is located at: /out-
+                put_directory/IR_impact_<nworst_instances>_<nworst_aggres-
+                sors>.rpt. This option is combined with the -nworst_instances,
+                -nworst_aggressors, and -pdn_model parameters.
+
+                The following is the report format:
+
+                      VIOL:<viol name> <violating  ir(domain  drop-threshold)>
+                <EIV time>
+
+                     -AGGR1:<aggr1  name>  <impact1>      -AGGR2:<aggr2  name>
+                <impact2>
+
+              * report_by_region: Reports IR drop values by region in the  re-
+                port  file  (output_directory/report.rpt | region_*.rpt). This
+                option is combined with the -nregion and -nworst_instances pa-
+                rameters.
+
+              * summary_only: Reports IR distribution summary in the  log  and
+                report file (output_directory/IR_distribution_<state_dir>_<do-
+                main_threshold>.rpt).
+
+       -nregion <value>
+              Default: 3
+
+              Specifies the number of regions to be analyzed.
+
+       -nworst_aggressors <value>
+              Default: 50
+
+              Specifies  the  number of aggressors that should be reported for
+              each violation.
+
+       -nworst_instances <value>
+              Default: 5
+
+              Specifies the number of worst instances to be reported.
+
+       -output_directory <directoryname>
+              Specifies the output directory in which the insight (IR drop and
+              EM violation) results will be saved in.
+
+       -pdn_model <directoryname>
+              Specifies the rail state directory  containing  the  sensitivity
+              database.  You  can  enable  sensitivity  database generation by
+              specifying set_rail_analysis_mode  -create_sensitivity_db  true.
+              The  -pdn_model  parameter must be specified with the -mode {re-
+              port_aggressor | predict_ir}  and  the  -eco_mode  {aggressor  |
+              both} parameters.
+
+       -reset_predict
+              Specifies to reset all the previous ECO changes. If this parame-
+              ter  is not specified, the previous changes in -eco_list will be
+              retained for the -mode predict_ir runs.
+
+       -state_directory <directoryname>
+              Specifies the top-level state directory that is generated by the
+              dynamic IR drop analysis. This state directory contains analysis
+              of all nets associated with the power domain. This is the output
+              directory in which the results of the  analyze_rail  command  is
+              stored (for example, core_25C_dynamic_1).
+
+       -watch_box <filename>
+              Specifies  a  file  containing the list of regions, wherein only
+              the instances inside these regions will be reported for  predic-
+              tion. You can write multiple regions in the file. This parameter
+              is used with the -mode predict_ir parameter.
+
+              The format of the file is:
+
+               {{x1,y1}{x2,y2}}
+
+               {{x3,y3}{x4,y4}}
+
+       -watch_inst <filename>
+              Specifies a file containing the list of instances to be reported
+              for  prediction.  You  can write multiple instances in the file.
+              This parameter is used with the -mode predict_ir parameter.
+
+              The format of the file is:
+
+               instance_1
+
+              Instance_2
+
+Examples
+              *
+
+                The following command specifies to perform IR prediction/esti-
+                mation:
+
+                get_ir_insight -mode predict_ir \
+
+                -state_directory Rail/latest \
+
+                -pdn_model Rail/latest  \
+
+                -eco_list eco_five \
+
+                -domain PD \
+
+                -domain_threshold 0.1 \
+
+                -watch_box region_watch\
+
+                -watch_inst instance_watch\
+
+                -reset_predict \
+
+                -output_directory predictIR
+
+                The generated report will be saved at: predict.out
+
+                The following is the sample report:
+
+                CTS_buf_01236 0.828523
+
+                CTS_buf_01248 0.829177
+
+                CTS_buf_02745 0.817085
+
+              * Specifies to generate the eco.ird file for Tempus IR-ECO  con-
+                sumption:
+
+                get_ir_insight -mode eco_report \
+
+                -state_directory Rail/latest  \
+
+                -eco_mode both \
+
+                -domain PD \
+
+                -domain_threshold 0.1 \
+
+                -pdn_model Rail/latest  \
+
+                -output_directory debugIR
+
+                The generated report will be saved at: debugIR/eco.ird
+
+                The following is the sample report:
+
+                PGNET START
+
+                  NET   VDD  0.900
+
+                  NET   VSS  0.000
+
+                PGNET END
+
+                REGION START
+
+                  INST ua/FE_n10786  1
+
+                    IRDROP  VDD:VSS   8.000e-11   0.1307  0.000e+00  7.029e-04
+                3.315e-03
+
+                  INST ua/FE_n6442  1
+
+                    IRDROP VDD:VSS  8.000e-11   0.1390   0.000e+00   7.452e-04
+                3.666e-03
+
+              *
+
+                Specifies  that  the  EIV  histogram range is from 0.095 mV to
+                0.12 mV:
+
+                get_ir_insight  -domain_threshold  0.1  -output_directory  de-
+                bug_ir  -state_directory  {rail_after/ALL_125C_dynamic_1} -do-
+                main ALL -mode summary_only -ir_drop_histogram_bin_size  0.006
+                -ir_drop_histogram_lower_limit   0.095  -ir_drop_histogram_up-
+                per_limit 0.12
+
+Sample Summary Report
+       Found 8826  instances  with  IR-drop  violations  in  design  based  on
+       eiv_method: Worst and eiv_eval_window: elapse.
+
+       Summary For All Cells :
+
+       Worst IR drop : 0.12337V
+
+       Specified IR drop threshold : 0.09V
+
+       Worst IR drop violation : 0.033327V
+
+       Total IR drop violation : 48.94V
+
+       IR drop violation distribution
+
+       Violation  Range    Violation Count  Accumulated Violation count  Total
+       Violation(V)  Accumulated Total Violation(V)
+
+       120mV      ~       125mV:               6                             6
+       0.186857                  0.186857
+
+       115mV       ~       120mV:              34                           40
+       0.918714                  1.10557
+
+       110mV      ~      115mV:              83                            123
+       1.81664                   2.92221
+
+       105mV       ~      110mV:              194                          317
+       3.32192                   6.24413
+
+       100mV      ~      105mV:              904                          1221
+       10.5601                   16.8043
+
+       95mV      ~      100mV:              2940                          4161
+       21.3391                   38.1433
+
+       90mV      ~      95mV:               4665                          8826
+       10.7967                   48.94
+
+Related Information
+              * "Voltus InsightAI" in Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025      get_ir_insight(25.10)

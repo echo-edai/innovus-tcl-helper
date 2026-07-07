@@ -1,0 +1,141 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_obj_on_bump(25.10)                                  add_obj_on_bump(25.10)
+
+Name
+       add_obj_on_bump - Adds shapes on the TSV bumps
+
+Syntax
+       add_obj_on_bump
+
+       [-help]
+
+       {{-cell <bump_cell_name> | -selected | -feedthru } {-relative_pin_layer
+       <pin_layer_name>  |  -rect  {x1  y1  x2  y2}  |  -polygon  {{x1 y1} {x2
+       y2}...}}}
+
+       [-check_only <bump_name> | -write_script <filename>]
+
+        {[-shape <layer>+] [-placement_blockage] [-routing_blockage  <layer>+]
+       [-physical_pin <layer>+]}
+
+       [-shape      <layer>+     [-check_only     <bump_name>]     [-incremen-
+       tal][-shape_keep_net ]]
+
+       [-feedthru [-cdl_map_file <cdl_map_file_name>]]
+
+       Adds shapes on the TSV bumps. You can use this command to add shapes on
+       all the specified TSV bumps or the specified bump. The shape size could
+       be user-defined or same as bump pin on the specified layer.
+
+Parameters
+       -help  Prints a brief description of the add_obj_on_bump command usage.
+              For a detailed description of the command, use the man command:
+
+              man add_obj_on_bump
+
+       -cdl_map_file <cdl_map_file_name>
+              Specifies the output cdl map file for LVS.
+
+       -cell <bump_cell_name>
+              Specifies the name of the bump cell on which the shape is to  be
+              added.
+
+       -check_only <bump_name>
+              Checks  if  there is a shape on the specified bump and outputs a
+              report file.
+
+              The -check_only option cannot be used with -write_script.
+
+              The -check_only option can be used only when  -shape  is  speci-
+              fied.
+
+       -feedthru
+              Adds  shapes  on  the bump that contains the TSV layer and whose
+              net is a feedthrough net.
+
+       -incremental
+              Adds shapes in the incremental mode. It deletes the shapes with-
+              out a bump, and adds new shapes on the bumps without shapes. The
+              -incremental parameter only checks the shapes on the same layer.
+
+              In the following sequence of  commands,  the  first  command  is
+              add_obj_on_bump   -shape   M1   and   the   second   command  is
+              add_obj_on_bump -shape M2 -incremental. In these  commands,  the
+              layers  specified are different. Therefore, add_obj_on_bump will
+              not delete previously added shapes on M1. Also,  the  result  of
+              the  command  add_obj_on_bump -shape M2 -incremental is the same
+              as add_obj_on_bump -shape M2.
+
+              >add_obj_on_bump -shape M1
+
+              >add_obj_on_bump -shape M2 -incremental
+
+              The -incremental option can be used only when -shape  is  speci-
+              fied.
+
+       -shape <layer>+
+              Specifies the layer(s) on which new shapes are to be added.
+
+              Polygons with non-45-degree edges are supported.
+
+       -placement_blockage
+              Adds a placement blockage on bumps. Only orthogonal polygons are
+              supported.
+
+       -physical_pin <layer>+
+              Specifies the layer(s) on which to add physical pins.
+
+              For  a  single-pin bump, the name of the physical pin is same as
+              that of the target bump. For a multiple-pin bump,  the  name  of
+              the  physical  pin  is  same as that of the bump pin on the same
+              layer. If no bump pin exists on the layer specified  for  adding
+              the  physical  pin, the tool chooses the name of any of the pins
+              on the target bump as the pin name of the physical pin.
+
+              Polygons with non-45-degree edges are supported.
+
+       -polygon {{x1 y1} {x2 y2}...
+              Specifies the point list of the polygon to add shapes. The  cen-
+              ter of the specified polygon bounding box aligns with the center
+              of the specified bump cell.
+
+       -rect {x1 y1 x2 y2}
+              Specifies  the  rectangle to add shapes. The center of specified
+              rectangle aligns with the center of the specified bump cell.
+
+       -relative_pin_layer <pin_layer_name>
+              Specifies the pin layer of the pin shape of the specified  bump.
+              Adds shapes based on the specified pin shape of the bump.
+
+              If  the -relative_pin_layer option is specified while adding ob-
+              jects, the shape of the added object is same as the shape of the
+              relative pin.
+
+       -routing_blockage <layer>+
+              Specifies the layer(s) on which  to  add  routing  blockages  on
+              bumps. Only orthogonal polygons are supported.
+
+       -selected
+              Adds shapes on the selected bump.
+
+       -shape_keep_net
+              Keeps the net when adding the layer shape.
+
+              When  you  specify  the -incremental option, the tool adds shape
+              with net name if there is no shape with this net on the bump.
+
+       -write_script <filename>
+              Specifies the file name to dump a Tcl script for adding  objects
+              on bumps. If this option is specified, the tool will not add ob-
+              jects on bumps directly.
+
+              The -write_script option cannot be used with -check_only.
+
+Example
+              * The following command adds a shape on layer M1 at the position
+                of  the  TSV bump whose net is a feedthrough net. The shape on
+                layer M1 is the same as the bump pin shape on layer TSV.
+
+                add_obj_on_bump -shape M1 -feedthru -relative_pin_layer TSV
+
+                           Fri Apr 04 01:25:37 2025     add_obj_on_bump(25.10)

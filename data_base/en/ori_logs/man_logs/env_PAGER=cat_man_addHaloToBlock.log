@@ -1,0 +1,150 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addHaloToBlock(25.10)                                    addHaloToBlock(25.10)
+
+Name
+       addHaloToBlock - Adds a halo to a block
+
+Syntax
+       addHaloToBlock
+
+       [-help]
+
+       <left bottom right top>
+
+       [-fromInstBox]
+
+       [-snapToSite]
+
+       [-ori <orientation>]
+
+       [<inst_name>  |-allMacro  |  -allBlackBox | -allCommitPtn | -allBlock |
+       -allIOPad | -cell <name>]
+
+       Adds a halo to a block. A halo is an area that prevents  the  placement
+       of  blocks  and  standard cells within the specified halo distance from
+       the edges of a hard macro, black box, or committed partition  in  order
+       to reduce congestion. A block halo value is specified based on the cur-
+       rent block orientation. Use this command during or after floorplanning.
+       You can use the deleteHaloFromBlock command to delete halos.
+
+Parameters
+       -allBlackBox
+              Specifies halo values for all black boxes.
+
+              Data_type: bool, optional
+
+       -allBlock
+              Specifies halo values for all hard macros, black boxes, and com-
+              mitted partitions.
+
+              Data_type: bool, optional
+
+       -allCommitPtn
+              Specifies halo values for all committed partitions.
+
+              Data_type: bool, optional
+
+       -allIOPad
+              Specifies halo values for all IO pads.
+
+              Data_type: bool, optional
+
+       -allMacro
+              Specifies halo values for all hard macros.
+
+              Data_type: bool, optional
+
+       -cell <name>
+              Specifies halo values for all instances of a cell.
+
+              Data_type: string, optional
+
+       -fromInstBox
+              Creates  a block halo, based on the instance boundary, even when
+              there is an overlap layer defined in the block cell or macro de-
+              finition.
+
+              Note: This parameter is for backward compatibility only. Cadence
+              does not recommend the use of this parameter because  there  can
+              be  problems  with the defin flow if this parameter is specified
+              and if the block cell or the macro has overlap layers.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each  addHaloToBlock parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man addHaloToBlock
+
+       <inst_name>
+              Specifies  the  block where the halo is to be added. You can use
+              wildcards (* or ?) for specifying instance names.
+
+              Data_type: string, optional
+
+       <left bottom right top>
+              Specifies the halo width on 4 sides. These  values  are  floats,
+              units  are  microns.  Halo deltas are specified in relation to a
+              block in R0 orientation (left is applied to  the  left  edge  of
+              block  oriented  R0).  For  non-R0,  the  halo  deltas  are  ro-
+              tated/flipped according to the blocks's orientation  (for  block
+              oriented MY, the left halo delta specifies the width of the halo
+              along the right side of the inst in the floorplan).
+
+              * left:  the width of the halo along the left edge of insts hav-
+                ing halos added.
+
+              * bottom: the width of the halo along the bottom edge of objects
+                having halos added.
+
+              * right: the width of the halo along the right edge  of  objects
+                having halos added.
+
+              * top:  the width of the halo along the top edge of objects hav-
+                ing halos added.
+
+              Data_type: box, required
+
+       -ori <orientation>
+              Specifies the orientation value of the instances  to  which  the
+              block  halo values are applied. The orientation value can be R0,
+              R90, R180, R270, MX, MX90, MY, or MY90.
+
+              Note: If the orientation is not set, the halo will be added with
+              the current orientation of the macro.
+
+              Data_type: string, optional
+
+       -snapToSite
+              Snaps the halo box to a site.
+
+              Data_type: bool, optional
+
+Example
+       The following command adds a halo around block xy_inst:
+
+       addHaloToBlock 10 20 30 40 xy_inst
+
+       If xy_inst is R0, the halo width is 10 along the left edge and 30 along
+       the right edge. If the block is MY, the halo width is 30 along the left
+       edge in the floorplan, and 10 along the right edge in the floorplan.
+
+       The following command adds a halo around all insts with cells  of  type
+       myDRAMCell:
+
+       addHaloToBlock 10 20 30 40 -cell myDRAMCell -ori MY
+
+       If  the inst is oriented R0, then the left edge width of the halo is 30
+       in the floorplan, and the right edge width of the halo is 10.
+
+Related Information
+              * deleteHaloFromBlock
+
+              * Floorplan Menu chapter in the Innovus Menu Reference
+
+                *
+                   Edit Halo
+
+                           Fri Apr 04 01:25:37 2025      addHaloToBlock(25.10)

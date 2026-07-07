@@ -1,0 +1,129 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_gate_array_filler(25.10)                      add_gate_array_filler(25.10)
+
+Name
+       add_gate_array_filler  -  Inserts  GA filler cells with regular pattern
+       during the pre-place stage
+
+Syntax
+       add_gate_array_filler
+
+       [-help]
+
+       [-allow_shift_distance <x> <y>]
+
+       [-area <x1> <y1> <x2> <y2>]
+
+       [-cell_orientation {R0|MX|MY|R180}]
+
+       [-min_spacing_x <distance>]
+
+       [-min_spacing_y <distance>]
+
+       [-offsetx <offset_in_microns>]
+
+       [-offsety <offset_in_microns>]
+
+       [-powerDomain <powerDomainName>]
+
+       [-prefix <prefixName>]
+
+       {-cell <cellName> -stepx <step_in_microns> -stepy <step_in_microns>}
+
+       Inserts GA filler cells  with  regular  pattern  during  the  pre-place
+       stage.  While  inserting  the GA filler, the command ensures that every
+       boundary channel has at least one column GA filler.
+
+       The GA filler cells created by this command are marked as physical-only
+       cells. This means that the isPhysOnly  attribute  of  these  GA  filler
+       cells  is  set  to  true.  This  is  a  prerequisite  for  the ecoPlace
+       -useGAFillerCells command to map the unplaced ECO cells to the added GA
+       filler cells, in case of a GA filler-based post-mask ECO.
+
+Parameters
+       -allow_shift_distance <x> <y>
+              Specifies the distance between the new and the original position
+              in the x and y directions.
+
+              If you do not specify -allow_shift_distance, the GA filler  will
+              be removed if it is added at original location with a violation.
+              If  -allow_shift_distance is specified, the GA can be shifted to
+              avoid violation. If a GA filler cannot be added at the  original
+              location  because of the violation, it will be moved to the left
+              side, right side, upside, or downside of the  original  location
+              to  ensure that there is no violation. The next filler keeps the
+              step value with the original position of the moved filler.
+
+       -area <x1 y1 x2 y2>
+              Specifies the area in which GA fillers are to be inserted. If no
+              area is specified, GA fillers will be inserted for the  complete
+              core area.
+
+       -cell <cellName>
+              Specifies the name of the filler cell to be used.
+
+       -cell_orientation {R0|MX|MY|R180}
+              Specifies all legal orientations of GFILL instances.
+
+       -min_spacing_x <distance>
+              Specifies  the distance between edges of GA fillers in the hori-
+              zontal direction. The following diagram shows min spacing  is  X
+              and Y from Cell A. No other GA filler can touch the red box.
+
+       -min_spacing_y <distance>
+              Specifies the distance between edges of GA fillers in the verti-
+              cal  direction. The following diagram shows min spacing is X and
+              Y from Cell A. No other GA filler can touch the red box.
+
+       -offsetx <offset_in_microns>
+              Specifies the offset, in microns, from the origin in  the  hori-
+              zontal  direction. If the -area parameter is specified, the ori-
+              gin is (x1, y1) of the box defined by  -area. If  -area  is  not
+              specified the origin is (0,0).
+
+       -offsety <offset_in_microns>
+              Specifies  the offset, in microns, from the origin in the verti-
+              cal direction. If the -area parameter is specified,  the  origin
+              is (x1, y1) of the box defined by  -area. If  -area is not spec-
+              ified the origin is (0,0).
+
+       -powerDomain powerDomainName
+              Specifies the power domain for which fillers are to be inserted.
+
+       -prefix <prefixName>
+              Specifies the prefix for the inserted GA filler cells.
+
+       -stepx <step_in_microns>
+              Specifies  the distance between GA fillers in the horizontal di-
+              rection.
+
+       -stepy <step_in_microns>
+              Specifies the distance between GA fillers in the vertical direc-
+              tion
+
+Examples
+              * The following command adds GA fillers  of  type  GAFILL4  with
+                spacing  in  horizontal  and vertical direction of 20 microns.
+                The first GAFILL4 will be placed at (10, 0).
+
+                add_gate_array_filler -cell GAFILL4 -stepx 20 -stepy 20  -off-
+                setx 10
+
+              * The  following  command  adds  GA fillers of type GAFILL4 with
+                regular spacing 20 and start location (0, 0).
+
+                add_gate_array_filler -cell GAFILL4 -stepx 20 -stepy 20
+
+              *
+
+                The following command adds GA fillers  of  type  GAFILL4  with
+                vertical  and horizontal spacing of 10 microns in the area de-
+                fined by coordinates 100 100 500 500.
+
+                add_gate_array_filler -area 100  100  500  500  -cell  GAFILL4
+                -stepx 10 -stepy 10
+
+Related Information
+              * ecoPlace
+
+                           Fri Apr 04 01:25:37 2025add_gate_array_filler(25.10)

@@ -1,0 +1,292 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+rechainPowerSwitch(25.10)                            rechainPowerSwitch(25.10)
+
+Name
+       rechainPowerSwitch  - Enables flexible power switch enable chaining and
+       unchaining after power switch insertion
+
+Syntax
+       rechainPowerSwitch
+
+       [-help]
+
+       [-backToBackChain]
+
+       [-cascade]
+
+       [-cellEnablePin]
+
+       [-chainByInstances]
+
+       [-chainByRow]
+
+       [-chainDirectionX <LtoR>|<RtoL>]
+
+       [-chainDirectionY <BtoT>|<TtoB>]
+
+       [-chainStyle {min_length_tree single_output_chain}]
+
+       [-chainXbeforeY]
+
+       [-chainYbeforeX]
+
+       [-enableNetIn]
+
+       [-enableNetOut]
+
+       [-enablePinIn]
+
+       [-enablePinOut]
+
+       [-maxDistanceX <um>]
+
+       [-maxDistanceY <um>]
+
+       [-mergeDistanceX <um>]
+
+       [-mergeDistanceY <um>]
+
+       [-parallelEnable]
+
+       [-reportFile]
+
+       [-reverseOrder]
+
+       [-selected]
+
+       [-start_location <coordinates>]
+
+       [-switchInstances]
+
+       [-unchainByInstances]
+
+       Enables flexible power switch  enable  chaining  and  unchaining  after
+       power switch insertion.
+
+       Note: It is recommended that you use this command for PSO enable chain-
+       ing.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each rechainPowerSwitch parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man rechainPowerSwitch.
+
+       -backToBackChain
+              Connects  the  enableNetOut  at  the  top of a column to the en-
+              ableNetIn at the top of the next column, and  connects  the  en-
+              ableNetOut at the bottom of the column to the enableNetIn at the
+              bottom  of  the next column. The chain proceeds left to right or
+              right to left. By default, the enableNetIn is connected  to  the
+              bottom  of  each column, and the enableNetOut exits from the top
+              of each column, in parallel.
+
+              This parameter is optional.
+
+       -cascade
+              Connects switches in cascade
+
+       -cellEnablePin
+              Provides the pin names of power  switch  cells  when  the  power
+              switch  cell  pin  names  are  different  than the specified in-
+              stance's cell. This option is also useful in cases where all en-
+              able pins of instances are not connected by enabling  a  way  to
+              provide pin map.
+
+              Example:
+
+              set  INST  [ addPowerSwitch -getSwitchInstances -powerDomain PD1
+              -column    ]
+
+              rechainPowerSwitch -chainByInstances -chainYbeforeX \
+
+              -unchainByInstances -enablePinIn SW_IN -enablePinOut SW_OUT \
+
+              -enableNetIn NETin -enableNetOut NETout \
+
+              -chainDirectionX RToL -reportFile pd1_chain.rpt \
+
+              -backToBackChain \
+
+              -cellEnablePin { { SW_withDiff_pinNames {SW_IN_1} {SW_OUT_1}  }}
+              \
+
+              -switchInstances $INST
+
+       -chainByInstances
+              To chain the instances. This option is used for chaining the in-
+              stances  defined by -selected or instances given in -switchByIn-
+              stances.
+
+              Select all PSO instances of power domain ALU
+
+              set ALUinst [addPowerSwitch -column -getSwitchInstances  -power-
+              Domain ALU]
+
+              The  below  command  make  the  changes in the connection of the
+              switch enable
+
+              rechainPowerSwitch -unchainByInstances\
+
+              -chainByInstances \
+
+              -switchInstances $ALUinst -enablePinIn A -enablePinOut Y \
+
+              -enableNetIn swcontrol_2 -enableNetOut swack_2 \
+
+              -cascade -chainDirectionY BtoT
+
+       -chainByRow
+              Gives additional control if you need to enable horizontal signal
+              chaining. For example, in rows. By default, signal  chaining  is
+              enabled from bottom to top.
+
+       -chainDirectionX <LtoR|RtoL>
+              Defines the direction of the chain along X axis.
+
+       -chainDirectionY <BtoT|TtoB>
+              Defines the direction of the chain along Y axis.
+
+       -chainStyle {min_length_tree single_output_chain}
+              Specifies the chain style for enabling power switches and making
+              enable chain connections. The specified chain styles help in op-
+              timizing the wire length with longer enable chains, and connect-
+              ing  all  the  power switches in single pass to avoid blockages.
+              Following are the chain style values specified by  this  parame-
+              ter:
+
+              * min_length_tree:  Connects the enable pin of the switches with
+                a chain, which has multiple branch outputs. The following com-
+                mand presents the usage of this parameter value:
+
+                rechainPowerSwitch -powerDomain PD1 -selected \
+
+                -chainStyle min_length_tree \
+
+                -maxDistanceX 40 -maxDistanceY 100 -startLoc "200 6400" \
+
+                -enableNetIn pso1 -enableNetOut pso1_out ....
+
+              * single_output_chain: Connects the enable pin of  the  switches
+                with  a  chain, which has single branch output. This parameter
+                value can be  specified  with  -max_distance_x  and  -max_dis-
+                tance_y  parameters.  The following command presents the usage
+                of this parameter value:
+
+                rechainPowerSwitch -powerDomain PD1 -selected \
+
+                -chainStyle single_output_chain \
+
+                -maxDistanceX 40 -maxDistanceY 100 -startLoc "200 6400" \
+
+                -enableNetIn pso1 -enableNetOut pso1_out ....
+
+       -chainXbeforeY
+              Defines row chain over column.
+
+       -chainYbeforeX
+              Defines column chain over row.
+
+              This is the default option.
+
+       -enableNetIn {listOfnets}
+              Specifies the list of input nets that the software  attaches  to
+              the enable input pins. The order in which you specify these nets
+              determines  the sequence in which nets are assigned to pins. En-
+              able nets and pins are connected automatically if they reside at
+              the same level in the hierarchy.
+
+       -enableNetOut {<netBaseName> | {listOfNets}}
+              Specifies the enable output nets that the software  attaches  to
+              the  enable  output  pins.  The order in which you specify these
+              nets determines the sequence in which nets are assigned to pins.
+              If enable nets and pins reside at the same level in the  hierar-
+              chy they are connected automatically. For the last switch of the
+              ring, the -enablePinOut is tied to -enableNetOut.
+
+       -enablePinIn {listOfPins}
+              Specifies  the  list  of enable input pins of the buffers inside
+              the switch cell. The order in which you specify these  nets  de-
+              termines the sequence in which nets are assigned to pins. If en-
+              able  nets  and  pins  reside at the same level in the hierarchy
+              they are connected automatically.The software ties the
+
+              -enablePinOut of the first switch cell to  the  -enablePinIn  of
+              the next switch cell in the same ring: All the enable pin of the
+              switch  cells in the same column are daisy-chained together. For
+              the first switch of the ring, the -enablePinIn is tied  to  -en-
+              ableNetIn.
+
+       -enablePinOut {listOfPins}
+              Specifies  the list of enable output pin(s) of the buffer(s) in-
+              side the switch cell. The order in which you specify these  pins
+              is important because nets are assigned to pins sequentially. The
+              software  ties the -enablePinOut of the first switch cell to the
+              -enablePinIn of the next switch cell in the same column: All the
+              enable pin of the switch cells in the  same  column  are  daisy-
+              chained  together.  For  the last switch of the column, the -en-
+              ablePinOut is tied to -enableNetOut.
+
+       -maxDistanceX <um>
+              Maximum X distance a switch can drive.
+
+       -maxDistanceY <um>
+              Maximum Y distance a switch can drive.
+
+       -mergeDistanceX <um>
+              To consider switches within this in the same column.
+
+       -mergeDistanceY <um>
+              To consider switches within this in the same row.
+
+       -parallelEnable
+              Connects enable Net In to all switches in parallel type  connec-
+              tion.
+
+       -reportFile
+              Writes switch instances and their corresponding input/output en-
+              able signal pin/net connections to the specified file name.
+
+       -reverseOrder
+              The reverse order of the -switchInstances.
+
+       -selected
+              Selects switches to be chained and unchained.
+
+              Note: This option must be used with -chainByInstances and
+
+              -unchainByInstances.
+
+       -start_location <coordinates>
+              Specifies the starting point for enabling single output chain.
+
+       -switchInstances
+              Specifies  the  instances to be chained/unchained. When chaining
+              is requested, the sequence of the final chain is taken from  the
+              sequence of the instance names given in the provided list.
+
+       -unchainByInstances
+              To unchain the instances. This option is used for unchaining the
+              instances defined by -selected or instances given in
+
+              -switchByInstances.
+
+Related Information
+              * deletePowerSwitch
+
+              * exportPowerSwitch
+
+              * importPowerSwitch
+
+              * movePowerSwitch
+
+              * replacePowerSwitch
+
+              * verifyPowerSwitch
+
+              * Low Power Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025  rechainPowerSwitch(25.10)

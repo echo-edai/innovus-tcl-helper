@@ -1,0 +1,117 @@
+{
+  "command": "reportSpecialRoute",
+  "is_cmd": true,
+  "summary": "报告由fcroute命令创建的所有RDL布线（特殊网络）的长度",
+  "description": "该命令用于报告由fcroute命令创建的所有RDL（重分布层）布线（SPECIALNETS）的长度。它支持曼哈顿和45度布线。可以报告每个特殊网络的线长，并报告长度超过指定阈值的特殊网络。使用-by_layer和-wire_segment选项可以按层和线段报告特殊网络的宽度和长度。该命令还包含用于中介层（interposer）路由检查、统计和屏蔽比分析的相关选项。",
+  "usage": "reportSpecialRoute [-help] [<reportName>] [-center_line] [-net <netName>] [-interposer_ndr_check [-exclude_nets <netName>]] [-interposer_route [-exclude_nets <netName>]] [-interposer_route [[-interposer_layers <layerName>] [-interposer_route_constraint_file <ircFileName>]]] [-interposer_shielding_ratio [-exclude_nets <netName>]] [[ [-by_layer] [-highlight45layer <layerName>] [-lengththreshold <value>] [-resfile <resFileName>] [-selected] [-summary] [-wire_segment] [-wirelength] ] | [-interposer_ndr_check ] | [-interposer_route ] | [-interposer_shielding_ratio ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个reportSpecialRoute参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<reportName>",
+      "description": "指定报告文件名。默认文件名为sp-wire.rpt。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-center_line",
+      "description": "指定通过中心线计算布线长度。即使用线中心线的总和来计算线长。若不指定此参数，则通过线段总和计算布线长度。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "报告指定网络的每个特殊网络的线长。注意：必须与-wirelength或-lengththreshold参数结合使用。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-interposer_ndr_check",
+      "description": "指定工具检查中介层布线的NDR违规和不完整屏蔽。如果检测到违规，报告将包含违规的网络、层和位置信息，并在违规浏览器中显示标记。默认对每个中介层路由网络执行检查；可使用-net或-exclude_nets选项将检查限制在特定网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_nets",
+      "description": "指定要排除的网络名称。此选项仅在指定了-interposer_route、-interposer_ndr_check或-interposer_shielding_ratio时可用。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-interposer_route",
+      "description": "报告中介层路由统计信息，包括中介层布线的最大、最小和平均线长。reportSpecialRoute读取由setIntegRouteConstraint定义的约束来决定哪些网络属于同一组。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-interposer_layers",
+      "description": "指定中介层层。使用此选项按层报告从tap via到tap via以及从bump到tap via的最大和最小布线长度。此选项仅在指定了-interposer_route时可用。",
+      "required": false,
+      "type": "layerName"
+    },
+    {
+      "name": "-interposer_route_constraint_file",
+      "description": "指定中介层路由约束文件的名称。此选项仅在指定了-interposer_route时可用。",
+      "required": false,
+      "type": "ircFileName"
+    },
+    {
+      "name": "-interposer_shielding_ratio",
+      "description": "检查并报告中介层路由网络的同层和层间屏蔽比。仅检查具有route_interposer_trunk_rules属性的网络。对于屏蔽比，线长通过线中心线计算，而非线段长度总和。使用-net选项可将检查限制在特定网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-by_layer",
+      "description": "报告每个特殊网络的各层信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-highlight45layer",
+      "description": "在设计显示区域高亮（黄色）指定层上所有采用45度布线的网络。",
+      "required": false,
+      "type": "layerName"
+    },
+    {
+      "name": "-lengththreshold",
+      "description": "报告长度超过指定值的特殊网络。这些值列在<reportName>指定的输出文件中，并在GUI中高亮显示这些布线。",
+      "required": false,
+      "type": "value"
+    },
+    {
+      "name": "-resfile",
+      "description": "指定由fcroute生成的电阻文件名（fcroute.res）（如果在配置文件中指定了srouteFCReport <file name>），并在电阻与fcroute约束文件中定义的最大电阻约束不匹配时，在GUI上高亮显示违规网络。",
+      "required": false,
+      "type": "resFileName"
+    },
+    {
+      "name": "-selected",
+      "description": "报告每个特殊网络所选线段的长度。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-summary",
+      "description": "汇总特殊网络的线长和通孔数量。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-wire_segment",
+      "description": "报告每个特殊网络的线段信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-wirelength",
+      "description": "报告每个特殊网络的线长。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

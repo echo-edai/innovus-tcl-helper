@@ -1,0 +1,113 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoRemoveTiedInputs(25.10)                          ecoRemoveTiedInputs(25.10)
+
+Name
+       ecoRemoveTiedInputs  -  Remaps  or  restructures gates that have inputs
+       connected to the same net
+
+Syntax
+       ecoRemoveTiedInputs
+
+       [-help]
+
+       [-base_cells <cell_list>]
+
+       [-ignore_base_cells <cell_list>]
+
+       [-ignore_insts <inst_list>]
+
+       [-insts <inst_list>]
+
+       [-relaxed_placement]
+
+       [-state {prePlace preCTS postCTS postRoute}]
+
+       [-term <term_list>]
+
+       [-verbose]
+
+       [-report]
+
+       Remaps or restructures gates that have inputs  connected  to  the  same
+       net.  These  gates are remapped into functionally equivalent logic such
+       that none of the new gates has inputs tied together. Usually, such  op-
+       timization  is  good  in all objectives. For example, a 4-input OR gate
+       with 3 of its inputs tied together (implementing function a+b+b+b)  can
+       safely be replaced with a 2-input OR gate (implementing a+b). This move
+       is  likely to be better in terms of area, power, and delay. However, in
+       case of complex gates, it may not be possible to restructure a gate  in
+       a  way that improves delay, but it may be possible to decompose it into
+       smaller discrete gates, none of which has inputs  tied  together.  Area
+       and/or  delay  may be worse, but in some libraries, it is preferable to
+       not have instances with inputs tied together.  The  ecoRemoveTiedInputs
+       command  fixes  any  gate with two or more inputs connected to the same
+       net regardless of the improvement in delay/area/power. It tries to find
+       improving moves, but it may accept moves that worsen delay/area/power.
+
+       The command can also insert buffers in nets tying inputs together.  In-
+       serting  buffers  should be used for the gates that cannot be automati-
+       cally fixed or that are preserved. You need  to  specify  which  buffer
+       cell(s)  must  be inserted before which input(s). There must be as many
+       buffer cells specified as there are inputs specified. The  only  excep-
+       tion  is specifying a single buffer cell; in that case it is understood
+       that all inputs will be untied by using instances of that  same  buffer
+       cell.
+
+       The  command honors setOptMode settings for timing update and legaliza-
+       tion. It does not call ecoRoute if run in the postRoute/ECO stages.
+
+       Note: MBFF cells are ignored by default as they always  have  tied  in-
+       puts.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each ecoRemoveTiedInputs parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man ecoRemoveTiedInputs
+
+       -base_cells <cell_list>
+              Specifies the buffer cells to be used for fixing.
+
+       -ignore_base_cells <cell_list>
+              Specifies to ignore instances of these cells from fixing.
+
+       -ignore_insts <inst_list>
+              Specifies to ignore these instances from fixing.
+
+       -insts <inst_list>
+              Specifies to fix only these instances.
+
+              Default: All design minus ignored instances/cells.
+
+       -relaxed_placement
+              Accepts moves even if instances cannot be placed.
+
+              You do not need to set this option  if  ecoRemoveTiedInputs  can
+              successfully  fix  all violations. In some cases, for example if
+              an instance with tied inputs is in a very  congested  area,  the
+              tool  may not be able to place the new instances. In such cases,
+              you can use the -relaxed_placement option to fix such instances.
+              However, the final placement may not be legal, and the  new  in-
+              stances  will  likely overlap.  For this, you can perform incre-
+              mental placement to legalize the placement.
+
+       -state {prePlace preCTS postCTS postRoute}
+              Specifies the current design state.
+
+       -term <term_list>
+              Specifies the terms to be buffered.
+
+       -verbose
+              Specifies to increase the detail of reports and fixing.
+
+       -report
+              Reports existing tied inputs, but does not  provide  fixing  de-
+              tails by any method.
+
+Related Information
+              * setOptMode
+
+              * ecoRoute
+
+                           Fri Apr 04 01:25:37 2025 ecoRemoveTiedInputs(25.10)

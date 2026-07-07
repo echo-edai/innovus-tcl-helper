@@ -1,0 +1,105 @@
+{
+  "command": "create_ccopt_skew_group",
+  "is_cmd": true,
+  "summary": "在设计中创建一个新的时钟偏斜组",
+  "description": "该命令用于在设计中创建一个新的时钟偏斜组。CCOpt（时钟树优化）将根据偏斜组的要求来平衡时钟树。通过使用 `-sources` 参数，可以实现多个时钟树之间的平衡。需要平衡的接收端（sinks）可以通过 `-shared_sinks` 或 `-exclusive_sinks` 参数显式指定，也可以通过 `-auto_sinks` 参数自动推断。每个偏斜组都会被分配一个等级（rank），该等级决定了管脚在所属的多个偏斜组中，哪个是活动的接收端。活动的接收端是指将在同一偏斜组内与其他活动接收端进行平衡的管脚。",
+  "usage": "create_ccopt_skew_group [-help] [-constrains none | default | all] [-from_clocks <clock_names>] [-from_constraint_modes <constraint_mode_names>] [-from_delay_corners <delay_corner_names>] -name <skew_group_name> [-rank <rank>] [-sinks <pins> | -shared_sinks pins | -exclusive_sinks pins | -auto_sinks | -filtered_auto_sinks <pins> | -balance_skew_groups <skew_groups>] [-sources <pins> | -balance_skew_groups <skew_groups>] [-target_insertion_delay <value>] [-target_skew <value>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。如需命令及其所有参数的详细说明，请使用 man 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-constrains",
+      "description": "指定创建的偏斜组应约束的范围：none（无）、default（默认）或 all（全部）。默认值为 default。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_clocks",
+      "description": "指定提取此偏斜组所依据的时钟名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_constraint_modes",
+      "description": "指定提取此偏斜组所依据的约束模式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_delay_corners",
+      "description": "指定与提取此偏斜组所依据的约束模式相关联的延迟角。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定新偏斜组的用户定义名称。该名称必须唯一。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-rank",
+      "description": "指定此偏斜组的 exclusive_sinks_rank 等级。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sinks",
+      "description": "指定设计中 CCOpt 应视为新偏斜组成员的输入管脚。",
+      "required": false,
+      "type": "pins"
+    },
+    {
+      "name": "-shared_sinks",
+      "description": "指定设计中 CCOpt 应视为新偏斜组成员但同时与其他偏斜组共享的输入管脚。这隐含 exclusive_sinks_rank 为 0。",
+      "required": false,
+      "type": "pins"
+    },
+    {
+      "name": "-exclusive_sinks",
+      "description": "指定设计中 CCOpt 应视为新偏斜组成员的输入管脚。这将赋予新偏斜组一个比任何当前已定义偏斜组高 1 的 exclusive_sinks_rank，从而将这些管脚从其当前所属的所有偏斜组中移除。",
+      "required": false,
+      "type": "pins"
+    },
+    {
+      "name": "-auto_sinks",
+      "description": "指定时，根据从源端可到达的输入管脚自动确定偏斜组的目标接收端。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-filtered_auto_sinks",
+      "description": "指定应从提供的子集中自动确定目标接收端。目标接收端基于从源端可到达的输入管脚确定，但只选择那些同时存在于提供的过滤管脚列表中的管脚。",
+      "required": false,
+      "type": "pins"
+    },
+    {
+      "name": "-balance_skew_groups",
+      "description": "指定应通过合并指定的偏斜组来创建新的偏斜组，以便将它们作为一个单一的偏斜组一起进行平衡。",
+      "required": false,
+      "type": "skew_groups"
+    },
+    {
+      "name": "-sources",
+      "description": "指定偏斜组的源管脚。",
+      "required": false,
+      "type": "pins"
+    },
+    {
+      "name": "-target_insertion_delay",
+      "description": "指定用于偏斜组的目标插入延迟。CCOpt 尝试将所有接收端的延迟保持在此延迟两侧各一半目标偏斜的范围内。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-target_skew",
+      "description": "指定时钟树综合应瞄准的偏斜值。它为创建的偏斜组设置 target_skew 属性。如果未设置此参数，软件将使用从 get_ccopt_property target_skew 获取的默认值。",
+      "required": false,
+      "type": "float"
+    }
+  ]
+}

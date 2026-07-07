@@ -1,0 +1,136 @@
+Usage: report_power_rail_results [-help] [{-region {x1 y1 x2 y2} | -rlrp_inst {instance_name} | -plot {none ir tc rc rj jpeak jrms unc ivdn ivdd ipc ipceiv isweiv effr thermal tile_thermal cvi1 pi pv pix tot vu ibu vc ibc er rlrp res rv_rms rv_peak rv_avg ivde ip ip_i ip_s ip_l ipd ipd_i ipd_s ipd_t ipd_l ip_clk ip_tr freq slack activity td cap load dd node_effr icm tpd ptpd fit sem_jrms sem_javg sem_jpeak rv_sem_jrms rv_sem_javg sem_ddt rv_sem_mavg rv_sem_jpeak rv_sem_jlpeak rv_sem_jspeak unc_inst unc_pinnodes lunc_inst}} [-nets {all, all_power, all_ground...}] [-filename <filename>]] [-filename <filename> [-append ]] [-plot {none ir tc rc rj jpeak jrms unc ivdn ivdd ipc ipceiv isweiv effr thermal tile_thermal cvi1 pi pv pix tot vu ibu vc ibc er rlrp res rv_rms rv_peak rv_avg ivde ip ip_i ip_s ip_l ipd ipd_i ipd_s ipd_t ipd_l ip_clk ip_tr freq slack activity td cap load dd node_effr icm tpd ptpd fit sem_jrms sem_javg sem_jpeak rv_sem_jrms rv_sem_javg sem_ddt rv_sem_mavg rv_sem_jpeak rv_sem_jlpeak rv_sem_jspeak unc_inst unc_pinnodes lunc_inst} [-layers {all, M1, M2...}] [-range_min <min>] [-range_max <max>] [-filter_min <filter_min>] [-filter_max <filter_max>] [-limit <#_lines>] [-ignore_limit_bound ] [-enable_filter_summary ]]
+
+-help                                     # Prints out the command usage
+-append                                   # Instead of overwrite the file
+                                          # (bool, optional)
+-enable_filter_summary                    # use the filtered results to form
+                                          # the summary (bool, optional)
+-filename <filename>                      # create text based violation report
+                                          # (string, optional)
+-filter_max <filter_max>                  # specifies the max value of color
+                                          # scale filter. (float, optional)
+-filter_min <filter_min>                  # specifies the min value of color
+                                          # scale filter. (float, optional)
+-ignore_limit_bound                       # ignore the upper bound of limit
+                                          # (bool, optional)
+-layers {all, M1, M2...}                  # layers for reporting
+                                          # (string, optional)
+-limit <#_lines>                          # Dump first number violations into
+                                          # report file. (float, optional)
+-nets {all, all_power, all_ground...}     # nets for reporting
+                                          # (string, optional)
+-plot {none ir tc rc rj jpeak jrms unc ivdn ivdd ipc ipceiv isweiv effr thermal tile_thermal cvi1 pi pv pix tot vu ibu vc ibc er rlrp res rv_rms rv_peak rv_avg ivde ip ip_i ip_s ip_l ipd ipd_i ipd_s ipd_t ipd_l ip_clk ip_tr freq slack activity td cap load dd node_effr icm tpd ptpd fit sem_jrms sem_javg sem_jpeak rv_sem_jrms rv_sem_javg sem_ddt rv_sem_mavg rv_sem_jpeak rv_sem_jlpeak rv_sem_jspeak unc_inst unc_pinnodes lunc_inst}
+                                          # none - Clear
+                                          # ir - IRdrop
+                                          # tc - Tap Current
+                                          # rc - Resistor Current
+                                          # rj - Iavg/Ilimit
+                                          # jpeak - Ipeak/Ilimit
+                                          # jrms - Irms/Ilimit
+                                          # sem_fit - Failure In Time
+                                          # sem_rms - RMS Current Over
+                                          # sem_avg - AVG Current
+                                          # sem_peak - PEAK Current
+                                          # sem_ddt - Detailed Delta
+                                          # Tempertaure
+                                          # rv_sem_rms - RV RMS
+                                          # Current
+                                          # rv_sem_avg - RV AVG
+                                          # Current
+                                          # rv_sem_mavg - RV MAX AVG
+                                          # Current
+                                          # rv_sem_peak - RV PEAK Current
+                                          # unc - unconnected power-grid
+                                          # sections
+                                          # ivdn - net based voltage drop
+                                          # ivdd - domain based drop
+                                          # ipc - instance peak current 
+                                          # ipceiv - EIV Window instance peak
+                                          # current
+                                          # isweiv -EIV Window instance switch
+                                          # status
+                                          # effr - effective resistance 
+                                          # thermal - Instance
+                                          # thermal
+                                          # tile_thermal - Tile Thermal 
+                                          # cvi1 - Customized file 1 
+                                          # pi - power-gate current I/Idsat
+                                          # pv - power-gate voltage drop 
+                                          # pix - power-gate current 
+                                          # tot - turn-on time 
+                                          # vu - voltage drop across
+                                          # package
+                                          # ibu - inter die bump vu
+                                          # er - electromigration risk
+                                          # rlrp - instance resistance of LRP
+                                          # 
+                                          # res - Grid Resistance
+                                          # rv_rms - RV RMS
+                                          # rv_peak - RV PEAK
+                                          # rv_avg - RV AVG
+                                          # ivde - Instance voltage drop in
+                                          # ESD
+                                          # ip - instance total power
+                                          # ip_i - instance internal power
+                                          # ip_s - instance switching
+                                          # power
+                                          # ip_l - instance leakage power
+                                          # ipd - instance total power
+                                          # density
+                                          # ipd_i - instance internal power
+                                          # density
+                                          # ipd_s - instance switching power
+                                          # density
+                                          # ipd_t - instance total power
+                                          # density
+                                          # ipd_l - instance leakage power
+                                          # density
+                                          # freq - fastest frequency domain for
+                                          # instance
+                                          # ip_tr - instance toggle rate
+                                          # slack - worst slack for
+                                          # instance
+                                          # activity - instance activity 
+                                          # td - transition density for
+                                          # instance
+                                          # cap - power-grid capacitance
+                                          # load - output loading capacitance
+                                          # for instance
+                                          # dd - decap density
+                                          # node_effr - node based reff
+                                          # icm - instance current movie
+                                          # tpd - tile power density
+                                          # ptpd - profiling tile power
+                                          # density
+                                          # fit - failures in time
+                                          # sem_jrms - RMS I/Ilimit
+                                          # sem_javg - AVG I/Ilimit
+                                          # sem_jpeak - PEAK
+                                          # I/Ilimit
+                                          # rv_sem_jrms - RV RMS
+                                          # I/Ilimit
+                                          # rv_sem_javg - RV AVG
+                                          # I/Ilimit
+                                          # rv_sem_jpeak - RV PEAK
+                                          # I/Ilimit
+                                          # rv_sem_jlpeak - RV Long PEAK
+                                          # I/Ilimit
+                                          # rv_sem_jspeak - RV Short PEAK
+                                          # I/Ilimit
+                                          # unc_inst - Unconnected Inst
+                                          # Pins
+                                          # unc_pinnodes -
+                                          # Unconnected/WeaklyConnected Pin
+                                          # Nodes
+                                          # lunc_inst - Logically Unconnected
+                                          # Inst (enum, optional)
+-range_max <max>                          # specifies the max value of color
+                                          # scale. (float, optional)
+-range_min <min>                          # specifies the max value of color
+                                          # scale. (float, optional)
+-region {x1 y1 x2 y2}                     # measure the data in specified XY
+                                          # location. Reserved and no
+                                          # implementation yet. (box, optional)
+-rlrp_inst {instance_name}                # instance name for reporting rlrp
+                                          # path. Reserved and no
+                                          # implementation yet (string, optional)

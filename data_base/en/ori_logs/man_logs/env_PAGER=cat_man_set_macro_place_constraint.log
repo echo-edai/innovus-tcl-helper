@@ -1,0 +1,557 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_macro_place_constraint(25.10)            set_macro_place_constraint(25.10)
+
+Name
+       set_macro_place_constraint - Enables you to specify the constraints for
+       placing the macros and standard cells concurrently
+
+Syntax
+        set_macro_place_constraint
+
+       [-help]
+
+       [<array elements>]
+
+       [-array  <array_name> [-common_hier <name>][-valid_group_orients {R0 MX
+       MY}]
+
+         [-place_order {horizontal vertical}]]
+
+       [{-insts <string> | -all_macros } {-orientation <string>} [-common_hier
+       <name>]]
+
+       [-cells <string> {-cell_obs <string> | -track_adjustment <string>}]
+
+       [-cpg <string>]
+
+       [[-max_io_pin_group_keep_out {<depth_value> [<side_value>]}]
+
+       [-forbidden_space_to_core {<unified_value> |  <horizontal_value  verti-
+       cal_value>}]
+
+       [-forbidden_space_to_macro  {<unified_value> | <horizontal_value verti-
+       cal_value>}]
+
+       [-min_space_to_core   {<unified_value>   |   <horizontal_value   verti-
+       cal_value>}]
+
+       [-min_space_to_macro   {<unified_value>   |   <horizontal_value  verti-
+       cal_value>}]
+
+       [-parallel_run_length  {<unified_value>  |   <vertical_value   horizon-
+       tal_value>}]
+
+       [-power_domain_as_core {true | false}]
+
+       [-horizontal_stacking       {<max_macro_stack_length      min_space_be-
+       tween_macro_stack max_space_between_macros>}]
+
+       [-vertical_stacking       {<max_macro_stack_length        min_space_be-
+       tween_macro_stack max_space_between_macros>}]
+
+       [-honor_strict_spacing_constraint {true | false}]
+
+       [-avoid_abut_macro_edge_with_pins {true | false}]
+
+       [-same_length_site <integer>]
+
+       [-pg_resource_model {<M1 value1 M2 value2 ...>}]
+
+       [-macro_corner_keepout {<double_endcap_width> <double_endcap_height>}]
+
+       [-halo_sharing {true | false}]
+
+       [-parallel_run_length_for_stacking  {<unified_value>  | <vertical_value
+       horizontal_value>}] ]
+
+       Enables you to specify the constraints for placing the macros and stan-
+       dard cells concurrently. These constraints can be used to place  macros
+       in  an  array  (or  matrix)  and  define the relative placement of each
+       macro. The whole array, treated like one macro, can be flipped or  mir-
+       rored  (R0,  MX,  MY,  R180).  You can use the new set_macro_place_con-
+       straint command to specify:
+
+              * Macro array constraints
+
+              * Group aligning constraints
+
+              * Macro-to-macro and macro-to-core boundary spacing constraints
+
+              * Macro orientation constraints
+
+              * Over macro power routing modeling
+
+              * Maximum stacking length
+
+              * Reserved space for pin routing
+
+              * I/O Pin Keep-out
+
+       Note: For 3D designs in Integrity 3D-IC platform, each die carries  its
+       own  macro  place constraint information. You must switch to a specific
+       die before invoking the set_macro_place_constraint command.
+
+Parameters
+       -all_macros
+              Specifies that all macros should honor  the  constraints.   This
+              option makes sense when using the -orientation option.
+
+              Data_type: bool, optional
+
+       <array_elements>
+              Specifies the instance members information of a row or column of
+              the array in the following format:
+
+              inst_name:orientation [spacing inst_name:orientation ] +
+
+              Note:  The  <array_elements> should be specified with the -array
+              parameter.
+
+              Data_type: string, optional
+
+       -array <array_name>
+              Specifies the macro array name.
+
+              Data_type: string, optional
+
+       -avoid_abut_macro_edge_with_pins {true | false}
+              When set to true, the  set_macro_place_constraint  command  does
+              not  abut  macro  edges  with pins even if the macro distance is
+              within the forbidden space setting. Macros will be separated  by
+              the min_space_to_macro distance.
+
+              Default: true
+
+              Data_type: enum, optional
+
+       -cell_obs {{<Layer1_Name PowerStripeWidth SpacingBetweenStripes>}
+       {<Layer2_Name ....>}}
+              Specifies the layer width and spacing to add cell obstruction on
+              each  macro to model power stripes . During the concurrent macro
+              placement the power mesh does not exist.  This parameter  allows
+              to mimic the number of routing tracks occupied by the real power
+              mesh  over the macros to make the congestion analysis more accu-
+              rate during the concurrent macro placement.
+
+              The format is:
+
+              cell_obs{{<Layer1_Name PowerStripeWidth  SpacingBetweenStripes>}
+              {<Layer2_Name ....>}}
+
+              Example:
+
+              set_macro_place_constraint  -cells  <cell_name>   -cell_obs {{M5
+              0.24 1.251} {M8 0.64 8.409} {M9 1.2 7.49} }
+
+               Note: This setting  is  generated  automatically  by  the  cre-
+              ate_pg_model_for_macro_place  command.  It is highly recommended
+              to use this command to define the -cell_obs parameter.
+
+              Data_type: string, optional
+
+       -cells <string>
+              Used in combination with the -cell_obs command to specifies  the
+              constraints for all instances of the specified cells.
+
+              Data_type: string, optional
+
+       -common_hier <name>
+              Specifies  the  common  logic  hierarchy name for <inst_name> in
+              <array_elements>, so  the  <inst_name>  can  be  specified  with
+              short-hand format.
+
+              Data_type: string, optional
+
+       -cpg <string>
+              Specifies the cpg guide of one instance.
+
+              Data_type: string, optional
+
+       -forbidden_space_to_core {<unified_value> | <horizontal_value verti-
+       cal_value>}
+              Specifies  the value for forbidden spacing between macro to core
+              boundary. If the space between the macro  and  core  is  smaller
+              than this value, then the macros are abutted.Note:
+
+              * If  only  one  unified value is specified, both horizontal and
+                vertical spacings use the same value. If two values are speci-
+                fied, the first value is for the horizontal spacing, the  sec-
+                ond value is for the vertical spacing.
+
+              * In  case  the -min_space_to_core parameter has been specified,
+                then the value specified for the -forbidden_space_to_core  pa-
+                rameter  should  be  less  than  the  value  specified for the
+                -min_space_to_core parameter.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Default: <0>
+
+              Data_type: string, optional
+
+       -forbidden_space_to_macro {<unified_value> | <horizontal_value verti-
+       cal_value>}
+              Specifies the value for forbidden spacing between macro to macro
+              boundary. If the space between the macros is smaller  than  this
+              value, then the macros are abutted.
+
+              Note:
+
+              * If  only  one  unified value is specified, both horizontal and
+                vertical spacings use the same value. If two values are speci-
+                fied, the first value is for the horizontal spacing, the  sec-
+                ond value is for the vertical spacing.
+
+              * In  case the -min_space_to_macro parameter has been specified,
+                then the value specified for the -forbidden_space_to_macro pa-
+                rameter should be  less  than  the  value  specified  for  the
+                -min_space_to_macro parameter.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Default: <0>
+
+              Data_type: string, optional
+
+       -halo_sharing {true | false}
+              When enabled, abutted macros can share halos between them.
+
+              Note:  When the spacing between two macros is less than the for-
+              bidden-space-to-macro, the two macros are abutted. Since a  sin-
+              gle  halo  width  instead  of double width is enough to meet the
+              physical rules, abutted macros can share halos between them  us-
+              ing the new -halo_sharing parameter.
+
+              Note:  The  halos  of  the abutted macros can overlap but macros
+              cannot overlap with the halo of the other macro.
+
+              Default: false
+
+              Data_type: enum, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each set_macro_place_constraint parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man set_macro_place_constraint
+
+       -honor_strict_spacing_constraint{true | false}
+              When  set  to  true, it specifies that the forbidden spacing and
+              minimum spacing constraints must be honored strictly.
+
+              Data_type: enum, optional
+
+       -horizontal_stacking {<max_macro_stack_length  min_space_be-
+       tween_macro_stack  max_space_between_macros>}
+              Specifies the maximum horizontal stack  depth  and  the  minimum
+              horizontal spacing.
+
+              * max_macro_stack_length:  Specifies  that  the  macro  stacking
+                length should not be more than the specified value.
+
+              * min_space_between_macro_stack: Specifies the  spacing  between
+                different macro stacks.
+
+              * <max_space_between_macros>:  Specifies  the  maximum space be-
+                tween macros. When the macro spacing is less than  the  speci-
+                fied value, the macros are counted in the stacking length. For
+                example,  if  the  max_space_between_macro value is 9 then the
+                macros will be considered as packed if the space  between  the
+                macros  is  between  0 and 9, however, if the real space is 10
+                then nothing will happened.
+
+              Data_type: string, optional
+
+       -insts <string>
+              Specifies the macros on which the  orientation  constraints  are
+              set.   Refer to the -orientation for more information.
+
+       -macro_corner_keepout {<double_endcap_width> <double_endcap_height>}
+              Specifies  the macro corner spacing constraints. It ensures that
+              there is enough space between the macro  corners  for  inserting
+              the endcap cells properly.
+
+              Note:  The corner keepout area starts at the corner of the macro
+              halo.
+
+              Note: The macro corner spacing constraints specified  with  this
+              parameter    are   honored   by   the   refine_macro_place   and
+              check_macro_place_constraint commands. However, if honoring  the
+              corner  keepout  constraint is difficult, corner abutting is al-
+              lowed.
+
+              Note: The tool reserves either  the  horizontal  keepout  larger
+              than  double  corner  cell width or vertical keepout larger than
+              double corner cell height
+
+              Default: {0,0}
+
+              Data_type: string, optional
+
+       -max_io_pin_group_keep_out {<depth_value> [<side_value>]}
+              Specifies the maximum height and (optionally) side extension  to
+              automatically add macro-only blockages to IO pins.
+
+              Note:   The   -max_io_pin_group_keep_out parameter automatically
+              coordinates the size of the macro-only blockages  based  on  the
+              pin density and number for each group of IO pins.
+
+              Note:  Side  value  is  optional. If you do not specify the side
+              value, the set_macro_place_constraint command  follows  the  de-
+              fault  method  to calculate the side ( side = 1/4 depth). If you
+              specify the side value, the max IO group  needs  to  follow  the
+              specified  depth  and side distance. The blockages of smaller IO
+              groups  will  be  derived  automatically,   keeping   the   same
+              <depth/side> proportion (as described for the max IO group)
+
+              Innovus supports the following formats:
+
+              set_macro_place_constraint            -max_io_pin_group_keep_out
+              <depth_value>
+
+              set_macro_place_constraint            -max_io_pin_group_keep_out
+              {<depth_value>}
+
+              set_macro_place_constraint            -max_io_pin_group_keep_out
+              {<depth_value side_value>}
+
+              Note:  The depth and side values are specified in microns.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Data_type: string, optional
+
+       -min_space_to_core {<unified_value> | <horizontal_value verti-
+       cal_value>}
+              Specifies the value for the minimum spacing  between  macro  and
+              core  boundary.  If  the  space  between  the  macro and core is
+              smaller than this value and larger  than  the  forbidden  space,
+              then the macros are pushed away from the core to minimum space.
+
+              Note:  If  only  one unified value is specified, both horizontal
+              and vertical spacings use the same  value.  If  two  values  are
+              specified,  the  first  value is for the horizontal spacing, the
+              second value is for the vertical spacing.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Default: <0>
+
+              Data_type: string, optional
+
+       -min_space_to_macro {<unified_value> | <horizontal_value verti-
+       cal_value>}
+              Specifies the value for the minimum  spacing  between  macro  to
+              macro  boundary.  If  the  space between the macros is less than
+              this value, then the macros are aligned.
+
+              Note: If only one unified value is  specified,  both  horizontal
+              and  vertical  spacings  use  the  same value. If two values are
+              specified, the first value is for the  horizontal  spacing,  the
+              second value is for the vertical spacing.
+
+              For Example:
+
+              * In the following command, both horizontal and vertical spacing
+                use the same value.
+
+                set_macro_place_constraint -min_space_to_macro 10
+
+              * In  the  following  command, the first value is for horizontal
+                spacing, the second value is for vertical spacing.
+
+                set_macro_place_constraint -min_space_to_macro {10 20}
+
+              Minimum=0
+
+              Maximum=100000
+
+              Data_type: string, optional
+
+       -orientation <string>
+              Specifies the allowed orientation for the macros.  The macro in-
+              stances on which you want to constrain the orientations  can  be
+              specified by -insts or -all_macros
+
+              Note: Specified orientation overwrites the previous definition.
+
+              Example:
+
+              set_macro_place_constraint  -all_macros  -orientation  {R90 MX90
+              MY90 R270}
+
+              Data_type: string, optional
+
+       -parallel_run_length {<unified_value> | <vertical_value horizon-
+       tal_value>}
+              Specifies the parallel run length  for  -min_space_to_macro  and
+              -forbidden_space_to_macro  check,  only macros with parallel run
+              length greater than the specified value will be checked with the
+              spacing constraint.
+
+              Note: If only one unified value is specified, the  parallel  run
+              length  along  both  the vertical and horizontal directions uses
+              the same value. If two values  are  specified,  then  the  first
+              value  is  for the parallel run length along the vertical direc-
+              tion and the second value is for the parallel run  length  along
+              the horizontal direction.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Default: 0.000000 0.000000
+
+              Data_type: string, optional
+
+       -parallel_run_length_for_stacking {<unified_value> | <vertical_value
+       horizontal_value>}
+              Specifies  the  parallel run length for -horizontal_stacking and
+              -vertical_stacking check, only  the  macros  with  parallel  run
+              length  equal  to  or  greater  than the specified value will be
+              counted in the stacking length.
+
+              Note: If only one unified value is specified, the  parallel  run
+              length  along  both  the vertical and horizontal directions uses
+              the same value. If two values are specified then the first value
+              is for the parallel run length along the vertical direction  and
+              the  second value is for the parallel run length along the hori-
+              zontal direction.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Default: 0.000000 0.000000
+
+              Data_type: string, optional
+
+       -pg_resource_model {<M1 value1 M2 value2 ...>}
+              Specifies the pg resource model for concurrent macro  placement.
+              During  the  concurrent  macro placement the power mesh does not
+              exist.  This parameter allows you to mimic the number of routing
+              tracks occupied by the real power mesh to  make  the  congestion
+              analysis more accurate during the concurrent macro placement.
+
+              Note:  This  setting  is  generated  automatically  by  the cre-
+              ate_pg_model_for_macro_placecommand. It is highly recommended to
+              use this command to define the -pg_resource_model parameter.
+
+              Data_type: string, optional
+
+       -place_order {horizontal | vertical}
+              Specifies the place order in row (horizontal) or column  (verti-
+              cal) first for macro array.
+
+              Default: horizontal
+
+              Data_type: enum, optional
+
+       -power_domain_as_core {true | false}
+              Specifies that the tool needs to treat the power domain boundary
+              as  the  core  boundary  when  honoring certain macro place con-
+              straints.   This   includes    constrains    set    using    the
+              -min_space_to_core,         -forbidden_space_to_core,        and
+              -avoid_abut_macro_edge_with_pins parameters.
+
+              Note:
+
+              * A macro outside the power domain will not be abutted  even  if
+                its  space to the power domain boundary is less than the value
+                for forbidden spacing between macro to core boundary (-forbid-
+                den_space_to_core).
+
+              * A macro inside the power domain will not be checked for  spac-
+                ing  with other power domains or with macros outside its power
+                domain.
+
+              Default: false
+
+              Data_type: enum, optional
+
+       -same_length_site <integer>
+              Specifies the minimum number of sites between the vertical  edge
+              of two macros.
+
+              Minimum=0
+
+              Maximum=100000
+
+              Data_type: int, optional
+
+       -track_adjustment {{<layer1 density1>} {<layer2> ....}}...
+              Specifies  the  layer  density  to  add track adjustment on each
+              macro. For each routing layer and each macro, if the PG  density
+              over  a  macro  is lower than the standard cell area then it in-
+              creases the track resource in macro area to mimic the  lower  PG
+              density.
+
+              Note:  This  setting  is  generated  automatically  by  the cre-
+              ate_pg_model_for_macro_place command. It is  highly  recommended
+              to use this command to define the -cell_obs parameter.
+
+              Data_type: string, optional
+
+       -valid_group_orients {R0 MX MY}
+              Specifies the valid orientations for the whole group.
+
+              Data_type: enum, optional
+
+       -vertical_stacking {<max_macro_stack_length min_space_be-
+       tween_macro_stack max_space_between_macros>}
+              Specifies  the maximum vertical stack depth and the minimum ver-
+              tical spacing.
+
+              * max_macro_stack_length:  Specifies  that  the  macro  stacking
+                length should not be more than the specified value.
+
+              * min_space_between_macro_stack:  Specifies  the spacing between
+                different macro stacks.
+
+              * <max_space_between_macros>: Specifies the  maximum  space  be-
+                tween  macros.  When the macro spacing is less than the speci-
+                fied value, the macros are counted in the stacking length. For
+                example, if the max_space_between_macro value is  9  then  the
+                macros  will  be considered as packed if the space between the
+                macros is between 0 and 9, however, if the real  space  is  10
+                then nothing will happened.
+
+              Data_type: string, optional
+
+Example
+              * The   following  command creates a macro array, ram_array, and
+                defines it constraints.
+
+                set_macro_place_constraint          -array           ram_array
+                {{ip1/dma/r0_irx:R0       4.66      ip1/dma/r1_irx:MY      8.0
+                ip1/dma/r2_irx:MY}      2.33      {ip1/dma/r3_irx:R0      4.66
+                ip1/dma/r_irx:MY}} -valid_group_orients {R0 MY}
+
+Related Information
+              * check_macro_place_constraint
+
+              * create_pg_model_for_macro_place
+
+              * get_macro_place_constraint
+
+              * reset_macro_place_constraint
+
+              * write_macro_place_constraint
+
+              * refine_macro_place
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+              * Using the Mixed Placer chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37se2t0_2m5acro_place_constraint(25.10)

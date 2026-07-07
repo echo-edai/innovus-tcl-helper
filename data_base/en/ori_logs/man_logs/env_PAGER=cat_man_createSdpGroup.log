@@ -1,0 +1,208 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createSdpGroup(25.10)                                    createSdpGroup(25.10)
+
+Name
+       createSdpGroup - Creates an SDP group
+
+Syntax
+       createSdpGroup
+
+       [-help]
+
+       [-justifyBy {SW|SE|NW|NE|N|W|S|E|MID}]
+
+       -name <sdpGroupName>
+
+       [-type {row|col|space}]
+
+       {{-skip_space  value}  |-skip_space_by_site_width  <value> <siteName >|
+       -skip_space_by_micron <value>}
+
+        | {{{-inst  <WCardName>... [-keepOrder ]} | -selected }
+
+         [[-spread_group <value> ] | [-spread_group_by_site_width <value site-
+       Name>] | [-spread_group_by_micron <value>]
+
+        | [[-numRow <value>] [-numCol  <value>]]]}
+
+       Creates an SDP group. The added object can be an  instance  or  another
+       SDP group.
+
+       The createSdpGroup command enables you to create a structured data path
+       using  TCL  commands.  You  do not need to learn SDP relative placement
+       syntax for creating a data path.
+
+       Before creating an SDP group, you should have:
+
+              * Imported the design
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each createSdpGroup parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man createSdpGroup.
+
+       -inst <WCardName>...
+              Specifies  one or more instance names. Use this parameter if you
+              want to create the SDP group from the specified  instances.  You
+              can  additionally  specify  -keepOrder  if  you want the tool to
+              honor the order in which SDP instance are specified in the list.
+
+              Note: Wildcards can be used to specify the instance names.
+
+       -justifyBy {SW|SE|NW|NE|N|W|S|E|MID}
+              Specifies the anchor point that will be used to  align  the  SDP
+              group you are creating.
+
+              Default: SW
+
+       -keepOrder
+              Honors  the order of instances in the SDP instance list that you
+              specify as input with the -inst parameter.
+
+       -name <sdpGroupName>
+              Specifies the name of the SDP group you are creating.
+
+       -numCol <value>
+              Indicates the number of columns to be created.
+
+       -numRow <value>
+              Indicates the number of rows to be created.
+
+              Note: If you specify both -numRow and -numCol, use the -type pa-
+              rameter to specify the parent structure type (row  or  col).  If
+              you  do  not  specify type, the default parent structure will be
+              column.
+
+       -selected
+              Indicates that you want to create the SDP group from the current
+              set of selected instances.
+
+              If the selected cells are already placed and you specify neither
+              the -numRow or -numCol options nor the -type option, the command
+              will automatically generate one column with rows where  the  SDP
+              structure will be based on the physical location of the selected
+              cells.  The  tool  will  print the following message to indicate
+              that the SDP structure created will be derived from the physical
+              location of the selected cells:
+
+              Command is running  with  physical  mode  extraction  where  SDP
+              structure will be derived from the existing physical cell place-
+              ment.
+
+              If  the  selected cells are not yet placed or if some of the se-
+              lected cells are placed while others are not, the tool prints  a
+              message  indicating  that SDP physical mode extraction cannot be
+              activated and SDP structure cannot be derived from the  existing
+              physical placement because the selected instance is not placed.
+
+       -skip_space <value>
+              Specifies   a   space  value  to  be  skipped.  By  default,  if
+              -skip_space is defined in a column,  its  value  represents  the
+              number  of skipped rows. If -skip_space is defined in a row, its
+              value is for column skipping and represents  the  number  of  M2
+              tracks (pitch of first vertical layer).
+
+              Skip  space value can also be specified as number of widths of a
+              specified  row  site  by  using  the   -skip_space_by_site_width
+              <value>  <siteName> parameter. However, row site width should be
+              specified only for an SDP row, and not for an SDP column.
+
+              Alternatively, you can specify the -skip_space_by_micron parame-
+              ter to specify the distance to be skipped in microns (um).
+
+              Note: Use the -skip_space parameter with the -type space  option
+              to add row/column spaces.
+
+       -skip_space_by_micron <value>
+              Specifies  the space value to be skipped in microns (um). If the
+              specified distance value is not equal to  the  exact  number  of
+              first  vertical  metal pitches or number of rows, createSdpGroup
+              rounds off the value.
+
+              Note: This option cannot be  used  with  either  -skip_space  or
+              -skip_space_by_site_width.
+
+       -skip_space_by_site_width <value> <siteName>
+              Specifies  the  number of row/column space to be skipped and the
+              name of the tech site. Uses the width of the specified  site  as
+              the skip unit in the horizontal direction.
+
+              Note:  This  option  cannot  be  used with either -skip_space or
+              -skip_space_by_micron.
+
+       -spread_group <value>
+              Inserts space between group of instances.  If  -spread_group  is
+              specified in a column, spacing will be the number of added rows.
+              If   -spread_group  is  specified  in a row, spacing will be the
+              number of placement grids added between the columns in that row.
+
+       -spread_group_by_micron <value>
+              Specifies the space to be inserted between groups  of  instances
+              in microns (um).
+
+              Note:  This  option  cannot  be used with either-spread_group or
+              -spread_group_by_site_width.
+
+       -spread_group_by_site_width <value> <siteName>
+              Specifies the number of row/column space to be inserted and  the
+              name  of  the tech site. Uses the width of the specified site as
+              the spread unit in the horizontal direction.
+
+              Note: This option cannot be used with  either  -spread_group  or
+              -spread_group_by_micron.
+
+       -type {row|col|space}
+              Indicates  whether  the  new group is a row, column, or an empty
+              (skipped) space.
+
+              Default: col
+
+Examples
+              * The following example creates an SDP group  named  TestGrp  of
+                type space with two spaces:
+
+                createSdpGroup -name TestGrp -type space -skip_space 2
+
+              * The  following  example  creates an SDP group named sdpGrp1 of
+                type row with four columns from the  selected  instances.  The
+                group is aligned in the South East direction:
+
+                createSdpGroup -name sdpGrp1 -type row -justifyBy SE -numCol 4
+                -selected
+
+              * The  following  example creates a row data path that has three
+                columns, each with two rows, for all the instances  that  have
+                name matched the pattern DTMF_INST/TDSP_CORE_INST*:
+
+                createSdpGroup    -name    sdp_group1    -type    row    -inst
+                DTMF_INST/TDSP_CORE_INST* -numRow 2 -numCol 3
+
+              * The following command automatically generates one column  with
+                rows where the SDP structure will be based on the physical lo-
+                cation of the selected cells, provided that the selected cells
+                are already placed:
+
+                createSdpGroup -selected -name group2
+
+Related Information
+              * getSdpGroupAttribute
+
+              * getSdpMode
+
+              * placeSdpGroup
+
+              * setSdpGroupAttribute
+
+              * setSdpMode
+
+              * sdp object in Innovus Database Object Information
+
+              * Using Structured Data Paths chapter of the User Guide
+
+              * Floorplan Menu chapter of the Menu Reference
+
+                * Structured Data Path
+
+                           Fri Apr 04 01:25:37 2025      createSdpGroup(25.10)

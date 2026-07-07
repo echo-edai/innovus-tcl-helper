@@ -1,0 +1,171 @@
+{
+  "command": "create_delay_corner",
+  "is_cmd": true,
+  "summary": "创建一个延迟计算角对象",
+  "description": "创建一个命名的延迟计算角对象，该对象可在后续创建分析视图时被引用。延迟计算角提供了控制特定视图下延迟计算所需的所有信息。每个角包含要使用的库、访问库时应使用的操作条件以及用于计算寄生数据的RC提取参数。延迟角对象可以被多个顶层分析视图共享。注意：-early_* 和 -late_* 参数不应用于表示最佳和最坏情况角，而应使用单独的延迟角来定义最佳和最坏情况的差异。在单个延迟计算角内使用 -early_* 和 -late_* 参数来控制片上变化，在这种情况下，不同的条件或库将用于单个时序路径的发射路径和捕获路径。",
+  "usage": "create_delay_corner [-help] [-early_estimated_worst_irdrop_factor <percent>] [-late_estimated_worst_irdrop_factor <percent>] -name <delayCornerName> [-si_enabled true | false] { { [-library_set <libSetObj>] | [-late_library_set <libSetObj> -early_library_set <libSetObj>] } [-opcond_library <libName>] [-opcond <opcondName>] [-pg_net_voltages <voltage_pairs>] [-rc_corner <rcCornerObj> | [-late_rc_corner <rcCornerObj> -early_rc_corner <rcCornerObj>]] [-irdrop_file <list_of_files> | -irdrop_data <files_or_directories>] [-late_opcond_library <libName>] [-early_estimated_worst_irDrop_factor <percent>] [-early_opcond_library <libName>] [-late_opcond <opCondName>] [-early_opcond <opCondName>] [-late_estimated_worst_irDrop_factor <percent>] [[-late_irdrop_file <list_of_files> -early_irdrop_file <libSetObj>] | [-late_irdrop_data <files_or_directories> -early_irdrop_data <files_or_directories>]] [-temp_file <tempName> | [-late_temp_file <tempName> -early_temp_file <tempName>]] }",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-early_estimated_worst_irdrop_factor",
+      "description": "指定早期电压降额因子。当指定此参数时，软件使用电压 = 标称电压 * (1 - 值) 进行延迟计算。默认值：0.0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-late_estimated_worst_irdrop_factor",
+      "description": "指定晚期电压降额因子。当指定此参数时，软件使用电压 = 标称电压 * (1 - 值) 进行延迟计算。默认值：0.0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-name",
+      "description": "指定要创建的延迟角对象的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-si_enabled",
+      "description": "控制信号完整性分析。当设置为 true 时，默认情况下所有 MMMC 视图的分析都将包含 SI 分析。当在延迟角上将此参数设置为 false 时，软件将禁用引用该角的所有视图的 SI 分析。默认情况下（或当此参数设置为 true 时），只要全局启用了 SI，就会计算与该角相关的所有视图的 SI 分析。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-library_set",
+      "description": "指定要与此延迟角对象关联的库集。要配置基于 ECSM 的多库插值，应指定一个 Tcl 列表。",
+      "required": false,
+      "type": "libSetObj(s)"
+    },
+    {
+      "name": "-late_library_set",
+      "description": "指定要与此延迟角对象关联的库集，用于在单个延迟角计算晚期到达时间。此参数主要用于配置用于片上变化分析的多模式多角环境。",
+      "required": false,
+      "type": "libSetObj"
+    },
+    {
+      "name": "-early_library_set",
+      "description": "指定要与此延迟角对象关联的库集，用于在单个延迟角计算早期到达时间。此参数主要用于配置用于片上变化分析的多模式多角环境。",
+      "required": false,
+      "type": "libSetObj"
+    },
+    {
+      "name": "-opcond_library",
+      "description": "指定定义操作条件的库的内部库名称。这不是库文件名。此参数主要用于配置单角或最佳-最坏情况分析模式。默认：软件在库集中搜索指定的操作条件，从主库开始。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-opcond",
+      "description": "指定用于建立和保持分析的操作条件。此参数主要用于配置单角或最佳-最坏情况分析模式。默认：库集中的每个库使用其自己的默认操作条件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pg_net_voltages",
+      "description": "指定用于早期/晚期时序分析的电源/地网络电压。",
+      "required": false,
+      "type": "voltage_pairs"
+    },
+    {
+      "name": "-rc_corner",
+      "description": "指定要与此延迟角对象关联的 RC 角对象。此参数主要用于配置 OCV 和最佳-最坏情况分析模式。",
+      "required": false,
+      "type": "rcCornerObj"
+    },
+    {
+      "name": "-late_rc_corner",
+      "description": "指定要与晚期角对象关联的 RC 角对象。",
+      "required": false,
+      "type": "rcCornerObj"
+    },
+    {
+      "name": "-early_rc_corner",
+      "description": "指定要与早期角对象关联的 RC 角对象。",
+      "required": false,
+      "type": "rcCornerObj"
+    },
+    {
+      "name": "-irdrop_file",
+      "description": "指定要应用于此延迟角对象的早期和晚期延迟计算的 IR 压降文件列表。此参数主要用于配置单角或最佳-最坏情况分析模式。注意：此参数已过时，将在未来版本中移除。",
+      "required": false,
+      "type": "list_of_files"
+    },
+    {
+      "name": "-irdrop_data",
+      "description": "指定要应用于指定延迟角对象的早期和晚期延迟计算的 IR 压降文件或目录。",
+      "required": false,
+      "type": "files_or_directories"
+    },
+    {
+      "name": "-late_opcond_library",
+      "description": "指定定义晚期操作条件的库的内部库名称。这不是库文件名。此参数主要用于配置用于片上变化分析的多模式多角环境。默认：软件在晚期库集中搜索指定的操作条件，从主库开始。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-early_opcond_library",
+      "description": "指定定义早期操作条件的库的内部库名称。这不是库文件名。此参数主要用于配置用于片上变化分析的多模式多角环境。默认：软件在早期库集中搜索指定的操作条件，从主库开始。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-late_opcond",
+      "description": "指定用于在单个延迟角计算晚期到达时间的操作条件。此参数主要用于配置用于片上变化分析的多模式多角环境。默认：晚期库集中的每个库使用其自己的默认操作条件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-early_opcond",
+      "description": "指定用于在单个延迟角计算早期到达时间的操作条件。此参数主要用于配置用于片上变化分析的多模式多角环境。默认：早期库集中的每个库使用其自己的默认操作条件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-late_irdrop_file",
+      "description": "指定在单个延迟角计算晚期到达时间时要应用的 IR 压降文件列表。此参数主要用于配置用于片上变化分析的多模式多角环境。注意：此参数已过时，将在未来版本中移除。",
+      "required": false,
+      "type": "list_of_files"
+    },
+    {
+      "name": "-early_irdrop_file",
+      "description": "指定在单个延迟角计算早期到达时间时要应用的 IR 压降文件列表。此参数主要用于配置用于片上变化分析的多模式多角环境。注意：此参数已过时，将在未来版本中移除。",
+      "required": false,
+      "type": "libSetObj"
+    },
+    {
+      "name": "-late_irdrop_data",
+      "description": "指定在单个延迟角计算晚期到达时间时要应用的 IR 压降文件或目录。",
+      "required": false,
+      "type": "files_or_directories"
+    },
+    {
+      "name": "-early_irdrop_data",
+      "description": "指定在单个延迟角计算早期到达时间时要应用的 IR 压降文件或目录。",
+      "required": false,
+      "type": "files_or_directories"
+    },
+    {
+      "name": "-temp_file",
+      "description": "指定用于单角温度感知延迟计算的温度文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-late_temp_file",
+      "description": "指定用于晚期角温度感知延迟计算的温度文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-early_temp_file",
+      "description": "指定用于早期角温度感知延迟计算的温度文件的名称。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

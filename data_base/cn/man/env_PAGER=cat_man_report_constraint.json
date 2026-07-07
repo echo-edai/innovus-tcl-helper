@@ -1,0 +1,123 @@
+{
+  "command": "report_constraint",
+  "is_cmd": true,
+  "summary": "报告当前设计的约束信息",
+  "description": "report_constraint 命令用于报告当前设计的约束信息，包括约束是否被违反、违反的程度以及最严重的违反对象。报告的信息涵盖所有建立时间和保持时间检查、设计规则违反（DRV）检查（如最大/最小电容、最大/最小转换时间、最大/最小扇出）、时钟相关检查（如脉冲宽度、最小周期、恢复时间、移除时间、时钟门控建立/保持时间、时钟偏斜）以及信号完整性相关的电迁移分析。该命令支持多线程报告，并允许通过多种参数配置报告的内容、格式和范围。",
+  "usage": "report_constraint [-all_violators] [-verbose] [-late] [-early] [-em_type {peak | rms | avg | all}] [-check_type { pulse_width | clock_period | recovery | removal | clock_gating_setup | clock_gating_hold | skew | pulse_clock_max_width | pulse_clock_min_width | electromigration | rail_swing}] [-clock] [-connection_class] [-data] [-drv_fields {<field_list>}] [-drv_output_format {txt|csv}] [-drv_violation_type { max_capacitance | max_transition | max_fanout | min_capacitance | min_transition | min_fanout | pulse_clock_max_transition | pulse_clock_min_transition}] [-max_pins_per_drv <integer>] [-retime {aocv | path_slew_propagation | aocv_path_slew_propagation}] [-retime_mode {path | exhaustive}] [-view <viewName>] [-worst_drv_per_net] [<pin_port_list>] [{> | >>} filename[.gz]]",
+  "options": [
+    {
+      "name": "-all_violators",
+      "description": "报告指定检查类型的所有违反者（而不仅仅是最严重的条目）。支持的检查类型包括建立时间、保持时间、时钟门控建立/保持时间、恢复时间、移除时间、时钟周期、脉冲宽度、最大/最小电容、最大/最小转换时间、最大/最小扇出、偏斜、脉冲时钟最大/最小宽度、脉冲时钟最大/最小转换时间等。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verbose",
+      "description": "生成详细报告，显示完整的数据路径以及相应的所需时间和裕量计算。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-late",
+      "description": "报告所有建立时间检查，包括常规建立时间、时钟门控建立时间和数据到数据建立时间检查。同时报告由 set_max_delay 设置的路径延迟。注意：此参数不报告恢复时间检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-early",
+      "description": "报告所有保持时间检查，包括常规保持时间、时钟门控保持时间和数据到数据保持时间检查。同时报告由 set_min_delay 设置的路径延迟。注意：此参数不报告移除时间检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-em_type",
+      "description": "根据指定的电迁移（EM）类型（峰值、均方根、平均值或全部）报告电迁移相关的设计规则违反。软件会从Liberty库中读取指定EM电流类型（RMS、峰值或平均值）的 em_max_toggle_rate 表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_type",
+      "description": "报告特定类型的时序检查。支持的检查类型包括：pulse_width（脉冲宽度）、clock_period（时钟周期）、recovery（恢复时间）、removal（移除时间）、clock_gating_setup（时钟门控建立时间）、clock_gating_hold（时钟门控保持时间）、skew（偏斜）、pulse_clock_max_width（脉冲时钟最大宽度）、pulse_clock_min_width（脉冲时钟最小宽度）、electromigration（电迁移）、rail_swing（电压摆幅）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock",
+      "description": "指定DRV检查将仅限于时钟网络。如果某个引脚同时属于时钟网络和数据网络，它将被报告为时钟网络引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connection_class",
+      "description": "如果网络驱动引脚和接收引脚的连接类属性不同，则报告违反。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-data",
+      "description": "指定DRV检查将仅限于数据网络。如果某个引脚同时属于时钟网络和数据网络，它将被报告为时钟网络引脚。默认情况下，DRV检查同时应用于时钟和数据网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drv_fields",
+      "description": "允许在DRV报告中仅包含指定的字段，并按照定义的顺序显示。字段列表请参考DRV字段列表表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-drv_output_format",
+      "description": "指定DRV输出格式为文本（txt）或CSV（csv）。默认值为“txt”。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-drv_violation_type",
+      "description": "报告特定类型的DRV违反。支持的DRV检查类型包括：max_capacitance（最大电容）、min_capacitance（最小电容）、max_transition（最大转换时间）、min_transition（最小转换时间）、max_fanout（最大扇出）、min_fanout（最小扇出）、pulse_clock_max_transition（脉冲时钟最大转换时间）、pulse_clock_min_transition（脉冲时钟最小转换时间）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_pins_per_drv",
+      "description": "报告每个DRV类别（例如，max_transition, max_capacitance）中指定数量的最严重违反。如果未指定此参数，则默认每个DRV类别报告1000条条目。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-retime",
+      "description": "使用指定的方法重新分析指定的路径集。支持的方法包括：aocv（应用路径级AOCV降额因子）、path_slew_propagation（基于实际传播的转换时间重新计算延迟）、aocv_path_slew_propagation（结合路径级AOCV降额和实际传播的转换时间）。注意：此参数仅支持建立/保持检查类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-retime_mode",
+      "description": "允许 report_constraint 命令在穷举路径分析（PBA）模式下运行。在此模式下，软件将穷举检查选定端点的n条最差路径，然后根据所有检查路径的重新计算裕量选择真正的最差路径进行报告。默认模式为“path”。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "为指定的分析视图生成包含端点和其他约束信息的报告。此参数仅在软件处于多模式多角分析模式时才能指定。默认情况下，报告基于所有分析视图生成最差端点和约束信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-worst_drv_per_net",
+      "description": "仅报告每个网络中最严重的DRV违反。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<pin_port_list>",
+      "description": "控制DRV约束的输出。当指定时，仅报告指定引脚或端口的所有DRV违反。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "{> | >>} filename[.gz]",
+      "description": "将报告输出重定向到文件。使用 > 会覆盖已存在的文件；使用 >> 会将报告追加到文件末尾。文件名必须是参数列表中的最后一个参数。可以通过添加 .gz 扩展名来生成压缩报告。默认情况下，报告显示在标准输出而不保存。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "command": "set_annotated_delay",
+  "is_cmd": true,
+  "summary": "为时序路径标注延迟值",
+  "description": "该命令用于为指定的时序路径（cell arc 或 net arc）标注延迟值。可以指定延迟值、条件表达式、上升/下降沿、最小/最大工作角等参数。如果不带任何参数，指定的延迟值将同时包含基础延迟和任何增量（串扰）延迟。",
+  "usage": "set_annotated_delay [-help] <delay_value> [-cond <expression>] [-delta_only] [-fall] [-increment] [-max] [-min] [-rise] {-net | -cell } {[-from <from_pins>] [-to <to_pins>]}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cond",
+      "description": "指定所选时序路径的 SDF 条件表达式。默认情况下，延迟适用于所有通过 -from 和 -to 选项选择的时序路径。对于 net arcs，该表达式被忽略。注意：不能与 -net 参数同时指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<delay_value>",
+      "description": "指定要标注到所选时序路径的延迟值",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-delta_only",
+      "description": "将延迟值填入增量延迟槽，以便区分基础网络延迟和由串扰引起的延迟偏移。软件会在时序报告中单独报告增量延迟值，并为 CPPR 计算维护该独立值。如果基础延迟先前已计算或从 SDF 标注，此参数会将指定延迟添加到现有基础延迟上。注意：此参数只能与 -net 参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fall",
+      "description": "指定延迟适用于下降沿。对于 cell arc，这是输出下降沿。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-increment",
+      "description": "在现有基础延迟值之上增加指定的延迟值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max",
+      "description": "为最大工作角标注延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-min",
+      "description": "为最小工作角标注延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rise",
+      "description": "指定延迟适用于上升沿。对于 cell arc，这是输出上升沿。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定延迟应标注到网络路径（net arcs）。必须与 -cell 二选一。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定延迟应标注到单元路径（cell arcs）。必须与 -net 二选一。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-from",
+      "description": "指定延迟适用的时序路径的源引脚。所选时序路径是其源引脚由此选项指定，且其汇引脚由 -to 选项指定的路径。如果未指定此选项，则仅选择那些汇引脚由 -to 选项指定的时序路径。注意：不能指定层次化引脚。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-to",
+      "description": "指定延迟适用的时序路径的汇引脚。所选时序路径是其汇引脚由此选项指定，且其源引脚由 -from 选项指定的路径。如果未指定此选项，则仅选择那些源引脚由 -from 选项指定的时序路径。注意：不能指定层次化引脚。",
+      "required": false,
+      "type": "pin+"
+    }
+  ]
+}

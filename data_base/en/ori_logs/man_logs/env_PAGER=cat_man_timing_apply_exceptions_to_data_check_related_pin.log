@@ -1,0 +1,60 @@
+env PAGER=cat man timing_apply_exceptions_to_data_check_related_pi n
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_apply_...ck_related_pin(25.10)    timing_apply_...ck_related_pin(25.10)
+
+Name
+       timing_apply_exceptions_to_data_check_related_pin
+
+Syntax
+       timing_apply_exceptions_to_data_check_related_pin
+
+       {true | false}
+
+       Default: true
+
+       Controls  if false path assertions which block the data path to the re-
+       lated (-from) reference pin of the data-to-data check disable the data-
+       to-data check.
+
+       When set to false, the data-to-data checks remain valid  when  a  false
+       path assertion blocks the data path to the related (-from) pin.
+
+       When  set  to true, any false path assertion which blocks the data path
+       to the related (-from) pin of the data-to-data check  also  causes  the
+       check to be disabled.
+
+       The  global  variable  has  no effect on the data-to-data checks with a
+       reference clock, where an exception blocks the clock  reference  signal
+       at the reference pin. The data-to-data check will always be disabled in
+       this situation.
+
+       To set this global variable, use the set command.
+
+Examples
+              * In the following example, the data-to-data check is disabled:
+
+                set timing_apply_exceptions_to_data_check_related_pin true
+
+                set_data_check -from portA -to portB
+
+                set_false_path -to portA
+
+              * In  the  following  example,  the data-to-data check is valid.
+                This is the default situation:
+
+                set timing_apply_exceptions_to_data_check_related_pin false
+
+                set_data_check -from portA -to portB
+
+                set_false_path -to portA
+
+              * In this case, the data check is always disabled.  and  is  not
+                affected by this global variables' settings:
+
+                set_data_check -from portA -to portB
+
+                set_false_path -to [get_clocks ClkA]
+
+                where the path to portA is clocked by ClkA.
+
+                           Fri Apr 04 01:2t5i:m3i7ng2_0a2p5ply_...ck_related_pin(25.10)

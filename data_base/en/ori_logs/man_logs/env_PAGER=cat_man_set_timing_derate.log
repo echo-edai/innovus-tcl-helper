@@ -1,0 +1,496 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_timing_derate(25.10)                              set_timing_derate(25.10)
+
+Name
+       set_timing_derate  -  Sets  delay scaling or derating factors for early
+       and late paths in the current design
+
+Syntax
+       set_timing_derate
+
+       [-help]
+
+       <derate_value>[<object_list>]
+
+       [-add]
+
+       [-cell_check]
+
+       [-cell_delay]
+
+       [-clock]
+
+       [-clock_period_check]
+
+       [-corner]
+
+       [-data]
+
+       [-dynamic]
+
+       [-early]
+
+       [-fall]
+
+       [-increment]
+
+       [-input_switching]
+
+       [-late]
+
+       [-mean]
+
+       [-multiply]
+
+       [-net_delay]
+
+       [-power_domain <string>]
+
+       [-pulse_width_check]
+
+       [-retain_delay]
+
+       [-rise]
+
+       [-sigma]
+
+       [-static]
+
+       [-statistical]
+
+       [-transition]
+
+       [-min | -max | -delay_corner delayCornerName]
+
+       Sets delay scaling or derating factors for early and late paths in  the
+       current  design.  You use this command to perform scaled on-chip varia-
+       tion around best-case and worst-case corners. The timing  scaling  fac-
+       tors  affect  the delay values generated in the timing reports. You can
+       set scaling factors for data paths, clock paths,  minimum  and  maximum
+       operating conditions.
+
+       If  you  do not specify the -clock or -data parameter, the software ap-
+       plies the scaling factors to both clock and data paths. If you  specify
+       only  one of the two parameters, -data or -clock, the software uses the
+       last defined value for the other.
+
+       Similarly, if you do not specify the -min or -max parameter, the  soft-
+       ware  applies  the scaling factor to both minimum and maximum operating
+       conditions. You should only use the -min or -max  parameter  for  best-
+       case  worst-case  analysis.  If  you  specify them in on-chip variation
+       (OCV) mode, the software will use the -min -early derating  factor  for
+       early  path  scaling,  and the -max -late derating factor for late path
+       adjustments.
+
+       When there are separate max and min  libraries  specified,  only  those
+       set_timing_derate  constraints  are honored that are specified with max
+       library. The constraints specified with min library are ignored.
+
+       In MMMC mode, for delay corners having different late and early library
+       sets, only those set_timing_derate constraints  are  honored  that  are
+       specified  with  late  library set of the delay corner. The constraints
+       specified with early library set are ignored.
+
+       Note: The set_timing_derate command can only be  used  on  the  command
+       line. You cannot import it as part of an SDC file.
+
+Parameters
+       -add   Incrementally adds or subtracts derates. You can also apply der-
+              ates on specific leaf instances.
+
+       -cell_check
+              Specifies  scaling  on timing checks. Use the -cell_check option
+              with the -early option to specify scaling on hold arcs  and  use
+              with the -late option to specify scaling on setup arcs.
+
+              When  you  specify this parameter, derating factors are also ap-
+              plied   to   user   constraints   such   as    set_output_delay,
+              set_data_check, and set_clock_gating_check.
+
+              The -cell_check parameter by default does not apply check derate
+              to  output  external  delay  (e.g., set_output_delay). To enable
+              this feature, you can set  the  timing_apply_check_derate_to_ex-
+              ternal_output_delay  timing global variable to true. When set to
+              true, this global applies cell derate to the top boundary port.
+
+       -cell_delay
+              Specifies scaling on cell delays.
+
+              If neither the -cell_delay nor the -net_delay option  is  speci-
+              fied,  the specified scaling factor applies to both types of de-
+              lays.
+
+       -clock Applies the derating factors to clock paths only.
+
+       -clock_period_check
+              Specifies derate values for clock period checks.
+
+       -corner
+              Applies derating on cells or nets that  are  modeled  as  corner
+              data  elements. The specified derating factor is applied to both
+              the mean and sensitivities of the  delays  (corner  objects  can
+              have propagated sensitivities).
+
+              A  cell with no timing arc data in a library that has any sensi-
+              tivity information with respect to any parameter defined in SPDF
+              are considered as a corner object. All cells that do not qualify
+              are considered to be statistical objects.
+
+              A net with parasitic data that has  no  sensitivity  information
+              with respect to any parameter defined in SPDF is considered as a
+              corner object. All nets that do not qualify are considered to be
+              statistical objects.
+
+       -data  Applies the derating factors to data paths only.
+
+       -delay_corner <delayCornerName>
+              Applies  the  derating factor to the specified delay calculation
+              corner or a list of delay corners.
+
+              Note: The timing derate can be  applied  to  corners  associated
+              with active views only.
+
+       <derate_value>
+              Specifies the derating value to be used.
+
+       -dynamic
+              Applies  the  specified  derating factor to the delta portion of
+              net delays only.
+
+              You can specify -net_delay or  -cell_delay  parameter  with  the
+              -dynamic parameter.
+
+              You cannot specify -dynamic with -mean or -sigma parameters.
+
+       -early Specifies that the derating factor applies to early paths. Early
+              paths  are launching clock during hold analysis, receiving clock
+              during setup analysis and datapath during hold analysis. For de-
+              finition of early and late paths, see "Definition of Early  Late
+              Paths" in Innovus User Guide.
+
+              Note: To use this parameter, you must specify -delay_corner.
+
+       -fall  Applies  the  derating  factor  to  falling delay and check arcs
+              based on the transition direction at the arc's sink pin.
+
+              This parameter can be used to selectively apply  timing  derates
+              for the fall arcs (cell, net, or check arcs).
+
+       -increment
+              Incrementally adds the derate value to the total derate value in
+              all the modes - OCV, AOCV, and SOCV mode. This parameter is used
+              to  specify  incremental  derates for leaf cell instances or li-
+              brary cell objects only.
+
+              The set_timing_derate command saves two different values  -  the
+              "base"  derate and the "incremental" derate. When the -incremen-
+              tal parameter is specified, the software populates the incremen-
+              tal derates.
+
+              Notes:
+
+              * -increment and -multiply are mutually exclusive parameters.
+
+              * -increment/-multiply are supported with  existing  parameters,
+                such as,  -late/-early, -rise/-fall, -mean/-sigma.
+
+              * Unlike  base transition derate, the derate values with -incre-
+                ment/-multiply can be greater or smaller than 1.
+
+              * Base transition derate values will be limited to: Late >=  1.0
+                and < 100.0, Early <= 1.0 and > 0.0.
+
+              By  default,  a  limit  check on total derate value will be per-
+              formed during transition for delay  calculation.  If  the  total
+              transition derate is out of range, a warning message will be is-
+              sued.
+
+              By  default, the incremental derates are overwritten. To disable
+              this behavior, you can use the following global variables:
+
+              * timing_derate_incremental_adjust_additive_mode:    Incremental
+                derates  are added to each other to obtain the final incremen-
+                tal derate value.
+
+              * timing_derate_incremental_multiply_accumulative_mode:   Incre-
+                mental  derates  are  multiplied with each other to obtain the
+                final incremental derate value.
+
+       -input_switching
+              Considers the given derate as simultaneous switching input (SSI)
+              derate that is applicable to early paths only.
+
+       -late  Specifies that the derating factor applies to late  paths.  Late
+              paths  are receiving clock during hold analysis, launching clock
+              during setup analysis and datapath during setup analysis.
+
+              Note: To use this parameter, you must specify the  -delay_corner
+              parameter.
+
+       -max   Applies  the  derating factor to the maximum operating condition
+              during best-case worst-case analysis. This parameter is  ignored
+              during on-chip variation analysis.
+
+              Note:  You cannot use the -max parameter when the software is in
+              multi-mode multi-corner (MMMC)  mode.  You  must  use  the  -de-
+              lay_corner parameter instead.
+
+       -min   Applies  the  derating factor to the minimum operating condition
+              during best-case worst-case analysis. This parameter is  ignored
+              during on-chip variation analysis.
+
+              Note:  You cannot use the -min parameter when the software is in
+              multi-mode multi-corner (MMMC)  mode.  You  must  use  the  -de-
+              lay_corner parameter instead.
+
+       -mean  Controls  nominal  derating. You can apply separate derating the
+              mean components of the delay.
+
+       -multiply
+              Incrementally multiplies derates. You can also apply derates  on
+              specific leaf instances.
+
+       -net_delay
+              Specifies scaling on net delays.
+
+       <object_list>
+              Specifies the list of instances, library cells, or nets to which
+              the derating will be applied.
+
+       -power_domain <string>
+              Allows you to specify a specific power domain for the timing de-
+              rate factors to be applied.
+
+       -pulse_width_check
+              Specifies derate values for pulse width checks.
+
+              Note:  The -pulse_width_check and -clock_period_check parameters
+              are mutually exclusive.
+
+              To apply check derating to pulse  width  checks,  set  the  tim-
+              ing_enable_derating_for_pulsewidth_checks   global  variable  to
+              true. By default, the global is set to false.
+
+       -retain_delay
+              Specifies scaling on retain constructs. If you specify both -re-
+              tain_delay and -cell_delay parameters, the software uses the re-
+              tain_delay value for retain construct scaling.  If  you  do  not
+              specify  the  -retain_delay  parameter,  retain  constructs  are
+              scaled in the same manner as cell delays.
+
+       -rise  Applies the derating factor to rising delay and check arcs based
+              on the transition direction at the arc's sink pin.
+
+              This parameter can be used to selectively apply  timing  derates
+              for the rise arcs (cell, net, or check arcs).
+
+       -sigma Controls derating on the variation component. You can apply sep-
+              arate derating to the sigma components of the delay.
+
+       -static
+              Applies  the  specified derating factor to the non-delta portion
+              of net delays only.
+
+              You can specify -net_delay or  -cell_delay  parameter  with  the
+              -static parameter.
+
+              You cannot specify -static with -mean or -sigma parameters.
+
+       -statistical
+              Applies  derating on cells or nets that are modeled as statisti-
+              cal data elements. The specified derating factor is  applied  to
+              both the mean and sigma of delays.
+
+              If  both  set_timing_derate -corner and -statistical options are
+              not specified, the derating factor is applied on  variation  and
+              corner  objects  equally.  This  is equivalent to issuing to two
+              separate set_timing_derate commands, one with  -statistical  op-
+              tion and the other with -corner option.
+
+       -transition
+              Specifies  scaling  on transitions. When specified, the software
+              allows derate transition and stretch waveforms.
+
+              For incremental derates applied to the base derate (without  the
+              -increment parameter), you can use the following parameters with
+              the -transition parameter:
+
+              *
+                 -increment  parameter  adds  to the base derate to obtain the
+                final derate.
+
+              * -multiply parameter multiplies the incremental derate with the
+                base derate to obtain the final derate value (-increment para-
+                meter is not required).
+
+              * Validity of final derate value (same limits as base transition
+                derate) is applied only during timing analysis, and not at the
+                time of constraint processing.
+
+Examples
+              * The following command (1) can be used when the software is  in
+                on-chip  variation  analysis mode to add pessimism to both the
+                setup and hold analyses by making the early paths  20  percent
+                faster:
+
+                 setAnalysisMode -analysisType onChipVariation
+
+                    ...
+
+                (1) set_timing_derate -early 0.8 -late 1.0
+
+              * The  following  example uses two set_timing_derate commands to
+                set the scaling factors independently for the min and max cor-
+                ners. When the software is in  best-case  worst-case  analysis
+                mode:
+
+                * Command  (1)  adds pessimism to the setup analysis by making
+                  the latching clock path 20 percent faster.
+
+                * Command (2) adds pessimism to the hold  analysis  by  making
+                  the latching clock path 10 percent slower.
+
+                  (1) set_timing_derate -max -early 0.8 -late 1.0
+
+                  (2) set_timing_derate -min -early 1.0 -late 1.1
+
+              * When the software is in on-chip variation analysis mode, there
+                is  only one active delay corner; therefore, the -min and -max
+                parameters should not be used. The following command  sequence
+                will generate a warning:
+
+                setAnalysisMode -analysisType onChipVariation
+
+                set_timing_derate -min -early 0.8 -late 0.9
+
+                set_timing_derate -max -early 1.1 -late 1.2
+
+                In  this  situation,  the software uses 0.8 for derating early
+                paths, and 1.2 for derating late paths.
+
+              * When the software is in on-chip variation analysis mode, there
+                is only one active delay corner; therefore, the -min and  -max
+                parameters  should not be used. The following command sequence
+                will generate a warning:
+
+                setAnalysisMode -analysisType onChipVariation
+
+                set_timing_derate -min -early 0.8 -late 0.9
+
+                set_timing_derate -max -early 1.1 -late 1.2
+
+                In this situation, the software uses 0.8  for  derating  early
+                paths, and 1.2 for derating late paths.
+
+              * The  following  example uses two set_timing_derate commands to
+                set the scaling factors independently for the min and max cor-
+                ners. When the software is in  best-case  worst-case  analysis
+                mode:
+
+                     * Command  (1)  adds  pessimism  to the setup analysis by
+                       making the latching clock path 20 percent faster.
+
+              * The following command sets the early path  scaling  factor  of
+                0.85 for instance MULT_9 cell delays:
+
+                set_timing_derate -early -cell_delay 0.85 [get_cells {MULT_9}]
+
+              * The  following  command  sets the early path scaling factor of
+                0.75 for the net named MUX2/Z:
+
+                set_timing_derate -net_delay -early 0.75 [get_nets {MUX2/Z}]
+
+              * The following command specifies power domain PD1 for  derating
+                instances:
+
+                set_timing_derate -power_domain PD1 -cell_delay 1.1
+
+              * In  the  following  example,  a  design  having max library as
+                'slow' and min library as 'fast', only the first two  set_tim-
+                ing_derate constraints are honored:
+
+                set_timing_derate   -late   1.2  [get_lib_cells  {slow/BUFX1}]
+                -cell_delay
+
+                set_timing_derate  -early  0.8  [get_lib_cells   {slow/BUFX1}]
+                -cell_delay
+
+                set_timing_derate   -late   1.1  [get_lib_cells  {fast/BUFX1}]
+                -cell_delay
+
+                set_timing_derate  -early  0.9  [get_lib_cells   {fast/BUFX1}]
+                -cell_delay
+
+              * Consider the following library sets in MMMC mode:
+
+                create_library_set -name libset1 -timing slow.lib
+
+                create_library_set -name libset2 -timing fast.lib
+
+                create_delay_corner  -name  corner1  -late_library_set libset1
+                -early_library_set libset2
+
+                From the following set_timing_derate constraints the first and
+                last are honored:
+
+                set_timing_derate -late 1.2 -cell_delay [get_lib_cells slow/*]
+                -delay_corner corner1
+
+                set_timing_derate  -early   2.3   -cell_delay   [get_lib_cells
+                slow/*] -delay_corner corner1
+
+                set_timing_derate -late 3.4 -cell_delay [get_lib_cells fast/*]
+                -delay_corner corner1
+
+                set_timing_derate   -early   4.5   -cell_delay  [get_lib_cells
+                fast/*] -delay_corner corner1
+
+              *
+
+                The following command can be used when the software is in  on-
+                chip  variation  analysis  mode  to  add pessimism to both the
+                setup and hold analyses by making the early paths  20  percent
+                faster:
+
+                setAnalysisMode -analysisType onChipVariation
+
+                set_timing_derate -early 0.8 -late 1.0
+
+                This  command  adds  pessimism to the setup analysis by making
+                the latching clock path 20 percent faster.
+
+              * The following example uses two set_timing_derate  commands  to
+                set the scaling factors independently for the min and max cor-
+                ners.  When  the  software is in best-case worst-case analysis
+                mode:
+
+                * The following command sets the early path scaling factor  of
+                  0.85 for instance MULT_9 cell delays:
+
+                  set_timing_derate   -early   -cell_delay   0.85   [get_cells
+                  {MULT_9}]
+
+                * The following command sets the early path scaling factor  of
+                  0.75 for the net named MUX2/Z:
+
+                  set_timing_derate -net_delay -early 0.75 [get_nets {MUX2/Z}]
+
+              * The  following command specifies power domain PD1 for derating
+                instances:
+
+                set_timing_derate -power_domain PD1 -cell_delay 1.1
+
+              * The following command shows library object level  support  for
+                clock (and pulse width) check options:
+
+                set_timing_derate -delay_corner [all_delay_corners] -clock_pe-
+                riod_check 1.05 [<object_list>]
+
+Related Information
+              * reset_timing_derate
+
+              * report_timing_derate
+
+              * setAnalysisMode
+
+                           Fri Apr 04 01:25:37 2025   set_timing_derate(25.10)

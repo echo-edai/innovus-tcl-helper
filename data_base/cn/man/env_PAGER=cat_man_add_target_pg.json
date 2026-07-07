@@ -1,0 +1,69 @@
+{
+  "command": "add_target_pg",
+  "is_cmd": true,
+  "summary": "为特定单元或实例创建专用的电源地（PG）连接路径，以解决局部IR压降热点问题，避免过度增加常规电源网格密度。",
+  "description": "该命令用于为特定单元（如高驱动强度的时钟缓冲器）或实例创建专用的电源地（PG）连接路径。在某些情况下，IR压降热点仅出现在特定单元上，或者某些单元的次级PG引脚需要连接到电源网格。add_target_pg命令通过分配一条从顶层低电阻PG走线到这些单元的专用路径，来解决大部分IR压降热点问题，从而为布线保留更多资源。",
+  "usage": "add_target_pg [-help] [-area {<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...}] [-force] [-instance {<list_of_instances>}] -nets {<list_of_nets>} -pin_layer <layer> [-stack_layer_config {<stack_layer_pattern>}] [-stack_layer_config_file <filename>] -target_layer {<layer1 layer2>} [-uda <subclass_string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含各参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定一个或多个区域，只有位于这些区域内的实例才会被连接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "即使连接存在DRC违规，也保留添加的PG路径，并添加一个DRC标记。若不设置此参数，新添加的PG路径将保持DRC干净；如果无法以DRC干净的方式连接到目标层，则添加的PG路径将被删除，引脚保持开路。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instance",
+      "description": "指定要连接的实例列表。注意，只有属于由set_add_target_pg_mode -pins参数定义的单元的实例才会被连接。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要连接的电源/地网络列表。",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-pin_layer",
+      "description": "指定要连接的单元引脚所在的层名。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-stack_layer_config",
+      "description": "定义引脚层和目标层之间中间层上的走线图案。其值格式为{layer1:n1:s1:w1:p1:g1 layer2:n2:s2:w2:p2:g2 ...}，分别指定层名、每组钉扎数量、钉扎宽度、组内间距、组间距离（间距）以及网格对齐方式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stack_layer_config_file",
+      "description": "指定堆叠层配置文件，该文件定义了引脚层和目标层之间中间层上的走线图案。此参数与-stack_layer_config参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-target_layer",
+      "description": "通过指定目标层名来定义一个或两个目标电源/地走线。若指定两个目标层，它们必须是相邻的，软件将连接到这两个相邻目标层上最近的、DRC干净的走线。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-uda",
+      "description": "指定要布线的用户自定义属性子类的名称字符串。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

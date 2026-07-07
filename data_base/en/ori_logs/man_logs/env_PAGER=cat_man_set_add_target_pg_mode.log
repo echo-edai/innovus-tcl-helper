@@ -1,0 +1,189 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_add_target_pg_mode(25.10)                    set_add_target_pg_mode(25.10)
+
+Name
+       set_add_target_pg_mode  -  Sets  global variables for the add_target_pg
+       command
+
+Syntax
+        set_add_target_pg_mode
+
+       [-help]
+
+       [-allow_weak_connect {true | false}]
+
+       [-max_extension_distance <value>]
+
+       [-pins {<cell1>:<pin1> <cell1>:<pin2> <cell2>:<pin1> ...}]
+
+       [-pins_group_distance <value>]
+
+       [-reset]
+
+       [-respect_routes {none | fixed | fixed_and_clock | all}]
+
+       [-share_resource {true | false}]
+
+       Sets global variables for the add_target_pg command.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each set_add_target_pg_mode parameter. For a de-
+              tailed  description  of  the command and all its parameters, use
+              the man command:
+
+              man set_add_target_pg_mode
+
+       -allow_weak_connect {true | false}
+              When this parameter is set to false, the number of wires created
+              on every stack layer need to satisfy the defined count with  DRC
+              clean. Else, the PG pin is left open.
+
+              When  set to true, the count lesser than defined can also be ac-
+              cepted while creating the total count causing DRC.
+
+              Default: false
+
+       -max_extension_distance <value>
+              Specifies the maximum distance that the target PG pin can extend
+              to the target layer. If the distance between the target  PG  pin
+              and  the  candidate  target layer is lesser than or equal to the
+              specified distance, the candidate target is treated as the  real
+              target.
+
+              If the target PG wire cannot be found within -max_extension_dis-
+              tance, the instance is left open. If this parameter is not used,
+              the  software connects the stripe layer to the closest target PG
+              wire with DRC clean, by default. See the figure below for under-
+              standing:
+
+              Default: 2147483647
+
+       -pins {<cell1>:<pin1> <cell1>:<pin2> <cell2>:<pin1> ...}
+              Specifies the cell pins to be connected.
+
+              Default: ""
+
+       -pins_group_distance <value>
+              Specifies the side-to-side distance of the pins to be treated as
+              a group while connecting the target PG pins. The pins  belonging
+              to the same group share the same target PG stripes connection.
+
+              When  this  parameter  is  set  to  its default value, auto, the
+              add_target_pg command uses the default  behavior  of  target  PG
+              generation  to  group  the pins. If this parameter is not speci-
+              fied, the software uses the pitch of metal layer above the  pins
+              layer with same direction (layer_pin+2) as the group distance.
+
+              If  the  pitch of metal layer above the pins layer with the same
+              direction (layer_pin+2) is not defined, the pins  will  be  con-
+              nected separately.
+
+              If  the distance between two pins is lesser than group_distance,
+              they will be treated as one group. See the figure below for  un-
+              derstanding:
+
+              When  pins_group_distance  is not defined, the software uses the
+              pitch of the metal layer above the pins layer with the same  di-
+              rection  (layer_pin+2) as the group distance. See the figure be-
+              low for understanding:
+
+              The following figure presents how the target PG pin's horizontal
+              offset affects the stapling sharing:
+
+              Default: auto
+
+       -reset Resets all or specified parameters to their default values.
+
+       -respect_routes {none | fixed | fixed_and_clock | all}
+              Specifies the route types to respect for DRC check during target
+              PG generation. This parameter always honor all covers  and  PGs,
+              but does not honor the trail routes, Following are the parameter
+              values:
+
+              * none: Specifies that no route types are respected.
+
+              * fixed: Respects fixed regular wires.
+
+              * fixed_and_clock: Respects fixed and routed clocks.
+
+              * all:  Respects  fixed  and routed clocks along with the routed
+                signals.
+
+              For  more  information  on  the  support  of  the   set_add_tar-
+              get_pg_mode  -respect_route  parameter  values with various sta-
+              tuses  of  net,  see  Support  of  set_add_target_pg_mode   -re-
+              spect_route Parameter Values.
+
+              Default: fixed_and_clock
+
+       -share_resource {true | false}
+              When  set  to  true,  the  newly  added  PGs of the intermediate
+              stacked layer can connect to the existing PG wire  of  the  same
+              layers  and  are preferred to be shifted to the track of the ex-
+              isting PG to save the track resource. If there are DRCs  between
+              the  added  PG  and the existing PG after shifting, the added PG
+              will follow the behavior explained below:
+
+              * If the added wire is on different net from the existing PG, it
+                will be shifted again to avoid DRC.
+
+              * If the added wire is on the same net of the  existing  PG,  it
+                will be merged with the existing wire.
+
+              When  set  to false, the stacked layer cannot connect to the ex-
+              isting intermediate layers between the cell PG pin and target PG
+              layer. Additionally, the newly added PG will be shifted  if  its
+              original location causes DRC.
+
+              Default: true
+
+Support of set_add_target_pg_mode -respect_route Parameter Values
+       The  following table presents the support of the set_add_target_pg_mode
+       -respect_route parameter values with various statuses of net:
+
+       ________________________________________________________
+
+       |  Target  PG  Honoring  a   Wire          |    -respect_route   Values
+       |
+
+       |______________________________________________|________|
+
+       |  Net Use  |  Status               |  none     |  fixed    |  fixed_an
+       |  all      |
+
+       |          |                       |           |            |   d_clock
+       |           |
+
+       |__________|___________|___________|___________|________|
+
+       | Yes      |  Yes      |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | Yes      |  Yes      |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | No       |  Yes      |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | Clock    |  No       |  No       |  Yes      |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | Signal   |  No       |  No       |  No       |  Yes      |
+
+       |__________|___________|___________|___________|________|
+
+       | No       |  No       |  No       |  No       |
+
+       |__________|___________|___________|___________|________|
+
+Related Information
+              * add_target_pg
+
+              * get_add_target_pg_mode
+
+                           Fri Apr 04 01:25:37 202s5et_add_target_pg_mode(25.10)

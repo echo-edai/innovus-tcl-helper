@@ -1,0 +1,75 @@
+{
+  "command": "generate_tech_pg_lib",
+  "is_cmd": true,
+  "summary": "动态生成技术电源网格库",
+  "description": "动态生成技术电源网格库。生成的tech-PGV将在会话结束后被删除。如果指定此命令，功耗分析和电源轨分析引擎将自动使用动态生成的tech-PGV。动态生成纯技术PGV的目的是无需跟踪纯技术PGV文件，从而确保纯技术PGV是从正确的Quantus技术文件生成的。纯技术PGV库将在工作目录下生成，并由功耗/电源轨分析引擎动态调用。",
+  "usage": "generate_tech_pg_lib [-help] [-decap_cells <cell_list>] [-default_power_voltage <value>] [-esd_cells <cell_list>] [-filler_cells <cell_list>] [-keep {true | false}] [-lef_layermap <filename>] [-output_dir <dir_name>] [-power_gate_file <filename>] -tech_file filename [-tech_only {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-decap_cells",
+      "description": "指定用于去耦优化的、具有显式去耦电容的单元名称列表。这些单元与穿通单元几乎等效，不同之处在于电源和地网络之间通常有一个有源器件来提供额外的去耦电容。电源网格视图库生成使用此单元列表来确保每个单元都关联一个电容值。如果某个单元没有关联电容，将发出警告信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-default_power_voltage",
+      "description": "指定LEF中存在的电源引脚的电压。默认值为1.2。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_cells",
+      "description": "指定静电放电（ESD）单元列表。您可以使用此参数来表征ESD单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-filler_cells",
+      "description": "列出没有GDS数据的填充单元或穿通单元的名称。这些单元可以在去耦优化期间被去耦电容单元替换。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keep",
+      "description": "指定生成的库在会话结束后应保留。默认值为false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lef_layermap",
+      "description": "指定一个提供LEF和技术文件之间层映射的文件。此参数是可选的。库生成会自动使用技术LEF（包含所有层和通孔定义）和Quantus Tech（提取库）文件生成层映射文件，因此，LEF层映射文件不是强制输入。自动生成的层映射文件位于PGV临时目录中。如果您想提供自己的层映射文件，可以指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_dir",
+      "description": "指定生成纯技术电源网格库的输出目录名称。默认为当前工作目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_gate_file",
+      "description": "指定一个文件，其中包含技术库生成表征电源门控单元所需的信息。指定单元名称、非开关电源引脚、开关电源引脚、导通电阻（欧姆）、饱和电流（毫安）和漏电流（毫安）。文件格式为：<cell> <supply> <switched> <Ron> <Idsat> <Ileak>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tech_file",
+      "description": "必需参数。指定用于提取的技术文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-tech_only",
+      "description": "指定生成不包含任何单元的纯技术PGV。默认值为false。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

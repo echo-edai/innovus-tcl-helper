@@ -1,0 +1,57 @@
+{
+  "command": "get_ccopt_dag_traversal",
+  "is_cmd": true,
+  "summary": "遍历时钟树网络的有向无环图（DAG），从指定引脚开始，沿其扇入或扇出方向进行遍历，并返回结果引脚列表。",
+  "description": "此命令用于遍历时钟树网络的有向无环图（DAG）。它从用户指定的引脚（或实例的引脚）开始，沿着时钟网络的扇入（向时钟源方向）或扇出（向时钟末端方向）进行遍历，最终返回遍历过程中遇到的所有引脚列表。该命令允许在遍历过程中跳过特定类型的实例节点（如缓冲器、反相器、时钟门控单元等），并且可以将遍历范围限制在指定的时钟偏斜组（skew group）内。时钟树网络被建模为有向无环图，以处理时钟树之间以及偏斜组之间的重新汇聚和重叠问题。",
+  "usage": "get_ccopt_dag_traversal [-help] [-fanin] [-fanout] [-of_insts instances] [-of_pins pins] [-skew_group skew_group_name] [-skip buffers inverters drivers clock_gates logics generators generated_roots all] [-transitive]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令参数的简要描述，包括类型和默认值信息。要获取命令及其所有参数的详细说明，请使用 man 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fanin",
+      "description": "从指定引脚开始，向其扇入方向（即朝向时钟源的方向）遍历，并返回遍历到的输出时钟网络引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fanout",
+      "description": "从指定引脚开始，向其扇出方向（即朝向时钟末端的方向）遍历，并返回遍历到的输入时钟网络引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-of_insts",
+      "description": "指定一个实例列表，作为遍历的起始点。如果指定了 -fanin，则从这些实例的输入引脚开始；如果指定了 -fanout，则从这些实例的输出引脚开始。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-of_pins",
+      "description": "指定一个引脚列表，作为遍历的起始点。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-skew_group",
+      "description": "如果指定，则将遍历限制在指定名称的时钟偏斜组内的实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip",
+      "description": "指定在遍历过程中应跳过并直接访问其扇入/扇出的节点类型。可以指定以下一个或多个类型：buffers（缓冲器）、inverters（反相器）、drivers（驱动器，等效于 buffers 和 inverters）、clock_gates（时钟门控单元）、logics（逻辑单元）、generators（生成器）、generated_roots（生成的根节点）、all（全部，等效于列出所有上述类型，也等效于 -transitive 选项）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-transitive",
+      "description": "跳过所有类型的节点，直接获取末端（如果使用 -fanout）或时钟根节点（如果使用 -fanin）。此选项等效于 -skip all。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

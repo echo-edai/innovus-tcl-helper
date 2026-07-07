@@ -1,0 +1,126 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ccopt_add_exclusion_drivers(25.10)          ccopt_add_exclusion_drivers(25.10)
+
+Name
+       ccopt_add_exclusion_drivers - Removes the excluded sinks from the clock
+       trees by adding exclusion drivers above these sinks
+
+Syntax
+       ccopt_add_exclusion_drivers
+
+       [-help]
+
+       [-lib_cell list_library_cells]
+
+       Removes  the  excluded  sinks  from the clock trees by adding exclusion
+       drivers above these sinks. Use this  command  after  running  the  cre-
+       ate_ccopt_clock_tree_spec  command.  Alternatively,  you  can  use  the
+       add_exclusion_drivers property to remove the  exclude  sinks  from  the
+       clock  tree.  It is recommended that you use one of the two, either the
+       command or the property, to exclude sinks from the clock trees.
+
+       For details of this property, see the "Related Properties" section  be-
+       low.
+
+       The names of the newly added drivers start with `CTS_cse', so that they
+       can  be  easily identified. This functionality is useful because it al-
+       lows you to fix hold violations on clock nets.  GigaOpt  does  not  fix
+       hold violations on clock nets. For example, if a pin, D, of a flop is a
+       clock  sink then the net attached to the D pin is a clock net. Any hold
+       violations will not be fixed by GigaOpt. However, by adding  an  exclu-
+       sion  buffer  above  the D pin, the net between the buffer's output pin
+       and the D pin of the flop becomes a non-clock net and any  hold  viola-
+       tions  will  be fixed by GigaOpt. Therefore, this new functionality al-
+       lows previously unfixable hold violations to be fixed.
+
+       You can use the following command to view the  exclusion  drivers  that
+       have been added by CCOpt:
+
+       get_ccopt_clock_tree_sinks *CTS_cse*
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each ccopt_add_exclusion_drivers parameter. For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command:  man ccopt_add_exclusion_drivers.
+
+       -lib_cell
+              Specifies a particular buffer or inverter to use as an exclusion
+              driver. If this parameter is not specified or if  the  property,
+              add_exclusion_drivers,  is  used  to  enable this functionality,
+              then CCOpt will choose small area  drivers  from  the  CTS  cell
+              lists  to  use as exclusion drivers. CCOpt will either add pairs
+              of inverters, or single  buffers  as  exclusion  drivers.  While
+              choosing  the cell to use, CCOpt will choose either inverters or
+              buffers depending on the value specified using the use_inverters
+              property. This property specifies whether clock  tree  synthesis
+              should use inverters or buffers when balancing the clock trees.
+
+              For  more  information about the use_inverters property, use the
+              following command:
+
+              get_ccopt_property -help use_inverters
+
+Related Properties
+              * add_exclusion_drivers
+
+                This is a user-settable property.  Setting  this  property  to
+                true  before  running  ccopt_designor  ccopt_design  -cts will
+                cause CCOpt to add extra drivers above exclude pins to  remove
+                them from the clock tree.
+
+                Normally  an exclusion buffer or a pair of inverters are added
+                above an exclude sink to remove them from the  clock  tree.  A
+                new clock sink will be created on the input to the newly added
+                driver.  If  there is a suitable pre-existing driver above the
+                exclude pin, then no extra driver will  be  added  -  the  new
+                clock  sink  will  be created on the input to the pre-existing
+                driver.
+
+              * effective_sink_type
+
+                This is a read-only property.  It  indicates  how  CCOpt  will
+                treat  a given pin, taking into account any implicit_sink_type
+                and sink_type settings.
+
+              * implicit_sink_type
+
+                This is a read-only property. It Indicates the  type  of  sink
+                that CCOpt classified this pin as. The possible values are ex-
+                clude,  ignore,  stop,  and empty string "". Instances of cell
+                pins that are data pins, scan input pins, or scan enable  pins
+                will  have  implicit_sink_type=exclude. This means that unless
+                there is an explicit sink_type set for that pin, either ignore
+                or stop, they will be removed from the clock tree. This  prop-
+                erty  takes  into account the settings done using the sink_tpe
+                property. Setting a non-default value for the sink_type  prop-
+                erty will override the implicit_sink_type property.
+
+              * sink_type
+
+                This  is  a  user-settable  property. It specifies the type of
+                sink that the pin represents. Valid values are auto,  through,
+                stop,  ignore,  min, and exclude. To exclude a clock sink that
+                is not already implicit_exclude, you can set this property  to
+                exclude.  This will change the effective_sink_type property to
+                exclude, and the sink will be removed from the clock tree.
+
+                For more information about the above properties, use the  fol-
+                lowing command:
+
+                get_ccopt_property -help <property_name>
+
+Related Information
+              * ccopt_design
+
+              * clock_opt_design
+
+              * create_ccopt_clock_tree_spec
+
+              * get_ccopt_clock_tree_sinks
+
+              * The following topic in the Innovus User Guide
+
+                * Shared Clock and Data Concerns in CTS
+
+                           Fri Apr 04 01:25:3c7co2p0t2_5add_exclusion_drivers(25.10)

@@ -1,0 +1,161 @@
+Usage: add_via_definition [-help] {[-via_rule <via_def_rule> | -cut_pattern <viaDef>] [-name <name>]} [[[-via_rule <via_def_rule> [-cut_size {x y}]]| -cut_pattern <viaDef>] [[-cut_spacing {x y}] [-top_enclosure {x y}] [-bottom_enclosure {x y}] [-top_offset {x y}] [-bottom_offset {x y}] [-row_col {x y}] [-origin {x y}] [-pattern <pattern>]]] [-name <name> {-cut_layer <layer> -cut_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}} {[-top_layer <layer>] {-top_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} | -top_polygon {{x1 y1} {x2 y2}...}}} {[-bottom_layer <layer>] {-bottom_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} | -bottom_polygon {{x1 y1} {x2 y2}...}}}] [[[-via_rule <via_def_rule>] [-cut_size {x y}] [-cut_spacing {x y}] [-top_enclosure {x y}] [-bottom_enclosure {x y}] [-top_offset {x y}] [-bottom_offset {x y}] [-row_col {x y}] [-origin {x y}] [-pattern <pattern>]] | [[-cut_layer <layer>] [-cut_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}] [-top_layer <layer>] [-top_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}] [-top_polygon {{x1 y1} {x2 y2}...}] [-bottom_layer <layer>] [-bottom_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}] [-bottom_polygon {{x1 y1} {x2 y2}...}]]] [-cut_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} [-cut_masks <int+>]] [-bottom_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} [-bottom_layer_masks <int+>]] [-top_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} [-top_layer_masks <int+>]] [-via_rule <via_def_rule> | [[-cut_masks <int+>] [-bottom_layer_masks <int+>] [-top_layer_masks <int+>]]] [-via_rule <via_def_rule> ]
+
+-help                                 # Prints out the command usage
+-bottom_enclosure {x y}               # Requires -via_rule or -cut_pattern
+                                      # option for a parameterized via.
+                                      # Specifies the bottom layer enclosure
+                                      # around the cut array. The enclosure
+                                      # measures the distance from the
+                                      # cut-array-edge to the metal-edge that
+                                      # encloses the cut-array. Values are
+                                      # specified in microns. Default = derived
+                                      # from -via_rule. (point, optional)
+-bottom_layer <layer>                 # Requires -name option for a fixed via.
+                                      # Specifies the name or pointer of the
+                                      # bottom layer. If not specified the
+                                      # first layer below the -cut_layer will
+                                      # be assumed. ((layer), optional)
+-bottom_layer_masks <int+>            # Specifies the masks for the rects on
+                                      # the bottom layer for a via_def. The
+                                      # mask values and rects must be in the
+                                      # same order and there must be the same
+                                      # number of mask values as rects. The
+                                      # bottom layer mask cannot be specified
+                                      # for parameterized vias. (string, optional)
+-bottom_offset {x y}                  # Requires -via_rule or -cut_pattern
+                                      # option for a parameterized via.
+                                      # Specifies the x,y offset for bottom
+                                      # layer in the via. After the non-shifted
+                                      # via is computed, the bottom layer
+                                      # rectangle is offset by adding the x,y
+                                      # to the -origin offset. Values are
+                                      # specified in microns. Default = {0 0}.
+                                      # (point, optional)
+-bottom_polygon {{x1 y1} {x2 y2}...}  # Requires -name option for a fixed via.
+                                      # The polygon to create on the bottom
+                                      # layer. Values are specified in microns.
+                                      # (point_list, optional)
+-bottom_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}
+                                      # Requires -name option for a fixed via.
+                                      # The list of rectangles to create on the
+                                      # bottom layer. Values are specified in
+                                      # microns. (box_list, optional)
+-cut_layer <layer>                    # Requires -name option for a fixed via.
+                                      # Specifies the name or pointer of the
+                                      # cut layer. The top/bottom layers of the
+                                      # via will be derived from the routing
+                                      # layers above/below the cut layer or
+                                      # specified with
+                                      # -top_layer/-bottom_layer.
+                                      # ((layer), optional)
+-cut_masks <int+>                     # Specifies the masks for the rects on
+                                      # the cut layer for a via_def. The mask
+                                      # values and rects must be in the same
+                                      # order and there must be the same number
+                                      # of mask values as rects.
+                                      # A mask pattern cannot be specified for
+                                      # parameterized via cuts. For
+                                      # parameterized via cuts, only three
+                                      # types of mask color patterns are
+                                      # allowed, checker-board (the default),
+                                      # alternating columns, and alternating
+                                      # rows using the LEF VIA PATTERN
+                                      # statement. Refer to the LEF VIA docs
+                                      # for more details. (string, optional)
+-cut_pattern <viaDef>                 # Specifies a via, new via's cut rects
+                                      # are parameterized from it.
+                                      # ((viaDef), optional)
+-cut_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}
+                                      # Requires -name option for a fixed via.
+                                      # The list of rectangles to create on the
+                                      # cut layer. Values are specified in
+                                      # microns. (box_list, optional)
+-cut_size {x y}                       # Requires -via_rule option for a
+                                      # parameterized via. Specifies the size
+                                      # (x=width, y=height) of the cut
+                                      # rectangles. Values are specified in
+                                      # microns and must be greater than 0.
+                                      # Default = derived from -via_rule.
+                                      # (point, optional)
+-cut_spacing {x y}                    # Requires -via_rule or -cut_pattern
+                                      # option. The spacing between the cuts.
+                                      # The spacing is measured from cut-edge
+                                      # to the next cut-edge. Values are
+                                      # specified in microns and must be
+                                      # greater than 0. Default = derived from
+                                      # -via_rule. (point, optional)
+-name <name>                          # Specifies the via name.  The name
+                                      # cannot collide with any existing
+                                      # via-master names. (string, optional)
+-origin {x y}                         # Requires -via_rule option for
+                                      # -cut_pattern for a parameterized via..
+                                      # The x,y offset for all shapes in the
+                                      # via. By default the 0,0 origin of the
+                                      # via is the center of the cut-array and
+                                      # the center of the enclosing metal
+                                      # rectangles. After the non-shifted via
+                                      # is computed, all the cut and metal
+                                      # rectangles are offset by adding these
+                                      # values. size (x=width, y=height) of the
+                                      # cut rectangles. Values are specified in
+                                      # microns. Default = {0 0} (point, optional)
+-pattern <pattern>                    # Requires -via_rule option for a
+                                      # parameterized via. Specified the cut
+                                      # pattern encoded as an ASCII string.
+                                      # This parameter is only required when
+                                      # some of the cuts are missing from the
+                                      # array of cuts. Refer to the LEF/DEF
+                                      # Reference DEF VIA syntax for examples.
+                                      # (string, optional)
+-row_col {x y}                        # Requires -via_rule or -cut_pattern
+                                      # option for a parameterized via. The
+                                      # number of cut rows and columns to
+                                      # create. Values must be greater than 0.
+                                      # Default = {1 1} (integer, optional)
+-top_enclosure {x y}                  # Requires -via_rule or -cut_pattern
+                                      # option for a parameterized via. The top
+                                      # layer enclosure around the cut array.
+                                      # The enclosure measures the distance
+                                      # from the cut-array-edge to the
+                                      # metal-edge that encloses the cut-array.
+                                      # Values are specified in microns.Default
+                                      # = derived from -via_rule.
+                                      # (point, optional)
+-top_layer <layer>                    # Requires -name option for a fixed via.
+                                      # Specifies the name or pointer of the
+                                      # top layer. If not specified the first
+                                      # layer above the -cut_layer will be
+                                      # assumed. ((layer), optional)
+-top_layer_masks <int+>               # Specifies the masks for the rects on
+                                      # the top layer for a via_def. The mask
+                                      # values and rects must be in the same
+                                      # order and there must be the same number
+                                      # of mask values as rects. The top layer
+                                      # mask cannot be specified for
+                                      # parameterized vias. (string, optional)
+-top_offset {x y}                     # Requires -via_rule or -cut_pattern
+                                      # option for a parameterized via. The x,y
+                                      # offset for top layer in the via. After
+                                      # the non-shifted via is computed, the
+                                      # top layer rectangle is offset by adding
+                                      # the x,y to the -origin offset. Values
+                                      # are specified in microns. Default = {0
+                                      # 0} (point, optional)
+-top_polygon {{x1 y1} {x2 y2}...}     # Requires -name option for a fixed via.
+                                      # The polygon to create on the top layer.
+                                      # Values are specified in microns.
+                                      # (point_list, optional)
+-top_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}
+                                      # Requires -name option for a fixed via.
+                                      # The list of rectangles to create on the
+                                      # top layer. Values are specified in
+                                      # microns. (box_list, optional)
+-via_rule <via_def_rule>              # The name or pointer of the via-rule
+                                      # (from LEF VIARULE GENERATE or
+                                      # OpenAccess standardViaDef) to use for
+                                      # the via master being created. Layers
+                                      # and default values are derived from the
+                                      # specified <via_rule>. When using
+                                      # -via_rule, a parameterized via master
+                                      # will be created.
+                                      # ((viaRuleGenerate), optional)

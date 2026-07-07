@@ -1,0 +1,81 @@
+{
+  "command": "dbQuery",
+  "is_cmd": true,
+  "summary": "Database query.",
+  "description": "Database query.",
+  "usage": "dbQuery [-help] [-bbox_overlap] [-d] [-objType {bump busGuide inst instAllShapes instTerm term marker net pBlkg pWire pgInstTerm rBlkg regular resizeBlkg row special sViaInst sWire viaInst wire whatIfWire whatIfVia pinShape guiRect guiLine guiPoly partition guiText}] [-threads] { [-areas {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}] [-polygons {x1 y1 x2 y2 ...}] } [-abut_only | -overlap_only | -enclosed_only ] [-layers <layer>+ [-strict_via_inst_layer_check ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "Prints out the command usage",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-abut_only",
+      "description": "Only returns the objects that abut the search area. No part of the object polygon overlaps the search area, but at least one point or line of intersection occurs between the object polygon and the search area. A single point of abutment (e.g. a corner or crossing edges) is also considered abutted. When multiple areas are specified, the object will be returned as long as it abuts one of the search areas.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-areas",
+      "description": "{{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...} Specifies the search areas, where ll = lower left, ur = upper right. By default, all objects overlapping or abutting this area are returned, unless -abut_only, -enclosed_only, or -overlap_only is specified. The polygon shape of the object is used for the overlap check. The units are in microns (unless -d is given). The input can be in either a single rect {llx1 lly1 urx1 ury1}, or a list of rects {{llx1 lly1 urx1 ury1} {llx2 lly2 urx2 ury2}}. A rect using \"two points\" format like {{llx1 lly1} {urx1 ury1}} is also allowed. But input format like {llx1 lly1 urx1 ury1 llx2 lly2 urx2 ury2} or {{llx1 lly1} {urx1 ury1} {llx2 lly2} {urx2 ury2}} is illegal and not allowed. The resulting area to check for overlap can be a rectangle, line, or a point. One object intersects multiple search areas will only be returned once.",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-bbox_overlap",
+      "description": "Uses bounding-box of the object rather than polygon shape of the object for overlap check.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "User specified values and return values are in database units: default is um",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enclosed_only",
+      "description": "Only returns the objects that are completely enclosed inside the search area. The object polygon is fully enclosed by the search area. No part of the object polygon sticks outside the search area, although it may abut the search area edges. When multiple areas are specified, the object will be returned as long as it is enclosed in one of the search areas.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layers",
+      "description": "Only returns the objects on the specified layers. The option only applies to object types: pinShape, pWire, rBlkg, regular, special, sViaInst, sWire, viaInst, wire, whatIfWire, and whatIfVia. A viaInst, sViaInst, and whatIfVia object will be returned if any of the via's bottom layer, cut layer, or top layer matches one of the specified layers. Other object types ignore this option and will always be returned. ((layer)+, optional)",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-objType",
+      "description": "{bump busGuide inst instAllShapes instTerm term marker net pBlkg pWire pgInstTerm rBlkg regular resizeBlkg row special sViaInst sWire viaInst wire whatIfWire whatIfVia pinShape guiRect guiLine guiPoly partition guiText} List of object types to return. Legal values are: {bump busGuide inst instAllShapes instTerm term marker net pBlkg pWire pgInstTerm rBlkg regular resizeBlkg row special sViaInst sWire viaInst wire whatIfWire whatIfVia partition}, (special = union of sWire and sViaInst), (regular = union of wire and viaInst), (pBlkg = Placement Blockage), (rBlkg = Routing Blockage), (resizeBlkg = Size Blockage), (guiRect = GUI Rect), (guiLine = GUI Line), (guiPoly = GUI Polygon), (guiText = GUI Text) default: inst",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-overlap_only",
+      "description": "Only returns objects that partially overlap with the search area. Some part of the object polygon overlaps the search area, and some part of the object polygon is outside the search area. A single point of contact is not considered an overlap. When multiple areas are specified, the object will be returned as long as it overlaps with one of the search areas.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-polygons",
+      "description": "Specifies the polygon search areas. By default, all objects overlapping or abutting this area are returned, unless -abut_only, -enclosed_only, or -overlap_only is specified. The units are in microns (unless -d is given). The format can be in either like {{x11 y11 x12 y12 x13 y13 ...} {x21 y21 x22 y22 x23 y23 ...} ...} or like {{{x11 y11} {x12 y12} {x13 y13} ...} {{x21 y21} {x22 y22} {x23 y23} ...} ...}. The polygon must be well-formed, and not have zero area, and not have crossing edges. One object intersects multiple polygon search areas will only be returned once.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-strict_via_inst_layer_check",
+      "description": "Returns only those objects on the specified layer which matches one of the via's bottom layer, cut layer, top layer. The objects of the via but on unmatched layers will not be returned. This option only works for sViaInst, viaInst.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-threads",
+      "description": "Query objects in mulitple threads mode, it's only suggested when it costs too much time if multiple areas are specified. It doesn't work in multiple threads mode when querying special, sViaInst, sWire.",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

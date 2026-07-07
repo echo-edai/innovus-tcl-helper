@@ -1,0 +1,240 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+pinAlignment(25.10)                                        pinAlignment(25.10)
+
+Name
+       pinAlignment - Aligns pins between blocks on their facing edges
+
+Syntax
+       pinAlignment
+
+       [-help]
+
+       [-ignore_ref_pin_shape]
+
+       [-markFixed]
+
+       [-moveFixedPin]
+
+       [-keepLayer | -newLayer <layer>]
+
+       [-legalizePin ]
+
+       [-noSnap]
+
+       [-pinNames <pinList>]
+
+       [-ptnInst <ptnName>]
+
+       [-refObj <refObjName>]
+
+       [-refType {partition_pin hinst}]
+
+       [-verbose]
+
+       Aligns pins between blocks on their facing edges. By default, this com-
+       mand  snaps  pins  to  the routing grid. You can use this command after
+       partitioning floorplanning.
+
+       Notes:
+
+              * Specified pins will not be aligned if they  do  not  have  the
+                reference connections on the reference block, or if the refer-
+                ence pins are not assigned prior to running this command.
+
+              * If this command is run on a blackbox that has one or more pins
+                with a single LEF port but with multiple shapes within the LEF
+                port, the command will remove these multiple shapes and create
+                a  single shape. If this command is run on a blackbox that has
+                one or more pins with multiple LEF ports, the first  LEF  port
+                will  be  processed  as  per the command and the remaining LEF
+                ports will remain unchanged.
+
+              * This command supports Multi Level Hierarchical Flow.
+
+       The pin alignment priority is as follows:
+
+              * If you specify the -refObj and the -ptnInst parameters but not
+                the -pinNames parameter, the pinAlignment command  aligns  all
+                pins  of  specified instances that are connected to the refer-
+                enced object.
+
+              * If you specify the -refObj parameter but not the -ptnInst  and
+                the  -pinNames  parameter, the pinAlignment command aligns all
+                pins of all partitions that are connected  to  the  referenced
+                object.
+
+              * If  you specify the -refObj, -ptnInst, and the -pinNames para-
+                meters, the pinAlignment command tries to align  all  possible
+                pins that can be aligned.
+
+              * If you do not specify the -refObj parameter, the following or-
+                der  of priority will be used for aligning partition pins that
+                have multiple connections:
+
+                * Hard macro pins
+
+                * I/O pads or pins
+
+                * Partition pins
+
+                * Standard cell pins
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each pinAlignment parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man pinAlignment
+
+       -ignore_ref_pin_shape
+              Specifies  that  the  aligned  pin will ignore matching of shape
+              with the reference pin.
+
+              Data_type: bool, optional
+
+       -keepLayer |
+              Specifies whether to keep the current pin layer.
+
+              Default: If you do not specify this option, the  new  pin  layer
+              will be the same as the referenced layer to reduce wire routing.
+
+              Data_type: bool, optional
+
+       -legalizePin
+              Specifies  that  the legalizePincommand should run automatically
+              after the pinAlignment command.
+
+              Data_type: bool, optional
+
+       -markFixed
+              Specifies that the pins that are moved by this command will have
+              a Fixed status.
+
+              Default: By default, the pins  moved  by  this  command  have  a
+              Placed status.
+
+              Data_type: bool, optional
+
+       -moveFixedPin
+              Specifies that the pins with a Fixed status can also be moved.
+
+              Data_type: bool, optional
+
+       -newLayer <layer>
+              Specifies a new pin layer.
+
+              Note: Layers can be specified using the LEF layer names or layer
+              ID numbers.
+
+              Data_type: string, optional
+
+       -noSnap
+              Disables pins from being snapped to the routing grid.
+
+              Data_type: bool, optional
+
+       -pinNames <pinList>
+              Specifies  the  pin(s) to be aligned between the facing edges of
+              the target block and reference block. You can use wildcards (*?)
+              with this parameter.  If you specify more than one pin, you must
+              enclose them in curly braces.
+
+              Data_type: string, optional
+
+       -ptnInst <ptnName>
+              Specifies the target instance where its pins will be aligned  to
+              the pins of the specified instance.
+
+              Data_type: string, optional
+
+       -refObj <refObjectName>
+              Specifies  the  reference object where the specified pins of the
+              target block will be aligned to the pins of  the  reference  ob-
+              ject.
+
+              The  reference object can be a standard cell, an I/O pin, an I/O
+              pad, a macro, or all I/O pins in the design  by  specifying  the
+              top  cell  as the reference object. Now the pinAlignment command
+              can also take uncommitted ptn as the reference object.
+
+              Note: You can also use wildcard (* or ?) for specifying the ref-
+              erence object names.
+
+              Data_type: string, optional
+
+       -refType {partition_pin hinst}
+              Specifies the type of reference objects  to  consider.  You  can
+              specify partition pins or hinsts.
+
+              Data_type: enum, optional
+
+       -verbose
+              Generates intermediate messages.
+
+              Data_type: bool, optional
+
+Examples
+              * The  following command aligns A0 and A1 pins of p1 to the ref-
+                erence pins of blockA:
+
+                pinAlignment -refObj blockA -ptnInst p1 -pinNames {A0 A1}
+
+              * Assume the following netlist:
+
+                module testcase (in1, in2, in3);
+
+                input in1, in2, in3;
+
+                wire net;
+
+                a i_a(.in1(in1), .in2(in2), .in3(in3), .out1(net));
+
+                BUFX1 i0(.A(net));
+
+                endmodule
+
+                module a(in1, in2, in3, out1);
+
+                input in1, in2, in3;
+
+                output out1;
+
+                endmodule
+
+                The following command aligns pins in1, in2, and in3 on  parti-
+                tion i_a:
+
+                pinAlignment -refObj testcase -ptnInst i_a
+
+       Moving  pin  [in1]  of partition [a] connected to pin [in1] of top cell
+       [testcase] to ALIGNED location ( 0.000 21.000 Metal3).
+
+        Moving pin [in2] of partition [a] connected to pin [in2] of  top  cell
+       [testcase] to ALIGNED location ( 0.000 38.920 Metal5).
+
+        Moving  pin  [in3] of partition [a] connected to pin [in3] of top cell
+       [testcase] to ALIGNED location ( 0.000 57.960 Metal3).
+
+        Aligned 3 pin(s) of the partition [a] successfully.
+
+       Note: Only 3 of the 4 partition pins are moved because pin out1 is con-
+       nected to a nearby instance rather than a top-level IO pin.
+
+Related Information
+              * assignIoPins
+
+              * assignPtnPin
+
+              * legalizePin
+
+              * checkPinAssignment
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Validating Pin Placement Results
+
+                * Aligning Partition Pins
+
+                           Fri Apr 04 01:25:37 2025        pinAlignment(25.10)

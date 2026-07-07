@@ -1,0 +1,449 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addRing(25.10)                                                  addRing(25.10)
+
+Name
+       addRing  - Creates rings for specified nets around the core boundary or
+       selected blocks and groups of core rows
+
+Syntax
+       addRing
+
+       [-help]
+
+       [-around {each_block each_reef  power_domain  default_power_domain  se-
+       lected cluster shared_cluster user_defined}]
+
+       [-center {0 | 1}]
+
+       [-exclude_selected {0 | 1}]
+
+       [-extend_corner {tl tr bl br lt lb rt rb}]
+
+       [-follow {core io}]
+
+       [-jog_distance <real_value>]
+
+       {-nets <name-or-value>}
+
+       [-offset_adjustment {automatic fixed}][-rectangle {0 | 1}]
+
+       [-skip_side {top | bottom | left | right}]
+
+       [-snap_wire_center_to_grid {None Grid Half_Grid Either}]
+
+       [-threshold {value | auto}]
+
+       [-type {core_rings block_rings}]
+
+       [-uda <subclass_string>]
+
+       [-use_interleaving_wire_group {0 | 1}]
+
+       [-use_wire_group {0 | 1}]
+
+       [-use_wire_group_bits <value>]
+
+       [-use_wire_group_reinforcement {0 | 1}]
+
+       [-use_wire_group_reinforcement_group_via {0 | 1}]
+
+       [-use_wire_group_reinforcement_spacing_width {spacing width}]
+
+       [-user_defined_region {x1 y1 x2 y2 ...}]
+
+       {-layer  {layer  |  {top  top_layer bottom bottom_layer left left_layer
+       right right_layer}} } {-width  {value  |  {top  top_width  bottom  bot-
+       tom_width left left_width right right_width}} } {-spacing {value | {top
+       top_spacing  bottom  bottom_spacing left left_spacing right right_spac-
+       ing}} }
+
+       [-offset {value | {top top_offset bottom bottom_offset left left_offset
+       right right_offset}}]
+
+       Creates rings for specified nets around the core boundary  or  selected
+       blocks and groups of core rows. Use this command after creating an ini-
+       tial floorplan.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each addRing parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man addRing
+
+       -around
+              Specifies the objects around which to create rings. This parame-
+              ter is used in conjunction with the -type parameter. Specify one
+              of the following:
+
+              * each_block|each_reef|power_domain:  Creates  rings around each
+                power domain or around each fence that surrounds a soft  block
+                in  the design. This option can only be used if you also spec-
+                ify -type block_rings.
+
+              * default_power_domain: Generates ring around  a  default  power
+                domain.
+
+              * selected|cluster|shared_cluster:  Creates rings around all se-
+                lected blocks with shared edges residing in the middle of  the
+                common  areas between adjacent blocks. This option can only be
+                used if you also specify -type block_rings.
+
+              * user_defined: Creates rings around user-defined blocks.
+
+       -center {0 | 1}
+              Specifies whether to center the core rings between the I/O  pads
+              and core boundaries. If you do not specify this parameter with a
+              value of 1, you must specify the parameter -offset {value | {top
+              top_offset   bottom   bottom_offset   left   left_offset   right
+              right_offset}.
+
+              Default: 0
+
+       -exclude_selected {0 | 1}
+              Specifies whether the core ring should be created  so  that  se-
+              lected  objects  (blocks  and  power  domains)  are not included
+              within its boundary.
+
+              Default: 0
+
+       -extend_corner {[tl] [tr] [bl] [bt] [lt] [lb] [rt] [rb]}
+              Extends the specified segment of the ring to the  specified  di-
+              rection. Following are the parameter values:
+
+              *
+
+                bl:  Extends  the bottom segment of the ring to the left until
+                encountering a target.
+
+              *
+
+                br: Extends the bottom segment of the ring to the right  until
+                encountering a target.
+
+              *
+
+                lb:  Extends  the left segment of the ring to the bottom until
+                encountering a target.
+
+              *
+
+                lt: Extends the left segment of the ring to the top until  en-
+                countering a target.
+
+              *
+
+                rb:  Extends the right segment of the ring to the bottom until
+                encountering a target.
+
+              *
+
+                rt: Extends the right segment of the ring to the top until en-
+                countering a target.
+
+              *
+
+                tl: Extends the top segment of the ring to the left until  en-
+                countering a target.
+
+              *
+
+                tr: Extends the top segment of the ring to the right until en-
+                countering a target.
+
+       -follow {core | io}
+              Specifies  whether core rings are placed along the core boundary
+              or the I/O boundary. This parameter is used only with the  -type
+              core_rings parameter.
+
+              Default:  core
+
+       -jog_distance <value>
+              Specifies the least amount of jog allowed (to follow the contour
+              of the referenced object) before a jog is removed. This value is
+              in  micrometers.  If the ring would need to jog a distance equal
+              to or less than this value in order to follow the contour of the
+              object, the ring will not jog.
+
+              Default: If you do not specify this parameter, the jog  distance
+              value  is automatically calculated based on the worst spacing in
+              the technology file.
+
+       -layer {layer | {top top_layer bottom bottom_layer left left_layer
+       right right_layer}}
+              Can now be used to replace old options:
+
+              -layer_top / - layer_bottom / - layer_left /
+
+              -layer_right
+
+              -layer metal7 means all four sides of the ring  will  use  layer
+              metal7.
+
+              Example:
+
+              * -layer  metal7  :  all  four  sides of the ring will use layer
+                metal7.
+
+              *
+
+                -layer {top metal7 bottom metal7 left  metal8  right  metal8}:
+                top  and  bottom  ring wires will be generated on metal7, left
+                and right ring wires will be on metal8.
+
+              The following types of formulas are supported:
+
+              *
+
+                Lefname
+
+              *
+
+                Metal layer number
+
+              Example:
+
+               If Metal2 is named by `MET2' in LEF file, then you can use
+
+              *
+
+                MET2
+
+              *
+
+                2
+
+              to identify metal2.
+
+       -nets <list_of_nets>
+              Specifies the names of the nets for which power rings are to  be
+              created.  You  must  enclose  the list of net names within curly
+              braces.
+
+       -offset_adjustment <automatic> | <fixed>
+              Specifies whether the offset is automatically adjusted when  you
+              change the width or spacing values.
+
+              Default: automatic
+
+       -offset {value | {top top_offset bottom bottom_offset left left_offset
+       right right_offset}}
+              Can now be used to replace old options:
+
+              -offset_top / -offset_bottom / -offset_left /
+
+              -offset_right
+
+              -offset 5 means all four sides of the ring will use 5um offset.
+
+              Example:
+
+              * -offset  5:  5  means  all four sides of the ring will use 5um
+                offset. (existing)
+
+              * -offset {top 5 bottom 6 left 7 right 8}: top ring  wires  will
+                use  5um  offset, bottom ring wires will use 6 um offset, left
+                ring wires will use 7 um offset, right ring wires will  use  8
+                um offset.
+
+       -rectangle {0 | 1}
+              If set to 1, creates rectangular rings only.
+
+              Default:  If you do not specify this parameter or if you specify
+              it with a value of 0, the creation of rectilinear rings is  per-
+              mitted.
+
+       -skip_side {top | bottom | left | right}
+              Specifies  the  side  to  be skipped from adding or creating the
+              ring.
+
+       -snap_wire_center_to_grid {<None> | <Grid> | <Half_Grid> | <Either>}
+              Controls the snapping of the center of the rings. If you do  not
+              specify  this  parameter,  rings  are not snapped to the routing
+              grid. Specify one of the following values:
+
+              * None: Does no snapping of the wires.
+
+              * Grid:Snaps the centers of the wires to the routing grid of the
+                same layer as the wire.
+
+              * Half_Grid:Snaps the centers of the wires to  the  half-routing
+                grid.  The half-routing grid is a virtual grid with the tracks
+                at the center of every two  adjacent  tracks  of  the  routing
+                grid.
+
+              * Either:Snaps  the  centers  of  the wires to the closer of the
+                routing grid or half-grid track.
+
+       -spacing <spacing>
+              Can now be used to replace old options:
+
+              -spacing _top / -spacing _bottom /  -spacing  _left  /  -spacing
+              _right
+
+              -spacing 1 means all four sides of the ring will use 1um for the
+              spacing.
+
+              Example:
+
+              * -spacing  1  : all four sides of the ring will use 1um for the
+                spacing. (existing)
+
+              * -spacing {top 1 bottom 1 left 2 right 2} : top ring wires will
+                use 1um for the spacing, bottom ring wires will use 1  um  for
+                the  spacing,  left  ring wires will use 2 um for the spacing,
+                right ring wires will use 2 um for the spacing.
+
+       -threshold {<value>| <auto>}
+
+       * value: Specifies the least amount of  spacing  allowed  between  ring
+         segments of adjacent blocks before the rings are merged. If the spac-
+         ing  is  less  than  this  value,  the  common sides of the rings are
+         merged. Units in micrometers.
+
+       * auto: Specifies that the Innovus will automatically  determine  where
+         to merge the wires being created with the prerouted wires.
+
+         Default:  10  <mu>m (if you do not specify this parameter, rings far-
+         ther than 10 <mu>m from each other are not merged).
+
+       -type <core_rings> | <block_rings>
+         Specifies the ring type to create.
+
+         Default: If you do not specify this parameter, core  rings  are  cre-
+         ated.
+
+         Specify one of the following values:
+
+         Creates  core  rings  that follow the contour of the core boundary or
+         the I/O boundary. If you specify core_rings, then  you  must  specify
+         either the-follow parameter or the -around  user_defined parameter.
+
+         Default:  The  ring  is  offset from the core, based on offset values
+         that you specify in the -offset parameters.
+
+         block_rings
+
+         Creates block rings that follow the contour of the specified objects.
+         If you specify block_rings, then you must specify the  -around  argu-
+         ment with one of its required options.
+
+       -uda <subclass_string>
+         Displays  the  user  defined  attribute attached to each created ring
+         segment.
+
+       -user_defined_region{<x1 y1 x2 y2>...}
+         Specifies the coordinates for a rectilinear region  if  you  use  the
+         -around  user_defined  parameter. You must specify at least four sets
+         of coordinates and the coordinate list must be enclosed within  curly
+         braces.  You  must also specify the coordinates in a linear sequence.
+         For example, you cannot specify the coordinates in a sequence such as
+         bottom left, top right, bottom right, top left.
+
+       -use_interleaving_wire_group {0 | 1}
+         If set to 1, connects multiple wires from the same net together, even
+         if separated by wires from a different net. You can only specify this
+         parameter if you also specify -use_wire_group  1.
+
+         Default: If you do not specify this parameter or if  you  specify  it
+         with a value of 0, interleaving wire groups are not used.
+
+       -use_wire_group {0 | 1}
+         If set to 1, connects multiple wires from the same net together.
+
+         Note:  For  stripes  to  connect to rings using wire groups, you must
+         specify -useWireGroup in both the addRing and addStripe commands.
+
+         The following figure shows the difference in the connections.
+
+         Default: If you do not specify this parameter or if  you  specify  it
+         with a value of 0, wire groups are not used.
+
+       -use_wire_group_bits <integer>
+         Specifies how many nets are to be included in the wire group. You can
+         only specify this parameter if you also specify -use_wire_group 1.
+
+         Default: The same number of nets as specified in the -nets parameter.
+
+       -use_wire_group_reinforcement {0 | 1}
+         Specifies reinforcement stripes. The option is boolean and optional.
+
+         Default: 0
+
+       -use_wire_group_reinforcement_group_via {0 | 1}
+         Creates  group  vias  for wire group corners along with reinforcement
+         stripes placed in the horizontal and vertical directions for the same
+         wires. You can use this parameter to improve the yield and  reliabil-
+         ity issues associated with vias and reinforcement stripes by ensuring
+         that if one of the vias or reinforcement stripes produces a void, the
+         contact will be maintained through one of the adjoining vias or rein-
+         forcement stripes.
+
+         Default: 0
+
+       -use_wire_group_reinforcement_spacing_width <spacing width>
+         Creates  group  vias  for wire group corners along with reinforcement
+         stripes placed in the spacing and width for the same wires.  You  can
+         use  this parameter to improve the yield and reliability issues asso-
+         ciated with vias and reinforcement stripes by ensuring that if one of
+         the vias or reinforcement stripes produces a void, the  contact  will
+         be  maintained  through  one  of  the adjoining vias or reinforcement
+         stripes.
+
+       -width <width>
+         Can now be used to replace old options:
+
+         -width_top / -width_bottom / -width_left /  -width_right
+
+         -width 4 means that four sides of the ring will use 4um metal width.
+
+         Example:
+
+         * -width 4 : all four sides of the ring will  use  4um  metal  width.
+           (existing)
+
+         * -width  {top  4  bottom 4 left 6 right 6} : top ring wires will use
+           4um metal width, bottom ring wires will use 4um metal  width,  left
+           ring  wires will use 6um metal width, right ring wires will use 6um
+           metal width.
+
+Examples
+              * The following command adds a core ring to the vdd and gnd nets
+                on layers METAL5 and METAL6:
+
+                addRing -nets {vdd gnd} -type core_rings -center 1 -layer {top
+                METAL6 bottom METAL6  right  METAL5  left  METAL5}  -width  10
+                -spacing 2
+
+                This  ring  is  centered between the I/O pad area and the core
+                boundary, has a width of 10 <mu>m, and is located at  least  2
+                <mu>m away from any other ring.
+
+              * A user may use addRing -nets {VSS VDD} -layer {top metal5 bot-
+                tom  metal5  left  metal6 right metal6} ... instead of addRing
+                -nets {VSS VDD} -layer {top  {metal5  metal5}  bottom  {metal5
+                metal5} left {metal6 metal6} right {metal6 metal6}} ...
+
+              * Per Old behavior:
+
+                addRing   -nets   {VSS   VDD}  -width_bottom  5  -width_top  5
+                -width_right 5 -width_left 5 -layer_top  Metal5  -layer_bottom
+                Metal5  -layer_left  Metal6  -layer_right Metal6 -offset_top 2
+                -offset_bottom 2 -offset_left 2 -offset_right 2 -spacing_top 1
+                -spacing_bottom 1 -spacing_left 1 -spacing_right 1
+
+              * Per New behavior:
+
+                addRing -nets {VSS VDD}  -width  5  -layer  {top  Metal5  left
+                Metal6 bottom Metal5 right metal6} -offset 2 -spacing 1
+
+Related Information
+              * getAddRingMode
+
+              * setAddRingMode
+
+              * Power Planning and Routing chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025             addRing(25.10)

@@ -1,0 +1,92 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+generateVias(25.10)                                        generateVias(25.10)
+
+Name
+       generateVias  -  Auto-generates  vias required by nanoroute for the de-
+       fault and non-default rules (NDRs)
+
+Syntax
+       generateVias
+
+       -help
+
+       [ -ndr_only ]
+
+       Auto-generates vias required by nanoroute for the default  and  non-de-
+       fault  rules (NDRs). The vias are based on the wire-widths of the rout-
+       ing-rule and are created to meet all the DRC via enclosure  rules  with
+       variations  for good pin-access, variations of double-cut vias for good
+       double-cut via utilization, and min-area vias required for stacked-vias
+       that have no route connected to meet the min-area metal rule.
+
+       The command only creates vias in the current Innovus session; they  are
+       not  saved  and  restored for usage in a later Innovus session. So this
+       command is normally only used for experimentation, or possibly  if  you
+       just  want temporary extra DFM vias to be used for this one session. If
+       you want to save the vias for usage by nanoroute in later Innovus  ses-
+       sions,  use  setGenerateViaMode  -auto  true. The command is not set to
+       "on" by default as setGenerateViaMode is set to false by default.
+
+       The command requires correct DRC rules (e.g. enclosure, spacing,  mini-
+       mum-cut,  min-area  rules,  etc), and at least one LEF VIARULE GENERATE
+       statement (or OpenAccess standardViaDef) for every via layer  used  for
+       routing  (as  required  by OpenAccess). The cut enclosure values in the
+       VIARULE GENERATE statement are not used except for old  LEF  technology
+       files (LEF version 5.5 and older) that have no enclosure rules (this is
+       not  recommended  usage,  but  is kept for backward compatability). The
+       VIARULE cut-spacing values are ignored-only the DRC cut-spacing  values
+       are used.
+
+       No predefined vias are required (e.g LEF VIA DEFAULT, or NONDEFAULTRULE
+       USEVIA  or an OpenAccess validVias list for any routing ConstraintGroup
+       are not needed).
+
+       Any predefined vias that do exist, are kept unless -deleteViaBeforeGen-
+       erate is used (see below).  Generated vias are compared  to  predefined
+       vias  and  if they are geometrically identical, that specific generated
+       via is not kept so no duplicate vias are created.
+
+       Note: NDRs that have the same widths as the default rule  will  inherit
+       the same vias, including any pre-defined vias.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each generateVias parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man generateVias.
+
+       -ndr_only
+              Specifies vias generation for non-default rules only.
+
+              When specified, it generates signal routing  vias  for  all  NDR
+              (non-default rules) and skips generating via for default rule.
+
+              It  is  always  used for designs having full set of default rule
+              vias, but not sufficient non-default rule vias.
+
+              Example
+
+               generateVias -ndr_only
+
+              This generates vias for all NDRs, including the NDRs created  by
+              add_ndr or createNdr commands.
+
+              You must use setGenerateViaMode -auto true -ndr_only true in the
+              Innovus flow.
+
+Example
+              * generateVias
+
+                Will  add  auto-generated  vias  to  any existing vias for all
+                routing rules.
+
+See also:
+              * dumpOutVias to write out the vias and look at them.
+
+              * setGenerateViaMode to generate vias persistently for  multiple
+                Innovus sessions.
+
+                           Fri Apr 04 01:25:37 2025        generateVias(25.10)

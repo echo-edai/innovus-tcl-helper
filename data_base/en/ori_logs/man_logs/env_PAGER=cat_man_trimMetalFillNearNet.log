@@ -1,0 +1,177 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+trimMetalFillNearNet(25.10)                        trimMetalFillNearNet(25.10)
+
+Name
+       trimMetalFillNearNet - Trims any metal fill around critical nets
+
+Syntax
+        trimMetalFillNearNet
+
+       [-help]
+
+       [-area {x1 y1 x2 y2}]
+
+       [-clock]
+
+       [-createFillBlockage <blockage_name>]
+
+       [-layer <layer_name_list>]
+
+       [-minTrimDensity {<percent1><layer_list1> [{<percent2><layer_list2>}]}]
+
+       [-minTrimUnionDensityToAboveLayer  {<percent1  layer_list1> [{<percent2
+       layer_list2>}]..}]
+
+       [-net {<net_name_list> | <net_object_pointer_list>}]
+
+       [-recomputeDensity]
+
+       [-remove]
+
+       [-slackThreshold <slack_in_ns>]
+
+       [-spacing <dist_in_um>]
+
+       [-spacingAbove <dist_in_um>]
+
+       [-spacingBelow <dist_in_um>]
+
+       Trims any metal fill around critical nets. This command enables you  to
+       reduce  the  timing  impact  on  critical nets due to metal fill on the
+       layer above, below and the same layer for the routing of  any  critical
+       net. Using this command, you can specify the critical net list, desired
+       spacing around critical nets, and metal fill density limit.
+
+       The  intended  usage model is to run timing analysis before metal fill,
+       add metal fill, then run timing analysis after metal  fill,  then  trim
+       the metal fill that caused timing to get worse. See the examples below.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each trimMetalFillNearNet parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use man trimMetalFillNearNet.
+
+       -area {x1 y1 x2 y2}
+              Specifies  a set of coordinates within which to trim metal fill.
+              If this parameter is not specified, metal fill is trimmed around
+              critical nets in the entire design area
+
+       -clock Specifies whether metal fill is to be trimmed around all clock.
+
+       -createFillBlockage <blockage_name>
+              Creates a fill blockage so that any subsequent fill steps do not
+              refill the trimmed area. If you specify a name,  the  tool  uses
+              that  name  as  the  fill blockage name. If you do not specify a
+              name, the tool uses the default name  <netName_layerName_*>  for
+              the fill blockage.
+
+       -layer <layer_name_list>
+              Trims metal fill only on the specified layers. If this parameter
+              is not specified, metal fill is trimmed on all layers.
+
+       -net {<net_name_list> | <net_object_pointer_list>}
+              Specifies  a  list  of  critical net names or pointers which are
+              surrounded by metal fill.
+
+       -minTrimDensity {<percent1><layer_list1> [{<percent2><layer_list2>}]}
+              Trims metal fill only until the specified  window  density  per-
+              centage  is  reached  to  avoid causing any metal density viola-
+              tions. You can specify different window density percentages  for
+              different  layers.  For example, {{20 1 2} {30 3}} would set the
+              min-density for metal1, metal2 windows to 20%, and for metal3 to
+              30%.
+
+       -minTrimUnionDensityToAboveLayer {<percent1 layer_list1> [{<percent2
+       layer_list2>}]..}
+              Trims metal fill only till meeting the specified percent  window
+              density.
+
+              Default: 0
+
+       -recomputeDensity
+              By  default,  if metal density values are required for -minTrim-
+              Density, and they are available in the database from a  previous
+              call  to  verifyMetalDensity,  the  existing database values are
+              used.  This option forces a call to verifyMetalDensity to recom-
+              pute window densities instead of using the stored values.
+
+       -remove
+              Specifies that the metal fill shapes overlapping  the  critical-
+              net  halo  area  should  be  removed  entirely  instead of being
+              trimmed to the halo edge created with  different  -spacing*  op-
+              tions.  This avoids the possibility of smaller metal fill shapes
+              that might be left over after trimming.
+
+       -slackThreshold <slack_in_ns>
+              Trims metal fill around nets with slack less than the  specified
+              value. The value specified should be in nanoseconds.
+
+       -spacing <dist_in_um>
+              Trims fill on the same layer by specified distance around criti-
+              cal  net routes. The distance specified should be in micrometers
+              (um). The default is 0 so no trimming is done.
+
+       -spacingAbove <dist_in_um>
+              Trims fill on the layer above the  current  layer  by  specified
+              distance  around  critical  net  routes.  The distance specified
+              should be in micrometers (um). The default is 0 so  no  trimming
+              is done.
+
+       -spacingBelow <dist_in_um>
+              Trims  fill  on  the  layer below the current layer by specified
+              distance around critical  net  routes.  The  distance  specified
+              should  be  in micrometers (um). The default is 0 so no trimming
+              is done.
+
+Example
+              * The most common usage model is to run timing  analysis  before
+                metal  fill,  add  metal fill, run timing analysis after metal
+                fill, and then trim the metal fill that causes timing  to  get
+                worse. Suppose the WNS before metal fill was -0.2ns, and after
+                metal  fill  the  WNS  is  -0.4ns.   This means the metal fill
+                caused a 0.2ns degradation.  One strategy is to trim  any  net
+                that  got  pushed  about beyond the original WNS of -0.2ns ag-
+                gressively with a larger trim spacing value because the  extra
+                WNS  is directly caused by metal-fill, and then trim any nega-
+                tive slack nets above 0.0ns to  improve  timing  margins.  The
+                spacing values depend on the technology node and timing criti-
+                cality.   A  reasonable  starting point would be to choose be-
+                tween 5x to 10x min-spacing for the aggressive trim value.  So
+                you might use these commands:
+
+                #Trim by 1.0um the layer above/below/same  for  any  net  with
+                worse slack than the pre-metal fill WNS of -0.2
+
+                trimMetalFillNearNet   -slackThreshold   -0.2   -spacing   1.0
+                -spacingAbove 1.0 -spacingBelow 1.0 -minTrimDensity {{20 1  2}
+                {30 3}}
+
+                #Trim  less  aggressively using 0.4um spacing for any net with
+                WNS above 0.0 to improve timing margins
+
+                trimMetalFillNearNet   -slackThreshold   0.0   -spacing    0.4
+                -spacingAbove  0.4 -spacingBelow 0.4 -minTrimDensity {{20 1 2}
+                {30 3}}
+
+              * In the following example, there is a critical net overlap with
+                the metal fill on the upper layer, metal5:
+
+                The following command trims metal fill  on  the  upper  layer,
+                metal5, and creates a fill blockage around the clk net.
+
+                trimMetalFillNearNet  -net clk -layer {metal4 metal5} -create-
+                FillBlockage -spacingAbove 0.2
+
+Related Information
+              * The following sections in the Optimizing Metal Density chapter
+                of User Guide.
+
+                     * Overview
+
+                     * Trimming Metal Fill
+
+                     * Trimming Metal Fill for Timing Closure
+
+                           Fri Apr 04 01:25:37 2025trimMetalFillNearNet(25.10)

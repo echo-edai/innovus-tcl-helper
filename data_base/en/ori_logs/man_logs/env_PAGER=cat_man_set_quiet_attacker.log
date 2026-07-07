@@ -1,0 +1,102 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_quiet_attacker(25.10)                            set_quiet_attacker(25.10)
+
+Name
+       set_quiet_attacker  - Specifies one or more coupled nets as non-attack-
+       ers (silent) for the delay and glitch analysis of a given victim net
+
+Syntax
+       set_quiet_attacker
+
+       [-help]
+
+       [-analysis_type {early | late}]
+
+       [-attacker <string>]
+
+       [-transition {rise | fall}]
+
+       [-victim <string>]
+
+       [-view <string>]
+
+       Specifies one or more coupled nets as non-attackers  (silent)  for  the
+       delay and glitch analysis of a given victim net.
+
+       You can run the update_glitch or update_timing command and view the re-
+       sults in the report_noise or report_timing command output.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -analysis_type {early | late}
+              Specifies  the analysis type for which the attackers will be as-
+              sumed quiet. If no value is specified, attackers are skipped for
+              both early/late analysis.
+
+       -attacker <string>
+              Specifies the attackers which should be  made  quiet  for  given
+              victim  net(s).  If no attacker is specified, all the aggressors
+              of given victim(s) will be ignored.
+
+              Note: If no victim is specified,  the  specified  attackers  are
+              made quiet for all victim nets in the design.
+
+       -transition {rise | fall}
+              Specifies  the victim transition for which attackers will be as-
+              sumed quiet. If no value is specified, attackers are skipped for
+              both rise and  fall transitions of the victim net.
+
+       -victim <string>
+              Specifies a list of victim nets for which  attackers  should  be
+              made  quiet.  Specific  attackers  can be skipped using the -at-
+              tacker option of this command. If the -attacker  option  is  not
+              specified,  all  the attackers of the given nets are made silent
+              and SI analysis will not be performed on these nets.
+
+              Note: If this option is not specified, the  attackers  specified
+              in  the  -attacker option are made quiet for all the nets in the
+              design.
+
+       -view <string>
+              Specifies the view for which attackers should be made quiet.  If
+              no view is specified, attackers are assumed quiet in all views
+
+Examples
+       Consider  a design having an attacker agg to victim nets vic1 and vic2.
+       The following command sets the attacker agg as quiet for both the  vic-
+       tim nets vic1 and vic2.
+
+       set_quiet_attacker -attacker {agg}
+
+              * The  following  command  sets the attackers A1 and A2 as quiet
+                when V1 is rising during late analysis.
+
+                set_quiet_attacker -victim V1 -attacker A1 A2 -transition rise
+                -analysis_type late
+
+              * The following command sets the attacker A1 quiet for victim V1
+                in the analysis view VIEW1. In this case, A1 may  be  a  valid
+                attacker  during SI analysis for victim V1 in views other than
+                VIEW1.
+
+                set_quiet_attacker -victim V1 -attacker A1 -view {VIEW1}
+
+       Consider a design having victim vic with attackers agg1 and agg2:
+
+              * The following command sets both the attackers agg1 and agg2 as
+                quiet for the victim net vic.
+
+                set_quiet_attacker -victim {vic}
+
+              * The following command sets the attacker agg1 as quiet for  the
+                given victim net vic
+
+                set_quiet_attacker -attacker {agg1} -victim {vic}
+
+Related Information
+              * report_noise
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025  set_quiet_attacker(25.10)

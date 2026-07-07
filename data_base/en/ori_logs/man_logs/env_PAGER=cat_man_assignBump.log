@@ -1,0 +1,301 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+assignBump(25.10)                                            assignBump(25.10)
+
+Name
+       assignBump  - Assigns the bumps closest to the I/O cells, using euclid-
+       ean distance, and adds bump connection target property onto bump
+
+Syntax
+        assignBump
+
+       [-help]
+
+       [{-area <x1 y1 x2 y2> | -selected }]
+
+       [-constraint_file <file_name>]
+
+       [-exclude_region <llx> <lly> <urx> <ury ...>]
+
+       [-maxDistance <distance>]
+
+       [-multiBumpToMultiPad]
+
+       [{[[-pgnet   net_list]   |   [-exclude_pgnet   net_list]][-pginst   in-
+       stance_list]} [-pgonly]]
+
+       Assigns  the  bumps closest to the I/O cells, using euclidean distance,
+       and adds bump connection target property onto bump. These bumps can  be
+       signal  bumps  specified  in  the  Verilog netlist or power/ground (PG)
+       bumps specified in the command line. From the 14.1 release,  assignBump
+       adds bump connect target to bumps by default during bump assignment.
+
+       This  command is for flip chip designs. Bumps must be created or loaded
+       from the I/O assignment file.
+
+       Use this command after the design is placed.
+
+       Note: The assignBump command does not affect any  existing  assignment.
+       Hence, it will not reassign any existing power/ground assignments.
+
+Support for CLASS BUMP Property
+       The  assignBump  command  supports the CLASS BUMP of PORT in LEF. Using
+       the LEF 5.7 syntax, you can add the CLASS BUMP property in the PORT  of
+       the  hard  macro LEF. With this property, fcroute is able to route from
+       these ports to the assigned bump.
+
+       The assignBump command supports I/O pads or hard macros that have  pins
+       with  multiple  geometries.  For the following hard macro definition in
+       LEF, assignBump assigns three bumps for block1, including two bumps for
+       pin signal1 and one for pin powerpin.
+
+       :
+
+           MACRO block1
+
+               PIN signal1
+
+                   PORT
+
+                       CLASS BUMP ;
+
+                       LAYER ... ;
+
+                       RECT ... ;
+
+                   END
+
+                   PORT
+
+                       CLASS BUMP ;
+
+                       LAYER ... ;
+
+                       RECT ... ;
+
+                   END
+
+               END signal1
+
+               PIN powerpin
+
+                   PORT
+
+                       CLASS BUMP ;
+
+                       LAYER ... ;
+
+                       RECT ... ;
+
+                   END
+
+               END powerpin
+
+           END block1
+
+       fcroute also supports routing for this kind of assignment. In the above
+       example, routing happens from the two  signal  bump  to  the  two  port
+       geometries  and one power bump to the powerpin geometry with CLASS BUMP
+       property.
+
+       The behavior of CLASS BUMP is summarized as below:
+
+              * If the CLASS BUMP property is not defined in any cell, assign-
+                Bump assigns one bump to each IO pin and  fcroute  works  nor-
+                mally.
+
+              * If  any pin port in CLASS PAD AREAIO or CLASS BLOCK cells con-
+                tains the CLASS BUMP property, assignBump  uses  the  property
+                for assignment.
+
+              * Each  pin  port  with the CLASS BUMP property will have a bump
+                assigned. This means a pin can have multiple bumps assigned to
+                it if it has more than one port defined as CLASS BUMP. fcroute
+                honors this property and routes  the  port  and  its  assigned
+                bump.  A  port  with CLASS BUMP attribute with multiple geome-
+                tries is considered as one object for assignment and routing.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each assignBump parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man assignBump
+
+       -area <x1 y1> <x2><y2>
+              Assigns  objects  in the area specified by the <x1>, <y1>, <x2>,
+              and <y2> coordinates.
+
+              * If the specified area includes only bumps, assignBump  assigns
+                the  selected  bumps  to  IO cells based on the total shortest
+                distance.
+
+              * If the specified area includes only IO cells,  assignBump  as-
+                signs the selected IO cells to bumps based on the total short-
+                est distance.
+
+              * If  the  specified area includes both IO cells and bumps, then
+                assignBump assigns the  selected  IO  cells  to  the  selected
+                bumps.  If  the number of bumps are not enough, assignBump is-
+                sues a warning.
+
+              Note: The selected objects must be same as the ones selected  by
+              the command windowSelect.
+
+              For  designs with double pad rows, the following conditions must
+              be kept in mind while defining area with assignBump -area:
+
+              *
+
+                All IO pads inside the area should be regular  and  should  be
+                placed  in either two rows or two columns. If the pads are ir-
+                regular, the tool will turn off double pad row assignment  au-
+                tomatically  and  use  the traditional optimization algorithm,
+                based on minimal global length.
+
+              *
+
+                Define areas in such a way that there is only one  double  pad
+                row in one area.
+
+              *
+
+                If  two  areas  overlap, it means there are now two double pad
+                rows in one area. The results of bump assignment in such situ-
+                ations might not be the most optimal. To get the most  optimal
+                results,  split  one of the areas into two to avoid overlap as
+                shown below:
+
+                Now, you can assign bumps using the following commands:
+
+                assignBump -area area1
+
+                assignBump -area area2
+
+                assignBump -area area3
+
+                assignBump -area area4
+
+              Note that for assigning bumps in a design with single pad  rows,
+              you can use assignBump without the -area option.
+
+              In the following example, the double pad area should be split to
+              avoid  overlaps as shown below. The rest of the bumps can be as-
+              signed without using the -area option:
+
+              assignBump -area area1
+
+              assignBump -area area2
+
+              assignBump
+
+       -constraint_file <file_name>
+              Specifies the path to the file containing bump  assignment  con-
+              straints.  At  present,  the  following types of bump assignment
+              constraints are supported:
+
+              * SHARE_FIND_PORT constraint to filter unnecessary ports
+
+              * ASSIGN_ANALOG_PG_NETS constraint to specify which signal  nets
+                are analog PG nets
+
+              * SHARE_IGNORE_*  and ASSIGN_IGNORE_* constraints to exclude in-
+                stances, macros, pins, or nets for assignment.
+
+              * ASSIGN_PAD2BUMP_RATIO constraint to specify the  pad  to  bump
+                ratio per net, macro, or instance.
+
+              For  more information on specifying bump assignment constraints,
+              refer to the "Using Bump Assignment Constraints" section of  the
+              Flip Chip Methodologies chapter of the User Guide.
+
+       -exclude_pgnet <net_list>
+              Specifies  the  names  of the power/ground nets that must be ex-
+              cluded from bump assignment. Wild cards  are  supported  in  net
+              names.
+
+              The net names should be enclosed in double quotation marks (" ")
+              or braces {}.
+
+       -exclude_region <llx><lly><urx><ury> <...>
+              Excludes  bumps  in  the  area  specified  by  the  lower-left x
+              (<llx>), lower-left y (<lly>), upper-right x (<urx>), and upper-
+              right y (<ury>) coordinates. You can specify  multiple  regions,
+              which may be disjoint.
+
+       -maxDistance <distance>
+              Specifies  the  maximum distance, in microns, to look for a bump
+              connection.
+
+       -multiBumpToMultiPad
+              Specifies that multiple pads need to  be  assigned  to  multiple
+              bumps. This parameter is useful when you need to assign multiple
+              pads on one net to multiple bumps based on shortest distance.
+
+       -pginst <instance_list>
+              Specifies the names of power/ground instances to which the power
+              bumps  are  assigned.  The  instance names should be enclosed in
+              double quotation marks (" ") or braces {}.
+
+       -pgonly
+              Assigns only power/ground nets to bumps.  When  this  option  is
+              specified, signals are not assigned to bumps.
+
+              Note:  Option  -pginst  or -pgnet|-exclude_pgnet is required for
+              option -pgonly.
+
+       -pgnet <net_list>
+              Specifies the names of the power/ground nets to which the  bumps
+              are  assigned. The net names should be enclosed in double quota-
+              tion marks (" ") or braces {}.
+
+              By default, bumps are assigned to all pads whose ports are  con-
+              nected to power/ground nets.
+
+       -selected
+              Assigns  selected bumps to the closest I/O instances or selected
+              I/O instances to the closest bumps.
+
+              * If only bumps are selected, assignBump  assigns  the  selected
+                bumps to IO cells based on the total shortest distance.
+
+              * If only IO cells are selected, assignBump assigns the selected
+                IO cells to bumps based on the total shortest distance.
+
+              * If  both  IO  cells and bumps are selected, assignBump assigns
+                the selected IO cells to the selected bumps. If there are  not
+                enough bumps, assignBump issues a warning.
+
+              Note:  The  -selected  parameter works with other options of as-
+              signBump, except -area and -exclude_region.
+
+Examples
+              * The following command assigns bumps to the  power  and  ground
+                nets,  VDD  and VSS, within the area specified by 600.0 (llx),
+                960.0 (lly), 2600.0 (urx), and 4100.0 (ury) coordinates.
+
+                assignBump -pgnet {VDD VSS} -area {600.0 960.0 2600.0 4100.0}
+
+              * The following command assigns multi-PG pads to bumps:
+
+                assignBump -pgonly -pgnet {VDD VSS}
+
+Related Information
+              * assignPGBumps
+
+              * assignSigToBump
+
+              * checkBump
+
+              * create_bump
+
+              * unassignBump
+
+              * Flip Chip Methodologies chapter of the User Guide
+
+              * Tools Menu chapter of the Menu Reference
+
+                * Flip Chip
+
+                           Fri Apr 04 01:25:37 2025          assignBump(25.10)

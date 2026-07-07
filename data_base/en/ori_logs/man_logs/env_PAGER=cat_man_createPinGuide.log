@@ -1,0 +1,185 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPinGuide(25.10)                                    createPinGuide(25.10)
+
+Name
+       createPinGuide - Creates a pin guide object
+
+Syntax
+        createPinGuide
+
+       [-help]
+
+       {[  -area  {<x1  y1 x2 y2>} | [-edge <integer> [[-offset_start <float>]
+       [-offset_end <float>]]]][ -layer {<layeridList>} [-layerPriority ]]}
+
+        [-pin <string> |  -pinGroup  <string>  |  -net  <string>  |  -netGroup
+       <string> | -name <string> ]
+
+        [-edge <integer> | -net <string> | -netGroup <string>]
+
+        [-cell <string> | -net <string> | -netGroup <string>]
+
+       Creates a pin guide object. The pin guide restricts the pins associated
+       with  the pin guide within the specified area. You can run this command
+       on the top-level module also. You can assign the same pin group or  net
+       group to multiple pin guides. Pin guides are generated for buses, nets,
+       net groups, pins, and pin groups. For buses and nets that do not physi-
+       cally connect to the partition, pin guides will not be created. You can
+       use this command during partition floorplanning.
+
+Parameters
+       -area <x1 y1 x2 y2>
+              Specifies the coordinates of the pin guide area.
+
+              * x1:  Specifies  the  lower  left x coordinate of the pin guide
+                area.
+
+              * y1: Specifies the lower left y coordinate  of  the  pin  guide
+                area.
+
+              * x2:  Specifies  the  upper right x coordinate of the pin guide
+                area.
+
+              * y2: Specifies the upper right y coordinate of  the  pin  guide
+                area.
+
+              Data_type: rect, required
+
+       -cell <string>
+              Specifies  the  name of the cell. This parameter is not required
+              if you are using the command for a top-level module.
+
+              Data_type: string, optional
+
+       -edge <integer>
+              Specifies the integer value where  edge  numbering  starts  from
+              lower-left  corner of a partition clock-wise. Edge 0 is the edge
+              that has the smallest y value.
+
+              Data_type: int, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each createPinGuide parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command:
+
+              man createPinGuide.
+
+       -layer {<layerIdList>}
+              Specifies the metal layer(s) for the pin guide.
+
+              Default:  You  must specify the correct pin layer. If you do not
+              specify the pin layer, Innovus will display an error instead  of
+              choosing  the preferred layer to assign pins like the old behav-
+              ior.
+
+              Note: Pins will not be assigned on  non-preferred  layers.  How-
+              ever,  pins can be assigned on Metal1 layer if the ptnAssignPin-
+              sOnLayerM1 global variable is set to 1.
+
+              Note: Layers can be specified using the LEF layer names or layer
+              ID numbers.
+
+              Data_type: string, optional
+
+       -layerPriority
+              Assign pins based on the order of -layer specified by the user.
+
+              Data_type: bool, optional
+
+       -name <string >
+              Specifies the name of the partition pin  guide  object.  If  you
+              specify  this  parameter,  the command will automatically detect
+              whether the object is a pin, pin group, net, net group, or  bus.
+              In case there are different objects with the same name, the com-
+              mand selects the object with the following precedence:
+
+              * If  a  cell  name is specified, the command selects the object
+                with the following precedence:
+
+              *
+
+                * pin
+
+                * pin group
+
+                * net
+
+                * net group or bus
+
+              * If a cell name is not specified, the command selects  the  ob-
+                ject with the following precedence:
+
+              *
+
+                * net
+
+                * net group or bus
+
+              For  example,  if  the value of objectName is P1, and there is a
+              pin group named P1 as well as a bus named P1, the  command  will
+              select the pin group named P1.
+
+              Data_type: string, optional
+
+       -net <string>
+              For  nets,  specifies  the name of the net. For buses, specifies
+              the name of the bus or the bus radix.
+
+              Data_type: string, optional
+
+       -netGroup <string>
+              Specifies the name of the net group.
+
+              Data_type: string, optional
+
+       -offset_end <float>
+              Specifies the distance, in microns, from the  ending  corner  of
+              the edge.
+
+              Minimum Value: 0
+
+              Maximum Value: 65535
+
+              Data_type: float, optional
+
+       -offset_start <float>
+              Specifies  the distance, in microns, from the starting corner of
+              the edge.
+
+              Minimum Value: 0
+
+              Maximum Value: 65535
+
+              Data_type: float, optional
+
+       -pin <string>
+              Specifies the name of the pin.
+
+              Data_type: string, optional
+
+       -pinGroup <string>
+              Specifies the name of the pin group.
+
+              Default: By default the name is defRGuideName.
+
+              Data_type: string, optional
+
+Example
+              * The following command creates a pin guide object for bus addr:
+
+                createPinGuide -area 2353.8000  7123.000  2653.8000  8298.2000
+                -name addr
+
+Related Information
+              * deletePinGuide
+
+              * selectPtnPinGuide
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Setting Pin Constraints
+
+                * Pin Guides
+
+                           Fri Apr 04 01:25:37 2025      createPinGuide(25.10)

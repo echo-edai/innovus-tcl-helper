@@ -1,0 +1,171 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_annotated_glitch(25.10)                        set_annotated_glitch(25.10)
+
+Name
+       set_annotated_glitch
+
+Syntax
+       set_annotated_glitch
+
+       [-help]
+
+       [-port <string>]
+
+       [-vh_glitch <string>]
+
+       [-vho_glitch <string>]
+
+       [-view <string>]
+
+       [-vl_glitch <string>]
+
+       [-vlu_glitch <string>]
+
+       Allows the ability to annotate glitches at any specified pin/port. This
+       command setting will override the VH/VL glitch with the specified value
+       on the given point and use that glitch value to propagate downstream.
+
+       If  the  defined  annotated glitch waveforms do not start and end at 0,
+       then the software will not consider those waveforms and a warning  will
+       be  issued.  In the following example both VL and VH waves should start
+       and end with 0.0 values. Since the VH wave is not  ending  at  0,  this
+       waveform will be ignored.
+
+       set_annotated_glitch  -vl_glitch {0 0 100e-12 0.01 200e-12 0.04 300e-12
+       0.03 600e-12 0} -port dff1/CK -vh_glitch {0 0 100e-12 0.1  200e-12  0.4
+       300e-12 0.3 600e-12 0.1} .
+
+       The software does not save (and report) waveforms below 5% of VDD. Con-
+       sider for example, the annotated glitch defined on a pin as:
+
+       set_annotated_glitch -port dff1/CK -vh_glitch {0 0 100e-12 0.01 200e-12
+       0.04 300e-12 0.03 600e-12 0}
+
+       In  this case, the glitch peak is 0.04 (40mV), which is below 5% of VDD
+       (1080mV) - equal to 54mV. Since this annotated glitch waveform peak  is
+       very  low, the report_noise command will not report it. However, if the
+       failure criteria is lower than 5%, then the software will save and  re-
+       port small glitch violations.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -port <string>
+              Specifies port or pin names on which you need to apply glitches.
+
+              This parameter works only when setSIMode -enable_glitch_propaga-
+              tion true is set in the report_timing flow.
+
+              In  the update_glitch flow, the -enable_glitch_propagation para-
+              meter is already set to true.
+
+       -vh_glitch <string>
+              Specifies a list of VH glitch wave points. You must  specify  at
+              least 3 time value pairs.
+
+       -vho_glitch <string>
+              Specifies a list of VHO glitch wave points.
+
+       -view <string>
+              Specifies a list of view names.
+
+       -vl_glitch <string>
+              Specifies  a  list of VL glitch wave points. You must specify at
+              least 3 time value pairs.
+
+       -vlu_glitch <string>
+              Specifies a list of VLU glitch wave points.
+
+       Examples
+              *
+
+                The following example annotates the specified VL  glitch  wave
+                points:
+
+                set_annotated_glitch  -vl_glitch {0 0.0  0.2e-9 0.540 0.405e-9
+                0} -vh_glitch {0.1e-9  0  0.205e-9 0.50 0.405e-9 0.200  0.6e-9
+                0.0} -port {A}
+
+              * The following command overrides the glitch value at  RIP  with
+                the  annotated  glitch, because glitch is annotated at the re-
+                ceiver input:
+
+                set_annotated_glitch -vl_glitch {0 0 100e-12 0.1  200e-12  0.4
+                300e-12 0.3 600e-12 0} -port seg2/u9/D
+
+                update_glitch
+
+                report_noise -nets seg2/n8
+
+                -------------------------------------------------------------------------
+
+                Peak(mV)  Level  TotalCap(fF)  TotalArea Width(ps) Vdd(mV) Li-
+                brary VictimNet
+
+                399.924  VL    144.11       110.00    550.104   1080    cell_w
+                seg2/u9/D {seg2/n8}
+
+                Receiver Input Threshold:
+
+                Value    (Threshold)  ReceiverNet Receiver failure_type
+
+                399.924  (431.244)    seg2/u9/D   (DFF)    [bbox]
+
+                Constituents:
+
+                Source Peak(mV) Offset(ps) Slew(ps) Xcap(fF) Vdd(mV) Edge Sta-
+                tus Net
+
+                Prp:            399.924    --       --       --       --    --
+                seg2/u8/Y
+
+                --------------------------------------------------------------------------
+
+              * In  the  following  example,  the impact of aggressors coupled
+                with the victim stage (along with  the  annotated  glitch)  is
+                also  considered because annotation is done at the driver out-
+                put:
+
+                set_annotated_glitch -vl_glitch {0 0 100e-12 0.1  200e-12  0.4
+                300e-12 0.3 600e-12 0} -port seg2/u8/Y
+
+                update_glitch
+
+                report_noise -nets seg2/n8
+
+                --------------------------------------------------------------------------------
+
+                Peak(mV)  Level  TotalCap(fF)  TotalArea Width(ps) Vdd(mV) Li-
+                brary  VictimNet
+
+                548.208  VL    144.11       159.30    581.172   1080    cell_w
+                seg2/u9/D {seg2/n8}
+
+                Receiver Input Threshold:
+
+                Value (Threshold) ReceiverNet Receiver failure_type
+
+                548.208 (432.648) seg2/u9/D   (DFF)    [bbox]
+
+                Constituents:
+
+                Source Peak(mV)  Offset(ps)  Slew(ps)  Xcap(fF)  Vdd(mV)  Edge
+                Status  Net
+
+                Cpl:             80.148      371.000  340.000  68.138  1080  R
+                ACT   seg3/n8
+
+                Cpl:            75.159     381.000  348.500  62.007   1080   R
+                ACT   seg1/n8
+
+                Prp:             392.904    --       --       --      --    --
+                seg2/u8/Y
+
+                ----------------------------------------------------------------------------
+
+Related Information
+              * report_noise
+
+              * update_glitch
+
+                           Fri Apr 04 01:25:37 2025set_annotated_glitch(25.10)

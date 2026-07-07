@@ -1,0 +1,57 @@
+{
+  "command": "scanReorder",
+  "is_cmd": true,
+  "summary": "在布局后对扫描单元进行重新排序",
+  "description": "在运行布局后对扫描单元进行重新排序。控制扫描链中缓冲器和反相器的跳过与移除。可使用 setScanReorderMode 命令为此命令设置全局参数。该命令会自动检测多个电源域，并最小化穿过它们的扫描链数量。它尊重直线和矩形的电源域边界。如果扫描链穿过工作电压相同的电源域，软件不会插入电平转换器。如果扫描链穿过工作电压不同的电源域，软件会插入适当的电平转换器。如果扫描重排序失败，可使用 scanTrace -verbose 命令查看扫描链停止的位置。注意：此命令设置的参数会覆盖 setScanReorderMode 命令的设置。注意：此命令支持多线程。",
+  "usage": "scanReorder [-help] [-addScanPortPrefix <prefix>] [-clkAware {true|false}] [-preferH {true|false}] [-preferV {true|false}] [-keepPDPorts {true|false} ] [-scanEffort {low|medium|high|auto} ] [-skipMode {skipNone|skipBuffer}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "显示帮助信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addScanPortPrefix",
+      "description": "指定要添加到扫描端口的字符串前缀",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clkAware",
+      "description": "指定扫描重排序是否考虑时钟树。为 true 时，扫描重排序是时钟树感知的，并由时钟树驱动。为 false 时，扫描重排序不考虑时钟树，由线长驱动。默认值为 false。此参数也可以取 0、1 或 0 到 1 之间的任何浮点数。如果未指定此参数或指定为 0，则表示完全不考虑时钟树。如果值接近 1，则表示更多地考虑时钟树。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-preferH",
+      "description": "指定扫描重排序连接的首选方向为水平方向。如果模块短而宽或设计存在垂直布线拥塞，则将扫描链重新排序为横向的“S”形配置。默认值为 false。注意：如果 -preferV 和 -preferH 都设置为 true，软件将不遵循此设置，并将它们都视为 false。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-preferV",
+      "description": "指定扫描重排序连接的首选方向为垂直方向。如果模块长而窄或设计存在水平布线拥塞，则将扫描链重新排序为垂直的“S”形配置。默认值为 false。注意：如果 -preferV 和 -preferH 都设置为 true，软件将不遵循此设置，并将它们都视为 false。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-keepPDPorts",
+      "description": "保持或校正层次化端口，不删除或插入电平转换器，并对剩余的扫描链进行重新排序。要关闭此选项，请使用 scanReorder -keepPDports false 或 setScanReorderMode -keepPDPorts false。默认值为 true。注意：此参数仅在 MSV 流程中有效。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-scanEffort",
+      "description": "指定重新排序扫描链的工作量级别。默认值为 -medium。可指定以下值之一：auto：运行内部重排序工作量，并可能在不同阶段进行调整。high：运行更多次扫描重排序迭代以获得更好的网络长度。使用此参数会增加运行时间。low：运行较少的扫描重排序迭代以快速最小化网络长度。medium：运行正常次数的迭代。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-skipMode",
+      "description": "指定扫描重排序如何处理扫描链中的缓冲器和反相器。默认值为 skipNone。可指定以下值之一：skipNone：指定缓冲器和反相器在扫描链重排序后保留。skipBuffer：忽略扫描链中的缓冲器。如果缓冲器未连接到设计中的其他地方，scanReorder 会将其移除。",
+      "required": false,
+      "type": "enum"
+    }
+  ]
+}

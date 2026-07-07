@@ -1,0 +1,129 @@
+{
+  "command": "optDesign",
+  "is_cmd": true,
+  "summary": "执行时钟树构建前、后或布线后的时序优化，并生成时序报告。",
+  "description": "该命令用于在时钟树构建前（preCTS）、构建后（postCTS）或布线后（postRoute）执行时序优化。它可以修复设计规则违规（DRV）、减少总负时序裕量（TNS）和修复建立时间/保持时间违规。优化技术包括添加缓冲器、调整门尺寸、重构网表、逻辑重映射、引脚交换、删除缓冲器、移动实例、应用有用偏移、应用层提升/非默认规则（NDR）断言以及触发器合并/拆分。在多模式、多角模式下，它会并发优化所有分析视图。",
+  "usage": "optDesign [-help] [-drv] [-excludeNets <fileName>] [-expandedViews] [-hold [-holdVioData <fileName>]] [-idealClock] [-incr] [-noEcoRoute] [-outDir <directoryName>] [-preCTS | -postCTS | -postRoute] [-prefix <fileNamePrefix>] [-selectedNets <fileName>] [-selectedTerms <fileName>] [-setup] [-targeted] [-timingDebugReport] [-useTransitionFiles]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drv",
+      "description": "修复最大电容（max_cap）和最大转换时间（max_tran）违规。需先使用 setOptMode -opt_fix_fanout_load 来修复扇出负载违规。不能与 -incr 同时使用。指定后，仅修复DRV，不修复建立/保持时序违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeNets",
+      "description": "指定包含要排除的网线层次化名称的文件。时序优化将排除这些网线。若网线同时出现在 -excludeNets 和 -selectedNets 文件中，则被排除。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-expandedViews",
+      "description": "生成所有活动视图的详细视图特定时序报告。每个视图会创建单独目录。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hold",
+      "description": "修复保持时间违规。不能与 -preCTS 同时使用。可与 -selectedNets 或 -selectedTerms 一起使用。在输出目录生成前缀为 prefix_hold.summary 的摘要文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-holdVioData",
+      "description": "与 -hold 参数一起使用，为修复后剩余的违规数据生成报告文件（.txt, .csv, .txtDetailed 格式）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-idealClock",
+      "description": "在 postCTS 或 postRoute 模式下使用时，使用理想时钟而非传播时钟进行时序优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-incr",
+      "description": "对违规路径执行增量建立时间优化，直到无法进一步优化为止。优化WNS和TNS。不能与 -drv 或 -hold 同时使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noEcoRoute",
+      "description": "禁止在 postRoute 优化期间使用 NanoRoute 路由器执行ECO布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outDir",
+      "description": "指定命令运行时写入时序报告的目录。默认：timingReports。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preCTS",
+      "description": "在时钟树构建前对已布局的设计执行时序优化。默认修复DRV和建立时间违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postCTS",
+      "description": "在时钟树构建后执行时序优化。默认修复DRV和建立时间违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postRoute",
+      "description": "在布线完成后执行时序优化。默认修复DRV、毛刺违规以及基于Base和SI延迟的建立时间违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-prefix",
+      "description": "为 optDesign 报告文件名指定前缀。默认：<设计名_设计阶段>（如preCTS, postCTS, postRoute）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selectedNets",
+      "description": "指定包含要考虑进行DRV修复或保持时间违规修复的网线层次化名称的文件。仅优化这些网线。仅当指定 -drv 或 -hold 时接受此选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selectedTerms",
+      "description": "指定包含要考虑进行时序优化的实例终端层次化名称的文件。仅优化连接到这些终端的网线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-setup",
+      "description": "修复 postRoute 优化流程中的建立时间违规。应与 -hold 参数一起使用以执行组合优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-targeted",
+      "description": "仅与 -postRoute 参数一起使用。调用基于目标的优化（TBOpt），对关键节点进行细粒度局部优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-timingDebugReport",
+      "description": "生成机器可读的时序调试报告，用于在Innovus中调试时序结果。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-useTransitionFiles",
+      "description": "使用 readTransitionFile 命令指定的转换文件，在 postRoute SI 优化期间修复转换时间违规。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

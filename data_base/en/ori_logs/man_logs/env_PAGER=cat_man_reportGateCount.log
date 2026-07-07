@@ -1,0 +1,117 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportGateCount(25.10)                                  reportGateCount(25.10)
+
+Name
+       reportGateCount  - Reports the size of the imported design, measured in
+       gate counts
+
+Syntax
+       reportGateCount
+
+       [-help]
+
+       [-hinst <hinst_name>]
+
+       [-level <level>]
+
+       [-limit <gateCount>]
+
+       [-stdCellOnly]
+
+       [-outfile <fileName>]
+
+       Reports the size of the imported design, measured in gate counts.
+
+       The software calculates the gate count for a module using the following
+       equation:
+
+       gateCount = moduleArea / gateSize
+
+       Where:
+
+              * moduleArea is the area of the module. By default, this is  the
+                sum  of  the  areas of all instances inside of the module, in-
+                cluding standard cells, blocks, and I/O cells. If you  specify
+                the -stdCellOnly parameter, moduleArea is the sum of the areas
+                of the standard cells inside the module only.
+
+              * gateSize is calculated as follows:
+
+                gateSize = dbgStdCellHgt x dbgDBUPerIGU x dbgSitesPerGate
+
+                Where:
+
+                     * dbgStdCellHgt is the standard cell row height.
+
+                     * dbgDBUPerIGU is the M2 layer pitch.
+
+                     * dbgSitesPerGate  is a user-defined global variable that
+                       determines the gate size the software assumes when cal-
+                       culating the gate count. For example, the default value
+                       of 3 means the assumed the gate  size  is  equal  to  1
+                       standard  cell  row height and 3 M2 layer pitch widths.
+                       You can change this value to adjust  the  assumed  gate
+                       size for each specific design.
+
+       You can use the reportGateCount command after importing the design.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reportGateCount parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man reportGateCount.
+
+       -level <level>
+              Expands the module to the specified level.
+
+              For example, if you specify 1, CTS expands the specified  module
+              by  one  level. The gate counts of all "children" modules of the
+              module that satisfy the -limit parameter  are  included  in  the
+              gate  count  report. If you specify 2, CTS expands the module by
+              two levels. The gate counts of all  "children"  and  "grandchil-
+              dren"  modules  of the module are included in the gate count re-
+              port.
+
+              Default: Module is not expanded, and CTS reports only  the  gate
+              count  of the module itself. (This is equivalent to specifying a
+              level of 0.)
+
+              Data_type: int, optional
+
+       -limit <gateCount>
+              Instructs CTS to ignore modules with gate counts below the spec-
+              ified limit. Such modules are ignored during expansion  and  re-
+              porting.
+
+              Default: CTS ignores modules with 1000 or fewer gates during ex-
+              pansion and reporting.
+
+              Data_type: int, optional
+
+       -hinst <hinst_name>
+              Specifies the hierarchical instance for which to generate a gate
+              count report.
+
+              Default:  Generates a gate count report for the hierarchical in-
+              stance corresponding to the top cell of the design.
+
+              Data_type: string, optional
+
+       -outfile <fileName>
+              Writes out the gate count report to the specified file name. The
+              default file extension is .gateCount.
+
+              Default: Displays the gate count report only in the Innovus con-
+              sole.
+
+              Data_type: string, optional
+
+       -stdCellOnly
+              Calculates gate count based only on standard  cells  within  the
+              specified module. Blocks and I/O cells within the module are ig-
+              nored.
+
+              Data_type: bool, optional
+
+                           Fri Apr 04 01:25:37 2025     reportGateCount(25.10)

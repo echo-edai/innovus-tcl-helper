@@ -1,0 +1,212 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_multicycle_path(25.10)                          set_multicycle_path(25.10)
+
+Name
+       set_multicycle_path  - Specifies multicycle paths between specific tim-
+       ing paths in a design or between clock domains
+
+Syntax
+        set_multicycle_path
+
+       [-help]
+
+       <<number_of_cycles>>
+
+       [-comment <<string>>]
+
+       [-fall]
+
+       [-fall_through <<through_list>>]
+
+       [-hold]
+
+       [-rise]
+
+       [-rise_through <<through_list>>]
+
+       [-setup]
+
+       [-through <<through_list>>]
+
+       [-start  | -end ]
+
+       [-from  <<from_list>>   |   -rise_from   <<from_list>>   |   -fall_from
+       <<from_list>>]
+
+       [-to <<to_list>]> | -rise_to <<to_list>> | -fall_to <<to_list>]>]
+
+       Specifies multicycle paths between specific timing paths in a design or
+       between  clock  domains. The multicycle paths are timing paths that re-
+       quire more than one clock period for execution.  By  default,  all  the
+       paths are considered as one cycle paths for setup and hold check evalu-
+       ation.  The  set_multicycle_path  command allows you specify additional
+       cycles for the paths.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <number_of_cycles>
+              Specifies the number of cycles allowed for the path.
+
+       -comment <string>
+              Allows you to insert comments. The comments are read but are ig-
+              nored with a one-time warning message. They are not used  during
+              timing analysis reporting nor are they written out during saving
+              of constraints.
+
+       -fall  Applies  the  assertion at the falling edge of the signal on the
+              path endpoints.
+
+       [-fall_through <<through_list>>]
+              Applies the assertion at the falling edge of the signal  on  the
+              through pins
+
+       -from <<from_list>> | -rise_from <<from_list>> | -fall_from
+       <<from_list>>
+              Specifies  the clocks, ports, pins, or sequential instances that
+              are at the start of the multicycle paths.
+
+              The port direction can be either input or inout.  Pins  must  be
+              valid  path  startpoints such as sequential instance clock pins,
+              latch data pins or pins on which input delays have  been  speci-
+              fied.  Pins  can be on intermediate hierarchical boundaries. The
+              <from_list> variable can contain either collection IDs or object
+              names.
+
+              If the -from option is used without the -to  option,  all  paths
+              originating from the from_list are multicycle paths.
+
+              Use  either the -from, -to, or -through option with the set_mul-
+              ticycle_path command to identify the paths.
+
+              Specifying both the -from and -to options identifies a path with
+              specific starting and ending points.
+
+              Use only one -from, -rise_from, or -fall_from  option  per  com-
+              mand.
+
+       -hold | -setup
+              Specifies   whether   the   multicycle   adjustment  applies  to
+              setup/hold check.
+
+              The -setup parameter applies multicycles  to  setup  check.  The
+              hold check is affected but the hold multiplier does not change.
+
+              The -hold parameter applies multicycles to hold check only.
+
+              Default:  If  you  do not specify -setup or -hold parameter, the
+              software considers the  specified  multicycle  value  for  setup
+              check and uses 0 for the hold check.
+
+       -rise  Applies  the  assertion  at the rising edge of the signal on the
+              path endpoints.
+
+       -rise_through <<through_list>>
+              Applies the assertion at the rising edge of the  signal  on  the
+              through pins.
+
+       -start | -end
+              Specifies  whether  the  multicycle  adjustment is to be applied
+              relative to the starting clock edge for the path or relative  to
+              the ending clock edge for the path.
+
+              Use  these  options for multiple clocks designs. By default, the
+              setup check is relative to the end clock and the hold  check  is
+              relative to the start clock.
+
+              Note: The -start and -end parameters are mutually exclusive; you
+              cannot specify them together.
+
+              You   can  set  the  timing_enable_sdc_compatible_data_check_mcp
+              global variable to true to enable checking  for  SDC  compatible
+              data checks. When the -start parameter is specified, the parame-
+              ter reverses the reference clock by one clock cycle.
+
+       -through <<through_list>>
+              Applies  the assertion to both the rising and the falling edges.
+              This parameter specifies the ports,  pins,  instances,  or  nets
+              that the path goes through.
+
+              The  pins  can  be  on intermediate hierarchical boundaries. The
+              <through_list> variable can contain either collection IDs or ob-
+              ject names.
+
+              When used without the -from or -to option,  all  paths  that  go
+              through  the  -through pins are multicycle paths. When used with
+              both the -from and -to options, any path starting at any pin  on
+              the  -from  list and going through any point on the -through pin
+              list and going to any point on the -to list is affected  by  the
+              assertion.
+
+              You  can  use only one -from and -to option, but you can specify
+              several -through options in the same command.
+
+              By default, the -through option applies the  assertion  to  both
+              the rising and the falling edges. Using the -rise_through option
+              applies  the  assertion  at the rising edge of the signal on the
+              through pins. Using the -fall_through option applies the  asser-
+              tion at the falling edge of the signal on the through pins.
+
+       -to <<to_list>]> | -rise_to <<to_list>> | -fall_to <<to_list>]>
+              Specifies  the clocks, ports, pins, or sequential instances that
+              are at the end of the multicycle paths.
+
+              The port direction can be either output or inout. Pins  must  be
+              valid  path  end-points such as sequential instance data pins or
+              pins on which output delays have been specified. Pins can be  on
+              intermediate hierarchical boundaries. The <to_list> variable can
+              contain either collection IDs or object names.
+
+              If  the  -to  option is used without the -from option, all paths
+              ending in the -to pin list are multicycle paths.  Use  only  one
+              -to option per command.
+
+              Use only one -to, -rise_to, or -fall_to option per command.
+
+Examples
+              * The  following  command  sets all paths between ff1b + ff2d to
+                two cycles for setup:
+
+                set_multicycle_path -setup 2 -from {ff1b} -to {ff2d}
+
+              * The following command moves hold check to start clock  preced-
+                ing edge:
+
+                set_multicycle_path -hold 1 -from {ff1b} -to {ff2d}
+
+              * The following commands show setup multiplier values from -1 to
+                3:
+
+                set_multicycle_path -1 -setup
+
+                set_multicycle_path 0 -setup
+
+                set_multicycle_path 1 -setup
+
+                set_multicycle_path 2 -setup
+
+                set_multicycle_path 3 -setup
+
+              * The  following commands show hold multiplier values from -1 to
+                3:
+
+                set_multicycle_path -1 -hold
+
+                set_multicycle_path 0 -hold
+
+                set_multicycle_path 1 -hold
+
+                set_multicycle_path 2 -hold
+
+                set_multicycle_path 3 -hold
+
+Related Information
+              * set_false_path
+
+              * set_max_delay
+
+              * set_min_delay
+
+              * reset_path_exception
+
+                           Fri Apr 04 01:25:37 2025 set_multicycle_path(25.10)

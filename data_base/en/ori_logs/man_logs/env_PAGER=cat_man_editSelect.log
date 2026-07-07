@@ -1,0 +1,395 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editSelect(25.10)                                            editSelect(25.10)
+
+Name
+       editSelect - Selects wires and vias using the specified parameters
+
+Syntax
+       editSelect
+
+       [-help]
+
+       [-area {<x1> <y1> <x2> <y2>}]
+
+       [-direction {H | V | 45 | 135}]
+
+       [-floating_via]
+
+       [-layer <list_of_layers>]
+
+       [-nets <net>*]
+
+       [-physical_pin_only]
+
+       [-regular_wire_with_drc]
+
+       [-shape {RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE PADRING
+
+                BLOCKRING FILLWIRE FILLWIREOPC DRCFILL None}]
+
+       [-shield]
+
+       [-shield_only]
+
+       [-status {COVER FIXED NOSHIELD ROUTED SHIELD UNKNOWN}]
+
+       [-subclass <sublass_name>]
+
+       [-type {Regular Special Patch}]
+
+       [-use {CLOCK POWER SIGNAL}]
+
+       [-via_cell <cell_name_list>]
+
+       [-with_edit_flag {0 | 1}]
+
+       [-object_type {Wire Via}]
+
+       [-from_pin <pin_name> -to_pin <pin_name>]
+
+       Selects  wires  and  vias using the specified parameters. The wires are
+       updated by subsequent wire editing commands.
+
+Parameters
+       -help  Prints the usage of the command. For a detailed  description  of
+              the command, use the man command:
+
+              man editSelect
+
+       -area {<x1 y1 x2 y2>}
+              Specifies  the  coordinates  for  the  area from which to select
+              wires and vias.
+
+              Default: Entire area
+
+              <x1>: Specifies the lower left x coordinate.
+
+              <y1>: Specifies the lower left y coordinate.
+
+              <x2>: Specifies the upper right x coordinate.
+
+              y2: Specifies the upper right y coordinate.
+
+       -direction {H | V | 45 | 135}
+              Specifies the orientation of the wires to be selected.
+
+              Default: If you do not specify  this  parameter,  selects  wires
+              with any orientation.
+
+              H: Specifies that horizontal wires are to be selected.
+
+              V: Specifies that vertical wires are to be selected.
+
+              45: Specifies that 45-degree wires are to be selected.
+
+              135: Specifies that 135-degree wires are to be selected.
+
+       -floating_via
+              Specifies  that only floating vias are to be selected. A via, or
+              a stack of vias, is floating, if it is not connected to  another
+              object,  wire,  pin,  or  via, on either its top or bottom metal
+              layer or on both these layers.
+
+       -from_pin <pin_name>
+              Specifies the name of the starting pin of the  wire  to  be  se-
+              lected.
+
+              The starting pin you specify should be connected to the same net
+              as  the  ending  pin  specified with -to_pin. If they connect to
+              different nets, the tool reports an error. In addition, the from
+              and to pins you specify should be connected to the same wire.
+
+              PG pins are also supported.
+
+              Note: Selection of wires between  specified  pins  is  supported
+              only for signal and clock nets.
+
+       -layer <list_of_layers>
+              Specifies  the  layers from which to select wires and vias. This
+              option supports backside and Through Silicon Via (TSV) layers as
+              well.
+
+              If you are specifying multiple layers, enclose them in braces.
+
+              Default: If you do not specify this parameter, selects wires and
+              vias on all layers.
+
+       -nets <net>*
+              Specifies the net names from which to select wires and vias.
+
+              You can use wildcard values in this field. For example,  if  you
+              specify V*, selects wires/vias from nets VDD and VSS.
+
+       -object_type {Wire Via}
+              Specifies  whether  wires or vias or both should be selected. If
+              the parameter is not specified, only wires are selected.
+
+              Default: Wire
+
+       -physical_pin_only
+              Specifies that physical pins are to be selected. By default, ed-
+              itSelect does not select physical pins.
+
+              You can use the -physical_pin_only parameter along  with  -area,
+              -layer,  or  -nets  to select the physical pins in the specified
+              area, layer, or net, respectively.
+
+       -regular_wire_with_drc
+              Selects regular wires with violation  markers.  Clock  nets  are
+              also selected.
+
+       -shape {RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE PADRING BLOCK-
+       RING FILLWIRE FILLWIREOPC DRCFILL None}
+              Specifies  the  shapes of the wires and vias to be selected. Use
+              all upper-case letters for the shapes. If you  specify  multiple
+              shapes,  enclose the list of shapes in braces. For shape defini-
+              tions, see Shapes, in the "DEF Syntax" chapter  of  the  LEF/DEF
+              Language Reference.
+
+              Default: If you do not specify this parameter, selects wires and
+              vias of all shapes.
+
+       -shield
+              Selects  the wires and vias of the nets specified with the -nets
+              parameter, along with the wires and vias shielding the specified
+              nets.
+
+              Note: This parameter cannot be used with -shield_only.
+
+       -shield_only
+              Selects only the shield wires associated with the nets specified
+              using the -nets parameter. The signal nets  being  shielded  are
+              not selected.
+
+              Note: This parameter cannot be used with -shield.
+
+       -status {COVER FIXED NOSHIELD ROUTED SHIELD UNKNOWN}
+              Specifies  the  status of wires and vias to be selected. Use all
+              upper-case letters for the status. If you specify more than  one
+              status, enclose the status list in braces.
+
+              Note: If you select -type Special -status NOSHIELD or -type Sig-
+              nal -status SHIELD the software generates an error message.
+
+       -subclass <sublass_name>
+              Specifies  the  subclass  name  of  the wires and vias to be se-
+              lected. Use this parameter if you want to select wires  or  vias
+              belonging  to  a  specific  subclass. Here, <subclass_name> is a
+              user-defined attribute that has been  previously  defined  using
+              the  -uda parameter of the addSplitPowerVia, addRing, addStripe,
+              or sroute command.
+
+              For wires, use this parameter if you want to  select  or  delete
+              rings, stripes, or other wires belonging to a specific subclass.
+              Only special wire is supported by this option.
+
+              Note: You can use wildcards in <subclass_name>.
+
+       -to_pin <pin_name>
+              Specifies the name of the ending pin of the wire to be selected.
+
+              The  ending  pin you specify should be connected to the same net
+              as the starting pin specified with -from_pin. If they connect to
+              different nets, the tool reports an error. In addition, the from
+              and to pins you specify should be connected to the same wire. If
+              there there are more than one wire or via between the  specified
+              starting  and ending pins, the command is not able to select the
+              wire path and returns an error.
+
+              PG pins are also supported.
+
+              The -from_pin and -to_pin parameters are  compatible  with  only
+              the -direction, -layer, -object_type, and -status options of the
+              editSelect  command.  If  you use -from_pin and -to_pin with any
+              other editSelect parameters, the tool returns an error.
+
+              Note: Selection of wires between  specified  pins  is  supported
+              only for signal and clock nets.
+
+       -type {Regular Special Patch}
+              Specifies  whether  to  select  regular  wires and vias, special
+              wires and vias, or patch wires.
+
+              Note: If you specify Regular, you must omit the -shapes  parame-
+              ter or specify -shapes None.
+
+       -use {CLOCK POWER SIGNAL}
+              Specifies  whether to select only CLOCK wires/vias, POWER wires,
+              or SIGNAL wires.
+
+       -via_cell <cell_name_list>
+              Specifies the via cells of the vias to be selected. You can  use
+              wildcards while specifying via cell names. If you are specifying
+              multiple cell names, enclose them in braces.
+
+       -with_edit_flag {0 | 1}
+              Selects all modified wires and vias, that is wires and vias with
+              value 1 for the isEdit property on the net.
+
+              Notes
+
+              * As  the  isEdit  property  is  added on the whole net, all the
+                wires and vias on the net with isEdit value set to 1  will  be
+                selected.
+
+              * The  isEdit  property is used to flag nets with modified wires
+                and vias. This is useful when evaluating how many objects need
+                to be modified for fixing DRC  violations  and  then  deciding
+                whether to fix the violations manually or through ECO routing.
+                The   isEdit   property   is   controlled  through  the  -cre-
+                ate_is_edit_flag parameter of setEditMode.  By  default,  this
+                parameter  is set to 0. If you set the value of this parameter
+                to 1, the isEdit property is set to 1 for nets  with  modified
+                wires or vias.
+
+Examples
+              * The  following  command  selects  all  wires on the METAL1 and
+                METAL2 layers:
+
+                editSelect -layer {METAL1 METAL2}
+
+              * The following command selects all vias on the cut layer VIA12:
+
+                editSelect -layer VIA12 -object_type Via
+
+              * The following command selects all vias on the cut layers VIA12
+                and VIA23:
+
+                editSelect -layer {VIA12 VIA23} -object_type Via
+
+              * The following command selects all  wires  on  the  METAL1  and
+                METAL2 layers and vias on the cut layer VIA12:
+
+                editSelect  -layer  {METAL1  METAL2  VIA12} -object_type {Wire
+                Via}
+
+              * The following command selects all horizontal fillwires on  the
+                METAL1 layer:
+
+                editSelect -layer METAL1 -direction H -shape FILLWIRE
+
+              * The  following  command  selects  VDD  STRIPEs  with  subclass
+                "stripe_A":
+
+                editSelect -nets VDD -shape  STRIPE  -type  Special  -subclass
+                stripe_A
+
+              * The following command selects all vias of shape FOLLOWPIN with
+                names that match the pattern tapcellvia_VIA1_RUL*:
+
+                editSelect  -shape  FOLLOWPIN  -via_cell  tapcellvia_VIA1_RUL*
+                -object_type Via
+
+              * The following command selects all the modified wires and vias:
+
+                editSelect -with_edit_flag 1 -object_type {Wire Via}
+
+              * The following command selects the complete  wire  between  the
+                specified from and to pins:
+
+                editSelect -from_pin C/A -to_pin A/A
+
+                The selected wire is depicted in red in the diagram below:
+
+              * The following command selects only the wire segments on the M2
+                layer between the specified from and to pins:
+
+                editSelect -from_pin C/A -to_pin A/A -layer M2
+
+                The  selected wire segments are depicted in red in the diagram
+                below:
+
+              * The following command only the vertical wire segments  between
+                the specified from and to pins:
+
+                editSelect -from_pin C/A -to_pin A/A -direction V
+
+                The  selected  wire  segment is depicted in red in the diagram
+                below:
+
+              * Consider the example below:
+
+                * The following command selects all nets that have  DRC  mark-
+                  ers:
+
+                  editSelect -regular_wire_with_drc
+
+                * The  following  command  selects wires with DRC markers from
+                  only Net B:
+
+                  editSelect -nets B -regular_wire_with_drc
+
+                * The following command selects only  routed  wires  with  DRC
+                  markers from Net B:
+
+                  editSelect -nets B -regular_wire_with_drc -status ROUTED
+
+              * The  following set of commands select and delete nets with DRC
+                markers while excluding clock nets:
+
+                editSelect -regular_wire_with_drc
+
+                editDeselect -use CLOCK
+
+                editDelete -selected
+
+Related Information
+              * editAddRoute
+
+              * editAdjust
+
+              * editCommitRoute
+
+              *
+
+                editChangeLayer
+
+              *
+
+                editChangeNet
+
+              *
+
+                editChangeRule
+
+              *
+
+                editChangeStatus
+
+              *
+
+                editChangeVia
+
+              * editCutWire
+
+              * editDelete
+
+              * editDeselect
+
+              * editDuplicate
+
+              * editMerge
+
+              * editMove
+
+              * editResize
+
+              * editSplit
+
+              * editTrim
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025          editSelect(25.10)

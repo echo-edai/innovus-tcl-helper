@@ -1,0 +1,476 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+saveNetlist(25.10)                                          saveNetlist(25.10)
+
+Name
+       saveNetlist - Writes a netlist file of the design
+
+Syntax
+       saveNetlist
+
+       fileName
+
+       [-help]
+
+       [-abstract]
+
+       [-applyMaskShift]
+
+       [-cellInstanceColor {true | false}]
+
+       [-cellMasterColor {true | false}]
+
+       [-derivePGPortDir]
+
+       [-excludeCellDef <cellName>]
+
+       [-excludeCellInst <cellName>]
+
+       [-excludeIlm]
+
+       [-excludeTopCellPGPort <cellName>]
+
+       [-exportTopPGNets]
+
+       [-followLogicalModuleOrder | -flat]
+
+       [-flattenBus]
+
+       [-cellNameMapFile <cellName>]
+
+       [-ignoreFixedMask]
+
+       [-ilm]
+
+       [-includeBumpCell]
+
+       [-includePhysicalCell <cellName>]
+
+       [-includePhysicalInst]
+
+       [-includePowerGround [-includeVirtualPG ]]
+
+       [-includeThruSubstrateInsts]
+
+       [-keepAllBackslash]
+
+       [-lineLength <characters_per_line>]
+
+       [-maskShiftSuffix <maskShiftSuffix>]
+
+       [-omitFloatingPort]
+
+       [-phys [-includeVirtualPG ]]
+
+       [-removePowerGround]
+
+       [-replaceTieConnection]
+
+       [-replaceWorWandWithWire]
+
+       [-replace_inout_with_output_for_pg_ports]
+
+       [-shortenNames]
+
+       [-topCell <cellName>]
+
+       [-topModuleFirst]
+
+       [-useCdsThruForAssign]
+
+       [-useEEQCellMap {<masterCell EEQcell1 EEQcell2>}]
+
+       [-useEEQCellWithLibertyInfo]
+
+       [-writeConstantForSignalConnection]
+
+       [-writeSupply0Supply1]
+
+       [-excludeLeafCell   |  -onlyLeafCell   |  -onlyStdCell  | -onlyMacro  |
+       -module moduleName]
+
+       Writes a netlist file of the design. By default, a logical  netlist  is
+       saved. The netlist is in hierarchical Verilog format only if the origi-
+       nal  netlist  loaded  was  hierarchical. The Innovus software saves the
+       netlist from the top level of the hierarchy to the bottom level of  the
+       hierarchy  if  the original netlist is specified from top to bottom. If
+       you run this command after using loadDefFile, it bundles  bus  pins  to
+       create  busses  in  Verilog.  Saving  the netlist is done after running
+       placement with timing driven option, clock tree synthesis,  scan  group
+       re-order, or IPO.
+
+       You can use this command after importing the design.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each saveNetlist parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man saveNetlist.
+
+       -abstract
+              Writes an empty Verilog module with port  declarations  for  the
+              specified module.
+
+              You  can  use the -abstract parameter with the following parame-
+              ters:
+
+              * -includePowerGround
+
+              * -excludeTopCellPGPort
+
+              * -derivePGPortDir
+
+              * -exportTopPGNets
+
+              * -module
+
+              * -phys
+
+              Default: Top module
+
+       -applyMaskShift
+              Adds a suffix to the cell name of a leaf instance based  on  the
+              color assignments of the instance.
+
+              Note:
+
+              * The netlist must be unique or -flat must specified for the op-
+                tion to take effect.
+
+              * The  mask shifted netlist cannot be read back into Innovus, as
+                the cell names with suffix do not actually exist  in  LEF  and
+                timing libraries.
+
+       -cellInstanceColor {true | false}
+              Specifies to use the instance-based color.
+
+       -cellMasterColor {true | false}]
+              Specifies  to  use  the cell master-based color from the Innovus
+              color engine.
+
+       -cellNameMapFile <cellName>
+              Replaces the cell name of the leaf instance with the name speci-
+              fied in the map file(s). If the cell name is not defined in  the
+              map  file,  the  cell name is changed on the basis of the tool's
+              default naming rule.
+
+       -derivePGPortDir
+              Specifies whether to derive (vs. assume) directions of  implicit
+              PG ports in saving a physical netlist.
+
+       -excludeCellDef <cellName>
+              Excludes the module definition of the specified cells.
+
+       -excludeCellInst <cellName>
+              Excludes  the instances of the specified cells from the netlist.
+              You can exclude logical or physical instances.
+
+              The <cellName> can be a single cell name or a list of cell names
+              separated by a space and surrounded by  braces  ({})  or  double
+              quotation marks ("").
+
+              For example: -excludeCellInst {cell1 cell2} or "cell1 cell2".
+
+       -excludeIlm
+              Excludes the ILM module.
+
+       -excludeLeafCell
+              Writes  I/O  instances,  macro  or block instances, and standard
+              cell instances to the netlist, but does not  include  leaf  cell
+              definitions in the netlist.
+
+       -excludeTopCellPGPort <portName>
+              Excludes  specified power and ground port(s) from the top cell's
+              module port list.
+
+              The <portName> can be a single port name or a list of port names
+              separated by a space and surrounded by  braces  ({})  or  double
+              quotation marks ("").
+
+              For example: -excludeTopCellPGPort {VSS VDD} or "VSS VDD".
+
+       -exportTopPGNets
+              Specifies to use top-cell PG nets as ports for the top module in
+              a physical netlist created with the -phys or -includePowerGround
+              option.
+
+       <fileName>
+              Specifies the name of the file where the netlist is written.
+
+       -flat  Writes a flattened Verilog netlist.
+
+              Default: If you omit this parameter, and if the original netlist
+              loaded  was hierarchical, the netlist is written in hierarchical
+              Verilog format.
+
+       -flattenBus
+              Writes a flattened-bus Verilog netlist. When this  parameter  is
+              used,  a  bus  bit, such as "A[0]" is output as "\A[0]". If such
+              conversions conflict with  existing  object  names,  saveNetlist
+              warns about such conflicts and returns an error:
+
+              **WARN: (ENCDB-2156): Cannot rename bus-bit %s '%s' in cell '%s'
+              because  the  name  '%s'  is  already in use on %s in that cell.
+              Change the design to remove the conflicting name or run the com-
+              mand without the -flattenBus option.
+
+              **ERROR: (ENCSYC-1279): Cannot output flatten-bus netlist due to
+              the reported object-name conflicts.
+
+       -followLogicalModuleOrder
+              Follows the logical module order.
+
+              The order of the modules, written  without  -includePowerGround,
+              in  a hierarchical logical netlist is different from that, writ-
+              ten with the option, in a hierarchical PG netlist.  If  -follow-
+              LogicalModuleOrder  is  specified  together  with -includePower-
+              Ground (but not -flat) the order of the modules  in  a  physical
+              netlist will be the same as that in a logical netlist.
+
+              Note: The same order is for non-leaf modules only.
+
+       -ignoreFixedMask
+              Ignores cell fixedMask when maskShift is applied.
+
+       -ilm   Writes out a netlist with ILM guts.
+
+              Note:  This  parameter  can  be specified only in the flattenIlm
+              state. If this parameter is specified in  the  unflatten  state,
+              the software returns an error message.
+
+       -includeBumpCell
+              Writes  bump  cell  information to the netlist. You can also use
+              -includeBumpCell with logical netlist.
+
+              Note: This parameter is effective only when used with either the
+              -phys or -flat parameters.
+
+       -includePhysicalCell <cellName>
+              Includes the physical instances of the specified  cells  in  the
+              netlist.  With  this parameter, 1'b1/1'b0-style, logical connec-
+              tions are used for tie-off pins.
+
+              The <cellName> can be a single cell name or a list of cell names
+              separated by a space and surrounded by  braces  ({})  or  double
+              quotes  (""), for example, -includePhysicalCell {cell1 cell2} or
+              "cell1 cell2".
+
+              Default: If you omit this parameter, no physical cell module de-
+              finitions will be in the netlist file.
+
+              Note: -includePhysicalCell creates a netlist that should not  be
+              read back into Innovus.
+
+       -includePowerGround
+              By  default,  PG  connections  in  the  original logical Verilog
+              netlist are already written out (unless -flat is given). You can
+              add "physical only" global  PG  net  connections  and  "physical
+              only"  PG nets added by IEEE1801 to the Verilog output with this
+              option.  It adds PG nets inside each module and PG ports on each
+              module in order to thread the PG connections to each pin.   Some
+              physical  tools  like LVS prefer to have these explicitly in the
+              hierarchical Verilog.
+
+       -includePhysicalInst
+              Activates physical netlisting by including  physical  instances,
+              such as fillers, in the netlist.
+
+       -includeVirtualPG
+              Includes virtual PG components.
+
+       -includeThruSubstrateInsts
+              Writes the thru-substrate connectivity. this option is used with
+              -flat.
+
+       -keepAllBackslash
+              Keeps all backslashes in names.
+
+       -lineLength <characters_per_line>
+              Specifies  the  maximum number of characters per line for module
+              port lists and instance port connections. When a line length ex-
+              ceeds the specified value, the software wraps the  line  at  the
+              next  opportunity.  You  must specify a non-negative integer for
+              the value.
+
+              <Default:> 0 (The software wraps lines at the earliest  opportu-
+              nity.)
+
+       -maskShiftSuffix <maskShiftSuffix>
+              Adds a user-specified suffix to the cell name of a leaf instance
+              instead of the tool's default suffix.
+
+              The  default  suffix is _<layer>_<mask>. For example, BUFX1_M0_1
+              default suffix means the M0 color flipped from mask 0 to mask 1.
+
+              The -maskShiftSuffix option works only when  -applyMaskShift  is
+              used.
+
+              Note: The netlist must be unique or -flat must specified for the
+              option to take effect.
+
+       -module <moduleName>
+              Saves the specified module of the netlist.
+
+       -omitFloatingPort
+              Omits the unconnected instance ports from the saved netlist.
+
+       -onlyLeafCell
+              Writes only leaf cell definitions in the netlist.
+
+              Default:  If  you  do  not  specify this parameter, the software
+              writes leaf  cell  definitions,  standard  cell  instances,  and
+              macro/block instances in the netlist file.
+
+       -onlyMacro
+              Writes only macro or block cell definitions to the netlist.
+
+              Default:  If  you  do  not  specify this parameter, the software
+              writes leaf  cell  definitions,  standard  cell  instances,  and
+              macro/block instances in the netlist file.
+
+       -onlyStdCell
+              Writes only standard cell instances in the netlist.
+
+              Default:  If  you  do  not  specify this parameter, the software
+              writes leaf  cell  definitions,  standard  cell  instances,  and
+              macro/block instances in the netlist file.
+
+       -phys  Writes out physical cell instances, and inserts power and ground
+              nets  in  the netlist. This is used for LVS and for designs with
+              multiple supply voltages. Hierarchical power and ground nets are
+              also supported.
+
+              Note: -phys creates a netlist that should not be read back  into
+              Innovus.
+
+       -removePowerGround
+              Removes  PG  ports, PG nets, PG pin connections, and replaces PG
+              net connections on signal pins with 1'b1 or 1'b0.
+
+       -replaceTieConnection
+              Replaces 1'b1 and 1'b0 constants with undriven nets in the  out-
+              put  netlist.  Use this parameter if you may want to save a Ver-
+              ilog netlist from Innovus without any 1'b* constants.
+
+              Note: By default,  the  saveNetlist  command  writes  a  Verilog
+              netlist file of the design using 1'b* constants to represent As-
+              sign nets and ports. However, subsequent verification steps that
+              you  use  outside Innovus might not be able to handle these 1'b*
+              constants. In such a case, use -replaceTieConnection.
+
+       -replaceWorWandWithWire
+              Replaces wor/wand with wire statement.
+
+       -replace_inout_with_output_for_pg_ports
+              Changes the direction of inout P/G ports to  output  except  for
+              the ones defined by IEEE1801/UPF.
+
+              Their directions remain unchanged.
+
+       -shortenNames
+              Maps  the net/instance names to the shorter names to reduce file
+              size. this option is used with -flat.
+
+       -topCell <cellName>
+              Saves the specified module along with its submodules.
+
+               If you use saveNetlist -topCell, tool only saves the  top  cell
+              in  the  netlist  file, and if you use saveNetlist without -top-
+              Cell, the tool saves all modules in the netlist file.
+
+       -topModuleFirst
+              Writes out top module first, followed by the rest  of  the  mod-
+              ules.
+
+              Note:  This  feature is not available for physical netlist writ-
+              ing. As a result, the -topModuleFirst option will be ignored  if
+              any  of  the following parameters is also specified: -phys, -in-
+              cludePowerGround, and -includePhysicalInst.
+
+       -useCdsThruForAssign
+              Replaces the assign statement with cds_thru, the output  netlist
+              will not be able to read back by Innovus. This is only for third
+              party tool.
+
+       -useEEQCellMap {<masterCell EEQcell1 EEQcell2>}
+              Defines the master cell and the EEQ cells that need to be mapped
+              to the master cell {{masterCell EEQcell1 EEQcell2} ...}
+
+       -useEEQCellWithLibertyInfo
+              Specifies  to  use the EEQ cell with the timing library informa-
+              tion as the master cell of a leaf instance.
+
+       -writeConstantForSignalConnection
+              Writes constant value for tie pin connection. When  this  option
+              is specified, tool can assign the tie net name to related signal
+              pin.  If this option is not specified, tool assigns the real net
+              name to the signal pin.
+
+       -writeSupply0Supply1
+              -writeSupply0Supply1 must be specified together  with  -phys  or
+              -includePowerGround  to  take  effect.  Its default is off, with
+              which a PG net is written as "supply0/supply1" only  if  it  de-
+              fined  as  such  in  the  original Verilog. When on, PG nets are
+              written as "supply0"  or  "supply1"  except  for  implicit  (see
+              IEEE1801) PG nets, which are written as "wire" as needed.
+
+Example
+              * The following command writes out the netlist in Verilog format
+                of  the current state of the design in Innovus to a file myde-
+                sign_cts.v:
+
+                saveNetlist mydesign_cts.v
+
+              * The following command saves the netlist  with  dtmf_recvr_core
+                as the top module to the output.v file:
+
+                saveNetlist -topCell dtmf_recvr_core output.v
+
+              * The following command saves the physical netlist of ILM inter-
+                nals to the output.v file:
+
+                saveNetlist -ilm -phys output.v
+
+                Use  this  combination  of  options to pass on power or ground
+                (P/G) information correctly to the netlist in  low  power  ILM
+                flow.
+
+              * The   following   example   shows  the  netlist  generated  by
+                saveNetlist -abstract.
+
+                module test(in1, in2, out1, out2, clk1, clk2, clk3, se1, se2);
+
+                 input [3:0] in1;
+
+                 input [7:0] in2;
+
+                 input clk1, clk2, clk3, se1, se2;
+
+                 output [3:0] out1;
+
+                 output [7:0] out2;
+
+                endmodule
+
+Related Information
+              * flattenIlm
+
+              * loadDefFile
+
+              * Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide.
+
+              * Top-level  Timing Closure Methodologies chapter in the Innovus
+                User Guide.
+
+                     * Interactive Use of ILMs
+
+              * ECO Flows chapter in the Innovus User Guide
+
+                     * Pre-Mask ECO Changes from a New DEF File
+
+                     * Pre-Mask ECO Changes from an ECO File
+
+                           Fri Apr 04 01:25:37 2025         saveNetlist(25.10)

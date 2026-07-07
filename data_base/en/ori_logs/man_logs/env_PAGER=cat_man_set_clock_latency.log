@@ -1,0 +1,214 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_clock_latency(25.10)                              set_clock_latency(25.10)
+
+Name
+       set_clock_latency - Specifies ideal internal clock latency and external
+       clock arrival delay
+
+Syntax
+       set_clock_latency
+
+       [-source [-early | -late]]
+
+       [-rise]
+
+       [-fall]
+
+       [-jitter <jitter_val>]
+
+       [-clock <clock_list>]
+
+       [-min]
+
+       [-max]
+
+       [-clock_gate]
+
+       <latency>
+
+       <pin_or_clock_list>
+
+       Specifies  ideal  internal clock latency and external clock arrival de-
+       lay.
+
+       Clock latency has two components:
+
+              * Source latency:
+
+                     * Specified using the -source parameter and is the  delay
+                       from  the external clock generator to the clock port of
+                       the design.
+
+                     * Applied when the clock is either ideal or propagated.
+
+                     * set_clock_latency set on a clock port has higher prece-
+                       dence than set_clock_latency set on a clock waveform.
+
+                     * Specified on clock  waveforms  with  both  the  set_in-
+                       put_delay command and the set_output_delay command.
+
+              * Network latency (clock tree delay):
+
+                     * Default  latency  type  and is the delay from the clock
+                       port to the register.
+
+                     * Applied only when the clock is ideal. When the clock is
+                       propagated, this delay is replaced by the actual  clock
+                       tree delays.
+
+                     * Specified  on  a  clock waveform or a clock port is ig-
+                       nored if the clock is propagated.
+
+                     * set_clock_latency set on a timing pin has higher prece-
+                       dence than set_clock_latency set on a waveform.
+
+                     * If there are multiple set_clock_latency and  set_propa-
+                       gated_clock  assertions  between  the  clock  waveform,
+                       clock root and clock endpoint, the closest assertion to
+                       the clock endpoint takes precedence.
+
+                     * Specified on  internal  circuit  pins  or  hierarchical
+                       ports  and  used  in the fanout cone of the network la-
+                       tency pin, when a clock is ideal.
+
+       Use the set_clock_latency command in two ways:
+
+              * To specify clock latency for a clock waveform:
+
+                     * Use the following syntax for source latency  associated
+                       with a clock signal:
+
+                       set_clock_latency  [-source]  [-early  |  -late]  [-min
+                       ][-max]<latency><pin_or_clock_list>
+
+                     * Use the following syntax for network latency associated
+                       with a clock signal:
+
+                       set_clock_latency           [-min]           [-max]<la-
+                       tency><pin_or_clock_list>
+
+       You cannot specify the -late and -early parameters for network latency.
+
+       Specifying  latency  on  a  port  or pin overrides any previous latency
+       specified on the port pin or waveform. The <pin_or_clock_list> argument
+       is the list of the clock  waveform  names  as  specified  by  the  cre-
+       ate_clock command.
+
+              * To specify clock latency on clock pins:
+
+                     * Use  the  following  syntax for source delay on a clock
+                       port:
+
+                       set_clock_latency  -source  [-early  |  -late]  [-rise]
+                       [-fall]
+
+                       <insertion_delay><pin_or_clock_list>
+
+                     * Use  the  following syntax for network delay on a clock
+                       pin:
+
+                       set_clock_latency [-min] [- max] [-rise] [-fall]
+
+                       <insertion_delay>-pin <pin_or_clock_list>
+
+       When a clock is ideal, the last specification along  a  path  is  used.
+       This  is  useful when you want to intentionally skew the clock tree and
+       model the physical hierarchical clock tree.
+
+Parameters
+       -clock <clock_list>
+              Associates clock latency constraints, placed at the  pin  level,
+              with  a specific clock. This makes it possible to specify a dif-
+              ferent latency per clock.
+
+              Note: You cannot use the -clock parameter  with  clock  waveform
+              objects.
+
+       -clock_gate
+              Allows  setting the local clock latency value on pin or port ob-
+              jects. This setting overwrites the  existing  latency  value  of
+              clock  gating  cells  and  is used when performing timing checks
+              against the specified pins or ports.
+
+       -early |  -late
+              Specifies clock arrival time with respect to the  early  or  the
+              late time of the clock signal. In setup analysis, launch path is
+              the late path and capture path is the early path. In hold analy-
+              sis,  launch  path is the early path and the capture path is the
+              late path. If neither parameter is  specified,  the  default  is
+              both  early and late. Use these parameters only with the -source
+              parameter. You cannot use these parameters with network latency.
+              Specify the clock latency at the given operating corner.
+
+              Note: The -min and -max parameters refer to the operating corner
+              and the -early and -late parameters refer to the  clock  arrival
+              time at the source. Use the -early and -late parameters with the
+              -source parameter to specify the four different clock latencies.
+
+       -jitter <jitter_val>
+              Specifies  the  portion  of  source clock latency value that can
+              have cycle-to-cycle variation.  When calculating  CPPR   adjust-
+              ment  this portion is removed from  CPPR  adjustment for differ-
+              ent  clock edge checks (e.g., setup), but it remains as part  of
+              cppr adjustment for same clock edge checks (e.g., hold).
+
+       <latency>
+              Specifies  the  value  of  the  latency,  in library units, as a
+              floating point.
+
+       <pin_or_clock_list>
+              Specifies a list of clock waveform names or a list  of  pins  to
+              associate  with  the  clock latency. The pin can be a port or an
+              instance pin.
+
+              Setting source latency on a pin is ignored.
+
+       -max   Specifies the clock latency for a particular  operating  corner.
+              Apply the -max parameter to the maximum operating corner.
+
+       -min   Specifies  the  clock latency for a particular operating corner.
+              Apply the -min parameter to the minimum operating corner.
+
+       -rise/ -fall
+              Specifies the -rise or -fall parameter to the waveform at regis-
+              ter clock pins for ideal latency and  to  the  waveform  at  the
+              source for source latency. Ideal network latency does not change
+              polarity when crossing negative unate arcs.
+
+       -source
+              Specifies  a  source  latency. If you do not specify the -source
+              parameter, network latency is applied.
+
+Examples
+              * The following set of commands enable you to create a clock us-
+                ing the create_clock command and apply latency to the  created
+                clock using the set_clock_latency command:
+
+                create_clock CLK2 -period 20 [get_ports {clkA clkB clkD}]
+
+                set_clock_latency -source 2 {clkB clkD} # Define port settings
+
+                set_clock_latency -rise 5 {clkB clkD} # Define port settings
+
+                set_clock_latency  -early -late -source CLK1 # Define waveform
+                settings
+
+                set_clock_latency 3 -early -late -source CLK1 #  Define  wave-
+                form settings
+
+Related Information
+              * reset_clock_latency
+
+              * create_clock
+
+              * set_clock_transition
+
+              * set_clock_uncertainty
+
+              * set_input_delay
+
+              * set_output_delay
+
+              * set_propagated_clock
+
+                           Fri Apr 04 01:25:37 2025   set_clock_latency(25.10)

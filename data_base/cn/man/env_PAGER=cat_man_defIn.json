@@ -1,0 +1,111 @@
+{
+  "command": "defIn",
+  "is_cmd": true,
+  "summary": "加载指定的DEF文件",
+  "description": "defIn命令用于加载指定的DEF文件。该命令可以在导入设计后的任何阶段使用。典型用途包括：加载包含由Innovus或其他工具保存的布局规划的DEF文件；加载包含扫描链信息的DEF文件以便进行扫描链重排序；加载包含由Innovus或其他工具保存的单元布局和布线的DEF文件。加载DEF文件时，必须位于保存该DEF文件时的相同层次结构级别。Innovus软件根据对象类型以多种方式将DEF文件信息加载到数据库中，例如：轨道、网格单元、行、芯片区域（删除现有对象并读入新信息）；阻塞、填充单元、特殊网络（比较物理数据，若不存在则添加）；非默认规则、通孔（若不存在则添加）；网络（移除现有常规布线，添加DEF文件中的布线）；引脚（移除现有物理信息，添加DEF文件中的信息，电源/地引脚不存在则添加，非电源/地引脚则报错）；组、区域（匹配层次实例则附加区域约束，否则创建实例组）；组件（不能添加新的逻辑单元，但可以添加物理单元，如焊盘类单元、无信号引脚的覆盖类单元、具有+ SOURCE DIST的实例）。注意：defIn会忽略自引用的屏蔽段。",
+  "usage": "defIn [-help] <fileName> [-add_blockage] [-allWarning] [-components] [-deleteBump] [-deleteSpecialRoute] [-ignore_drcfill] [-ignore_pg_connectivity] [-nets] [-override_special_routing {pg signal logical physical all}] [-preserveShape] [-removeHalfWireExtensionOnPin] [-specialnets] [-specialRouteUserClass <user_class_name>] [-verilog_from_def_netlist_flow] [-incremental_routing]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个defIn参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定要加载的DEF文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-add_blockage",
+      "description": "将未定义的实例（COVER单元除外）转换为阻塞。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allWarning",
+      "description": "列出加载DEF文件时发出的所有警告消息。默认限制为前1000条警告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-components",
+      "description": "读取DEF文件的COMPONENTS部分，并忽略其他部分（除非指定了-nets或-specialnets参数）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-deleteBump",
+      "description": "在读取DEF文件之前删除数据库中的所有凸块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-deleteSpecialRoute",
+      "description": "在读取DEF文件之前删除数据库中的所有特殊布线，包括RDL布线以及设计中的电源和地特殊布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_drcfill",
+      "description": "忽略具有DRCFILL形状属性的特殊布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_pg_connectivity",
+      "description": "忽略SPECIALNETS和NETS部分中的电源地连接性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nets",
+      "description": "读取DEF文件的NETS部分，并忽略其他部分（除非指定了-components或-specialnets参数）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-override_special_routing",
+      "description": "根据DEF文件中指定的网络类型，删除数据库中对应网络的特殊布线。如果在读取DEF内容之前指定此选项，将删除网络上的特殊布线，然后读入新的布线。数据类型：枚举，可选值：pg, signal, logical, physical, all。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-preserveShape",
+      "description": "防止创建符号化的中心线连接布线数据，并保持布线数据原样。此选项将覆盖全局环境变量defInShapeBasedDefFile。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-removeHalfWireExtensionOnPin",
+      "description": "将所有与引脚重叠的线端点的半线宽延伸截断为零延伸。这对于由defOut -addHalfWireExtensionOnPin创建的DEF文件很有用，该命令强制NETS部分的所有布线使用默认的半线宽延伸。注意：使用此参数可能导致DRC违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specialRouteUserClass",
+      "description": "为从DEF文件读入的所有特殊布线设置指定的用户类名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-specialnets",
+      "description": "读取DEF文件的SPECIALNETS和VIAS部分，并忽略其他部分（除非指定了-components或-nets参数）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog_from_def_netlist_flow",
+      "description": "协调由loadDefFile命令生成的DEF和Verilog文件中的名称。如果需要检索与原始DEF文件匹配的任何信息，此过程是必需的。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-incremental_routing",
+      "description": "防止删除信号网络的整个布线，仅添加新的线和通孔。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

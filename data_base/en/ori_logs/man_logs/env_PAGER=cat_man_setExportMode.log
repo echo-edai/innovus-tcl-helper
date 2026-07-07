@@ -1,0 +1,107 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setExportMode(25.10)                                      setExportMode(25.10)
+
+Name
+       setExportMode - Controls certain aspects of how the software writes out
+       a Verilog netlist
+
+Syntax
+       setExportMode
+
+       [-help]
+
+       [-reset]
+
+       [-fullPinout {true | false}]
+
+       [-implicitPortMapping {true | false}]
+
+       Controls  certain  aspects  of  how  the  software writes out a Verilog
+       netlist.
+
+       Use the getExportMode command to return the current  settings  for  the
+       setExportMode command.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each setExportMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setExportMode.
+
+       -fullPinout {true | false}
+              Writes out all connected and unconnected pins in the netlist.
+
+              Default: false
+
+       -implicitPortMapping {true | false}
+              Writes out the netlist with implicit port mapping (that is,  or-
+              dered  port  connections or position-based port connections) for
+              hierarchical instances.
+
+              Default: false
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software  resets  all  setExportMode  parameters  to
+              their  default  values.  If you specify parameters after -reset,
+              the software resets only those parameters to their default  val-
+              ues.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+Examples
+       Assume the following hierarchical module:
+
+       module
+
+       block (out1, out2, out3, A, B, C);
+
+       endmodule
+
+              * The following example shows how the saveNetlist command writes
+                out an instance of the module block in the netlist by default:
+
+                block i1(.out2(Y), .A(n1), .B(n2), .C(n3));
+
+              * The following command instructs  the  saveNetlist  command  to
+                write out all connected and unconnected pins when it saves the
+                netlist:
+
+                setExportMode -fullPinout true
+
+                The  instance  of module block is written in the saved netlist
+                as follows:
+
+                block i1(.out1(), .out2(Y), .out3(), .A(n1), .B(n2), .C(n3));
+
+              * The following command instructs  the  saveNetlist  command  to
+                write  out  the netlist with implicit port mapping for hierar-
+                chical instances when it saves the netlist:
+
+                setExportMode -implicitPortMapping true
+
+                The instance of the module  block  is  written  in  the  saved
+                netlist as follows:
+
+                block i1( , Y, , n1, n2, n3);
+
+              * The  following command resets the -fullPinout parameter to its
+                default value:
+
+                setExportMode -reset -fullPinout
+
+              * The following command resets all setExportMode  parameters  to
+                their default values:
+
+                setExportMode -reset
+
+Related Information
+              * getExportMode
+
+              * saveNetlist
+
+                           Fri Apr 04 01:25:37 2025       setExportMode(25.10)

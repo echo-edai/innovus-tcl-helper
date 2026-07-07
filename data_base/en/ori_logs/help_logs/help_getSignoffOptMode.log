@@ -1,0 +1,324 @@
+Usage: getSignoffOptMode [-help] [-addInst] [-addLoad] [-allowSkewing]
+                         [-alongRouteBuffering] [-bufferCellList] [-checkType]
+                         [-clockCellList] [-clockMaxLevel] [-deleteInst]
+                         [-disableGeometryChecks] [-drvMargin] [-ecoFilePrefix]
+                         [-emType] [-fixCellEm] [-fixClockDrv] [-fixDataDrv]
+                         [-fixGlitch] [-fixHoldAllowSetupDegrade]
+                         [-fixHoldAllowSetupOptimization]
+                         [-fixHoldAllowSetupTnsDegrade] [-fixHoldVariationAware]
+                         [-fixHoldWithMargin] [-fixIrDrop] [-fixMaxCap]
+                         [-fixMaxTran] [-fixOsusGlitch] [-fixSiSlew]
+                         [-fixSlackInRangeLowerLimit]
+                         [-fixSlackInRangeUpperLimit] [-fixXtalk]
+                         [-fixXtalkPreserveHold] [-fixXtalkPreserveSetup]
+                         [-holdTargetSlack] [-holdTargetSlackPerView]
+                         [-holdXtalkDeltaThreshold] [-holdXtalkSlackThreshold]
+                         [-ignoreDrvChecks] [-keepTempFiles] [-legalOnly]
+                         [-loadCellList] [-loadEcoOptDb] [-loadIrdropDb]
+                         [-maxCapMargin] [-maxLocalDensity] [-maxOptRunTime]
+                         [-maxPaths] [-maxRunTime] [-maxSlack] [-maxTranMargin]
+                         [-numReportPaths] [-nworst] [-optimizeCoreOnly]
+                         [-optimizeReplicatedModules] [-optimizeSequentialCells]
+                         [-partitionListFile] [-pbaEcoRoute] [-pbaEffort]
+                         [-postMask] [-postStaTcl] [-powerAware]
+                         [-powerOptFocus] [-prefixName] [-preserveFiller]
+                         [-preStaTcl] [-resizeInst] [-retime] [-retimeDepth]
+                         [-retimeDepthEarly] [-retimeMode]
+                         [-routeCongestionThreshold] [-routingCongestionAware]
+                         [-saveEcoOptDb] [-selectDrvNetFile] [-selectDrvPinFile]
+                         [-selectHoldEndpoints] [-selectSetupEndpoints]
+                         [-setupRecovery] [-setupTargetSlack]
+                         [-setupTargetSlackPerView] [-setupXtalkDeltaThreshold]
+                         [-setupXtalkSlackThreshold] [-skewCoreOnly]
+                         [-skipDrvNetFile] [-specifyHoldEndpointsMargin]
+                         [-specifySetupEndpointsMargin] [-swapInst]
+                         [-upsizeInPowerOpt] [-useGaFillerList]
+                         [-usePfcDecapList] [-usePfcFillerList]
+                         [-usePfcRegularList] [-verbose] [-quiet] [-nonDefault]
+
+-help                                  # Prints out the command usage
+-addInst                               # Specifies whether timing optimizer is
+                                       # allowed to add buffer/delay/inverter
+                                       # cell instances. (bool, default=true)
+-addLoad                               # Specifies whether Hold optimizer is
+                                       # allowed to add dummy cell instances
+                                       # (bool, default=false)
+-allowSkewing                          # useful skew based setup opt
+                                       # (bool, default=false)
+-alongRouteBuffering                   # Allow buffer/inverter to be inserted
+                                       # along the route and not only at driver
+                                       # or sink terms. (bool, default=true)
+-bufferCellList                        # Specifies a list of buffer/delay cells
+                                       # that can be used for DRV and Hold
+                                       # optimizers, regardless of whether
+                                       # those cells have a "dont_use"
+                                       # attribute. (string, default="")
+-checkType                             # Check type for path based analysis.
+                                       # (enums={early late both}, default=both)
+-clockCellList                         # Restricts the list of
+                                       # buffers/inverter/gating cells that are
+                                       # allowed to be used by ECO on the clock
+                                       # tree. (string, default="")
+-clockMaxLevel                         # max level allowed for clock tree
+                                       # (int, default=0)
+-deleteInst                            # delete buffer for optimization
+                                       # (bool, default=true)
+-disableGeometryChecks                 # Performs Vth swapping without checking
+                                       # pins geometry. (bool, default=false)
+-drvMargin                             # Specifies a margin value by which
+                                       # ratio the drv check would be relaxed
+                                       # or tightened (float, default=0)
+-ecoFilePrefix                         # Specifies the prefix name for the ECO
+                                       # files generated. (string, default="")
+-emType                                # Specifies the current waveform
+                                       # calculation method when doing EM
+                                       # fixing.
+                                       # (enums={all avg rms peak}, default=all)
+-fixCellEm                             # Enables Cell EM violations fixing
+                                       # during DRV optimization.
+                                       # (bool, default=false)
+-fixClockDrv                           # fix max_cap/max_tran violations on
+                                       # clock nets (bool, default=false)
+-fixDataDrv                            # fix max_cap/max_tran violations on
+                                       # data nets (bool, default=true)
+-fixGlitch                             # fix nets with glitch
+                                       # (bool, default=false)
+-fixHoldAllowSetupDegrade              # Allow setup slack fixing in hold
+                                       # fixing.
+                                       # (enums={none low medium}, default=none)
+-fixHoldAllowSetupOptimization         # simultaneous hold and setup fixing
+                                       # (bool, default=false)
+-fixHoldAllowSetupTnsDegrade           # When active, the Setup Total Negative
+                                       # Slack can be degraded during Hold time
+                                       # violations fixing while still
+                                       # maintaining the Setup Worst Negative
+                                       # Slack in every Setup active views.
+                                       # (bool, default=false)
+-fixHoldVariationAware                 # Variation aware hold fixing.
+                                       # (bool, default=false)
+-fixHoldWithMargin                     # Specifies a slack margin value in
+                                       # nanoseconds for Hold time violations
+                                       # fixing. The purpose is to overfix any
+                                       # Hold violations by the amount of the
+                                       # margin value. This margin is not
+                                       # applied on nets that are already
+                                       # meeting the Hold target slack. 
+                                       # (float, default=0)
+-fixIrDrop                             # fix ir-drop hotspots
+                                       # (bool, default=false)
+-fixMaxCap                             # Enables max_cap violations fixing
+                                       # during DRV optimization.
+                                       # (bool, default=true)
+-fixMaxTran                            # Enables max_tran violations fixing
+                                       # during DRV optimization.
+                                       # (bool, default=true)
+-fixOsusGlitch                         # fix nets with osus glitch
+                                       # (bool, default=false)
+-fixSiSlew                             # Performs SI Slew fixing during DRV
+                                       # fixing using resizing and buffering
+                                       # techniques. (bool, default=false)
+-fixSlackInRangeLowerLimit             # Sets the lower slack limit for a
+                                       # violated path to be considered during
+                                       # timing closure.
+                                       # (float, default=-1.00000001504747e+30)
+-fixSlackInRangeUpperLimit             # Sets the upper slack limit for a
+                                       # violated path to be considered during
+                                       # timing closure.
+                                       # (float, default=1.00000001504747e+30)
+-fixXtalk                              # Reduces the crosstalk on the net that
+                                       # violates the thresholds set by the
+                                       # user. (bool, default=false)
+-fixXtalkPreserveHold                  # preserve hold slack in xtalk fixing
+                                       # (bool, default=false)
+-fixXtalkPreserveSetup                 # preserve setup slack in xtalk fixing
+                                       # (bool, default=false)
+-holdTargetSlack                       # Specifies a target slack value in
+                                       # nanoseconds for hold timing optimize
+                                       # (float, default=0)
+-holdTargetSlackPerView                # Specifies view-wise target slack
+                                       # values in nanoseconds for hold timing
+                                       # optimization (string, default="")
+-holdXtalkDeltaThreshold               # Crosstalk delta delay threshold for
+                                       # selecting nets in hold timing views
+                                       # when running Xtalk fixing.
+                                       # (float, default=0.3, min=0, max=9.22337203685478e+18)
+-holdXtalkSlackThreshold               # Slack threshold for selecting nets in
+                                       # hold timing views when running Xtalk
+                                       # fixing.
+                                       # (float, default=1000, min=0, max=9.22337203685478e+18)
+-ignoreDrvChecks                       # Ignores DRV checks during
+                                       # timing/area/power optimization.
+                                       # (bool, default=false)
+-keepTempFiles                         # To keep all the temporary files
+                                       # generated by D-MMMC and Tempus clients
+                                       # for debugging purposes.
+                                       # (bool, default=false)
+-legalOnly                             # Enables/disables legal location checks
+                                       # during resizing and buffering
+                                       # (bool, default=true)
+-loadCellList                          # Specifies the list of load cells
+                                       # (string, default="")
+-loadEcoOptDb                          # Path of directory where ECO Timing DB
+                                       # files must be loaded from.
+                                       # (string, default="")
+-loadIrdropDb                          # Path of directory where command
+                                       # debug_irdrop generated IR drop DB
+                                       # files are kept (string, default="")
+-maxCapMargin                          # Specifies the ratio by which the
+                                       # max_cap check would be relaxed or
+                                       # tightened
+                                       # (float, default=0, min=-10, max=0.99)
+-maxLocalDensity                       # threshold value for local density
+                                       # check. To enable give a value more
+                                       # than 0 (float, default=-1)
+-maxOptRunTime                         # If set to a positive value, would
+                                       # restrict the optimization runtime by
+                                       # that value, in minutes. (uint, default=0)
+-maxPaths                              # Specifies how many paths are getting
+                                       # retimed for ECO DB generation in PBA
+                                       # mode. (int, default=5000000)
+-maxRunTime                            # If set to a positive value, would
+                                       # restrict the command runtime by that
+                                       # value, in minutes. (uint, default=0)
+-maxSlack                              # Specifies the maximum GBA slack value
+                                       # to be used when selecting paths to be
+                                       # retimed for ECO DB generation in PBA
+                                       # mode. (float, default=0)
+-maxTranMargin                         # Specifies the ratio by which the
+                                       # max_tran check would be relaxed or
+                                       # tightened
+                                       # (float, default=0, min=-10, max=0.99)
+-numReportPaths                        # Number of paths printed after signoff
+                                       # timing analysis per view
+                                       # (int, default=50)
+-nworst                                # Specifies the number of paths to be
+                                       # retimed per endpoints for ECO DB
+                                       # generation in PBA mode. (int, default=50)
+-optimizeCoreOnly                      # Enables the tool to optimize timing or
+                                       # recover area/power only on register to
+                                       # register paths. (bool, default=false)
+-optimizeReplicatedModules             # Allows the tool to perform timing
+                                       # optimization inside replicated
+                                       # hierarchies while generating only one
+                                       # ECO file per sets of clones.  The cell
+                                       # name of the replicated hierarchies
+                                       # have to be listed in a file pointed by
+                                       # the -partitionListFile option.
+                                       # (bool, default=false)
+-optimizeSequentialCells               # Specifies whether the
+                                       # timing/area/power optimizer is allowed
+                                       # to optimize sequential cells.
+                                       # (bool, default=true)
+-partitionListFile                     # File containing list of partitions in
+                                       # the design (string, default="")
+-pbaEcoRoute                           # Enables PBA timing to be passed to
+                                       # ecoRoute for higher timing driven
+                                       # routing accuracy (bool, default=false)
+-pbaEffort                             # When enabling "high" effort mode, all
+                                       # the optimization engines will perform
+                                       # more aggressive timing closure or
+                                       # area/power recovery with respect to
+                                       # PBA timing and the expectation is to
+                                       # get better quality of results.
+                                       # (enums={medium high}, default=high)
+-postMask                              # enable post mask ECO mode
+                                       # (bool, default=false)
+-postStaTcl                            # File containing the TCL code that will
+                                       # be executed immediately after signoff
+                                       # timing analysis per view
+                                       # (string, default="")
+-powerAware                            # power awareness in all optimizers and
+                                       # transforms (bool, default=false)
+-powerOptFocus                         # focus for power optimization
+                                       # (enums={total leakage dynamic leakageOnly dynamicOnly}, default=total)
+-prefixName                            # Specifies the prefix to be assigned to
+                                       # the new instances inserted.
+                                       # (string, default=ESO)
+-preserveFiller                        # To enable preserve and restore of
+                                       # fillers (bool, default=true)
+-preStaTcl                             # File containing the TCL code that will
+                                       # be executed immediately prior to
+                                       # signoff timing analysis per view
+                                       # (string, default="")
+-resizeInst                            # enable/disable resizing transform
+                                       # (bool, default=true)
+-retime                                # To enable PBA-based timing report and
+                                       # optimization for of all optimizers.
+                                       # (enums={none aocv path_slew_propagation aocv_path_slew_propagation}, default=path_slew_propagation)
+-retimeDepth                           # Retime depth for exhaustive path based
+                                       # analysis.
+                                       # (enums={default infinite}, default=default)
+-retimeDepthEarly                      # Retime depth for exhaustive path based
+                                       # early analysis.
+                                       # (enums={default infinite}, default=default)
+-retimeMode                            # Retime mode for path based analysis.
+                                       # (enums={none path exhaustive}, default=path)
+-routeCongestionThreshold              # threshold value for route congestion
+                                       # buffering, value between 0 and 1
+                                       # (float, default=0.7, min=0, max=1)
+-routingCongestionAware                # Check routing congestion before adding
+                                       # buffers (bool, default=false)
+-saveEcoOptDb                          # Path of directory where ECO Timing DB
+                                       # files are saved.
+                                       # (string, default=ecoTimingDB)
+-selectDrvNetFile                      # list of nets to be optimized during
+                                       # DRV fixing (string, default="")
+-selectDrvPinFile                      # list of pins to be optimized during
+                                       # DRV fixing (string, default="")
+-selectHoldEndpoints                   # select end points for hold fixing
+                                       # (string, default="")
+-selectSetupEndpoints                  # select end points for setup fixing
+                                       # (string, default="")
+-setupRecovery                         # Forces Setup fixing to perform Setup
+                                       # timing recovery by using Vth swapping
+                                       # only. Useful feature to recover timing
+                                       # degradation after large ECO change
+                                       # during Power optimization.
+                                       # (bool, default=false)
+-setupTargetSlack                      # Specifies a target slack value in
+                                       # nanoseconds for setup timing optimize
+                                       # (float, default=0)
+-setupTargetSlackPerView               # Specifies view-wise target slack
+                                       # values in nanoseconds for setup timing
+                                       # optimization (string, default="")
+-setupXtalkDeltaThreshold              # Crosstalk delta delay threshold for
+                                       # selecting nets in setup timing views
+                                       # when running Xtalk fixing.
+                                       # (float, default=0.3, min=0, max=9.22337203685478e+18)
+-setupXtalkSlackThreshold              # Slack threshold for selecting nets in
+                                       # setup timing views when running Xtalk
+                                       # fixing.
+                                       # (float, default=1000, min=0, max=9.22337203685478e+18)
+-skewCoreOnly                          # dont skew flops which eventually
+                                       # launches/captures any IO path
+                                       # (bool, default=false)
+-skipDrvNetFile                        # list of nets to be excluded during DRV
+                                       # fixing (string, default="")
+-specifyHoldEndpointsMargin            # specify end point specific margin for
+                                       # hold fixing (string, default="")
+-specifySetupEndpointsMargin           # specify end point specific margin for
+                                       # setup fixing (string, default="")
+-swapInst                              # Enables/disables VT swap resizing.
+                                       # Setup/leakage optimizers do not honor
+                                       # this option and always perform
+                                       # VT-swapping. (bool, default=true)
+-upsizeInPowerOpt                      # Allow upsizing of cells for total
+                                       # power (bool, default=false)
+-useGaFillerList                       # original of enable post mask mode to
+                                       # use cells from the specified list at
+                                       # GA filler sites (string, default="")
+-usePfcDecapList                       # Specify list of PF decap cells that
+                                       # are allowed to be removed in post mask
+                                       # mode (string, default="")
+-usePfcFillerList                      # Specify list of PF filler cells that
+                                       # are allowed to be removed/reinserted
+                                       # in post mask mode (string, default="")
+-usePfcRegularList                     # Specify list of PF filler logic/ECO
+                                       # cells that are allowed to be used
+                                       # during optimization in post mask mode
+                                       # (string, default="")
+-verbose                               # Specifies whether the command should
+                                       # output log file reporting with
+                                       # verbosity or not. (bool, default=false)
+-quiet                                 # Displays the current settings in Tcl list format only
+-nonDefault                            # Displays the current settings which are not default settings

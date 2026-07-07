@@ -1,0 +1,475 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+defOut(25.10)                                                    defOut(25.10)
+
+Name
+       defOut - Writes the specified information to a DEF file
+
+Syntax
+       defOut
+
+       [-help]
+
+       <fileName>
+
+       [-addHalfWireExtensionOnPin]
+
+       [-allLayers]
+
+       [-bumpAsPin]
+
+       [-cutRow]
+
+       [-cut_pg_rail]
+
+       [-earlyGlobalRoute]
+
+       [-flatten_via_pillar]
+
+       [-floorplan]
+
+       [-ioRow]
+
+       [-netlist]
+
+       [-noCoreCells]
+
+       [-noPrintWildCard]
+
+       [-noSpecialNet]
+
+       [-noStdCells]
+
+       [-noTracks]
+
+       [-no_covered_wire_patch]
+
+       [-no_virtual_trim]
+
+       [-outputMaskLayers <listOfLayers>]
+
+       [-scanChain]
+
+       [-selected]
+
+       [-skip_trimmetal_layers]
+
+       [-specialRouteUserClass <user_class>]
+
+       [-trimmetal_gap_fill]
+
+       [-unit <unit_per_micron>]
+
+       [-unplaced]
+
+       [-useEEQCellWithLibertyInfo]
+
+       [-usedVia]
+
+       [-verilog_from_def_netlist_flow]
+
+       [-withShield]
+
+       [-routing  [-routing_to_specialnet  | -wrongway_routing_as_specialroute
+       ]]
+
+       Writes  the specified information to a DEF file. By default, the defOut
+       command writes floorplan, and all placed and unplaced standard cell in-
+       formation to the DEF file.
+
+       The defOut command does not support multiple groups per region. The de-
+       fOut command supports rectilinear die area.
+
+       By default, the defOut command does not write out any NONDEFAULTRULE or
+       VIA defined in the LEF file. To write out a LEF via, set the  defOutLe-
+       fVia  global environment variable to 1. To write out a nondefault rule,
+       set the defOutLefNDR global environment variable to 1.
+
+       You can use the defOut command after importing a design.
+
+       Note: You can select the DEF version for your output  file  by  setting
+       the lefDefOutVersion global environment variable to the version number.
+       For  example, to set the version number to 5.6, type the following com-
+       mand:
+
+       set lefDefOutVersion 5.6
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each defOut parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man defOut.
+
+       -addHalfWireExtensionOnPin
+              Typically,  signal  routing in the NETS section uses the default
+              half-width wire extensions everywhere except for zero extensions
+              on pins. This parameter forces the zero-extension on pins to the
+              default half-width extension, and makes the DEF  compatible  for
+              older tools that do not support DEF zero wire extensions.
+
+              Note: Using this parameter can cause DRC violations.
+
+       -allLayers
+              By default, only wires and vias on routing layers are written to
+              the  DEF.  This option will write out wires, vias, and shapes on
+              non-routing layers to the SPECIALNETS section. This includes the
+              LEF MASTERSLICE layers, IMPLANT layers, and ROUTING or CUT  lay-
+              ers  with  sub-types  MIMCAP  or PASSIVATION. These shapes might
+              have been added with add_shape, or imported from DEF or  OA  di-
+              rectly.
+
+       -bumpAsPin
+              Writes  bump  cells  as top-level pins in the PINS section. If a
+              PORT in a block has a PASSIVATION layer, the tool treats  it  as
+              an embedded bump. defOut -bumpAsPin outputs all the layer infor-
+              mation  for  embedded  bumps  in  the  PIN section as for normal
+              bumps. Use the -bumpAsPin parameter to generate a DEF  file  for
+              use with Quantus gate-level extraction.
+
+       -cut_pg_rail
+              Cuts the pg rails.
+
+       -cutRow
+              Cuts  rows against placement obstructions, block halos, or power
+              domain fence minimum gaps.
+
+              Default: Placement blockages are written to the DEF file.
+
+       -earlyGlobalRoute
+              Writes information about the wires  generated  by  Early  Global
+              Router  to the NETS section of the DEF file. This option implies
+              the -routing parameter; therefore, if you specify  this  parame-
+              ter, you do not need to specify -routing.
+
+       <fileName>
+              Specifies the DEF output file.
+
+              If  you  add  .gz as a suffix, the defOut command will automati-
+              cally compress the generated file.
+
+       -flatten_via_pillar
+              Some advanced nodes that use SADP (self-aligned double  pattern-
+              ing)  use  via-pillars.  A via-pillar is a single via definition
+              with two or more disjoint metal-shapes on the  bottom  (or  top)
+              routing  layer of the via. This option will flatten the via pil-
+              lar into several separate "normal" vias (e.g. a via with only  a
+              single metal shape on the top and bottom via layers). The multi-
+              ple  normal  vias will be geometrically equivalent to the single
+              via pillar. This can be useful for external tools  that  do  not
+              support a via pillar.
+
+              Note:  DEF created with this option should not be read back into
+              Innovus. It should only be used for external tools that  do  not
+              support via-pillars properly.
+
+       -floorplan
+              Writes  the floorplan data to the DEF file. This information in-
+              cludes rows, chip size, CLASS PAD  instances,  CLASS  BLOCK  in-
+              stances, and all placed standard cells.
+
+       -ioRow Generates  I/O  rows  based on I/O pad placement, and writes the
+              I/O row information to the DEF file.
+
+       -netlist
+              Writes the netlist (that is, the routing  connectivity  informa-
+              tion)  to  the DEF file. This option is typically used after the
+              design has been placed.
+
+              Note: Use -netlist with -unplaced if the  design  has  not  been
+              placed.
+
+       -noCoreCells
+              Excludes  core  cell information from the DEF file to reduce the
+              data size for import into APD.
+
+       -noPrintWildCard
+              Suppresses the use of the wildcard format to  represent  special
+              net connectivity.
+
+       -noSpecialNet
+              Excludes special vias from the DEF file.
+
+       -noStdCells
+              Excludes  placed and unplaced standard cell information from the
+              DEF file.
+
+              Note:
+
+              * If you specify this parameter with the -floorplan or -unplaced
+                parameters, it overrides their setting.
+
+              * Fixed and cover instances are considered as pre-placed  floor-
+                plan objects. This option does not apply to them.
+
+       -noTracks
+              Excludes output track and gcell statements to the DEF file.
+
+       -no_covered_wire_patch
+              Excludes  the  wire  patch  that  is  fully covered by any metal
+              shape, such as routing wire or physical pin. The wire patch  can
+              be  on any net, and it can be a regular routing or special rout-
+              ing.
+
+       -no_virtual_trim
+              Excludes the trim metal shapes on a virtual trim metal layer.
+
+       -outputMaskLayers <listOfLayers>
+              Specifies the output MASK data on the specified layers only.
+
+              The valid values for this option are "metal", "cut", or  a  list
+              of  layers  separated by a space character in a form of either a
+              single layer or a range of layers. For example,  -outputMaskLay-
+              ers {Metal1:Metal3 Via23}
+
+              You  can  also  specify none as a value. When none is specified,
+              defOut does not give any MASK data on any layer in the output.
+
+       -routing
+              Writes the routing information to the NETS section  of  the  DEF
+              file.  If  the  -routing option is not specified, both power and
+              signal vias are not written to the DEF file.
+
+              Note: The -routing parameter  implies  the  -netlist  parameter;
+              therefore,  if  you  specify  this parameter, you do not need to
+              specify -netlist.
+
+       -routing_to_specialnet
+              Writes all regular NETS routing to the SPECIALNETS  section  in-
+              stead.
+
+              When  you  use defOut -routing_to_specialnet -selected, the tool
+              writes out the selected routing to special routing.
+
+              It converts all regular routing wires and vias that are normally
+              written to the NETS section, to SPECIALNETS routing as  RECT  or
+              VIA  statements.  This  is intended to be read by analysis tools
+              (such as RC extraction tools) that do  not  understand  all  the
+              NETS  routing  properly. Some tools do not understand some newer
+              DEF syntax, or how to interpret wrong-way routes that are  wider
+              than  the  default  routing-rule  for some advanced nodes due to
+              WIDTH, WIDTHTABLE or SPANLENGTHTABLE rules  with  WRONGDIRECTION
+              values.
+
+              Note:  Specialnet  routing  cannot  be  modified  by  the signal
+              router. So, it should not be read back for any flows  that  will
+              require optimization or future incremental or ECO routing.
+
+              This option cannot be used with the -earlyGlobalRoute option.
+
+       -scanChain
+              Writes  scan  chain  information to the DEF file. This option is
+              mandatory to ensure that START/STOP instances of scan chain  are
+              preserved  during timing/power closure when reloading the DEF in
+              another session.
+
+       -selected
+              Writes out information for selected as follows:
+
+              * If an instance or net is selected, writes only the DEF  header
+                and  COMPONENT  section for instances you have selected in the
+                Innovus main window. If you  specify  the  -routing  parameter
+                along  with this parameter, the defOut command writes selected
+                nets with their special routing and  regular  routing  to  the
+                NETS section of the DEF file.
+
+              * If  a  net is not selected but individual segments or vias are
+                selected, writes only the selected vias to the DEF  file.  All
+                LEF  vias  are excluded by default. If the defOutLefVia global
+                variable is set to 1, defOut -selected includes  selected  LEF
+                vias  when writing out selected vias. If the -noSpecialNet op-
+                tion is specified, special vias on the selected net  will  not
+                be written out.
+
+              * If  a bump is selected, writes bump pin connection to the SPE-
+                CIALNETS section of the DEF file. If a  net  is  selected  but
+                bump  pins  are not individually selected, bump pin connection
+                is not written.
+
+              * If a blockage is selected in the main window, writes  blockage
+                information to the DEF file.
+
+              * If  a  group  is  selected,  all the instances in the selected
+                groups are treated as selected and are writtten out.
+
+       -skip_trimmetal_layers
+              Specifies not to write trimmetal shapes in the FILLS section.
+
+       -specialRouteUserClass <user_class>
+              Specifies the user class for special route.
+
+       -trimmetal_gap_fill
+              Writes trimmetal gap fills to a dummy  net  _TRIMMETAL_FILLS_RE-
+              SERVED in the SPECIALNETS section.
+
+       -unit <unit_per_micron>
+              Defines the units for the DEF file.
+
+       -unplaced
+              Writes  information  about  unplaced  standard  cells to the DEF
+              file.
+
+       -useEEQCellWithLibertyInfo
+              Specifies to use the EEQ cell with the timing  library  informa-
+              tion as the master cell of a leaf instance.
+
+       -usedVia
+              Specifies that only used vias should be written to the DEF file.
+              Unused  vias  are ignored. All LEF vias are also excluded by de-
+              fault. To include used LEF vias in the DEF file, set the defOut-
+              LefVia global variable is set  to  1  before  specifying  defOut
+              -usedVia.
+
+              * If  the -routing option is specified along with -usedVia, used
+                signal vias are also written out.
+
+              * If the -noSpecialNet option is specified along with  -usedVia,
+                used special vias are not written out.
+
+              * If  you  specify both -usedVia and -selected, the -usedVia op-
+                tion is ignored and only selected vias are written to the  DEF
+                file. The following warning message is issued:
+
+                **WARN:  (ENCDF-1039): Option -usedVia will be ignored because
+                option -selected is specified. Only selected vias will be out-
+                put.
+
+              * If neither -selected nor -usedVia is specified and the defOut-
+                LefVia variable is set to 0 (default), all DEF vias are  writ-
+                ten out.
+
+              * If neither -selected nor -usedVia is specified and the defOut-
+                LefVia  variable is set to 1, all DEF and LEF vias are written
+                out.
+
+       -verilog_from_def_netlist_flow
+              Reconciles the names in the DEF and Verilog files  generated  by
+              the  loadDefFile  command.  The  loadDefFile command generates a
+              flat Verilog file in which all of the special characters are es-
+              caped. Use this parameter to convert the escaped names  back  to
+              the original names in the DEF file.
+
+       -withShield
+              By  default,  defOut does not write out the shielding routing on
+              the power/ground net when outputting regular routing of selected
+              nets in NETS section.  When  -withShield  is  specified,  defOut
+              writes  out those shielding routing (if any) on the power/ground
+              net which is in the SPECIALNETS section.  The-withShield  option
+              must be used with the -routing and -selected options.
+
+              Note:  Multiple  nets  can  be selected. If none of the selected
+              nets have shielding routing, the -withShield option has  no  ef-
+              fect.
+
+       -wrongway_routing_as_specialroute
+              Writes wrong-way routing in the SPECIALNETS section.
+
+              This  option  duplicates any wrong-way routing segments that re-
+              quire extra-width into the SPECIALNETS routing section as a RECT
+              with +SHAPE DRCFILL.
+
+              This option is intended to be used for tools (such as RC extrac-
+              tion tools) that do not understand how to increase the width  of
+              DEF  wrong-way  NETS routing properly. DEF requires wider widths
+              for some wrong-way routes due to LEF DRC rules using the  WIDTH,
+              WIDTHTABLE, or SPANLENGTHTABLE statements along with WRONGDIREC-
+              TION values. These types of tools normally understand SPECIALNET
+              RECT  statements and can merge the SPECIALNET RECT on top of the
+              NETS wrong-way routing segment and  therefore  use  the  correct
+              width. The duplicate SPECIALNETS RECTs are given the +SHAPE DRC-
+              FILL  keyword  in  order  to make it easy to filter them out for
+              tools that do not need them.
+
+              When loading back the DEF with these  DRCFILL,  use  defIn  -ig-
+              nore_drcfill  to ignore these duplicate wrong-way direction seg-
+              ments.
+
+Example
+              * The following command writes floorplanning data, and  informa-
+                tion on placed and unplaced standard cells to TOPCHIP_SP.def:
+
+                defOut -floorplan -unplaced TOPCHIP_SP.def
+
+              * The  following command also writes floorplanning data, and in-
+                formation on placed and unplaced standard cells:
+
+                defOut test.def
+
+              * The following command writes floorplan and standard  cell  in-
+                formation  to  the  DEF  file.  It does not write out unplaced
+                standard cell information.
+
+                defOut -floorplan
+
+              * The following command excludes all information on  placed  and
+                unplaced standard cells from the DEF file:
+
+                defOut -floorplan -noStdCells
+
+                The resulting DEF file contains floorplan data only.
+
+              * The following command writes the shield wires that are shield-
+                ing the selected nets to the DEF file:
+
+                defOut -selected -routing -withShield test.def
+
+              * The  following  command writes bump cells as top-level pins in
+                the PINS section of the test.def file:
+
+                defOut -bumpAsPin test.def
+
+                The PINS section in the test.def file is as follows:
+
+                ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                PINS 102 ;
+
+                - iot_schm_2m16m_3v + NET iot_schm_2m16m_3v + DIRECTION OUTPUT
+                + USE SIGNAL
+
+                + SPECIAL + POLYGON ap ( 93300 65970 ) ( 65970 65970 )
+
+                ( 65970 93300 ) ( 27330 93300 ) ( 27330 65970 ) ( 0 65970 )
+
+                ( 0 27330 ) ( 27330 27330 ) ( 27330 0 ) ( 65970 0 )
+
+                ( 65970 27330 ) ( 93300 27330 ) + FIXED ( 386690 2658905 ) N ;
+
+                - tck + NET tck + DIRECTION INPUT + USE SIGNAL
+
+                + SPECIAL + POLYGON ap ( 93300 65970 ) ( 65970 65970 )
+
+                ( 65970 93300 ) ( 27330 93300 ) ( 27330 65970 ) ( 0 65970 )
+
+                ( 0 27330 ) ( 27330 27330 ) ( 27330 0 ) ( 65970 0 )
+
+                ( 65970 27330 ) ( 93300 27330 ) + FIXED ( 53350 2658905 ) N ;
+
+                +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Related Information
+              * defHierChar
+
+              * defOutLefNDR
+
+              * defOutLefVia
+
+              * defOutPolygonDieArea
+
+              *
+
+                defStreamOutCheckUncolored
+
+              * lefDefOutVersion
+
+              *
+
+                Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                     * Using a Design Flow that Includes Astro or Apollo
+
+                           Fri Apr 04 01:25:37 2025              defOut(25.10)

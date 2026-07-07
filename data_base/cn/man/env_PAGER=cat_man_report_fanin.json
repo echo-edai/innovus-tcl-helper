@@ -1,0 +1,51 @@
+{
+  "command": "report_fanin",
+  "is_cmd": true,
+  "summary": "报告指定端口、引脚或网络的扇入网络，支持不受时序图约束（如set_disable_timing和case analysis）的锥形遍历。",
+  "description": "该命令允许进行一种不依赖于时序图的锥形遍历，即不会被set_disable_timing和case analysis设置所阻断。默认情况下，其追踪行为与时序视图以及使用all_fanin和all_fanout命令生成的报告相匹配。报告会明确指出是否遍历了被禁用的或处于case analysis状态的时序弧。",
+  "usage": "report_fanin -to <pin_port_net_list> [-trace_through {case_disable | user_disable | all}] [-pin_levels <numOfPinLevels>] [-view <viewName>] [-nosplit] [{> | >> } <filename>]",
+  "options": [
+    {
+      "name": "-to",
+      "description": "指定一个引脚、端口或网络的列表或集合。也允许混合列表或异构集合。",
+      "required": true,
+      "type": "pin_port_net_list"
+    },
+    {
+      "name": "-trace_through",
+      "description": "允许遍历被禁用的时序弧。可选值：case_disable（遍历因set_case_analysis禁用的弧，不遍历因set_disable_timing禁用的弧）、user_disable（遍历因set_disable_timing禁用的弧，不遍历因set_case_analysis禁用的弧）、all（遍历所有弧）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_levels",
+      "description": "指定输出的期望深度。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-view",
+      "description": "指定在特定视图中被禁用的时序弧。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nosplit",
+      "description": "指定报告中的长名称不会被分割成多行。注意：应在指定set_table_style -no_frame_fix_width参数后使用此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": ">",
+      "description": "将报告写入指定的文件名。如果文件已存在，软件会覆盖它。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": ">>",
+      "description": "将报告写入指定的文件名。如果文件已存在，软件会将报告内容追加到文件末尾。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

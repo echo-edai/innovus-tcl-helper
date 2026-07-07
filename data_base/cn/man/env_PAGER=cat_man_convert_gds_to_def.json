@@ -1,0 +1,135 @@
+{
+  "command": "convert_gds_to_def",
+  "is_cmd": true,
+  "summary": "一个将GDSII文件转换为DEF文件以进行电源/地线签核分析的GDS2DEF工具。",
+  "description": "这是一个GDS2DEF工具，用于将给定的GDSII文件转换为DEF文件，以便进行电源/地线签核分析。该工具可以转换单元级GDS和全芯片级GDS。生成的DEF文件包含所有电源/地线布线的几何图形、指定的电源/地线引脚信息、组件以及逻辑连接信息。",
+  "usage": "convert_gds_to_def [-help] [-black_box_cell_file <filename>] -gds_file <filename> -gds_layermap <filename> [-inst_name_file <filename>] -net_location_file <filename> [-output_components {ALL | NONE | CONN}] -output_def_file <filename> [-output_lef_macros <filename>] -power_grid_library <libraryname> -top_cell <cellname> [-use_gds_label {ALL | TOP | <<tech_layer_name>> | <<cell_name>>:<<tech_layer_name>> | <<cell_name>>:ALL}] [-verilog_file <filename>] [-spef_file<filename>] [-esd_marker_layer_file <filename>] [-esd_cell_bbox_file <filename>] [-inst_name_prefix <prefix>] [-ignore_gds_inst_name] [-print_complete_short_path] [-extract_signal_net_logic_info_only] [-zero_pin_size]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-black_box_cell_file",
+      "description": "指定一个包含黑盒单元列表的文件名，工具将忽略这些单元。可以指定精确字符串匹配和通配符搜索。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gds_file",
+      "description": "（必需）指定输入GDS文件的名称。GDSII文件中的顶层单元名称是生成DEF中的设计名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-gds_layermap",
+      "description": "（必需）指定GDS层与技术层之间的映射文件。提取映射文件中定义的所有层，忽略未定义的层。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-inst_name_file",
+      "description": "指定一个包含生成DEF中实例名称的文件名，格式为：<x坐标> <y坐标> <实例名>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net_location_file",
+      "description": "（必需）指定包含需要考虑的网表引脚位置列表的网表位置文件名。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-output_components",
+      "description": "指定在GDS到DEF转换期间要打印在DEF文件COMPONENTS部分中的组件。默认值为ALL。选项：ALL（输出所有实例）、NONE（不打印实例）、CONN（仅输出具有逻辑连接的实例）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output_def_file",
+      "description": "（必需）指定输出DEF文件的名称。如果给定的DEF名称包含“.gz”，软件将对DEF文件进行gzip压缩以减小文件大小。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-output_lef_macros",
+      "description": "指定一个包含要为其生成LEF文件的宏列表的文件名。为每个宏生成一个LEF文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_grid_library",
+      "description": "（必需）指定合并的电源网格库（.cl）的名称。只能指定一个.cl库。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-top_cell",
+      "description": "（必需）指定GDSII文件中的顶层单元名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-use_gds_label",
+      "description": "指定选择文本标签的条件。选项：ALL（使用GDS中的所有文本标签）、TOP（仅使用顶层文本标签）、<<tech_layer_name>>（使用指定层上的所有文本标签）、<<cell_name>>:<<tech_layer_name>>（使用指定GDS单元在指定层上的所有文本标签）、<<cell_name>>:ALL（使用指定GDS单元的所有文本标签）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verilog_file",
+      "description": "指定输出Verilog文件的名称。此参数允许您使用GUI显示纯GDS流程的轨道分析结果。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spef_file",
+      "description": "指定SPEF文件的名称，该文件可用于在生成的DEF文件中包含信号网。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_marker_layer_file",
+      "description": "指定一个文件，其中包含ESD单元/实例名称列表及其表示ESD单元边界框的对应GDS标记层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_cell_bbox_file",
+      "description": "指定一个文件，其中包含每个ESD单元的边界框。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst_name_prefix",
+      "description": "为输出DEF和Verilog文件中的所有实例名称指定一个前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignore_gds_inst_name",
+      "description": "指定忽略指定GDS文件中的实例名称，软件将自动为输出DEF和Verilog文件中的所有实例分配实例名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-print_complete_short_path",
+      "description": "指定在两个网络之间发生短路时打印完整的短路路径。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extract_signal_net_logic_info_only",
+      "description": "指定仅打印输出DEF文件NETS部分中信号网的逻辑连接。如果未指定此参数，软件会在DEF文件的SPECIALNETS部分打印信号网的逻辑连接和布线形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-zero_pin_size",
+      "description": "指定在输出DEF文件中将引脚形状设置为大小为零的“(0 0)(0 0)”。当端口形状位于绘制形状（金属几何图形）之外，且端口标签定义在几何图形边缘附近时，可以使用此参数。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

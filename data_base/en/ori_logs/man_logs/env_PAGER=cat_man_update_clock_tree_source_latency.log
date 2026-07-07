@@ -1,0 +1,98 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+update_clock_t...source_latency(25.10)  update_clock_t...source_latency(25.10)
+
+Name
+       update_clock_tree_source_latency  - Stores clock arrival and transition
+       times at the clock tree source group roots in preparation for multi-tap
+       CTS
+
+Syntax
+       update_clock_tree_source_latency
+
+       [-help]
+
+       -clock_tree_source_groups <source_group_list>
+
+       Stores clock arrival and transition times  at  the  clock  tree  source
+       group roots in preparation for multi-tap CTS.
+
+       This  command  may  be  helpful for configuring arrival times for clock
+       structures in which a mesh drives the source group  roots.  With  other
+       structures  such  as  H-tree,  which  have a single driver per net, the
+       source group roots are usually defined as generated clock trees and CTS
+       will automatically propagate the clock arrival  times  from  the  clock
+       source,  through  the  drive  structure, up to the inputs of the source
+       group roots.  Flexible H-tree synthesis takes care of all this automat-
+       ically.  However for mesh applications, the  CTS  clock  specification,
+       clock   trees   defined   by   the   create_ccopt_clock_tree  and  cre-
+       ate_ccopt_generated_clock_tree commands, cannot include nets with  mul-
+       tiple  drivers,  so  CTS  cannot  automatically propagate arrival times
+       through the clock mesh. For these structures, the source group is typi-
+       cally defined as a collection of non-generated clock trees, and the ar-
+       rival times are explicitly annotated at their roots before the start of
+       CTS.
+
+       This command simplifies the process by querying the timing  engine  for
+       arrivals  and transitions and setting the source_latency and source_in-
+       put_max_trans properties at the roots of the specified source group  or
+       groups.
+
+       Note:  The  update_clock_tree_source_latency command queries the timing
+       graph to get arrival times and transitions. If timing  is  not  already
+       available,  the command will first perform a timing graph update, which
+       may take some time. Also, the command assumes  that  for  a  particular
+       source group there is a single common clock phase present at all roots.
+       If  there is no common clock phase at all roots, or if there are multi-
+       ple common clocks phases, the command will issue an error  message  and
+       quit.  Also,  if  a specified source group includes any generated clock
+       trees, the command will issue an error message and quit.
+
+Parameters
+       -help  Outputs a brief description of the  update_clock_tree_source_la-
+              tency  command.  For  a detailed description of the command, use
+              the man command:
+
+              man update_clock_tree_source_latency
+
+       -clock_tree_source_groups <source_group_list>
+              The list of clock tree source groups for whose clock  roots  the
+              latencies will be stored. This parameter is required to be spec-
+              ified.
+
+Example
+       The  following command updates the latencies for a single source group,
+       four_taps. In this case, timing is  already  available  and  no  timing
+       graph update is required.
+
+       update_clock_tree_source_latency -clock_tree_source_groups four_taps
+
+       Updating clock tree source latencies for source group 'four_taps'.
+
+       Found common clock 'clock' at all source group roots.
+
+       Set source timing for 4 roots of source group 'four taps'.
+
+       dly_abc_worst:
+
+          latency:   late  rise:  [0.565ns,  0.602ns],  late  fall:  [0.816ns,
+       0.852ns], early rise: 0.000ns, early fall: 0.000ns
+          transition: late: [0.119ns, 0.120ns], early: [0.119ns, 0.120ns]
+
+Related Information
+              * create_ccopt_clock_tree
+
+              * create_ccopt_generated_clock_tree
+
+              * The following properties:
+
+                * source_latency
+
+                * source_input_max_trans
+
+       For detailed information about the  above  properties,  see  the  CCOpt
+       Properties  chapter  in  the  Innovus User Guide. You can also view the
+       property help by running the following command:
+
+       get_ccopt_property -help <property name>
+
+                           Fri Apr 04 01:u2p5d:a3t7e_2c0l2o5ck_t...source_latency(25.10)

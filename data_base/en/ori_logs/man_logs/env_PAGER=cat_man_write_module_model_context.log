@@ -1,0 +1,164 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_module_model_context(25.10)            write_module_model_context(25.10)
+
+Name
+       write_module_model_context  -  Creates  a  context model for a specific
+       cell or a master/clone instance
+
+Syntax
+       write_module_model_context
+
+       [-help]
+
+       {-cell <cellName> | -master_clone_inst <master_clone_inst>}
+
+       [-tag t<ag_name>]
+
+       [-type {extraction_context timing_context}]
+
+       [-type_specific_options <type_specific_options>]
+
+       Creates a context model for a specific cell or a master/clone instance.
+       This context model can be loaded additionally with its design later  in
+       the flow.
+
+Parameters
+       -cell <cellName>
+              Specifies  the cell name(s) to be loaded. You can specify a list
+              of cell names.
+
+              Data_type: string, required
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each write_module_model_context parameter. For a
+              detailed  description  of the command and all of its parameters,
+              use the man command:
+
+              man write_module_model_context
+
+       -master_clone_inst <instance_name>
+              Specifies the instance name of a master/clone module.  Use  this
+              option if the instance has clone(s).
+
+              Data_type: string, optional
+
+       -tag <tag_name>
+              Specifies the output tag name.
+
+              Default: latest
+
+              Data_type: string, optional
+
+       -type {extraction_context timing_context}
+              Specifies the type of the generated context model.
+
+              * extraction_context:  Writes the extraction context information
+                of specified modules/instances.
+
+              * timing_context: Writes the timing context information of spec-
+                ified modules/instances.
+
+              Data_type: enum, optional
+
+       -type_specific_options
+              Specifies the options of the type model.
+
+              * For  extraction_context  type  of model, the type specific op-
+                tions available are:
+
+                {-extension <distance> |  -surrounding_tag  <name>  |  -ground
+                <name>}
+
+                * -extension <distance>
+
+                  Specifies the block halo distance (in microns) where routing
+                  data will be included in an output DEF file.
+
+                  Default: 10
+
+                * -surrounding_tag name
+
+                  Specifies the surrounding object tag name.
+
+                  Default: Tag name of the current loaded design.
+
+                * -ground name
+
+                  Specifies  the  ground net that the surrounding nets will be
+                  tied to.
+
+              * For timing_context type of model, the  type  specific  options
+                available are:
+
+                {-skip_interface_paths | -overwrite | -with_constraints}
+
+                * -skip_interface_paths
+
+                  Specify this option if the module is instantiated many times
+                  at  the  full-chip top design. It preserves the context data
+                  impacting only internal reg-reg paths. During analysis  with
+                  this context data, interface paths will be unconstrained.
+
+                * -overwrite
+
+                  Specify this option to overwrite the existing timing_context
+                  model. It overwrites the existing context data.
+
+                *
+
+                  -with_constraints
+
+                  Specify  this  option  to  write the SDC file of each of the
+                  specified module inside the corresponding  sub  directories.
+                  This  option  is  supported only in SMSC flow and for single
+                  instantiated modules.
+
+              Data_type: string, optional
+
+Example
+              * The following command creates an extraction context model  for
+                cell  ptn_wrapper with routing data within 50 micron halo dis-
+                tance from ptn_wrapper LEF boundary:
+
+                restore_module_model dtmf_recvr_core -tag init -noTiming
+
+                # Ensure that routing to be cut around specified object should
+                be a LEF
+
+                set_module_model  -cell  ptn_wrapper  -type  lef  -tag  my_ex-
+                tract_v1
+
+                commit_module_model               -mmmc_file               de-
+                sign/dtmf_recvr_core.enc.dat/viewDefinition.tcl
+
+                earlyGlobalRoute
+
+                write_module_model_context  -cell  ptn_wrapper   -tag   my_ex-
+                tract_v1  -type_specific_options  {-extension  50 -ground vss1
+                init} -type extraction_context
+
+Related Information
+              * check_module_model
+
+              * commit_module_model
+
+              * create_module_model
+
+              * report_module_model
+
+              * restore_module_model
+
+              * savePartition
+
+              * set_module_model
+
+              * update_module_model
+
+              * Hierarchical and Prototyping Flow chapter in the Innovus  User
+                Guide
+
+                *
+
+                  Integrated Hierarchical Database Flow
+
+                           Fri Apr 04 01:25:37wr2i0t2e5_module_model_context(25.10)

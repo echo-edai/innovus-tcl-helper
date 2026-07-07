@@ -1,0 +1,145 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_max_capacitance(25.10)                          set_max_capacitance(25.10)
+
+Name
+       set_max_capacitance  - Sets the maximum capacitance limit on the speci-
+       fied instance pin, ports of the top cell, the specified designs, and/or
+       clock waveforms
+
+Syntax
+       set_max_capacitance
+
+       [-help]
+
+       <capacitance_limit>
+
+       <object_list>
+
+       [-clock_path]
+
+       [-data_path]
+
+       [-fall]
+
+       [-override]
+
+       [-rise]
+
+       Sets the maximum capacitance limit on the specified instance pin, ports
+       of the top cell, the specified designs,  and/or  clock  waveforms.  The
+       pins  of cell instances of timing libraries will have their own maximum
+       constraint. The software will pick the more  aggressive  value  of  the
+       two.
+
+       When  set on a port, the total capacitance of the net connected to that
+       port must be less than or equal to the specified limit. Maximum capaci-
+       tance limits also come from library objects, which is the default maxi-
+       mum capacitance limit of libraries and the maximum capacitance limit on
+       library cell pins. Pins in the  design  inherit  the  limits  from  li-
+       braries.
+
+       Note: The limit set on the top cell applies to its ports. Thus, if max-
+       imum capacitance limits are set on the top cell and its ports, the most
+       constraining limit will apply to the ports.
+
+       When  limits  are  set  on  a  clock waveform, you can use -clock_path,
+       -data_path, -rise, and -fall parameters to provide more specifications.
+
+       The set_max_capacitance constraint on clock  objects  will  be  honored
+       only  by  the  report_constraint  command  for DRV violations. The con-
+       straint will not be used in optimizations.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clock_path
+              Applies the max capacitance constraint only to pins in the clock
+              network of the clocks defined in the object list.
+
+       -data_path
+              Applies the max capacitance constraint only to data  path  pins,
+              where  the  path is launched by the clocks defined in the object
+              list.
+
+       -fall  Applies the max capacitance constraint only to  falling  capaci-
+              tance.
+
+       -rise  Applies  the  max  capacitance constraint only to rising capaci-
+              tance.
+
+       <capacitance_limit>
+              Specifies the value for the minimum capacitance limit. The limit
+              must be greater than or equal to zero. The limit is  in  capaci-
+              tance units from the target technology library.
+
+       <object_list>
+              Specifies a list of objects - ports, instance pins, library cell
+              pins, designs, and/or clock waveforms.
+
+       -override
+              Overrides the maximum capacitance limit from other sources, such
+              as, library or constraints.
+
+              This  parameter can be used to force a specific constraint value
+              for a specified list of instance pins/port/library cell  pins  -
+              this overrides the maximum/minimum values set prior to this set-
+              ting.
+
+              To enable this feature, make the following setting:
+
+              set timing_constraint_enable_drv_limit_override true
+
+Examples
+              * The  following example sets a maximum capacitance limit of 1.2
+                units on all the ports of the top cell and a  maximum  capaci-
+                tance limit of 0.5 units on the port named d_out:
+
+                set_max_capacitance 1.2 [get_ports *]
+
+                set_max_capacitance 0.5 d_out
+
+              * The  following  example  uses the report_ports command to show
+                the maximum capacitance limit set on ports, as  shown  in  the
+                example below:
+
+                set_max_capacitance   0.9  [get_ports  *]  report_ports  -type
+                port_cap_limit -pin [get_ports *]
+
+                Example:  Maximum Capacitance Limit Set on Ports Report
+
+                > report_ports -type port_cap_limit -pin [get_ports *]
+
+                ----------------------------------------
+
+                Pin    Dir  Assertion       Value
+
+                Name
+
+                ----------------------------------------
+
+                CLK2   IN   port_cap_limit  ( : 0.900 )
+
+                CLK1   IN   port_cap_limit  ( : 0.900 )
+
+                in2    IN   port_cap_limit  ( : 0.900 )
+
+                in1    IN   port_cap_limit  ( : 0.900 )
+
+                out2   OUT  port_cap_limit  ( : 0.900 )
+
+                out1   OUT  port_cap_limit  ( : 0.900 )
+
+                ----------------------------------------
+
+Related Information
+              * get_ports
+
+              * report_ports
+
+              * set_max_transition
+
+              * set_max_fanout
+
+              * report_constraint
+
+                           Fri Apr 04 01:25:37 2025 set_max_capacitance(25.10)

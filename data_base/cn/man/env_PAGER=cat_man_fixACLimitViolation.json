@@ -1,0 +1,63 @@
+{
+  "command": "fixACLimitViolation",
+  "is_cmd": true,
+  "summary": "修复与交流电流密度、导线自热、焦耳热或电迁移相关的违规，主要用于布线后阶段。",
+  "description": "修复与交流电流密度、导线自热、焦耳热或电迁移相关的违规，主要用于布线后阶段。修复方法包括对违规网络应用布线规则、减小驱动器尺寸或添加缓冲器以分割网络负载。此命令应与 verifyACLimit 命令结合使用。verifyACLimit 命令可以标记违规网络供 fixACLimitViolation 命令修复，并可以生成供 fixACLimitViolation 读取的报告文件。fixACLimitViolation 命令仅应用单一的修复方法来修复电迁移违规。您可以通过指定 -fixingMethod 参数来选择修复方法。如果未指定方法，该命令将通过为违规网络设置布线规则来修复电迁移违规。",
+  "usage": "fixACLimitViolation [-help] [-excludeIO {true | false}] [-excludeNetFile <filename>] [-fixNetCategory {dataOnly | clockOnly | clockAndData}] [-fixingMethod {route_rule | down_size | buffer | size_or_buffer | route_size_or_buffer}] [-postCTS] [-selectNetFile <filename>] [-useReportFile <filename>] [-useSegmentBasedNDR {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 fixACLimitViolation 参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeIO",
+      "description": "如果设置为 true，则在违规修复期间排除连接到 I/O 引脚的网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeNetFile",
+      "description": "指定一个包含要从交流限值违规修复中排除的网络名称的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fixNetCategory",
+      "description": "指定要修复的网络类型。dataOnly 仅修复数据网络。clockOnly 修复时钟网络。clockAndData 修复时钟和数据网络。注意：对于时钟网络，仅使用布线规则进行修复。不会使用减小尺寸或添加缓冲器的方法。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fixingMethod",
+      "description": "指定用于纠正电迁移违规的修复方法。可以指定以下任一方法：route_rule（对信号电迁移违规网络应用布线规则）、down_size（对信号电迁移违规网络应用驱动器单元减小尺寸）、buffer（对信号电迁移违规网络应用缓冲器）、size_or_buffer（对信号电迁移违规网络应用尺寸调整或缓冲器。此选项仅适用于数据网络。时钟网络将跳过尺寸调整或缓冲器）、route_size_or_buffer（对信号电迁移违规网络应用布线、尺寸调整或缓冲器。布线可应用于时钟和数据网络。但是，尺寸调整或缓冲器将仅应用于数据网络）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-postCTS",
+      "description": "如果指定，则启用对时钟网络的修复，适用于时钟树综合后的数据库。此参数应仅与 -fixNetCategory clockOnly 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selectNetFile",
+      "description": "指定一个包含要对其执行交流限值违规修复的网络名称的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useReportFile",
+      "description": "读取 verifyACLimit 报告，并使用报告文件中的违规信息来设置适当的布线规则。建议使用此参数以获得最佳修复性能。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useSegmentBasedNDR",
+      "description": "启用/禁用基于分段的布线规则。如果设置为 true，则生成并应用基于分段的布线规则来修复违规。这种方法使您能够为违规网络的每一层指定所需的宽度和间距。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

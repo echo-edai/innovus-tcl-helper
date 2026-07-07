@@ -1,0 +1,298 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+remove_assigns(25.10)                                    remove_assigns(25.10)
+
+Name
+       remove_assigns  - Removes assign statements from the Verilog as much as
+       possible while keeping the same DEF netlist
+
+Syntax
+       remove_assigns
+
+       [-help]
+
+       [-buffer <bufName>]
+
+       [-buffering [-buffer_tie_assigns ][-includeIdealNets ]  [-includeClock-
+       Path]]
+
+       [-honordonttouch]
+
+       [-ignorePortConstraints]
+
+       [-net <netName >[-netBuffer <netBufName>]]
+
+       [-prefix <bufNamePreFix>]
+
+       [-report]
+
+       Removes  assign  statements  from the Verilog as much as possible while
+       keeping the same DEF netlist. This means that the placement and routing
+       remain the same and timing is not disturbed.
+
+       The remove_assigns command removes all non-top module assign nets with-
+       out adding buffers.There are cases where you do not want assign nets in
+       your design. However, there are some assign nets in  the  original  net
+       list imported into Innovus, or you have a design with some unwanted as-
+       sign  nets. In such cases, you can use remove_assigns to remove all as-
+       signs or replace assigns with proper buffers that are automatically se-
+       lected by the tool.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each remove_assigns.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man remove_assigns
+
+       -buffer <bufName>
+              Specifies  the  name of the buffer for all assign nets, disables
+              automatic buffer selection.
+
+       -buffer_tie_assigns
+              Allows to buffer tie assigns.
+
+       -buffering
+              Specifies whether the assign net buffering feature is needed.
+
+              If only "-buffering" is specified, all  assigns,  including  top
+              and  non-top  module  assigns,  will be replaced by buffers. The
+              buffers for each module will be automatically selected  to  meet
+              all power domain requirements with the minimum area cost.
+
+       -honordonttouch
+              Honors  dont_touch. This setting prevents assign removal on mod-
+              ules which have preserve/dont_touch settings.
+
+       -ignorePortConstraints
+              Allows to ignore all port constraints during assign removal.
+
+       -includeClockPath
+              Removes assigns on clock path.
+
+       -includeIdealNets
+              Removes assigns on ideal nets.
+
+       -net <netName>
+              Specifies the name of net (s). Supports  removing  or  buffering
+              assigns of a list of assign nets,
+
+              For example, the following command removes all assigns of assign
+              nets n1, n2 and n3.
+
+              remove_assigns -net {n1 n2 n3}
+
+              The following command replaces all assigns of assign nets n1, n2
+              and n3 with buffers.
+
+              remove_assigns -buffering -net {n1 n2 n3}
+
+              If  "-net" is used, "-buffering" must also be used for buffering
+              those assign nets specified in <netName>. Otherwise,  remove_as-
+              signs will work same as no options are specified (as default).
+
+              Whenever option "-net" is used, <netName> must be provided. Oth-
+              erwise, a warning message is issued.
+
+              You can specify any of the following as the <netName>:
+
+              * Single net name
+
+              * Multiple net names separated with space
+
+              * Single  wildcard  name  (all  matched assign nets will be col-
+                lected for buffering)
+
+              * Multiple wildcard names separated with space (all match assign
+                nets will be collected for buffering)
+
+              * Single bus name
+
+              * Multiple bus names
+
+              Note: For each bus, all or portion of bus  bits  can  be  assign
+              nets  and  the others can be non-assign nets. The buffering code
+              replaces only those assign bus bits while leave those non-assign
+              bus bits unchanged.
+
+       -netBuffer <netBufName>
+              Specifies the name of the buffer for the specific net  given  in
+              the  -net  option.  This option, if specified, should come after
+              the  -net option.
+
+       -prefix <bufNamePreFix>
+              Specifies the user-specified prefix for buffer names.
+
+              If -prefix is used, you need to specify a  prefix  bufNamePreFix
+              for  buffer  names that may be used in this command. The default
+              prefix for added buffers is "buf_dummy_" if you do  not  specify
+              it.
+
+       -report
+              Reports  list  of all buffers and assign nets that were replaced
+              by the buffers.
+
+              If -report is used, a list of all buffers and assign  nets  that
+              were  replaced  by  the buffers will be reported in log file. If
+              buffers are inserted to the netlist you may need to use  Innovus
+              to place and route them.
+
+       The remove_assigns command:
+
+              * Removes assigns that involve only internal "wires".
+
+                For example, in the code below, assign n2 = n1 is removed.
+
+                module top();
+
+                  wire n1, n2;
+
+                  assign n2 = n1;
+
+                  BUFX2 u1(.Y(n1));
+
+                  BUFX2 u2(.A(n2));
+
+                  endmodule
+
+                becomes
+
+                module top();
+
+                  wire n1;
+
+                  BUFX2 u1(.Y(n1));
+
+                  BUFX2 u2(.A(n1));
+
+                  endmodule
+
+              *
+
+                Removes assigns that involve only one port.
+
+                For example, in the code below, assign p1 = n1 is removed.
+
+                  module hier(p1);
+
+                  output p1;
+
+                  wire n1;
+
+                  assign p1 = n1;
+
+                   BUFX2 u1(.Y(n1));
+
+                  endmodule
+
+                becomes
+
+                  module hier(p1);
+
+                  output p1;
+
+                   BUFX2 u1(.Y(p1));
+
+                  endmodule
+
+              *
+
+                Rewires  nets  with  feedthrough assigns that involve at least
+                two ports, at some higher level:
+
+                module hier2 (
+
+                          i,
+
+                          o);
+
+                     input i;
+
+                     output o;
+
+                     assign o = i ;
+
+                     BUFX2 u1 (.A(i));
+
+                  endmodule
+
+                  module hier (
+
+                          i,
+
+                          o);
+
+                     input i;
+
+                     output o;
+
+                     hier2 u1 (.i(i),
+
+                          .o(o));
+
+                  endmodule
+
+                  module top ();
+
+                     // Internal wires
+
+                     wire i;
+
+                     wire o;
+
+                     BUFX2 u1 (.Y(i));
+
+                     hier u2 (.i(i),
+
+                          .o(o));
+
+                     BUFX2 u3 (.A(o));
+
+                  endmodule
+
+                becomes
+
+                module hier2 (
+
+                          i,
+
+                          o);
+
+                     input i;
+
+                     output o;
+
+                     BUFX2 u1 (.A(i));
+
+                  endmodule
+
+                  module hier (
+
+                          i,
+
+                          o);
+
+                     input i;
+
+                     output o;
+
+                     hier2 u1 (.i(i));
+
+                  endmodule
+
+                  module top ();
+
+                     // Internal wires
+
+                     wire i;
+
+                     BUFX2 u1 (.Y(i));
+
+                     hier u2 (.i(i));
+
+                     BUFX2 u3 (.A(i));
+
+                  endmodule
+
+                           Fri Apr 04 01:25:37 2025      remove_assigns(25.10)

@@ -1,0 +1,185 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+optPower(25.10)                                                optPower(25.10)
+
+Name
+       optPower  -  Optimizes  the power consumption of the design by swapping
+       gates for those with lower power, or deleting buffers/inverters without
+       degrading timing
+
+Syntax
+       optPower
+
+       [-help]
+
+       [-allowResizing]
+
+       [-effortLevel {high}]
+
+       [-force]
+
+       [-preCts | -postCts | -postRoute]
+
+       [-prePlace]
+
+       [-seqOnly]
+
+       Optimizes the power consumption of the design  by  swapping  gates  for
+       those with lower power, or deleting buffers/inverters without degrading
+       timing.  This  works  in  conjunction  with  the  setOptMode -opt_leak-
+       age_to_dynamic_ratio command to determine the type of optimization  be-
+       ing performed -  leakage, dynamic, or a combination of both.
+
+       Since  the default for setOptMode -opt_leakage_to_dynamic_ratio parame-
+       ter is 1.0, optPower will perform leakage optimization only by  default
+       using LEF-safe optimization (if no other switch is set). It is vital to
+       set up the design correctly before starting power optimization.
+
+       The setup steps include the following:
+
+              * Setting  the  correct power views for both leakage and dynamic
+                optimization
+
+              * Ensuring that the libraries contain cell_leakage_power  infor-
+                mation
+
+              * Ensuring that the switching activity has been correctly speci-
+                fied  either  through read_activity_file -format { VCD | TCF |
+                SAF } file_name or the set_default_switching_activity command
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each optPower parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand: man optPower.
+
+       -allowResizing
+              Specifies that optimization uses resizing for power reclaim and,
+              if  needed,  for  recovery. Since the cells will be of different
+              physical footprint, placement refinement and routing ECO will be
+              used. The DRV and timing recovery steps will also be  performed,
+              as  required.  These  extra  steps will result in an increase in
+              runtime. As this is a more aggressive  optimization,  the  power
+              savings  should  be superior to the default optPower values, but
+              this may cause timing degradations in some cases. When this  pa-
+              rameter   is   set,  the   setOptMode  -opt_post_route_check_an-
+              tenna_rules true setting will be ignored and the  software  will
+              give a warning to that effect.
+
+       -effortLevel {high}
+              Specifies the effort level as high. When this parameter is spec-
+              ified,  power optimization uses aggressive reclaim. The software
+              performs a timing recovery step and there is a large increase in
+              runtime on an average as compared to when  regular  power  opti-
+              mization is performed.
+
+       -force Resizes  each  instance to a cell with the lowest leakage power,
+              disregarding design rule violations  and  optimum  timing.  This
+              only  works when setOptMode -opt_leakage_to_dynamic_ratio is set
+              to 1.0.
+
+       -preCts
+              Performs power optimization on the  placed  design,  before  the
+              clock trees are created.
+
+       -postCts
+              Performs  power  optimization on a design whose clock trees have
+              already been created.
+
+       -prePlace
+              When specified, performs power optimization on an  unplaced  de-
+              sign. This parameter must be used with the -force parameter.
+
+       -postRoute
+              Performs  power  optimization  on a design whose routing is com-
+              plete.
+
+       -seqOnly
+              Specifies that dynamic power optimization should be done on  se-
+              quential cells only. This option works with the -force parameter
+              in all modes; preCts, prePlace, postCts, and postRoute.
+
+Examples
+              * Use  the  following  commands to optimize the design targeting
+                total power at the preCts stage:
+
+                setOptMode -opt_leakage_to_dynamic_ratio 0.5
+
+                optPower -preCts
+
+              * Use the following command to optimize  the  design,  targeting
+                leakage power only at the postCts stage (assuming that setOpt-
+                Mode  -opt_leakage_to_dynamic_ratio  has been untouched or has
+                been set to the default value of 1.0):
+
+                optPower -postCts
+
+              * Use the following commands to optimize dynamic power  only  at
+                the postRoute stage:
+
+                setOptMode -opt_leakage_to_dynamic_ratio 0.0
+
+                optPower -postRoute
+
+              * Use the following commands to perform resizing for total power
+                optimization in the design at the preCts stage:
+
+                setOptMode -opt_leakage_to_dynamic_ratio 0.5
+
+                optPower -preCts -allowResizing
+
+              * Use the following commands to perform aggressive dynamic power
+                optimization in the design at the postCts stage:
+
+                setOptMode -opt_leakage_to_dynamic_ratio 0.0
+
+                optPower -postCts -effortLevel high
+
+              * Use  the following commands to optimize leakage power by forc-
+                ing all cells to their lowest leakage equivalent, disregarding
+                DRV and timing degradations at the preCts stage:
+
+                setOptMode -opt_leakage_to_dynamic_ratio 1.0
+
+                optPower -preCts -force
+
+              * Use the following commands to optimize dynamic power by  swap-
+                ping sequential cells only in the design at the preCts stage:
+
+                setOptMode -opt_leakage_to_dynamic_ratio 0.0
+
+                optPower -preCts -seqOnly
+
+              * Use  the  following  commands to allow the tool to swap gates,
+                including the gates with negative slack,  up  to  the  current
+                negative slack at the postRoute stage:
+
+                setOptMode -opt_setup_target_slack <current_negative_slack>
+
+                optPower -postRoute
+
+              * To  prevent  power  optimization from working on near critical
+                paths, you can set a different target to that  of  the  timing
+                optimization. A typical example is shown below where power op-
+                timization will not work on paths less than 0.1ns but the tar-
+                get for timing will remain 0.0 :
+
+                setOptMode -opt_setup_target_slack 0.0
+
+                setOptMode -opt_area_recovery_setup_target_slack 0.1
+
+                setOptMode -opt_leakage_to_dynamic_ratio 0.5
+
+                optPower -preCts
+
+Related Information
+              * read_activity_file
+
+              * set_default_switching_activity
+
+              * setOptMode
+
+              * The following topic in the Innovus User Guide
+
+                * Optimizing Power
+
+                           Fri Apr 04 01:25:37 2025            optPower(25.10)

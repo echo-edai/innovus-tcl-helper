@@ -1,0 +1,81 @@
+{
+  "command": "dbQuery",
+  "is_cmd": true,
+  "summary": "数据库查询命令，用于在指定区域内搜索特定类型的物理设计对象",
+  "description": "该命令用于在版图数据库中查询指定区域内的物理设计对象。用户可以通过指定搜索区域（矩形或多边形）、对象类型、层以及其他过滤条件（如仅邻接、仅重叠或仅完全包含）来精确筛选结果。支持多线程模式以加速对多个区域的查询。",
+  "usage": "dbQuery [-help] [-bbox_overlap] [-d] [-objType {bump busGuide inst instAllShapes instTerm term marker net pBlkg pWire pgInstTerm rBlkg regular resizeBlkg row special sViaInst sWire viaInst wire whatIfWire whatIfVia pinShape guiRect guiLine guiPoly partition guiText}] [-threads] { [-areas {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}] [-polygons {x1 y1 x2 y2 ...}] } [-abut_only | -overlap_only | -enclosed_only ] [-layers <layer>+ [-strict_via_inst_layer_check ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox_overlap",
+      "description": "使用对象的边界框而非多边形形状进行重叠检查",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "用户指定的输入值和返回值使用数据库单位（默认单位为微米）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-objType",
+      "description": "指定要返回的对象类型列表。合法值包括：bump, busGuide, inst, instAllShapes, instTerm, term, marker, net, pBlkg, pWire, pgInstTerm, rBlkg, regular, resizeBlkg, row, special, sViaInst, sWire, viaInst, wire, whatIfWire, whatIfVia, pinShape, guiRect, guiLine, guiPoly, partition, guiText。默认值为inst。",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-threads",
+      "description": "启用多线程模式查询对象。仅当指定多个区域且查询耗时过长时建议使用。查询special、sViaInst、sWire对象类型时，多线程模式无效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-areas",
+      "description": "指定搜索区域，格式为矩形列表。默认返回与此区域重叠或邻接的所有对象，除非指定了-abut_only、-enclosed_only或-overlap_only。单位默认为微米（除非使用-d选项）。",
+      "required": false,
+      "type": "box_list"
+    },
+    {
+      "name": "-polygons",
+      "description": "指定多边形搜索区域。默认返回与此区域重叠或邻接的所有对象，除非指定了-abut_only、-enclosed_only或-overlap_only。单位默认为微米（除非使用-d选项）。",
+      "required": false,
+      "type": "polygon"
+    },
+    {
+      "name": "-abut_only",
+      "description": "仅返回与搜索区域邻接的对象。对象多边形与搜索区域无重叠部分，但至少有一个点或边相交。当指定多个区域时，只要对象与任一搜索区域邻接即被返回。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-overlap_only",
+      "description": "仅返回与搜索区域部分重叠的对象。对象多边形部分在搜索区域内，部分在外。单个接触点不被视为重叠。当指定多个区域时，只要对象与任一搜索区域重叠即被返回。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enclosed_only",
+      "description": "仅返回完全包含在搜索区域内的对象。对象多边形完全被搜索区域包围，没有部分突出到区域外（但可以邻接区域边缘）。当指定多个区域时，只要对象被任一搜索区域完全包含即被返回。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layers",
+      "description": "仅返回指定层上的对象。此选项仅适用于特定对象类型（如pinShape, wire, viaInst等）。对于viaInst、sViaInst和whatIfVia对象，只要其底层、切割层或顶层之一匹配指定层即被返回。",
+      "required": false,
+      "type": "layer+"
+    },
+    {
+      "name": "-strict_via_inst_layer_check",
+      "description": "仅返回那些位于指定层且与通孔的底层、切割层或顶层之一匹配的对象。通孔对象中位于不匹配层上的部分将不被返回。此选项仅对sViaInst和viaInst对象有效。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

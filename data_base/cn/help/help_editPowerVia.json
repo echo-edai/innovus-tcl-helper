@@ -1,0 +1,207 @@
+{
+  "command": "editPowerVia",
+  "is_cmd": true,
+  "summary": "编辑电源/地线通孔的命令",
+  "description": "该命令用于添加、删除或修改电源/地线网络上的通孔。它提供了丰富的选项来控制通孔的操作范围、位置、形状以及生成规则，例如指定操作区域、网络、层、通孔尺寸、是否跳过特定类型的引脚或线网形状等。",
+  "usage": "editPowerVia [-help] [-area <{x1 y1 x2 y2} {x3 y3 x4 y4} ...>] [-bottom_layer <layername>] [-cell_pins <string>] [-create_via_on_merged_target_on_layer <string>] [-create_via_on_merged_target_within <float>] [-create_via_on_signal_pins <0|1>] [-exclude_stack_vias <0|1>] [-followpin_via_stapling {cutclass1 weight1 cutclass2 weight2}] [-nets <string>] [-orthogonal_only <0|1>] [-same_sized_stack_vias <0|1>] [-skip_via_on_pin [pad block cover standardcell physicalpin]] [-skip_via_on_wire_shape [blockring stripe followpin corewire blockwire iowire padring ring fillwire noshape]] [-skip_via_on_wire_status [routed fixed cover shield]] [-split_long_via {threshold step offset length}] [-split_vias <0|1>] [-top_layer <layername>] [-uda <subclass_string>] [-via_using_exact_crossover_size <0|1>] [-add_vias <0|1> | -delete_vias <0|1> | -modify_vias <0|1> ] [-between_selected_wires <0|1> | -selected_blocks <0|1> | -selected_wires <0|1> | -selected_vias <0|1>] [[[-via_columns <integer>] [-via_rows <integer>]] | [[-via_height <float>] [-via_width <float>]] | [[-via_scale_height <float>] [-via_scale_width <float>]]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add_vias",
+      "description": "指定添加通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-area",
+      "description": "指定在区域内放置通孔",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-between_selected_wires",
+      "description": "指定在选中的线网之间放置通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-bottom_layer",
+      "description": "指定最底层的金属层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_pins",
+      "description": "指定要放置通孔的电源/地线端子或引脚",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_via_on_merged_target_on_layer",
+      "description": "在合并后的目标上而非原始目标上放置通孔",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_via_on_merged_target_within",
+      "description": "在指定层上，合并指定距离内的目标",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-create_via_on_signal_pins",
+      "description": "指定在信号引脚上创建通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-delete_vias",
+      "description": "指定删除通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-exclude_stack_vias",
+      "description": "指定是否生成堆叠通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-followpin_via_stapling",
+      "description": "定义在followpin通孔缝合中优先尝试的两种切割类型及其权重（用于通孔插入比例计算）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-modify_vias",
+      "description": "指定修改通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要放置通孔的网络",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-orthogonal_only",
+      "description": "仅在正交线网和引脚的交叉点上创建通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-same_sized_stack_vias",
+      "description": "生成尺寸相同的堆叠通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-selected_blocks",
+      "description": "指定在选中的模块上放置通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-selected_vias",
+      "description": "指定修改选中的通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-selected_wires",
+      "description": "指定在选中的线网上放置通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-skip_via_on_pin",
+      "description": "跳过在指定类型引脚上的通孔创建",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-skip_via_on_wire_shape",
+      "description": "跳过在指定形状线网上的通孔创建",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-skip_via_on_wire_status",
+      "description": "跳过在指定状态线网上的通孔创建",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-split_long_via",
+      "description": "将长度超过阈值的通孔按照指定的步长、偏移量和长度分割成更小的通孔",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-split_vias",
+      "description": "指定当遇到障碍物时是否分割通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-top_layer",
+      "description": "指定最顶层的金属层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-uda",
+      "description": "为用户定义的属性子类附加到通孔",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_columns",
+      "description": "指定通孔中切割列的数量",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_height",
+      "description": "指定通孔高度",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-via_rows",
+      "description": "指定通孔中切割行的数量",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_scale_height",
+      "description": "指定通孔高度的缩放百分比",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-via_scale_width",
+      "description": "指定通孔宽度的缩放百分比",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-via_using_exact_crossover_size",
+      "description": "指定从精确的交叉尺寸生成部分通孔",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-via_width",
+      "description": "指定通孔宽度",
+      "required": false,
+      "type": "float"
+    }
+  ]
+}

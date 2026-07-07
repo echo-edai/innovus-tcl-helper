@@ -1,0 +1,177 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_proto_model(25.10)                                  set_proto_model(25.10)
+
+Name
+       set_proto_model  - The set_proto_model command specifies the model type
+       of a specific module
+
+Syntax
+       set_proto_model
+
+       [-help]
+
+       -model <name_list>
+
+       [-type {full | flex_module | flex_instgroup}]
+
+       [-create_total_area <number> | -create_gate_area <number> |
+
+       {-create_gate_count <number> -create_area_per_gate <number>}]
+
+       [-create_extra_macro {macro_name <number>
+
+       [macro_name <number>] ...}
+
+       [-planDesign_target_util number]
+
+       [-reset]
+
+       The set_proto_model command specifies the model type of a specific mod-
+       ule.
+
+       Note: Wildcards are not supported by this command.
+
+Parameters
+       -create_area_per_gate number
+              Specifies the area per gate.
+
+              Data_type: float, optional
+
+       -create_extra_macro
+
+              {macro_namenumber[macro_namenumber] ...}"  Specifies  the  addi-
+              tional macro(s) of a module that you want to add in the original
+              netlist.  If  you  wish to add extra macros, this option changes
+              the netlist.
+
+              For example, if your original netlist has macro A and you  spec-
+              ify  an  additional macro named macro B, then the flexModel with
+              have both macro A and macro B.
+
+              Data_type: string, optional
+
+               -create_gate_area <number>" Specifies the total area of  gates.
+              This  value  does not include macro area. Its unit is square mi-
+              crons. The total area (equivalent to -create_total_area) is cal-
+              culated as the sum of specified total gate area and macro area.
+
+              Data_type: float, optional
+
+               -create_gate_count <number>" Specifies the number of gates.  If
+              you  specify  this  parameter, you also need to specify area per
+              gate value.Total gate area is equal to the product of gate count
+              and area per gate. The calculated total gate area does  not  in-
+              clude  the  macro  area. So, the total area (equivalent to -cre-
+              ate_total_area) is equal to the sum of total gate area  and  the
+              macro area.
+
+              Data_type: int, optional
+
+       -create_total_area <number>
+              Specifies  the module area of a model that includes the standard
+              cell area and the macro area.
+
+              Note: A warning message is issued when  macro  area  is  greater
+              than the area specified using the -create_total_area parameter.
+
+              Note:  For -create_area_per_gate number, -create_total_area num-
+              ber, -create_gate_area number and -create_gate_count number; you
+              can define the area instead of the value calculated by the  tool
+              (for  times when you wish to specify  larger area for the module
+              to achieve better results).
+
+              Data_type: float, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each set_proto_model parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man set_proto_model.
+
+       -model<name_list>
+              Specifies a name for the model type.
+
+              Data_type: string, required
+
+       -planDesign_target_util <number>
+              Specifies  the target utilization value to derive initial module
+              size of a model. This value is used by the proto_design  command
+              to derive the module size of a specified flexModel if its module
+              is not placed yet.
+
+              Default: current design utilization
+
+              Note:  You  can  reduce the target utilization value by 10 to 20
+              percent to account for 10 to 20  percent  increase  in  instance
+              count during optimization.
+
+               If the post-target utilization is 0.75, then Cadence recommends
+              you to set the following:
+
+              set_proto_mode -model <name_list> -planDesign_target_util 0.55
+
+              Data_type: float, optional
+
+       -reset Resets all the attributes of a module.
+
+              Data_type: bool, optional
+
+       -type {full | flex_module | flex_instgroup}
+              Specifies the model type as full or a flex module or a flexInst-
+              group.  You  use  this  parameter  when  you  want  to convert a
+              flex_module back to the original netlist or converse.
+
+              Data_type: enum, optional
+
+Examples
+              * The following command specifies the number of gates  as  10000
+                and area per gate as 0.65 for the tdsp_core model:
+
+                set_proto_model   -model  tdsp_core  -create_gate_count  10000
+                -create_area_per_gate 0.65 -type flex_module
+
+              * The following command specifies model alu as flex_module  with
+                total area 1000 and target utilization 0.75:
+
+                set_proto_model  -model  alu  -type  flex_module   -create_to-
+                tal_area   1000 -planDesign_target_util 0.75
+
+              * The following command specifies model crossbar as  flex_module
+                with total area 3000:
+
+                set_proto_model -model crossbar  -type flex_module -create_to-
+                tal_area   3000
+
+              * The  following  command  specifies  the  extra macro {pllclk 2
+                ram128x164} of the chico model:
+
+                set_proto_model -model  chico  -create_extra_macro  {pllclk  2
+                ram128x164}
+
+              * The  following  command  resets  all the attributes of the alu
+                model:
+
+                set_proto_model -model alu -reset
+
+Related Information
+              * get_proto_model
+
+              * set_proto_mode
+
+              *
+
+                assemble_proto_model
+
+              *
+
+                create_proto_model
+
+              *
+
+                identify_proto_model
+
+              *
+
+                Prototyping Methodologies chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025     set_proto_model(25.10)

@@ -1,0 +1,203 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+readBumpLocation(25.10)                                readBumpLocation(25.10)
+
+Name
+       readBumpLocation  -  The command creates or assigns objects on the cur-
+       rent die according to the bumps on the adjacent die
+
+Syntax
+        readBumpLocation
+
+       [-help]
+
+       <fileName>
+
+       [-allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}]
+
+       [-die_box]
+
+       [-ignore_route_blockages]
+
+       [-force_current_die]
+
+       {[-frontBump     <bumpCellName>]     [-backBump     <backBumpCellName>]
+       [-bump_cell_from_bump_file ]}
+
+       [{-backBump  <backBumpCellName>  |  -bump_cell_from_bump_file  }  [-ro-
+       tate_bump  -prefix <prefixName>]]
+
+       [{-frontBump <bumpCellName> | -bump_cell_from_bump_file  }[-rotate_bump
+       -prefix <prefixName>] [-stackViaUnderBump <stackViaName>]]
+
+       [-prefix <prefixName> | -bump_name_from_bump_file {true | false}]
+
+       [-checkAlignment ]
+
+       [-nonFeedthru ]
+
+       [-feedthru ]
+
+       [-tsvViaName  <viaCellName>  [-feedthruSize  <sizex sizey>] [-offset {x
+       y}]]
+
+       The command creates or assigns objects on the current die according  to
+       the  bumps on the adjacent die. In a TSV design, the micro bumps on the
+       adjacent die should be aligned, and the aligned micro bumps  should  be
+       with  the  same  signal. Specify this command to sync-up the micro bump
+       between dies. Firstly,  the  command  tries  to  find  the  front  side
+       bump/back  side bump/TSV at the location aligned to the bump on the ad-
+       jacent dies. If all the specified bumps/TSVs are found on  the  current
+       die, the command will assign the found bump/TSV with the same signal as
+       the  bump  on  the adjacent die; if none of the specified bumps/TSV are
+       found, the command will create the specified  bump/TSV  with  the  same
+       signal at the aligned position.
+
+       This command supports the combo bump and embedded bump flows.
+
+       Use  this  command  after reading the stacked die config file (XML), by
+       using readTSVConfig, as the die configuration is required for the  bump
+       alignment.
+
+       Note:  A  combo  bump is a group of bumps that are treated as one bump,
+       which means all bumps in the same combo bump will be created, assigned,
+       unassigned, and manipulated at the same time. This command synchronizes
+       the combo bump information between adjacent  chips  automatically.  All
+       bumps belonging to the same combo bump will be treated as one unit. Em-
+       bedded  bump  is  the  bump  at the block-level, and the information of
+       these bumps can be exchanged between chips at the top-level.
+
+Parameters
+       -allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}
+              Specifies the overlap control type. The allowed values  for  the
+              -allow_overlap_control parameter are:
+
+              * keep_all: Keeps all overlapping bumps.
+
+              * keep_existing_bumps:  Keeps  the existing bumps before calling
+                readBumpLocation if there is an overlap.  If  this  option  is
+                specified,  readBumpLocation keeps creating a bump if there is
+                an overlap and continues creating the remaining bumps. A warn-
+                ing message is displayed when  bump  creation  is  skipped  to
+                avoid overlap.
+
+              * keep_new_bumps:  Removes  the  existing  bumps  before calling
+                readBumpLocation, places the newly created bump  if  there  is
+                overlap,  and  then  continues creating the remaining bumps. A
+                warning message is displayed when deleting the existing  bumps
+                to  avoid  overlap.  If the status of the existing bumps to be
+                deleted is covered or fixed, a warning is  displayed  and  the
+                new  bumps  overlapping with the covered or fixed old bump are
+                not kept.
+
+       -backBump <bumpCellName>
+              Creates or assigns the backside bumps at  the  location  aligned
+              with the bumps on the adjacent die.
+
+       -checkAlignment
+              Use  this  parameter  to check the alignment between current die
+              and the adjacent dies. It also checks the  overlap  between  the
+              OBS layer and bumps (both front and back bumps).
+
+              When this parameter is specified, all other parameters are inef-
+              fective.
+
+       -bump_cell_from_bump_file
+              Creates bumps with the same bump cell defined in the bump file.
+
+       -bump_name_from_bump_file {true | false}
+              Creates bumps with the same bump name defined in bump file.
+
+       -die_box
+              Draws the die bounding box based on the DieBox value in the bump
+              file.
+
+       -force_current_die
+              Specifies  to  consider  the  bump  file as the current die bump
+              file. Skip to check if the specified bump file  is  for  current
+              die or adjacent die or a block.
+
+       <fileName>
+              Specifies  the  name  of  the bump location file of the adjacent
+              die.
+
+       -frontBump <bumpCellName>
+              Creates or assigns the frontside bumps at the  location  aligned
+              with the bumps on the adjacent die.
+
+       -feedthru
+              Creates   or  assigns  the  bump  with  feedthru  net  only.  If
+              -feedthruSize and -tsvViaName are specified,  the  TSV  and  the
+              stacked via of the feedthru will also be created.
+
+       -feedthruSize <sizex sizey>
+              Specifies  the  size for feedthru. This option is exclusive with
+              the -nonFeedthru option.
+
+       -ignore_route_blockages
+              Allows creation of bumps on route blockages. When this option is
+              specified, the tool ignores checking route blockages when creat-
+              ing bumps.
+
+       -nonFeedthru
+              Creates or assigns the bump with normal net only.
+
+       -offset x y
+              Specifies the offset from the TSV to the corresponding bump.
+
+              Note: You can also specify the offset in the bump  file  by  ap-
+              pending -offset x y to the line.
+
+              The  offset in the bump file has higher priority than the offset
+              specified in the command line. If -offset is specified  at  both
+              command  line  and bump file, the program will follow the offset
+              specified in the bump file.
+
+       -prefix <prefixName>
+              Adds prefix name for a bump during bump creation and  bump  map-
+              ping.
+
+              The default name of bumps are frontBump_* or backBump_* with se-
+              rial numbers.
+
+              If  -prefix <prefixName> is applied, created bump names are pre-
+              fixName_frontBump_* or prefixName_backBump_*.
+
+              Note: Single underscore (_) is automatically added  between  the
+              <prefixName> and the default bump name.
+
+       -rotate_bump
+              Rotates bumps during bump mapping according to the chip and bump
+              orientation information of the adjacent die.
+
+       -stackViaUnderBump <stackViaName>
+              Specifies the stack via name under the front bump.
+
+              The  tool  automatically adds the specified via cell stacking to
+              the bottom layer of front-side bump.
+
+       -tsvViaName <viaCellName>
+              Creates or assigns the TSV at the location aligned (or with off-
+              set if -offset is specified) to the bumps on the adjacent die.
+
+       Note: If neither -feedthru nor -nonFeedthru is specified, the  bump/TSV
+       with  both  feedthru  net  and non-feedthru net will be created and as-
+       signed.
+
+Examples
+              * The following command reads a bump file and creates the corre-
+                sponding frontside bump on current die:
+
+                readBumpLocation bumpfile -frontBump front_bump_cell
+
+              * The following command reads a bump file and creates the corre-
+                sponding backside bump and TSV current die:
+
+                readBumpLocation bumpfile -backBump back_bump_cell -tsvViaName
+                tsv_via
+
+Related Information
+              * writeBumpLocation
+
+              * readTSVConfig
+
+                           Fri Apr 04 01:25:37 2025    readBumpLocation(25.10)

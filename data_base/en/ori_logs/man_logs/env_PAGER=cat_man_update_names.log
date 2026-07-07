@@ -1,0 +1,410 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+update_names(25.10)                                        update_names(25.10)
+
+Name
+       update_names - Updates the inst, net, phys_insts, port, module, and de-
+       sign names at each level of hierarchy
+
+Syntax
+       update_names
+
+       [-help]
+
+        [-allowed <chars>]
+
+       [-change_modules <hinsts_modules> [-local]]
+
+        [-design]
+
+       [-first_restricted <chars>]
+
+       [-honor_dont_touch]
+
+       [-hport]
+
+       [-inst]
+
+       [-last_restricted <chars>]
+
+       [-log_file <string> [-append_log]]
+
+       [-map {{<from to>}...}]
+
+       [-max_length <integer>]
+
+       [-module]
+
+       [-net]
+
+       [-nocase]
+
+       [-phys_inst]
+
+       [-port]
+
+       [-prefix <string >[-name_collision]]
+
+       [-quiet]
+
+       [-random [-random_map_dir <out_dir>]]
+
+       [-regexp]
+
+        [-replace_string <string>]
+
+        [-reserved_words <string>]
+
+        [-restricted <string>]
+
+       [-suffix <string> [-name_collision]]
+
+       [-system_verilog]
+
+       [-verilog]
+
+       [-vhdl]
+
+       Updates  the  inst,  net, phys_insts, port, module, and design names at
+       each level of hierarchy. The inst and net names are local to  only  one
+       level of hierarchy, as seen by Verilog inside a module.
+
+       If a net or port name is a part of a bus definition, then only the base
+       bus name is updated, and the bus-bits are not modified. So for example,
+       a net named 'busA[0]' specifies that the base bus name is 'busA', which
+       can  be  changed  to  'busB[0]'.  However,  the  '[0]' part will not be
+       changed.
+
+       If a net or port name is an escaped scalar name, then all  the  charac-
+       ters  can  be modified. So in such a case, an escaped Verilog name like
+       '\busA[0] ' can be changed to 'busA_0_' using various matching  options
+       available as shown in the Examples section below.
+
+       You  can  restrict  the changes to just one name type using parameters,
+       such as -inst, -net, -port, -module, or  -design.  Otherwise,  the  re-
+       quested change is applied to all the name types.
+
+       By default, there is no restriction on the length of the new names (see
+       -max_length).
+
+       Each  name  is  checked, and the characters or strings are removed, re-
+       placed, or added according to the parameters explained below. Then  the
+       final  name  is  checked for collisions with any existing names. If the
+       new name collides with an existing name, a suffix such as _1 and _2  is
+       appended until it is unique.
+
+       The old and new names for each modified name are reported.
+
+       Note:  Names  used  for  SDC timing constraints can only be modified if
+       they are loaded into memory. So you must make sure all the timing views
+       are loaded with set_analysis_view before running this command.
+
+       Note: There is a limitation that names used inside a  CPF  power_intent
+       file  cannot  be updated. CPF usage assumes that the CPF file is golden
+       and should not be modified. If you need to change names used  inside  a
+       CPF file, you need to update the CPF file manually and then read in the
+       new  CPF  file  after  running  update_names.  In contrast, an IEEE1801
+       power_intent file is allowed to  change  during  the  design  flow,  so
+       changing any pin, instance or net names with update_names will automat-
+       ically  update  the IEEE 1801 names. You can write out the new IEEE1801
+       file with the updated names.
+
+Parameters
+       -allowed <chars>
+              Specifies the characters that are  allowed  in  the  names.  Any
+              characters  that  are not in the allowed list will be removed in
+              the final name. The minimum specification is 10  characters.  To
+              allow all the letters from a to z in capital and lower case let-
+              ters, you must specify all of them. Use-regexp to allow dash "-"
+              as a character range indicator.
+
+       -append_log
+              Appends  the  report  to <out_file> specified with the -log_file
+              option. If you omit this option, <out_file> is overwritten.  You
+              can specify this option only if you have specified the -log_file
+              option.
+
+       -change_modules <hinsts_modules>
+              Limits the name changes to the objects inside the specified list
+              of  modules  or  modules of the hinsts.  The changes are applied
+              recursively down the hierarchy below  each  module,  unless  the
+              -local parameter is specified. The current design is used by de-
+              fault, if this parameter is not used.
+
+       -design
+              Changes only the design module name.
+
+       -first_restricted <chars>
+              Specifies the characters that cannot be used in the beginning of
+              the  name. Those will be removed, including repeated characters.
+              So -first_restricted {_#%$} will change _$abc to just abc.
+
+       -help  Prints the command usage.
+
+       -honor_dont_touch
+              Prevents renaming of the objects, for which the  dont_touch  at-
+              tribute is set.
+
+       -hport Changes  the  port  names  (e.g. Verilog input, output, or inout
+              names) of the intermediate modules for all hinsts, including bus
+              port names. It also modifies the same  implicit  net  name  con-
+              nected  to the port to match the new port name. It does not mod-
+              ify the port names of library cells or the top-level design.
+
+       -inst  Changes only the Verilog instance names at each level of hierar-
+              chy.
+
+       -last_restricted <chars>
+              Specifies the characters that cannot be used at the ending of  a
+              name. Those will be removed, including repeated chars.
+
+       -local Turns off the recursive descent, so that changes become local to
+              the  module  or design. The objects defined in the design/module
+              can be modified (for example, design/module,  port/hport,  inst,
+              or  net names), but sub-module names and hport names of sub-mod-
+              ules cannot be modified.
+
+       -log_file <out_file>
+              Specifies a log file for the output report that  shows  the  old
+              name and the new name for any name changes.
+
+       -map {{<from> <to>}...}
+              Takes  a  list  of string pairs and maps the first string to the
+              second string in each pair. You need to  enclose  each  pair  in
+              braces. To be compatible with Genus usage, double quotes are op-
+              tionally  allowed  around  the  strings.  For example, both -map
+              {{"from" "to"} {"AND" "and"}} and -map  {{from  to}  {AND  and}}
+              will result in the same output.
+
+        -max_length <int>
+              Limits the length of the changed name to the specified number of
+              characters.  If the name exceeds the limit, the additional char-
+              acters will be truncated from the end. If the new  name  is  not
+              unique,  the  original name is further trimmed back to allow the
+              name with a suffix, such as 1, 2, etc. to  make  it  unique  and
+              within the specified length limit.
+
+              Note: The truncation happens after all other changes. This means
+              the  truncated  names  may  now collide with -vhdl, -verilog, or
+              -system_verilog reserved names, or end  with  a  char  from  the
+              -last_restricted  set.  If  that happens, you will have to rerun
+              the  command  with  the  same  options  and  either   a   longer
+              -max_length or no -max_length.
+
+       -module
+              Changes all module names other than the design module name.
+
+       -name_collision
+              Adds  only the -prefix or  -suffix values, if a name change col-
+              lides with an existing name. This parameter  can  be  used  only
+              when either the  -prefix or  -suffix parameter is used.
+
+       -net   Changes  the  Verilog net names at each level of hierarchy (e.g.
+              Verilog wire names). This will not modify net names that  corre-
+              spond to Verilog port definitions (e.g. Verilog input, output or
+              inout  names).  If  you  want to modify those net names, use the
+              -port option.
+
+       -nocase
+              Changes names that collide if the case is ignored. For  example,
+              if  both net1 and Net1 exist, one of them will be changed to re-
+              solve the collision by appending a suffix, such as _1 or _2.
+
+       -phys_inst
+              Changes only those physical inst names (like filler cells)  that
+              do  not appear normally in the Verilog output. When this parame-
+              ter  is   specified,   the   module-scoping   parameters   (like
+              -change_modules) are ignored, so all the physical inst names are
+              checked.
+
+       -port  Changes  the  port  names  (e.g. Verilog input, output, or inout
+              names) of the top-level module for  the  design,  including  bus
+              port  names.  It  also  modifies the same implicit net name con-
+              nected to the port to match the new port name. It does not  mod-
+              ify the port names of library cells or intermediate modules.
+
+       -prefix <string>
+              Adds a prefix to the names that are changed.
+
+       -quiet Suppresses the messages about individual objects being renamed.
+
+       -random
+              Makes  all  the  modified names random. It obfuscates the design
+              names so that the test cases can be shared without exposing  the
+              real netlist names. This parameter cannot be used with any other
+              parameter  that affects names. It can be used with -inst,  -net,
+              -hport,  -design, and  -port to limit the types of names  to  be
+              modified.
+
+       -random_map_dir <out_dir>
+              Specifies the out_dir (output directory) for the map-file of the
+              old  and  new random names to be written for each name type that
+              is modified inside the output directory. This parameter requires
+              the -random parameter. It is useful in the cases when there  are
+              side files that have names to be mapped and are not supported by
+              update_names. The following files are written:
+
+              inst.map for inst and hinst names
+
+              net.map for net and hnet names
+
+              pin.map for hport and pin names
+
+              port.map for top-level port names
+
+              module.map for module names
+
+              The  format  is <old_name new_name> on each line for every name.
+              For example, inst.map may look like:
+
+              blockA/blockB/regC       i1/i2/i3
+
+              blockA/regD                     i1/i3
+
+              ...
+
+       -regexp
+              Allows specifying character ranges with a dash "-" in  the  -al-
+              lowed  option. This is similar to regexp single character match-
+              ing usage. For example, to allow all alphanumerical  characters,
+              along with _ and $ as legal chars, use:-allowed {a-zA-Z0-9_$}
+
+       -replace_string <string>
+              Specifies   the  replacement  string  for  -restricted  or  -re-
+              served_words strings. The default value for this option is "_".
+
+        -reserved_words <string>
+              Specifies a list of words to be avoided (reserved  words),  like
+              'begin  end'.  If a complete name exactly matches one of the re-
+              served words (not just a sub-string of the name),  then  by  de-
+              fault,  the name will be changed with the addition of an _1, _2,
+              etc. suffix. If you also specify the  -replace_string  <rep_str>
+              parameter, then the reserved words will be replaced by <rep_str>
+              instead, and the _1, _2, etc. will be appended, if there are any
+              collisions.
+
+       -restricted <string>
+              Specifies  a  list of strings that cannot be used inside a name.
+              Each string is replaced with the -replace_string string. For ex-
+              ample, -restricted {ab bc}  will  replace  all  the  ab  and  bc
+              strings inside the names.
+
+       -suffix <string>
+              Adds a suffix to the names that are changed.
+
+              Note:  If  the  length of -suffix exceeds the -max_length value,
+              the suffix is truncated.
+
+       -system_verilog
+              Replaces SystemVerilog reserved words. If a  complete  name  ex-
+              actly  matches  one of the reserved words (not just a sub-string
+              of the name), then the name will be changed.
+
+       -verilog
+              Replaces Verilog reserved words.  If  a  complete  name  exactly
+              matches  with one of the Verilog reserved words (not only a sub-
+              string of the name), then the name will be changed.
+
+       -vhdl  Fixes names to meet VHDL identifier requirements.
+
+              It replaces VHDL reserved words.  If  a  complete  name  exactly
+              matches one of the VHDL reserved words (not only a sub-string of
+              the name), then the name will be changed.
+
+              It  also  implicitly uses -first_restricted "_0123456789" to re-
+              move any leading _ or digit chars, and -last_restricted  "_"  to
+              remove  any  trailing  _ chars, so you cannot use -vhdl together
+              with -first_restricted or -last_restricted.
+
+              Finally, this option will remove any repeated  _  chars  in  the
+              middle  of any name, and replace it with a single _ char because
+              VHDL does not allow repeated _ chars.
+
+Examples
+              * The following command replaces the p1 inst name with the  pre-
+                fix_p1 prefix without updating all the p1 sub-strings (for ex-
+                ample, without changing insts named p12 or op1):
+
+                update_names  -inst -reserved_words {p1} -replace_string {pre-
+                fix_p1}
+
+              * The following example replaces sub-string "no" with "NO",  and
+                all brackets "[" and "]" with underscore "_" in all net names:
+
+                innovus 1> update_names -net -map {{no NO} {[ _} {] _}}
+
+                Optional  double-quotes  are ignored, so this has the same re-
+                sult:
+
+                innovus 1> update_names -net -map {{"no" "NO"} {"[" "_"}  {"]"
+                "_"}}
+
+                So, a Verilog net name that requires escaping like:
+
+                \test[0]nox would change to test_0_NOx
+
+                Note,  neither  the Verilog or DEF name requires escaping any-
+                more, so no \ would be written to Verilog  or  DEF  for  these
+                names. A "real" bus name like
+
+                no[0] would just be changed to NO[0]
+
+                because  the  [0]  are bus-bit chars and values that are never
+                changed.
+
+              * The following example replaces any sub-strings that match  ab,
+                bc, or ca with "@" in all object names:
+
+                innovus 1> update_names -restricted "ab bc ca" -replace_string
+                "@"
+
+              * The  following command changes the brackets "[" and "]" in all
+                names to "_". It does not change real bus-bit chars for nets.
+
+                innovus 1> update_names -restricted {[ ]} -replace_string "_"
+
+                Note: You should use {} to protect the []  from  being  inter-
+                preted by Tcl.
+
+              * The following example specifies the maximum length of all mod-
+                ule names to be 12 characters.
+
+                innovus 1> update_names -max_length 12 -module
+
+              *
+
+                The  following example fixes case-insensitive collisions. Sup-
+                pose you have two insts named inst73 and INST73. This  command
+                renames  one  of  the insts by appending  _<num> to one of the
+                names for avoiding a naming conflict, when casing is ignored.
+
+                innovus 1> update_names -inst -nocase
+
+              *
+
+                The following example allows all capital and lower  case  let-
+                ters, numbers, underscores, backslash, and brackets. Any other
+                character will be removed.
+
+                innovus  1> update_names -allowed {ABCDEFGHIJKLMNOPQRSTUVWXYZ-
+                abcdefghijklmnopqrstuvwxyz0123456789_\[]}
+
+                If you want to use character ranges, you can use -regexp:
+
+                innovus 1> update_names -regexp -allowed {a-zA-Z0-9_\[]}
+
+              *
+
+                If you want to change names that collide with reserved Verilog
+                words, then use the following command:
+
+                innovus 1> update_names -verilog
+
+                Names that exactly match a Verilog reserved words,  like  "in-
+                put"  will  be  replaced with "input_1". This does not replace
+                sub-strings in names that match "input", so  "my_input"  would
+                not be modified.
+
+Related Information
+       rename_obj
+
+                           Fri Apr 04 01:25:37 2025        update_names(25.10)

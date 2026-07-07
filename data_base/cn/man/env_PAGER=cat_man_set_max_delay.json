@@ -1,0 +1,99 @@
+{
+  "command": "set_max_delay",
+  "is_cmd": true,
+  "summary": "为时序路径指定最大延迟约束",
+  "description": "set_max_delay 命令用于为指定的时序路径设置最大延迟值。该命令的优先级高于为同一路径指定的其他路径例外（set_false_path 命令除外）。使用 -from、-to 或 -through 选项来识别路径。当指定时序单元名称作为路径起点时，有效路径从时钟引脚开始，这意味着从时钟到输出 Q 的延迟也包含在内。可以通过在单元名后添加 /Q 来指定路径从寄存器的 Q 输出开始，此时从时钟到 Q 的路径不计入延迟计算。每条命令只能使用一个 -from、-rise_from、-fall_from、-to、-rise_to 或 -fall_to 参数，但可以在同一条命令中使用多个 -through 参数。",
+  "usage": "set_max_delay value [-combinational_from_to | -ignore_clock_latency] [{-from |-rise_from | -fall_from} <from_list>] [{-through | -rise_through | -fall_through} <through_list>] [-no_segment] [{-to | -rise_to | -fall_to} <to_list>] [-comment <string>] [-rise] [-fall]",
+  "options": [
+    {
+      "name": "-combinational_from_to",
+      "description": "将由 -from/-to 引脚定义的路径视为纯组合路径，即源/捕获时钟延迟不计入裕量计算。需要存在 -from/-to 引脚才能生效。此参数将在未来版本中弃用，建议迁移至 -ignore_clock_latency 参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_clock_latency",
+      "description": "指定此参数时，软件不将发射/捕获时钟延迟计入时序路径延迟。这是 SDC 2.1 中引入的行业标准结构。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-from",
+      "description": "指定时序路径起点列表。可以是对象 ID、相对于当前模块的层次名称或时钟名称。有效起点包括输入端口、双向端口或时序单元的时钟引脚。默认应用于信号的上升沿和下降沿。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-rise_from",
+      "description": "在起点引脚信号的上升沿应用最大延迟约束。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-fall_from",
+      "description": "在起点引脚信号的下降沿应用最大延迟约束。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-through",
+      "description": "指定时序路径的经过点列表。可以是对象 ID、相对于当前模块的层次名称或时钟名称。默认应用于信号的上升沿和下降沿。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-rise_through",
+      "description": "在通过点引脚信号的上升沿应用断言。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-fall_through",
+      "description": "在通过点引脚信号的下降沿应用断言。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-no_segment",
+      "description": "将约束指定为非分段式，允许进行无路径分割的路径延迟检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-to",
+      "description": "指定时序路径终点列表。可以是对象 ID、相对于当前模块的层次名称或时钟名称。有效终点包括输出端口、双向端口或时序单元的数据引脚。默认应用于信号的上升沿和下降沿。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-rise_to",
+      "description": "在终点引脚信号的上升沿应用最大延迟约束。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-fall_to",
+      "description": "在终点引脚信号的下降沿应用最大延迟约束。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-comment",
+      "description": "允许插入注释。注释会被读取但会被忽略（伴随一次性警告信息），不用于时序分析报告，也不会在保存约束时写出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rise",
+      "description": "在路径端点的信号上升沿应用断言。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fall",
+      "description": "在路径端点的信号下降沿应用断言。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

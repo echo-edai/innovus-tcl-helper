@@ -1,0 +1,69 @@
+{
+  "command": "staggerBondPad",
+  "is_cmd": true,
+  "summary": "在现有I/O环上生成交错的键合焊盘图案",
+  "description": "该命令用于在现有的I/O环上生成交错的键合焊盘图案。在这种设计方法中，键合焊盘是与I/O驱动单元分离的LEF宏定义，但被放置在I/O驱动单元之上，以形成组合的键合焊盘和I/O驱动电路。该命令仅支持CLASS为PAD的实例。为了产生交错图案，LEF中为每个I/O单元定义了多个键合焊盘单元，每个焊盘都位于特定的位置，对应于外部、中部或内部的交错位置。键合焊盘的定义使得当它们被放置在I/O单元上时，任何一个都可以连接到I/O单元引脚，无需或只需极少的RDL布线。Innovus通过根据I/O实例在I/O环中的位置以及正在生成的图案，选择外部、中部或内部的交错键合焊盘放置在每个I/O单元上，从而生成交错图案。如果I/O单元的顺序改变，或者添加或删除了单元，可以重新生成交错图案。由于键合焊盘宏是单独定义的，因此可以轻松地用不同交错位置的键合焊盘替换，而无需更改设计的逻辑。",
+  "usage": "staggerBondPad [-help] {-startIoInstName <instName> [-endIoInstName <instName>] | -ring <number> | -side {e | w | n | s} [-ring <number>] | -all} {-pattern <pattern_string> | -startStaggerPosition {i | m | o}} [-pad <position><padName position padName...>] [-pinName <pinName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个staggerBondPad参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-all",
+      "description": "指定在所有I/O实例上放置键合焊盘。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-startIoInstName",
+      "description": "指定开始放置键合焊盘的第一个I/O实例的名称。可与-endIoInstName参数结合使用。如果实例中存在多个引脚，可使用-pinName参数指定从哪个引脚开始。注意：如果适用，键合焊盘将按照从起始I/O实例(-startIoInstName)到最后一个I/O实例(-endIoInstName)的顺时针模式放置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-endIoInstName",
+      "description": "指定结束放置键合焊盘的最后一个I/O实例的名称。可与-startIoInstName参数结合使用。注意：键合焊盘按照从起始I/O实例(-startIoInstName)到最后一个I/O实例(-endIoInstName)的顺时针模式放置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pad",
+      "description": "当LEF文件中为给定的内部(i)、中部(m)或外部(o)位置指定了多个键合焊盘时，指定使用哪个键合焊盘和位置。例如，如果LEF文件中指定了三个外部键合焊盘，您可以使用此参数选择哪个键合焊盘用作外部键合焊盘。默认值：软件使用给定位置键合焊盘列表中的第一个键合焊盘。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern",
+      "description": "指定I/O实例上键合焊盘的交错图案。<pattern_string>指定i(内部)、m(中部)和o(外部)的任意组合。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinName",
+      "description": "指定实例内部的引脚名称。如果由-startIoInstName参数指定的实例包含多个引脚，您可以使用此参数指定从哪个引脚开始。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ring",
+      "description": "指定操作哪个环，环1为最外层。随着向核心靠近，环号递增。对于三环设计，最内层为环3。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-side",
+      "description": "指定芯片的地理侧边。可以指定芯片的东(e)、西(w)、北(n)或南(s)侧。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-startStaggerPosition",
+      "description": "指定指定键合焊盘(-pad)在指定I/O实例(-startIoInstName)上的起始交错位置。可以使用内部(i)、中部(m)或外部(o)位置开始键合焊盘的交错位置。默认的交错位置顺序是内部(i)、中部(m)和外部(o)。如果以中部(m)的交错位置开始，则下一个键合焊盘放置在外部(o)交错位置，随后是放置在内部(i)交错位置的键合焊盘。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

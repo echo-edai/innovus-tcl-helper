@@ -1,0 +1,57 @@
+{
+  "command": "setMaxCapPerFreqTran",
+  "is_cmd": true,
+  "summary": "设置设计中引脚的最大电容，该值同时考虑输入转换时间和输出频率。",
+  "description": "此命令用于设置设计中引脚的最大电容值，该约束同时考虑输入信号的转换时间和输出信号的频率。如果引脚的实际电容超过此设定值，reportCapViolation命令将报告电容违规。可以在加载时序库文件（即导入或恢复设计）后的任何时间使用此命令。",
+  "usage": "setMaxCapPerFreqTran [-help] -freq {<freq1><freq2 freq3>...} -tran {<tran1><tran2 tran3>...} -cap {{<cap11 ><cap12 cap13>...} {{<cap21 ><cap22 cap23>...}} {{<cap31 ><cap32 cap33>...}}} -pins {cell <outputpin>} [-lib <libName>] [-force] [-inputpin <inputpin>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-freq",
+      "description": "指定输出引脚翻转频率值的列表，至少需要两个值。频率值必须递增，总数不能超过255。类型为浮点数，单位为Hz，所有值必须大于等于0。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-tran",
+      "description": "指定输入转换时间值的列表，至少需要两个值。转换时间值必须递增，总数不能超过255。类型为浮点数，单位为纳秒，所有值必须大于等于0。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-cap",
+      "description": "指定一个电容值表，这些值与-freq和-tran值相关联，定义了最大输出引脚电容。电容值的总数必须等于-freq值数量乘以-tran值数量。电容值为浮点数，单位为皮法，所有值必须大于等于0。该表使用频率作为第一索引，输入转换时间作为第二索引。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-pins",
+      "description": "将新的电容约束添加到指定的单元和引脚集合。可以指定输出或输入输出引脚；输入引脚会被忽略。可以在单元或引脚名称中使用星号(*)通配符。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-lib",
+      "description": "指定要更新的单元引脚所在的库名称（来自.lib文件）。如果未指定库名，则修改所有库中匹配的单元引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "仅根据插值得到的-freq、-tran和-cap值计算最大电容，并忽略库中这些引脚先前定义的max_capacitance值。默认（未指定-force时）使用库max_capacitance值与插值-cap值中的最坏情况（最小值）来计算最大电容。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inputpin",
+      "description": "指定与-tran中的输入转换时间值相对应的输入引脚名称。如果未给出-inputpin，则-tran值对应于所有输入引脚。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

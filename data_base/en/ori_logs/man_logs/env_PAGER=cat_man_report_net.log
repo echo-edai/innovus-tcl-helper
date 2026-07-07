@@ -1,0 +1,202 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_net(25.10)                                            report_net(25.10)
+
+Name
+       report_net - Reports the net information on the current module
+
+Syntax
+        report_net
+
+       [-min_fanout <int>]
+
+       [-max_fanout <int>]
+
+       {-net <list_of_net_name_or_id> | -pin <list_of_pin_name_or_id>}
+
+       [-tcl_list]
+
+       [-hier]
+
+       [[{> | >>} <filename> | -output <filename>]
+
+        | -tcl_list]
+
+       Reports  the net information on the current module. The information in-
+       cludes the net name, the number of source pins, sink pins and  bidirec-
+       tional pins on the net, wire capacitance, and total capacitance.
+
+       Electrical  information  such  as pin capacitance, and wire capacitance
+       with which the net is associated are also included.
+
+       Use the -pin option to report the net that is connected to  the  speci-
+       fied  pin (or port). Both -net and -pin cannot be specified at the same
+       time. The net (or pin) names can be hierarchical names that are  unique
+       relative to the top cell.
+
+       This command only searches for the defined nets and does not modify any
+       object in database.
+
+Parameters
+       {> | >>} <filename>
+              When  specified  with >, writes the report to the specified file
+              name. If the file already exists, the software overwrites it.
+
+              When specified with >>, writes the report to the specified  file
+              name.  If the file already exists, the software concatenates the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the  list.
+              The  <filename>,  -output, and -tcl_list parameters are mutually
+              exclusive; you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default: Report is displayed on standard  output  without  being
+              saved.
+
+       -hier  Reports  all  of  the nets in the design hierarchy. Without this
+              argument, only the nets in the current level  of  hierarchy  are
+              reported.
+
+       -max_fanout <int>
+              Reports the net whose number of fanouts is less than or equal to
+              the maximum number specified by <integer>.
+
+       -min_fanout <int>
+              Reports the net whose number of fanouts is greater than or equal
+              to the minimum number specified by <integer>.
+
+       -net <list_of_net_name_or_id>
+              Reports  the set of nets on the list of net names. This argument
+              cannot be specified at the same time as -pin. If neither -net or
+              -pin is specified, all nets are listed by default.
+
+              Note: This argument also reports the capacitance of the net  and
+              the input pins.
+
+       -output <filename>
+              Dumps  the  report to the specified file instead of to the stan-
+              dard output. The <filename> argument must be the  last  argument
+              in the list.
+
+              This  parameter cannot be used simultaneously with the -tcl_list
+              option.
+
+       -pin <list_of_pin_name_or_id>
+              Reports  the  set  of  nets  to  which  the  pins  on  the  list
+              <list_of_pin_name_or_id>  are connected. This argument cannot be
+              specified at the same time as -net.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for extracting information from  the  report
+              in a Tcl program.
+
+              The  -tcl_list,  <filename>  and -output parameters are mutually
+              exclusive; you cannot specify them together.
+
+Examples
+              * Control the report_net table fields, such as setting the mini-
+                mum and maximum column width using  the  set_table_style  com-
+                mand.   The   table  names  are  report_net_source_table,  re-
+                port_net_sink_table, report_net_summary_table, report_net, and
+                report_net_header.
+
+              * For example, the following command sets an indentation of  six
+                columns  for the table and disables printing of the first col-
+                umn:
+
+                set_table_style  -name   report_net_source_table   -indent   6
+                -max_widths {0,}
+
+                report_net
+
+              * The  format  of  the report_net report is the same for all the
+                examples, as shown in the first example. The following command
+                reports information about net named in, as shown in  the  fol-
+                lowing example:
+
+                report_net -net n5
+
+                Net Name : n5
+
+                Number of Sources : 1
+
+                Number of Sinks : 1
+
+                Number of Bidis : 0
+
+                Source of parasitics : Wireload model(.lib None Generated)
+
+                Net Capacitance : 0.000
+
+                Total Capacitance : 0.011
+
+                ----------------------------------------------------------------------
+
+                Source
+
+                ----------------------------------------------------------------------
+
+                Pin R Driver Load Slew
+
+                ----------------------------------------------------------------------
+
+                Name   Dir   Cell   Cap    Model    Model  Ctotal  Rise   Fall
+                Phase
+
+                --------------------------------------------------------------------------
+
+                u5/Q  OUT  DFF   0.000 Unknown  CTOTAL  1.000    0.003   0.003
+                CLK_W_4_gen2(D)(N)
+
+                u5/Q   OUT   DFF    0.000  Unknown CTOTAL 1.000   0.003  0.003
+                CLK_W_4_gen1_inv(D)(P)
+
+                --------------------------------------------------------------------------
+
+                ---------------------------------------------------------------------
+
+                Sinks for pin u5/Q
+
+                ---------------------------------------------------------------------
+
+                Pin R Delay Slew
+
+                ----------------------------------------------------------------------
+
+                Name   Dir  Cell  Cap    Parameters Rise   Fall   Rise    Fall
+                Phase
+
+                ---------------------------------------------------------------------------------
+
+                u7/A  IN   BUF    0.011  -          0.000  0.000  0.003  0.003
+                CLK_W_4_gen2(D)(N)
+
+                u7/A  IN   BUF    0.011  -          0.000  0.000  0.003  0.003
+                CLK_W_4_gen1_inv(D)(P)
+
+                --------------------------------------------------------------------------------
+
+              * The  following command reports the net to which the pin inter-
+                esting_pin is connected:
+
+                report_net -pin interesting_pin
+
+              * The following command reports all the nets in the current mod-
+                ule:
+
+                report_net -net *
+
+              * The following command reports all nets with a  fanout  greater
+                than 16:
+
+                report_net -net * -min_fanout 16
+
+Related Information
+              * report_path_exceptions
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025          report_net(25.10)

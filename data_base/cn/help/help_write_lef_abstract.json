@@ -1,0 +1,201 @@
+{
+  "command": "write_lef_abstract",
+  "is_cmd": true,
+  "summary": "将设计导出为LEF抽象文件",
+  "description": "该命令用于将当前设计导出为LEF（库交换格式）抽象文件。LEF文件包含单元的物理抽象信息，如引脚位置、金属障碍物（OBS）和尺寸，用于布局和布线。命令提供了多种选项来控制导出的内容，例如指定输出LEF版本、控制哪些层作为障碍物或引脚导出、是否从块或布线中提取障碍物、以及如何处理电源地（PG）条带引脚等。",
+  "usage": "write_lef_abstract [-help] <out_file> [-add_obs_layers <layer_list>] [-cutObsMinSpacing] [-excludeObsLayers <layer_list>] [-excludePinLayers <layer_list>] [-extractBlockObs] [-extractBlockPGPinLayers <layer_list>] [-extractBlockSignalPinLayers <layer_list>] [-ignoreBumpOnPin {all pg signal}] [-ioPadPin] [-noCutObs] [-property] [-stripePin [-selected ]] [-stripePin [-portForEachStripePin ]] [-stripePin [-PGPinLayers <layer_list>]] [-stripePin [-PGNets <net>+]] [-specifyTopLayer <layer> [-obs_above_top_layer <layer>+]] [-specifyTopLayer <layer> ] [-obs_above_top_layer <layer>+ ] [-extractWellLayerObs <well_layer_list> [-extractWellObsByRow <margin>]] [-extractWellLayerObs <well_layer_list> [-mergeConnectedWellOnly ]] [-obsSpacing <value_layer_pair_list> [-obsSpacingPerLayer ]]  [ -5.6 | -5.7 | -5.8 | -6.0 ] [-design_boundary <point_list> | -extractRoutingObs <microns>] [-cutObsToExposeRouting <microns> | -extractRoutingObs <microns>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法帮助信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<out_file>",
+      "description": "LEF输出文件的名称",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-5.6",
+      "description": "输出LEF版本5.6",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-5.7",
+      "description": "输出LEF版本5.7",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-5.8",
+      "description": "输出LEF版本5.8",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-6.0",
+      "description": "输出LEF版本6.0",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-PGNets",
+      "description": "仅在这些指定的电源地（PG）网络上输出PG条带引脚",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-PGPinLayers",
+      "description": "在这些指定的层上输出PG条带引脚",
+      "required": false,
+      "type": "layer_list"
+    },
+    {
+      "name": "-add_obs_layers",
+      "description": "将这些层上的图形作为OBS（障碍物）图形写入LEF。不能是布线层或切割层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cutObsMinSpacing",
+      "description": "按照最小间距规则在引脚图形周围切割OBS",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cutObsToExposeRouting",
+      "description": "从边界向内切割指定微米数的OBS，以暴露布线通道",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-design_boundary",
+      "description": "基于指定的设计边界点列表来写出SIZE和OBS",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeObsLayers",
+      "description": "不在这些指定的层上创建OBS图形",
+      "required": false,
+      "type": "layer_list"
+    },
+    {
+      "name": "-excludePinLayers",
+      "description": "不在这些指定的层上创建PIN图形",
+      "required": false,
+      "type": "layer_list"
+    },
+    {
+      "name": "-extractBlockObs",
+      "description": "从顶层以上的BLOCK、RING、PAD宏中提取OBS，并写入LEF文件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extractBlockPGPinLayers",
+      "description": "从这些指定层上的BLOCK、RING、PAD、COVER宏中提取PG引脚",
+      "required": false,
+      "type": "layer_list"
+    },
+    {
+      "name": "-extractBlockSignalPinLayers",
+      "description": "从这些指定层上的BLOCK、RING、PAD、COVER宏中提取信号引脚（连接到设计端口）",
+      "required": false,
+      "type": "layer_list"
+    },
+    {
+      "name": "-extractRoutingObs",
+      "description": "从边界向内提取指定微米数的常规布线和屏蔽线作为OBS",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-extractWellLayerObs",
+      "description": "通过将所有图形合并为一个边界框，从指定阱层上的实例中提取OBS",
+      "required": false,
+      "type": "layer_list"
+    },
+    {
+      "name": "-extractWellObsByRow",
+      "description": "从指定阱层上的行边界框加上边距来提取OBS",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-ignoreBumpOnPin",
+      "description": "不导出引脚上的凸块（bump）图形。可选值：all, pg, signal。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-ioPadPin",
+      "description": "将连接到设计引脚的IO焊盘作为LEF引脚图形写出",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mergeConnectedWellOnly",
+      "description": "仅合并相连的阱图形，而不是将所有图形合并为一个边界框",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCutObs",
+      "description": "不在引脚周围切割OBS图形",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-obsSpacing",
+      "description": "在OBS部分写出LEF58_OBSSPACING属性",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-obsSpacingPerLayer",
+      "description": "在层定义下为每一层写出间距属性",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-obs_above_top_layer",
+      "description": "为这些指定层上不是PIN图形的特殊布线和通孔写出OBS图形，而不是一个大的抽象OBS图形",
+      "required": false,
+      "type": "layer+"
+    },
+    {
+      "name": "-portForEachStripePin",
+      "description": "为-stripePin创建的每个引脚图形创建一个独立的LEF端口",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-property",
+      "description": "写出所有用户定义的设计属性",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "仅将选中的PG条带作为LEF引脚图形写出",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specifyTopLayer",
+      "description": "创建OBS直到此指定层",
+      "required": false,
+      "type": "layer"
+    },
+    {
+      "name": "-stripePin",
+      "description": "将顶层金属上的PG条带作为LEF引脚图形写出",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

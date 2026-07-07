@@ -1,0 +1,111 @@
+{
+  "command": "floorPlan",
+  "is_cmd": true,
+  "summary": "通过尺寸或坐标指定版图规划（Floorplan）的尺寸",
+  "description": "该命令通过指定尺寸或Die、I/O、Core的坐标来定义版图规划的尺寸。它会初始化版图规划并调用add_tracks命令来创建新的布线轨道。默认情况下，add_tracks命令会计算轨道间的最佳间距并忽略技术LEF中的间距值。当使用此命令时，版图规划会自动调整大小——会动态地为模块、固定的标准单元、固定的预布线和阻挡物自动推导出相对约束。版图规划会进行线性调整：模块间的间距均匀调整；模块和黑盒的大小均匀调整；固定的预布线和I/O会自动调整。注意：该命令会检查指定的I/O框和核心框是否在Die框的范围内，如果超出则会显示错误信息。",
+  "usage": "floorPlan [-help] [-adjustToSite] [-coreMarginsBy {io | die}] [-dieSizeByIoHeight {min |max}] [-flip {f | s | n}] [-fplanOrigin {center | llcorner}] [-noResize] [-noSnapToGrid] [-overlapSameSiteRow] {-b {<die_box io_box core_box>} | -s {<W H Left Bottom Right Top>}  | -d {<W H Left Bottom Right Top>}  | -r {<aspectRatio >[<rowDensity> [<Left Bottom Right Top>]]} | -su {<aspectRatio> [<stdCellDensity> [<Left Bottom Right Top>]]} | -keepShape <util>} [-site <name >| -siteOnly <name>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个版图规划参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-adjustToSite",
+      "description": "调整Die区域的宽度，使其成为I/O站点或核心站点宽度的整数倍。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-coreMarginsBy",
+      "description": "指定核心边距是使用核心到I/O边界还是核心到Die边界来计算。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-dieSizeByIoHeight",
+      "description": "指定Die尺寸计算时是使用最大I/O高度还是最小I/O高度。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-flip",
+      "description": "指定核心区域底部行的方向。f：第一行从底部向上翻转；n：无行翻转；s：第二行从底部向上翻转。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-fplanOrigin",
+      "description": "指定版图规划的原点是在中心还是在左下角。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-noResize",
+      "description": "检查如果所有内容都相同，是否需要执行版图规划。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noSnapToGrid",
+      "description": "指定核心框（或Die框）边界不会对齐到最近的金属间距，即使指定的Die/核心框尺寸不是最小金属间距的整数倍。这可以防止输入的版图规划框被改变。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-overlapSameSiteRow",
+      "description": "指定相同站点的行可以相互重叠。单高度行不能重叠。只有双高度或多高度行可以重叠，并且在单高度倍数的部分，任何其他重叠部分大小将导致行被忽略。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-b",
+      "description": "指定版图规划的所有三个框：die_box, io_box, core_box。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-s",
+      "description": "指定核心尺寸以及核心边缘（核心框的外边缘）之间的间距（以微米为单位）。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-d",
+      "description": "指定Die尺寸以及Die边缘（核心外边缘到I/O边界）之间的间距（以微米为单位）。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-r",
+      "description": "将芯片的核心尺寸指定为高度除以宽度的比率。如果使用值1.0，则定义正方形芯片。值2.0将定义一个高度尺寸是宽度尺寸两倍的矩形芯片。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-su",
+      "description": "通过标准单元密度确定核心和模块尺寸。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-keepShape",
+      "description": "指定调整大小后的目标利用率。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-site",
+      "description": "指定一个核心行站点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-siteOnly",
+      "description": "仅为指定的站点创建行。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "command": "addTieHiLo",
+  "is_cmd": true,
+  "summary": "在设计的逻辑层次中添加指定的tie-off单元实例，并将网表实例的tie-off引脚连接到这些新增实例的引脚上。",
+  "description": "该命令用于在设计的逻辑层次结构中添加指定的tie-off单元（tie-high和tie-low驱动单元）实例，并将网表中已有实例的tie-off引脚连接到这些新增的tie-off单元实例的引脚上，从而为网表实例的tie-high和tie-low引脚提供到电源和地的连接。通常在流程中放置完标准单元后使用此命令。注意：如果省略-powerdomain选项，命令将在默认电源域中插入tie-hilo。要为所有域添加tie-off单元，需要使用-matchingPDs选项。如果未指定参数，此命令将使用setTieHiLoMode命令设置的全局参数。",
+  "usage": "addTieHiLo [-help] [-cell <cellNames>] [-createHierPort {true | false}] [-keepExisting {true | false}] [-matchingPDs {true | false}] [-postMask {true | false}] [-powerDomain <powerDomainName>] [-prefix <prefixName>] [-reportHierPort {true | false}] [-cellPin <cellName:cellPin> < >| -instancePin <fileName> | -excludePin <fileName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个addTieHiLo参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要添加的tie单元。最多只能指定两个tie单元，其中一个必须是tie-high驱动单元，另一个是tie-low驱动单元。两个单元名必须用引号包围。此参数会覆盖setTieHiLoMode命令指定的单元名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-createHierPort",
+      "description": "如果其他约束（如最大扇出和最大距离）允许，允许添加的tie单元跨层次边界连接到tie引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepExisting",
+      "description": "当设置为true时，保留设计中先前运行中添加的现有tie-off，并添加新的tie-off。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-matchingPDs",
+      "description": "为所有库绑定中包含指定tie-off单元(s)的电源域添加tie-off单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postMask",
+      "description": "在后掩模流程中插入tie单元。指示软件重用现有的tie单元来关断设计中新创建的备用实例，而不是添加或删除tie单元。搜索连接到逻辑1或逻辑0的输入引脚，并尝试将它们关断到tie-high或tie-low单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-powerDomain",
+      "description": "将tie-off单元插入到指定的电源域中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefix",
+      "description": "为添加的tie单元实例指定一个前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reportHierPort",
+      "description": "当-createHierPort的值为true时，将创建的端口连接报告到名为tiehilo.rpt的文件中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cellPin",
+      "description": "指定要连接的单元引脚。格式可以是\"cellName1:cellPin cellName2:cellPin cellName3:cellPin\"。只有具有tie 0/1连接且在-cellPin中指定的单元引脚才会被更改为tie单元。其余的tie连接保持不变。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instancePin",
+      "description": "指定实例引脚文件名。文件格式为\"instanceName/instancePin\"。文件中的每一行包含一个实例引脚。只有具有tie 0/1连接且在此文件中定义的实例引脚才会被更改为tie单元。其余的tie连接保持不变。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludePin",
+      "description": "指定excludePin文件名。文件格式为\"instanceName/instancePin\"。文件中的每一行包含一个实例引脚。只有具有tie 0/1连接且未在此文件中定义的实例引脚才会被更改为tie单元。其余的tie连接保持不变。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

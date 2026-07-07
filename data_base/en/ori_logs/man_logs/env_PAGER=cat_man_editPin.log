@@ -1,0 +1,596 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editPin(25.10)                                                  editPin(25.10)
+
+Name
+       editPin - Modifies properties of pins, such as pin spreading, pin loca-
+       tion, pin width and depth, spacing, snap-to location, and status
+
+Syntax
+       editPin
+
+        [-help]
+
+        [-cell <cellName> | {-hinst <hinstName >[-refMaster]}]
+
+        [-end {<x y>}]
+
+        [-fixedPin]
+
+       [-global_location]
+
+       [-include_rectilinear_edge]
+
+       [-masterCloneAware]
+
+       [-offsetEnd <value>]
+
+       [-offsetStart <value>]
+
+        -pin {<pinName> | <pinNameList>}
+
+       [-pinDepth <pinDepthValue>]
+
+        [-pinWidth <pinWidthValue>]
+
+       [-quiet]
+
+       [-skipWrappingPins]
+
+       [-snap {TRACK | USERGRID | MGRID}]
+
+       [-spreadDirection {clockwise | counterclockwise | both}]
+
+        [-start {<x y>}]
+
+       [-use { SIGNAL | CLOCK | ANALOG }]
+
+        [{-layer {<layerId> | <layerIdListName>} |
+
+        {[-layerH <layerId>] [-layerV <layerId>]}}
+
+        [-layer_priority]
+
+        [-assign {<x y>} |
+
+         -spreadType {START | CENTER | SIDE | EDGE | RANGE} |
+
+         -pattern  {fill_track | fill_layer | fill_optimised | fill_diagonal |
+       fill_sinusoidal | fill_checkerboard}]]
+
+        [-side <sideName> | -edge <edgeNumber>]
+
+        [-fixOverlap {0|1} [-honorConstraint {0|1}]]
+
+        [-pattern {fill_track | fill_layer | fill_optimised | fill_diagonal  |
+       fill_sinusoidal | fill_checkerboard} [-reverse_alternate]]
+
+        [-spacing <spacingValue> [-unit {MICRON | TRACK}]]
+
+       Modifies  properties  of pins, such as pin spreading, pin location, pin
+       width and depth, spacing, snap-to location,  and  status.  The  editPin
+       command provides the equivalent capabilities of the Pin Editor form.
+
+       Note: The editPin command does not support wildcards.
+
+       The editPin command honors the minimum area rule as follows:
+
+              * If  neither  the  -pinWidth  nor the -pinDepth parameters have
+                been specified, the editPin  command  takes  the  minimum  pin
+                width  and  the  minimum area from the LEF file and calculates
+                the pin depth accordingly.
+
+              * If only the -pinWidth parameter has been specified, the  edit-
+                Pin  command takes the minimum area from the LEF file and cal-
+                culates the pin depth accordingly.
+
+              * If only the -pinDepth parameter has been specified, the  edit-
+                Pin  command takes the minimum area from the LEF file and cal-
+                culates the pin width accordingly.
+
+       If both the -pinWidth and the -pinDepth parameters are  specified,  the
+       editPin  command  takes  these  specified values, without enforcing the
+       minimum area rule.
+
+       The editPin command is clone context aware. The command:
+
+              * Looks at routing blockages on  clone  and  honors  them  while
+                keeping pins of master with -cell <>.
+
+              * Looks at abutted macro blockages and honors them while keeping
+                pins of master with -cell <>.
+
+              * Honors route blockage on master.
+
+       Note:  The value of the parameters of the editPin command is not stored
+       across multiple runs of the command - you need to specify the  required
+       value with every run of the command.
+
+       For example, if you do not specify the -pinWidth parameter, the default
+       pin width of the specified layer is used.
+
+       Note:  The editPin command checks and corrects DRC violations and over-
+       laps while placing internal pins. It supports pin placement on Metal  1
+       and accepts all layers for pin placement by default.
+
+       Note: The pin-related commands (editPin, checkPinAssignment, and legal-
+       izePin)  do  not consider regular wires for checking and correcting DRC
+       violations and overlaps while placing I/O or partition pins.
+
+       Note: The editPin command is used for manual pin assignment  in  nested
+       partitions. It places pins of nested partitions similar to single level
+       partitions.
+
+Parameters
+       -assign {<x y>}
+              Preassigns a pin at the specified location. You can use this pa-
+              rameter with other parameters such as -snap, -fixOverlap, -side,
+              and so on.
+
+              Note:  -assign  {x  y}  considers the local coordinates from the
+              bounding box of the fence.
+
+              Data_type: point, optional
+
+       -cell <cellName>
+              Specifies the name of the module. If you do not specify  a  cell
+              name, the command runs on the top-level cell.
+
+              Data_type: string, optional
+
+       -edge <edgeNumber>
+              For  rectilinear  partitions, specifies the edge along which the
+              pins will be placed. The edge number is  an  integer.  The  edge
+              numbering  starts  from  the  lower-left  corner  of a partition
+              clock-wise.
+
+              Edge 0 is the edge that has the smallest y value.
+
+              To spread pins on multiple rectilinear edges  that  are  on  the
+              same side, use the -side parameter.
+
+              For  rectangular  partitions,  you  can  specify a side with the
+              -side parameter.
+
+              Data_type: int, optional
+
+       -end {<x y>}
+              For pin spreading along a range, specifies the coordinates where
+              pins should end. This parameter is  used  with  the  -spreadType
+              RANGE parameter.
+
+              Data_type: point, optional
+
+       -fixedPin
+              When selected, the pin status is set to fixed. This implies that
+              the pin is locked in its position and will not be moved.
+
+              Note:  By default, the pin status is set to placed. This implies
+              that the pin is positioned but not  necessarily  locked  in  its
+              place. It can  be moved or adjusted.
+
+              Data_type: bool, optional
+
+       -fixOverlap {0 | 1}
+              With  this  parameter  on,  the editPin command tries to resolve
+              pin-overlap with other/nearby objects. The pins are moved to the
+              closest acceptable position such that pins do not overlap.
+
+              Default: 1. Resolve pin-overlap is on.
+
+              Note: This parameter applies only when pins are snapped to layer
+              track.
+
+              Data_type: bool, optional
+
+       -global_location
+              Specifies that the global location should be considered  by  the
+              command.
+
+              Note: By default, all locations that the editPin command consid-
+              ers  are coordinates with respect to lower-left corner of parti-
+              tion. If you specify the -global_location  option,  the  -start,
+              -end,  and -assign parameters accept coordinates with respect to
+              the lower-left corner of the design.
+
+              For example, in the following command, the pin will be placed 3u
+              from the lower-left corner of the partition.
+
+              editPin -cell c -pin cIn -assign 0 3 -layer 2 -side left
+
+              When you use the -global_location parameter,  the  pin  will  be
+              placed 3u from the lower-left corner of the design.
+
+              editPin  -cell  c  -pin  cIn  -assign  0  3  -layer 2 -side left
+              -global_location
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each editPin parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man editPin
+
+       -hinst <hinstName>
+              Specifies  the hinst name, including black box or committed par-
+              tition and top.
+
+              Data_type: string, optional
+
+       -honorConstraint {0|1}
+              Specifies whether user-defined pin constraints  should  be  hon-
+              ored.
+
+              The following constraints are honored when this parameter is set
+              to on:
+
+              * pin spacing
+
+              * pin size
+
+              * pin-to-corner distance
+
+              * partition-allowed pin layers.
+
+              Default: 0 (user-defined pin constraints are not honored)
+
+              Data_type: bool, optional
+
+       -include_rectilinear_edge
+              Specifies that all the edges coming in the solution space should
+              be included.
+
+              Data_type: bool, optional
+
+       -layer {<layerId> | <layerName>}
+              Specifies  the  layer on which the pins will be assigned. Layers
+              can be specified using the LEF layer names or layer ID numbers.
+
+              Note: This parameter is optional but only  when  -spreadType  is
+              not specified.
+
+              Note:  For  designs  that  have  backside metal layers, both the
+              backside and frontside layers are accepted.
+
+              Data_type: bool, optional
+
+       -layerH <layerId>
+              Specifies the preferred horizontal layer on which the pins  will
+              be assigned.
+
+              Note:  For  designs  that  have  backside metal layers, both the
+              backside and frontside layers are accepted.
+
+              Data_type: string, optional
+
+       -layerV <layerId>
+              Specifies the preferred vertical layer on which the pins will be
+              assigned.
+
+              Note: For designs that have  backside  metal  layers,  both  the
+              backside and frontside layers are accepted.
+
+              Data_type: string, optional
+
+       -layer_priority
+              Specifies that the input layer is given based on its priority.
+
+              Data_type: bool, optional
+
+       -masterCloneAware
+              Enables master-clone context awareness for feasibility checking.
+
+              Data_type: bool, optional
+
+       -offsetEnd <value>
+              Sets the offset from the end of the edge (in microns) to be con-
+              sidered as the endpoint for placing the pin.
+
+              Note:  The  -offsetStart and -offsetEnd options can only be used
+              with the -edge option.
+
+              Data_type: float, optional
+
+       -offsetStart <value>
+              Sets the offset from the start of the edge (in  microns)  to  be
+              considered as the start point for placing the pin.
+
+              Note:  The  -offsetStart  and  -offsetEnd parameters can only be
+              used with the -edge parameter.
+
+              Data_type: float, optional
+
+       -pattern {fill_track | fill_layer | fill_optimised | fill_diagonal |
+       fill_sinusoidal | fill_checkerboard}
+              Specifies the multi-layer-spread-pattern must be followed by the
+              set of selected pins.
+
+              fill_track
+
+              fill_layer
+
+               fill_optimised
+
+              fill_diagonal
+
+              fill_sinusoidal
+
+              fill_checkerboard
+
+              Data_type: enum, optional
+
+       -pin {<pinName> | <pinNameList>}
+              Specifies the pins, or the list of pins of the specified  module
+              on which the command will run.
+
+              Note:  The  naming  convention  to  identify individual ports is
+              based on the order in which the  ports  are  stored  inside  the
+              database.  The  first,  second, and third ports will be named as
+              <pinName> with the suffix as port0, port1, port2,  respectively.
+              For example: VDD.port0, VDD.port1, VDD.port2
+
+              Data_type: string, required
+
+       -pinDepth <pinDepthValue>
+              Sets the depth of the pin in microns.
+
+              Default: If you do not specify this parameter, the default depth
+              of the specified layer is used.
+
+              Data_type: float, optional
+
+       -pinWidth <pinWidthValue>
+              Sets the width of the pin in microns.
+
+              Default: If you do not specify this parameter, the default width
+              of the specified layer is used.
+
+              Data_type: float, optional
+
+       -quiet Specifies that the messages should be suppressed.
+
+              Data_type: bool, optional
+
+       -refMaster
+              Specifies that the clone's edge, spreadDirection, and offset are
+              with respect to the master.
+
+              Data_type: bool, optional
+
+       -reverse_alternate
+              Specifies  that  the  reverse  of the multi-layer-spread-pattern
+              must be followed by the set of selected pins.
+
+              For example, fill_track -reverse_alternate
+
+              Data_type: bool, optional
+
+       -side <sideName>
+              For rectangular partitions, specifies the side on which the pins
+              will be placed. The values for sideName  can  be:  TOP,  BOTTOM,
+              LEFT, RIGHT, or INSIDE.
+
+              Note:  The  value  INSIDE can only be specified with the -assign
+              parameter.
+
+              For rectilinear partitions, you can also specify  an  edge  with
+              the -edge parameter.
+
+              Note:  The  setPinAssignMode  -pinEditInBatch parameter does not
+              support the internal pins (where the side is INSIDE).
+
+              Data_type: string, optional
+
+       -skipWrappingPins
+              Skips pin wrapping on the adjacent edge or the  same  edge  from
+              the other side.
+
+              Data_type: bool, optional
+
+       -snap {TRACK | USERGRID | MGRID}
+              Specifies how the pins will be snapped.
+
+              * TRACK: Snaps pins to layer tracks.
+
+              * USERGRID: Snaps pins to the user-defined grid.
+
+              * MGRID: Snaps pins to the manufacturing grid.
+
+              Default: TRACK
+
+              Data_type: enum, optional
+
+       -spacing <spacingValue>
+              Displays  the edge-track-to-edge-track  spacing between pins for
+              multi-pin editing. The spacing is either in  micrometers  or  by
+              layer track, as specified by the -unit parameter. A spacing of 1
+              track  means  pins should be placed on every track with no empty
+              tracks between them.
+
+              Default: The spacing is set automatically.
+
+              Data_type: string, optional
+
+       -spreadDirection {clockwise | counterclockwise | both}
+              Specifies the direction in which the pins are  spread.  You  can
+              specify:
+
+              * clockwise: Sets the pins in the clockwise direction.
+
+              * counterclockwise:  Sets  the pins in the counter clockwise di-
+                rection.
+
+              * both: Sets the pins by looking for the closest legal  location
+                to the desired location in both directions.
+
+              Default: clockwise
+
+              Data_type: enum, optional
+
+       -spreadType {START | CENTER | SIDE | EDGE | RANGE}
+              Specifies how to spread pins along a block's edge.
+
+              * START:  Uses  the  coordinates of the first pin specified with
+                the -pin parameter as the starting point (anchor) for  spread-
+                ing  a group of pins. This value can be used even if you spec-
+                ify a single pin with the -pin parameter.
+
+              * CENTER: If a single pin is specified with the -pin  parameter,
+                the  pin  will  be  placed  at  the  center  of  the specified
+                edge/side. If multiple pins are specified, the pin editor  au-
+                tomatically  calculates  the starting and end points such that
+                the center pin(s) of the group are placed at the center of the
+                specified edge or side.
+
+              * SIDE: If you specify a side with the -side parameter and spec-
+                ify the -spreadType SIDE parameter, the pins are spread evenly
+                along all the edges belonging to the specified side. The  pins
+                are spread from left to right and from bottom to top.
+
+              * EDGE:  If  you  specify  an  edge with the -edge parameter and
+                specify the -spreadType EDGE parameter, the  pins  are  spread
+                evenly  along  the  entire specified edge, using the limits of
+                the edge as the starting and ending points.
+
+              * RANGE: Spreads pins evenly along the block edge between points
+                you specify with -start {x y} and -end {x y}  parameters.  The
+                ending  coordinates  become the coordinates of the last pin in
+                the pin group. The Pin Editor determines the appropriate spac-
+                ing.
+
+              Note: For rectilinear partitions, if the start and/or end points
+              are not on the specified side, the start and/or end  points  are
+              snapped to the nearest correct location on the specified side.
+
+              Data_type: enum, optional
+
+       -start {x y}
+              For pin spreading along a range, specifies the coordinates where
+              pins  should  start. This parameter is used with the -spreadType
+              RANGE and the -spreadType START parameters.
+
+              Data_type: point, optional
+
+       -unit {MICRON | TRACK}
+              Specifies the unit in microns or in tracks. This  parameter  ap-
+              plies only to the unit of the -spacing parameter.
+
+              Default: Micron
+
+              Data_type: enum, optional
+
+       -use {SIGNAL | CLOCK | ANALOG}
+              Specifies the +USE property of the partition pin.
+
+              Data_type: string, optional
+
+Example
+       The following command modifies the pins as specified here:
+
+              * the command runs on the module DTMF_CORE_INST1
+
+              * the   command   runs  on  all  pins  whose  name  starts  with
+                DTMF_CORE_INST1_OUTPIN
+
+              * the pins are spread on the edge number 2
+
+              * the USE property is set to CLOCK
+
+              * the pins are spread between the coordinates (17 23)  and  (117
+                123)
+
+              * the pins are assigned on the layer Metal3
+
+              * the pin status is set to Fixed
+
+              * the pins are snapped to layer tracks
+
+              * the unit is in tracks
+
+              * the spacing between pins for multi-editing is set to 2 tracks
+
+              * the pin depth is set to 10 microns.
+
+                Note:  The  -unit  parameter is set to TRACK but that does not
+                affect the unit of pin depth.
+
+              * the pins are moved to the nearest acceptable location  as  the
+                -fixOverlap  parameter  is set to 1. However, the -overlapCon-
+                straints parameter is not specified.
+
+                editPin
+
+                -cell DTMF_CORE_INST1
+
+                -pin {DTMF_CORE_INST1_OUTPIN}
+
+                -spreadType RANGE
+
+                -edge 2
+
+                -layer Metal3
+
+                -use CLOCK
+
+                -fixOverlap 1
+
+                -snap TRACK
+
+                -pinDepth 10
+
+                -start {17 23}
+
+                -end {117 23}
+
+                -spacing 2
+
+                -unit TRACK
+
+                -fixedPin
+
+              * The editPin command looks at routing blockages  on  clone  and
+                honors  them. In the figure below, the following command would
+                not start pins on master from Y=0 as there is a route blockage
+                on clone at desired location.
+
+                editPin -hinst p(m) -spreadType  start  -start  0  0  -edge  0
+                -layer 2 -pin A*
+
+                Also,  the  following  command  would not start pins on master
+                from Y=10 as there is a macro with obstruction on clone at de-
+                sired location.
+
+                editPin -hinst p(m) -assign 10 5  -edge  2  -layer  2  -pin  B
+                -spreadDirection {both}
+
+              * The  following  commands  are  used  to edit pins in the batch
+                mode:
+
+                setPinAssignMode -pinEditInBatch true
+
+                editPin -hinst p(m) -spreadType  start  -start  0  0  -edge  0
+                -layer 2 -pin A*
+
+                editPin  -hinst  p(m)  -assign  10  5  -edge 2 -layer 2 -pin B
+                -spreadDirection {both}
+
+                setPinAssignMode -pinEditInBatch false
+
+Related Information
+              * setPinAssignMode
+
+              * legalizePin
+
+              * assignPtnPin
+
+              * assignIoPins
+
+              * "Editing Pins" in the Innovus User Guide.
+
+              * "Assigning Pins" in the Innovus User Guide.
+
+              * "Pin Editor" in the Innovus Menu Reference.
+
+                           Fri Apr 04 01:25:37 2025             editPin(25.10)

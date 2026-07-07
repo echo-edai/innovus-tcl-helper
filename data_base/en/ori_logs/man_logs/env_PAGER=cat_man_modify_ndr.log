@@ -1,0 +1,167 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+modify_ndr(25.10)                                            modify_ndr(25.10)
+
+Name
+       modify_ndr  -  Modifies  a non-default rule created by the add_ndr com-
+       mand, or coming in from DEF or the OpenAccess design data
+
+Syntax
+       modify_ndr
+
+       [-help]
+
+       [-add_via {<via_name1 via_name2 ...>}]
+
+       [-generate_via]
+
+       [-hard_spacing {0|1}]
+
+       [-min_cut {<layer1>[:<layer2>] <min_cut ...>}]
+
+       -name <ruleName>
+
+       [-spacing {<layer1>[:<layer2>]  <spacing>  ...}  |  -spacing_multiplier
+       {<layer1>[:<layer2>] <spacing> ...}]
+
+       [-use_via_cut_class <string>]
+
+       [-via {<via_name1 via_name2> ...}]
+
+       [-width   {<layer1>[:<layer2>]   <width>   ...}   |   -width_multiplier
+       {<layer1>[:<layer2>] <width> ...}]
+
+       Modifies a non-default rule created by the add_ndr command,  or  coming
+       in  from  DEF or the OpenAccess design data. This command also supports
+       modifying an NDR for the objects on the backside layers.
+
+       Note: Any NONDEFAULTRULE defined in LEF or the OA  techfile  cannot  be
+       modified  by  this  command. You must modify the LEF or OA techfile di-
+       rectly if you need to change them.
+
+       This command should normally be used before any routing exists  in  the
+       design.  If  there  is  any  existing  routing using this NDR, then the
+       changes may cause new DRC violations. In some  cases  ecoRoute  may  be
+       able  to repair the routing (for example just changing the vias can of-
+       ten be repaired, and just adding new via choices should  not  need  any
+       repair),  but  in many cases you will need to reroute the entire design
+       (e.g. when changing the width or spacing) to get good results.
+
+       If setGenerateViaMode -auto is true, then vias are automatically gener-
+       ated for the modified NDR based on the setGenerateViaMode settings. See
+       the setGenerateViaMode command for more details.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each modify_ndr parameter. For a detailed description
+              of the command and all of its parameters, use the man command:
+
+              man modify_ndr
+
+       -add_via {<via_name1 via_name2> ...}
+              Specifies a list of vias to add to the existing NDR via list.
+
+              You can use this parameter to add DFM vias or other custom vias.
+
+       -generate_via
+              Auto-generates vias with the generateVias command.
+
+              This is intended for debugging, and not  used  generally  as  it
+              only  adds  vias for the current session. If you save, and later
+              restore the design in a new session,  the  added  vias  are  not
+              added to the NDR via list any longer. You can use this option to
+              do experiments in the current session, or write out a LEF or DEF
+              file to put the modified NDR into the LEF or OA techfile.
+
+              Note:  If setGenerateViaMode -auto is true, then vias are always
+              auto-generated even when -generate_via is not given. This is the
+              normal usage behavior if you want to use the auto-generated vias
+              for the rest of the flow (e.g. after save,  and  then  restoring
+              the design in a new session).
+
+       -hard_spacing {0|1}
+              Sets the non-default rule as HARDSPACING.
+
+       -min_cut {<layer1>[:<layer2>] <min_cut> ...}
+              Specifies the minimum cut limit for via layers.
+
+       -name <ruleName>
+              Specifies the name of the non-default rule to be modified.
+
+       -spacing {<layer1>[:<layer2>] <spacing ...>}
+              Specifies the spacing for the routing layers.
+
+       -spacing_multiplier {<layer1>[:<layer2>] <spacing> ...}
+              Specifies the spacing multiplier for the routing layers.
+
+       -use_via_cut_class <string>
+              Specifies  the  layer  and cut_class list to support the LEF/DEF
+              property. The value must  be  given  in  the  format  of  either
+              {layer  cut_class} or  {layer cut_class nr_row nr_col}. Refer to
+              the examples below:
+
+              modify_ndr -name new_1 -use_via_cut_class {V1 VX}
+
+              modify_ndr -name new_2 -use_via_cut_class {V1 VX 2 1}
+
+       -via {<via_name1 via_name2 ...>}
+              Resets the via list to empty, and then adds the  list  of  named
+              vias to the NDR via list.
+
+       -width {<layer1>[:<layer2>] <width ...>}
+              Specifies the width for the routing layers.
+
+       -width_multiplier {<layer1>[:<layer2>] <width> ...}
+              Specifies the width multiplier for the routing layers.
+
+Examples
+              * The  following  command  creates  a  rule that requires double
+                width and double spacing. All other values are the same as the
+                default rule. add_ndr is like modify_ndr for  via  generation.
+                If  setGenerateViaMode  -auto is true, then vias are automati-
+                cally generated that match the different layer widths. If not,
+                the vias from the default rule are used, which is not  correct
+                for wires that are twice the default width.
+
+                add_ndr    -name    NDR_2w2s   -spacing   {metal1:metal4   0.2
+                metal5:mmetal6  0.4  metal7  0.6}  -width  {metal1:metal4  0.2
+                metal5:metal6 0.4 metal7 0.6}
+
+              * The following command modifies the width and spacing values in
+                non-default  rule  NDR_2w2s  created by the command. above. If
+                setGenerateViaMode -auto is true, vias are automatically  gen-
+                erated  with matching widths and added to the NDR via-list. If
+                not, then the original vias are  not  changed,  which  can  be
+                wrong for different widths.
+
+                modify_ndr   -name   NDR_2w2s   -spacing   {metal1:metal4  0.4
+                metal5:metal6  0.8  metal7  0.9}  -width  {metal1:metal4   0.4
+                metal5:metal6 0.8 metal7 0.9}
+
+              * The  following  command  auto-generates vias for rule NDR_2w2s
+                with the generateVias command to get vias that match the wider
+                wire widths, even if setGenerateViaMode -auto is  false.  This
+                is  only  useful  for  debugging in the current session, or to
+                write a LEF file with the NDR to add back into the LEF  or  OA
+                techfile.  If  you want to use the auto-generated vias for the
+                rest of the flow, you should set setGenerateViaMode  -auto  to
+                true.
+
+                modify_ndr -name NDR_2w2s -generate_vias
+
+              * The following command modifies existing rule NDR_2w2s to spec-
+                ify MINCUTS to 2 for the Vx layers (via1 to via3).
+
+                modify_ndr -name NDR_2w2s -min_cut {via1:via3 2}
+
+Related Information
+              * add_ndr
+
+              * exportNdr
+
+              * setGenerateViaMode
+
+              * generateVias
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025          modify_ndr(25.10)

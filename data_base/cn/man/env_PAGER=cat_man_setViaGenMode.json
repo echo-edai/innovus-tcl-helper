@@ -1,0 +1,321 @@
+{
+  "command": "setViaGenMode",
+  "is_cmd": true,
+  "summary": "设置用于连接环和条带的通孔的全局变量",
+  "description": "此命令设置全局变量，用于在使用 addRing、addStripe、editPowerVia、sroute、addSplitPowerVia 或 editAddRoute 命令时，连接环和条带的通孔生成。它提供了广泛的参数来控制通孔生成的各个方面，如精度、间距、合并、DRC处理、钩连（hookup）样式和首选通孔规则等。",
+  "usage": "setViaGenMode [-help] [-reset] [-accuracy_effort {low | medium | high}] [-add_pin_to_pin_via {true | false}] [-align_merged_stack_via_metals {true | false}] [-allow_via_expansion {true | false}] [-allow_wire_shape_change {true | false}] [-area_only {true | false}] [-bot_enclosure {<overhang1 overhang2>}] [-create_double_row_cut_via {0 | 1 | 2}] [-create_max_row_cut_via {true | false}] [-cut_spacing {<x_spacing y_spacing>}] [-cutclass_preference {default | {[square] [bar] [large]} | cutclass_name_list} | file_name] [-disable_via_merging {true | false}] [-extend_out_wire_end {true | false}] [-full_cut_via_only {true | false}] [-genvia_naming_prefix <viaNamePrefix>] [-hookup_contact_max {<distance1_max distance2_max>}] [-hookup_contact_pg_track {<start_value pitch_value>}] [-hookup_preplace_fix {0 | 1}] [-hookup_rail_pair {0 | 1}] [-hookup_via_distance {<distance_value1> [<distance_value2> [<boundary_spacing>]]}] [-hookup_via_fixed_grid {true | false}] [-hookup_via_min_distance <distance>] [-hookup_via_style {none | loose | compact | moderate}] [-hookup_via_viarule {<filler> {<default> |{<list_of_via> <rule>/<cell_names> }} ...}] [-hookup_virtual_trim_grid {default |{-layer -mask1 {-pitch -core_offset...}}}] [-ignore_design_boundary {true | false}] [-ignore_DRC {true | false}] [-ignore_viarule_enclosure {true | false}] [-inherit_wire_status {true | false}] [-invoke_verifyGeometry {true | false}] [-keep_existing_via {0 | 1 | 2}] [-keep_fixed_via {true | false}] [-mincut_preference <value>] [-optimize_cross_via {true | false}] [-optimize_via_on_routing_track {true | false}] [-parameterized_via_only {true | false | auto}] [-partial_overlap_threshold <float>] [-preferred_vias_only {use_lef | open | keep}] [-reference_boundary {design|core}] [-respect_signal_routes {0 | 1 | 2}] [-respect_stdcell_geometry {true | false}] [-respect_wire_ndr {true | false}] [-set_via_expansion_dir {auto | horizontal | vertical}] [-snap_via_center_to_grid {{ layer1 {none | grid | half_grid | either } [hard]} layer2 {{none | grid | half_grid | either } [hard]} ... }] [-split_long_via_global_grid {x_offset x_pitch x_length_threshold x_length_multiplier y_offset y_pitch y_length_threshold y_length_multiplier}] [-symmetrical_via_only {true | false | auto}] [-top_enclosure {<overhang1 overhang2>}] [-use_track_offset {true | false}] [-use_trim_metal_enclosure {true | false}] [-viarule_preference {default | predefined | generated | <list of via rule/cell names> | <file_name>}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 setViaGenMode 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定参数重置为其默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-accuracy_effort",
+      "description": "控制在通孔生成期间精度和运行时间之间的平衡。可选值：low, medium, high。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-add_pin_to_pin_via",
+      "description": "在不同覆盖宏之间插入通孔以连接引脚。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-align_merged_stack_via_metals",
+      "description": "对齐合并的堆叠通孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-allow_via_expansion",
+      "description": "允许通孔扩展到交叉区域之外以满足 LEF 规则。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-allow_wire_shape_change",
+      "description": "允许通孔改变现有导线的金属形状。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-area_only",
+      "description": "仅在指定区域内添加通孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-bot_enclosure",
+      "description": "使用指定的底部包覆值生成通孔，而不修改 LEF 文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_double_row_cut_via",
+      "description": "尝试将通孔扩展为比原始多一个切口。值：0, 1, 2。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_max_row_cut_via",
+      "description": "尝试将通孔扩展为比原始多一行或一列切口。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-cut_spacing",
+      "description": "使用指定的切口间距值生成通孔，而不修改 LEF 文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cutclass_preference",
+      "description": "指定插入特殊通孔时对通孔切口类别的偏好。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-disable_via_merging",
+      "description": "在 followpin 层相邻的两层范围内禁用通孔合并。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-extend_out_wire_end",
+      "description": "允许通孔在 T 型交叉点处延伸到现有导线末端之外。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-full_cut_via_only",
+      "description": "允许用户仅创建完整切口的通孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-genvia_naming_prefix",
+      "description": "将所有生成的通孔的前缀名称设置为指定值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hookup_contact_max",
+      "description": "设置从接触点创建钩连通孔的最大距离，以及连续 M0 PG 引脚上两个钩连通孔之间的最大距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hookup_contact_pg_track",
+      "description": "设置钩连接触使用的 PG 轨道的起点和间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hookup_preplace_fix",
+      "description": "在 DRC 检查期间增强钩连通孔生成的运行时间。仅在多 CPU 处理模式下有效。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-hookup_rail_pair",
+      "description": "在行两侧分布的配对 M0 followpin 上添加钩连通孔。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-hookup_via_distance",
+      "description": "控制为每个 followpin 放置第一个 PG 通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hookup_via_fixed_grid",
+      "description": "控制钩连通孔是否只能在固定网格上添加。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-hookup_via_min_distance",
+      "description": "指定两个 PG 通孔之间的最小约束距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-hookup_via_style",
+      "description": "设置钩连通孔的样式。可选值：none, loose, compact, moderate。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-hookup_via_viarule",
+      "description": "指定在钩连通孔生成期间，指定单元区域的首选通孔规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hookup_virtual_trim_grid",
+      "description": "为 PG 钩连通孔生成创建虚拟修剪网格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignore_design_boundary",
+      "description": "指定通孔是否可以扩展到设计边界（布局规划区域）之外。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignore_DRC",
+      "description": "设置此选项将在创建通孔时忽略 DRC 但遵循用户定义的值。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignore_viarule_enclosure",
+      "description": "控制是否忽略 VIARULE GENERATE 中的包覆值。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-inherit_wire_status",
+      "description": "控制生成的通孔是否继承目标导线的状态。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-invoke_verifyGeometry",
+      "description": "启用或禁用通孔生成软件调用的 verify_drc 命令。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-keep_existing_via",
+      "description": "控制在交叉点存在通孔时，是否保留现有通孔或放置新通孔。值：0, 1, 2。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-keep_fixed_via",
+      "description": "控制当调用 viaGen 生成通孔时是否保留固定通孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-mincut_preference",
+      "description": "指定在交叉点进行通孔生成时的最小切口数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-optimize_cross_via",
+      "description": "生成每层具有最小包覆值的通孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-optimize_via_on_routing_track",
+      "description": "通过最小化地移动或修改中间层的通孔来释放布线轨道。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-parameterized_via_only",
+      "description": "仅生成参数化通孔。可选值：true, false, auto。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-partial_overlap_threshold",
+      "description": "指定在部分重叠导线上创建通孔的比率阈值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-preferred_vias_only",
+      "description": "仅生成在 -viarule_preference 中设置的通孔。可选值：use_lef, open, keep。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-reference_boundary",
+      "description": "指定在 -split_long_via_global_grid 参数中指定偏移值时的偏移参考。可选值：design, core。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-respect_signal_routes",
+      "description": "控制通孔生成软件是否遵循预先存在的信号布线。值：0, 1, 2。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-respect_stdcell_geometry",
+      "description": "遵循标准单元图案内的几何形状。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-respect_wire_ndr",
+      "description": "控制钩连通孔和信号布线之间的间距，以支持所有 NDR 规则。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-set_via_expansion_dir",
+      "description": "设置通孔扩展方向。可选值：auto, horizontal, vertical。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-snap_via_center_to_grid",
+      "description": "指定每个布线层的通孔中心对齐样式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-split_long_via_global_grid",
+      "description": "提供选项来控制全局网格，使网格上的通孔在 X 和/或 Y 方向上对齐。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-symmetrical_via_only",
+      "description": "控制是否仅生成对称通孔。可选值：true, false, auto。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-top_enclosure",
+      "description": "使用指定的顶部包覆值生成通孔，而不修改 LEF 文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_track_offset",
+      "description": "使用轨道偏移。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-use_trim_metal_enclosure",
+      "description": "强制工具使用修剪层的包覆。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-viarule_preference",
+      "description": "设置首选的通孔规则用法。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "command": "createSpareModule",
+  "is_cmd": true,
+  "summary": "创建一个由指定单元组成的备用模块",
+  "description": "该命令用于创建一个备用模块，该模块由用户指定的单元（如逻辑门、触发器）构成。可以配置模块名称、包含的单元类型和数量、时钟和复位信号的连接、高低电平绑定单元，以及实例命名前缀等选项。此功能常用于设计裕量（Design for Margin, DFM）或为后期工程变更单（Engineering Change Order, ECO）预留可用的逻辑资源。",
+  "usage": "createSpareModule [-help] -moduleName <moduleName> -cell {<cellName>[<number>] [<cellName> [<number>] ] ...} [-clock <netName>] [-reset <netName>:<pinName> [<pinName>] ...] [-tie {<tieCellName> [<tieCellname>] } ] [-tieLo {<pinList> | *} ] [-useCellAsPrefix]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-moduleName",
+      "description": "指定备用模块的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要添加到备用模块中的单元名称及其数量。如果未指定数量，则由 setTieHiLoMode -maxFanOut 参数控制添加的单元数量。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-clock",
+      "description": "指定连接到备用模块中实例时钟引脚的时钟网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-reset",
+      "description": "指定一个网络及其引脚，以连接到备用模块中时序备用单元的复位引脚。如果未指定此参数，则这些复位引脚将不被连接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tie",
+      "description": "指定要添加到备用模块中的高电平绑定（tie-high）和低电平绑定（tie-low）单元。软件会自动识别引脚是高电平还是低电平。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tieLo",
+      "description": "指定要连接到指定低电平绑定单元的引脚列表。未在此指定的引脚将连接到 1'b1 或高电平绑定单元。如果未通过 -tie 参数指定低电平绑定单元，则引脚将连接到 1'b0。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useCellAsPrefix",
+      "description": "将主单元名称作为前缀添加到模块内实例化的门单元名称前。默认情况下，软件添加 spr_gate_<n> 作为前缀；指定此选项后，会将主单元名称添加到默认前缀之前。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

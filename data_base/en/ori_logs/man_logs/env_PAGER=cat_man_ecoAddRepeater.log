@@ -1,0 +1,388 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoAddRepeater(25.10)                                    ecoAddRepeater(25.10)
+
+Name
+       ecoAddRepeater - Adds either a single buffer or two inverters on a net
+
+Syntax
+       ecoAddRepeater
+
+       [-help]
+
+       {-net <netName> | -term <term1 term2>... }
+
+       [-hinstGuide  <hinstName> | -spreadDist <distance> | -spreadCount <num-
+       ber> ]
+
+       [-name <instName> | -spreadDist <distance> | -spreadCount <number> ]
+
+       [-spreadDist <distance> | -spreadCount <number> ]
+
+       [-newNetName <netName> | -spreadDist <distance> | -spreadCount <number>
+       ]
+
+       [-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc} | -offLoadAtLoc {x1a
+       y1a x1b y1b x2a y2a x2b y2b ....} | { xLoc yLoc  inv_xLoc  inv_yLoc}  |
+       -offLoadSlack  <slack> | -spreadDist <distance> | -spreadCount <number>
+       ]
+
+       [-radius <mu>m | -logicalChangeOnly | -spreadDist <distance> | -spread-
+       Count <number> ]
+
+       [-offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....}  |  {  xLoc  yLoc
+       inv_xLoc  inv_yLoc}  | -offLoadSlack <slack> | -spreadDist <distance> |
+       -spreadCount <number> ]
+
+       [{[-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc}]
+
+       [-relativeDistToSink <sinkWeight>]
+
+       [-offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....}  |  {  xLoc  yLoc
+       inv_xLoc inv_yLoc}]} [ -radius <mu>m ] ]
+
+       [-loc  {xLoc  yLoc}  | { xLoc yLoc inv_xLoc inv_yLoc} [-bufOrient {R0 |
+       R90 | R180 | R270 | MX | MX90 | MY | MY90}]]
+
+       [-net <netName> [-spreadDist <distance>]]
+
+       [-spreadPrefix  <prefix>]]  [-spreadDist  <distance>  [-firstSpreadDist
+       <distance>]]
+
+       [-cell <cell1 cell2>]
+
+       [-relativeDistToSink  <sinkWeight> | -offLoadAtLoc {x1a y1a x1b y1b x2a
+       y2a x2b y2b ....} | { xLoc  yLoc  inv_xLoc  inv_yLoc}  |  -offLoadSlack
+       <slack> | -spreadDist <distance> | -spreadCount <number> ]
+
+       [-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc} | -noPlace ]
+
+       Adds  either a single buffer or two inverters on a net. This allows you
+       to optionally specify the location and radius, the location relative to
+       the sink pin, and the buffer insertion based on the slack. This command
+       also checks for and observes power domains based on the  specified  in-
+       stance name and location. This command cuts wires by default.
+
+       This  command does not modify dont_touch nets if setEcoMode -honorDont-
+       Touch is set to true.
+
+       Notes:
+
+              * The ecoAddRepeater command is simultaneous setup/hold and MMMC
+                aware. To make the command simultaneous setup/hold aware,  set
+                the   global   variable   set_global  timing_enable_simultane-
+                ous_setup_hold_mode to true. The simultaneous setup/hold  mode
+                can  only  be  used for timing analysis. It cannot be used for
+                any physical implementation steps.
+
+                By default, if you specify an inverter  as  the  master  cell,
+                ecoAddRepeater adds a pair of inverters but if you set setEco-
+                Mode-LEQCheck  as false, ecoAddRepeater adds a single inverter
+                only.
+
+              * ecoAddRepeater can return new instance and net name:  newInst-
+                Name inputNet outputNet
+
+                Example
+
+                set result [ecoAddRepeater -net s2_hresp0 -cell inv_32 \
+
+                -loc {1069.018666 128.2435714}]
+
+                set newInstName [lindex $result 0]
+
+                set inputNetName [lindex $result 1]
+
+                set outputNetName [lindex $result 2]
+
+                If  a  pair of inverter is added then the return list could be
+                the following, assuming inv1OutputNet drives the input pin  of
+                inv2InstName:
+
+                {inv1InstName  inv1InputNet inv1OutputNet inv2InstName inv2In-
+                putNet inv2OutputNet}
+
+              * When ecoAddRepeater is used in the post-mask ECO, ensure  that
+                it  is  used  with  the  -noPlace  option  to avoid base layer
+                change. Also, call ecoPlace -useSpareCells or ecoSwapSpareCell
+                to map the new repeater to the spare cell. If you plan to call
+                ecoRoute -modifyOnlyLayersbottomLayer:topLayer  later,  ensure
+                that the added repeater can be connected through the specified
+                layer.  Otherwise,  please  do not use the ecoAddRepeater com-
+                mand. You can also use loadECO <ecofile> -postMask to add  re-
+                peaters in the post-mask ECO.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each ecoAddRepeater.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoAddRepeater
+
+       -bufOrient {R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90}
+              Specifies the legalized orientation for the instance.
+
+              Valid orientation values are: R0, R90, R180, R270, MX, MX90, MY,
+              MY90.
+
+              Note: The -loc option is required with -bufOrient.
+
+              For more information on orientation keys, see "Orientation  Key"
+              in  the  Floorplanning  the  Design  chapter of the Innovus User
+              Guide.
+
+       -cell <cell1 cell2 ...>
+              Specifies the name of the cell(s) which is to be inserted as re-
+              peater.
+
+       -firstSpreadDist <distance>
+              Specifies the distance (from the driver) after which  the  first
+              repeater  is  to be added. With the -firstSpreadDist option, you
+              must specify -spreadDist.
+
+              Minimum: 2.2250738585072e-308
+
+              Maximum: 1073741.823
+
+       -hinstGuide <hinstName>
+              Indicates the module hierarchy in which the inst is inserted  by
+              Tempus or a third party tool so that Innovus is able to make the
+              association in case the instance appears in the -termList option
+              of an ECO command at a later stage. This option can be only used
+              when  setEcoMode  -batchMode true command is specified. You also
+              need to specify the -name option along with it.
+
+       -loc {x y | x1 y1 x2 y2}
+              Specifies the x and y coordinates for the location of the buffer
+              or inverter pair to insert. If no  location  is  specified,  the
+              tool will automatically determine a location.
+
+              * If  the  cell is a buffer and location is specified, the newly
+                created buffer is placed at the specified location (x y).
+
+              * If multiple buffers are added in the same ecoAddRepeater  com-
+                mand,  the  buffers are added in the order of their locations,
+                starting from the buffer farthest from the net's driver.
+
+              * If the cell is an inverter pair and two locations  are  speci-
+                fied,  the  first  inverter will be placed at location (x1 y1)
+                and the second inverter will be placed at location (x2 y2).
+
+              * If the cell is an inverter pair and only one location is spec-
+                ified, both inverters will be placed at the same  location  (x
+                y).
+
+       -logicalChangeOnly
+              Specifies  that  buffer/inverter  addition should be done in the
+              logical-only mode.
+
+       -name <instName>
+              Specifies the base name for the repeater to be inserted.
+
+              When -cell is inverter, you can specify two names  for  inverter
+              pair enclosed in {{ }}.
+
+       -net <netName  >
+              Specifies the name of the net where the buffer will be inserted.
+
+       -newNetName <netName>
+              Specifies the base name for the new net created for the repeater
+              insertion.
+
+              When  -cell  is inverter, you can specify two names for inverter
+              pair enclosed in {{ }}.
+
+              ExampleecoAddRepeater -net DTMF_INST/ARB_INST/n_36  -cell  INVX4
+              -name {{cell1 cell2}} -newNetName {{net1 net2}}
+
+              Before
+
+              After
+
+       -noPlace
+              Specifies that the inserted cells should not be placed. Only the
+              logical change in connectivity will be made.
+
+       -offLoadAtLoc {x1a y1a x1b y1b x2a y2a x2b y2b ....}
+              Specifies  the  location(s)  at  which buffer (or inverter-pair)
+              should be inserted to drive the sinks downstream from the  loca-
+              tion(s).
+
+       -offLoadSlack <slack>
+              Inserts  a buffer to offload the paths with less than the speci-
+              fied slack threshold from the driver  of  a  net  with  multiple
+              cells. This option ignores the <term> option, if it is provided.
+              This  option  is  used to connect the added buffer to drive only
+              noncritical receivers, selected By Slack. This checks the timing
+              graph for noncritical receivers  and  offloads  those  from  the
+              critical  path, and could improve critical path timing by penal-
+              izing noncritical path delays.
+
+              Note:
+
+              * The -offLoadAtLoc and -offLoadSlack options are  mutually  ex-
+                clusive.
+
+              * The -loc and -offLoadSlack options are mutually exclusive.
+
+       -radius <mu>m
+              Specifies  the  radius  in which the added instances are free to
+              move. If no legal location can be found in the specified radius,
+              the cells would be placed at the specified location resulting in
+              an overlap with other cells. In that case,  you  should  perform
+              legalization.
+
+              Note: When the -radius option is used in ecoAddRepeater, {[-loc]
+              [-relativeDistToSink] [-offLoadAtLoc]} must be specified.
+
+       -relativeDistToSink <sinkWeight>
+              Specifies  the location of the buffer based on its distance from
+              the sink or the driver pin. The value is a number between 0  and
+              1.  A  low  value  (0.1) places the buffer near the sink; a high
+              value (0.9) places the buffer near the driver. The  fraction  is
+              based on the length of the wire.
+
+              This option works:
+
+              * When one term is provided; it does not work if no term or mul-
+                tiple terms are specified.
+
+              * When -net with 1-sink net is provided. It does not work if the
+                specified net is not a 1-sink net.
+
+       -spreadCount <number>
+              Specifies the number of repeaters to be added for buffering.
+
+              Minimum: 1
+
+              Maximum: INT_MAX
+
+       -spreadDist <distance>
+              Specifies  the  distance  (starting from the driver) after which
+              repeaters are to be added.
+
+              Minimum: 2.2250738585072e-308
+
+              Maximum: 1073741.823
+
+       -spreadPrefix <prefix>
+              Specifies the prefix to be used for new instances and nets added
+              during the spread buffering.
+
+       -term <term1 term2>...
+              Specifies a list of terms.  The  terms  specified  in  the  list
+              should  be connected to a common net and the tool adds buffer to
+              the common net. If -term is not specified, all the terms of  the
+              net will be buffered.
+
+       Note: You can specify the following in the setEcoMode command:
+
+       setEcoMode -honorFixedStatus false #to modify FIXED instance.
+
+       setEcoMode  -honorDontUse false #to modify instances which have dontUse
+       attribute on cells.
+
+       setEcoMode -honorDontTouch false #to  modify  instance/nets  which  are
+       marked dontUse.
+
+       setECOMode -honorFixedNetWire false #to insert a cell on wires with the
+       FIXED/COVER   status   and  change  the  status  of  these  wires  from
+       FIXED/COVER to ROUTED.
+
+Examples
+              *
+
+                The following examples are the two methods to add two back-to-
+                back inverters:
+
+                *
+
+                  The following example adds two instances  of  INV0  inverter
+                  cell:
+
+                  setEcoMode -LEQCheck true ; # default.
+
+                  ecoAddRepeater -cell {INV0} -name {{inst_0 inst_1}} ...
+
+                *
+
+                  The  following  example adds two instances, one each of INV0
+                  and INV1 inverter cells: -
+
+                  setEcoMode -LEQCheck false ; # default: true.
+
+                  ecoAddRepeater -cell {INV0 INV1} -name {inst_0 inst_1} ...
+
+                  After the first (1) method, you can run the  following  com-
+                  mand  to  change one of the two inverter instances to a dif-
+                  ferent inverter  cell:  -ecoChangeCell  -cell  {INV1}  -inst
+                  {<full hierarchical name of inst_1>}
+
+              * The following syntax shows multiple buffer insertion:
+
+                ecoAddRepeater  {-net|-term}  [-relativeDistToSink 0|1]  -cell
+                {cell1  cell2 cell3..} [-loc <loc1> <loc2> <loc3>..] [-bufOri-
+                ent <orient1>  <orient2>  <orient3>]  [-name  <name1>  <name2>
+                <name3>..] [-newNetName  <name1> <name2> <name3>...]
+
+              * The following command adds a buffer near the receiver:
+
+                ecoAddRepeater                                            -net
+                DTMF_INST/TDSP_CORE_INST/MPY_32_INST/M16X16_INST/n_784   -cell
+                BUFX4 -relativeDistToSink 0.1
+
+              * The following command adds a buffer near the driver:
+
+                ecoAddRepeater                                            -net
+                DTMF_INST/TDSP_CORE_INST/MPY_32_INST/M16X16_INST/n_784   -cell
+                BUFX4 -relativeDistToSink 0.9
+
+              * The following command adds a buffer in a specified location
+
+                ecoAddRepeater -net wire_I10 -loc {51.5 85.67} -cell BUFFX4
+
+              * The following command adds a buffer by specifying the terminal
+                list:
+
+                ecoAddRepeater   -cell   INVX4   -term   {i1/i2/in1  i1/i2/in2
+                i1/i2/in3}
+
+              * The following command adds an inverter pair by specifying  the
+                slack time:
+
+                ecoAddRepeater -net wire1_B2 -cell INVX4 -offLoadSlack -0.1
+
+              *
+
+                The following command adds an inverter pair:
+
+                ecoAddRepeater  -net  myNet -cell INVX4 -loc {123 450 145 480}
+                -name {{cell1 cell2}} -newNetName {{net1 net2}}
+
+              * The  following  command  adds  inverter  pairs  and   multiple
+                buffers:
+
+                ecoAddRepeater -cell {inv_1 inv_2} -offLoadAtLoc  {x1a y1a x1b
+                y1b x2a y2a x2b y2b}
+
+                In the above example, {x1a y1a } {x1b y1b} buffers are for in-
+                verter  pair 1 (inv_1) and {x2a y2a} {x2b y2b} buffers are for
+                inverter pair2 (inv_2).
+
+Related Information
+              * ecoDeleteRepeater
+
+              * ecoPlace
+
+              * ecoSwapSpareCell
+
+              * setEcoMode
+
+              * timing_enable_simultaneous_setup_hold_mode
+
+              * For more information on  orientation  keys,  see  "Orientation
+                Key"  in  the  Floorplanning the Design chapter of the Innovus
+                User Guide.
+
+                           Fri Apr 04 01:25:37 2025      ecoAddRepeater(25.10)

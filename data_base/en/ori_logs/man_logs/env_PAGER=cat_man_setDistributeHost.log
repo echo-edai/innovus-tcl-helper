@@ -1,0 +1,327 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setDistributeHost(25.10)                              setDistributeHost(25.10)
+
+Name
+       setDistributeHost - Specifies the multiple-CPU processing configuration
+       for distributed processing or Superthreading
+
+Syntax
+       setDistributeHost
+
+       [-help]
+
+       [-add <string>]
+
+       [-args <string>]
+
+        [-custom]
+
+       [-custom_script <string>]
+
+       [-custom_script_list <string>]
+
+       [-local]
+
+       [-lsf]
+
+       [-nc]
+
+       [-noWaitTaskComeUp]
+
+       [-queue <string>]
+
+       [-remove <string>]
+
+       [-reportLsfInfo]
+
+       [-resource <string>]
+
+       [-rsh]
+
+       [-shellTimeout <integer>]
+
+       [-single_cpu_lsf_args <string>]
+
+       [-ssh]
+
+       [-timeOut <integer>]
+
+       [-env_script <string>]
+
+       Specifies  the  multiple-CPU  processing  configuration for distributed
+       processing or Superthreading. The software finds hosts  from  the  last
+       setDistributeHost  command specified before a distributed processing or
+       Superthreading command starts.
+
+       Use getDistributeHost to display the current settings for  the  setDis-
+       tributeHost command.
+
+       This command is required for distributed processing and Superthreading.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -add <string>
+              Adds  the  specified  hosts to the rsh/ssh configuration. If you
+              specify more than one host,  separate  each  host  name  with  a
+              space.
+
+              Each  time  you  specify a host, the software uses it to run one
+              client process. To run more than one client process on  a  host,
+              specify it more than once. For example, if you have two machines
+              that each has two CPUs and you want to use both CPUs in both ma-
+              chines, type a command like the following:
+
+              setDistributeHost -rsh -add {<machine1> <machine2>\
+
+                  <machine1> <machine2>}
+
+       -args <string>
+              Specifies  any  additional  arguments you need to provide to the
+              Sun Grid Engine (SGE) or Load Sharing Facility (LSF) job submis-
+              sion command.
+
+       -custom
+              Specifies to use the custom job submission script  for  distrib-
+              uted processing.
+
+       -custom_script <string>
+              Specifies a custom script to run distributed processing.
+
+              You can use this parameter with -custom only.
+
+       -custom_script_list <string>
+              Specifies to customize the launch of multiple jobs, based on re-
+              sources  required  for  these jobs. This parameter allows you to
+              specify multiple launch strings in order of priority with a max-
+              imum allowed job count for each string.
+
+              If you request for N number of jobs, the command starts  submit-
+              ting jobs starting from <string1>, until the corresponding count
+              is  reached, at which point it starts submitting the next string
+              in the list. Therefore, the command submits the first "<count1>"
+              jobs with <string1>, the next "<count2>" jobs with <string2> and
+              so on. It stops when the total submitted jobs  has  reached  the
+              requested number (N).
+
+              Note:  This parameter can only be specified with the -custom pa-
+              rameter.
+
+       -env_script <string>
+              Specifies a user-defined shell environment script  that  is  run
+              for  each  of  the slave hosts. The parameter allows you to pass
+              these environment settings to the slave hosts by including  them
+              in  the  shell environment script. The license variables used by
+              the software are also automatically passed to the slave hosts to
+              avoid license errors.
+
+       -local Runs all distributed processing jobs on the master machine.
+
+       -lsf   Specifies a Load Sharing Facility configuration. If you  do  not
+              specify any parameters for -lsf , the software uses default set-
+              tings.
+
+              Note:  To  use this parameter, LSF must already be set up (typi-
+              cally by specifying the LSF_ENVDIR and LSF_SERVERDIR environment
+              variables) and bsub must be in your search  path.  Contact  your
+              LSF administrator for details.
+
+       -nc    Uses  NC  commands  (Network Computer from RTDA) for distributed
+              processing.
+
+       -noWaitTaskComeUp
+              Does not allow the software to wait for tasks that  are  delayed
+              or are not likely to occur.
+
+       -queue <string>
+              Specifies the queue for the LSF or SGE configuration.
+
+       -remove <string>
+              Removes  the  specified hosts or all hosts from the rsh/ssh con-
+              figuration. If you specify more than  one  host,  separate  each
+              host name with a space.
+
+       -reportLsfInfo
+              Specifies to report LSF information in a single report. This pa-
+              rameter  allows you to collect the system statistics on the sta-
+              tus of the distributed jobs. It has the following information:
+
+              * Host name for master and LSF tasks
+
+              * Number of CPUs on each  machine  that  are  being  used  by  a
+                process
+
+              * Job ID/PID for each task process
+
+              * Total memory used on each machine
+
+              * Total virtual memory used on each machine
+
+              * Total CPU time used on each machine
+
+              You must specify this parameter with the -lsf parameter.
+
+              To  get  the LSF information, specify the getDistributeHost -re-
+              portLsfInfo command parameter. You must specify the  getDistrib-
+              uteHost  -reportLsfInfo  only after the LSF tasks exit to obtain
+              the task CPU time. If you specify this command before  the  task
+              exits, the command gives a warning message.
+
+       -resource <string>
+              Specifies a resource string for the SGE or LSF queue.
+
+              Note:  The correct resource string is specific to your installa-
+              tion. Contact your LSF administrator for the appropriate parame-
+              ters and values.
+
+       -rsh   Specifies a remote shell configuration. For information, see the
+              rsh documentation.
+
+       -shellTimeout<integer>
+              Specifies the number of  seconds  the  host  machine  waits  for
+              rsh/ssh  machines  to become available for multiple-CPU process-
+              ing.
+
+              Default: 5
+
+       -single_cpu_lsf_args <string>
+              Specifies the bsub options. For information, see the  LSF  docu-
+              mentation.
+
+              Note: You must use this parameter to adjust the LSF argument for
+              a single CPU application. Alternatively, use the -args parameter
+              to  adjust  the LSF argument for an application that runs in the
+              Superthreading mode.
+
+       -ssh   Specifies a secure shell configuration.
+
+       -timeout <integer>
+              Specifies the default timeout for  a  submitted  job  that  will
+              never start. This functionality prevents the master machine from
+              hanging when the clients do not come up for some reason.
+
+              After  timeout, a warning message appears informing you that the
+              distributed CPUs did not come online within the  expected  time.
+              The master will continue waiting for the clients and it is up to
+              you  to  continue  waiting or kill the run if there are problems
+              with the Distributed Resource Management (DRM) system.
+
+              A sample warning message is given below:
+
+              Task id 2 did not come up within the  specified  timeout  period
+              (300  seconds).  Use  setDistributeHost  -timeout  to change the
+              value. This may be a real error due to incorrect  or  incomplete
+              platform/machine specification provided via setDistributeHost to
+              your distributed resource management system (LSF/Sun Grid Engine
+              etc.).  If  running locally (setDistributeHost -local), the cur-
+              rent machine may be overloaded with too many jobs  and  swapping
+              (check  free memory and CPUs with top). For local runs, consider
+              reducing the number of CPUs you are using via  the  setMultiCpu-
+              Usage command or free up some memory by killing other memory in-
+              tensive processes.
+
+              Default:  3600  for all the modes (LSF, NC, SGE, RSH, SSH, local
+              and custom
+
+              Note: When the set_distribute_host command is not specified, the
+              software sets the default mode as local and the EDP  timeout  is
+              3600 seconds.
+
+Examples
+rsh
+       The  following  command  creates  an  rsh  configuration and adds hosts
+       host10, host11, and host12:
+
+       setDistributeHost -rsh -add {host10 host11 host12}
+
+       The following commands create an rsh configuration with host1 and host2
+       as remote hosts and then adds host3 and host4 to the configuration:
+
+       setDistributeHost -rsh -add {host1 host2}
+
+       setDistributeHost -rsh -add {host3 host4}
+
+LSF
+       The following command uses an existing LSF environment, and  relies  on
+       the  general  LSF  set up by the system administrator. In this example,
+       the name of the queue implies that all the machines have 4 Gb  of  mem-
+       ory.
+
+       setDistributeHost -lsf -queue mem4G
+
+       The  following  command  schedules a LSF job named bigQueue to run on a
+       Linux machine for a maximum of 30 minutes. No other jobs can run on the
+       machine while bigQueue is running.
+
+       setDistributeHost -lsf -queue bigQueue -args {-x -W 30} \
+
+          -resource {OSNAME==Linux}
+
+       The following command schedules a LSF job named smallQueue  to  run  on
+       Linux machines with minimum speed of 2000 MHz.
+
+       setDistributeHost -lsf -queue smallQueue -args {-W 20} \
+
+           -resource {OSNAME==Linux && SPEED>2000}
+
+       Note:  Check with your LSF administrator for the correct values for the
+       resource string, as the parameters and their values differ in each  in-
+       stallation.  For  example,  the parameter name for the speed of the ma-
+       chine might be MHZ instead of SPEED (as in the preceding example),  and
+       the units might be specified in gigahertz instead of megahertz.
+
+       The following command specifies to report LSF information:
+
+       setDistributeHost -lsf -args "-q lnx64" -reportLsfInfo
+
+       getDistributeHost -reportLsfInfo lsf.log
+
+       Note:  Use  the above two commands together to save the LSF information
+       in the specified file.
+
+Local
+       The following command runs all distributed processing jobs on  the  ma-
+       chine on which you are running the master version of the software:
+
+       setDistributeHost -local
+
+Custom
+       The following command runs distributed processing with a custom script:
+
+       setDistributeHost  -custom  -custom_script  {bsub  -q  bigQueue  -x  -R
+       "OS==Linux && memory>20000"}
+
+       The following command runs distributed processing with a custom  script
+       list:
+
+       setDistributeHost  -custom  -custom_script_list  {{{bsub -P ICD -W 2 -q
+       admin -R "OSNAME==Linux && OSREL==EE50"}1} {{rsh hpc1 -e} 1}}
+
+Examples
+              * The  following  command  allows  the  client  to  source   the
+                my_env_file before start up on the same machine:
+
+                setDistributeHost -local -env_script my_env_file
+
+                This command allows the master to pass on the user-defined en-
+                vironment settings.
+
+              * The following command allows the client to run using the LSF:
+
+                setDistributeHost -lsf -noWaitTaskComeUp
+
+                When  the  -noWaitTaskComeUp parameter is specified, the soft-
+                ware will not wait for all the clients to come up  when  parts
+                of the clients are launching timeout.
+
+Related Information
+              * Accelerating the Design Process By Using Multiple-CPU Process-
+                ing chapter in the Innovus User Guide.
+
+              * "Tools Menu" chapter in the Innovus Menu Reference
+
+                     * Set Multiple CPU Usage
+
+              * getDistributeHost
+
+                           Fri Apr 04 01:25:37 2025   setDistributeHost(25.10)

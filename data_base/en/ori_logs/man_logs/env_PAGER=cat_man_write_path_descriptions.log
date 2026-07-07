@@ -1,0 +1,115 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_path_descriptions(25.10)                  write_path_descriptions(25.10)
+
+Name
+       write_path_descriptions  -  Writes out the path descriptions of all the
+       timing paths specified in the variable (path collection)  to  an  ASCII
+       file
+
+Syntax
+       write_path_descriptions
+
+       [-help]
+
+       var_name
+
+       -out_file <string>
+
+       Writes  out  the path descriptions of all the timing paths specified in
+       the variable (path collection) to an ASCII file.
+
+       The output file contains a set of report_timing commands for each  tim-
+       ing  path  in  the given path collection. The file also includes a com-
+       plete description of each timing path captured  through  timing  points
+       along with the clock and edge information.
+
+       The  path  description  of a given collection of paths can be read back
+       and the same path configuration can be recreated in another Tempus ses-
+       sion. This allows to process and compare the  timing,  attributes,  and
+       other characteristics of the specified paths.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <var_name>
+              Specifies the object collection of timing paths.  The input must
+              be a single collection.
+
+              If you need to write out path descriptions of collections gener-
+              ated with different analysis types or path collections, a single
+              collection can be created by appending all the collections using
+              the append_to_collection command.
+
+       -out_file <string>
+              Redirects output to the specified file.
+
+       Examples
+              * The  following  command  writes  out  descriptions of late GBA
+                paths - when the -path_type parameter is not specified:
+
+                set path_coll [report_timing -collection]
+
+                write_path_descriptions $path_coll > PathSpecFile.txt
+
+                The output file PathSpecFile.txt contains:
+
+                report_timing -net -path_type full_clock  -late  -from_rise  A
+                -through_rise B -through_rise C \
+
+                       -to_rise  D  -view  slow_v  -clock_from clk1 -edge_from
+                lead -clock_to clk2 -edge_to lead
+
+              * The following command writes  out  descriptions  of  late  PBA
+                paths when the -path_typefull option is specified:
+
+                set     path_coll     [report_timing    -collection    -retime
+                path_slew_propagation -path_type full]
+
+                write_path_descriptions $path_coll > PathSpecFile.txt
+
+                The output file PathSpecFile.txt contains:
+
+                report_timing -net -path_type full_clock  -late  -from_rise  A
+                -through_rise B -through_rise C \
+
+                       -to_rise  D  -view  slow_v  -clock_from clk1 -edge_from
+                lead -clock_to clk2 -edge_to lead
+
+                Note: The output does not show retime details. You should  use
+                the  read_path_descriptions-retime parameter to analyze retime
+                collections that are defined with the  write_path_descriptions
+                command.
+
+              * The  following  command  writes  out  descriptions of both the
+                early and late GBA paths:
+
+                set path_coll [report_timing -collection]
+
+                set path_coll_early [report_timing -collection -early]
+
+                append_to_collection path_coll $path_coll_early
+
+                write_path_descriptions $path_coll > PathSpecFile.txt
+
+                The output file PathSpecFile.txt contains:
+
+                report_timing -net -path_type full_clock  -late  -from_rise  A
+                -through_rise B -through_rise C \
+
+                       -to_rise  D  -view  slow_v  -clock_from clk1 -edge_from
+                lead -clock_to clk2 -edge_to lead
+
+                report_timing -net -path_type full_clock -early  -from_rise  A
+                through_rise B -to_rise D -view \
+
+                       slow_v  -clock_from clk1 -edge_from lead -clock_to clk2
+                -edge_to lead
+
+Related Information
+              * read_path_descriptions
+
+              * append_to_collection
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 20w2r5ite_path_descriptions(25.10)

@@ -1,0 +1,113 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_max_fanout(25.10)                                    set_max_fanout(25.10)
+
+Name
+       set_max_fanout  -  Sets the maximum fanout load limit constraint on the
+       specified instance pins, library cell pins,  ports  of  the  top  cell,
+       clock waveforms, and/or specified modules
+
+Syntax
+       set_max_fanout
+
+       [-help]
+
+       <fanout_limit>
+
+       <object_list>
+
+       [-override]
+
+       Sets the maximum fanout load limit constraint on the specified instance
+       pins, library cell pins, ports of the top cell, clock waveforms, and/or
+       specified  modules.  When pins of cell instances have their own maximum
+       constraint defined in the library, the software will pick the more  ag-
+       gressive value of the two.
+
+       When  set  on  a port, the fanout load of the net connected to the port
+       must be less than or equal to the specified limit  value  to  meet  the
+       constraint.  The fanout load of a net is the sum of the fanout loads of
+       the pins driven by the net. When set on a module, the limit applies  to
+       all  the  nets of that module. Libraries and library cell pins may also
+       have the maximum fanout load limit. In this case the most  constraining
+       limit is applied to the nets.
+
+       Use  the report_ports -type fanout_load_limit command to view the maxi-
+       mum fanout load limits set on ports of the top cell.
+
+       Fanout load limit can be asserted on input ports, output pins, bidirec-
+       tional pins, or ports and library pins. You cannot apply the constraint
+       on input pins and output ports.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <fanout_limit>
+              Specifies the value of the maximum fanout load limit constraint.
+              This is a float number and it must be greater than or  equal  to
+              zero.
+
+       <object_><list>
+              Specifies a list of objects - input ports, instance output pins,
+              designs, or library cell output pins.
+
+       -override
+              Overrides  the maximum fanout limit from other sources, such as,
+              library or constraints.
+
+              This parameter can be used to force a specific constraint  value
+              for  a  specified list of instance pins/port/library cell pins -
+              this overrides the maximum/minimum values set prior to this set-
+              ting.
+
+              To enable this feature, make the following setting:
+
+              set timing_constraint_enable_drv_limit_override true
+
+Examples
+              * The following example sets a maximum fanout load limit of  5.0
+                units on all the ports of the top cell:
+
+                set_max_fanout 5.0 [get_ports *]
+
+              * The  following  example  shows  a report of the maximum fanout
+                load limit set on ports using the report_ports command:
+
+                set_max_fanout   5.0   [get_ports   *]   report_ports    -type
+                fanout_load_limit -pin [get_ports *]
+
+                Example: Maximum Fanout Load Limit Set On Ports Report
+
+                > report_ports -type fanout_load_limit -pin [get_ports *]
+
+                -------------------------------------------
+
+                Pin    Dir  Assertion        Value
+
+                Name
+
+                -------------------------------------------
+
+                CLK2   IN  fanout_load_limit 5.000
+
+                CLK1   IN  fanout_load_limit 5.000
+
+                in2    IN  fanout_load_limit 5.000
+
+                in1    IN  fanout_load_limit 5.000
+
+                -------------------------------------------
+
+Related Information
+              * get_ports
+
+              * report_ports
+
+              * set_fanout_load
+
+              * set_max_capacitance
+
+              * set_max_transition
+
+              * report_constraint
+
+                           Fri Apr 04 01:25:37 2025      set_max_fanout(25.10)

@@ -1,0 +1,105 @@
+{
+  "command": "set_min_delay",
+  "is_cmd": true,
+  "summary": "为时序路径指定最小延迟约束",
+  "description": "set_min_delay 命令用于为指定的时序路径设置一个最小延迟值。该命令指定的约束优先级高于为同一路径设置的其他路径例外（set_false_path 除外）。可以使用 -from、-to 或 -through 选项来标识路径。当指定一个时序单元作为路径起点时，有效路径默认从时钟引脚开始；通过在单元名后添加 /Q 可以指定从寄存器的 Q 输出开始，此时时钟到 Q 的延迟不计入。该命令支持指定上升沿、下降沿或两者，并可以忽略时钟延迟。",
+  "usage": "set_min_delay <value> [-combinational_from_to | -ignore_clock_latency] [{-from |-rise_from | -fall_from} <from_list>] [{-through | -rise_through | -fall_through} <through_list>] [{-to | -rise_to | -fall_to} <to_list>] [-no_segment] [-rise] [-fall] [-comment <string>]",
+  "options": [
+    {
+      "name": "<value>",
+      "description": "指定的最小延迟值",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-combinational_from_to",
+      "description": "将由 -from/-to 引脚定义的路径视为纯组合路径，排除源/捕获时钟延迟。此参数在未来版本中将被弃用，建议使用 -ignore_clock_latency。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_clock_latency",
+      "description": "指定后，软件在计算时序路径延迟时不将发射/捕获时钟的延迟计入。这是 SDC 2.1 引入的行业标准构造。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-from",
+      "description": "指定时序路径的起点列表。可以是对象 ID、相对于当前模块的层次化名称或时钟名。默认应用于信号的上升沿和下降沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-rise_from",
+      "description": "指定时序路径的起点列表，仅应用于起点引脚信号的上升沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-fall_from",
+      "description": "指定时序路径的起点列表，仅应用于起点引脚信号的下降沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-through",
+      "description": "指定时序路径的经过点列表。可以是对象 ID、相对于当前模块的层次化名称或时钟名。默认应用于信号的上升沿和下降沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-rise_through",
+      "description": "指定时序路径的经过点列表，仅应用于经过点引脚信号的上升沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-fall_through",
+      "description": "指定时序路径的经过点列表，仅应用于经过点引脚信号的下降沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-to",
+      "description": "指定时序路径的终点列表。可以是对象 ID、相对于当前模块的层次化名称或时钟名。默认应用于信号的上升沿和下降沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-rise_to",
+      "description": "指定时序路径的终点列表，仅应用于终点引脚信号的上升沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-fall_to",
+      "description": "指定时序路径的终点列表，仅应用于终点引脚信号的下降沿。",
+      "required": false,
+      "type": "pin+"
+    },
+    {
+      "name": "-no_segment",
+      "description": "指定该约束为非分段约束，允许进行无路径分割的路径延迟检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rise",
+      "description": "将断言应用于路径终点信号的上升沿。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fall",
+      "description": "将断言应用于路径终点信号的下降沿。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-comment",
+      "description": "允许插入注释。注释会被读取但会被忽略（伴随一次性警告信息），不用于时序分析报告，也不会在保存约束时写出。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

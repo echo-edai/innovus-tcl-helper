@@ -1,0 +1,153 @@
+{
+  "command": "add_via_definition",
+  "is_cmd": true,
+  "summary": "根据指定参数或形状列表创建通孔定义（主模板）",
+  "description": "该命令用于创建通孔定义（主模板），支持两种类型：参数化通孔和固定通孔。参数化通孔需要指定通孔规则（-via_rule）以及行、列、间距和包围层等参数，类似于 LEF/DEF 中使用 VIARULE GENERATE 定义的通孔。固定通孔则需要指定名称（-name）和一系列矩形或多边形列表，类似于 LEF/DEF 中使用 RECT 和 POLYGON 语句定义的通孔。创建的通孔主模板是设计（DEF）通孔，主要用于 DEF SPECIALNETS 布线，除非使用 modify_ndr 命令将其添加到 NONDEFAULTRULE 的有效通孔列表中。",
+  "usage": "add_via_definition [-help] [-bottom_layer_masks <int+>] [-cut_masks <int+>] [-name <viaName>] {{[-via_rule <via_def_rule> | -cut_pattern <viaDef>] [[-cut_size {<x y>}][-cut_spacing {<x y>}][-top_enclosure {<x y>}] [-bottom_enclosure {<x  y>}][-top_offset  {<x  y>}][-bottom_offset {<x y>}][-row_col {<x y>}] [-origin {<x y>}] [-pattern <pattern>]]} | {{-cut_layer <layer> -cut_rects {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...} {[-top_layer  <layer>]  {-top_rects  {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...} | -top_polygon {{<x1 y1>}{<x2 y2>}...}}} {[-bottom_layer <layer>] {-bottom_rects {{<x1 y1 x2 y2>} {<x3  y3  x4 y4>} ...} | -bottom_polygon {{<x1 y1>} {<x2 y2>}...}}}}} [-top_layer_masks <int+>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bottom_layer_masks",
+      "description": "为通孔定义中底层矩形指定掩模值。掩模值与矩形必须顺序相同且数量一致。",
+      "required": false,
+      "type": "int+"
+    },
+    {
+      "name": "-cut_masks",
+      "description": "为通孔定义中切割层矩形指定掩模值。掩模值与矩形必须顺序相同且数量一致。",
+      "required": false,
+      "type": "int+"
+    },
+    {
+      "name": "-name",
+      "description": "指定要创建的通孔名称。对于参数化通孔定义，除非指定 -name，否则新通孔名称将从 -via_rule 名称派生。名称不能与任何现有通孔主模板名称冲突。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_rule",
+      "description": "指定用于创建通孔主模板的通孔规则（来自 LEF VIARULE GENERATE 或 OpenAccess standardViaDef）的名称或指针。使用此选项将创建参数化通孔主模板。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cut_pattern",
+      "description": "指定一个通孔单元，新通孔单元的切割矩形将基于此进行参数化。可以指定现有通孔单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cut_size",
+      "description": "指定切割矩形的大小（x=宽度，y=高度）。值以微米为单位，必须大于0。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cut_spacing",
+      "description": "指定切割之间的间距。间距从切割边到下一个切割边测量。值以微米为单位，必须大于0。需要 -via_rule 选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_enclosure",
+      "description": "指定切割阵列周围的顶层包围层。包围层测量从切割阵列边缘到包围切割阵列的金属边缘的距离。值以微米为单位。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_enclosure",
+      "description": "指定切割阵列周围的底层包围层。包围层测量从切割阵列边缘到包围切割阵列的金属边缘的距离。值以微米为单位。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_offset",
+      "description": "指定通孔中顶层的 <x,y> 偏移。在计算“未偏移通孔”后，通过将 x,y 添加到 -origin 偏移来偏移顶层矩形。值以微米为单位。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_offset",
+      "description": "指定通孔中底层的 <x,y> 偏移。在计算“未偏移通孔”后，通过将 x,y 添加到 -origin 偏移来偏移底层矩形。值以微米为单位。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-row_col",
+      "description": "指定要创建的切割行数和列数。值必须大于0。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-origin",
+      "description": "指定通孔中所有形状的 x,y 偏移。默认情况下，通孔的 0,0 原点是切割阵列的中心和包围金属矩形的中心。在计算“未偏移通孔”后，所有切割和金属矩形通过添加这些值进行偏移。值以微米为单位。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern",
+      "description": "将切割模式指定为 ASCII 字符串。仅当切割阵列中缺少某些切割时才需要此参数。需要 -via_rule 选项用于参数化通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cut_layer",
+      "description": "指定切割层的名称或指针。通孔的顶层/底层从切割层上方/下方的布线层派生。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cut_rects",
+      "description": "指定要在切割层上创建的矩形列表。值以微米为单位。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_layer",
+      "description": "如果未指定，则假定为 -cut_layer 上方的第一层。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_rects",
+      "description": "指定要在顶层上创建的矩形列表。值以微米为单位。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_polygon",
+      "description": "指定要在顶层上创建的多边形。值以微米为单位。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_layer",
+      "description": "如果未指定，则假定为 -cut_layer 下方的第一层。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_rects",
+      "description": "指定要在底层上创建的矩形列表。值以微米为单位。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_polygon",
+      "description": "指定要在底层上创建的多边形。值以微米为单位。需要 -name 选项用于固定通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_layer_masks",
+      "description": "为通孔定义中顶层矩形指定掩模值。掩模值与矩形必须顺序相同且数量一致。",
+      "required": false,
+      "type": "int+"
+    }
+  ]
+}

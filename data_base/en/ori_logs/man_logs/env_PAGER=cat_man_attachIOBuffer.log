@@ -1,0 +1,170 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+attachIOBuffer(25.10)                                    attachIOBuffer(25.10)
+
+Name
+       attachIOBuffer  - Adds buffers/inverters to the I/O pins of a block and
+       places the buffers/inverters near the I/O pins
+
+Syntax
+        attachIOBuffer
+
+       [-help]
+
+       [-baseName <baseName>]
+
+       [-dishonorUpfDomainBoundaryCheckForIsoLsStrategy]
+
+       [-excNetFile <excNetFileName>]
+
+       [-excludeClockNet]
+
+       [-port]
+
+       [-prePlace]
+
+       [-selNetFile <selNetFileName>]
+
+       [-skipRefinePlace]
+
+       [-suffix <suffixName>]
+
+       {[-in <cellNameList>] [-out <cellNameList>]}
+
+       [-status {placed fixed softfixed}]
+
+       Adds buffers/inverters to the I/O  pins  of  a  block  and  places  the
+       buffers/inverters near the I/O pins. When a top-level input (output) is
+       connected to a power domain other than the default, the added buffer is
+       matched  to  the  hierarchy of the destination (source) cell and placed
+       inside the power domain.
+
+       This command is power-domain aware. To take advantage of  this  feature
+       when the netlist contains level shifters, load the shifter table before
+       running this command.
+
+       Through  the -port and -suffix parameters, you can control the instance
+       and net names created when you use attachIOBuffer.
+
+       You can use this command after loading a design. Use the -status  fixed
+       parameter before you run place_design.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each attachIOBuffer parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the  man  command:
+
+              man attachIOBuffer
+
+       -baseName <baseName>
+              Specifies the base name of the new nets. For nets with the  same
+              base name, you should consider the hierarchical index and add 1.
+              For  example,  if  there are several nets with an abc base name,
+              ending on abc98, then the first new net with the same base  name
+              is abc99.
+
+              Example: attachIOBuffer -baseName buf -in BUFX4
+
+              Before
+
+              After
+
+       -dishonorUpfDomainBoundaryCheckForIsoLsStrategy
+              Dishonors   power-domain  boundary  check  for  isolation/level-
+              shifter instances.
+
+       -excludeClockNet
+              Does not connect the buffer on clock nets. You must trigger  the
+              clock  net  markings  prior  to running attachIOBuffer, with the
+              timeDesign command. To  query  whether  a  given  clock  net  is
+              marked, use dbIsNetClock <netName>.
+
+       -excNetFile <excNetFileName>
+              Specifies  the  file  that contains the names of nets to exclude
+              from the buffer attachment operation.
+
+       -in <cellNameList>
+              Specifies the cell name or a list of cell  names  of  the  input
+              (-in) buffer. If the specified cell is an inverter, then the at-
+              tachIOBuffer command inserts an inverter pair.
+
+              Note:  If  the  -in  and -out parameters are specified together,
+              both input and output pins will be  attached  buffers/inverters.
+              If  only  -in (or -out) option is specified, then only input (or
+              output) pins will be attached buffer. If  a  list  of  cells  is
+              specified,  it  will  insert the first CPF compliant cell. It is
+              recommended  to  give   non-AO   buffers/inverters   before   AO
+              buffers/inverters in the list.
+
+       -out <cellNameList>
+              Specifies  the  cell  name or a list of cell names of the output
+              (-out) buffer. If the specified cell is an  inverter,  then  the
+              attachIOBuffer command inserts an inverter pair.
+
+              Note:  If  the  -in  and -out parameters are specified together,
+              both input and output pins will be  attached  buffers/inverters.
+              If  only  -in (or -out) option is specified, then only input (or
+              output) pins will be attached buffer. If  a  list  of  cells  is
+              specified,  it  will  insert the first CPF compliant cell. It is
+              recommended  to  give   non-AO   buffers/inverters   before   AO
+              buffers/inverters in the list.
+
+       -port  Prepends  the  port name to the name of the net or instance cre-
+              ated.
+
+              Example: attachIOBuffer -in BUFX4 -port
+
+              Before
+
+              After
+
+       -prePlace
+              Specifies to legally place the inverter connected  to  the  port
+              and to leave the other inverter unplaced.
+
+              Example: attachIOBuffer -in INVX2 -prePlace
+
+       -selNetFile <selNetFileName>
+              Specifies the file that contains the names of nets to include in
+              the buffer attachment operation.
+
+       -skipRefinePlace
+              Skips  legalization  of  the  new  buffer/inverter  (incremental
+              placement needs to be run later to legalize it).
+
+       -status {placed fixed softfixed}
+              Specifies  the  placement  status  of  the   added   buffer   as
+              placed/fixed/softfixed.
+
+       -suffix <suffixName>
+              Appends a string to name of the net or instance created.
+
+Examples
+              * The  following command attaches buffers bufx4 to the I/O pins.
+                The new nets have a basename of abc:
+
+                attachIOBuffer -baseName abc -in bufx4
+
+              * The following command prepends the port name and  appends  the
+                _buf string to the name of the instance and net created by at-
+                tachIOBuffer:
+
+                attachIOBuffer -port -suffix "buf"
+
+                Resulting instance name:
+
+                port1_I_buf
+
+                Resulting net name:
+
+                port1_N_buf
+
+Related Information
+              * place_design
+
+              * refinePlace
+
+              * timeDesign
+
+                           Fri Apr 04 01:25:37 2025      attachIOBuffer(25.10)

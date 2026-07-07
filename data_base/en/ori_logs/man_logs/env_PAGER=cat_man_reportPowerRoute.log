@@ -1,0 +1,83 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportPowerRoute(25.10)                                reportPowerRoute(25.10)
+
+Name
+       reportPowerRoute - Reports the cut ratio when two types of cuts are in-
+       serted  between two parallel followpin rails with editPowerVia -follow-
+       pin_via_stapling to maximize the effective number of cuts
+
+Syntax
+       reportPowerRoute
+
+       [-help]
+
+        [-followpin_cut_ratio {<cutClass1 weight1 cutClass2 weight2>}]
+
+        [-net <string>]
+
+       Reports the cut ratio when two types of cuts are inserted  between  two
+       parallel  followpin  rails with editPowerVia -followpin_via_stapling to
+       maximize the effective number of cuts. The ratio is calculated  by  di-
+       viding  the  sum of weighted cut count of each cut class by theoretical
+       cut count, if the smallest via is inserted along with  the  power  rail
+       with minimum spacing.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each reportPowerRoute parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man reportPowerRoute
+
+       -followpin_cut_ratio {<cutClass1 weight1 cutClass2 weight2>}
+              Specifies  the  names  and  weights  of the two types of the cut
+              classes.
+
+              Note: The cutClass must be defined in the header lef file before
+              loading  the  design.  Otherwise,  it  will  print  error   mes-
+              sage(IMPPP-4411). Additionally, the format of the cutClass to be
+              defined in the lef file should be:
+
+              PROPERTYDEFINITIONS
+
+              ^aEUR| ^aEUR|
+
+              LAYER LEF58_CUTCLASS STRING ;
+
+              ^aEUR| ^aEUR|
+
+              END PROPERTYDEFINITIONS
+
+              LAYER VIA0
+
+              TYPE CUT ;
+
+              PROPERTY LEF58_CUTCLASS "
+
+              CUTCLASS VSINGLECUT WIDTH 0.020 LENGTH 0.020 CUTS 1;
+
+              CUTCLASS VDOUBLECUT WIDTH 0.020 LENGTH 0.050 CUTS 2;
+
+              " ;
+
+              ^aEUR| ^aEUR|
+
+              END VIA0
+
+       -net <string>
+              Specifies  the followpin net names to be reported. If this para-
+              meter is not specified, the report is  calculated  for  all  the
+              followpin nets.
+
+Example
+       The following command specifies the weights for the VDOUBLE and VSINGLE
+       cut classes and calculates the reports for the VSS followpin net:
+
+       reportPowerRoute -followpin_cut_ratio {VDOUBLE 1.8 VSINGLE 1} -net VSS
+
+Related Information
+       Power Planning and Routing chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025    reportPowerRoute(25.10)

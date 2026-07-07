@@ -1,0 +1,320 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+savePartition(25.10)                                      savePartition(25.10)
+
+Name
+       savePartition  -  Saves the partition information to the current direc-
+       tory or a specified directory
+
+Syntax
+       savePartition
+
+       [-help]
+
+       [<partitionName> {<list>}]
+
+       [-fplan]
+
+       [-verilog]
+
+       [ [-dir  <dirName>]  [-module_model_tag  <tag_name>][  {[-noFPlan  |  {
+       [-noNetlist   ]  [-savePlacement  ]  }][-def_netlist_for_eco  |  {[-def
+       [-savePlacement ]]}]
+
+       [ -defNoCutRow ] [-ptnSite ] [-topLevelNoPtnModule ] } |
+
+       { { [-ptnLib <ptnLibName>] [-ptnView <ptnViewName>] [-topView <topView-
+       Name>] } } ] ]
+
+       [ -def_no_std_cells ] [ -def_no_trial_route ]
+
+       Saves the partition information to the current directory or a specified
+       directory. This command is run after running the partition  command  to
+       generate timing budget files and stamp model files.
+
+       Notes:
+
+              * The savePartition command does not write GNC rules in the par-
+                tition  floorplan  file  for multiple-supply voltage (MSV) de-
+                signs. The Common Power Format (CPF) file contains this infor-
+                mation.
+
+              * The savePartition command supports partitions with FlexModels.
+                If there are FlexModels at the top-level, then the saved  top-
+                level  netlist contains FlexModels. If there are no FlexModels
+                outside partitions, then the top-level  netlist  will  be  the
+                original  full netlist. Similarly, if a partition has FlexMod-
+                els, then its partition netlist will contain flexmodes.
+
+              * The savePartition command saves a file with the hierarchy  in-
+                formation  into the top-level design directory for a FlexModel
+                design with nested partitions. This hierarchy  information  is
+                used   by   the  replace_proto_model  command.  When  the  re-
+                place_proto_model command replaces the FlexModel netlist  back
+                to the original full netlist after the savePartition  command,
+                the  hierarchy  information for the nested partitions is auto-
+                matically available.
+
+              * The savePartition command saves the design information to  the
+                global init_* variables in the *.global file.
+
+              * The  savePartition  command supports multi-threading. This re-
+                duces the run time  for  huge  designs  by  saving  individual
+                blocks in parallel.
+
+              * The  savePartition  command saves mmmc data without timing in-
+                formation for partitions for which timing budgets are not  de-
+                rived.
+
+              * The  savePartition  command  automatically  saves  all the bus
+                guide constraints with associated net groups. This enables bus
+                routing at block level as per chip level constraints.
+
+              * The savePartition command automatically  saves  all  the  cell
+                padding  information to each partition block data. This infor-
+                mation is saved in partitioned block .fp file.
+
+              * The savePartition command inherits all the attributes assigned
+                to a net for block implementation flow. Preserving  these  at-
+                tributes  allows  the  Early  Global  Router and the NanoRoute
+                Router to route the nets following specific requirements.
+
+              * The savePartition command writes out an  additional  DEF  file
+                for  each  block  with  its  scan  information  in the <parti-
+                tion_name>.scandef.gz format.
+
+              * The savePartition command saves an  additional  file  in  each
+                parent  directory in the <design_name>.pg.gz format to support
+                for PG-file in hierarchical flow.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each savePartition parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command: man savePartition
+
+       -def   Writes out the DEF format files for the design.
+
+              Data_type: bool, optional
+
+       -defNoCutRow
+              Specifies that, when row information is written to the DEF file,
+              the  rows  are not cut against placement obstructions, block ha-
+              los, or power domain fence minimum gaps.
+
+              Data_type: bool, optional
+
+       -def_netlist_for_eco
+              Writes out the DEF file with netlist. This DEF is  used  by  the
+              create_pushdown_eco command for ECO comparison.
+
+              Note:  This  functionality  is equivalent to specifying -netlist
+              with -unplaced parameter of the defOut command.
+
+              Data_type: bool, optional
+
+       -dir <dirName>
+              The directory name that  will  contain  the  partition  informa-
+              tion/files.
+
+              Data_type: string, optional
+
+       -fplan Writes  out  incremental  floorplan  by  pushing  down floorplan
+              changes from a full chip level design to a partition block. This
+              option allows you to run savePartition for a uncommitted  parti-
+              tion without running the partition command. For committed parti-
+              tion  savePartition  -fplan  reports an error. The savePartition
+              -fplan -dir command honors blackboxes and saves  limited  floor-
+              plan  information  for  blackboxes  in the previously saved data
+              created by the savePartition -dir command..
+
+              Note: After savePartition -fplan command, a non-committed parti-
+              tion still remains uncommitted.
+
+              Data_type: bool, optional
+
+       -module_model_tag <tag_name>
+              Specifies the module model tag to be used for saving the  parti-
+              tion.  This creates pnr and lef module models for each partition
+              block. For top-level design, this  also  creates  a  pnr  module
+              model.
+
+              Note:  This  parameter  is  part  of the Integrated Hierarchical
+              Database (iHDB) flow. Before using this parameter, you must  set
+              the   default  central  directory  name  (set_module_model  -de-
+              fault_dir <default_model_data_directory> ) where the module mod-
+              els data will be saved/loaded.
+
+              Note: These block-level and top-level pnr models should be  used
+              for  implementing the block-level and top-level designs, respec-
+              tively.
+
+              For example, if design dtmf has the  ptn_wrapper  partition  and
+              the  default  global  data  directory  is  /myproject/DATA. With
+              savePartition -module_model_tag init, a pnr model will  be  cre-
+              ated  for  top-level  design  in the following directory: mypro-
+              ject/DATA/dtmf/init/pnr.
+
+              For partition ptn_wrapper, a pnr and lef models will be  created
+              in    the   /myproject/DATA/ptn_wrapper/init/pnr   and   /mypro-
+              ject/DATA/ptn_wrapper/init/lef directories.
+
+              Data_type: string, optional
+
+       -noFPlan
+              Saves partitions without generating a  floorplan  file  for  the
+              partitioned design.
+
+              Data_type: bool, optional
+
+       -noNetlist
+              Saves  partitions without generating a netlist file for the par-
+              titioned design.
+
+              Data_type: bool, optional
+
+       -def_no_std_cells
+              When you specify this option, standard cells are not written  in
+              the DEF file.
+
+              Note:  This functionality is equivalent to the -unplaced parame-
+              ter of the defOut command.
+
+              Data_type: bool, optional
+
+       -def_no_trial_route
+              When you specify this option, wires generated  by  Early  Global
+              Router are not written in the DEF file.
+
+              Note:  This functionality is equivalent to NOT using the -early-
+              GlobalRoute parameter of the defOut command.
+
+              Data_type: bool, optional
+
+       <partitionName> <list>
+              Specifies the names of each partition to be saved.
+
+              Data_type: string, optional
+
+       -ptnLib <ptnLibName>
+              Specifies an OpenAccess database  library  directory  where  the
+              top-level  design  and the block-level design for all the parti-
+              tions will be saved. This parameter is used when saving the par-
+              tition into an OpenAccess database.
+
+              Note: For OpenAccess data, you can save the specified partitions
+              using the partitionName parameter.  However,  if  the  specified
+              partition  is  a  top-level design then all committed partitions
+              must be saved just like no  partition  names  are  specified  to
+              avoid unbound references in OpenAccess.
+
+              Data_type: string, optional
+
+       -ptnSite
+              Outputs sites for partitions in the LEF file.
+
+              Data_type: bool, optional
+
+       -ptnView <ptnViewName>
+              Specifies  the  view  name  for the top and the partition views.
+              This parameter is used when saving the partition into an OpenAc-
+              cess database.
+
+              Default: The default value of the view is layout
+
+              Note:
+
+              * If -ptnView is specified, but not -ptnLib,  then  the  current
+                design  lib  is used. You do not have to use the savePartition
+                command to create a special  library  to  hold  the  partition
+                data.  You  can create the partition data into the same design
+                library that holds the full-flat version  of  the  design.  In
+                this  case,  cellviews will be overwritten if they already ex-
+                ist.
+
+              * If -ptnView is specified, but  not  -topView,  then  all  cell
+                views created with the savePartition command will have the pt-
+                nViewName  appended  to  the  top cell's cellview. In order to
+                prevent overwriting the top cell's cellview if  the  name  al-
+                ready  exists,  use the -topView option to specify a different
+                view name than the one used for the rest of the partitions be-
+                ing created by the savePartition command.
+
+              * If -dir is specified, but -ptnView is not, then the saveParti-
+                tion command would be in the non-OA mode. If -dir and -ptnView
+                are specified then the dir is created, but instead of  putting
+                design data into it, only the cds.lib is added to the directo-
+                ries created.
+
+              Data_type: string, optional
+
+       -savePlacement
+              When  used  with the -def parameter, specifies that the unplaced
+              standard cells should also be saved to the DEF file.
+
+              Note: This functionality is equivalent to the -unplaced  parame-
+              ter of the defOut command.
+
+              Data_type: bool, optional
+
+       -topLevelNoPtnModule
+              Suppresses  stub verilog modules for partitions in the top-level
+              partition netlist.
+
+              Data_type: bool, optional
+
+       -topView <topViewName>
+              Specifies view name for top design.
+
+              Data_type: string, optional
+
+       -verilog
+              Writes out an ASCII Verilog file to the saved  partition  direc-
+              tory.  The  netlist  is  always stored as a binary file, so this
+              Verilog file is not used by restoreDesign. It is sometimes  use-
+              ful  to save the Verilog in addition to the other saved files to
+              make it possible to send the Verilog directly to other tools, or
+              to open it in an editor for debugging. Otherwise,  you  need  to
+              load  the  design  into Innovus, and call saveNetlist to see the
+              Verilog file.
+
+              Data_type: bool, optional
+
+Example
+              * The following command saves the partition information/files in
+                a directory try3 hierarchically for each of the  three  parti-
+                tions:
+
+                savePartition -dir try3 TOPCHIP_SP sheet17 sheet25 sheet7
+
+              * The following command saves the partition information/files in
+                the OpenAccess database format.
+
+                The  information  for the top and the block level designs (all
+                blocks) will be written in the libForOA  directory  view  with
+                the name ptnView1.
+
+                It  saves  partitions without generating a floorplan file or a
+                net list for the partitioned design. It also  does  not  write
+                the standard cells or trialRoute wires in the DEF file.
+
+                savePartition  -ptnLib  libForOA  -ptnView  ptnView1  -noFPlan
+                -noNetlist -def_no_std_cells -def_no_trial_route
+
+Related Information
+              * partition
+
+              * deletePartition
+
+              * definePartition
+
+              * restoreDesign
+
+              * assembleDesign
+
+              * set_module_model
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Saving Partitions
+
+                           Fri Apr 04 01:25:37 2025       savePartition(25.10)

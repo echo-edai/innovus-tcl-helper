@@ -1,0 +1,178 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editCutWire(25.10)                                          editCutWire(25.10)
+
+Name
+       editCutWire  -  Cuts wires, bus guides, or rectangles, such as physical
+       pin port shapes, at the specified location
+
+Syntax
+       editCutWire
+
+       [-help]
+
+       [-only_visible_wires]
+
+       [-selected]
+
+       {-lines {<x1 y1 x2 y2 ...>} | [-box {x1 y1 x2 y2}  [-delete_wire_in_box
+       ]] }
+
+       Cuts  wires,  bus  guides,  or  rectangles,  such  as physical pin port
+       shapes, at the specified location. You can choose to cut by line (using
+       the -lines parameter) or by box (using the -box parameter.  editCutWire
+       honors setEditMode -cut_wire_overlap settings.
+
+       Patch wires are also supported.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each editCutWire parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man editCutWire
+
+       -box {<x1 y1 x2 y2>}
+              Specifies  the lower-left and upper-right coordinates of the box
+              for cutting wires, bus guides, or rectangles.
+
+              The -box option currently has the following limitations:
+
+              * The cut-box must be a rectangle (or square). A  polygon  shape
+                will be ignored.
+
+              * Only  the wires that are perpendicular to the cut-box edge are
+                cut. In addition, the cut-box edge must pass across the  wire,
+                bus guide, or rectangle completely.
+
+              * This  option  can  be used to cut only horizontal and vertical
+                wires. 45-degree wires are not yet supported.
+
+       -delete_wire_in_box
+              Deletes automatically the cut wires in the area  specified  with
+              -box.  This  option  can be specified only if -box is specified.
+              Otherwise, the tool returns an error.
+
+       -lines {<x1 y1 x2 y2 ...>}
+              Specifies the start and end coordinates of one or more line seg-
+              ments for cutting wires, bus guides, or rectangles.
+
+              If you specify multiple cut-line segments, they should be paral-
+              lel to each other. For instance, you cannot specify one horizon-
+              tal cut-line and one vertical cut-line with the  -lines  parame-
+              ter. If you do, the tool reports the following error:
+
+              Cut lines are not parallel.
+
+              In  addition, a cut-line must cut across the wire, bus guide, or
+              rectangle from one edge to the other. Once cut, the signal  wire
+              pieces  maintain  a one-half wire-width extension. Special wires
+              do not maintain an extension.
+
+              When you run editCutWire, the tool snaps  the  cut-line  to  the
+              manufacturing  grid  automatically. The change in coordinates is
+              displayed at the prompt as a warning such as follows:
+
+              WARNING: Cut-line is auto-snapped from  (966.343500  1227.245500
+              966.811500  1227.245500)  to  (966.345000 1227.245000 966.810000
+              1227.245000).
+
+              Note that the tool records only the cut-line  coordinate  before
+              snapping in the log file.
+
+              Note:  The -lines option supports editing of 45-degree wire seg-
+              ments.
+
+              In addition, you can also draw a 45-degree  cut-line  to  cut  a
+              group of wires in a stair pattern as shown below:
+
+              Both  regular and special wires can be cut with a 45-degree cut-
+              line. However, patch wires cannot be cut in this way.  When  you
+              use a 45-degree cut-line, the wires are cut from the touch point
+              of  the  center line. You can use a single 45-degree cut-line to
+              cut wires in different directions as shown below:
+
+       -only_visible_wires
+              Specifies that only the wires on the visible layers are cut.  If
+              this  parameter  is  not  specified, the tool cuts all the wires
+              overlapping with the cut-line or box.
+
+       -selected
+              Specifies that only the selected wires, bus guides,  or  rectan-
+              gles should be cut.
+
+Examples
+              * The  following command cuts the wires through which the speci-
+                fied cut-line passes:
+
+                editCutWire -lines {200 300 200 310}
+
+              *
+
+                Consider the wire depicted below:
+
+                The following command  cuts  the  wire,  along  the  specified
+                45-degree cut-line segments, {95.30 -641.16 95.39 -641.08} and
+                {95.69 -641.17 95.78 -641.08}:
+
+                editCutWire  -lines {95.30 -641.16 95.39 -641.08 95.69 -641.17
+                95.78 -641.08}
+
+              * The following diagrams show examples of using a cut-box to cut
+                wires:
+
+                * In a), the horizontal wire is cut. The vertical wire is  not
+                  cut  because the cut-box edges that are perpendicular to the
+                  wire do not pass through it completely.
+
+                * In b), both the horizontal and vertical wires are cut.
+
+                * In c), the vertical wire is cut at tje two places where  the
+                  perpendicular  edges  of  the  cut-box  pass through it com-
+                  pletely. The horizontal wire is not cut.
+
+                * In d), the horizontal wire is cut. The 45-degree wire is not
+                  cut because 45-degree wire edits are not yet supported while
+                  cutting by box.
+
+                * In e), no cuts are made.
+
+Related Information
+              * editAddRoute
+
+              * editAdjust
+
+              * editCommitRoute
+
+              * editDelete
+
+              * editDuplicate
+
+              * editMerge
+
+              * editMove
+
+              * editResize
+
+              * editRotate
+
+              * editSplit
+
+              * editTrim
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025         editCutWire(25.10)

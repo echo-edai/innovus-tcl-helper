@@ -1,0 +1,183 @@
+{
+  "command": "finishFloorplan",
+  "is_cmd": true,
+  "summary": "完成布局规划，用于自动添加各种类型的阻挡层（如Halo、布线阻挡、放置阻挡等）以优化芯片设计",
+  "description": "该命令用于在芯片布局规划阶段结束时，自动创建和添加各种设计约束区域。主要功能包括：根据间距自动添加单元光环（Halo）、创建部分放置阻挡以控制标准单元密度、添加布线阻挡以限制特定区域的布线、在核心区域边缘或拐角创建阻挡，以及创建基于设计规则检查（DRC）的区域。用户可以通过多种参数组合，精确控制阻挡的类型、位置、尺寸和属性，从而为后续的布局和布线步骤做好准备，确保设计满足物理和电气规则。",
+  "usage": "finishFloorplan [-help] [-mask <integer>] { [[-autoHalo | [-autoHaloBasedOnPitch [-margin <float>]] | -addHalo <float> | [-fillPlaceBlockage <string> [-density <string>] [-excludeFlops ] [-deadArea <float>] [-honor_placement_density ]] | [-fillRouteBlockage <float> [-layer <string>] [-cutLayer <string>] [-fills | -exceptFill ] [-exceptpgnet ] [-spacing <float> | -designRuleWidth <float>] [-deadArea <float>]] | -addCornerBlockage <string> | [-drcRegionLayer <string> [-edgeExtend {x y}] [-edgeShrink {x y}] ] | -addCoreEOLBlockage | -addBoundaryBlockage | -addRowBasedRegionBlockage | -undo ] [-area {x1 y1 x2 y2}] [-namePrefix <string>] ]}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印此命令的使用说明",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mask",
+      "description": "指定添加布线阻挡和创建DRC区域时使用的掩模编号",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-autoHalo",
+      "description": "自动为单元添加光环（Halo）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoHaloBasedOnPitch",
+      "description": "基于布线间距自动添加光环",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-margin",
+      "description": "为基于间距的光环设置边距",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-addHalo",
+      "description": "添加指定宽度的光环",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-fillPlaceBlockage",
+      "description": "创建部分放置阻挡，参数为<类型> <最大间隙>",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-density",
+      "description": "仅为部分放置阻挡设置密度值",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeFlops",
+      "description": "将触发器和锁存器排除在部分放置阻挡之外",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-deadArea",
+      "description": "设置最大无效区域值",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-honor_placement_density",
+      "description": "添加放置阻挡时进行标准单元密度检查",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fillRouteBlockage",
+      "description": "创建布线阻挡，参数为<最大间隙>",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-layer",
+      "description": "指定布线阻挡的布线层ID",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cutLayer",
+      "description": "指定布线阻挡的切割层ID",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fills",
+      "description": "指定布线阻挡是否应用于金属填充",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exceptFill",
+      "description": "设置布线阻挡的'exceptFill'属性，使其应用于除金属填充外的所有布线",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exceptpgnet",
+      "description": "指定布线阻挡是否排除电源地网络",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-spacing",
+      "description": "设置间距值",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-designRuleWidth",
+      "description": "设置设计规则宽度",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-addCornerBlockage",
+      "description": "添加拐角阻挡，参数为<宽度> <高度>",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-drcRegionLayer",
+      "description": "指定DRC区域层名称列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-edgeExtend",
+      "description": "从边缘扩展DRC区域，参数为{x y}坐标点",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-edgeShrink",
+      "description": "从边缘收缩DRC区域，参数为{x y}坐标点",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-addCoreEOLBlockage",
+      "description": "添加核心区行末（EOL）阻挡",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addBoundaryBlockage",
+      "description": "添加边界布线阻挡",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-addRowBasedRegionBlockage",
+      "description": "添加基于行的区域阻挡",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-undo",
+      "description": "撤销最近的操作",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定操作区域，参数为{x1 y1 x2 y2}定义的矩形框",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-namePrefix",
+      "description": "为创建的阻挡设置名称前缀",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

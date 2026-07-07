@@ -1,0 +1,251 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+debug_irdrop(25.10)                                        debug_irdrop(25.10)
+
+Name
+       debug_irdrop  -  Specifies  to  automatically  identify the region with
+       worst IRdrops and EM violations, and provide necessary  information  to
+       determine and fix the root cause
+
+Syntax
+       debug_irdrop
+
+       [-help]
+
+       [-nworst_instances <value>]
+
+       [-output_directory <dir>]
+
+       -state_directory <dir>
+
+       [-net <netname> | -domain <domainname>]
+
+       [-region {x1 y1 x2 y2 }| -nregion <value>]
+
+       [-eco_report]
+
+       [-net_threshold <value> | -domain_threshold <value>]
+
+       [-summary_only]
+
+       [-tile_row_col {<X> <Y>}]
+
+       [-tile_size {<X> <Y>}]
+
+       [-non_violating_instslimit <value>]
+
+       [-enable_xp {true | false}]
+
+       Specifies  to  automatically identify the region with worst IRdrops and
+       EM violations, and provide necessary information to determine  and  fix
+       the  root  cause.  The reports are consolidated for each region to find
+       root-cause. Root cause analysis is done by identifying top 10 instances
+       in each hotspot and report the following:
+
+              * Hotspot Region Coordinate
+
+              * Timing Library Analysis
+
+              * Power-Grid View Analysis
+
+              * Power-Grid Integrity Analysis
+
+              * IR-Drop Composition
+
+              * Root Cause Analysis
+
+       You must specify this command after running the analyze_rail command.
+
+       The debug_irdrop command requires a VTS-XL license.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each debug_irdrop parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man debug_irdrop.
+
+       -domain <domainname>
+              Specifies the name of the power domain.
+
+       -domain_threshold <value>
+              Specifies  the minimum allowed voltage for the domain being ana-
+              lyzed. The value will be in percentage. This parameter  behavior
+              is same as the set_rail_analysis_domain -threshold parameter.
+
+       -eco_report
+              Specifies  to  generate a file with IR drop information that can
+              be used by Tempus ECO to fix IR voltage drop for  all  instances
+              in  a design. The report (eco.ird) is generated in the specified
+              output directory ( debug_irdrop -output_directory).
+
+       -enable_xp {true | false}
+              Specifies to identify the worst IR drop and  EM  violations  re-
+              gions  in  the Extensively Parallel (XP) mode wherein processing
+              is distributed over a large number of machines.
+
+              Default : false
+
+       -net <netname>
+              Specifies the name of the power or ground net that you  want  to
+              analyze.
+
+       -net_threshold <value>
+              Specifies  the  minimum  allowed voltage for the power net being
+              analyzed. The value must be an absolute number.  This  parameter
+              behavior is same as the set_pg_nets -threshold parameter.
+
+       -non_violating_instslimit <value>
+              Reports   non-violating  instances  within  hotspots  (violating
+              tiles) that are close to the threshold value. This parameter al-
+              lows you to define a limit (sub-threshold) that can be  used  to
+              report the non-violating instances that are close to the thresh-
+              old.
+
+       For  example,  if  the -net_threshold or -domain_threshold is 60mV, and
+       -non_violating_instslimit is 3mV close to the threshold, the  debug_ir-
+       drop  command  will  report  all  the violating instances above the do-
+       main/net threshold and also the non-violating instances  which  are  in
+       the  range  of  60mV-57mV. This information about the non-violating in-
+       stances can be used for IR improvement in the Timing-aware IR Drop Fix-
+       ing flow.
+
+       -nregion <value>
+              Specifies the number of regions  to  be  analyzed.  The  default
+              value is 3.
+
+       -nworst_instances <value>
+              Specifies  the number of worst instances to be reported. The de-
+              fault value is 5.
+
+        -output_directory <dir>
+              Specifies the output directory in which the Irdrop and EM viola-
+              tion results will be saved in.
+
+        -region {<x1> <y1> <x2> <y2> }
+              Specifies the region containing the worst instances. The default
+              unit of x1 y1 x2 y2 is in database units.
+
+       -summary_only
+              Specifies to generate a violation summary report that displays a
+              summary of the IR drop violation distribution for all the cells.
+              In addition, the report also displays the summary of the IR drop
+              violation distribution for the standards cells. If this  parame-
+              ter is specified, the detailed IR report is not generated.
+
+       -state_directory <dir>
+              Specifies the top-level state directory that is generated by the
+              dynamic IR drop analysis. This state directory contains analysis
+              of all nets associated with the power domain. This is the output
+              directory  in  which  the results of the analyze_rail command is
+              stored (for example, core_25C_dynamic_1).
+
+       -tile_row_col {X Y}
+              Specify the number of tiles  in  the  x  and  y  direction.  The
+              -tile_row_col and -tile_size parameters enable tile-based analy-
+              sis  of the hotspot regions. Tile-based analysis divides the de-
+              sign into user-defined tile size, and reports IR drop violations
+              on each tile.
+
+              The default value is 100um^2 (10x10 tiles).
+
+       -tile_size {X Y}
+              Specify the size  of  tiles  in  the  x  and  y  direction.  The
+              -tile_row_col   and   -tile_size  parameters  enable  tile-based
+              analysis of the hotspot regions. Tile-based analysis divides the
+              design into user-defined tile size, and reports IR  drop  viola-
+              tions on each tile.
+
+Examples
+              * The  following  command  generates IR debug report for the VSS
+                net in the specified output directory:
+
+                debug_irdrop    -state_directory     dynamic_rail/core_25C_dy-
+                namic_1/VSS    -net    VSS    -output_directory   IR_DEBUG_VSS
+                -nworst_instances 10
+
+              * The following command generates  a  violation  summary  report
+                that displays a summary of the IR drop violation distribution:
+
+                debug_irdrop -summary_only
+
+                The following is a sample summary report:
+
+                Summary For All Cells:
+
+                Worst IR drop: 0.123326V
+
+                Specified IR drop threshold: 0.09V
+
+                Worst IR drop violation: 0.033326V
+
+                Total IR drop violation: 29.9416V
+
+                IR drop violation distribution
+
+                Violation Range   Violation Count  Accumulated Violation count
+                Total Violation(V)  Accumulated Total Violation(V)
+
+                120mV     ~     125mV:           3                           3
+                0.094411                0.094411
+
+                115mV    ~     120mV:           32                          35
+                0.858654                0.953065
+
+                110mV     ~     115mV:          72                         107
+                1.57548                 2.52854
+
+                105mV    ~    110mV:           150                         257
+                2.57834                 5.10688
+
+                100mV     ~     105mV:          586                        843
+                6.95461                 12.0615
+
+                95mV    ~    100mV:           1518                        2361
+                11.115                  23.1765
+
+                90mV     ~    95mV:            3013                       5374
+                6.76508                 29.9416
+
+                Summary For StdCells:
+
+                Worst IR drop: 0.123326V
+
+                Specified IR drop threshold: 0.09V
+
+                Worst IR drop violation: 0.033326V
+
+                Total IR drop violation: 29.9416V
+
+                IR drop violation distribution
+
+                Violation Range   Violation Count  Accumulated Violation count
+                Total Violation(V)  Accumulated Total Violation(V)
+
+                120mV     ~     125mV:           3                           3
+                0.094411                0.094411
+
+                115mV     ~     120mV:           32                         35
+                0.858654                0.953065
+
+                110mV    ~    115mV:           72                          107
+                1.57548                 2.52854
+
+                105mV     ~     110mV:          150                        257
+                2.57834                 5.10688
+
+                100mV    ~    105mV:           586                         843
+                6.95461                 12.0615
+
+                95mV     ~    100mV:           1518                       2361
+                11.115                  23.1765
+
+                90mV    ~    95mV:            3013                        5374
+                6.76508                 29.941
+
+Related Information
+              * set_rail_analysis_mode
+
+              * "Static  Power,  IRdrop  and EM Analysis" in the Voltus Stylus
+                Common UI User Guide
+
+                           Fri Apr 04 01:25:37 2025        debug_irdrop(25.10)

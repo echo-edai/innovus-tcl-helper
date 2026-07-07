@@ -1,0 +1,39 @@
+{
+  "command": "flattenPartition",
+  "is_cmd": true,
+  "summary": "将分区恢复（展平）为普通模块状态",
+  "description": "该命令用于撤销（展平）分区，使其恢复为普通模块状态。此命令也应用于在提交黑盒后取消分配黑盒引脚。若要在提交黑盒前取消分配引脚，应使用 setPtnPinStatus 命令。此命令同时会取消分配分区引脚。若需为分区带回行信息，可使用 -bringBackRow 参数。如果分区行是非整数倍高度的行或未与顶层行对齐，flattenPartition 命令将自动创建一个与该分区关联的电源域。此电源域将具有以下特征：\n* 时序库将与顶层相同。\n* 如果在分区块中定义了全局网络连接，电源域将具有相同的全局网络连接。否则，电源域的全局网络连接将设置为顶层网络连接。\n* 最小间隙值将与分区的放置光晕值相同。\n带回非整数倍高度行或未对齐行的推荐使用模型如下：\n自顶向下流程：\n* 在全芯片级设计中创建一个电源域。\n* 指定与分区相同的层次实例。\n自底向上流程：\n* 在顶层设计中创建一个电源域。\n* 将实例块分配为步骤1中创建的电源域的成员。\nflattenPartition 命令支持带有 FlexModels 的分区。如果已提交的分区具有 FlexModel 网表，它将恢复 FlexModel 信息。",
+  "usage": "flattenPartition [-help] [<partition_name>] [-bringBackRow] [-keepPinGeometry] [-noUninheritPhysical]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 flattenPartition 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bringBackRow",
+      "description": "指定在以下情况下应带回分区行信息：1) 分区不是电源域且分区中的行信息与顶层设计不同；2) 在撤销分区后，分区空间的行未与顶层行对齐。使用此参数时，将为分区创建一个电源域。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepPinGeometry",
+      "description": "指定为每个分区引脚，在分区引脚顶部放置一个类型为特殊布线的 DRCFILL 金属。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noUninheritPhysical",
+      "description": "指定在 flattenPartition 期间移除仅物理单元实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<partition_name>",
+      "description": "指定分区的名称。可以指定任意数量的分区。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

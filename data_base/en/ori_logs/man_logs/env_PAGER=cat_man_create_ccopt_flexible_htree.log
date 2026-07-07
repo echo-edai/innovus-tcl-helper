@@ -1,0 +1,556 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_ccopt_flexible_htree(25.10)          create_ccopt_flexible_htree(25.10)
+
+Name
+       create_ccopt_flexible_htree - Creates a design object for a flexible H-
+       tree, under the specified pin
+
+Syntax
+       create_ccopt_flexible_htree
+
+       [-help]
+
+       [-adjust_sink_grid_for_aspect_ratio {true | false}]
+
+       [-auto_sinks   {{[floorplan_num]  [{{partition_hinst  |  design}  num}]
+       ...}}]
+
+       [-auto_sinks_sink_area {<width height>}]
+
+       -final_cell <base_cell>
+
+       [-hv_balance {true | false}]
+
+       [-image_directory <dirName>]
+
+       [-inverting]
+
+       [-layer_density <value>]
+
+       [-max_driver_distance <value>]
+
+       [-max_root_distance <value>]
+
+       [-mode {drv | distance}]
+
+       -name <flexibleHtreeName>
+
+       [-omit_symmetry <string>]
+
+       [-partition_boundary_polarity {non_inverting | inverting | ignore}]
+
+       [-partition_groups {{partition ...} [max_boundary_net_length]  [invert-
+       ing | non_inverting] [subtree] ...}]
+
+       [-power_weight <value>]
+
+        -pin {pin | port}
+
+       [-sink_grid {columns rows}]
+
+       [-sink_grid_box {<xmin ymin xmax ymax>}]
+
+       [-sink_grid_exclusion_zones  {{<xmin ymin xmax ymax>} ...}sink_grid_ex-
+       clusion_zones]
+
+       [-sink_instance_prefix <prefixName>]
+
+       [-sink_grid_sink_area {<width height>}]
+
+       [-sinks {{pin_name | {<xmin ymin xmax ymax>}} ...}]
+
+       [-stop_at_sdc_clock_roots]
+
+       -trunk_cell <base_cell>
+
+       Creates a design object for a flexible H-tree, under the specified pin.
+       The H-tree is adjusted to consider placement and routing blockages, and
+       any power routing.
+
+       You can specify this command in a sequence to create multiple  flexible
+       H-trees.
+
+       Note: This command does not synthesize flexible H-trees. After creating
+       or  defining  flexible  H-trees  using  this  command,  use the synthe-
+       size_ccopt_flexible_htrees command to synthesize all  the  flexible  H-
+       trees created using this command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each create_ccopt_flexible_htree parameter. For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command:  man create_ccopt_flexible_htree.
+
+       -adjust_sink_grid_for_aspect_ratio {true | false}
+              When set to true, adjusts the sink grid for aspect ratio.
+
+              Default: true
+
+       -auto_sinks {{[floorplan_num] [{{partition_hinst | design} num}] ...}}
+              Specifies the number of sink rectangles per partition hinst  and
+              at  the top-level. Add floorplan_num of sink rectangles based on
+              the density of clock sinks under the root  of  the  flexible  H-
+              tree. If the number of sink rectangles are not specified for all
+              partitions,  the  sink  rectangles  are apportioned based on the
+              number of sink rectangles specified for the floorplan and  clock
+              sink  density.  The  number of sink rectangles for the floorplan
+              must be specified in this case. In  restricted  floorplans,  the
+              number of sink rectangles may be lower than specified.
+
+              Note:  This  feature  is intended to run on designs after place-
+              ment. The below warning is issued if there  are  unplaced  clock
+              sinks  related  to the H-tree being created when this feature is
+              run.
+
+              IMPCCOPT-1573: Using the Flexible H-Tree auto sinks feature  re-
+              quires clock sinks to be placed but there are %d clock sinks (%d
+              clock  sinks  in total) that are not placed. Check the placement
+              status. Continuing using available placement information.
+
+              This  parameter  is  mutually  exclusive  with  the  -sink_grid,
+              -sinks, and -sink_grid_exclusion_zones parameters.
+
+              The corresponding CCOpt properties are:
+
+              * auto_sinks
+
+              * auto_sinks_rects
+
+              * auto_sinks_sink_area
+
+              For details, see CCOpt Properties.
+
+              Note:  The curly braces in bold must be entered with the command
+              syntax.
+
+              Examples:
+
+              * For a design without partitions, you can specify as follows:
+
+                -auto_sinks {16} -auto_sinks_sink_area {50 50}
+
+                The software will assign 16 sinks to the design.
+
+              * For a design with partitions, you can specify as follows:
+
+                -auto_sinks  {16   {hinst:top/main   4}   {hinst:top/vec   4}}
+                -auto_sinks_sink_area {50 50}
+
+                The   software   will  assign  4  sinks  each  in  partitions,
+                hinst:top/main and hinst:top/vec.  If  applicable,  additional
+                sinks  will  be  assigned to the top-level or other partitions
+                based on the number of sinks specified for the floorplan  (16)
+                and  the density of clock sinks under the root of the flexible
+                H-tree.
+
+       -auto_sinks_sink_area {<width height>}
+              Specifies the approximate size of the rectangle  describing  the
+              initial  width and height of automatically computed sink rectan-
+              gles {<width height>}.
+
+       -image_directory <dirName>
+              Specifies the name of the directory to which the  images  gener-
+              ated by the H-tree synthesis algorithm are written.
+
+              The images are PNG files.
+
+              Color coding of images is provided below:
+
+              White: Unobstructed edges of the synthesis grid
+
+              Red:  Grid  points  that are blocked for trunk cell placement in
+              all modules
+
+              Orange: Grid points that are blocked for final cell placement in
+              all modules
+
+              Red orange: Grid points that are blocked  for  trunk  and  final
+              cell placement in all modules
+
+              Yellow circle: The grid point of the source
+
+              Yellow points: Candidate grid points of H-tree sinks
+
+              Yellow  rectangle:  The  sink  area containing target grid point
+              candidates of H-sinks, adjusted to the synthesis grid
+
+              Brown: If specified, the sink grid box snapped to the  synthesis
+              grid
+
+              Green/blue: The edges of the synthesized H-tree
+
+              Purple: H-tree repeaters
+
+              Cyan: Partition boundaries in hierarchical designs
+
+       -final_cell <base_cell>
+              Specifies  the  library cell (buffer or inverter) to use for the
+              ends of the clock tree.
+
+       -hv_balance {true | false}
+              When set to true, specifies that  the  horizontal  and  vertical
+              metal wires can only be balanced against other wires of the same
+              orientation.
+
+              When  set  to  false,  specifies  that  any wire can be balanced
+              against any other wire.
+
+              Default: true
+
+       -inverting
+              Specifies whether the tree will invert its input or not. By  de-
+              fault, this parameter is not enabled.
+
+       -layer_density <value>
+              Specifies  the  layer density used to compute the parasitics for
+              timing estimates of H-tree nets.
+
+       -max_driver_distance <value>
+              When specified, the software ignores DRVs  and  uses  the  given
+              value  as  the  maximum length of the nets connecting the H-tree
+              drivers.
+
+       -max_root_distance <value>
+              When specified, the software ignores DRVs  and  uses  the  given
+              value  as  the maximum length of the net connecting the root and
+              the first driver of the H-tree. This value can only be specified
+              if the -max_driver_distance parameter is also specified.
+
+       -mode {drv | distance}
+              Specifies the driver insertion mode.
+
+              When set to drv, drivers are inserted to avoid DRVs.
+
+              When set to distance, the parameters,  -max_driver_distance  and
+              -max_root_distance  determine  the  maximum net lengths allowed.
+              Transitions and delays are not computed in this case.
+
+              Default: drv
+
+              Note: When this parameter is  set  to  distance,  the  -max_dri-
+              ver_distance  and  -max_root_distance  parameters must be speci-
+              fied.
+
+       -name  <flexibleHtreeName>
+              Specifies the name of the flexible H-tree to  be  created.  This
+              parameter is required.
+
+       -omit_symmetry <string>
+              Specifies  that  no  symmetry  drivers and/or branches should be
+              added to balance the pin load of nets in the flexible H-tree.
+
+              Symmetry drivers are drivers that are added to balance  pin  ca-
+              pacitances  at  branch  points. For example, if buffer pairs are
+              inserted at branch points, one of these buffers  may  not  drive
+              any  fanout  and  is inserted to match other buffer pairs at the
+              same level of the flexible H-tree. Omitting symmetry drivers can
+              reduce the power of the H-tree but increase  its  skew.  Drivers
+              that  are  added  to terminate symmetry branches do not count as
+              symmetry drivers and are never omitted.
+
+              Similarly, symmetry branches are branches  that  are  needed  to
+              balance  the wire load at branch points. They are added to match
+              other branchpoints at the same level  of  the  flexible  H-tree.
+              Symmetry  branches are always terminated with drivers, which are
+              not counted as symmetry drivers.
+
+              Possible values for this parameter are:
+
+              false: Add symmetry branches and drivers
+
+              true: Omit both symmetry drivers and branches
+
+              drivers: Omit symmetry drivers
+
+              branches: Omit symmetry branches
+
+              {drivers branches}: Omit both symmetry drivers and branches
+
+              {}: Add symmetry branches and drivers
+
+              By default, symmetry branches and buffers are added.
+
+       -partition_boundary_polarity {non_inverting | inverting | ignore}
+              Specifies the polarity of the clock signal with  regard  to  the
+              source of the flexible H-tree when entering partitions. The fol-
+              lowing values are allowed:
+
+              * non_inverting:  When  specified, allows only non-inverting po-
+                larity at partition entry points.
+
+              * inverting: When specified, allows only inverting  polarity  at
+                partition entry points.
+
+              * ignore: When specified, allows inverting and non-inverting po-
+                larity at partition entry points.
+
+              Default: non_inverting
+
+       -partition_groups {{<partition> ...} [max_boundary_net_length] [invert-
+       ing | non_inverting] [<subtree>] ...}
+              Specifies  the groups in which partitions are clustered in chan-
+              nelless designs. Nested lists imply  allowed  crossings  between
+              groups. Each group has zero or one input port and each partition
+              must only be specified once. Optionally, a maximum pre-route net
+              length  from the boundary of a partition group can be specified.
+              The maximum pre-route net length must be specified as the second
+              parameter of a nested partition group. Optionally, the next  ar-
+              gument  specifies  the  clock  phase when entering the partition
+              group in relation to the root pin of the H-tree. Allowed  values
+              are  'inverting'  and 'non_inverting'. If no value is specified,
+              the clock phase is unconstrained.  The  clock  phase  is  uncon-
+              strained  when  crossing the boundaries of partitions within the
+              same group. All specified clock phases must be either  inverting
+              or non_inverting.
+
+              For example, if the following partitions are specified:
+
+              {{A} {{C D} 50 non_inverting {{E F}} {{G}}}}
+
+              It means the following:
+
+              * The H-tree starts in partition A and descends into group C/D.
+
+              * From  partition  group  C/D, the tree descends into groups E/F
+                and G.
+
+              * Any clustering of sinks inside the C/D and E/F groups  is  al-
+                lowed, potentially crossing internal partition boundaries sev-
+                eral times.
+
+              * Partition A has no clock input port and one clock output port
+
+              * Partition  group  C/D  has  one clock input port and two clock
+                output ports
+
+              * Partition group E/F and G have one clock  input  port  and  no
+                clock output port
+
+              * The  maximum  net  length  from the entry point into partition
+                group C/D is 50um (pre-route)
+
+              * The clock phase is non_inverting when entering parition  group
+                C/D. The clock phase is unconstrained when entering other par-
+                tition groups
+
+              Default: {}
+
+       -power_weight <value>
+              Specifies the power versus insertion delay trade-off. Valid val-
+              ues  are  between  0 and 1, specifying the weight that is put on
+              power optimization during the synthesis of flexible H-trees.
+
+              Default: 1
+
+       -pin  {pin | port}
+              Specifies the pin under which to  create  the  flexible  H-tree.
+              This parameter is required.
+
+       -sink_grid {columns rows}
+              Specifies  the  columns  and rows of a grid of H-tree sinks. The
+              columns and rows may be swapped if the -adjust_sink_grid_for_as-
+              pect_ratio parameter is set to true.
+
+              Note:
+
+              * This parameter is not supported in master/clone designs.
+
+              * This parameter is mutually exclusive with the -auto_sinks  pa-
+                rameter.
+
+       -sink_grid_box {xmin ymin xmax ymax}
+              Specifies  the  area  of the box that the grid of H-trees should
+              cover.
+
+       -sink_grid_exclusion_zones {{<xmin ymin xmax ymax>} ...}
+              Specifies zones from which sinks of the sink grid  are  excluded
+              if the zones completely cover the respective sink area.
+
+              Note:  This parameter is mutually exclusive with the -auto_sinks
+              parameter.
+
+       -sink_grid_sink_area {<width height>}
+              Specifies the approximate size of the rectangle describing valid
+              locations for final cells, specified using the -final_cell para-
+              meter, per H-tree sink in the grid.
+
+       -sink_instance_prefix <prefixName>
+              Specifies the prefix used for instance  names  of  final  cells,
+              specified  using  the -final_cell parameter and the sinks speci-
+              fied using the -sinks parameter.
+
+       -sinks {<pin_name>| {<xmin ymin xmax ymax>}}
+              Specifies approximate rectangular sink regions  for  the  buffer
+              locations  at the end of the tree, which are specified using the
+              -final_cell parameter or pins. The specified pins must be in the
+              clock tree. Nested lists imply clustering relationships.
+
+              Note: This parameter is mutually exclusive with the  -auto_sinks
+              parameter.
+
+       -stop_at_sdc_clock_roots
+              Specifies  that  the clock tree definition should stop searching
+              for parts of the clock tree at the root of SDC clocks.
+
+       -trunk_cell <base_cell>
+              Specifies that this cell should be used for the  buffers  inside
+              the flexible H-tree. This parameter is required.
+
+Examples
+              * The following command creates a flexible H-tree for four sinks
+                under the the pin "root/Y". The sinks of the H-tree will be of
+                type BUFX16 and placed approximately inside the specified sink
+                rectangles.  Other buffers added to the H-tree will be of type
+                BUFX8. No symmetry buffers are added to balance the  pin  load
+                of  nets.  The  flexible  H-tree is then synthesized using the
+                synthesize_ccopt_flexible_htrees command.
+
+       create_ccopt_flexible_htree -name tree0 -pin root/Y -sinks {  {200  200
+       300  300}  {200 700 300 800} {700 200 800 300} {700 700 800 800} } -fi-
+       nal_cell BUFX16 -trunk_cell BUFX8 -omit_symmetry drivers
+
+       synthesize_ccopt_flexible_htrees
+
+              * The following commands create two flexible H-trees  under  the
+                pins  "rootA/Y"  and  "rootB/Y". The sinks will be of the type
+                INVX8 and will be placed in the specified  sink  grids.  Other
+                buffers  added to the H-trees will be of type INVX12. Symmetry
+                buffers are omitted to balance the pin load of nets. The flex-
+                ible  H-trees  are  then   synthesized   using   the   synthe-
+                size_ccopt_flexible_htrees command.
+
+       create_ccopt_flexible_htree  -name htreeA -pin rootA/Y -sink_grid {2 2}
+       -final_cell INVX8 -trunk_cell INVX12 -omit_symmetry drivers
+
+       create_ccopt_flexible_htree -name htreeB -pin rootB/Y -sink_grid {4  4}
+       -final_cell INVX8 -trunk_cell INVX12 -omit_symmetry drivers
+
+       synthesize_ccopt_flexible_htrees
+
+       Note:  During flexible H-tree synthesis a number of buffers (or invert-
+       ers) are created. In designs with no fence regions, every  instance  in
+       the  flexible  H-tree,  including all H-tree sinks, are assigned to the
+       top-level hInst. In this case, the create_ccopt_flexible_htree  command
+       moves  the  original fanout of the root pin of the flexible H-tree to a
+       single H-tree sink as shown in the image below.
+
+       In designs where there are fence regions, the  command  chooses  hInsts
+       for  instances  in  the  flexible  H-tree considering fence region con-
+       straints. The fanout of the root pin of the  flexible  H-tree  is  con-
+       nected  to H-tree sinks that best match the hInst to which a fanout in-
+       stance belongs.
+
+       The images below illustrate a clock tree with three clock  tree  sinks,
+       ff1,  ff2,  and  ff3  and three hInsts, "top", "left", and "right". The
+       hInsts "left" and "right" are fenced. Fenced regions are shown in  pale
+       orange.  Sink  ff1  is in hInst "right", ff2 is in the top-level hInst,
+       and ff3 is in hInst "left". The hInsts "left" and "right" are  children
+       of  the top-level hInst. After flexible H-tree synthesis there are four
+       H-tree sink instances, t1, t2, t3, and t4 laid out  in  a  square  such
+       that t1 is in the fence region for the hInst "left", t2 is in the fence
+       region for the hInst "right", and the other two are in hInst "top". The
+       flops  have  been connected to H-tree sinks that match their fence con-
+       straints. Note that when running ccopt_design after creating the flexi-
+       ble H-tree, multi-tap CTS may reconnect ff2 to t4 rather than t3.
+
+       Before H-tree Synthesis
+
+       After H-tree Synthesis
+
+       Using the Sink Grid Parameters
+
+       The diagram below illustrates the usage of the sink grid parameters  of
+       this command. Note the following:
+
+              * The  sink grid is specified as {4 4}, which means it will have
+                four columns and four rows
+
+              * No H-tree sinks are created for sink areas that are completely
+                covered by placement blockages or exclusions zones
+
+              * H-tree sink instances with the name specified in  the  diagram
+                will be placed inside the unblocked parts of the sink areas
+
+              * The  sink  grid  is  adjusted  by snapping it to the synthesis
+                grid, which means that the specified sink  areas  are  treated
+                only as a guide
+
+Related Properties
+       You can also set the following properties on the flexible H-tree design
+       objects by using the set_ccopt_property command:
+
+              * adjust_sink_grid_for_aspect_ratio
+
+              * final_cell
+
+              * flexible_htree
+
+              * flexible_htree_placement_legalization_effort
+
+              * htree_sinks
+
+              * hv_balance
+
+              * image_directory
+
+              * inverting
+
+              * layer_density
+
+              * mode
+
+              * omit_symmetry
+
+              * partition_boundary_polarity
+
+              * pin
+
+              * power_weight
+
+              * sink_grid
+
+              * sink_grid_sink_area
+
+              * sink_grid_box
+
+              * sink_grid_exclusion_zones
+
+              * sink_instance_prefix
+
+              * stop_at_sdc_clock_roots
+
+              * trunk_cell
+
+       For  detailed  information  about  all public CCOpt properties, see the
+       CCOpt Properties chapter in the Innovus User Guide.
+
+       You can also use the following command:
+
+       get_ccopt_property -help <propertyName>
+
+Related Information
+              * ccopt_design
+
+              * clock_opt_design
+
+              * delete_ccopt_flexible_htrees
+
+              * get_ccopt_flexible_htrees
+
+              * get_ccopt_property
+
+              * synthesize_ccopt_flexible_htrees
+
+              * set_ccopt_property
+
+              * The following topics in the Innovus User Guide
+
+                * CCOpt Properties
+
+                * Flexible H-Tree and Multi-Tap Clock Flow
+
+              * For details of the use model for this feature, see the  Flexi-
+                ble  H-tree  and  Multi-Tap  Clock Flow in Innovus Application
+                Note on the Cadence Online Support website.
+
+                           Fri Apr 04 01:25:3c7re2a0t2e5_ccopt_flexible_htree(25.10)

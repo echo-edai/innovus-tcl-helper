@@ -1,0 +1,123 @@
+{
+  "command": "savePartition",
+  "is_cmd": true,
+  "summary": "将分区信息保存到当前目录或指定目录",
+  "description": "该命令用于将设计的分区信息保存到文件系统中，通常在运行 partition 命令之后执行，以生成时序预算文件和模型文件。它支持多种输出格式（如DEF、Verilog）、多种保存模式（文件目录或OpenAccess数据库），并包含许多选项来控制保存的内容（如是否包含版图、网表、放置信息等）。命令还支持多线程以加速大型设计的保存过程，并会保存总线约束、单元填充信息等辅助数据，以支持层次化设计流程。",
+  "usage": "savePartition [-help] [<partitionName> {<list>}] [-fplan] [-verilog] [ [-dir <dirName>] [-module_model_tag <tag_name>][ {[-noFPlan | {[-noNetlist ] [-savePlacement ] }][-def_netlist_for_eco | {[-def [-savePlacement ]]}][ -defNoCutRow ] [-ptnSite ] [-topLevelNoPtnModule ] } | { { [-ptnLib <ptnLibName>] [-ptnView <ptnViewName>] [-topView <topViewName>] } } ] ] [ -def_no_std_cells ] [ -def_no_trial_route ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<partitionName>",
+      "description": "指定要保存的分区名称列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fplan",
+      "description": "将全芯片设计的版图变更下推至分区块，输出增量版图文件。允许对未提交的分区运行，无需先运行 partition 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog",
+      "description": "将ASCII Verilog文件写入保存的分区目录。此文件不用于restoreDesign，主要用于调试或与其他工具交互。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dir",
+      "description": "指定包含分区信息/文件的目录名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-module_model_tag",
+      "description": "指定用于保存分区的模块模型标签。这会为每个分区块创建pnr和lef模块模型，并为顶层设计创建pnr模块模型。此参数是集成层次化数据库（iHDB）流程的一部分。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noFPlan",
+      "description": "保存分区时不生成分区设计的版图文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noNetlist",
+      "description": "保存分区时不生成分区设计的网表文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-def",
+      "description": "为设计写出DEF格式文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-savePlacement",
+      "description": "与 -def 参数一起使用时，指定未放置的标准单元也应保存到DEF文件中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-def_netlist_for_eco",
+      "description": "写出包含网表的DEF文件。此DEF文件用于create_pushdown_eco命令进行ECO比较。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-defNoCutRow",
+      "description": "指定当行信息写入DEF文件时，行不针对放置障碍物、块光晕或电源域围栏最小间隙进行切割。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ptnSite",
+      "description": "在LEF文件中输出分区的站点信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-topLevelNoPtnModule",
+      "description": "抑制顶层分区网表中分区的存根Verilog模块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ptnLib",
+      "description": "指定一个OpenAccess数据库库目录，用于保存顶层设计和所有分区的块级设计。此参数用于将分区保存到OpenAccess数据库中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ptnView",
+      "description": "指定顶层和分区视图的视图名称。此参数用于将分区保存到OpenAccess数据库中。默认视图名为layout。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-topView",
+      "description": "指定顶层设计的视图名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-def_no_std_cells",
+      "description": "指定此选项时，标准单元不会写入DEF文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-def_no_trial_route",
+      "description": "指定此选项时，早期全局布线器生成的导线不会写入DEF文件。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

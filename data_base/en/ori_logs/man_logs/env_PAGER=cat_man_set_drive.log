@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_drive(25.10)                                              set_drive(25.10)
+
+Name
+       set_drive  -  Sets  the  drive resistance on the specified input and/or
+       bidirectional ports of the top cell
+
+Syntax
+        set_drive
+
+       [-rise] [-fall]
+
+       [-max] [-min]
+
+       <resistance_value>
+
+       <port_list>
+
+       Sets the drive resistance on the specified input  and/or  bidirectional
+       ports of the top cell.
+
+       The  drive resistance models the cell driving the port. This resistance
+       is used to compute the load dependent delay and the slew at the  speci-
+       fied ports. The load-dependent delay is added to the arrival times.
+
+       The  load-dependent  delay and the slew are computed by multiplying the
+       drive resistance by the wire capacitance of the net  connected  to  the
+       port.
+
+       Use  the  report_ports  command  to  view drive resistances asserted on
+       ports.
+
+Parameters
+       -fall  Specifies that the drive  resistance  is  to  be  used  for  the
+              falling  transition  at the specified ports. By default, if nei-
+              ther the -rise nor the -fall option are specified, the drive re-
+              sistance applies to both the rising transition and  the  falling
+              transition.
+
+       -min   Specifies that the drive resistance is to be used to compute the
+              early path delay. By default, if neither the -min option nor the
+              -max  option  is specified, the drive resistance applies to both
+              the early path delay and the late path delay.
+
+       -max   Specifies that the drive resistance is to be used to compute the
+              late path delay. By default, if neither the -min option nor  the
+              -max  option  is specified, the drive resistance applies to both
+              the early path delay and the late path delay.
+
+       <port_list>
+              Specifies a list of input or bidirectional ports  on  which  the
+              drive resistance is set.
+
+       <resistance_value>
+              Specifies  the value of the drive resistance. This value must be
+              greater than or equal to zero. The drive resistance is in  units
+              found in the target technology library.
+
+       -rise  Specifies that the drive resistance is to be used for the rising
+              transitions  at  the specified ports. By default, if neither the
+              -rise option nor the -fall option are specified, the  drive  re-
+              sistance  applies  to both the rising transition and the falling
+              transition.
+
+Example
+              * The following command sets a drive resistance of 2.0  for  the
+                early  path, the late path, the rising and the falling transi-
+                tions at the in1 and in2 ports and shows how drive resistances
+                are reported using the report_ports command as  shown  in  the
+                example below:
+
+                tempus > set_drive 2.0 [get_ports {in1 in2}]
+
+                tempus  >  report_ports -type drive_resistance -pin [get_ports
+                {in1 in2}]
+
+                The following report is displayed:
+
+                -----------------------------------------------------------------
+
+                Early Late
+
+                -----------------------------------------------------------------
+
+                Pin      Dir    Assertion        Clock    Rise    Fall    Rise
+                Fall
+
+                Name                          Name
+
+                ------------------------------------------------------------------
+
+                in1     IN     drive_resistance  *(D)(P)  2.000   2.000  2.000
+                2.000
+
+                in2    IN    drive_resistance  *(D)(P)  2.000    2.000   2.000
+                2.000
+
+                ------------------------------------------------------------------
+
+Related Information
+              * all_inputs
+
+              * report_ports
+
+              * set_driving_cell
+
+              * set_input_transition
+
+              * set_load
+
+                           Fri Apr 04 01:25:37 2025           set_drive(25.10)

@@ -1,0 +1,593 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+saveDesign(25.10)                                            saveDesign(25.10)
+
+Name
+       saveDesign  -  Saves the complete design database in the native Innovus
+       format if fileName is specified, or as an OpenAccess database  (OA  DB)
+       if -cellview or -view are specified
+
+Syntax
+       saveDesign
+
+       [-help]
+
+       [-addTiming]
+
+       [-current_top_cell_only]
+
+       [-mmmc2]
+
+       [-noFill]
+
+       [-no_pvs_fill]
+
+       [-skip_file {metric cmd}]
+
+       [-no_wait <out_file>]
+
+       {{<fileName> } | {{{-cellview {<libname> <cellname> <viewname>} | -view
+       <viewname>}  [ -saveRestoreFile <file_name>] [-oaUsedLibsOnly | -oaLibs
+       ]} }}
+
+       [-timingGraph [-noConstraint ]]
+
+       [[-user_path [-keep_input_path ]] ]
+
+       [-tcon ]
+
+       [-rc ]
+
+       [-libs ]
+
+       [-lib2ldb ]
+
+       [-def ]
+
+       [-verilog ]
+
+       [-tgz ]
+
+       Saves the complete design database in  the  native  Innovus  format  if
+       fileName  is  specified,  or as an OpenAccess database (OA DB) if -cel-
+       lview or -view are specified.
+
+       The native Innovus DB format in output directory must be used when  you
+       have  LEF files for technology and physical library data in your origi-
+       nal initialization script (e.g. init_lef_file <files>), while the OA DB
+       output must be used if  you  use  OA  libraries  (e.g.  init_oa_ref_lib
+       <libs> and init_oa_search_libs <libs>) during initialization.
+
+       There  are different types of OA methodologies and flows supported that
+       are controlled by setOaxMode. You can also look at the Mixed Signal In-
+       teroperability  Guide  for   more   details   on   their   effects   on
+       saveDesign/restoreDesign.
+
+       You  can save a design to the same location from which you restored the
+       design. The new data will overwrite the previous data.
+
+       You can use the saveDesign command at any time after init_design.
+
+       By default, external file references used inside the  fileName.dat  di-
+       rectory (e.g. to library files, or SDC files that are not modified) are
+       stored  using  a  portable  format that allows you to copy fileName.dat
+       anywhere in the same network where the full path names are still valid,
+       and then restore it with restoreDesign. This  portable  format  is  not
+       supported  for  OA DBs that require the usage of a cds.lib file to find
+       physical file locations.
+
+       Note:
+
+              * The saveDesign command does not save the  state  of  the  tim-
+                ing_enable_simultaneous_setup_hold_mode  timing  global  vari-
+                able. When the global is set to true, various physical  design
+                functions  in  the system are disabled. When the design is re-
+                stored (using the restoreDesign command), the physical  design
+                commands  are  required to be active so that the system can be
+                properly initialized.
+
+              * The new LEF will not be saved by saveDesign in  the  following
+                scenarios.
+
+                * If  you  replaced the LEF macro file multiple times. In this
+                  case, the tool would not know which file to keep at the end.
+
+                * If the old lef file that contains the  original  macro  con-
+                  tains  other  MACRO  definition.  In this case, the old file
+                  cannot be removed by the tool. If the old file  is  not  re-
+                  moved, the new file is appended to the list. As mentioned in
+                  the  above  point, the list may have multiple lef files that
+                  contain the same MACRO but with different  definition.  When
+                  reading  LEF files with multiple definitions, the tool keeps
+                  only the first one. As a result, in  the  next  session  the
+                  file that you want will not be loaded.
+              After  trying  different  macro definitions, you need to replace
+              the content of the macro definition manually. You  can  do  this
+              either  by  overwriting  the one in original LEF file, or if the
+              original LEF file contains only that macro,  replacing  the  LEF
+              file in the LEF file list.
+
+              *
+
+                You should not modify the contents of a saved DB (*.enc.dat or
+                *.db)  at  any time. If the contents of the saved DB are modi-
+                fied, restoring such modified DB might cause problems later or
+                lead to DB corruption or crashes.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each saveDesign parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man saveDesign.
+
+       -addTiming
+              If you use restoreDesign -noTiming to restore the DB, the timing
+              data  is  not loaded. This option allows you to copy the ignored
+              timing data from the original restoreDesign location, and add it
+              back during saveDesign like this:
+
+              restoreDesign -noTiming test1.enc.dat top
+
+              <physical editing commands ...>
+
+              saveDesign -addTiming test2.enc
+
+              This usage model is intended to allow faster physical-only edit-
+              ing, like DRC fixing, where the netlist is not modified.  If you
+              change the netlist, unpredictable results may occur when reading
+              the test2 DB using timing data copied from test1.
+
+       -current_top_cell_only
+              Specifies to only write current design module and its submodules
+              in the netlist. By default,  all  the  modules  from  the  input
+              netlist  will be saved even if they do not belong to current de-
+              sign.
+
+       -cellview {<libname cellname viewname>}
+              Saves the design in the OpenAccess  database  format  using  the
+              specified  lib, cell, and view names. The design is saved in the
+              lib/cell/view OA directory.
+
+              Note: Usually, the cell name is the same as the design top  cell
+              name.  If the cell name specified is different from the top cell
+              name, it means that the top module created in  OpenAccess  would
+              have the new cell name instead of the original name.
+
+       -def   Saves  a  DEF file, in addition to the normal DB files in the DB
+              directory. This parameter is not normally used for flat or block
+              flows, and is not used by restoreDesign. It can be useful  in  a
+              hierarchical  flow, where you want to use assembleDesign to read
+              only the netlist and the DEF files without opening up  each  de-
+              sign  DB  and  writing  out the Verilog and DEF files separately
+              (see -verilog).
+
+       <fileName>
+              Specifies the name of the output file with a restoreDesign  com-
+              mand in it to load the saved DB.  The .dat extension is appended
+              to  the  name to create an output directory to save the DB using
+              native Innovus formats. So saveDesign test will  create  a  file
+              named test, with a command like this in it:
+
+              restoreDesign test.dat top
+
+              It  will  also create a directory named test.dat with all the DB
+              files in it.
+
+              You can then use source test to load the saved DB  in  a  future
+              session.
+
+       -keep_input_path
+              Saves the path same as the path in the input file.
+
+       -libs  Normally  external  file  references,  such as references to the
+              LEF, .lib, SDC files are saved using a full-path name,  symbolic
+              links  to  the original files inside a libs sub-directory inside
+              the DB directory.
+
+              This option forces copies of the  files,  rather  than  symbolic
+              links,  in  the libs sub-directory so there are no external file
+              references. This makes the DB directory much larger, but  it  is
+              suitable  for  sending  to a different network where the library
+              and external data files are not available.
+
+              An OA DB will still have OA library references using the  normal
+              cds.lib methodology, but any other external file references will
+              be copied inside the cellview directory.
+
+              Note:  Any  future  sessions  that  use  restoreDesign  and then
+              saveDesign will have references to the files inside this  design
+              directory  rather  than  to the original external locations. So,
+              you must keep this DB directory around as long as any  other  DB
+              references  it  (or  you  must use saveDesign -libs in the later
+              session to force another local copy of the external files).
+
+       -lib2ldb
+              Converts the .lib timing libraries referenced in the  MMMC  file
+              to  the  .ldb format and writes them in a libs sub-directory in-
+              side the output design directory.  References  to  the  original
+              .lib  files  in  the  MMMC file are changed to the corresponding
+              .ldb files inside the libs sub-directory.
+
+              This makes the design directory much larger because it  has  all
+              the  timing  library  data inside it, and is not recommended for
+              normal flows.
+
+              Normally a user should setup the .ldb files in an  external  li-
+              brary  directory  and  have  the MMMC files use them directly to
+              avoid this overhead.
+
+              Using .ldb files will make restoreDesign faster  when  it  reads
+              the library data. So, this option is useful for "throw-away" de-
+              bugging  experiments  that require repeated sessions at the cost
+              of a one-time conversion, and carrying the library data with the
+              design. See the write_ldb command for more information about the
+              usage of .ldb files.
+
+       -mmmc2 Saves the complete design database in the MMMC2 format.
+
+       -noConstraint
+              Saves the timing graph data without the  SDC  constraints  data,
+              and requires the -timingGraph option.
+
+              This  is useful to reduce the disk size, and speedup saveDesign,
+              restoreDesign. But the timing-graph data cannot be loaded by any
+              other release version, and without the  SDC  files,  the  timing
+              constraints  would be lost if loaded by a different release ver-
+              sion.
+
+              Note: You can still load the timing-graph with the  current  re-
+              lease version, and then use saveDesign without the -noConstraint
+              option,  to  regenerate  the SDC files from the timing-graph and
+              then use restoreDesign with a later release.
+
+       -noFill
+              Does not save any metal or via fill shapes inside the  DB.  This
+              is  useful if you did ECO routing, and the fill data is going to
+              be regenerated anyway, so it is not  worth  saving  the  current
+              fill data any more. All the fill data that would go to DEF FILLS
+              section  (floating  fill  data),  or the DEF SPECIALNETS section
+              with + SHAPE FILLWIRE or FILLWIREOPC will  be  ignored  and  not
+              saved.
+
+       -no_pvs_fill
+              Does  not  save  the  PVS  fill  data file. In some PVS flows, a
+              stream (GDS) file from PVS is saved inside the Innovus DB direc-
+              tory (see the PVS documentation for more  details).  During  re-
+              storeDesign  this  file is not read but can be optionally loaded
+              or used later in the flow.
+
+              By default, if the PVS fill file exists, saveDesign will copy it
+              from the read_db location  to  the  new  DB  directory.  If  ECO
+              changes  to  the  current design have made the PVS fill file in-
+              valid, use this option to stop it from being copied.
+
+       -no_wait <out_file>
+              Saves the design in a separate process. You can continue execut-
+              ing new commands simultaneously while the design is being saved.
+              This is useful when you want to save intermediate results  with-
+              out waiting for the save to complete.
+
+              Simultaneous  commands that modify the DB will have no effect on
+              the saved design. The memory is shared unless you modify it,  so
+              there  is  little  or  no increase in the memory usage for small
+              changes, but if you completely changed everything in the DB, you
+              would temporarily have up to double the total  memory  for  both
+              processes  to  run. Each process may use multiple CPUs up to the
+              limits set by setMultiCpuUsage -localCpu. Therefore, if the  si-
+              multaneous commands use multiple local CPUs, you may temporarily
+              have  up  to  double the max local CPU usage until saveDesign is
+              complete. The actual number of CPUs used  by  saveDesign  varies
+              with design size and the type of data being saved. So, you would
+              need  to experiment with your specific design to find the number
+              of CPUs used, or set the -localCpu value  temporarily  lower  to
+              limit it.
+
+              The  output messages or error messages which normally go to std-
+              out/stderr (e.g. the xterm)  generated  by  saveDesign  will  be
+              redirected  to  <out_file>. Any .log or .logv information is ig-
+              nored and lost. You can check <out_file> to  see  if  saveDesign
+              completed successfully.
+
+              If  you  give  the  exit  command,  the  session  will  wait for
+              saveDesign -no_wait to complete before exiting, while other com-
+              mands will run simultaneously. This allows flow scripts that run
+              multiple sessions to know any save from the previous session  is
+              complete  before  the  next session uses it, without the need to
+              poll or check <out_file>.
+
+              Example:
+
+              The following command saves the design  into  the  my_design.dat
+              directory, and any messages are written to save.1.
+
+              saveDesign my_design -no_wait save.1
+
+       -oaLibs
+              Saves  all OA libraries specified in cds.lib under the directory
+              libname/cellname/viewname/libs/oa/.
+
+              Note: This parameter works only in OA designs.
+
+       -oaUsedLibsOnly
+              Saves only the libraries  listed  in  the  init_oa_ref_lib,  and
+              init_oa_search_lib,  which  are referenced through the on-demand
+              processing. On specifying this parameter, a new cds.lib file  is
+              created  with  only  the  specified libraries. The libraries are
+              saved under the directory libname/cellname/viewname/libs/oa/.
+
+              Note: This parameter works only in OA designs.
+
+       -rc    Saves RC extraction data, including data for incremental extrac-
+              tion. By default, Innovus does not automatically save RC extrac-
+              tion data to save disk space and run-time.
+
+              The -rc parameter does not save RC extraction data if the design
+              is not extracted or if you extract the data using  the  preRoute
+              extraction engine.
+
+       -saveRestoreFile <file_name>
+              Specifies  the  file  name  that can be sourced to read back the
+              OpenAccess Design.
+
+              If you add this option, you can save a *.inn file and record the
+              restoreDesign command. The *.inn file can be sourced to  restore
+              the OA design.
+
+       -skip_file {metric cmd}
+              Removes the specified db files.
+
+              * If  you save a design with the -skip_file {metric} option, the
+                tool does not save file db inn.um.gz and .metric.gz.
+
+              * If you save a design with the  -skip_file  {cmd}  option,  the
+                tool does not save the inn.cmd.gz file.
+
+              * If  you save a design with the -skip_file {metric cmd} option,
+                all inn.um.gz, .metric.gz,  and  inn.cmd.gz  files  cannot  be
+                saved.
+
+       -tcon  By  default,  if  the SDC timing constraints have not been modi-
+              fied, a link to the original external SDC file is kept to reduce
+              the disk size. If the SDC timing constraints were modified, then
+              the SDC files are automatically stored in the DB directory. This
+              option will force all SDC files to be copied locally inside  the
+              DB directory, even if they did not change.
+
+              Note:  Any  future  sessions  that  use  restoreDesign  and then
+              saveDesign will have references to SDC files inside this  design
+              directory rather than to the original external location. So, you
+              must  keep this DB directory around as long as any other DB ref-
+              erences it (or you must use saveDesign in the later  session  to
+              force another local copy of the SDC files).
+
+       -tgz   Saves  the  design as a gzipped tar file. The saveDesign command
+              saves fileName.dat and automatically turns on -libs and -sdc  to
+              force  all  external  file references to be copied inside the DB
+              directory (for example, .lib, .lef, .tcz files).  Then  it  tars
+              the directory and gzips it into a single portable Innovus design
+              tar  ball,  by  adding the .tar.gz extension to the fileName.dat
+              name.
+
+              The  following  commands  results  in   a   file   named   myDe-
+              sign.enc.dat.tar.gz:
+
+               saveDesign myDesign.enc -tgz
+
+       -timingGraph
+              Saves  the  timing graph data. When this parameter is specified,
+              the -rc parameter is also automatically enabled. This means that
+              the RC extraction data is also saved along with the timing graph
+              data at the postRoute stage. At the preRoute stage, the RCs  are
+              not  saved  but all information is present to fully time the de-
+              sign without the need to rebuild the timing graph.
+
+              Commands, such as report_timing and optDesign, that  use  timing
+              analysis  results use the saved timing graph. This can save sig-
+              nificant CPU after restoreDesign. A user can get the same timing
+              seen previously without waiting for the timing  analysis  to  be
+              repeated.
+
+              Note:  This  feature is dependent on the build version and tool.
+              Tempus cannot read a timing-graph written by Innovus.  You  must
+              write  and  read the timing graph using the same tool and build.
+              You can still load the design with a different  tool  or  build,
+              but  the  timing-graph  is  lost  and you must repeat the timing
+              analysis. The timing graph data must be fully built  (e.g.  with
+              report_timing) before calling saveDesign -timingGraph.
+
+       -user_path
+              By default all external file references (such as. library files)
+              are stored as absolute paths without any symbolic links. So, the
+              DB directory is portable anywhere on the same network.  This op-
+              tion  stores  external file references exactly as you entered it
+              For example, full paths like /x/y or relative paths like ../x/y,
+              ./x/y), and keeps any symbolic links used inside the path names.
+
+              Example:
+
+              Consider that there are two library files a.lib and b.lib under:
+
+              /global/project1/libs/mmmc
+
+              And two lef files c.lef and d.lef under:
+
+              /global/project1/libs/lef
+
+              There are two symlinks to the libs:
+
+              /usa/db1/libs1.0/mmmc/a.lib                                   ->
+              /global/project1/libs/mmmc/a.lib
+
+              /usa/libs/mmmc/b.lib    ->    /global/project1/libs/mmmc/b.lib
+
+              And two symlinks to the lefs:
+
+              /usa/db1/libs1.0/lef/c.lef                                    ->
+              /global/project1/libs/lef/c.lef
+
+              /usa/libs/lef/d.lef     ->    /global/project1/libs/lef/d.lef
+
+              Your current work dir is /usa/db1.1/. You have  an  init  script
+              like:
+
+              set init_mmmc_files ./mmmc.tcl
+
+              set init_lef_file {/usa/db1/libs1.0/lef/c.lef ../libs/lef/d.lef}
+
+              set init_verilog design.v
+
+              init_design
+
+              Where mmmc.tcl has:
+
+              create_library_set          -name          test          -timing
+              {/usa/db1/libs1.0/mmmc/a.lib ../libs/mmmc/b.lib }
+
+              Then after saveDesign, without -user_path,  the  libs  and  lefs
+              will save link to the real files:
+
+              > saveDesign db1.2
+
+              The  ./mmmc.tcl  file  is always stored inside the DB dir, so no
+              external reference is used.
+
+              By default, external file references are resolved to their full-
+              path name without any symlinks.
+
+              The .lib files inside the mmmc.tcl file will be  referenced  as:
+              {/global/project1/libs/mmmc/a.lib
+
+              /global/project1/libs/mmmc/b.lib}
+
+              The      .lef      files      will     be     referenced     as:
+              {/global/project1/libs/lef/c.lef
+              /global/project1/libs/lef/d.lef}
+
+              This is portable and can be loaded by restoreDesign anywhere  on
+              the same network.
+
+              /usa/db1.2/libs1.2/mmmc/a.lib                                 ->
+              /global/project1/libs/mmmc/a.lib
+
+              /usa/db1.2/libs1.2/mmmc/b.lib                                 ->
+              /global/project1/libs/mmmc/b.lib
+
+              /usa/db1.2/libs1.2/lef/c.lef                                  ->
+              /global/project1/libs/lef/c.lef
+
+              /usa/db1.2/libs1.2/lef/d.lef                                  ->
+              /global/project1/libs/lef/d.lef
+
+              With -user_path, the libs and lefs keep the symlinks of the cur-
+              rent db:
+
+              > saveDesign db1.2 -user_path
+
+              The  .lib  files  will  be  referenced  as  entered by the user:
+              {/usa/db1/libs1.0/mmmc/a.lib ../libs/mmmc/b.lib}
+
+              The  .lef  files  will  referenced  as  entered  by  the   user:
+              {/usa/db1/libs1.0/lef/c.lef ../libs/lef/d.lef}
+
+              So restoreDesign must be run in the same directory as saveDesign
+              was  run,  or  in a directory with the same ./y and /x directory
+              structure.
+
+              /usa/db1.2/libs1.2/mmmc/a.lib                                 ->
+              /usa/db1/libs1.0/mmmc/a.lib
+
+              /usa/db1.2/libs1.2/mmmc/b.lib   ->    ../../../libs/mmmc/b.lib
+
+              /usa/db1.2/libs1.2/lef/c.lef    ->   /usa/db1/libs1.0/lef/c.lef
+
+              /usa/db1.2/libs1.2/lef/d.lef    ->    ../../../libs/lef/d.lef
+
+       -verilog
+              Saves a Verilog file inside the DB directory, in addition to the
+              normal DB files. This parameter is not normally used for flat or
+              block flows, and is not used by restoreDesign. It can be used in
+              a  hierarchical  flow,  where  you want to use assembleDesign to
+              read only the Verilog and the DEF files without opening up  each
+              design  DB  and writing out the Verilog and DEF files separately
+              (see -def).
+
+       -view <viewname>
+              Specifies the name of the OA view. This view will  be  saved  in
+              the same lib/cell/ directory that you used with restoreDesign or
+              with  init_design  during initialization. This option provides a
+              shortcut to save a view quickly in the same  lib/cell  structure
+              that you read from.
+
+              Example:
+
+              restoreDesign -cellview {designLib top layout}
+
+              saveDesign -cellview {designLib top place}
+
+              saveDesign -view place
+
+              Both the above saveDesign commands are equivalent.
+
+Example
+              * The following command writes the current design into directory
+                test.enc.dat:
+
+                saveDesign test.enc
+
+              * If you already ran timing analysis, you can save some run time
+                during read like this:
+
+                report_timing #first time usage, builds timing-graph
+
+                saveDesign test.enc -timingGraph
+
+                Then in a new session
+
+                restoreDesign test.enc.dat top
+
+                report_timing   #reports  results,  without  repeating  timing
+                analysis
+
+              * For physical-only editing, you can do this to speedup restore-
+                Design/saveDesign by ignoring the timing during restoreDesign,
+                and adding it back during saveDesign.
+
+                restoreDesign test1.enc.dat top -no_timing
+
+                <physical-only editing>
+
+                saveDesign test2.enc -addTiming
+
+                Then in a new session
+
+                restoreDesign test2.enc.dat top #has timing from test1.enc.dat
+
+                If  the  logical  netlist  was  modified  during  editing   of
+                test1.enc.dat,  then  reading  test2.enc.dat  may  have unpre-
+                dictable timing results.
+
+Related Information
+              * assembleDesign
+
+              * fill_setting_save
+
+              * init_design
+
+              * init_oa_ref_lib
+
+              * init_oa_search_lib
+
+              * restoreDesign
+
+              * setMultiCpuUsage
+
+              * write_ldb
+
+              * Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide.
+
+              * Partitioning the Design chapter in the Innovus User Guide.
+
+              * Mixed Signal Interoperability Guide for OpenAccess usage.
+
+                           Fri Apr 04 01:25:37 2025          saveDesign(25.10)

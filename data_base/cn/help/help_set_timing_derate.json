@@ -1,0 +1,189 @@
+{
+  "command": "set_timing_derate",
+  "is_cmd": true,
+  "summary": "设置时序降额因子，用于调整时序分析中的延迟和检查值，以考虑工艺、电压、温度（PVT）变化或片上变化（OCV/AOCV/SOCV）的影响。",
+  "description": "此命令用于在静态时序分析（STA）中设置降额因子，以模拟工艺、电压、温度（PVT）变化或片上变化（OCV/AOCV/SOCV）对电路时序的影响。降额因子可以应用于单元延迟、网络延迟、时序检查（如建立时间、保持时间）、时钟周期检查、脉冲宽度检查等。用户可以为早路径（early）和晚路径（late）、上升沿（rise）和下降沿（fall）、最小（min）和最大（max）操作条件、静态（static）和动态（dynamic）延迟部分、均值（mean）和标准差（sigma）分量等分别指定不同的降额值。命令支持全局应用或针对特定的对象列表（如实例、单元、网络）、延迟角（delay_corner）或电源域（power_domain）进行设置。选项如 -add 和 -multiply 允许对现有的降额值进行增量调整。",
+  "usage": "set_timing_derate [-help] [<object_list>] [<derate_value>] [-add] [-cell_check] [-cell_delay] [-clock] [-clock_period_check] [-corner] [-data] [-dynamic] [-early <float>] [-fall] [-increment] [-input_switching] [-late <float>] [-mean] [-multiply] [-net_delay] [-power_domain <string>] [-pulse_width_check] [-retain_delay] [-rise] [-sigma] [-static] [-statistical] [-transition] [-min | -max | -delay_corner <delayCornerName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<object_list>",
+      "description": "指定要应用降额因子的实例、库单元或网络列表（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<derate_value>",
+      "description": "指定要使用的降额值（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-add",
+      "description": "以增量方式添加或减去降额值（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell_check",
+      "description": "指定对时序检查进行缩放（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell_delay",
+      "description": "指定对单元延迟进行缩放（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock",
+      "description": "仅将降额因子应用于时钟路径（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock_period_check",
+      "description": "指定时钟周期检查的降额值（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-corner",
+      "description": "对建模为角点数据元素的单元/网络应用降额（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-data",
+      "description": "仅将降额因子应用于数据路径（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delay_corner",
+      "description": "将降额因子应用于指定的延迟计算角点（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-dynamic",
+      "description": "将指定的降额因子应用于单元/网络延迟的动态部分（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-early",
+      "description": "指定降额因子应用于早路径（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-fall",
+      "description": "将降额因子应用于路径的下降沿（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-increment",
+      "description": "在所有（OCV/AOCV/SOCV）模式下，将降额值增量添加到总降额值中（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-input_switching",
+      "description": "将给定的降额理解为同时开关输入降额，仅适用于早路径（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-late",
+      "description": "指定降额因子应用于晚路径（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-max",
+      "description": "在最佳-最坏情况分析中，将降额因子应用于最大操作条件（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-mean",
+      "description": "在SOCV分析流程中，用于指定延迟均值分量的降额因子。对于单元延迟和检查，-mean支持库单元和实例对象。对于网络延迟，它作为全局级降额因子支持。-multiply和-add选项可与-mean一起使用，对先前指定的-mean基础降额进行增量调整。（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-min",
+      "description": "在最佳-最坏情况分析中，将降额因子应用于最小操作条件（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-multiply",
+      "description": "以增量方式乘以降额值（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net_delay",
+      "description": "指定对网络延迟进行缩放（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-power_domain",
+      "description": "允许您指定一个特定的电源域来应用时序降额因子（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pulse_width_check",
+      "description": "指定脉冲宽度检查的降额值（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-retain_delay",
+      "description": "指定对保留构造进行缩放（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rise",
+      "description": "将降额因子应用于路径的上升沿（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sigma",
+      "description": "在SOCV分析流程中，用于指定延迟变异分量的降额因子。对于单元延迟和检查，-sigma支持库单元和实例对象。对于网络延迟，它作为全局级降额因子支持。-multiply和-add选项可与-sigma一起使用，对先前指定的-sigma基础降额进行增量调整。（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-static",
+      "description": "将指定的降额因子应用于单元/网络延迟的静态部分（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-statistical",
+      "description": "对建模为统计数据元素的单元/网络应用降额（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-transition",
+      "description": "指定对转换时间进行缩放（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

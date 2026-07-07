@@ -1,0 +1,170 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+fix_floorplan(25.10)                                      fix_floorplan(25.10)
+
+Name
+       fix_floorplan  -  Fixes  the  detected  violations  as  part of the UFC
+       methodology by adding routing blockages around  macro,  snapping  macro
+       location, or re-shaping core shape
+
+Syntax
+        fix_floorplan
+
+       [-help]
+
+       -file <fileName>
+
+       -type {ufc tcic}
+
+       [-selected ]
+
+       [-report_file <string>]
+
+       [-report_unplaced_block ]
+
+       [-break_at_conflict ]
+
+       [-honor_snap_block_grid ]
+
+       [-selected_rules <rule_name_list>]
+
+       Fixes  the detected violations as part of the UFC methodology by adding
+       routing blockages around macro, snapping macro location, or  re-shaping
+       core  shape.  The UFC methodology also provides the capability to auto-
+       matically fix the violations with imported UFC rules.
+
+       Note: The Unified Floorplan Constraints (UFC) methodology is a   power-
+       ful  Innovus  capability that can define several rules on floorplan ob-
+       jects, check specified rules, and report the violations with rule  name
+       as  well  as  severity.  The  violations  can be shown in the violation
+       browser. UFC also provides the ability to  automatically  fix  specific
+       violations.  It  can add routing blockages, snap macro location, adjust
+       core shape to fix corresponding violations. In addition, UFC also  pro-
+       vides the ability to exclude rules from checking for specified objects.
+
+       Usage Model:
+
+              * Load the Design.
+
+              * Create a UFC file with floorplan rules.
+
+              * Run UFC checking. (check_ufc)
+
+              * Fix reported violations. (fix_floorplan)
+
+       You can use the fix_floorplan command to fix the detected violations as
+       part of the UFC methodology. It fixes violations by:
+
+              * Adding routing blockages around macros
+
+              * Snapping macro locations
+
+              * Re-shaping core shapes
+
+       The  UFC  methodology also provides the capability to automatically fix
+       the violations with imported UFC rules.
+
+       Note: The fix_floorplan command tries to fix all the detected floorplan
+       violations by default, however, it currently does  not  support  fixing
+       die  size  and core size violations. If a floorplan has rule conflicts,
+       then the results after the fix may not be perfect.  Cadence  recommends
+       you  ensure that the rules used are not conflicting and that the die or
+       core size satisfy the rules. Cadence also recommends you  contact  your
+       Cadence  representative  if  your  constraints  file comes from a third
+       party, but you want to use the fix_floorplan command to fix the  viola-
+       tions.
+
+       Note: The fix_floorplan command honors the setFPlanMode -no_cut_row pa-
+       rameter that specifies if rows are not required to be cut before opera-
+       tions.  With  setFPlanMode  -no_cut_row  false  or  not  specified, the
+       fix_floorplan command will work based on  the  current  row  shape.  If
+       there is any violation for rows, the fix_floorplan command will run the
+       cutRow  command  to  fix.  With setFPlanMode -no_cut_row true, the tool
+       identifies that the  rows should not be cut. The fix_floorplan  command
+       will  fix  the row violations by adding place blockages instead of cut-
+       ting row. The place blockages will be added to the row area  that  will
+       be  cut out and kept after fix_floorplan to satisfy the row constraint.
+       The actual row shape will not be changed after the  fix_floorplan  com-
+       mand.
+
+Parameters
+       -break_at_conflict
+              Enables the tool to exit from fixing violations when conflict of
+              rules  is  encountered.  You  must fix the conflict of rules and
+              then re-run the fix_floorplan command.
+
+              Data_type: bool, optional
+
+       -file <fileName>
+              Specifies the name of file containing the rules or constraints.
+
+              Data_type: string, required
+
+       -help  Prints a brief description that includes type and default infor-
+              mation for each fix_floorplan parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand:
+
+              man fix_floorplan
+
+       -honor_snap_block_grid
+              When  specified, the fix_floorplan command honors the block snap
+              grid defined by the setFPlanMode -snapBlockGrid command.
+
+              Data_type: bool, optional
+
+       -report_file <string>
+              Specifies the name of the file that saves the report summary.
+
+              Data_type: string, optional
+
+       -report_unplaced_block
+              Enables the tool to show the number of unplaced macros  in  sum-
+              mary.
+
+              Data_type: bool, optional
+
+       -selected
+              Specifies that only the selected objects can be moved to fix vi-
+              olations.
+
+              Note:  The fix_floorplan command currently only support selected
+              macros.
+
+              Data_type: bool, optional
+
+       -selected_rules <rule_name_list>
+              When specified, the fix_floorplan command only fixes  violations
+              for  specified rules. The -selected_rules parameter accepts rule
+              names, rule names list, variables, and wildcards.
+
+              Note: When this option is not specified, the fix_floorplan  com-
+              mand fixes all violations by default.
+
+              Data_type: bool, optional
+
+       -type {ufc tcic}
+              Specifies the type of input file. The fix_floorplan command sup-
+              ports ufc and tcic files.
+
+              Data_type: enum, required
+
+Example
+              * The  following  command  fixes the ufc violations based on the
+                rules defined in the DTMF1.ufc file and writes the  report  to
+                the  fix_cmds.tcl file.
+
+                fix_floorplan   -type   ufc   -file   DTMF1.ufc   -report_file
+                fix_cmds.tcl
+
+              * The following command fixes the ufc violations for Rule A  and
+                Rule B only.
+
+                fix_floorplan   -type  tcic  -file  test.tcic  -selected_rules
+                "RuleA RuleB"
+
+Related Information
+              * check_ufc
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025       fix_floorplan(25.10)

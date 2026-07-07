@@ -1,0 +1,320 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_activity(25.10)                                        get_activity(25.10)
+
+Name
+       get_activity
+
+Syntax
+       get_activity
+
+       [-help]
+
+       [-instance <<string>>]
+
+       [-list_of_nets_based_on_driver <<string>>]
+
+       [-list_of_nets_based_on_source_of_activity_info <<string>>]
+
+       [-net <<string>>]
+
+       [-outfile <<string>>]
+
+       [-pin <<string>>]
+
+       [-port <<string>>]
+
+       [-report_average_switching_activity]
+
+       [-report_cell_group_activity_summary_report]
+
+       [-summary]
+
+       [-tcl_list]
+
+       Determines  the  source  of activity for the specified nets/pins/ports.
+       The power analysis engine has various sources from where activities can
+       be annotated from, such as switching activity specification  (input/se-
+       quential/global/clock   gate),   clock   definitions/constants  through
+       SDC/TWF, activity files (VCD/TCF/SAF),  user  defined  activity  and/or
+       propagated values.
+
+       Parameters
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each get_activity parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man get_activity
+
+       -instance <string>
+              Specifies the top/hierarchy instance or the leaf level  instance
+              name for which average activity is to be reported.
+
+       -list_of_nets_based_on_driver {primary_inputs | sequential | combina-
+       tional | memory | ICG | black_box}
+              Specifies  to output the list of nets based on the specified net
+              driver.
+
+              You can specify one or more net drivers at a time, as shown  be-
+              low:
+
+              get_activity -list_of_nets_based_on_driver primary_inputs|combi-
+              national| sequential | ICG | memory | black_box
+
+              To  specify  multiple  drivers,  you  can use |(means 'or') or &
+              (means 'and') between two drivers, without a space.
+
+       -list_of_nets_based_on_source_of_activity_info {activ-
+       ity_file|set_switching_activity|propagated|default}
+              Specifies to output the list of nets based on the specified  ac-
+              tivity source information.
+
+       -net  <string>
+              Specifies the name of the net.
+
+              Note: You can use the get_nets command to determine the activity
+              source for a collection of nets.
+
+       -outfile <string>
+              Specifies the output file into which the activity sources are to
+              be written.
+
+       -pin <string>
+              Specifies the name of the pin.
+
+              Note: You can use the get_pins command to determine the activity
+              source for a collection of pins.
+
+       -port <string>
+              Specifies the name of the port.
+
+              Note:  You can use the get_ports command to determine the activ-
+              ity source for a collection of ports.
+
+       -report_average_switching_activity
+              Specifies to report  the  average  activity  of  the  given  in-
+              stance/hierarchy/top-level.
+
+       -report_cell_group_activity_summary_report
+              Specifies to give a summary of cell group activity.
+
+       -summary
+              Generates a detailed activity annotation report of the specified
+              nets, pins, and ports. This report contains the following infor-
+              mation:
+
+              * Primary Inputs
+
+              * Sequential Outputs
+
+              * Memory/Macro Outputs
+
+              * Tristate Outputs
+
+              Note:  Use  the get_activity -summary command to report activity
+              annotation   summary   without    printing    information    for
+              nets/pins/ports.
+
+       -tcl_list
+              Produces  the report in the Tcl list format instead of a tabular
+              format.
+
+              The -tcl_list and -outfile parameters  are  mutually  exclusive;
+              you cannot specify them together.
+
+       The activity report for pins is displayed in the following format:
+
+       <Pin Name> <Source of the Activity Value> <Duty Cycle> <Toggles/Sec>
+
+       The report fields are described below:
+
+              * Pin Name: Name of the specified pins.
+
+              * Source of the Activity Value: Source of activity for the spec-
+                ified nets, pins, or ports.
+
+              * Duty Cycle: Probability of signal at 1.
+
+              * Toggles/Sec: Number of toggles divided by the total simulation
+                time.
+
+Examples
+              * The following example returns the activity sources of all nets
+                that  match the specified pattern and writes the output infor-
+                mation to a file named nets.rpt:
+
+                get_activity -net [get_nets n*] -outfile nets.rpt
+
+                The following is the example output of the nets.rpt file:
+
+                int3 activity_file 0.5 5e+07
+
+                int2 sequential_activity 0.5 2.5e+07
+
+                int1 user_defined_activity 0.5 1e+07
+
+                nt3 global_activity 0.5 5e+07
+
+                nt3 input_activity 0.5 5e+07
+
+                int5 clock_gate_activity 0.5 2.5e+07
+
+                int1 user_defined_activity 0.5 1e+07out
+
+                sequential_activity 0.5 2.5e+07
+
+                clk sdc/twf 0.5 5e+08
+
+                c_int2 propagation 0.5 5e+08
+
+              * The following example returns the activity source of  the  pin
+                i_4/A1  and  writes  the  output information to a power report
+                file named pin.rpt:
+
+                get_activity -pin i_4/A1 -outfile pin.rpt
+
+              *
+
+                The following command report the average activity of all nets:
+
+                get_activity -report_average_switching_activity
+
+                The following is the example output:
+
+                Avg Switching activity of all nets 4.727e+17
+
+              *
+
+                The following command gives a summary of cell group activity:
+
+                get_activity -report_cell_group_activity_summary_report
+
+                The following is the example output:
+
+                Group Activity Summary Report:
+
+                Source
+                 ->                     activity  file  set_switching_activity
+                propagated default                  Total
+
+                All  nets                       2 1                        2 5
+                10
+
+                Break-up based on net driver:
+
+                Primary
+                 Input                 2(40%)                   0(0%)
+                 0(0%)                    3(60%) 5
+
+                Sequential    0(0%)                        1(33.33%)     0(0%)
+                2(66.67%)                3
+
+                Combinational                 0(0%)
+                 0(0%)                    2(100%) 0(0%)                    2
+
+                Memory
+                 0(0%)                    0(0%) 0(0%)                    0(0%)
+                0
+
+                ICG                           0(0%)
+                 0(0%)                    0(0%) 0(0%)                    0
+
+                Black        Box                            0(0%)        0(0%)
+                0(0%) 0(0%)                    0
+
+              *
+
+                The following command gives the list of nets based on  primary
+                inputs:
+
+                get_activity -list_of_nets_based_on_driver primary_inputs
+
+                The following is the example output:
+
+                D2 D1 CP2 CP1 dummy0
+
+              *
+
+                The  following command gives the list of nets based on primary
+                inputs or sequential driver:
+
+                get_activity -list_of_nets_based_on_driver  primary_inputs|se-
+                quential
+
+                The following is the example output:
+
+                Q2 Q1 D2 D1 CP2 CP1 n1 dummy0
+
+              *
+
+                The  following command gives the list of nets based on primary
+                inputs or sequential driver for the instance ff1b:
+
+                get_activity -list_of_nets_based_on_driver  primary_inputs|se-
+                quential -instance ff1b
+
+              *
+
+                The  following  command  gives  the  list of nets based on the
+                propagated source for the instance i2:
+
+                get_activity    -list_of_nets_based_on_source_of_activity_info
+                propagated -instance i2
+
+              *
+
+                The  following  command gives a summary of cell group activity
+                for the instance i2:
+
+                get_activity  -instance  i2   -report_cell_group_activity_sum-
+                mary_report
+
+              * The  following command gives the list of nets based on the de-
+                fault activity:
+
+                get_activity -list_of_nets_based_on_source_of_activity default
+
+                The following is the example output:
+
+                rst shutdown isolate coef_ld start  bypass  test_mode  se  sdi
+                Xn_in[3] Xn_in[2] Xn_in[1] Xn_in[0]
+
+                Yn_in[15]  Yn_in[14]  Yn_in[13]  Yn_in[12] Yn_in[11] Yn_in[10]
+                Yn_in[9] Yn_in[8] Yn_in[7] Yn_in[6]
+
+              * The following command gives the list of nets based on the  ac-
+                tivity file:
+
+                get_activity  -list_of_nets_based_on_source_of_activity activ-
+                ity_file
+
+                The following is the example output:
+
+                ref_clk test_clk pll_clk
+
+              *
+
+                The following command gives the list  of  nets  based  on  the
+                switching activity:
+
+                get_activity         -list_of_nets_based_on_source_of_activity
+                set_switching_activity
+
+                The following is the example output:
+
+                rst ref_clk shutdown isolate  coef_ld  start  bypass  test_clk
+                test_mode se sdi sdo Xn_in[3] Xn_in[2]
+
+                 Xn_in[1] Xn_in[0] Yn_in[15] Yn_in[14] Yn_in[13]
+
+Related Information
+              * get_power
+
+              * set_power_analysis_mode
+
+              * report_power
+
+              * "Static  Power, IRdrop and EM Analysis" in the Voltus IC Power
+                Integrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025        get_activity(25.10)

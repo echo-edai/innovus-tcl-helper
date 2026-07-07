@@ -1,0 +1,63 @@
+{
+  "command": "create_library_set",
+  "is_cmd": true,
+  "summary": "创建库集，用于关联时序库和cdB/UDN库到一个指定的名称，以便在更高层次的描述（如延时计算角）中引用。",
+  "description": "该命令将一个TCL列表中的时序库和cdB/UDN库与指定的库集名称关联起来。库集允许将一组库文件视为单个实体，从而简化高层配置。同一库集可以被不同的延时计算角多次引用。时序库可以是文本格式或Cadence二进制库格式（LDB）。注意：LDB文件不向前兼容。命令会决定ECSM与CCS数据的优先级（优先ECSM）。库定义的顺序很重要，软件将列表中的第一个库视为主库，后续库优先级依次降低。库集只能在顶层模块设置后才能创建。注意：AOCV和SOCV库不能同时指定。",
+  "usage": "create_library_set [-help] [-aocv <string>] [-library_side_file <string>] [-link_timing <string>] -name <libSetName> [-si <string>] [-socv <string>] [-target_timing <string>] [-timing <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-aocv",
+      "description": "指定要包含在库集中的AOCV库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-library_side_file",
+      "description": "指定库侧文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-link_timing",
+      "description": "指定要包含在库集中的链接时序库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定要创建的库集的名称。此名称用于将库列表与特定的延时计算角关联。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-si",
+      "description": "指定要包含在库集中的cdB库和/或用户定义噪声（UDN）模型。这些库是执行信号完整性分析所必需的。注意：此参数不能用于CCS-N或ECSM-N模型（仅用于cdB）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-socv",
+      "description": "指定要包含在库集中的SOCV库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-target_timing",
+      "description": "指定要包含在库集中的目标时序库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-timing",
+      "description": "指定要包含在库集中的时序库。注意：用于基于ECSM的多库插值的库必须在额外的Tcl列表结构中进行分组。可以指定三个在不同电压下表征的时序库（通常是上下电压边界和一个中间点）。软件所需的所有电压将从这组库中插值得到。组中的库只能在表征电压上不同；其他所有方面必须相同。但是，如果要执行基于多温度的库插值，可以为每个电压值使用两个在不同温度下表征的库文件。ECSM和CCS库可能非常大，加载可能需要大量时间。可以使用write_ldb命令将ASCII NLDM（Liberty .lib）、ECSM和CCS库转换为二进制版本。在配置文件中可以指定这些二进制库而不是原始的ASCII库。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

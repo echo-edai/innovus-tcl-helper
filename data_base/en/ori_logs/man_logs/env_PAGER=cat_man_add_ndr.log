@@ -1,0 +1,143 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_ndr(25.10)                                                  add_ndr(25.10)
+
+Name
+       add_ndr - Adds a non-default rule for objects
+
+Syntax
+           add_ndr
+
+       [-help]
+
+       [-add_via {<via_name1 via_name2 ...>}]
+
+       [-exclude_backside_via]
+
+       [-generate_via]
+
+       [-hard_spacing]
+
+       [-init <string>]
+
+       [-min_cut {layer1[:layer2] <min_cut ...>}]
+
+       [-spacing <string> | -spacing_multiplier <string>]
+
+       [-via {<via_name1 via_name2 ...>}]
+
+       [-width <string> | -width_multiplier <string>]
+
+       {-name <ruleName>}
+
+       [-use_via_cut_class <string>]
+
+       Adds  a non-default rule for objects. You can also remove vias from the
+       NDR. The command checks the generateVias mode and if setGenerateViaMode
+       is set to -auto true, the generated vias is used  irrespective  of  the
+       -generate_via  option.  You can use the command at any point in the de-
+       sign flow. This command also supports adding an NDR for the objects  on
+       the backside layers.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each
+
+              add_ndr parameter. For a detailed description of the command and
+              all
+
+              of its parameters, use the man command: man add_ndr
+
+       -add_via {<via_name1 via_name2 ...>}
+              Adds  vias  to the existing via list. You can use this parameter
+              to add DFM vias or other custom vias.
+
+       -exclude_backside_via
+              Prevents inclusion of non-route or backside vias in a newly  de-
+              fined non-default rule.
+
+       -generate_via
+              Auto-generates vias with the generateVia command.
+
+              Note:  If  the NDR specified by you is with metal wider than the
+              default rule,
+
+              it is recommended to use this option for getting better  routing
+              results.
+
+       -hard_spacing
+              Sets the non-default rule as HARDSPACING.
+
+       -init <string>
+              Specifies  the  name  of an existing non-default rule from which
+              all values are initialized.
+
+              Note:  Other options will over-write these values.
+
+       -min_cut {layer1[:layer2] <min_cut ...>}
+              Specifies the minimum cut limit for via layers.
+
+       -name <ruleName>
+              Specifies the name of the non-default rule that is to be added.
+
+       -spacing {layer1[:layer2] <spacing ...>}
+              Specifies the spacing for routing layers.
+
+       -spacing_multiplier {layer1[:layer2] <spacing_multiplier>}
+              Spacing multiplier for routing layers.
+
+       -use_via_cut_class <string>
+              Specifies multiple layer definition and cut_class list  to  sup-
+              port the LEF/DEF property. The value must be given in the format
+              of   either   {layer  cut_class}  or   {layer  cut_class  nr_row
+              nr_col}. Refer to the examples below:
+
+              add_ndr -name new_1 -use_via_cut_class {V1 VX}
+
+              add_ndr -name new_2 -use_via_cut_class {V1 VX 2 1}
+
+              add_ndr -use_via_cut_class {{V1 VX 2 1} {V2 VH 2 1} .....}
+
+       -via {<via_name1 via_name2 ...>}
+              Resets and adds the list of via or via rule generate name.
+
+       -width {layer1[:layer2] <width ...>}
+              Specifies the width for routing layers.
+
+       -width_multiplier {layer1[:layer2] <width_multiplier ...>}
+              Width multiplier for routing layers.
+
+Examples
+              * The following command creates a rule that requires extra spac-
+                ing. All other values are the same as the default rule.
+
+                add_ndr -name  default_2x_space  -spacing  {metal1:metal4  0.2
+                metal5:metal6 0.4 metal7 0.6}
+
+              * The  following  command  creates  a new wide-wire routing rule
+                (double wide on the Mx routing layers, but not the  wide  lay-
+                ers).
+
+                Auto-generate  vias  because the width changed, so the default
+                vias are not correct.
+
+                add_ndr -name Mx_2x_wide -width {metal1:metal4  0.20}  -gener-
+                ate_via
+
+              * The  following  command  uses existing wide-wire rule, but re-
+                quire 2 cut vias for the Vx layers (via1 to via3)
+
+                add_ndr -name  Mx_2x_wide_Vx_2cut  -init  Mx_2x_wide  -min_cut
+                {via1:via3 2}
+
+Related Information
+              * modify_ndr
+
+              * exportNdr
+
+              * setGenerateViaMode
+
+              * generateVias
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025             add_ndr(25.10)

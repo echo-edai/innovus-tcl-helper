@@ -1,0 +1,177 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+assignPGBumps(25.10)                                      assignPGBumps(25.10)
+
+Name
+       assignPGBumps - Assigns power and ground bumps to connect flip chip I/O
+       pins and adds property value onto bumps
+
+Syntax
+       assignPGBumps
+
+       [-help]
+
+       [-connectType {ioring | corering | stripe | iopin}]
+
+       -nets {<name_list>}
+
+       [-selected | -floating | -bumps {<bump_name_list>}]
+
+       [-V | -H | -checkerboard [-square {<width height>}]]
+
+       Assigns  power  and ground bumps to connect flip chip I/O pins and adds
+       property value onto bumps. Use this command after bumps are created. It
+       overwrites existing assignments for selected bumps.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each assignPGBumps parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man assignPGBumps
+
+               -bumps {<bump_name_list>}" Specifies the names of the bumps  to
+              be assigned. The names must be enclosed in braces. Wildcards are
+              supported in bump names.
+
+              Note:  This  parameter cannot be used with -selected and -float-
+              ing.
+
+       -checkerboard
+              Specifies that the checkerboard style of bump assignment will be
+              used if multiple nets are defined using the -nets parameter:
+
+              The -checkerboard parameter is  typically  used  for  a  regular
+              (rectangular) bump array. To apply this pattern for an irregular
+              (rectilinear) bump array, first form a regular array by creating
+              virtual  bumps  in the areas where there are no bumps. Next, as-
+              sign the bumps using the checkerboard pattern  and  then  remove
+              the virtual bumps.
+
+              Notes
+
+              * The checkerboard style can be used with more than two nets, as
+                shown below:
+
+                assignPGBumps  -nets  {VSS1 VDD1 VDE1 VDDM} -checkerboard -se-
+                lected
+
+                The -checkerboard option for multiple nets can be  used  in  a
+                regular  bump matrix with the same bump cell for all bumps and
+                the same X/Y pitch between bumps. If bumps are missing in  the
+                pattern,  the  tool skips assignment to maintain the diagonal,
+                staggered net direction.
+
+              * The checkerboard style can support irregular  bump  assignment
+                when used with the -square parameter. For details, see the de-
+                scription of the -square parameter.
+
+       -connectType {ioring | corering | stripe | iopin}
+              Specifies  the  bump  connect  type  when assigning power/ground
+              bumps. Connection type can be I/O Ring, Core  Ring,  Stripe,  or
+              I/O Pin.
+
+       -floating
+              Assigns all floating bumps.
+
+       -H     Specifies  that  the horizontal style of bump assignment will be
+              used if multiple nets are defined using the -nets parameter:
+
+       -nets {<name_list>}
+              Specifies the net names. Net names must be enclosed in braces.
+
+       -selected
+              Assigns selected bumps.
+
+       -square {<width height>}
+              Specifies the width and height of a square in  the  checkerboard
+              style  of bump assignment. Use this parameter if you want to ap-
+              ply the checkerboard style of bump assignment for  an  irregular
+              bump  matrix.  When  you specify the -square parameter, the tool
+              creates a virtual checkerboard made of squares of the  specified
+              dimensions and then assigns the squares with the specified nets.
+              The  square  to  which a bump belongs is determined based on the
+              location of its center. The tool then assigns the  corresponding
+              net to the bump.
+
+              For  example,  the  following command creates a virtual checker-
+              board with squares of width 150  and  height  100,  assigns  the
+              squares  with  the  Nets 1, 2, 3, and 4, and assigns the nets to
+              bumps based on the square on which their center is located:
+
+              assignPGBumps -nets {1 2 3 4}  -checkerboard  -selected  -square
+              {150 100}
+
+              Case A
+
+              As shown in Case B below, the assignment is dependent on the lo-
+              cation of the center of the bumps.
+
+              Case B
+
+              The  assignment also changes if you change the dimensions speci-
+              fied for the checkerboard squares. For  example,  the  following
+              command creates a virtual checkerboard with squares of width 300
+              and height 100.
+
+              assignPGBumps  -nets  {1  2 3 4} -checkerboard -selected -square
+              {300 100}
+
+              Case C
+
+              Note that although the bump locations are same in both  Cases  A
+              and  C,  the assignments in Case C are different from Case A be-
+              cause of the change in square dimensions.
+
+              Notes
+
+              * The -square parameter can be used  only  if  -checkerboard  is
+                specified.
+
+              * The  -square  parameter  can  be  used for selected as well as
+                floating bumps.
+
+       -V     Specifies that the vertical style of  bump  assignment  will  be
+              used if multiple nets are defined using the -nets parameter:
+
+Example
+              * The  following  command assigns selected bump to the power net
+                VDD:
+
+                assignPGBumps -nets VDD -selected
+
+              * The following command assigns only the specified bumps to  the
+                power net VDD:
+
+                assignPGBumps -nets VDD -bumps {Bump_1 Bump_2 Bump_3}
+
+              * The  following command assigns floating bumps to the specified
+                nets in the horizontal style:
+
+                assignPGBumps -H -floating -nets {VSS1 VDD1 VDE1}
+
+              * The following command assigns selected power/ground  bumps  in
+                the checkerboard style to the VDD and VSS nets:
+
+                assignPGBumps -selected -nets {VDD VSS} -checkerboard
+
+              * The  following  command  assigns  all  the  floating  bumps in
+                checkerboard pattern to the VDD and VSS nets:
+
+                assignPGBumps -floating -nets {VDD VSS} -checkerboard
+
+Related Information
+              * assignBump
+
+              * assignSigToBump
+
+              * unassignBump
+
+              * Flip Chip Methodologies chapter of the User Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Flip Chip
+
+                           Fri Apr 04 01:25:37 2025       assignPGBumps(25.10)

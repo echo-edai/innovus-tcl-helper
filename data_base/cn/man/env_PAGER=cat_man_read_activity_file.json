@@ -1,0 +1,105 @@
+{
+  "command": "read_activity_file",
+  "is_cmd": true,
+  "summary": "指定用作输入的功耗活动文件的名称和类型",
+  "description": "此命令用于指定静态或动态功耗计算所需的功耗活动文件。它支持多种文件格式（如VCD、TCF、SAIF、FSDB、PHY、SHM），并允许通过参数设置时间范围、层次分隔符、作用域、块映射、权重、缩放因子等，以精确控制活动数据的读取和应用。",
+  "usage": "read_activity_file <name> [-end {<time1 time2 ...timen>} ] [-format { VCD | TCF | SAIF | FSDB | PHY| SHM}] [-hier_separator <separator>] [-reset] [-start {<time1 time2 ...timen>} ] [-set_net_freq {true | false}] [-block <block_name>] [-scope <scope_name>] [-scale_duration <scalefactor>] [-start_time_shift <value>] [-rtl {true|false}] [-name_mapping_rule <file>] [-weight <value>] [-zero_delay {true|false}] [-cell <cell_name> ]",
+  "options": [
+    {
+      "name": "<name>",
+      "description": "活动文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-end",
+      "description": "指定活动文件中用于功耗分析的时间范围的结束时间。可以指定多个时间值以定义多个非重叠窗口。单位可以是秒(s)、毫秒(ms)、微秒(us)、纳秒(ns)或皮秒(ps)。",
+      "required": false,
+      "type": "time+"
+    },
+    {
+      "name": "-format",
+      "description": "指定活动文件的格式。支持的格式包括：VCD、TCF、SAIF、FSDB、PHY、SHM。参数区分大小写。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-hier_separator",
+      "description": "指定层次化网线名、总线名和引脚名中的分隔符字符。必须与设计网表中的分隔符字符相同。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "如果指定此参数，将重置并忽略之前使用read_activity_file命令指定的所有活动文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-start",
+      "description": "指定活动文件中用于功耗分析的时间范围的开始时间。可以指定多个时间值以定义多个非重叠窗口。单位可以是秒(s)、毫秒(ms)、微秒(us)、纳秒(ns)或皮秒(ps)。",
+      "required": false,
+      "type": "time+"
+    },
+    {
+      "name": "-set_net_freq",
+      "description": "当需要从TCF或VCD文件中捕获网线频率以进行信号电迁移分析（verifyACLimit）时，应设置此选项。必须与verifyACLimit -use_db_freq选项一起使用。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-block",
+      "description": "指定FSDB/SAIF/TCF/VCD块的名称，用于将子块活动文件与顶层Verilog文件进行映射。支持基于块实例名称的多个活动文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scope",
+      "description": "指定FSDB/SAIF/TCF/VCD的作用域，即活动文件中与要分析的设计部分相关联的模块名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scale_duration",
+      "description": "将FSDB/SAIF/TCF/VCD的持续时间值按指定的比例因子进行缩放。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-start_time_shift",
+      "description": "指定活动文件的开始时间偏移量。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-rtl",
+      "description": "指定将向量作为RTL向量处理并执行状态传播。RTL向量是零延迟向量，因此始终会对来自此向量文件的信号进行延迟标注。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-name_mapping_rule",
+      "description": "指定启用基于规则的映射，以将RTL向量映射到门级网表。此参数有助于解决RTL和门级网表之间的名称不匹配问题。",
+      "required": false,
+      "type": "file"
+    },
+    {
+      "name": "-weight",
+      "description": "指定TCF文件的权重值。默认值为1.0。该值应为小于1.0的浮点数。此参数允许您合并多个不同功能模式的TCF文件以进行设计的静态功耗估算。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-zero_delay",
+      "description": "指定将向量作为零延迟向量处理并执行延迟标注。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-cell",
+      "description": "指定活动文件的主单元名称。此参数允许您支持基于主单元的活动规范，即只需指定主单元名称，而无需指定从该主单元实例化的所有实例。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

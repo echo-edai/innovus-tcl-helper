@@ -1,0 +1,87 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verifyTieCell(25.10)                                      verifyTieCell(25.10)
+
+Name
+       verifyTieCell - Checks tie cell connections
+
+Syntax
+       verifyTieCell
+
+       [-help]
+
+       [-noTieCell <filename>]
+
+       [-powerDomain <string>]
+
+       [-report <filename>]
+
+       Checks tie cell connections. verifyTieCell honors the tie high/low cell
+       list  from  setTieHiLoMode  -cell  and  checks  whether  or not the tie
+       high/low nets are connected to the tie high/low cells.
+
+       Use this command after using addTieHiLo to  add  instances  of  tie-off
+       cells to the logical hierarchy of the design.
+
+       The expected flow is as follows:
+
+              * Specify  the  tie  cell names and other settings with the set-
+                TieHiLoMode command.
+
+              * Add tie high/low cells with addTieHiLo.
+
+              * Run verifyTieCell to check whether tie  cell  connections  are
+                correct.
+
+       Violations can be viewed in Violation Browser.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each verifyTieCell parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man verifyTieCell
+
+       -noTieCell <filename>
+              Specifies  a  file  containing  exception  list  of instance/pin
+              names. Use this parameter  to  specify  the  instance/pins  that
+              should not have any tie cell connections.
+
+              The  file  should  list  instance and pin names in the following
+              format:
+
+              <instance_name/pin_name>
+
+       -powerDomain <string>
+              Specifies the power domain name to be checked.
+
+       -report <filename>
+              Specifies the report file for recording tie cell violations.  By
+              default, the report is saved as <designName>.tie.rpt.
+
+Examples
+              * The  following  commands  check the tie cell to assess if TIEH
+                and TIEL are inserted for tie nets. If the dontTouch  instance
+                does not have a tie cell, violation will not be detected:
+
+                setTieHiLoMode -cell {TIEH TIEL} -honorDontTouch true
+
+                verifyTieCell -report vtc.rpt
+
+              * The  following commands will check if inst or pin in inst.list
+                has a tie cell. If it happens, a violation will be detected:
+
+                setTieHiLoMode -cell {TIEH TIEL}
+
+                verifyTieCell -noTieCell inst.list -report vtc.rpt
+
+Related Information
+              * addTieHiLo
+
+              * setTieHiLoMode
+
+              * "Verifying Tie Cells" in the Identifying  and  Viewing  Viola-
+                tions chapter of User Guide.
+
+                           Fri Apr 04 01:25:37 2025       verifyTieCell(25.10)

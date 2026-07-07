@@ -1,0 +1,230 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setScanReorderMode(25.10)                            setScanReorderMode(25.10)
+
+Name
+       setScanReorderMode  -  Controls certain aspects of how the software re-
+       orders scan chains
+
+Syntax
+       setScanReorderMode
+
+       [-help]
+
+       [-reset]
+
+       [-addScanPortPrefix <prefix>]
+
+       [-clkAware {true | false}]
+
+       [-compLogic {true | false}]
+
+       [-enable_for_partition {true|false}]
+
+       [-keepPDPorts {true | false}]
+
+       [-keepPort <fileName>]
+
+       [-preferH {true | false}]
+
+       [-preferV {true | false}]
+
+       [-scanEffort {low | medium | high | auto}]
+
+       [-skipMode {skipNone | skipBuffer | skipFloatingBuffer}]
+
+       [-swapEffort {low|medium|high}]
+
+       Controls certain aspects of how the software reorders scan chains.
+
+       Use the getScanReorderMode command to return the current  settings  for
+       the setScanReorderMode command.
+
+       Note:  Parameters  specified by the scanReorder command supersede those
+       specified by the setScanReorderMode command.
+
+Parameters
+       -addScanPortPrefix <prefix>
+              Specifies the prefix to be added to scan hports.
+
+              Default: ""
+
+       -clkAware {true | false}
+              Specifies whether scan reordering is clock tree aware.
+
+              * When true, scan reordering is clock tree aware, and  is  clock
+                tree driven.
+
+              * When  false,  scan  reordering is not clock tree aware, and is
+                wirelength driven.
+
+              Default: false (The software is not clock tree aware.)
+
+       -compLogic {true | false}
+              If set to true, enables -scanTrace trace through multiple  input
+              logic  gates (whose input/output pin is not defined in the input
+              scan DEF) in the scan path.
+
+              Default: false
+
+              Note: When -compLogic is set to  true,  there  can  be  multiple
+              valid scan paths. In that case, scanTrace will select one of the
+              valid  paths.  However,  it  is recommended that you specify the
+              relevant gate's input/output pin to avoid trace through alterna-
+              tive paths.
+
+       -enable_for_partition {true|false}
+              Enables scanReorder for a design  with  partition.  By  default,
+              scan reorder is disabled for full-level design with partitions.
+
+              This option works with the -keepPort option.
+
+              Default: false
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setScanReorderMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setScanReorderMode.
+
+       -keepPDPorts {true | false}
+              Maintains or corrects the hierarchical ports without deleting or
+              inserting shifters, and reorders the remaining scan chain.
+
+              Default: true
+
+              Note: This parameter works in the MSV flow only.
+
+       -keepPort <fileName>
+              Specifies a file that lists the names of hierarchical  instances
+              whose ports cannot be changed, removed, duplicated, or reordered
+              during scan reordering.
+
+              Default: ""
+
+       -preferH {true | false}
+              Specifies  that the preferred direction for scan reordering con-
+              nections is horizontal. Reorders the scan chain to snake a side-
+              ways "S" configuration if the block is short and wide or the de-
+              sign has vertical routing congestion.
+
+              Default: false
+
+              Note: If both -preferV and -preferH are set to true,  the  soft-
+              ware  does not honor the setting and treats them both as if they
+              were false.
+
+       -preferV {true | false}
+              Specifies that the preferred direction for scan reordering  con-
+              nections  is vertical. Reorders the scan chain to snake a verti-
+              cal "S" configuration if the block is long and narrow or the de-
+              sign has horizontal routing congestion.
+
+              Default: false
+
+              Note: If both -preferV and -preferH are set to true,  the  soft-
+              ware  does not honor the setting and treats them both as if they
+              were false.
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software resets all setScanReorderMode parameters to
+              their default values. If you specify  parameters  after  -reset,
+              the  software resets only those parameters to their default val-
+              ues.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+       -scanEffort {low | medium | high | auto}
+              Specifies the effort level for reordering scan chains.
+
+              Default: auto
+
+              Specify one of the following values:
+
+              * auto: Runs internal reorder effort, and it may tune at differ-
+                ent stages.
+
+              * high:  Runs  more iterations of scan reorder to achieve better
+                net length. Using this parameter increases the run time.
+
+              * low: Runs fewer iterations of scan  reorder  to  minimize  net
+                length quickly.
+
+              * medium: Runs a normal number of iterations.
+
+       -skipMode {skipNone | skipBuffer | skipFloatingBuffer}
+              Specifies  how  scan reordering handles buffers and inverters in
+              the scan chain.
+
+              Default: skipNone
+
+              Specify one of the following:
+
+              * skipNone: Specifies that buffers and  inverters  remain  after
+                the scan chain reorder.
+
+              * skipBuffer:  Ignores buffers in the scan chain. If a buffer is
+                not connected elsewhere in the design, scanReorder removes the
+                buffer.
+
+              * skipFloatingBuffer: Skips only buffers in the floating section
+                and keeps the buffers that belong to an ordered section.
+
+              Note: During scan reordering, the order of scan elements in  the
+              ordered  section  must  be kept as importing scan specification.
+              However, the order of the floating elements can be changed.
+
+       -swapEffort {low|medium|high}
+              Specifies the effort  level  for  scanReorder  different  chains
+              swapping.
+
+              Default: high
+
+              Specify one of the following values:
+
+              * high
+
+              * low
+
+              * medium
+
+Examples
+              * The following command enables scan reorder in a full-level de-
+                sign with partitions:
+
+                setScanReorderMode -enable_for_partition true
+
+                set keepPort_file_name <filename>
+
+                set keepPort_fp [open $keepPort_file_name w]
+
+                foreach hi [dbGet -e top.ptns.masterHInst] {
+
+                  puts $keepPort_fp "[dbGet $hi.name]"
+
+                }
+
+                close    $keepPort_fpsetScanReorderMode    -keepPort    $keep-
+                Port_file_name
+
+              * The following command resets the -keepPDPorts parameter to its
+                default value:
+
+                setScanReorderMode -reset -keepPDPorts
+
+              * The following command resets all setScanReorderMode parameters
+                to their default values:
+
+                setScanReorderMode -reset
+
+Related Information
+              * getScanReorderMode
+
+              * scanReorder
+
+              * Placing the Design chapter in the Innovus User Guide
+
+                * Optimizing and Reordering Scan Chains
+
+                           Fri Apr 04 01:25:37 2025  setScanReorderMode(25.10)

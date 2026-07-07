@@ -1,0 +1,62 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_derate_...e_scaling_mode(25.10)  timing_derate_...e_scaling_mode(25.10)
+
+Name
+       timing_derate_voltage_scaling_mode
+
+Syntax
+       timing_derate_voltage_scaling_mode  {first_library  | snap_to_nearest |
+       interpolate}
+
+       Default: first_library
+
+       Controls how timing derates are computed when the analysis  voltage  is
+       not at the characterization voltage of any of the currently loaded tim-
+       ing  libraries.  When the timing analysis environment is configured for
+       interpolation, the MMMC library set will contain a list of  timing  li-
+       braries at different voltage characterizations points.
+
+       You can specify the following options:
+
+       first_library
+              Derates  associated with the first library in the timing library
+              list will be used.
+
+       snap_to_nearest
+              Allows the software to choose one set of derates  from  the  li-
+              brary closest to the required analysis voltage.
+
+       interpolate
+              Allows the timer to perform interpolation of the derates associ-
+              ated with the two bounding reference libraries.
+
+       Consider the following example:
+
+       create_library_set -name ls_interp_1.50V_1.80V
+
+       -timing [list stdcell_1.50V.lib stdcell_1.75V.lib stdcell_1.80V.lib]
+
+       In this example, by default (first_library) the derates associated with
+       the library stdcell_1.50V.lib will be used.
+
+       When set to snap_to_nearest, if the analysis voltage is 1.70V, the der-
+       ates from the library stdcell_1p75V.lib will be used.
+
+       When  set to interpolate, if the analysis voltage is 1.60V, then inter-
+       polation of derates  from  the  libraries  stdcell_1.50V.lib  and  std-
+       cell_1.75V.lib will be used.
+
+       If  interpolation  mode  is selected and the analysis voltage is beyond
+       either the smallest or largest voltage, then the library  derates  will
+       not  be  interpolated. The derates associated with the nearest bounding
+       library will be used. If the analysis voltage is 1.90V, then  only  the
+       derates from stdcell_1.80V.lib will be used.
+
+       If  interpolation  mode  is enabled, but not all the bounding libraries
+       have derate values, a default derate value of 1.0 will be  assumed  for
+       the  missing  derates and used for interpolation. A TA-960 warning mes-
+       sage will also be issued.
+
+       To set this global variable, use the set command.
+
+                           Fri Apr 04 01:t2i5m:i3n7g_2d0e2r5ate_...e_scaling_mode(25.10)

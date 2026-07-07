@@ -1,0 +1,155 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createTBOptFile(25.10)                                  createTBOptFile(25.10)
+
+Name
+       createTBOptFile  -  This  command  creates  a target-based optimization
+       (TBOpt) file for use with postRoute targeted optimization
+
+Syntax
+       createTBOptFile
+
+       [-help]
+
+       -bottleneckInstanceNumber <integer>[-early]
+
+       [-max_paths <integer>]
+
+       [-max_slack <float>]
+
+       [-min_slack <float>]
+
+       -outFile <filename>
+
+       [-path_group <groupname_list>]
+
+       [-timingFile <filename>]
+
+       This command creates a target-based optimization (TBOpt) file  for  use
+       with postRoute targeted optimization. Once created, this file is passed
+       to  the  setOptMode  -opt_target_based_opt_file command. You can either
+       provide the name of the binary timing report on which you want to  base
+       the  critical  instance  analysis by using the -timingFile parameter or
+       let the command generate the timing report internally by using the val-
+       ues specified for the -min_slack, -max_slack, and -max_paths parameters
+       or the internal default values for these parameters.
+
+       Based on this timing report, a bottleneck analysis is performed and the
+       critical instances are stored in a file that  is  specified  using  the
+       -outFile  filenameparameter.  This  file uses the TBOpt format with the
+       INSTS token. The bottleneck analysis computes the number  of  times  an
+       instance appears (on only the failing paths by default) and creates "n"
+       number  of path categories for the instances with the highest number of
+       occurrences. Note that "n" is the number you specify using the -bottle-
+       neckInstanceNumber parameter of this command.
+
+       Also note that by default, multiple instances  per  path  are  allowed.
+       This means that if there are multiple critical instances on a path, all
+       of  them  will be returned, therefore, leading to the generation of the
+       most accurate list of critical instances.
+
+       For more information on using the TBOpt  file, see  Performing  Target-
+       Based Optimization in the Innovus User Guide.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each createTBOptFile parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command: man createTBOptFile
+
+       -bottleneckInstanceNumber <integer>
+              Specifies the number of critical bottleneck instances to be gen-
+              erated. This is a required parameter.
+
+       -early Specifies that the TBOpt file will be created based on hold tim-
+              ing's critical nodes. This parameter can be specified along with
+              the  following  commands  to generate and use a hold target file
+              for hold TBOpt. For example:
+
+              createTBOptFile  -early  -bottleneckInstanceNumber  5   -outFile
+              TBOpt_bottleneck_5_hold.txt
+
+              setOptMode     -opt_target_based_opt_hold_file     TBOpt_bottle-
+              neck_5_hold.txt
+
+              optDesign -postRoute -targeted -hold
+
+       -max_paths <integer>
+              Specifies the number of worst paths to be considered, regardless
+              of the endpoint.
+
+              By default, the value is 100,000.
+
+       -max_slack <float>
+              Specifies that only those paths should be considered that have a
+              slack equal to or less than the specified float value in ns.
+
+              By default, the value is 0.0 to ensure that only paths with neg-
+              ative slacks are considered.
+
+       -min_slack <float>
+              Specifies that only those paths should be considered that have a
+              slack greater than the specified float value in ns.
+
+       -outFile <filename>
+              Specifies the name of the TBOpt file  that  will  be  generated.
+              This is a required parameter.
+
+       -path_group <groupname_list>
+              Specifies  that  only  those paths should be considered that are
+              from the specified path groups on which you  want  to  base  the
+              critical instance analysis.
+
+       -timingFile <filename>
+              Specifies the name of the binary timing report on which you want
+              to base the critical instance analysis. If this parameter is not
+              specified,   the   command  generates  its  own  file  with  the
+              -max_slack value of  0.0 and  -max_paths value of  100,000.
+
+Example
+              * The following command generates a TBOpt file with five  criti-
+                cal   instances  using  the  default  values  for  -min_slack,
+                -max_slack, and -max_paths that will be written to  the  file,
+                TBOpt_bottleneck_5.txt:
+
+                createTBOptFile     -bottleneckInstanceNumber    5    -outFile
+                TBOpt_bottleneck_5.txt
+
+                The TBOpt_bottleneck_5.txt file will contain five critical in-
+                stances with the appropriate syntax for target-based postRoute
+                optimization.
+
+                For example,
+
+                INSTS            :            {mod_i/i_mod_glm_cluster_0/U586}
+                {mod_i/i_mod_glm_cluster_2/U535}        {mod_i/i_mod_glm_clus-
+                ter_1/U596} {mod_i/ser_en/U92} {mod_i/ser_en/U101}
+
+              * The following command generates a TBOpt file with six critical
+                instances based on only the reg2reg path group with the  maxi-
+                mum number of worst paths as 3000:
+
+                createTBOptFile
+                     -bottleneckInstanceNumber    6   -outFile   TBOpt_bottle-
+                neck_6.txt
+                     -path_group reg2reg -max_paths 3000
+
+              * The following command generates a TBOpt file with nine  criti-
+                cal  instances  based on a timing analysis of the worst 10,000
+                paths between +0.025ns and -1.0ns:
+
+                createTBOptFile    -bottleneckInstanceNumber    9     -outFile
+                TBOpt_bottleneck_9.txt   -min_slack   -1.0  -max_slack  +0.025
+                -max_paths 10000
+
+Related Information
+              * optDesign
+
+              * setOptMode
+
+              * report_timing
+
+              * The following topic in the Innovus User Guide
+
+                * Performing Target-Based Optimization
+
+                           Fri Apr 04 01:25:37 2025     createTBOptFile(25.10)

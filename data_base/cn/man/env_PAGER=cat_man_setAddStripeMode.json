@@ -1,0 +1,329 @@
+{
+    "command": "setAddStripeMode",
+    "is_cmd": true,
+    "summary": "设置用于电源条带的全局变量。",
+    "description": "setAddStripeMode 命令用于配置在执行 addStripe 命令创建电源条带时所使用的全局行为模式。它提供了大量选项来控制条带的创建、连接、扩展、间距、过孔生成、DRC 处理以及与设计中其他结构（如环、块、引脚）的交互方式。",
+    "usage": "setAddStripeMode [-help] [-reset] [-allow_jog {none|{[padcore_ring ][block_ring ]}}] ...",
+    "options": [
+        {
+            "name": "-help",
+            "description": "输出包含每个 setAddStripeMode 参数类型和默认信息的简要描述。",
+            "default": "无"
+        },
+        {
+            "name": "-reset",
+            "description": "将所有参数重置为其默认值。任何与默认值不匹配的值将被重置并报告。",
+            "default": "无"
+        },
+        {
+            "name": "-allow_jog",
+            "description": "指定条带可以以何种方式绕线连接。如果设置为 padcore_ring 和/或 block_ring，则允许条带在同一层或不同金属层上绕线连接到 padcore_ring/block_ring。如果设置为 none，则不允许条带在任何层上绕线。允许使用直连（无绕线）配合开关层进行连接。",
+            "default": "padcore_ring block_ring"
+        },
+        {
+            "name": "-allow_nonpreferred_dir",
+            "description": "指定是否允许以非首选方向绕线连接到目标。当设置为 none 时，禁用非首选方向绕线。注意：1. '0' 或 'false' 不是此选项的合法值。2. 此选项有五个可用值。3. 'none' 值与其他选项值互斥。",
+            "default": "padring"
+        },
+        {
+            "name": "-area",
+            "description": "指定要创建条带的矩形和/或直角多边形区域的坐标。它将指定的区域追加到之前的区域中。注意：* 如果 setAddStripeMode -area 与 addStripe -area 冲突，addStripe -area 具有更高优先级，setAddStripeMode -area 被忽略。* 如果条带仅在当前命令的区域中创建，可以通过以下三种方式之一重置之前的区域：setAddStripeMode -reset -area，setAddStripeMode -area {}，setAddStripeMode -area \"\"。* 当此参数与 setAddStripeMode -domain_offset_from_core true 一起使用时，指定区域的 -start_offset 值是从核心区域开始测量的。",
+            "default": "\"\""
+        },
+        {
+            "name": "-break_at",
+            "description": "指定条带的断点。如果指定了 block_ring、selected_block、unassigned_bump、overlap_ringpin、outer_ring 或 outside_ringmacro 中的任何一个，当条带遇到不在同一线网组中的指定结构时，条带会断开。block_ring：条带在遇到块环和环引脚时断开并连接。selected_block：当块不包含阻挡物时，条带在块边界处停止。当块包含阻挡物且从块边界到阻挡物边缘的间距大于该层的最小间距值时，条带在块边界处停止。当从块边界到阻挡物边缘的间距小于该层的最小间距时，条带在距离阻挡物最小间距处停止。unassigned_bumps：条带在未分配的凸块处断开。overlap_ringpin：防止条带与不同线网的相同方向环引脚重叠。outer_ring：当条带遇到不在同一线网组的嵌套块环或环引脚时，条带在外环处断开。outside_ringmacro：如果选定的块有环引脚，条带在块外一小段距离处断开。blocks_without_same_net：在没有引脚与 addStripe 命令中指定的线网相同的块处断开条带。",
+            "default": "none"
+        },
+        {
+            "name": "-color_balance",
+            "description": "指定以平衡颜色添加 VDD/VSS 条带。same_color：对应于组间交错。alternate_color：对应于组内交错。为了实现颜色平衡，占据偶数轨道的条带颜色将交替选择。注意：条带位置将始终位于完整网格/轨道或半网格/轨道上。仅支持两个线网。此选项必须与 -recommend_width 一起指定。",
+            "default": "无"
+        },
+        {
+            "name": "-continue_on_no_selection",
+            "description": "如果设计没有电源域，或者没有选择围栏，addStripe 将忽略 -over_power_domain 选项，并生成延伸到核心环的条带。",
+            "default": "false"
+        },
+        {
+            "name": "-detailed_log",
+            "description": "设置此参数将使 addStripe 输出扩展日志或详细日志。",
+            "default": "false"
+        },
+        {
+            "name": "-domain_offset_from_core",
+            "description": "通过在电源域上创建条带，使其与设计中的全局条带对齐，允许您使用用于全局条带的偏移量作为电源域条带的偏移量。此参数使用从核心区域开始的偏移量，这是全局条带的默认值。",
+            "default": "false"
+        },
+        {
+            "name": "-extend_to_closest_target",
+            "description": "将条带延伸到指定的目标。此参数可以与 setAddStripeMode -max_extension_distance 一起使用。参数值描述：* none：限制条带延伸到任何目标。* stripe：允许条带延伸到附近的条带。* ring：允许条带延伸到附近的环。* same_dir_stripe：允许条带延伸到相同方向的条带。* area_boundary：允许条带延伸到特定区域边界。",
+            "default": "none"
+        },
+        {
+            "name": "-extend_to_first_ring",
+            "description": "如果设置为 true，条带天线将延伸到最近的环。如果设置为 false，条带在命令的 -extend_to 参数指定的边界处停止。",
+            "default": "false"
+        },
+        {
+            "name": "-ignore_block_check",
+            "description": "如果设置为 false，当条带遇到环时，软件不会检查该环是否包围着一个块。如果设置为 true，当条带遇到环时，软件会自动检查是否有块被环包围。注意：此参数仅与 addStripe 命令的 -break_at 参数结合使用。",
+            "default": "false"
+        },
+        {
+            "name": "-ignore_blockring_when_breaking",
+            "description": "如果设置为 true，当条带无法越过块时，在块外断开条带。如果设置为 false，当条带无法越过块时，在块环处断开条带。",
+            "default": "false"
+        },
+        {
+            "name": "-ignore_nondefault_domains",
+            "description": "在非默认域上创建全局条带而不中断。如果您不希望条带在非默认域处断开，请在使用 addStripe 命令之前将此变量设置为 true。",
+            "default": "false"
+        },
+        {
+            "name": "-ignore_DRC",
+            "description": "设置此参数将创建忽略 DRC 但遵循用户定义值的条带。仅用于原型设计。",
+            "default": "false"
+        },
+        {
+            "name": "-inside_cell_allow_shift",
+            "description": "允许在遇到 DRC 时移动新创建的支柱，前提是给定轨道上已存在现有的特殊连线。此参数仅在 -inside_cell_only 参数设置为 true 时有效。当 -inside_cell_allow_shift 参数设置为 false 时，遇到违规时支柱将被移除。当设置为 true 时，遇到违规时，新创建的支柱将在三个轨道中向右移动。下一个支柱的位置取决于当前支柱的最终位置。这些支柱之间的距离应满足用户指定的间距。两个支柱之间的间距不应小于用户指定的间距。",
+            "default": "false"
+        },
+        {
+            "name": "-inside_cell_only",
+            "description": "控制条带是否仅在选定或指定的实例内部生成。如果没有选择实例或没有使用 addStripe -master，则不会生成条带。注意：当 setAddStripeMode -inside_cell_only true 与 setAddStripeMode -domain_offset_from_core true 一起使用时，标准单元区域的 -start_offset 值是从核心区域开始测量的。",
+            "default": "false"
+        },
+        {
+            "name": "-keep_pitch_after_snap",
+            "description": "当设置为 true 时，用于对齐的两个 PG 组之间的距离被设置为大于或等于通过 addStripe -set_to_set_distance 参数指定的间距值。当设置为 false 时，新创建的 PG 组从当前位置对齐到对 -keep_pitch_after_snap 参数有效的最近位置。新生成条带的平均间距大约等于指定的 addStripe -set_to_set_distance 参数值。此参数与 addStripe -snap_wire_center_to_grid 参数一起工作。",
+            "default": "false"
+        },
+        {
+            "name": "-max_extension_distance",
+            "description": "设置条带与同一层同一方向的附近条带之间的最大延伸距离。",
+            "default": "2.14748e+09"
+        },
+        {
+            "name": "-max_via_size",
+            "description": "交叉过孔的最大尺寸，指定为全尺寸过孔的百分比。您必须为指定的每个形状指定三个值。形状值包括：Pad、Ring、Stripe、Blockring、Blockpin、Cover、Selected、No shape、Standardcell。必须为每个形状指定的三个值是：交叉过孔的最大宽度（全尺寸过孔的百分比）、交叉过孔的最大高度（全尺寸过孔的百分比）、目标穿透度（为连接到指定形状目标的过孔指定更小的尺寸）。",
+            "default": "\"\""
+        },
+        {
+            "name": "-merge_with_all_layers",
+            "description": "在所有层上将条带合并到块环或引脚。此参数类似于 addStripe 命令的 -merge_stripes_value 参数，不同之处在于它将条带合并到所有层，而不仅仅是条带层。",
+            "default": "false"
+        },
+        {
+            "name": "-mesh_via",
+            "description": "启用使用网格过孔支柱以减少内存使用。",
+            "default": "false"
+        },
+        {
+            "name": "-offset_from_core",
+            "description": "如果设置为 true，第一条或最后一条条带从设计的核心区域开始偏移。如果设置为 false，第一条或最后一条条带从核心环、焊盘环开始偏移，具体取决于与选项一起指定的参数。注意：如果您使用以下任何参数指定 addStripe 命令，此参数不会影响偏移：* -over_power_domain 1 * -extend_to all_domains * -area",
+            "default": "true"
+        },
+        {
+            "name": "-optimize_stripe_for_routing_track",
+            "description": "指定位置设置，将条带中心线移动以避免禁止间距。如果两侧无法同时固定，则始终固定一侧。当设置为 shift 时，addStripe 会自动移动条带以保留布线资源。",
+            "default": "none"
+        },
+        {
+            "name": "-over_row_extension",
+            "description": "将条带延伸到覆盖行末端的 followpin。",
+            "default": "false"
+        },
+        {
+            "name": "-orthogonal_offset",
+            "description": "为块级设计、块或标准单元的每个边定义条带的正交偏移，以指定边的正交偏移。边号从左下角的垂直边开始。当此选项第二次设置时，首先重置所有正交偏移值。",
+            "default": "{none}"
+        },
+        {
+            "name": "-orthogonal_only",
+            "description": "仅为正交连线和引脚交叉点创建过孔。默认：如果您不指定此参数或将其指定为值 1，软件会为正交连线和引脚交叉点创建过孔。",
+            "default": "true"
+        },
+        {
+            "name": "-partial_set_thru_domain",
+            "description": "指定如果域包含指定的线网，是否越过电源域。",
+            "default": "false"
+        },
+        {
+            "name": "-recommend_width",
+            "description": "file_name 指定条带的推荐宽度值列表。注意：此选项必须与 -color_balance 一起指定。",
+            "default": "无"
+        },
+        {
+            "name": "-remove_floating_stapling",
+            "description": "移除那些未连接到电源条带/follow pin 的浮动钉扎条带，当钉扎条带是使用参考层生成时。当钉扎条带是通过用户指定的偏移和间距添加时，此参数不会移除浮动钉扎条带。",
+            "default": "true"
+        },
+        {
+            "name": "-remove_floating_stripe_over_block",
+            "description": "如果设置为 true，则移除在同一块或环宏内开始和结束的条带片段。如果设置为 false，则不移除条带片段。",
+            "default": "true"
+        },
+        {
+            "name": "-remove_stripe_under_ring",
+            "description": "移除与现有环具有重叠区域且方向相同的条带段。条带可以与现有环位于不同的层。",
+            "default": "false"
+        },
+        {
+            "name": "-respect_routes",
+            "description": "指定在条带生成期间忽略 DRC 检查的布线类型。此参数始终遵循所有覆盖和 PG，但不遵循追踪布线。参数值：* none：指定不遵循任何布线类型。* fixed：遵循固定的常规连线。* fixed_and_clock：遵循固定的和已布线的时钟。* all：遵循固定的和已布线的时钟以及已布线的信号。",
+            "default": "fixed_and_clock"
+        },
+        {
+            "name": "-route_over_rows_only",
+            "description": "如果设置为 true，仅在标准单元行上布线条带。如果设置为 false，条带不限于在此边界内的行上布线。",
+            "default": "false"
+        },
+        {
+            "name": "-rows_without_stripes_only",
+            "description": "如果设置为 true，全局条带将按照其他参数的指定生成。然后，条带也会在尚未包含条带的行簇上生成。如果设置为 false，条带将按照其他参数的指定生成，而不在尚未包含条带的行簇上生成。",
+            "default": "false"
+        },
+        {
+            "name": "-same_sized_stack_vias",
+            "description": "如果设置为 true，软件总是生成相同尺寸的堆叠过孔。如果设置为 false，软件会根据需要修剪过孔以满足 DRC 规则。",
+            "default": "false"
+        },
+        {
+            "name": "-skip_via_on_pin",
+            "description": "防止在指定类型的引脚上生成过孔。如果您指定 -skip_via_on_pin {}，电源规划软件会连接到所有五类引脚。如果您不指定此参数，则会为块引脚、焊盘引脚和覆盖宏引脚生成过孔，但不会为标准单元引脚生成过孔。",
+            "default": "Standardcell"
+        },
+        {
+            "name": "-skip_via_on_wire_shape",
+            "description": "防止在指定的连线形状上生成过孔。如果您指定 -skip_via_on_wire_shape {}，电源规划软件会连接到所有五类连线形状。默认：如果您不指定此参数，可以在除无形状连线外的所有连线形状上生成过孔。",
+            "default": "noshape"
+        },
+        {
+            "name": "-spacing_from_block",
+            "description": "如果值小于 0，越块条带在距离边界指定距离处结束。如果值大于 0，全局条带在距离受阻块指定用户单位处断开。如果值等于 0，条带偏移为 0。",
+            "default": "0"
+        },
+        {
+            "name": "-spacing_type",
+            "description": "指定 addStripe -spacing 的间距类型。",
+            "default": "edge_to_edge"
+        },
+        {
+            "name": "-split_long_via",
+            "description": "将长度超过指定长度（threshold_value，单位微米）的过孔分割成更小的过孔，并指定中心到中心的间距（step_value，单位微米）、左/底端偏移（offset_value，单位微米）和垂直/水平高度（height_value，单位微米）值。这与 -split_vias 参数无关。注意：如果 offset_value 为负，过孔将对称地放置在两端。offset_value 的默认值为 -1。",
+            "default": "无"
+        },
+        {
+            "name": "-split_vias",
+            "description": "指定如果在条带与任何目标（引脚或连线）的交叉处存在阻挡物（宏阻挡物；不同线网上的连线或引脚）阻止创建全尺寸过孔，是否可以创建两个或更多部分过孔。例如，如果有几个金属阻挡物部分阻挡了通常放置全尺寸过孔的区域，这可能很有用。此参数允许在开放区域创建不违反工艺规则的部分过孔。值为 1 允许创建多个部分过孔。值为 0 阻止创建多个部分过孔。",
+            "default": "false"
+        },
+        {
+            "name": "-split_wire_spacing",
+            "description": "指定每个分割连线之间的间距。",
+            "default": "使用 LEF 文件中的间距规则"
+        },
+        {
+            "name": "-split_wire_weight",
+            "description": "当来自一层的分割连线试图在另一层进行目标连接但被 I/O 连线阻挡时，可能会删除一些 I/O 连线，以便大约 n/10 的分割条带连线完成目标连接。注意：当您指定此选项时，软件会删除最少的 I/O 连线以容纳大约 n/10 的分割条带连线。",
+            "default": "0"
+        },
+        {
+            "name": "-split_wire_width",
+            "description": "指定每个分割连线的宽度。",
+            "default": "使用 LEF 文件中的最大宽度值"
+        },
+        {
+            "name": "-stacked_via_bottom_layer",
+            "description": "指定可以堆叠过孔的最低层。",
+            "default": "设计中的最低金属层"
+        },
+        {
+            "name": "-stacked_via_top_layer",
+            "description": "指定可以堆叠过孔的最高层。",
+            "default": "设计中的最高金属层"
+        },
+        {
+            "name": "-stapling_extend_to_minimum_spacing",
+            "description": "自动延伸新创建的相邻钉扎以满足端到端最小间距要求，同时避免 DRC。此参数仅适用于钉扎连线。当设置为 false 时，新添加条带的长度遵循通过 addStripe -stapling 参数定义的长度。当设置为 true 时，新添加的条带会自动延伸。只有一端在边缘的连线将与新生成的条带具有端到端间距。仅延伸端到端侧，边缘线端不延伸。延伸的条带仍保持在芯片区域内。",
+            "default": "false"
+        },
+        {
+            "name": "-stapling_nets_style",
+            "description": "如果使用多个线网，则指定钉扎样式。它控制在 addStripe -nets 中指定的钉扎条带排列样式。此参数的默认值为 end_to_end。请注意：* 当指定 end_to_end（默认值）时，线网按末端方向排列。* 当指定 side_to_side 时，线网按侧边方向排列。* 当指定 side_to_side_full_nets 时，线网按侧边方向排列。除了 side_to_side 行为外，它还根据参考线网创建其他线网的钉扎。side_to_side_full_nets 值只能在现有参考条带（使用 -stapling {length refer_layer}）上生成。",
+            "default": "end_to_end"
+        },
+        {
+            "name": "-stapling_shift",
+            "description": "自动移动钉扎条带以避免 DRC。",
+            "default": "true"
+        },
+        {
+            "name": "-stop_at_closest_target",
+            "description": "在母单元上绘制条带时，在最近的目标处停止条带。",
+            "default": "none"
+        },
+        {
+            "name": "-stop_at_last_wire_for_area",
+            "description": "如果设置为 false，条带天线被修剪回最近的相同线网的连线或引脚。如果设置为 true，条带天线不被修剪。注意：此选项仅在您指定 -area 参数时可用。",
+            "default": "false"
+        },
+        {
+            "name": "-stripe_min_length",
+            "description": "指定最小条带长度。stripe_width 是一个固定字符串。这里的固定字符串指的是当前连线的宽度。",
+            "default": "stripe_width"
+        },
+        {
+            "name": "-stripe_min_width",
+            "description": "指定修剪后剩余条带的最小宽度。",
+            "default": "0.0"
+        },
+        {
+            "name": "-switch_cellname",
+            "description": "将指定的开关单元视为一个环。然后，开关单元中的引脚可以用作条带的目标。如果开关单元在核心区域内，软件将其视为块环。如果开关单元在布局行之外，该单元被视为核心环，并用作条带边界。您可以指定一个或多个开关单元名称。要关闭此功能，请指定以下之一：* -switch_cellname \"\" * -switch_cellname none",
+            "default": "none"
+        },
+        {
+            "name": "-switch_layer_overlap_length",
+            "description": "控制用于条带层与切换到的层之间过孔的重叠距离。注意：重叠仅适用于为直连（非绕线）创建的过孔。",
+            "default": "0"
+        },
+        {
+            "name": "-trim_antenna_back_to_shape",
+            "description": "当指定形状的连线是阻挡物阻止连接到另一个目标之前的最后一个目标时，防止条带产生天线。指定以下形状之一：* block_ring * core_ring * pad_ring * stripe。默认行为：条带延伸到阻挡物，在最后一个连接和阻挡物之间留下天线。",
+            "default": "none"
+        },
+        {
+            "name": "-trim_antenna_max_distance",
+            "description": "使用此选项指定天线末端与受阻目标之间的距离（单位微米）。此值控制是否保留或修剪所选形状的天线。Cadence 建议您指定一个相当于核心区域与焊盘环或核心环之间距离的值。* 如果受阻目标在指定距离内，则保留天线，您可以使用 SRoute 软件完成连接。* 如果受阻目标超出指定距离，则天线被修剪回最后一个连接。",
+            "default": "0.0"
+        },
+        {
+            "name": "-trim_stripe",
+            "description": "指定是否按指定形状修剪形状。",
+            "default": "None"
+        },
+        {
+            "name": "-use_exact_spacing",
+            "description": "如果设置为 true，电源条带使用从阻挡物、引脚或连线出发的精确间距规则断开，以避免设计规则违规。如果设置为 false，电源条带在所有层的最大范围规则间距的 1.5 倍处断开。默认：* true：适用于高级/N7 节点 * false：适用于非高级/非 N7 节点",
+            "default": "取决于节点"
+        },
+        {
+            "name": "-use_stripe_width",
+            "description": "如果设置为 true，绕线连接到环的条带始终使用条带宽度进行绕线。如果设置为 false，绕线宽度是条带宽度或环段宽度中较小的一个。注意：此参数仅与 addStripe 命令的以下参数结合使用：-jog_to_connect 1",
+            "default": "true"
+        },
+        {
+            "name": "-use_point2point_router",
+            "description": "如果设置为 false，则关闭点对点布线引擎。如果设置为 true，addStripe 命令会自动调用内部点对点布线引擎来布线困难的电源条带连接（例如连接 addStripe 命令未连接的电源条带天线）。",
+            "default": "false"
+        },
+        {
+            "name": "-via_using_exact_crossover_size",
+            "description": "指定是否生成精确交叉尺寸的部分过孔。值为 1 允许生成部分过孔。值为 0 阻止部分过孔，软件总是生成全尺寸过孔。",
+            "default": "true"
+        }
+    ]
+}

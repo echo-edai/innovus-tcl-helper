@@ -1,0 +1,133 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+bitblast_ports(25.10)                                    bitblast_ports(25.10)
+
+Name
+       bitblast_ports - Bitblasts the specified port bus (or hport bus) of the
+       specified design, module, or module of the specified hinst, so they are
+       scalars rather than bus-bits
+
+Syntax
+       bitblast_ports
+
+       [-help]
+
+       <topCell>|<vCell|hInst>+
+
+       [-bus <busname>]
+
+       Bitblasts  the  specified  port bus (or hport bus) of the specified de-
+       sign, module, or module of the specified hinst,  so  they  are  scalars
+       rather  than  bus-bits.  This  can  be useful to allow optimization for
+       flexibility such as changing the inversion of just  some  bits  of  the
+       bus.  The  name  of  the  bitblasted ports will follow the nomenclature
+       specified by the bit_blasted_port_style global  variable.  The  default
+       style is:
+
+       %s_%d
+
+       where  %s  is  the  bus name, and %d is the bus-bit value. Each bus-bit
+       that is renamed is reported for each module that is changed.
+
+       Names used for SDC timing constraints can only be modified if they  are
+       loaded  into  the memory. So, you must ensure that all the timing views
+       are loaded with set_analysis_view before running this command. You  can
+       either  write  out  the modified SDC files with the new names for later
+       usage or write constraints and Tcl scripts in a way that does  not  use
+       the original bus-bit names.
+
+       There  is  a  limitation that port names used inside a CPF power_intent
+       file cannot be changed. CPF usage assumes that the CPF file  is  golden
+       and  should  not be modified. If you need to change names used inside a
+       CPF file, you need to update the CPF file manually, and  then  read  in
+       the new CPF file after running bitblast_ports. In contrast, an IEEE1801
+       power_intent  file  is  allowed  to  change  during the design flow, so
+       changing any port names with bitblast_ports will  automatically  update
+       the  IEEE  1801 names. You can write out the new IEEE1801 file with the
+       updated names.
+
+       For non-uniquified netlist, if you bit-blast the hinst, the module  and
+       the cloned hinsts also get bit-blasted.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each bitblast_ports.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man bitblast_ports
+
+       <topCell>|<vCell|hInst>+
+              Specifies the list of design|module|hinst.
+
+       -bus <busname>
+              Bit-blasts just the  specified  bus  (just  "A"  not  "A[3:0]"),
+              rather than all busses for the module.
+
+Examples
+              * In  the  following  example,  the design top has two-bit input
+                port AI:
+
+                AI[1:0]
+
+                @Innovus> bitblast_ports design:top
+
+                #New bitblasted names
+
+                Module: top
+
+                AI[0]      AI_0
+
+                AI[1]      AI_1
+
+                @Innovus> get_db ports .name
+
+                > AI_0 AI_1
+
+              * In the following example, hinst1 has two-bit port IN:
+
+       IN[1:0]
+
+       @Innovus> bitblast_ports hinst:top/hinst1 -bus IN
+
+       #New bitblasted names
+
+       Module: mod1
+
+       IN[0]      IN_0
+
+       IN[1]      IN_1
+
+       @Innovus> get_db hinst:top/hinst1 .hports.name
+
+       > hinst1/IN_0 hinst1/IN_1
+
+              * In the following example, design top has 2 two-bit input ports
+                AI, BI:
+
+       AI[1:0] BI[1:0]
+
+       @Innovus> bitblast_ports design:top -bus AI
+
+       #New bitblasted names
+
+       Module: mod1
+
+       AI[0]      AI_0
+
+       AI[1]      AI_1
+
+       @Innovus> get_db ports .name
+
+       > AI_0 AI_1 BI[0] BI[1]
+
+       You can bit-blast all ports of two different hinsts:
+
+       >bitblast_ports {hinst:top/h1 hinst:top/h2} > bitblast.rpt
+
+       >
+
+Related Information
+              * set_analysis_view
+
+                           Fri Apr 04 01:25:37 2025      bitblast_ports(25.10)

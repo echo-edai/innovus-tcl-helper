@@ -1,0 +1,117 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_dynamic_rail_simulation(25.10)          set_dynamic_rail_simulation(25.10)
+
+Name
+       set_dynamic_rail_simulation - An optional command to set the parameters
+       for dynamic rail analysis
+
+Syntax
+       set_dynamic_rail_simulation
+
+       [-help]
+
+       [-start <value>]
+
+       [-stop <value>]
+
+       [-resolution <value>]
+
+       [-reset]
+
+       [-auto_repeat]
+
+       An optional command to set the parameters for dynamic rail analysis. By
+       default, dynamic rail analysis uses the start time, stop time, and res-
+       olution  from current data file. To analyze fewer clock cycles, you can
+       choose different start and stop times using the -start  and  -stop  op-
+       tions. It is recommended that at least one or two full cycles are simu-
+       lated to fully charge and discharge the on-chip capacitance.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each set_dynamic_rail_simulation parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man set_dynamic_rail_simulation.
+
+       -auto_repeat
+              Specifies to repeat the dynamic current waveform till the  -stop
+              time  specified.   If  -stop is not specified, all the waveforms
+              will repeat till the longest waveform duration.  The   -auto_re-
+              peat  parameter  can be used when multiple dynamic current files
+              have different simulation periods or when IR drop analysis needs
+              to be run for longer duration.
+
+              The following command sets the dynamic simulation time from 20ns
+              to 100ns in which the current data will be repeated until  100ns
+              is reached:
+
+              set_dynamic_rail_simulation -start 20ns -auto_repeat -stop 100ns
+
+              The  -repeat  parameter of the set_power_data command has higher
+              priority  than   set_dynamic_rail_simulation  -auto_repeat,   as
+              shown in the following example:
+
+              set_power_data  VDD1.ptiavg -repeat 50
+
+              set_power_data  VDD2.ptiavg
+
+              set_dynamic_rail_simulation -auto_repeat -stop 100
+
+              In this example, VDD1 waveform will repeat till 50ns, while VDD2
+              waveform will repeat till 100ns.
+
+       -reset Resets all the previous set_dynamic_rail_simulation command set-
+              tings to the default settings.
+
+       -resolution<value>
+              By  default rail analysis picks up the resolution (or step size)
+              saved in the dynamic  current  files.  To  achieve  better  rail
+              analysis  performance, you can increase the step size using this
+              option. However, using larger than two times the  step  size  of
+              current  data  file is not recommended as it can impact accuracy
+              of dynamic IR drop analysis. You can specify the units with  the
+              value.  If  you do not specify a unit, the software uses the de-
+              fault unit.
+
+              Default: Picoseconds (ps).
+
+       -start <value>
+              Defines the start time to be used  for  dynamic  rail  analysis.
+              This  option  is  used  with the -stop option and enables you to
+              perform a more detailed analysis in specific  time  ranges.  You
+              can  specify  the  units with the value. If you do not specify a
+              unit, the software uses the default unit.
+
+              Default: The default unit is nanoseconds (ns). The default value
+              is the start time from current data file. The start time in  the
+              current data file is usually 0ns.
+
+       -stop<value>
+              Defines the stop time to be used for dynamic rail analysis. This
+              option is used with the -start option and enables you to perform
+              a  more detailed analysis in specific time ranges. You can spec-
+              ify the units with the value. If you do not specify a unit,  the
+              software uses the default unit.
+
+              Default: The default unit is nanoseconds (ns). The default value
+              is  the  end  of the current data. If multiple current files are
+              specified and they all have different  simulation  periods,  the
+              largest simulation period is used to decide the stop time.
+
+Examples
+              * The  following  command  sets the dynamic simulation time from
+                2ns to 12ns with a resolution of 100ps:
+
+                set_dynamic_rail_simulation -start 2ns -stop 12ns  -resolution
+                100ps
+
+Related Information
+              * set_rail_analysis_mode
+
+              * set_power_data
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:3s7et2_0d2y5namic_rail_simulation(25.10)

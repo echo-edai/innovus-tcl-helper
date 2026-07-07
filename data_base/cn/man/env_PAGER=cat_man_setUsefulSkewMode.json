@@ -1,0 +1,57 @@
+{
+  "command": "setUsefulSkewMode",
+  "is_cmd": true,
+  "summary": "设置 skewClock 命令的全局参数",
+  "description": "此命令用于设置 skewClock 命令的全局参数，以控制有用时钟偏斜（useful skew）的行为。它可以配置是否将延迟限制应用于整个流程、是否允许在时钟树综合（CTS）前阶段延迟时序元件、是否仅对宏单元进行偏斜、允许的最大和最小偏斜延迟量、是否排除边界时序单元，以及重置参数到默认值等功能。通过 getUsefulSkewMode 命令可以查看当前设置。",
+  "usage": "setUsefulSkewMode [-help] [-opt_skew_apply_delay_limits_to_full_flow {true|false}] [-opt_skew_delay_pre_cts {true|false}] [-opt_skew_macro_only {true | false}] [-opt_skew_max_allowed_delay <delay>] [-opt_skew_min_allowed_delay <delay>] [-opt_skew_no_boundary {true | false}] [-reset]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。如需详细说明，请使用 man 命令。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-opt_skew_apply_delay_limits_to_full_flow",
+      "description": "当设置为 true 时，指定将有用偏斜限制应用于整个流程。在此设置下，早期时钟流程会被修改，以便预先存在的工具生成的有用偏斜计入由 -opt_skew_max_allowed_delay 参数施加的限制。工具生成的有用偏斜包括任何类别为 useful_skew 或 global_skew 的引脚插入延迟（PID）。其他类别的 PID 不予考虑。默认值为 false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-opt_skew_delay_pre_cts",
+      "description": "指定允许有用偏斜功能在时钟树综合（CTS）前阶段延迟时序元件，而不仅仅是提前它们。这启用了一种更积极的算法，建议在时序收敛受限于最优偏斜时使用。默认值为 true。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-opt_skew_macro_only",
+      "description": "允许您将偏斜限制仅用于宏单元。启用后，常规的时序元件（如触发器）将不会被偏斜。默认值为 false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-opt_skew_max_allowed_delay",
+      "description": "限制软件在执行有用偏斜操作时可以从相邻触发器借用的裕量（以纳秒为单位）。Innovus 的延迟计算和 RC 提取方法可能与签核工具不同，因此如果软件借用过多裕量，可能会出现其他建立时间违规。通过控制裕量借用，可以防止这些建立时间违规。限制借用的偏斜也限制了时钟树偏斜，以避免大的保持时间违规。值范围：min=0 max=1000，默认值为 1ns。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-opt_skew_min_allowed_delay",
+      "description": "允许工具跳过任何小于所设置最小延迟的偏斜。目的是避免创建在 CTS 阶段无法正确遵循的非常小的延迟宏模型，同时也减少生成的宏模型数量。值范围：min=0 max=1000，默认值为 0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-opt_skew_no_boundary",
+      "description": "在有用偏斜计算中，排除或包含边界时序单元以及普通时序元件。注意：此参数适用于 CTS 前、CTS 后和布线后的有用偏斜行为。默认值为 false。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "将参数重置为其默认值。-reset 参数必须是第一个指定的参数。如果仅指定 -reset，软件会将所有 setUsefulSkewMode 参数重置为其默认值。如果在 -reset 之后指定参数，软件仅重置这些参数到其默认值。任何当前值与默认值不匹配并被重置的参数将被报告。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

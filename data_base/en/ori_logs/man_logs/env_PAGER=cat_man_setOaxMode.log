@@ -1,0 +1,744 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setOaxMode(25.10)                                            setOaxMode(25.10)
+
+Name
+       setOaxMode  - Controls aspects of how the Innovustm Implementation Sys-
+       tem software reads OpenAccess technology, and  creates  OpenAccess  li-
+       braries
+
+Syntax
+       setOaxMode
+
+       [-help]
+
+       [-reset]
+
+       [-allowAnalysisOnly {true|false}]
+
+       [-allowBitConnection {true | false}]
+
+       [-allowTechUpdate {true | false}]
+
+       [-bindkeyFile <fileName>]
+
+       [-compressLevel <value>]
+
+       [-convertTo {polygon|defaultStyle}]
+
+       [-cutRows {true | false}]
+
+       [-displayDrfFile <pathName>]
+
+       [-displayDrfInLibrary {true|false}]
+
+       [-drcFillPurpose {gap_fill|drawing}]
+
+       [-encloseQuickAbstractPins {true | false}]
+
+       [-fullLayerList {true | false}]
+
+       [-fullPath {true | false}]
+
+       [-hybridRows {true|false}]
+
+       [-instPlacedIfUnknown {true | false}]
+
+       [-libCreateMode {none | attach | copy | reference}]
+
+       [-locking {true | false | errorIfLocked}]
+
+       [-logicOnlyImport {true | false}]
+
+       [-merge_trim {true | false}]
+
+       [-nonRectilinearShapes {bbox|approximate}]
+
+       [-pinPurpose {true | false}]
+
+       [-pushPinConstraint {true | false}]
+
+       [-quickAbstractForCustomCells {pcells |stdcells |all | off}]
+
+       [-readSystemReservedLayers {all | text | off}]
+
+       [-saveCdsFixedVias {new_vias_only | off}]
+
+       [-saveMaskDataLocked {true | false}]
+
+       [-saveNetVoltage {true | false}]
+
+       [-saveRelativePath {true | false}]
+
+       [-saveRestoreFile {true | false}]
+
+       [-silently_ignore_unsupported_vias {true | false}
+
+       [-textPurpose <purpose_name>]
+
+       [-tieNet {<tieHighNetName><tieLowNetName>}]
+
+       [-updateMode {true | false | auto}]
+
+        [-useVirtuosoBindkey {true | false}]
+
+        [-useVirtuosoColor {true | false}]
+
+        [-viewSubType {VCE | VXL | none}]
+
+       Controls  aspects  of  how the Innovustm Implementation System software
+       reads OpenAccess technology, and creates OpenAccess libraries.
+
+       Use the getOaxMode command to return the current settings for  the  se-
+       tOaxMode command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setOaxMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setOaxMode.
+
+       -allowAnalysisOnly {true|false}
+              Allows analysis only flow.
+
+              assembleDesign is not allowed when setOaxMode -allowAnalysisOnly
+              is set to false and  setOaxMode  -updateMode  is  set  to  true,
+              thereby  locking the OpenAccess databse. To allow assembleDesign
+              to proceed, you must  change  setOaxMode  -allowAnalysisOnly  to
+              true. If you set -allowAnalysisOnly to true and the Innovus ses-
+              sion is in updateMode = true mode (whether set explicitly or in-
+              ternally on the fly), the -updateMode setting is ignored.
+
+              Note  that  there may be loss of some semantic information, such
+              as MPPs, while saving the design when -allowAnalysisOnly is  set
+              to  true.  However, the saved design would be geometrically cor-
+              rect.
+
+       -allowBitConnection {true | false}
+              Creates databases for instances that only have bit-based  termi-
+              nals, without requiring the corresponding bus terminals.
+
+              When  set to true, it saves the connectivity information by bits
+              if the bus connections are not available.
+
+              When set to false, an error will be issued if the abstract  view
+              is missing expected bus terminal information.
+
+              Default: false
+
+       -allowTechUpdate {true | false}
+              Allows  the technology database to be updated. The common reason
+              that a technology database would need to be updated is that  new
+              vias  have been added to the design that are not in a parameter-
+              ized form. Via masters that are a simple list of rectangles  re-
+              quire that a "custom via" be created in the technology database.
+              If the design library had been created with an attached technol-
+              ogy,  the value should be set to false, allowing a reference li-
+              brary technology that is shared by multiple designs to have  de-
+              sign-specific  vias to be added to it. For design libraries that
+              have been created in reference  mode,  allowing  the  technology
+              database to be updated is typically fine but normally it is best
+              to always use paramaterized vias for OpenAccess-based flows.
+
+              Using  setViaGenMode -symmetrical_via_only true before any power
+              planning or routing will typically prevent the creation of  non-
+              parameterized vias in the flow.
+
+              When  -allowTechUpdate is set to false, the creation of the Ope-
+              nAccess database will fail if any "custom vias" would need to be
+              created within the design library.
+
+              Default: true
+
+       -bindkeyFile <fileName>
+              Maps into Innovus-equivalent bindkeys. If the  bindkey  file  is
+              not specified, the Virtuoso default bindkey information is used.
+
+              Default: This is a string value and its default value is " ".
+
+              For  more information, see the "SKILL to TCL Mapping" section in
+              the Importing and Exporting Designs chapter of the Innovus  User
+              Guide.
+
+       -compressLevel <value>
+              Sets  the compression level of a library during the library cre-
+              ation process. Cellviews written to a library  will  follow  the
+              compression  level of the library and not the current setOaxMode
+              -compressLevel setting.
+
+              Valid values range between 0 to 9. A value of 0  indicates  that
+              compression is turned off.
+
+              Default: 1
+
+       -convertTo {polygon|defaultStyle}
+              Enables  interoperability of the end style of geometries of type
+              path segment between Virtuoso and Innovus.
+
+              This parameter applies to the diagonal path segments only.
+
+              If the end-style of a diagonal path segment is custom, then  the
+              end style is retained as is.
+
+              If  the end style of a diagonal path segment is not custom, then
+              if you set the value to polygon, Innovus converts the path  seg-
+              ment into a geometrically equivalent polygon.
+
+              If  the  value  specified is defaultStyle, then the end style of
+              the path segment is set to defaultStyle. In this  case,  Innovus
+              retains  the semantics of the object to be a path segment.Impor-
+              tant: To ensure that there is no loss of semantic  or  geometric
+              information,  the path segments in Virtuoso -XL and Virtuoso-GXL
+              should use the custom end-style on diagonal path segments  which
+              can be created using Create-Shape-Geometric Wire.
+
+              Default: polygon
+
+       -cutRows {true | false}
+              Cuts  rows against placement obstructions, block halos, or power
+              domain fence minimum gaps.
+
+              Default: false
+
+       -displayDrfFile<pathName>
+              Allows you to specify a specific display.drf file that is to  be
+              used.  It  overrides all the searching options and the specified
+              file is used.
+
+              Specifies the display resource file to be  used.  The  file  can
+              have  a  name other than display.drf. This setting overrides all
+              the search options and the specified file is used.
+
+              The following command searches for the mydisplay.drf file, irre-
+              spective of the value of the -displayDrfInLibrary parameter:
+
+              setOaxMode -displayDrfFile /servers/oastore/mydisplay.drf
+
+              Default: String
+
+       -displayDrfInLibrary {true | false}
+              Allows the tool to search for the display.drf file in the  tech-
+              nology  library  (or  complete technology graph in case of ITDB)
+              when set to true. If not found, it looks for  the  file  in  the
+              current working directory followed by the home directory.
+
+              When  set  to  false, the tool searches for the display.drf file
+              first in the current working directory followed by the home  di-
+              rectory.
+
+              Default: false
+
+       -drcFillPurpose {gap_fill|drawing}
+              Specifies  whether  to  save  DRCFILL  shapes to the gap_fill or
+              drawing purpose. By default, DEF routes with + SHAPE DRCFILL are
+              mapped to the gapFill purpose in OpenAccess. However, some  Ope-
+              nAccess  tech  files  do  not  have  this purpose defined so any
+              shapes mapped to the gapFill purpose would  not  be  visible  in
+              Virtuoso  and  would not be written out in GDS or OASIS. In such
+              cases, set the -drcFillPurpose  parameter  to  drawing  to  save
+              these  shapes  to  the  drawing  purpose.  When you do so, these
+              shapes get an additional internal attribute so they  can  round-
+              trip back to DRCFILL shapes properly.
+
+              Default: gap_fill
+
+       -encloseQuickAbstractPins {true | false}
+              Specifies  that shapes enclosing the layout pin shapes should be
+              included as part of the pins  during  Quick  Abstract  Inference
+              (QAI)  pin  modeling. Check the Quick Abstract Inference chapter
+              in the Mixed Signal (MS) Interoperability Guide for details.
+
+              Default: true
+
+       -fullLayerList {true | false}
+              Imports the complete list of OpenAccess layers,  when  importing
+              an OpenAccess design.
+
+              If you specify false, only OpenAccess layers defined with oacMa-
+              terial an type are imported.
+
+              Default: true
+
+       -fullPath {true | false}
+              Creates  the  DEFINE  statements in the lib.def files using full
+              paths. If you specify -fullPath false, the software creates  the
+              statements using relative paths.
+
+              Default: false
+
+       -hybridRows {true | false}
+              Reads  hybrid  rows from the Process Design Kit (PDK). When this
+              parameter is set to true, the tool checks whether the sites  are
+              abutted  horizontally  or  vertically and calculates the complex
+              site width and height accordingly.
+
+              Default: false
+
+       -instPlacedIfUnknown {true | false}
+              Maps the placement status of instances in the  OpenAccess  data-
+              base  to  the placement status in the Innovus software. When set
+              to true, the instances in the OpenAccess database that  have  an
+              unknown  placement status are treated as "placed" in the Innovus
+              software. When set to false, instances with an unknown placement
+              status are treated as "unplaced."
+
+              Default: true
+
+       -libCreateMode {none | attach | copy | reference}
+              Specifies the mode in which saveDesign -cellview creates  a  li-
+              brary.
+
+              none:  Turns off the ability to have saveDesign create a library
+              if it does not already exist.
+
+              attach: Attaches the technology database specified by the  tech-
+              nology library to the library that is to be created.
+
+              copy: Copies the technology database specified by techLib to the
+              library  specified by libName, and saves the library to the cur-
+              rent working directory.
+
+              reference: Creates a local technology database in the design li-
+              brary that can be modified incrementally.  This  is  the  recom-
+              mended  setting  to  handle  the  case where the design may have
+              "custom vias" added at some point by power planning/routing.
+
+              Default: reference
+
+       -locking {true | false | errorIfLocked}
+              Specifies whether or not the OpenAccess database will be  locked
+              when  the  design is restored in Innovus. You can specify one of
+              the following options:
+
+              * false: This is the default option. When set to false, the tool
+                does not check whether the design cell view is  locked  before
+                restoring  the design. The OpenAccess database can continue to
+                be edited by other processes even while the design is restored
+                in Innovus.
+
+                Note: If the -updateMode parameter is set to true,  the  soft-
+                ware  automatically  locks  the database, even if the -locking
+                parameter is set to false.
+
+              * true: When set to true, Innovus locks  the  design  cell  view
+                during  restoreDesign,  provided that it is not already locked
+                by some other tool. With this setting, other tools cannot edit
+                the OpenAccess database as long as it is locked  for  the  In-
+                novus  session  but  they can still access the database in the
+                read-only mode. To remove the lock, specify the unlockOaDesign
+                command or exit the Innovus software.
+
+                Note: If the design cell view is already locked by some  other
+                tool  before  restoreDesign, Innovus issues a warning but con-
+                tinues to read in the cell view.
+
+              * errorIfLocked: If you want the tool to  be  more  restrictive,
+                set the -locking parameter to errorIfLocked. With this option,
+                if the design is already locked while importing or restoring a
+                design, the tool aborts and reports the following error:
+
+                **ERROR:  (IMPOAX-7995):  updateMode/locking  is on. Design is
+                already locked by another tool. You are recommended  to  close
+                this design from another application before proceeding.
+
+              Default: false
+
+              The  value  of  -locking  cannot be changed while a design is in
+              memory.
+
+       -logicOnlyImport {true | false}
+              Controls what information the software reads when  importing  an
+              OpenAccess maskLayout database.
+
+              When  set  to true, the software only reads the logical (Verilog
+              netlist equivalent) connectivity during the init_design process.
+              When set to false (the default value),  the  software  automati-
+              cally reads physical information (floorplan, placement, routing,
+              etc.)  from  the database, and updates physical net connectivity
+              for power and ground connections.
+
+              Note: The -logicOnlyImport parameter only applies to  OpenAccess
+              maskLayout  databases.  For other types of OpenAccess databases,
+              the software always only reads the logical connectivity.
+
+              Default: false
+
+       -merge_trim {true | false}
+              Merges the trim metal shapes during save when the trim metal gap
+              is less than or equal to the max_gap in microns.
+
+              Default: true
+
+       -nonRectilinearShapes {bbox | approximate}
+              Translates non-rectilinear shapes to  rectilinear  shapes  while
+              reading in an OpenAccess design:
+
+              * approximate - Converts non-rectilinear shapes into approximate
+                stepped rectilinear shapes.
+
+              * bbox  -  Converts  non-rectilinear  shapes  into  bounding box
+                shapes.
+
+              Default: bbox
+
+       -pinPurpose{true | false}
+              Writes out pin shapes with the purpose pin. When set  to  false,
+              writes out pin shapes with the purpose drawing.
+
+              Default: false
+
+       -pushPinConstraint {true | false}
+              Specifies  whether  or not saveDesign or saveOaBlackboxes should
+              push an interoperable  pin  constraint  into  its  corresponding
+              blackbox abstract cellview.
+
+              Note:  Interoperable  pin  constraints  refer to pin constraints
+              that are understood by Innovus, Virtuoso, and PVS.
+
+              Default: false
+
+       -quickAbstractForCustomCells {pcells | stdcells | all |off}
+              Trims design shapes of custom cells. By default, this capability
+              is turned on for all types of custom cells. The  following  set-
+              tings are allowed for this parameter:
+
+              * pcells  -  Trims  design  shapes  of only custom parameterized
+                cells (PCells).
+
+              * stdcells - Trims design shapes of only custom standard cells.
+
+              * all - Trims design shapes of all custom cells.
+
+              * off - Does not trim design shapes of any custom cell.
+
+              Note: This feature needs the INVS30 (Innovus  Mixed  Signal  Op-
+              tion)  license.  If  this license is not available, the abstract
+              that gets generated for custom cells will not work  properly  in
+              Innovus.
+
+              Default: all
+
+       -readSystemReservedLayers {all | text | off}
+              Reads  the  system-reserved  layers  from the PDK. The following
+              settings are supported:
+
+              * all - All system-reserved layers are read.
+
+              * text - Only text layer is read.
+
+              * off - No system-reserved layer is read.
+
+              Default: all
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software resets all setOaxMode parameters  to  their
+              default values. Any values that do not already match the default
+              value and are reset will be reported.
+
+               If  you  specify  parameters  after -reset, the software resets
+              only those parameters to their default values.
+
+       -saveCdsFixedVias {new_vias_only | off}
+              Controls how fixed/custom vias are created in OpenAccess library
+              when saving a design from Innovus to OpenAccess:
+
+              * new_vias_only - Any newly created custom via  is  saved  as  a
+                fixed via while any pre-existing custom via in the Incremental
+                Technology  Database  (ITDB) is reused when saving the design.
+                This is the default option.
+
+              * off - No cdsFixedVias are created. All  fixed/custom  vias  in
+                the design are saved as oaCustomVia.
+
+                Note:  This feature needs the INVS30 (Innovus Mixed Signal Op-
+                tion) license. If this license is not available, the off value
+                will be used and no fixed vias will be created.
+
+              Default: new_vias_only
+
+       -saveMaskDataLocked {true | false}
+              Sets the shapes with mask coloring (mask values other than 0) to
+              locked in the saved cellview, when set to true.
+
+              By default, oaOut and saveDesign write  out  shapes  with  their
+              mask coloring information in an unlocked state. Some tools treat
+              the  unlocked  color  information as the recommended color. How-
+              ever, for some foundry processes, shapes with unlocked mask col-
+              oring information are written to GDSII/Stream  as  gray  (uncol-
+              ored).  In  such cases, set the -saveMaskDataLocked parameter to
+              true to lock the mask coloring of shapes explicitly.
+
+              Note: This option affects only the saving of  shapes  with  non-
+              zero mask coloring values. Review the map file that will be used
+              to  create  GDSII/Stream  output from the OpenAccess cellview to
+              determine if the map file requires shapes to be locked for  them
+              to be written out as colored.
+
+              Default: false
+
+       -saveNetVoltage {true | false}
+              Saves the minimum and maximum net voltage across all loaded tim-
+              ing  views  to  every  net.  When this parameter is set to true,
+              write_db writes voltage information to the voltage attribute  of
+              oaBitNet.  This is useful for Virtuoso, and other tools that may
+              read the cellview, to understand the  minimum  and  maximum  net
+              voltage without needing to interpret the CPF or .lib file to get
+              that  information.  Roundtrip of the information into Innovus is
+              not dependent on this setting.
+
+              Default: false
+
+       -saveRelativePath {true | false}
+              Defines the current working directory ($cwd) in  the  configura-
+              tion  file  as  ".". When set to true, a design can be restored,
+              even if the directory path of the design file is changed.
+
+              Default: true
+
+       -saveRestoreFile {true| false}
+              Creates the view.inn file when the  saveDesign  command  is  run
+              with  the  -cellview  or -view arguments. The view.inn file is a
+              file that can be sourced to read the  cellview  that  was  saved
+              into  a new Innovus session. The file name will be the specified
+              view name with the .inn suffix added.
+
+              When saveDesign is used  in  the  <sessionName>  style  (without
+              -cellview  or -view specified), the inn file will always be cre-
+              ated. In the <sessionName> style, the inn  file  will  have  the
+              name  specified  by  the user even if the view name has the .inn
+              omitted (if the .inn suffix is not specified, the file and  view
+              names will be the same).
+
+              Set the -saveRestoreFile parameter to true to create an inn file
+              that  can be sourced. The use of the inn file makes it easier to
+              write scripts that are more generic and work across multiple de-
+              signs by depending only on the view name and not the design  li-
+              brary or cell name.
+
+              Default: false
+
+       -silently_ignore_unsupported_vias {true | false}
+              Specifies whether restoreDesign should issue messages about vias
+              that are not supported in Innovus when a Virtuoso design is read
+              in.
+
+              Default: false
+
+       -textPurpose <purpose_name>
+              Specifies  the  purpose  name that will be used when text labels
+              are written.
+
+              By default, any text label created in Innovus (typically via the
+              add_text command) is automatically mapped to  the  drawing  pur-
+              pose. Use the -textPurpose parameter to map the text labels to a
+              user-defined purpose.
+
+              Note:  setOaxMode  -textPurpose <purpose_name> overrides the de-
+              fault drawing purpose on output.
+
+              Default: drawing
+
+       -tieNet {<tieHighNetName><tieLowNetName>}
+              Specifies the global tie high and tie low net names to  be  cre-
+              ated  in the OpenAccess database. The nets are used to represent
+              the Verilog 1'b1/1'b0 connections to the instance  ports.  Typi-
+              cally, tie1 and tie0 are used as tie high and tie low net names,
+              respectively.  If these names exist in the design locally in any
+              module, then the global names should be changed.
+
+              Default: ""
+
+       -updateMode {true | false | auto}
+              Specifies whether or not to save or restore an OpenAccess design
+              in update mode.
+
+              If the -updateMode parameter is set to true, restoreDesign -cel-
+              lview processes parameterized cells (PCells)  and  other  custom
+              objects correctly in the Innovus database. For information about
+              generating/regenerating the PCell cache, refer to the "Preparing
+              the IP Library" section in the Technology Data Preparation chap-
+              ter of the Mixed Signal (MS)  Interoperability Guide.
+
+              -updateMode  true also ensures that saveDesign -cellview updates
+              the Innovus-modified portion of an OpenAccess  database  without
+              making changes to PCells or other custom objects.
+
+              In  the  setOaxMode  -updateMode  true  mode, the tool locks the
+              source cellview for the duration of the Innovus session.
+
+              The updateMode parameter provides the ability to import an  Ope-
+              nAccess  database  created  from  Virtuoso that contains objects
+              which are not understood by Innovus. Complete the  digital  part
+              in  Innovus  and  update only the objects modified by Innovus in
+              the original OpenAccess database. If your design has any of  the
+              following  objects, they would only be visible (not editable) in
+              Innovus:
+
+              * PCells
+
+              * Modgen cells
+
+              * Fig-groups
+
+              * PCell vias
+
+              * RODs (Example, Multi-Part Paths, and so on)
+
+              * User defined properties on design objects such as nets, shapes
+                (lxStickyNet), instances, abstract views, intermediate hierar-
+                chical instances, and so on.
+
+              You won't be allowed to edit or modify these objects.
+
+              On using this parameter, the property on  shapes  (for  example,
+              lxStickyNet)  and nets created in VLS-XL / GXL would be kept as-
+              is.
+
+              In case of designs where parameterized vias  are  used,  Innovus
+              understands  these  parameters  and evaluates them on-the-fly to
+              create an exact shape and orientation of the cuts.
+
+              If the -updateMode parameter is set to  auto  and  the  cellview
+              contains objects that are not supported in Innovus, the software
+              internally enables update mode with a message such as follows:
+
+              INFO:  Objects have been found in the cellview requiring update-
+              Mode to be enabled so that there is no loss of semantic informa-
+              tion when the cellview is saved.
+
+              Note that enabling update mode  can  affect  saveDesign  perfor-
+              mance.
+
+              Default: false
+
+              The  value of -updateMode cannot be changed while a design is in
+              memory. If this parameter has been set to true before  importing
+              an  OpenAccess  design into Innovus, you cannot convert -update-
+              Mode to false in any new Innovus session.
+
+              The on-disk OpenAccess cellview is locked  between  the  restore
+              and save steps when -updateMode is set to true.
+
+              In  -updateMode  auto, the lock is applied at the time that oaIn
+              or restoreDesign starts and released at the end of  the  command
+              if  no  objects  were encountered that required updateMode to be
+              enabled.
+
+       -useVirtuosoColor{true|false}
+              Allows you to display colors and stipples for the design  layers
+              (including  full  custom  layers). When this parameter is set to
+              true, Innovus utilizes the specified display  resource  file  or
+              the  display.drf  file  to  display the same colors and stipples
+              that you would see if you open the design in Virtuoso.
+
+              The following command specifies the absolute or relative path of
+              the display resource file using the oa_display_resource_file at-
+              tribute and allows you to display colors and  stipples  for  the
+              design layers:
+
+              setOaxMode -displayDrfFile ../display.drf -useVirtuosoColor true
+
+              Default: false
+
+       -useVirtuosoBindkey{true|false}
+              Allows you to use Virtuoso bindkeys.
+
+              Default: false
+
+       -viewSubType{VCE | VXL | none}}
+              Indicates  which Virtuoso application should be used for viewing
+              the layout cellviews in the saved OpenAccess database.
+
+              When set to VCE, cellviews are opened in Virtuoso Chip Editor.
+
+              When set to VXL, cellviews are opened in Virtuoso XL.
+
+              When set to none, it indicates that the OpenAccess database  can
+              be  edited  by  any editor within Virtuoso platform based on its
+              license availability.
+
+              Default: VXL
+
+Examples
+              * The following command instructs the Innovus software to create
+                the DEFINE statements using full paths:
+
+                setOaxMode -fullPath true
+
+              * The following command cuts  rows  against  placement  obstruc-
+                tions, block halos, or power domain fence minimum gaps:
+
+                setOaxMode -cutRows true
+
+              * The  following  command  resets the -fullPath parameter to its
+                default value:
+
+                setOaxMode -reset -fullPath
+
+              * The following command  resets  all  setOaxMode  parameters  to
+                their default values:
+
+                setOaxMode -reset
+
+              * The  following command searches for the mydisplay.drf file ir-
+                respective of the value of the -displayDrfInLibrary parameter:
+
+                setOaxMode -displayDrfFile /servers/oastore/mydisplay.drf
+
+              * The following command sequence enables the saveDesign  command
+                to  write out an inn file to enable loading the saved database
+                into a new session without needing to know the design  library
+                or cell names:
+
+                setOaxMode -saveRestoreFile true
+
+                saveDesign -cellview "designLib top placed"
+
+                In addition to saving the cellview "designLib top placed", the
+                tool creates an inn file named placed.inn in the current work-
+                ing  directory.  This  file contains the command restoreDesign
+                -cellview "designLib top placed"
+
+                To load the design cellview that was saved in a  new  session,
+                use:
+
+                innovus -init placed.inn
+
+Related Information
+              * add_text
+
+              * assembleDesign
+
+              * getOaxMode
+
+              * restoreDesign
+
+              * saveDesign
+
+              * saveOaBlackboxes
+
+              * setViaGenMode
+
+              * oaOut
+
+              * unlockOaDesign
+
+              * Mixed Signal (MS) Interoperability Guide
+
+                * Design Data Preparation
+
+                * Quick Abstract Inference
+
+                * Working with Vias in OpenAccess
+
+                * Using NanoRoute To Route a Design from Virtuoso
+
+                * Chip Finishing and ECO Flows
+
+                * Useful Tips
+
+              * Importing  and  Exporting  Designs chapter in the Innovus User
+                Guide
+
+                           Fri Apr 04 01:25:37 2025          setOaxMode(25.10)

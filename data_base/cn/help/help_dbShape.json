@@ -1,0 +1,129 @@
+{
+  "command": "dbShape",
+  "is_cmd": true,
+  "summary": "对形状列表进行几何运算并输出结果",
+  "description": "该命令用于对输入的几何形状（多边形或矩形）列表执行一系列几何运算（如并集、交集、差集、移动、缩放、计算包围盒等），并可以指定输出结果的格式（如多边形、矩形、水平矩形或总面积）。",
+  "usage": "dbShape [-help] [-d] [-step <step>] [-output {polygon rect hrect area}] <shapeList> [AND <shapeList> | ANDNOT <shapeList> | OR <shapeList> | XOR <shapeList> | INSIDE shapeList | OUTSIDE shapeList | ENCLOSE shapeList | STRADDLE shapeList | BBOX | HOLES | NOHOLES | BBOX_CIRCLE | BBOX_OCTAGON | MOVE {<dx> <dy>} | SIZE <value> | SIZEX <value> | SIZEY <value>] ...",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "指定用户输入值和返回值使用数据库单位。默认：所有值使用用户单位（微米）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-step",
+      "description": "指定步长。当输出格式为矩形时，用于将非正交形状转换为一系列矩形。默认值为第一个布线层的最小宽度。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-output",
+      "description": "指定输出格式。可选值：polygon（多边形）、rect（垂直矩形）、hrect（水平矩形）、area（最终形状的总面积）。默认值为rect。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "<shapeList>",
+      "description": "输入的形状列表。可以是多边形或矩形。多边形格式：{{x y} {x y} ...}；矩形格式：{x1 y1 x2 y2}。",
+      "required": true,
+      "type": "list"
+    },
+    {
+      "name": "AND",
+      "description": "二元运算符：计算两个形状列表的交集。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "ANDNOT",
+      "description": "二元运算符：计算第一个形状列表减去第二个形状列表的差集。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "OR",
+      "description": "二元运算符：计算两个形状列表的并集。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "XOR",
+      "description": "二元运算符：计算两个形状列表的并集减去它们的交集。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "INSIDE",
+      "description": "二元运算符：筛选出第一个列表中完全位于（包括接触）第二个列表中某个形状内部的形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "OUTSIDE",
+      "description": "二元运算符：筛选出第一个列表中完全位于（包括接触）第二个列表中所有形状外部的形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "ENCLOSE",
+      "description": "二元运算符：筛选出第一个列表中完全包围第二个列表中至少一个形状的形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "STRADDLE",
+      "description": "二元运算符：筛选出第一个列表中部分位于内部、部分位于外部第二个列表中至少一个形状的形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "BBOX",
+      "description": "一元运算符：计算形状列表的包围盒。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "HOLES",
+      "description": "一元运算符：返回填充原始形状列表中孔洞的新形状列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "NOHOLES",
+      "description": "一元运算符：返回包含原始形状列表中已填充孔洞的新形状列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "MOVE",
+      "description": "一元运算符：将形状列表移动指定的 {dx, dy} 距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "SIZE",
+      "description": "一元运算符：将形状列表的尺寸均匀增加指定的值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "SIZEX",
+      "description": "一元运算符：将形状列表在X方向上的尺寸增加指定的值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "SIZEY",
+      "description": "一元运算符：将形状列表在Y方向上的尺寸增加指定的值。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

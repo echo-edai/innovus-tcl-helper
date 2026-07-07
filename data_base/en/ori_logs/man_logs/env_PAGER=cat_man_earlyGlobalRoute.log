@@ -1,0 +1,175 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+earlyGlobalRoute(25.10)                                earlyGlobalRoute(25.10)
+
+Name
+       earlyGlobalRoute  -  Early  Global  Route (earlyGlobalRoute) is a quick
+       global routing for estimating routing-related  congestion and parasitic
+       (resistance and capacitance) values
+
+Syntax
+       earlyGlobalRoute
+
+       [-help]
+
+       Early Global Route (earlyGlobalRoute) is a quick global routing for es-
+       timating routing-related  congestion and parasitic (resistance and  ca-
+       pacitance) values. The Early Global Route results are also used for pin
+       assignment  when  you  commit partitions in hierarchical designs. Early
+       Global Route does not guarantee DRC-clean routing results. Do not  per-
+       form  signal  integrity analysis on a design that has been routed using
+       Early Global Route, because these routes are only used to estimate par-
+       asitic values for timing analysis. Route  designs  with  the  NanoRoute
+       router if you want to perform signal integrity analysis.
+
+       Wire  overlap can occur if a gcell is only partially covered by a rout-
+       ing blockage or pre-routed wires. Overlapping of non-default rule wires
+       can also occur during track assignment; however,  this  information  is
+       modeled  when  the  router estimates congestion. You can use the early-
+       GlobalRoute command after running placement. If the design  uses  addi-
+       tional  placement  features,  such  as  clock  tree  synthesis and scan
+       groups, use the command after running these placement features. If  you
+       have run IPO commands on your design, you must run the earlyGlobalRoute
+       command to update interconnections for the design.
+
+       Notes:
+
+              * You  can  set the global parameters for the Early Global Route
+                program by using the setRouteMode command. Parameters that you
+                specify with setRouteMode are then used automatically whenever
+                you run Early Global Route, either explicitly through the ear-
+                lyGlobalRoute command or internally during in-place  optimiza-
+                tion, partitioning, or placement.
+
+              * The assignPtnPin command reports the number of guide pins from
+                route  guides  and  fixed pins. Since earlyGlobalRoute chooses
+                guide points provided by assignPtnPin to lay wires  on  parti-
+                tion boundary, the earlyGlobalRoute report clearly differenti-
+                ates  between  fixed  pins  and  the pins which are in the pin
+                guide.
+
+              * The Early Global Router supports nested partitions. The parti-
+                tions specified with the setRouteMode  -earlyGlobalRouteParti-
+                tionHonorFence  and  the  setRouteMode -earlyGlobalRouteParti-
+                tionHonorPin parameters are routed in the  style  that  honors
+                fence  and  pin  constraints.  All  other partitions are still
+                routed flat.
+
+              * The Early Global Router supports get_metric APIs  and  enables
+                you  to query existing routing metrics at command line. To en-
+                able this capability, routeDesign just calls the 'get_metrics'
+                API after generating the routing metrics.
+
+              * If bus guides have been created in the GUI,  the  earlyGlobal-
+                Route command honors the bus guides automatically.
+
+              * The  earlyGlobalRoute  command honors multiple-CPU setting for
+                track assignment inside earlyGlobalRoute by default.
+
+              * The Early Global Router supports blackboxes by default. It in-
+                ternally calls the assignPtnPin command and places and  routes
+                all unplaced blackbox pins.
+
+              * The  Early  Global  Router supports uses two-row-height gcells
+                with congestion modelling improvement for the technology nodes
+                whose row-height is smaller than 7 track. It  uses  2x2  gcell
+                size  as  default  for  small default gcell size (<=7). By de-
+                fault, it checks for the number of tracks rather than checking
+                the technology of the design to grow gcell size.
+
+                Note: This enhancement is designed  only  for  N7  designs  as
+                these  designs  have  less  than 7 tracks. If an N7 design has
+                more than 7 tracks then these setting will not be  applied  in
+                order to ensure a better congestion accuracy.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each earlyGlobalRoute parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man earlyGlobalRoute.
+
+Example
+              * The following command honors partition fences with single  en-
+                try  and does not allow crossing other partitions, when early-
+                GlobalRoute is run:
+
+                setRouteMode -earlyGlobalRoutePartitionHonorFence {.}
+
+                earlyGlobalRoute
+
+              * The following command does quick global routing for estimating
+                routing-related  congestion and parasitic values.
+
+                earlyGlobalRoute
+
+                #% Begin earlyGlobalRoute (date=02/10 16:11:30, mem=1043.0M)
+
+                [NR-eGR] Started Early Global Route kernel ( Curr Mem: 1187.03
+                MB )
+
+                [NR-eGR] Num Prerouted Nets = 0 Num Prerouted Wires = 0
+
+                [NR-eGR] Read 7482 nets ( ignored 0 )
+
+                [NR-eGR] Layer group 1: route 7425 net(s) in layer  range  [2,
+                6]
+
+                [NR-eGR] Early Global Route overflow of layer group 1: 0.01% H
+                + 0.00% V. EstWL: 5.111114e+05um
+
+                [NR-eGR] Overflow after Early Global Route 0.03% H + 0.00% V
+
+                [NR-eGR] Length (um) Vias
+
+                [NR-eGR] -----------------------------------
+
+                [NR-eGR] Metal1 (1H) 0 25155
+
+                [NR-eGR] Metal2 (2V) 134127 35802
+
+                [NR-eGR] Metal3 (3H) 189844 5296
+
+                [NR-eGR] Metal4 (4V) 95825 1646
+
+                [NR-eGR] Metal5 (5H) 77137 416
+
+                [NR-eGR] Metal6 (6V) 29560 0
+
+                [NR-eGR] -----------------------------------
+
+                [NR-eGR] Total 526492 68315
+
+                [NR-eGR]
+                --------------------------------------------------------------------------
+
+                [NR-eGR] Total half perimeter of net bounding box: 471333um
+
+                [NR-eGR] Total length: 526492um, number of vias: 68315
+
+                [NR-eGR]
+                --------------------------------------------------------------------------
+
+                [NR-eGR]  Total eGR-routed clock nets wire length: 0um, number
+                of vias: 0
+
+                [NR-eGR]
+                --------------------------------------------------------------------------
+
+                [NR-eGR] Finished Early Global Route kernel ( CPU:  0.47  sec,
+                Real: 0.72 sec, Curr Mem: 1225.82 MB )
+
+                #%    End   earlyGlobalRoute   (date=02/10   16:11:31,   total
+                cpu=0:00:00.5,  real=0:00:01.0,  peak   res=1073.6M,   current
+                mem=1058.7M)
+
+Related Information
+              * setRouteMode
+
+              * getRouteMode
+
+              * Using  Early  Global  Route for Congestion and Timing Analysis
+                chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025    earlyGlobalRoute(25.10)

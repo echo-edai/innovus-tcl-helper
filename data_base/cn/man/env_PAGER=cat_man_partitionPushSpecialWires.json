@@ -1,0 +1,39 @@
+{
+  "command": "partitionPushSpecialWires",
+  "is_cmd": true,
+  "summary": "为特殊走线重叠分区的网络创建Verilog端口，以便在使用分区命令时将这些特殊走线推入分区。",
+  "description": "该命令为那些特殊走线（special wires）与分区重叠的网络，在分区内创建Verilog端口（连接）。当使用分区命令时，这些网络的特殊走线会被推入分区。\n注意：对于主分区和克隆分区中的特殊走线推入，它会检查特殊走线形状的对称性。仅对于对称的形状，partitionPushSpecialWires命令会在Verilog模块中创建一个端口，并在所有主分区和克隆分区的层次实例（hinsts）之间，建立新端口与特殊走线网络之间的逻辑连接（实现主分区和克隆分区中逻辑端口的复用）。\n注意：如果原始网络连接到一个类型为in-out的分区端口，那么会在重叠分区内创建一个in-out端口，否则只创建一个输入端口。",
+  "usage": "partitionPushSpecialWires [-help] [-checkOnly] [-keepNetName] {-nets <list_of_net_names> | -overlappingPartitions <ptn_names>}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个partitionPushSpecialWires参数类型和默认信息的简要描述。如需命令及其所有参数的详细描述，请使用man命令：man partitionPushSpecialWires。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-checkOnly",
+      "description": "指定后，工具将检查所选网络的特殊走线在所有重叠的主克隆单元层次实例（hinsts）上是否对称。在主分区和克隆分区中，它会检查网络的对称性并报告不对称的网络。当未指定-checkOnly参数时，工具会检查指定的网络，并仅在有效的网络上创建逻辑端口。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepNetName",
+      "description": "指定后，有助于避免重叠分区之间的网络名称冲突，方法是在partitionPushSpecialWires命令执行期间保留原始网络名称。它确保非总线网络以及在模块中没有匹配名称的网络在分区中保留其名称。注意：partitionPushSpecialWires命令使用net_base_name创建分区端口名称，而不添加后缀。如果发生冲突，会显示警告，并按照默认行为使用后缀修改名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nets",
+      "description": "指定需要在分区过程中将其特殊走线推入模块的网络（Verilog网络）列表，以确保这些网络在设计中的正确连接性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-overlappingPartitions",
+      "description": "指定分区列表，并自动识别其特殊走线路径与指定分区重叠的网络。确保这些特殊网络在分区过程中被推入适当的分区。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

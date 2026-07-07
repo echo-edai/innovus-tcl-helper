@@ -1,0 +1,358 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_cell_instance_timing(25.10)          report_cell_instance_timing(25.10)
+
+Name
+       report_cell_instance_timing
+
+Syntax
+       report_cell_instance_timing
+
+       [-help]
+
+       <list_of_cell_instances >
+
+       [-early | -late]
+
+       [-clock_timing]
+
+       [-tcl_list]
+
+       [-view <view_name>]
+
+       [{> | >>} <filename>]
+
+       Reports  the following information about the timing context for all the
+       pin and delay arcs of the specified instances:
+
+              * Arrival time
+
+              * Required time
+
+              * Slack
+
+              * Delays
+
+       Note: Internal pins (pins inside the instance boundary)  are  also  re-
+       ported.
+
+       This  command  uses the results of earlier timing analysis runs; there-
+       fore,  you  must  run  the  report_timing  command  before  using   re-
+       port_cell_instance_timing.
+
+       To  analyze the setup (maximum) paths, you must use the setAnalysisMode
+       -checkType setup command and run the report_timing command before using
+       the -late parameter. Similarly, to analyze the  hold  (minimum)  paths,
+       you  must  use  the setAnalysisMode -checkType hold command and run the
+       report_timing command before using the -early parameter.
+
+       The report_cell_instance_timing timing report  contains  the  following
+       tables:
+
+              * The  first  table in the report contains information about the
+                pins of the instance.
+
+                The propagated slew is the slew that is propagated to the pin,
+                based on the slew propagation mode.
+
+              * The second table contains information about the  arcs  through
+                the instance.
+
+                The slew out is the slew calculated at the arc output from the
+                arc input slew, using the timing model.
+
+              * The  third  table,  generated for sequential devices, contains
+                information about the timing checks, if present, on the cell.
+
+                Only checks that are from the library are shown in this table.
+                Automatic checks, such as clock gating setup and hold, are not
+                reported.
+
+       The Phase column of each table can contain the following symbols:
+
+              * D indicates it is a data signal in the clock domain.
+
+              * C indicates it is a clock signal in the clock domain.
+
+              * P indicates it is a positive phase.
+
+              * N indicates it is a negative phase.
+
+              * L indicates it is a latency phase.
+
+              * Asterisk (*) indicates there is a timing exception  associated
+                with the signal.
+
+                Note:  Currently, it is not possible to expand the asterisk to
+                determine which exception is associated with the reported tim-
+                ing phase.
+
+       When the software is in multi-mode multi-corner timing  analysis  mode,
+       the  timing  context  information  is reported for each active analysis
+       view, with the view name listed in the Phase column.
+
+Parameters
+       -help  Prints out the command usage.
+
+       {> | >>} <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  <filename> parameter must be the last argument in the list.
+              The <filename> and -tcl_list parameters are mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -clock_timing
+              Specifies to report slack for clock style checks.
+
+       -early | -late
+              Reports  the  information  for  early   (maximum)   path   (data
+              hold/clock  setup)  or  late  (minimum)  path  (data setup/clock
+              hold).
+
+              You must use the setAnalysisMode -checkType hold command and run
+              the report_timing command before  using  the  -early  parameter.
+              Similarly, you must use the setAnalysisMode-checkType setup com-
+              mand  and  run  the report_timing command before using the -late
+              parameter.
+
+              Default: If you do not specify any of the parameters, the  soft-
+              ware uses the -late parameter.
+
+       <list_of_cell_instances>
+              Specifies  a  flat  (non-hierarchical)  cell instance or list of
+              cell instances. Use curly braces ({}) to enclose  the  list  and
+              separate the instance names with white space.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -view <view_name>
+              Specifies the analysis view in which to  query  the  object  at-
+              tribute.
+
+Examples
+              * The  following  example  reports  information about the timing
+                context of instance seg1/u9:
+
+       Example: report_cell_instance_timing seg1/u9
+
+       ----------------------------------------------------------------------
+
+                          Instance seg3/u14 of DFF
+
+        ----------------------------------------------------------------------
+
+        Pin   Dir   Propagated  Arrival  Required  Slack  Phase
+
+                   Slew
+
+        ----------------------------------------------------------------------
+
+        CK ^ IN    0.062        0.621                     CLK_W_3(C)(P) *
+
+        CK v IN    0.065        1.503                     CLK_W_3(C)(P) *
+
+        CK ^ IN    0.062        0.621                     CLK_W_3(D)(P) *
+
+        CK v IN    0.065                                  CLK_W_3(D)(P) *
+
+        CK ^ IN    0.062                                  CLK_W_3(D)(N) *
+
+        CK v IN    0.065        1.503                     CLK_W_3(D)(N) *
+
+        D ^  IN    1.077        2.062   2.434     0.372   CLK_W_3(D)(P)
+
+        D v  IN    0.003        1.815   2.465     0.650   CLK_W_3(D)(P)
+
+        Q ^  OUT   0.044        0.788                     CLK_W_3(D)(P)
+
+        Q v  OUT   0.040        0.748                     CLK_W_3(D)(P)
+
+        QN ^ OUT   0.058        0.816                     CLK_W_3(D)(P)
+
+        QN v OUT   0.041        0.857                     CLK_W_3(D)(P)
+
+        -----------------------------------------------------------------
+
+        -----------------------------------------------------------------
+
+                      Instance seg3/u14 of DFF
+
+        -----------------------------------------------------------------
+
+        Arc         Slew
+
+        -----------------------------------------------------------------
+
+        From  To   In     Out    Load   Delay  Phase
+
+        -----------------------------------------------------------------
+
+        CK ^  QN ^ 0.062  0.058  0.000  0.196  CLK_W_3(C)(P) *
+
+        CK ^  QN v 0.062  0.041  0.000  0.236  CLK_W_3(C)(P) *
+
+        CK ^  QN ^ 0.062  0.058  0.000  0.196  CLK_W_3(D)(P) *
+
+        CK ^  QN v 0.062  0.041  0.000  0.236  CLK_W_3(D)(P) *
+
+        CK ^  QN ^ 0.062         0.000         CLK_W_3(D)(N) *
+
+        CK ^  QN v 0.062         0.000         CLK_W_3(D)(N) *
+
+        CK ^  Q ^  0.062  0.044  0.000  0.167  CLK_W_3(C)(P) *
+
+        CK ^  Q v  0.062  0.040  0.000  0.128  CLK_W_3(C)(P) *
+
+        CK ^  Q ^  0.062  0.044  0.000  0.167  CLK_W_3(D)(P) *
+
+        CK ^  Q v  0.062  0.040  0.000  0.128  CLK_W_3(D)(P) *
+
+        CK ^  Q ^  0.062         0.000         CLK_W_3(D)(N) *
+
+        CK ^  Q v  0.062         0.000         CLK_W_3(D)(N) *
+
+        -----------------------------------------------------------------------
+
+        ------------------------------------------------------------------------
+
+                                      Instance seg3/u14 of DFF
+
+        -------------------------------------------------------------------------
+
+                    Pins                               Phase
+
+        ------------------------------------------------------------------------
+
+        Check  Sig  Ref   Slack   Delay   Adjust  Sig            Ref
+
+        ------------------------------------------------------------------------
+
+        HOLD   D ^  CK ^  1.570   -0.129  0.000   CLK_W_3(D)(P)  CLK_W_3(C)(P)
+       *
+
+        HOLD   D v  CK ^  1.222   -0.027  0.000   CLK_W_3(D)(P)  CLK_W_3(C)(P)
+       *
+
+        SETUP  D ^  CK ^  0.372   0.186   -2.000  CLK_W_3(D)(P)  CLK_W_3(C)(P)
+       *
+
+        SETUP  D v  CK ^  0.650   0.155   -2.000  CLK_W_3(D)(P)  CLK_W_3(C)(P)
+       *
+
+        ------------------------------------------------------------------------
+
+              * If a constant is asserted or propagated to the  instance  pin,
+                it  is reported in the Phase column of the pin table, as shown
+                in the following example:
+
+       Example: report_cell_instance_timing p5042A
+
+       --------------------------------------------------------------------
+
+        Instance p5042A of MUX2HVTD1
+
+        ---------------------------------------------------------------------
+
+        Pin   Dir  Propagated   Arrival  Required  Slack    Phase
+
+        Slew
+
+        --------------------------------------------------------------------
+
+        I0 ^ IN    0.032        0.127    8.583    8.455     EJ_TCK(D)(P)
+
+        I0 v IN    0.021        0.127    8.568    8.441     EJ_TCK(D)(P)
+
+        I1 ^ IN    0.060        0.295                       EJ_TCK(D)(P)
+
+        I1 v IN    0.035        0.260                       EJ_TCK(D)(P)
+
+        S    IN                                             Constant 0
+
+        Z ^  OUT   0.020        0.168    8.624    8.455     EJ_TCK(D)(P)
+
+        Z v  OUT   0.021        0.170    8.612    8.441     EJ_TCK(D)(P)
+
+        ---------------------------------------------------------------------
+
+       ---------------------------------------------------------------------
+
+        Instance p5042A of MUX2HVTD1
+
+        ---------------------------------------------------------------------
+
+        Arc         Slew
+
+        ---------------------------------------------------------------------
+
+        From  To    In      Out    Load    Delay    Phase
+
+        ---------------------------------------------------------------------
+
+        I0 ^  Z ^   0.032   0.020  0.002   0.041    EJ_TCK(D)(P)
+
+        I0 v  Z v   0.021   0.021  0.002   0.044    EJ_TCK(D)(P)
+
+        I1 ^  Z ^   0.060   0.002                   EJ_TCK(D)(P)
+
+        I1 v  Z v   0.035   0.002                   EJ_TCK(D)(P)
+
+        ---------------------------------------------------------------------
+
+              * When the software is in multi-mode multi-corner analysis mode,
+                the timing context information is  reported  for  each  active
+                analysis  view. The view name is reported in the Phase column,
+                as shown in the following example:
+
+                report_cell_instance_timing FE_OFC304_EJ_TDO
+
+                ----------------------------------------------------------------------------------------------
+
+                                          Instance     FE_OFC304_EJ_TDO     of
+                BUFFHVTD8
+
+                 ----------------------------------------------------------------------------------------------
+
+                 Pin       Dir       Propagated      Arrival          Required
+                Slack        Phase
+
+                                  Slew
+
+                 ----------------------------------------------------------------------------------------------
+
+                 I  ^       IN        0.052           8.812             16.260
+                7.448     EJ_TCK(D)(N)(setup_view1)*
+
+                 I   v        IN        0.033          8.799            16.319
+                7.520     EJ_TCK(D)(N)(setup_view1)*
+
+                 Z  ^       OUT       0.338           8.919             16.367
+                7.448     EJ_TCK(D)(N)(setup_view1)*
+
+                 Z   v        OUT       0.167          8.852            16.372
+                7.520     EJ_TCK(D)(N)(setup_view1)*
+
+                 ----------------------------------------------------------------------------------------------
+
+Related Information
+              * report_net
+
+              * report_timing
+
+                           Fri Apr 04 01:25:3r7ep2o0r2t5_cell_instance_timing(25.10)

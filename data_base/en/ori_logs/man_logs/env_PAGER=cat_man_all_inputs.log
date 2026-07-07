@@ -1,0 +1,84 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+all_inputs(25.10)                                            all_inputs(25.10)
+
+Name
+       all_inputs  -  Returns a collection of input or inout ports in the cur-
+       rent design
+
+Syntax
+       all_inputs
+
+       [help]
+
+       [-clock list_of_<clocks>]
+
+       [-no_clocks]
+
+       [-edge_triggered]
+
+       [-level_sensitive]
+
+       Returns a collection of input or inout ports in the current design.
+
+       To filter inputs, use the get_ports command to create a  collection  of
+       ports  matching certain criteria. You can assign these ports to a vari-
+       able or pass them using another command. You can limit the contents  of
+       the collection to ports with input delay relative to a specific clock.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clock <list_of_clocks>
+              Considers  or  limits  the search to ports that have input delay
+              relative to a specified list of clocks.
+
+       -edge_triggered
+              Returns a collection of input ports (specified with the  set_in-
+              put_delay -clock constraint), that have edge-triggered input de-
+              lay.
+
+       -level_sensitive
+              Returns  a collection of input ports (specified with the set_in-
+              put_delay -level_sensitive constraint), that  have  level-sensi-
+              tive input delay.
+
+       -no_clocks
+              Returns  primary  input  ports  that do not have create_clock or
+              create_generated_clock constraints.
+
+Example
+              * The following command returns the names all of the input ports
+                with input delay relative to an ideal_clk:
+
+                all_inputs -clock ideal_clk
+
+              * The following example lists all input ports in the current de-
+                sign:
+
+                all_inputs
+
+              * The following example sets the drive value of  all  the  input
+                ports on the current design to 10:
+
+                set_drive 10.0 [all_inputs]
+
+              * The  following  example  marks with a multicycle value of 0 to
+                the all paths from inputs having level-sensitive  input  delay
+                relative to PHI1 to level-sensitive registers clocked by
+
+                CDNSCLK:
+
+                set_multicycle_path 0 \
+
+                      -from [all_inputs -clock CDNSCLK -level_sensitive] \
+
+                      -to [all_registers -data_pins -clock CDNSCLK]
+
+Related Information
+              * get_ports
+
+              * report_ports
+
+              * set_input_delay
+
+                           Fri Apr 04 01:25:37 2025          all_inputs(25.10)

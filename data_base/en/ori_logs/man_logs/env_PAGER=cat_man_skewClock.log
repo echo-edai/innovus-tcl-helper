@@ -1,0 +1,228 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+skewClock(25.10)                                              skewClock(25.10)
+
+Name
+       skewClock  -  Modifies the clock arrival time on sequential elements in
+       order to improve the data path timing between two sequential elements
+
+Syntax
+       skewClock
+
+       [-help]
+
+       [-hold]
+
+       [-postCTS]
+
+       [-postRoute]
+
+       Modifies the clock arrival time on sequential elements in order to  im-
+       prove  the  data path timing between two sequential elements. The skew-
+       Clock command outputs depend on whether the clock tree is built or not.
+
+              * In preCTS mode, skewClock generates two  files:  a  scheduling
+                file and a latency file.
+
+              * In  postCTS  and  postRoute  mode,  skewClock  inserts buffers
+                and/or inverters in an existing clock tree. In  addition,  re-
+                sizing of buffers and/or inverters can also be committed.
+
+       Cadence  recommends  using  setOptMode-opt_skew  and  optDesign-preCTS,
+       -postCTS, or -postRoute to run useful skew optimization  during  timing
+       optimization.  For  information on how to use optDesign, see Optimizing
+       Timing in the Innovus User Guide.
+
+       PreCTS Mode
+
+       The skewClock command identifies elements that can be advanced  or  de-
+       layed,  and  computes target delay for each. An advancable element is a
+       sequential gate on which the clock signal can be safely made to  arrive
+       early  without  worsening  the  slack on the critical path. In general,
+       this is true for sequential elements where the slack on the output  pin
+       (SQ)  is negative (SQ < 0) and is worse than the slack on the input pin
+       (SD) : (SQ < SD).
+
+       The skewClock command generates the following files:
+
+              * Scheduling file: The CTS scheduling file lists the  delays  to
+                consider  on  sequential  elements by the clock tree synthesis
+                tool. When loaded in CTS, the scheduling file  constrains  CTS
+                to  build  a  tree that fulfills the targets computed by skew-
+                Clock.
+
+                The scheduling file must be loaded in addition to the original
+                clock tree specification file (see "Examples" section below).
+
+                The syntax of the scheduling file is as follows:
+
+                Macromodel  pin  <lefPinName><maxRiseDelay><minRiseDelay><max-
+                FallDelay><minFallDelay><inputCap>
+
+                An entry in the configuration file is available to specify the
+                scheduling file:
+
+                Set rda_input <ui_scheduling_file> scheduling_file.cts
+
+                When the design is saved, the scheduling file is copied in the
+                design  directory, and the line above is added to the configu-
+                ration file of the saved design.
+
+              * Latency file: This file lists the delays to be  considered  on
+                sequential  elements by the timing analysis tool. These delays
+                are computed by skewClock.
+
+                The file syntax is as follows:
+
+                set_clock_latency rise <delay><pinName>
+
+                The timing engine takes the latency file into account when the
+                following parameter is specified:
+
+                setAnalysisMode -usefulSkew true
+
+                When building the timing graph,  the  Innovus  software  first
+                loads  the  timing  constraints, and then the latency file, as
+                specified in the configuration file, for example
+
+                set_rda_input (ui_latency_file) latency_file.sdc
+
+                When the design is saved, the latency file is  copied  to  the
+                design  directory, and the line above is added to the configu-
+                ration file of the saved design.
+
+PostCTS and PostRoute Mode
+       The skewClock command identifies  delayable  elements  and  delays  the
+       clock  for each element. A delayable element is a sequential element on
+       which the clock signal can be  safely  delayed  without  worsening  the
+       slack  on  the critical path. In general, this is true for each sequen-
+       tial element where the slack on the data pin (SD)  is  negative  (SD<0)
+       and  is  worse  than  the slack on the output pin (SQ) : (SD < SQ). The
+       skewClock command inserts and/or resizes buffers and/or inverters on an
+       existing clock tree.
+
+              * The  skewClock net name prefix is FE_%sN
+
+              * The skewClock instance name prefix is FE_%sC
+
+              * The default instance name added during useful  skew  optimiza-
+                tion is FE_USKC
+
+              * The  default net name added during useful skew optimization is
+                FE_USKN
+
+       If SD > SQ, the elements before the D pin can be  advanced,  and  skew-
+       Clock can do resizing on the buffers and/or inverters to compensate the
+       timing on Q pin.
+
+       Note:  To  control the buffer and inverter cells used by skewClock, use
+       set_ccopt_property buffer_cells and set_ccopt_property inverter_cells.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each skewClock parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the  man com-
+              mand:
+
+               man skewClock
+
+       -hold  Allows optimization for hold timing.
+
+       -postCTS
+              The skewClock command allows the use  of  an  algorithm  in  the
+              postCTS  mode. When this parameter is specified, only setup tim-
+              ing optimization is performed. When it is specified  along  with
+              the -hold parameter, only hold timing optimization is performed.
+
+              This means,
+
+              * The  skewClock  -postCTS command will only optimize setup tim-
+                ing.
+
+              * The skewClock -postCTS -hold command will only  optimize  hold
+                timing, without degrading setup timing.
+
+              To  optimize  both  setup and hold violations, run the following
+              commands:
+
+              skewClock -postCTS
+
+              skewClock -postCTS -hold
+
+       -postRoute
+              The skewClock command allows the use  of  an  algorithm  in  the
+              PostRoute  mode.  It  forces the command to end with ECO routing
+              for the modified clock nets. An ecoRoute is  followed  by  clock
+              skewing.  The difference between PostCTS mode and PostRoute mode
+              is that the former is not limited to be legal  only,  while  the
+              latter is in a legal only mode.
+
+              When this parameter is specified, only setup timing optimization
+              is  performed. When it is specified along with the -hold parame-
+              ter, only hold timing optimization is performed.
+
+              This means,
+
+              * The skewClock -postRoute command will only optimize setup tim-
+                ing.
+
+              * The skewClock -postRoute -hold command will only optimize hold
+                timing, without degrading setup timing.
+
+              To optimize both setup and hold violations,  run  the  following
+              commands:
+
+              skewClock -postRoute
+
+              skewClock -postRoute -hold
+
+Examples
+              * The  following  commands  show  how to use skewClock in preCTS
+                flow without using optDesign:
+
+                setAnalysisMode -usefulSkew true
+
+                timeDesign -preCTS
+
+                skewClock
+
+                timeDesign -preCTS
+
+                ccopt_design
+
+                timeDesign -postCTS
+
+                Note: The recommended method for useful skew in preCTS mode is
+                as follows:setOptMode -opt_skew true
+
+                optDesign -preCTS
+
+              * The following example shows how to use  skewClock  in  postCTS
+                mode  as  an incremental fixing after normal postCTS optimiza-
+                tion:
+
+                ccopt_design
+
+                skewClock -postCTS
+
+                timeDesign -postCTS
+
+Related Information
+              * getLatencyFile
+
+              * getSchedulingFile
+
+              * getUsefulSkewMode
+
+              * setLatencyFile
+
+              * setNanoRouteMode
+
+              * setSchedulingFile
+
+              * setUsefulSkewMode
+
+              * The following topic in the Innovus User Guide
+
+                     * Optimizing Timing using Useful Skew
+
+                           Fri Apr 04 01:25:37 2025           skewClock(25.10)

@@ -1,0 +1,69 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_contex..._clock_mapping(25.10)    timing_contex..._clock_mapping(25.10)
+
+Name
+       timing_context_port_based_clock_mapping
+
+Syntax
+       timing_context_port_based_clock_mapping {true | false}
+
+       Default: false
+
+       Enables clock mapping based on block ports.
+
+       When set to true, clock mapping is done depending solely on clock prop-
+       erty  of  the  top  and  block clock for each clock and data port sepa-
+       rately. For enabling N-to-1 or 1-to-N clock mapping, this global  vari-
+       able should be set true.
+
+       When  set  to  false, only 1-to-1 clock mapping is done. In such cases,
+       the following rules are used to determine clock mapping:
+
+              * Rule1: Clocks with matching property (period/duty cycle)
+
+              * Rule2: Clocks with matching name
+
+              * Rule3: Clocks present on maximum number common ports
+
+              * Rule4: Any one of the matching clocks
+
+       For example,
+
+              *
+
+                Consider the following illustration:
+
+                When  set  to  true,  the  following  mapping  will  be  seen:
+                ________________________________________________________
+
+                | Block Port      |  Block Clock     |  Mapped top      |
+
+                |                 |                  |   clock          |
+
+                |_________________|__________________|__________________|
+
+                | P1              |  CLK             |  CLK, TCLK       |
+
+                |_________________|__________________|__________________|
+
+                When set to false, CLK will be mapped to CLK according to Rule
+                2.
+
+       Notes:
+
+              * The  context_data  property of block port can be accessed only
+                when this global variable is set true.
+
+              * When set to true, the software may increase the  pessimism  as
+                the  worst  latency/arrival  will  be picked for block context
+                analysis.
+
+              * If there are multiple block clocks that can be mapped to  same
+                top clock on the same block port, then Tempus does not perform
+                auto  mapping  (when  set to true). Whereas for the false set-
+                ting, clock mapping is done depending on the  above  mentioned
+                rules.
+
+       To set this global variable, use the set command.
+
+                           Fri Apr 04 01:2t5i:m3i7ng2_0c2o5ntex..._clock_mapping(25.10)

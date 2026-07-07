@@ -1,0 +1,221 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_metal_density_options(25.10)              set_metal_density_options(25.10)
+
+Name
+       set_metal_density_options  -  Sets  the  parameters  for extracting the
+       metal density information
+
+Syntax
+       set_metal_density_options
+
+       [-metal_density_include_file <filename>]
+
+       -power_grid_library <pgv_path>
+
+       [-reuse_md_db_path <MD_db_path>]
+
+       -tech_file <tech_file_path>
+
+       -thermal_conductivity_file <thermal_file>
+
+       [-user_defined_metal_density_file <user_defined_md_file>}]
+
+       [-vtm_densitytable_tile {<Xint> <Yint>} ]
+
+       [-vtm_densitytable_tile_size {<Xsize> <Ysize>}]
+
+       [-vtm_header_include_file <user_defined_header_content_file>]
+
+       -vtm_path <output_path>
+
+       Sets the parameters for extracting the metal density information.  This
+       command must be specified before the extract_metal_density command.
+
+Parameters
+       -metal_density_include_file <filename>
+              Specifies the file for listing the additional variables that can
+              be included when extracting metal density information. For exam-
+              ple,  you  can specify "setvar report_with_lef_layer_names true"
+              to output the LEF layer names.
+
+       -power_grid_library <pgv_path>
+              Specifies the path to the power cell libraries (.cl).
+
+       -reuse_md_db_path <MD_db_path>
+              Specifies to reuse the generated metal density database for  ex-
+              tract_metal_density. When specified, the PGV/tech file specified
+              with  set_metal_density_options will be ignored.
+
+       -tech_file <tech_file_path>
+              Specifies  the path to the extraction technology file to be used
+              for top-level power-grid extraction.
+
+       -thermal_conductivity_file <thermal_file>
+              Specifies a file containing the thermal conductivity  value  for
+              layers.  You  can use this parameter to include the thermal con-
+              ductivity value of the following layers in the power map file:
+
+              * Silicon
+
+              * Metal
+
+              * Dielectric
+
+              * Micro Bump (optional for 3DIC design)
+
+              * Fill material in micro bump layer  (optional for 3DIC design)
+
+              The thermal conductivity file format is:
+
+              Section 1 (layer type based thermal conductivity value)
+
+              #default
+
+              $layer_type1 $thermal_conductivity_parameter1
+
+              $layer_type2 $thermal_conductivity_parameter2
+
+              Section 2 (layer name based thermal conductivity value)
+
+              #perlayer
+
+              $layer1_name $thermal_conductivity_parameter1  $dielectric_ther-
+              mal_conductivity_1
+
+              $layer2_name  $thermal_conductivity_parameter2 $dielectric_ther-
+              mal_conductivity_2
+
+              Here,
+
+              * You can either specify both Section 1 (layer type  based)  and
+                Section  2  (layer name based), or specify one of the two sec-
+                tions. If both sections are specified, then layer  name  based
+                section takes precedence over layer type based section.
+
+              * The  layer  name  based section has thermal conductivity value
+                and its dielectric layer's thermal conductivity value for each
+                metal/via layer.
+
+              * If section 2 has no parameters defined, the software will  use
+                the default parameters defined in the section 1.
+
+              Example:
+
+              ###default
+
+              Metal      430
+
+              Silicon    250
+
+              Dielectric 0.6
+
+              ###Perlayer
+
+              Metal1    430    0.4
+
+              Via1      410    0.5
+
+              Metal2    390    0.5
+
+              Via2      410    0.5
+
+       -user_defined_metal_density_file <user_defined_md_file>}
+              Allows you to define the metal density in the user-defined metal
+              density flow.
+
+              The format of the user-defined metal density file is:
+
+              CELL <cell_name>
+
+              CELL_AREA [ xmin ymin xmax ymax | x1 y1 x2 y2 x3 y3 x4 y4 ... x1
+              y1]     # Must specify if cell PGV is not imported
+
+              LAYER  <layer_name(s)>                            #  Layer to be
+              defined metal density; multiple layers are available (LEF  layer
+              name based)
+
+              ALL   <metal_density_value>                        #  To  define
+              metal density for whole cell area as `ALL'  only  `ALL'  can  be
+              used now
+
+              END_LAYER
+
+              END_CELL
+
+              Example:
+
+              CELL Macro1
+
+              CELL_AREA 0 0 32 16
+
+              LAYER Metal1 Metal2 Metal3
+
+              ALL 0.2
+
+              END_LAYER
+
+              LAYER Via1 Via2
+
+              ALL 0.05
+
+              END_LAYER
+
+              END_CELL
+
+              CELL Macro2
+
+              CELL_AREA 0 0 32 16
+
+              LAYER Metal1 Metal2 Metal3
+
+              ALL 0.2
+
+              END_LAYER
+
+              LAYER Via1 Via2
+
+              ALL 0.05
+
+              END_LAYER
+
+              END_CELL
+
+       -vtm_densitytable_tile {<Xint> <Yint>}
+              Specifies  the number of tiles in the X and Y directions for the
+              metal density table.
+
+       -vtm_densitytable_tile_size {<Xint> <Yint>}
+              Specifies the size of tiles instead of tile number in the X  and
+              Y directions for the metal density table.
+
+       -vtm_header_include_file <user_defined_header_content_file>
+              Allows  you  to  define extra header information like file loca-
+              tion.
+
+       -vtm_path <output_path>
+              Specifies the directory path to the metal  density  file  output
+              folder.
+
+Examples
+              * The following command specifies to set the metal density para-
+                meters:
+
+                set_metal_density_options \
+
+                -power_grid_library "$DesignDir/PGV/tech_pgv/techonly.cl" \
+
+                -tech_file $DesignDir/QRC/qrcTechFile \
+
+                -vtm_path ./vtm_MD_db \
+
+                -thermal_conductivity_file $DesignDir/MISC/thermal_conduct.txt
+                \
+
+                -vtm_densitytable_tile {10 10} \
+
+                -vtm_header_include_file $DesignDir/MISC/user_header.txt
+
+Related Information
+              * extract_metal_density
+
+                           Fri Apr 04 01:25:37s2e0t2_5metal_density_options(25.10)

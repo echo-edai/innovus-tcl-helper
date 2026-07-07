@@ -1,0 +1,212 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addIoInstance(25.10)                                      addIoInstance(25.10)
+
+Name
+       addIoInstance - Specifies constraints for insertion of power and ground
+       I/O instances in the I/O ring or in the I/O rows
+
+Syntax
+        addIoInstance
+
+       [-help]
+
+       [-cell {<name1 name2 ...>}]
+
+       -inst {<inst1 inst2 ...>}
+
+       {{-refInst <inst_name> [-ccw]} | {-selected [-ccw]} |
+
+       {-repeat num [-skip <num>]
+
+       [-inSelected  | [-ioRing <num>] -side {N | W | S | E} | -ioRow name]} |
+       -loc llx lly }
+
+       [-spacing <val>]
+
+       [-orientation <orient>]
+
+       [-spread]
+
+       Specifies constraints for insertion of power and ground  I/O  instances
+       in  the  I/O  ring or in the I/O rows. This command inserts physical IO
+       cells into design following constraints. It is used  during  floorplan-
+       ning.  If  you do not specify any of the following parameters, the com-
+       mand addIoInstance adds I/Os for all I/O cells, on all  sides  and  for
+       all I/O rings.
+
+              * -ioRing <num>
+
+              * -side
+
+              * -ioRow <name>
+
+Parameters
+       -ccw   Specifies the counter-clockwise direction to add the new I/O in-
+              stance.
+
+              Data_type: bool, optional
+
+       -cell {<name1 name2 ...>}
+              Specifies one or more cells. Adds one I/O for each cell that was
+              specified.
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each addIoInstance parameter.For  a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:
+
+              man addIoInstance
+
+       -inSelected
+              Repeatedly inserts new I/O instance(s) within the  selected  I/O
+              cell(s).
+
+              Data_type: bool, required
+
+       -inst {<inst1 inst2 ...>}
+              Specifies  the  instance  name prefix for the new I/O. This must
+              match with the number of cells that are specified.
+
+              Data_type: string, required
+
+       -ioRing <num>
+              Specifies the I/O ring number in which the new I/O  instance  is
+              added.
+
+              Default: 0
+
+              Data_type: int, optional
+
+       -ioRow <name>
+              For the new I/O row flow, adds I/Os on the specified I/O row.
+
+              Data_type: string, optional
+
+       -loc <x y>
+              Adds the new I/O instance at the location specified by x y coor-
+              dinates.
+
+              Note: You cannot use this parameter in conjunction with the -re-
+              fInst or -selected parameters.
+
+              Data_type: point, required
+
+       -orientation <orient>
+              Specifies the orientation of the new I/O instance. You can spec-
+              ify one of the following values:
+
+              * R0
+
+              * R90
+
+              * R180
+
+              * R270
+
+              * MX90
+
+              * MY90
+
+              * MX
+
+              * MY
+
+              Default: R0
+
+              Use this parameter with -cell and -loc parameters.
+
+              Note:  When specifying the -refInst or -selected parameters, the
+              software uses the orientation from those instances.
+
+              See Orientation Key for more information.
+
+              Data_type: string, optional
+
+       -refInst <inst_name>
+              Specifies the name of the reference instance and  adds  the  new
+              I/O  instance above or below the reference instance in clockwise
+              direction.
+
+              Default: Clockwise direction of the reference instance.
+
+              Data_type: string, optional
+
+       -repeat <num>
+              Repeatedly adds new I/O instances every number  (num)  of  cells
+              that you specify.
+
+              Default: Adds instances in the clockwise direction of the refer-
+              ence instance.
+
+              Data_type: int, required
+
+       -selected
+              If  -repeat  is  specified,  this parameter adds the new I/O in-
+              stance(s) in the selected cell(s) in clockwise direction of  the
+              selected  instance.  If -repeat is not specified, this parameter
+              changes the selected cells as referenced cells and adds new  I/O
+              instances  in the referenced cells, in the default clockwise di-
+              rection.
+
+              Data_type: bool, required
+
+       -side {N | W | S | E}
+              Specifies the side on which the new I/O instance is added.
+
+              Default: N
+
+              Data_type: string, optional
+
+       -skip <num>
+              Skips the number (num) of cells  specified,  before  adding  the
+              first I/O instance. This happens only when -repeat num is speci-
+              fied.
+
+              Data_type: int, optional
+
+       -spacing <val>
+              Specifies  the  spacing  value,  in microns, between the I/O in-
+              stances.
+
+              Data_type: float, optional
+
+       -spread
+              Evenly replaces all the I/O cells on the same row where the  new
+              I/O  instance was added. This prevents overlapping of I/O cells.
+              If you do not specify this parameter, the command still adds the
+              new I/Os even if overlapping occurs.
+
+              Note: The addIoInstance command works for both  the  I/O  flows,
+              the  old  flow  and the new row based pad placement flow. In the
+              new flow, each time you add a new I/O instance, the I/Os on  the
+              I/O  rows  with  the  existing constraints are replaced. In this
+              situation, if all the existing I/Os do  not  have  any  specific
+              constraint  defined,  then  the replacement of the I/Os also re-
+              solves overlapping each time when the I/O cell is added, evading
+              the usage of -spread option.
+
+              Data_type: bool, optional
+
+Example
+              * The following command adds new I/O instance il to  cell  BUMP-
+                CELL  at  lower-left  x location 100 and lower-left y location
+                100:
+
+                addIoInstance -inst il -cell BUMPCELL -loc 100 100
+
+              * The following command inserts the I/O instance newIo  for  the
+                cell  PVDD  on  the West side of the I/O box, skipping 3 I/O's
+                (from below) on the West side and repeating the  insertion  of
+                I/O's every 2 instances.
+
+                addIoInstance -cell PVDD -repeat 2 -inst newIo -side W -skip 3
+                -spread
+
+Related Information
+              * deleteIoInstance
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025       addIoInstance(25.10)

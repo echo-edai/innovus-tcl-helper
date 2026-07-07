@@ -1,0 +1,198 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_max_transition(25.10)                            set_max_transition(25.10)
+
+Name
+       set_max_transition  -  Sets the maximum slew time limit (transition) on
+       the specified instance pin, ports of the top cell, and/or  clock  wave-
+       forms
+
+Syntax
+       set_max_transition
+
+       [-help]
+
+       <transition_limit>
+
+       <object_list>
+
+       [-clock_path]
+
+       [-data_path]
+
+       [-fall]
+
+       [-override]
+
+       [-rise]
+
+       Sets the maximum slew time limit (transition) on the specified instance
+       pin, ports of the top cell, and/or clock waveforms.
+
+       The pins of cell instances of timing libraries will have their own max-
+       imum  constraint.  The  software will pick the more aggressive value of
+       the two.
+
+       When set on a port, the slew time at the port  must  be  less  than  or
+       equal  to  the  specified  limit. Maximum transition limits on pins can
+       come from library objects, which are the default maximum transition  of
+       the libraries or maximum transition on library cell pins. In this case,
+       the  most constraining limit, which is the smallest, will apply on pins
+       and ports.
+
+       Use the report_ports -type slew_limit command to view the maximum tran-
+       sition limits set on ports of the top cell.
+
+       When limits are set on a  clock  waveform,  you  can  use  -clock_path,
+       -data_path, -rise, and -fall parameters to provide more specifications.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each set_max_transition parameter. For a  detailed
+              description  of  the  command and all of its parameters, use the
+              man command: man set_max_transition.
+
+       -clock_path
+              Applies the max transition constraint only to pins in the  clock
+              network of the clocks defined in the object list.
+
+       -data_path
+              Applies  the  max  transition constraint only to data path pins,
+              where the path is launched by the clocks defined in  the  object
+              list.
+
+       -fall  Applies  the  max  transition constraint only to falling transi-
+              tions.
+
+       <object_list>
+              Specifies the list of objects - ports,  instance  pins,  library
+              cell pins, clock waveforms, or current design.
+
+       -override
+              Overrides  the maximum transition limit from other sources, such
+              as, library or constraints.
+
+              This parameter can be used to force a specific constraint  value
+              for  a  specified list of instance pins/port/library cell pins -
+              this overrides the maximum/minimum values set prior to this set-
+              ting.
+
+              To enable this feature, make the following setting:
+
+              set timing_constraint_enable_drv_limit_override true
+
+       -rise  Applies the max transition constraint  only  to  rising  transi-
+              tions.
+
+       <transition_limit>
+              Specifies  the  value  of  the  maximum slew time limit (maximum
+              transition), which must be greater than or equal  to  zero.  The
+              maximum slew time limit is in time units in the current session.
+
+Examples
+              * The  following  command sets a maximum transition limit of 0.9
+                units on all the ports of the top cell:
+
+                set_max_transition 0.9 [get_ports *]
+
+              * The following example shows a report of the maximum transition
+                limit set on ports using the report_ports command, as shown in
+                the example below:
+
+                set_max_transition 0.9 [get_ports *]
+
+                report_ports -type slew_limit -pin [get_ports *]
+
+       Example:  Maximum Transition Limit Set on Ports Report
+
+       ________________________________________________________
+
+       | Pin Name   |  Dir        |  Assertion  |  Value      |
+
+       |____________|_____________|_____________|_____________|
+
+       | in1        |  IN         |  slew_limit |  ( :        |
+
+       |            |             |             |   0.9000 )  |
+
+       |____________|_____________|_____________|_____________|
+
+       | in2        |  IN         |  slew_limit |  ( :        |
+
+       |            |             |             |   0.9000 )  |
+
+       |____________|_____________|_____________|_____________|
+
+       | out1       |  OUT        |  slew_limit |  ( :        |
+
+       |            |             |             |   0.9000 )  |
+
+       |____________|_____________|_____________|_____________|
+
+       | out2       |  OUT        |  slew_limit |  ( :        |
+
+       |            |             |             |   0.9000 )  |
+
+       |____________|_____________|_____________|_____________|
+
+       | out3       |  OUT        |  slew_limit |  ( :        |
+
+       |            |             |             |   0.9000 )  |
+
+       |____________|_____________|_____________|_____________|
+
+       | out4       |  OUT        |  slew_limit |  ( :        |
+
+       |            |             |             |   0.9000 )  |
+
+       |____________|_____________|_____________|_____________|
+
+              * The following command sets the  maximum  transition  limit  of
+                0.001 units on pins in the all_clocks collection:
+
+                set_max_transition 0.001 -clock_path [all_clocks]
+
+              * The  following  command  sets the transitions to the specified
+                value for your entire design:
+
+                set_max_transition <value> [current_design]
+
+              *
+
+                The following command impacts report_contraint output as shown
+                below:
+
+                set_max_transition 0.01 TDP_COE_INST/TDP_COE_GL_INST/p82
+
+                The following command shows output as shown below:
+
+                report_constraint -all_violators -drv_violation_type max_tran-
+                sition
+
+                ###############################################################
+
+                # format : frame 0 : split 0
+
+                Check type : max_transition
+
+                --------------------------------------------------------------------------
+
+                Pin  Name                           Required   Actual    Slack
+                View
+
+                --------------------------------------------------------------------------
+
+                TDP_COE_INST/TDP_COE_GL_INST/p82    0.010      1.138    -1.128
+                func_slow_RCMAX
+
+                --------------------------------------------------------------------------
+
+Related Information
+              * get_ports
+
+              * report_ports
+
+              * set_max_capacitance
+
+              * report_constraint
+
+                           Fri Apr 04 01:25:37 2025  set_max_transition(25.10)

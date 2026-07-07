@@ -1,0 +1,75 @@
+{
+  "command": "createWhatIfInternalGeneratedClock",
+  "is_cmd": true,
+  "summary": "在 BlackBox 或 BlackBlob 上创建内部引脚，并在该引脚上生成时钟",
+  "description": "此命令用于在 BlackBox 或 BlackBlob 单元上创建一个内部引脚，并在此引脚上定义一个生成时钟（Generated Clock）。该命令会相应地更新时序图。内部引脚将被视为时钟端口，可用于建立检查时序弧。生成时钟的延迟应包含主时钟的延迟。此命令也可用于在已存在的内部引脚上指定生成时钟（通过 -noCreateInternalPin 参数）。如果单元有多个实例，将为每个实例定义生成时钟。生成时钟的延迟可通过 setWhatIfClockLatency 命令设置。内部引脚和生成时钟被视为 what-if 断言，可使用 deleteWhatIfTimingAssertions 命令删除。该命令应在 Verilog 网表中包含 I/O 的 BlackBox 或 BlackBlob 模块定义可用后使用。",
+  "usage": "createWhatIfInternalGeneratedClock <blackBoxCellName> [-help] -clockName <genClkName> -clockPin <internalPinName> -masterPin <clockInputPort> [-edge_shift <edge_shift_list>] [-noCreateInternalPin] [-invert] {-multiplyBy <integer> | -divideBy <integer> | -edges <edge_list>}",
+  "options": [
+    {
+      "name": "<blackBoxCellName>",
+      "description": "指定 BlackBox 或 BlackBlob 单元的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-help",
+      "description": "显示此命令的帮助信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clockName",
+      "description": "指定在内部引脚上生成的时钟的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-clockPin",
+      "description": "指定在 BlackBox 或 BlackBlob 内部生成的引脚名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-masterPin",
+      "description": "指定生成时钟的源（主时钟引脚）。源必须是已存在的时钟端口，并且该端口上应有可用的时钟。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-edge_shift",
+      "description": "为指定的边沿列表中的每个边沿指定偏移量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noCreateInternalPin",
+      "description": "指定应在已存在的内部引脚上创建生成时钟。此时，-clockPin 参数应指定该已存在的内部引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-invert",
+      "description": "反转源时钟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-multiplyBy",
+      "description": "指定频率倍增因子。生成时钟周期等于主时钟周期除以该参数。该参数为整数值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-divideBy",
+      "description": "指定频率分频因子。生成时钟周期等于主时钟周期乘以该参数。该参数为整数值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-edges",
+      "description": "指定从源时钟到衍生时钟的边沿列表。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

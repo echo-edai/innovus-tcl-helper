@@ -1,0 +1,153 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setImportMode(25.10)                                      setImportMode(25.10)
+
+Name
+       setImportMode  - Controls aspects of how the software reads in the Ver-
+       ilog netlist and other design files
+
+Syntax
+       setImportMode
+
+       [-help]
+
+       [-reset]
+
+       [-discardFloatingVNets {true|false}]
+
+       [-keepEmptyModule {true| false}]
+
+       [-minDBUPerMicron <DBUPerMicron>]
+
+       [-syncRelativePath {true | false}]
+
+       [-timerMode {true|false}]
+
+       Controls aspects of how the software reads in the Verilog  netlist  and
+       other design files.
+
+       Use  the  getImportMode  command to return the current settings for the
+       setImportMode command.
+
+       You can use the setImportMode command before importing a design.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each setImportMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setImportMode.
+
+       -discardFloatingVNets {true|false}
+              If  true, an hnet (Verilog wire statement) that has nothing con-
+              nected to it, is deleted from the netlist. The default value  is
+              false in Innovus to allow for netlist repair, but true in Tempus
+              to delete non-timed nets and reduce memory.
+
+              Default: false
+
+       -keepEmptyModule {true | false}
+              Keeps empty modules.
+
+              If  set  to  false, the software converts the empty modules into
+              special leaf cells that do not have a physical  library  associ-
+              ated with them.
+
+              If  the  module  is a hard macro, using a value of true or false
+              produces the identical behavior: the software keeps the module.
+
+              Default: true
+
+              Note:
+
+              Empty modules can be removed later from the design by using  the
+              deleteEmptyModule command.
+
+       -minDBUPerMicron <DBUPerMicron>
+              Sets  the  minimum  database  units  per micron allowed when LEF
+              files initialize the database units.
+
+              You can specify a value for the minimum database units  per  mi-
+              cron  allowed when LEF files initialize the database units. This
+              option is intended for users with LEF files that  have  database
+              units  that  are not fine enough for NanoRoute to run properly -
+              when NanoRoute requires the LEF database units to be finer  than
+              the  manufacturing  grid.  If you do not want to modify your LEF
+              file, you can use this option to override the LEF database units
+              value.
+
+              The default value is 0, which means that the software  uses  the
+              LEF file units. The software uses the units set in the LEF file,
+              if the LEF units are greater than the minimum database units you
+              specify.  Conversely,  if the units you specify are greater than
+              the LEF units, the software uses  the  units  you  specify.  The
+              value  you  set is saved so the next time you open the design it
+              will have the same database units.
+
+              Default: 0
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software  resets  all  setImportMode  parameters  to
+              their  default  values.  If you specify parameters after -reset,
+              the software resets only those parameters to their default  val-
+              ues.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+       -syncRelativePath {true | false}
+              Synchronizes all relative paths in the top.globals file  to  the
+              current working directory. Use this parameter if you want to re-
+              store the design without first changing your current working di-
+              rectory to the directory saved in the previous design session.
+
+              Default:  false  (You  must change your working directory to the
+              directory saved in the previous design session  before  you  re-
+              store the design.)
+
+       -timerMode {true|false}
+              When  set to true, the tool loads only the Verilog and MMMC file
+              (including timing constraint, timing  lib,  and  RC  extraction)
+              during restoreDesign.
+
+Examples
+              * The  following  command synchronizes all relative paths to the
+                current working directory:
+
+                setImportMode -syncRelativePath true
+
+              * The following command resets the  -syncRelativePath  parameter
+                to its default value:
+
+                setImportMode -reset -syncRelativePath
+
+              * The  following  command resets all setImportMode parameters to
+                their default values:
+
+                setImportMode -reset
+
+Related Information
+              * deleteEmptyModule
+
+              * getImportMode
+
+              * restoreDesign
+
+              * Importing and Exporting Designs chapter in  the  Innovus  User
+                Guide
+
+                     * Handling Verilog Assigns
+
+              * Partitioning the Design chapter in Innovus User Guide
+
+                     * Defining Blackboxes
+
+                     * Blackbox Flow
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                     * Checking Your LEF Files
+
+                           Fri Apr 04 01:25:37 2025       setImportMode(25.10)

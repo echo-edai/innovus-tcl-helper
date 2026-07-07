@@ -1,0 +1,103 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+push_snapshot_stack(25.10)                          push_snapshot_stack(25.10)
+
+Name
+       push_snapshot_stack - Creates a hierarchy for metric capture
+
+Syntax
+        push_snapshot_stack
+
+       Creates a hierarchy for metric capture. All metrics captured inside the
+       hierarchy  is saved at this level during snapshot creation (implicit or
+       explicit). Snapshot hierarchies can be nested so any number of  hierar-
+       chies are supported.
+
+       Note:  Each  push_snapshot_stack   must  have a corresponding pop_snap-
+       shot_stack.
+
+Parameters
+       None
+
+Example
+       The following code shows the usage of push_snapshot_stack:
+
+       read_design ...
+
+       push_snapshot_stack
+
+       place_design
+
+       pop_snapshot_stack
+
+       create_snapshot -label place
+
+       push_snapshot_stack
+
+       opt_design -pre_cts
+
+       pop_snapshot_stack
+
+       create_snapshot -label prects
+
+       push_snapshot_stack
+
+       ccopt_design
+
+       time_design -post_cts
+
+       time_design -post_cts -hold
+
+       pop_snapshot_stack
+
+       create_snapshot -label cts
+
+       # --------------------------------------------------------------------
+
+       This will result in the following snapshot hierarchy:
+
+       place {
+
+        place_design {
+
+        <metrics>
+
+        }
+
+       }
+
+       prects {
+
+        opt_design -pre_cts {
+
+        <metrics>
+
+        }
+
+       }
+
+       cts {
+
+        ccopt_design {
+
+        <metrics>
+
+        }
+
+        time_design -post_cts {
+
+        <metrics>
+
+        }
+
+        time_design -post_cts -hold {
+
+        <metrics>
+
+        }
+
+       }
+
+Related Information
+              * pop_snapshot_stack
+
+                           Fri Apr 04 01:25:37 2025 push_snapshot_stack(25.10)

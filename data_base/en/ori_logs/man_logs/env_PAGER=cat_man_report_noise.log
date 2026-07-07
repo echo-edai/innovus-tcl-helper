@@ -1,0 +1,846 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_noise(25.10)                                        report_noise(25.10)
+
+Name
+       report_noise - Generates text-based noise reports
+
+Syntax
+       report_noise
+
+       [-help]
+
+       [-bumpy_waveform]
+
+       [-cell_type {bbox | clock | data | latch}]
+
+       [-delay {min | max}]
+
+       [-double_clocking]
+
+       [-double_switching]
+
+       [-exclude_failures]
+
+       [-expand_virtual_attacker_bus]
+
+       [-failure]
+
+       [-gui_victim_nets_file]
+
+       [-format <string>]
+
+       [-histogram]
+
+       [-level {vl | vh | vlu | vho}]
+
+       [-max_threshold <float>]
+
+       [-merge_dir <string>]
+
+       [-nets <string>]
+
+       [-output_format string]
+
+       [-output_file <string>]
+
+       [-overshoot_undershoot]
+
+       [-pins <string>]
+
+       [-precision <integer>]
+
+       [-quiet_nets]
+
+        [-remove_status_row <string>]
+
+       [-report_virtual_attacker_constituents]
+
+       [-reverse_voltage_change_threshold <float>]
+
+       [-slack <float>]
+
+       [-skip_nets_or_pins_in_header]
+
+       [-sort_by <string>]
+
+       [-style {default | extended}]
+
+       [-threshold <float>]
+
+       [-txtfile <filename[.gz]>]
+
+       [-view]
+
+       Generates text-based noise reports.
+
+       Note:  You  need to ensure that the setSIMode -enable_glitch_report (to
+       generate glitch report) or -enable_delay_report (to  generate  detailed
+       delay report) parameters are set to true, before the report_timing, up-
+       date_timing, or update_glitch commands are run.
+
+Parameters
+       ________________________________________________________
+
+       | -help  |   Prints out the command usage.                 |
+
+       |________________________________________________|______|
+
+       | -bumpy |  Flags nets with bumpy waveforms at the         |
+
+       | _wavef |   receiver.Note: This parameter will always     |
+
+       | orm    |   show maximum delay bumpy report (even if      |
+
+       |        |  the -delay min option is specified).           |
+
+       |________________________________________________|______|
+
+       | -cell_ |  Generates a glitch report for the              |
+
+       | type   |   user-specified cell-type. You can specify one |
+
+       |  {bbox |   of the following options:bbox: Generates a    |
+
+       |  |     |   report for only the black-box receiversclock: |
+
+       |  clock |   Generates a report for only the clock pin     |
+
+       |  |     |   receiversdata: Generates a report for only    |
+
+       |        |   the data pin receiverslatch: Generates a      |
+
+       | data | |   report for only the latch pin receivers       |
+
+       |  latch |                                                 |
+
+       |________________________________________________|______|
+
+       | -delay |  Reports delay uncertainty instead of noise     |
+
+       |        |   values. The only legal values are min or      |
+
+       | {min | |  max for minimum or maximum path delay          |
+
+       |  max}  |   analysis.                                     |
+
+       |________________________________________________|______|
+
+       | -doubl |   Enables double clocking reporting.            |
+
+       | e_cloc |                                                 |
+
+       | king   |                                                 |
+
+       |________________________________________________|______|
+
+       | -doubl |   Repor |         |         |         |         |
+
+       | e_swit |  ts     |         |         |         |         |
+
+       | ching  |   doubl |         |         |         |         |
+
+       |        |  e      |         |         |         |         |
+
+       |        |   switc |         |         |         |         |
+
+       |        |  hing   |         |         |         |         |
+
+       |        |   analy |         |         |         |         |
+
+       |        |  sis    |         |         |         |         |
+
+       |        |         |         |         |         |         |
+
+       |        |  data   |         |         |         |         |
+
+       |        |   in    |         |         |         |         |
+
+       |        |   noise |         |         |         |         |
+
+       |        |   repor |         |         |         |         |
+
+       |        |  ts.    |         |         |         |         |
+
+       |________|_________|_________|_________|_________|______|
+
+       | -exclu |  Excludes all failing nets from the glitch      |
+
+       | de_fai |   report.                                       |
+
+       | lures  |                                                 |
+
+       |________________________________________________|______|
+
+       | -expan |  Reports virtual attacker components and        |
+
+       | d_virt |   expands bus bits in the noise reports.This    |
+
+       | ual_at |   parameter works only when the bus virtual     |
+
+       | tacker |   attacker feature is enabled using the         |
+
+       | _bus   |   setSIMode                                     |
+
+       |        |   -enable_virtual_attacker_constituent_report   |
+
+       |        |   true setting.                                 |
+
+       |________________________________________________|______|
+
+       | -failu |  Reports receiver peak failures and DC          |
+
+       | re     |   tolerance failure nets. Use this option       |
+
+       |        |  only for glitch noise failure reports.The      |
+
+       |        |   report_noise, without the -failure option,    |
+
+       |        |   will use 0.10 of vdd as default.When you      |
+
+       |        |   specify -failure option you need to use       |
+
+       |        |   -threshold to lowest order of noise that is   |
+
+       |        |   saved, if not specified which is 0.05 of      |
+
+       |        |   Vdd.Option: Directory Name:-sort_by noise     |
+
+       |        |   glitch -sort_by rcvr_peak glitch              |
+
+       |________________________________________________|______|
+
+       | -forma |  Specifies the output report format fields.     |
+
+       | t      |   The valid fields are:arc, attacker_edge,      |
+
+       |  strin |   attacker_logical_correlation_phase,           |
+
+       | g      |   attacker_net, attacker_offset, attacker_peak, |
+
+       |        |   attacker_slew, attacker_source,               |
+
+       |        |   attacker_status, attacker_vdd,                |
+
+       |        |   attacker_wire_length, attacker_xcap,          |
+
+       |        |   cell_type, delay, glitch_slack, incr_delay,   |
+
+       |        |   level, peak, receiver_cell,                   |
+
+       |        |   receiver_input_failure_threshold,             |
+
+       |        |   receiver_input_pin,                           |
+
+       |        |   receiver_output_failure_threshold,            |
+
+       |        |   receiver_output_peak, slack, slack_status,    |
+
+       |        |   stage_info, thresh_source,                    |
+
+       |        |   verbose_logical_correlation_report,           |
+
+       |        |   victim_edge, victim_library,                  |
+
+       |        |   victim_logical_correlation_phase, victim_net, |
+
+       |        |   victim_slew, victim_total_area,               |
+
+       |        |   victim_total_cap, victim_total_cross_cap,     |
+
+       |        |   victim_vdd, victim_width,                     |
+
+       |        |   victim_wire_lengthNote: The                   |
+
+       |        |   victim_total_cross_cap option is supported    |
+
+       |        |   only for SI delay reporting. Each field       |
+
+       |        |   corresponds to the following columns of the   |
+
+       |        |   glitch report:arc: Arcattacker_edge:          |
+
+       |        |   Edgeattacker_net: Netattacker_offset:         |
+
+       |        |  Offset (ps)attacker_peak: Peak                 |
+
+       |        |   (mV)attacker_slew: Slew                       |
+
+       |        |  (ps)attacker_source: Constituents:             |
+
+       |        |   Sourceattacker_status: Statueattacker_vdd Vdd |
+
+       |        |   (V)attacker_wire_lengthattacker_xcap: Xcap    |
+
+       |        |   (fF)glitch_slack: Slacklevel: Levelpeak: Peak |
+
+       |        |   (mV)receiver_cell: Receiver                   |
+
+       |        |   cellreceiver_input_failure_threshold:         |
+
+       |        |   Receiver Input Thresholdreceiver_input_pin:   |
+
+       |        |   ReceiverNetreceiver_output_failure_threshold: |
+
+       |        |   Failure thresholdreceiver_output_peak:        |
+
+       |        |   Receiver output peak Valueslack_status:       |
+
+       |        |   Statusstage_infothresh_source:                |
+
+       |        |   ReceiverThresholdType (Global | User |        |
+
+       |        |   Library)victim_library: Libraryvictim_net:    |
+
+       |        |   VictimNetvictim_total_area:                   |
+
+       |        |   TotalAreavictim_total_cap: TotalCap           |
+
+       |        |   (fF)victim_vdd: Vdd (V)victim_width: Width    |
+
+       |        |   (ps)victim_wire_lengthThe following options   |
+
+       |        |   are not available with the single line        |
+
+       |        |   format:delayincr_delayslackthresh_sourcevicti |
+
+       |        |  m_edgevictim_slewvictim_total_cross_capTo      |
+
+       |        |   choose whether the report format should be on |
+
+       |        |   a single line or multiple lines, you can      |
+
+       |        |  use the -output_format parameter.              |
+
+       |________________________________________________|______|
+
+       | -gui_v |   Generates the GUI format glitch reports (aae  |
+
+       | ictim_ |  or aae_<viewname> files under the            |
+
+       | nets_f |   reporting directory) and incremental delay    |
+
+       | ile    |   reports (aae_<max/min>_incDelay or          |
+
+       |        |   aae_<viewname>_<max/min>_incDelay         |
+
+       |        |    files under the reporting directory) to be   |
+
+       |        |   used in the Display Noise Net form.           |
+
+       |________________________________________________|______|
+
+       | -histo |   Generates the noise histogram.                |
+
+       | gram   |                                                 |
+
+       |________________________________________________|______|
+
+       | -level |   Specifies the level for which a report needs  |
+
+       |  {vl | |  to be generated when single-level report is    |
+
+       |  vh    |   desired. You can specify one of these options |
+
+       | |      |   -  vl, vh, vlu, and vho.                      |
+
+       | vlu    |                                                 |
+
+       | | vho} |                                                 |
+
+       |________________________________________________|______|
+
+       | -max_t |  Specifies the maximum peak noise or receiver   |
+
+       | hresho |   peak thresholds to report on.                 |
+
+       | ld     |                                                 |
+
+       |  float |                                                 |
+
+       |________________________________________________|______|
+
+       | -merge |  Takes a directory name and generates a         |
+
+       | _dir   |   software compatible database.                 |
+
+       |  strin |                                                 |
+
+       |________________________________________________|______|
+
+       | -nets  |  Reports the specified nets in the noise        |
+
+       | string |   report.                                       |
+
+       |________________________________________________|______|
+
+       | -outpu |  Specifies the name of the output file name     |
+
+       | t_file |   prefix. The name of the output file is        |
+
+       |  strin |   generated by combining the prefix and the     |
+
+       | g      |   specified view name.If you do not specify     |
+
+       |        |   this option:The software automatically        |
+
+       |        |  names the text report as `glitch' for noise    |
+
+       |        |   glitch reports and `delay' for noise delay    |
+
+       |        |   reports.The software dumps the generated      |
+
+       |        |   report to the console window for better       |
+
+       |        |   usability.Note: If the text report file       |
+
+       |        |  with the .gz extension is used, the output     |
+
+       |        |   file is gzipped to generate a compressed      |
+
+       |        |   report.                                       |
+
+       |________________________________________________|______|
+
+       | -pins  |   Specifies the name of the pins to be          |
+
+       | string |   reported.                                     |
+
+       |________________________________________________|______|
+
+       | -preci |  Specifies the precision value up to which the  |
+
+       | sion   |  glitch data is to be printed. The allowed      |
+
+       |  integ |   values are 0, 1, 2 and 3.                     |
+
+       | er     |                                                 |
+
+       |________________________________________________|______|
+
+       | -outpu |  Specifies if the output format should be on a  |
+
+       | t_form |  single line or on multiple lines. You can      |
+
+       | at     |   specify one of the following                  |
+
+       |  strin |   options:single_linemultiple_lineIf the        |
+
+       | g      |   single_line option is specified and the       |
+
+       |        |   attacker info is chosen as a field, then      |
+
+       |        |  all the attacker related format options will   |
+
+       |        |   be printed together.The -output_format        |
+
+       |        |   parameter only works with the -format         |
+
+       |        |  option and does not affect the default         |
+
+       |        |   reporting output format.Default:              |
+
+       |        |   multiple_line                                 |
+
+       |________________________________________________|______|
+
+       | -overs |  Reports the overshoot (VHO) and undershoot     |
+
+       | hoot_u |   (VLU) glitches.The setSIMode                  |
+
+       | ndersh |   -enable_overshoot_undershoot_glitch must be   |
+
+       | oot    |   set to true before the analysis is performed, |
+
+       |        |   in order to generate the overshoot-undershoot |
+
+       |        |   glitch report.Default: If this option is      |
+
+       |        |  not used during glitch reporting, then VL      |
+
+       |        |  and VH type of glitches will be reported.      |
+
+       |________________________________________________|______|
+
+       | -quiet |   Generates a report of all the quiet           |
+
+       | _nets  |   attackers.                                    |
+
+       |________________________________________________|______|
+
+       | -remov |   Shows only the active attackers and filters   |
+
+       | e_stat |   out Sb, UF, and LC from the glitch report.    |
+
+       | us_row |                                                 |
+
+       |  <st   |                                                 |
+
+       | ring;G |                                                 |
+
+       |________________________________________________|______|
+
+       | -repor |  Specifies the maximum slack value for a bumpy  |
+
+       | t_virt |  net.                                           |
+
+       | ual_at |                                                 |
+
+       | tacker |                                                 |
+
+       | _const |                                                 |
+
+       | ituent |                                                 |
+
+       |________________________________________________|______|
+
+       | -rev   |  Reports the clock nets with reverse swing      |
+
+       | everse |   greater than the user-specified threshold     |
+
+       | _volta |   value (ratio of VDD). By default, the         |
+
+       | ge_cha |   threshold value is set to 0.1.                |
+
+       | nge_th |                                                 |
+
+       | reshol |                                                 |
+
+       | d      |                                                 |
+
+       |  <fl   |                                                 |
+
+       | oat> |                                                 |
+
+       |________________________________________________|______|
+
+       | -slack |  Generates a report for bumpy nets based on     |
+
+       |  float |   slack.Units: Seconds                          |
+
+       |________________________________________________|______|
+
+       | -skip_ |   Generates the glitch report without a list    |
+
+       | nets_o |   of nets or pins in the report header.         |
+
+       | r_pins |                                                 |
+
+       | _in_he |                                                 |
+
+       | ader   |                                                 |
+
+       |________________________________________________|______|
+
+       | -sort_ |  Requests the sorting of entries. You can sort  |
+
+       | by     |  by:noisereceiver_peakslackcell_typeThe         |
+
+       |  strin |   software determines the default HTML output   |
+
+       | g      |   directories based on the options you          |
+
+       |        |   choose.Depending on the sorting option you    |
+
+       |        |   select, the software sorts the report         |
+
+       |        |  fields in the following order:-sort_by         |
+
+       |        |  Option Level 1 Level 2 Level 3 Level           |
+
+       |        |   4rcvr_peak receiver peak noise netname        |
+
+       |        |   level noise noise - netname level             |
+
+       |________________________________________________|______|
+
+       |        |  For example, if you use the -sort_bynoise      |
+
+       |        |   option, the first level of sorting will be    |
+
+       |        |   based on noise, followed by receiver peak,    |
+
+       |        |   netname, and level.Note: The report           |
+
+       |        |  displays the vl noise level before the vh      |
+
+       |        |   noise level.Default: receiver_peak            |
+
+       |________________________________________________|______|
+
+       | -style |  Generates reports in one of the styles -       |
+
+       |  {defa |   extended or default.extended: Generates       |
+
+       | ult    |   extended reports with victim and aggressor    |
+
+       | |      |   timing windows, dropped aggressor slews,      |
+
+       |  exten |  and reasons for dropped aggressors.            |
+
+       | ded}   |   Additionally, the report also shows driver    |
+
+       |        |   pins and driver library pins.default:         |
+
+       |        |   Generates the default report, which is        |
+
+       |        |   similar to the text report generated using    |
+
+       |        |   the -text parameter.                          |
+
+       |________________________________________________|______|
+
+       | -thres |  Specifies the minimum peak noise, absolute     |
+
+       | hold   |   delay uncertainty, relative delay             |
+
+       |  float |   uncertainty, and receiver peak thresholds     |
+
+       |        |  to report on.Default:0.10 of vdd for nets -    |
+
+       |        |   when the glitch report is generated using the |
+
+       |        |   report_noise-sort_by noise option.10 (ps) for |
+
+       |        |   nets - when a detailed delay report is        |
+
+       |        |   generated using the report_noise-delay        |
+
+       |        |   parameter).Note:The -threshold parameter      |
+
+       |        |   accepts percentage values.All -sort_by values |
+
+       |        |   that represent voltages will be in mV.        |
+
+       |________________________________________________|______|
+
+       | -txtfi |  Specifies the name of the text report file.    |
+
+       | le     |    If the specified file name is compressed,    |
+
+       |  filen |   with the .gz extension, the file is           |
+
+       | ame[.g |   gzipped.If you do not specify the -txtfile    |
+
+       | z]     |   option:The software automatically names the   |
+
+       |        |   text report as `glitch' for noise glitch      |
+
+       |        |   reports and `delay' for noise delay           |
+
+       |        |   reports.The software dumps the generated      |
+
+       |        |   report to the console window for better       |
+
+       |        |   usability.If the -txtfile parameter is not    |
+
+       |        |   used, then Innovus will output the SI         |
+
+       |        |  report to the screen. When the -txtfile        |
+
+       |        |   parameter is specified, then Innovus uses the |
+
+       |        |   user-specified name. In case of MMMC, Innovus |
+
+       |        |   uses the <txtfile Name>_<view Name>       |
+
+       |        |   naming convention.                            |
+
+       |________________________________________________|______|
+
+       | -view  |   Specifies the view name.                      |
+
+       |________________________________________________|______|
+
+       Examples
+              * The  following  command  reports  noise for the view named de-
+                fault_emulate_view:
+
+                report_noise  -delay  max   -threshold   1600   -txtfile   de-
+                lay_max_format.rpt  -format {attacker_slew  attacker_xcap  at-
+                tacker_status attacker_edge    attacker_net  stage_info  slack
+                victim_slew  victim_total_cross_cap victim_net }
+
+                ******************************************************
+
+                Noise Delay Report (for view default_emulate_view)
+
+                ******************************************************
+
+                Report Options:
+
+                ------------------------------------------------------
+
+                -threshold 1600 (ps)
+
+                -delay max
+
+                [-style default]
+
+                [-sortBy IncrDelay]
+
+                -------------------------------------------------------
+
+                -------------------------------------------------------
+
+                Slack(ps)   Slew(ps)   Total    Xcap(fF)    VictimNet
+
+                -2.973      0.635      277.574  seg3/u6/A   {seg3/n5}
+
+                Stage information:
+
+                            Cell       Pin
+
+                Driver:     INV        seg3/u5/Y
+
+                Receiver:   INV        seg3/u6/A
+
+                Constituents:
+
+                Slew(ps)   Xcap(fF)   Status   Edge   Net
+
+                331.500    138.787    INF      F      seg1/n5
+
+                358.667    138.759    SY       F      seg2/n5
+
+                ------------------------------------------------------
+
+                Slack(ps)  Slew(ps)   Total Xcap(fF)  VictimNet
+
+                14.906     0.597      278.115         seg1/u6/A {seg1/n5}
+
+                Stage information:
+
+                           Cell       Pin
+
+                Driver :   INV        seg1/u5/Y
+
+                Receiver : INV        seg1/u6/A
+
+                Constituents:
+
+                Slew(ps)   Xcap(fF)   Status   Edge   Net
+
+                279.500    139.280    INF      F      w3
+
+                359.333    138.807    INF      F      seg3/n5
+
+                ------------------------------------------------------
+
+                Slack(ps) Slew(ps)    Total Xcap(fF)  VictimNet
+
+                15.737    0.587       270.604         seg1/u12/A {seg1/n11}
+
+                Stage information:
+
+                           Cell    Pin
+
+                Driver :   INV     seg1/u11/Y
+
+                Receiver : INV     seg1/u12/A
+
+                Constituents:
+
+                Slew(ps)   Xcap(fF)   Status   Edge   Net
+
+                276.500    135.654    INF      F      w5
+
+                337.167    134.517    INF      F      seg3/n11
+
+              * The  following command reports noise for the specified report-
+                ing fields:
+
+                report_noise -delay max -format {delay incr_delay  victim_slew
+                victim_total_cap  victim_total_cross_cap victim_vdd victim_net
+                attacker_offset attacker_slew attacker_xcap  attacker_vdd  at-
+                tacker_edge attacker_status attacker_net} -txtfile custom.rpt
+
+                -------------------------------
+
+                Delay(NomMax/Max)  IncrDelay(ps)  Slew(ps)  TotalCap(fF) Total
+                Xcap(fF) Vdd(V) VictimNet
+
+                -43.400/2418.200  2461.600      12.372   639.088       599.796
+                1.62   i1/A {n1}
+
+                Type  IncrDelay(ps) Delay(NomMax/Max)  VictimInst
+
+                R     3253.300      5457.100/8710.400  drv/Y {INV:A}
+
+                Constituents:
+
+                Offset(ps)  Slew(ps)  Xcap(fF)  Vdd(V)  Edge  Status  Net
+
+                -245.000    30.000    52.145    1.62    F     att1
+
+                -199.000    120.000   26.751    0.00    F     INF     ~n1
+
+                ------------------------------
+
+              *
+
+                The  following  command  shows glitch values greater than 0.20
+                VDD as:
+
+                report_noise -threshold 0.20
+
+                Output report file name prefix is (null)
+
+                Info: Processing report for view default_emulate_view ...
+
+                ###############################################################
+
+                # Command: report_noise -threshold 0.20
+
+                # View: default_emulate_view
+
+                ###############################################################
+
+                Report Options:
+
+                --------------------------------------------------------------------------------
+
+                -type glitch
+
+                -threshold 20% (of vdd)
+
+              * To generate a glitch report, you can use  the  following  com-
+                mand:
+
+                report_noise -txtfile glitch.txt
+
+              * To generate a glitch report sorted by input noise, you can use
+                the following command:
+
+                report_noise -txtfile sort_by_glitch_input.txt -sort_by noise
+
+              * To generate a glitch failure report, you can use the following
+                command:
+
+                report_noise -txtfile glitch_failure.txt -failure
+
+              *
+
+                To  generate  a  glitch  report  for VL noises sorted by input
+                noise, you can use the following command:
+
+                report_noise -sort_by noise -level vl
+
+              *
+
+                To generate a glitch report for only latch receiver  pin  cell
+                types, you can use the following command:
+
+                report_noise -txtfile latch_glitch.txt -cell_type latch
+
+Related Information
+              *
+
+                report_timing
+
+              *
+
+                report_timing_format
+
+              * check_noise
+
+                           Fri Apr 04 01:25:37 2025        report_noise(25.10)

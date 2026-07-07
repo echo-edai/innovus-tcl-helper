@@ -1,0 +1,123 @@
+{
+  "command": "set_default_switching_activity",
+  "is_cmd": true,
+  "summary": "为设计中所有未定义切换活动性的主输入、网络和其他器件指定默认的切换活动性",
+  "description": "此命令用于为设计中所有主输入、网络和其他器件指定默认的切换活动性，这些器件的活动性之前未通过用户属性、切换计数格式（TCF）文件、值变化转储（VCD）文件或时钟网络追踪进行定义。它可以在设计层级指定用户定义的活动性。",
+  "usage": "set_default_switching_activity [-black_box_density <value>] [-black_box_duty <value>] [-block <master_cell_name>] [-duty <value>] [-global_activity <factor>] [-hier <hierarchy_name>] [-input_activity <factor>] [-period <value>] [-seq_activity <factor>] [-reset] [-reset_type { global_activity | seq_activity ... }] [-clock_gates_enable {<activity_factor>}] [-icg_ratio <num>] [-comb_clockgate_ratio <num>] [-clock_gates_output {<activity_factor>}] [-clock_gates_output_ratio <num>] [-clip_activity_to_domain_freq {true | false}] [-name <activity_name>] [-macro_activity <factor>]",
+  "options": [
+    {
+      "name": "-black_box_density",
+      "description": "为设计中所有黑盒的所有输出引脚设置默认的转换密度。必须与 -black_box_duty 参数一起使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-black_box_duty",
+      "description": "为设计中所有黑盒的所有输出引脚设置默认的占空比。必须与 -black_box_density 参数一起使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-block",
+      "description": "指定用于活动性设置的主单元名称。用于为块分区定义用户定义的切换活动性，适用于基于块的分布式功耗流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-duty",
+      "description": "指定占空比，即信号为逻辑1的概率。必须与 -period 参数一起指定。默认值为0.5（相当于50%的占空比）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-global_activity",
+      "description": "指定所有未设置节点在一个时钟周期内切换的平均次数。如果未指定，除非关闭时钟域，否则将使用最快的域频率。与 -seq_activity 参数互斥，若同时指定，此参数优先。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-hier",
+      "description": "指定要分配全局活动性的层次结构名称。如果未提供，则假定为整个设计。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-input_activity",
+      "description": "指定主输入在一个时钟周期内切换的平均次数。可以是任何正数。默认值为0.2（每五个时钟周期切换一次）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-period",
+      "description": "指定默认操作周期（1/频率），即活动性所参考的周期。如果未指定，软件将使用设计中的主导时钟。单位可以是秒（s）、毫秒（ms）、微秒（us）、纳秒（ns）或皮秒（ps）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-seq_activity",
+      "description": "指定时序逻辑输出的活动性。该值将用于触发器的输出端口以传播活动性。如果未指定，将从输入端口开始对整个设计进行传播。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有指定的选项重置为默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset_type",
+      "description": "指定要选择性重置的全局规格。必须与 -reset 参数一起使用。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-clock_gates_enable",
+      "description": "指定时钟门控单元使能引脚的活动性。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-icg_ratio",
+      "description": "设置集成时钟门控（ICG）单元输出的传播比率。指定后，此参数将所有已识别的ICG实例的输出引脚设置为该实例时钟输入上最快转换密度的<num>倍。不能与 -hier 参数一起指定。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-comb_clockgate_ratio",
+      "description": "设置组合时钟门控单元输出的传播比率。指定后，此参数将任何被识别为组合时钟门控单元的实例的输出活动性设置为到达该实例时钟输入的最快转换密度的<num>倍。不能与 -hier 参数一起指定。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-clock_gates_output",
+      "description": "指定时钟门控单元输出引脚的活动性。适用于ICG和组合时钟门控单元。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-clock_gates_output_ratio",
+      "description": "控制集成和组合时钟门控单元输出引脚的转换密度。等效于同时指定 -icg_ratio 和 -comb_clockgate_ratio 参数并赋予相同的值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-clip_activity_to_domain_freq",
+      "description": "指定执行基于域的活动性裁剪。此参数将数据路径裁剪到1倍频率，而时钟网络仍保持在2倍频率。允许您更好地控制相对于频率的裁剪速率。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-name",
+      "description": "允许您为指定的抖动活动名称设置活动级别。可以为抖动分析定义低/高活动级别。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-macro_activity",
+      "description": "指定设计中宏的活动因子。允许值在0到1之间。对于动态功耗分析，在给定周期内，指定百分比的宏将被选择进行切换；对于静态功耗分析，宏的所有输出引脚都被分配指定的活动性。默认值为0.2。",
+      "required": false,
+      "type": "float"
+    }
+  ]
+}

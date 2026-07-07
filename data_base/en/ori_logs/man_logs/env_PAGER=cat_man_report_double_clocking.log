@@ -1,0 +1,174 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_double_clocking(25.10)                    report_double_clocking(25.10)
+
+Name
+       report_double_clocking
+
+Syntax
+       report_double_clocking
+
+       [-help]
+
+       [-file <string>]
+
+       [-max_delta_delay <float>]
+
+       [-nworst <integer>]
+
+       [-reverse_slope_limit <float>]
+
+       [-reverse_voltage_change_threshold <float>]
+
+       [-view <string>]
+
+       Reports  noise  impact  on  clock nets by generating information on the
+       double clocking, transition type, and reverse slope.
+
+       The report output displays violations in sorted order -  based  on  the
+       absolute  value  of  the  slope,  a  negative value indicates a reverse
+       slope.
+
+       Note: The report_double_clocking command requires that clocks have been
+       defined and applied prior to timing analysis with SI (update_timing  or
+       report_timing).   The report_double_clocking command does not work with
+       the glitch-only flow (update_glitch).
+
+       Double clocking occurs when the noise glitch  attacks  a  transitioning
+       signal.  The  multiple  transition or double clocking check supplements
+       the transition time check performed in static timing analysis.  Transi-
+       tion  time  is  defined  as the duration of time that a signal takes to
+       make the transition between two threshold points.  However,  transition
+       time  does  not  account  for  the  waveform  shape between the voltage
+       thresholds.
+
+       For special signals such as clocks it is important to analyze the wave-
+       form shape between the voltage threshold in case the signal transitions
+       slowly or in the opposite direction (even for a short duration of time)
+       causing multiple clock edges. This command enables you  to  report  the
+       worst-case slope (dV/dtfor rising signal and -dV/dt for falling signal)
+       of a signal transitioning between the voltage thresholds. The slope de-
+       rivative  is  measured  in  units  of volts per nanosecond (V/ns). This
+       value can be positive if the signal does not change direction, 0 if the
+       signal is flat, and negative if the signal changes direction even for a
+       short duration of time.
+
+       The following figure shows two falling signal transitions:
+
+       Figure: Negative Worst-Slope Derivative
+
+       In the above figure, the  falling  signal  transitions  have  identical
+       transition times. However, the worst-case slope derivatives for the two
+       falling  waveforms are different. If a clock signal exhibits a negative
+       slope derivative, there is a possibility of  a  double  clocking  func-
+       tional  failure. A higher reverse slope results in a higher possibility
+       of a double clocking functional failure.
+
+       The double clocking report contains the following  sections  and  their
+       corresponding fields:
+
+              * Double Clocking
+
+                * Rise  Slope (V/ns): Specifies the worst reverse slope of the
+                  rising clock signal as a measure of volt per nano-second.
+
+                * Fall Slope (V/ns): Specifies the worst reverse slope for the
+                  falling clock signal as a measure of volt per nano-second.
+
+                * VictimNet: Specifies the name of the victim net.
+
+              * Instance Pin: Displays the name of the instance pin.
+
+              * Transition Type: Indicates the type of transition the  net  is
+                undergoing - R for rising, F for falling.
+
+              * Reverse  Slope:  Indicates  the  slope that is opposite to the
+                transition type and the value reported is  the  worst  reverse
+                slope.
+
+       Parameters
+
+       -help  Prints out the command usage.
+
+       -file <<string>>
+              Specifies the output filename.
+
+              Default: {$parm_filename_prefix}_clock.text
+
+       -max_delta_delay <float>
+              Reports  clock  nets,  for  which the delay change caused due to
+              noise, exceeds the specified number.
+
+              Default: 0
+
+       -max_slew <float>
+              Reports clock nets for which the transition time, including  SI,
+              exceeds the specified number.
+
+              Default: 0
+
+       -nworst <integer>
+              Specifies the number of clock nets to report in each category.
+
+              Default: 1
+
+       -reverse_slope_limit <float>
+              Reports  the  clock nets for which the slope is below the speci-
+              fied number.
+
+              Default: 0
+
+       -reverse_voltage_change_threshold <float>
+              Controls the reverse slope failure criteria by allowing  you  to
+              supply  a minimum voltage change as a percentage of VDD. The re-
+              verse slope must be sustained in order for it to  be  considered
+              as failing.
+
+              Default:0.1
+
+       -view <string>
+              Specifies the view name for which the report to be generated.
+
+       Examples
+
+              * The  following  command reports clock nets that have a reverse
+                slope less than -1:
+
+                report_double_clocking -reverse_slope_limit -1
+
+              * The following command reports 100 clock net violations of each
+                category:
+
+                report_double_clocking -nworst 100
+
+              * The following command shows the double clocking report for de-
+                fault_emulate_view view:
+
+                report_double_clocking -view default_emulate_view
+
+                ********************************************************************************
+
+                 Double Clocking Report For View: default_emulate_view
+
+                 Generated: Thu Mar 12 08:43:01 2015
+
+                 ********************************************************************************
+
+                 Instance  Pin                                         Transi-
+                tion Type Reverse Slope
+
+                DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/acc_reg_13/CK          R
+                -0.32465
+
+                 DTMF_INST/TDSP_CORE_INST/EXECUTE_INST/acc_reg_13/CK         R
+                -0.32465
+
+Related Information
+              *
+
+                report_timing
+
+              *
+
+                report_noise
+
+                           Fri Apr 04 01:25:37 202r5eport_double_clocking(25.10)

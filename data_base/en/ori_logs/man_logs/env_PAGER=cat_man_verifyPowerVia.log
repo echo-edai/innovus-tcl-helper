@@ -1,0 +1,487 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verifyPowerVia(25.10)                                    verifyPowerVia(25.10)
+
+Name
+       verifyPowerVia  - This command provides a variety of power-rail overlap
+       checks to look for missing power-grid vias
+
+Syntax
+       verifyPowerVia
+
+       [-help]
+
+       [-append]
+
+       [-area {<x1> <y1> <x2> <y2>}]
+
+       [-checkWirePinOverlap]
+
+       [-edgeToEdge]
+
+       [-error <integer>]
+
+       [-exclude_region_file <check_file>]
+
+       [-fill]
+
+       [-hookup_pitch <pitch_value>]
+
+       [-ignore_objects {drc_fill | io_wire}]
+
+       [-ignore_partial_overlap {true | false | <value>}]
+
+       [-layerRange {<bottomLayer> <topLayer>}]
+
+       [-layer_rail <layer_name]>
+
+       [-layer_stripe <layer_list>]
+
+       [-net {<netNames>} | -selected]
+
+       [-nonOrthogonalCheck [-distance {x y}]]
+
+       [-pitch <pitch_value>]
+
+       [-report <file>]
+
+       [-search_range {x y}]
+
+       [-shielding]
+
+       [-stackedVia]
+
+       [-stripe_rule <value>]
+
+       [-viaUtil <value>]
+
+       [-what_if_report <filename>]
+
+       [-widthRange<string>]
+
+       This command provides a variety of power-rail overlap  checks  to  look
+       for  missing  power-grid  vias.  By  default, it checks that orthogonal
+       power-routes on adjacent routing layers have  a  via  between  them  at
+       every  intersection.  For  example,  there should be a via at the point
+       where a Metal3 power stripe overlaps a Metal2 power stripe. By default,
+       horizontal routes get checked only for overlaps with  vertical  routes.
+       If  the  power shapes are polygon, the polygon is split into rectangles
+       and the rectangles are used to decide the direction. Support for check-
+       ing stacked vias between non-adjacent routing layers is optional.  Vio-
+       lations are highlighted in the layout window, and a text report is gen-
+       erated with the location of the missing vias.
+
+       By  default,  this  command  checks power vias within the die area. For
+       checking power vias outside the die area, use the -area parameter  with
+       specifying outer coordinates.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each verifyPowerVia parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man verifyPowerVia
+
+       -append
+              Specifies  that  all  previous  verifyPowerVia  settings will be
+              kept.
+
+       -area <x1 y1 x2 y2>
+              Specifies the coordinates of the  area  within/outside  the  die
+              area to be checked.
+
+       -checkWirePinOverlap
+              Specifies  that  wire  overlaps  of  pin  shapes  should also be
+              checked. By default, only wire overlaps with wires are checked.
+
+       -distance {<x y>}
+              Specifies distances for finding missing via within  a  specified
+              window  for  a non-orthogonal check, with <x> and y representing
+              the distance in the horizontal and vertical directions,  respec-
+              tively.
+
+              When  the  x or y distance is provided, verifyPowerVia checks if
+              the wire is parallel with another wire. If yes, it checks:
+
+              * The via center to via center spacing  between  parallel  wires
+                against the value x (y)
+
+              * The  via  center  to  wire  end distance against the value x/2
+                (y/2)
+
+              If the actual distance is greater than the required distance  in
+              either case, it marks a violation.
+
+              When the x or y distance is not provided or set to 0, the via to
+              via distances are not checked.
+
+              Note: This parameter can only be specified with the -nonOrthogo-
+              nalCheck parameter.
+
+       -edgeToEdge
+              Checks  the  non-orthogonal  distance from edge to edge within a
+              layer.
+
+       -error <integer>
+              Specifies the maximum number of errors to report.
+
+       -exclude_region_file <check_file>
+              Ignores missing VIA checks within the specified  check_file  re-
+              gions  for a cell extension area. The check_file format can be a
+              set of the following values:
+
+              * cell: Specifies the cell type.
+
+              * ext_layer_bottom: Specifies the extension area bottom layer.
+
+              * ext_layer_top: Specifies the extension area top layer.
+
+              * ext_x: Specifies the extension length in the X direction.
+
+              * ext_y: Specifies the extension length in the X direction.
+
+              * exc_x: Specifies the exception length in the X direction.
+
+              * exc_y: Specifies the exception length in the Y direction.
+
+              Example 1:
+
+              The following set of  check_file  formats  ignores  missing  VIA
+              check  within  the  yellow rectangle (in the output), but checks
+              missing VIA within the blue rectangle:
+
+              FTV_CELL, B_M0, B_M1, X, Y, X', Y'
+
+              INV_D2, M0, M1, X2, Y2, X2', Y2'
+
+              Following is the output:
+
+              Example 2:
+
+              The following set of  check_file  formats  ignores  missing  VIA
+              check within the yellow rectangle (in the output):
+
+              FTV_CELL, B_M0, B_M1, X, Y
+
+              INV_D2, M0, M1, X2, Y2
+
+              Following is the output:
+
+       -fill  Specifies  that  tied-off  metal  fill  should  also be checked.
+              Floating fill is still ignored.
+
+              Default: Metal fill will be ignored.
+
+       -hookup_pitch <pitch_value>
+              Specifies the distance between two vias, which are on the filler
+              instance and are greater than or equal to the given value.
+
+       -ignore_objects {drc_fill | io_wire}
+              Skips checking the power vias of the specified wire type.
+
+       -ignore_partial_overlap {true | false | <value>}
+              Specifies if the partially overlapped metal layers  need  to  be
+              checked for missing vias. Specify one of the following parameter
+              values:
+
+              * true:  Ignores  checking  the  vias missing in partially over-
+                lapped metal layers.
+
+              * false: Checks the vias missing in partially  overlapped  metal
+                layers.
+
+              *
+
+                <value>: Checks the vias missing in partially overlapped metal
+                layers  on  and  above  the specified portion of <value> range
+                from 0 to 1. For example, specifying the <value> as  0.2  will
+                check the vias missing in partially overlapped metal layers on
+                or above 20% of the overlapped wires.
+
+                The  instance  pin  and  physical pin shapes are considered as
+                wires.
+
+              Default: false
+
+       -layerRange {<bottomLayer> <topLayer>}
+              Checks for the missing stacked vias between the bottom  and  top
+              layers.  It also checks for the missing vias between all the ad-
+              jacent intermediate layers, but does not check for  the  stacked
+              vias  between  the intermediate layers. While using this parame-
+              ter, you can specify full layer names like METAL1, or  abbrevia-
+              tions  like  1.  For  example,  verifyPowerVia -layerRange {2 5}
+              checks for missing stacked vias between overlapping 2 and 5, and
+              also missing adjacent vias for overlapping 2/3, 3/4, and 4/5.
+
+              This parameter checks the missing adjacent vias  if  bottomLayer
+              is  specified,  but  topLayer  is  not,  with  considering  that
+              topLayer is just one layer above. To review the missing  stacked
+              via or missing adjacent via DRC marker, use the violationBrowser
+              command for filtering the DRC marker. For example:
+
+              * To display only the missing stacked via DRC markers, run:
+
+                violationBrowser -all -filter {stacked via} -search_desc -fil-
+                ter_mode AND
+
+              * To  display only the missing via DRC markers between the adja-
+                cent layers, run:
+
+                violationBrowser  -all  -filter  {adjacent  via}  -search_desc
+                -filter_mode AND
+
+              See violationBrowser for more information on the command usage.
+
+       -layer_rail <layer_name>
+              Specifies  a  single  power rail layer for missing via (only the
+              via  above  power  rail)  check.  The  check  depends   on   the
+              -stripe_rule  option. When -stripe_rule is specified, the via to
+              via distance should be less  than  or  equal  to  the  specified
+              value.   If   a   distance  value  is  not  specified  with  the
+              -stripe_rule option, the check is ignored.
+
+              See the examples below.
+
+              The -layer_rail option is not controlled by -layerRange. You can
+              specify a power rail layer other than that specified with  -lay-
+              erRange  for  checks  against  the  stripe_rule and search_range
+              rules.
+
+       -layer_stripe <layer_list>
+              Specifies the power stripe layers to be checked for a valid con-
+              nection path from power rail to power stripe. The check  depends
+              on  the  -search_range option. If -search_range is specified, at
+              least one valid connection path should be found from  the  power
+              rail  to power stripe in that search range. If a search range is
+              not specified with the -search_range option, the  check  is  ig-
+              nored.
+
+              You  can  specify  the power rail layer with the -layer_rail op-
+              tion. By  default,  only  the  uppermost  power  rail  layer  is
+              checked.
+
+              See the examples below.
+
+              The  -layer_stripe  option is not controlled by -layerRange. You
+              can specify power stripe layers other than that  specified  with
+              -layerRange for checks against the search_range rule.
+
+       -net {<netNames>}
+              Specifies  the  names  of the power nets that will be checked. A
+              single net or a list of nets enclosed  in  curly  braces({})  or
+              quotes  ("  ")  can  be  specified. Wildcards (* and ?) are sup-
+              ported. For example, when you specify verifyPowerVia -net  {v*},
+              all PG net names having initial letter as v are checked.
+
+              Note:  Currently,  wildcards  are supported for checking PG nets
+              only.
+
+              Default: All power grid nets.
+
+       -nonOrthogonalCheck
+              Checks the overlap area for non-orthogonal crossing wires  (e.g.
+              wires  that  are both in the same direction) in adjacent as well
+              as non-adjacent layers. Checks for missing vias between  two  or
+              more  parallel  wires. The via center-to-center distance between
+              parallel wires should be less than or  equal  to  the  specified
+              spacing
+
+              If this parameter is not specified, horizontal wires get checked
+              only against vertical wires.
+
+              Note:  You  can  use -distance {x y} parameter with -nonOrthogo-
+              nalCheck to find missing vias within a  specified  window.  When
+              the  x  or  y distance is provided, verifyPowerVia checks if the
+              wire is parallel with another wire. If yes, it  checks  the  via
+              center-center  spacing  and via center-wire end distance between
+              parallel wires. If the actual distance is greater than  the  re-
+              quired distance, it marks a violation.
+
+       -pitch <pitch_value>
+              Specifies  the  distance  between two vias, which are not on the
+              filler instance and are greater  than  or  equal  to  the  given
+              value.
+
+       -report file
+              Specifies the name of the output file for the report.
+
+              Default: design_name.powervia.rpt
+
+       -search_range {x y}
+              Specifies  a  rectangle  area with XY. There should be one valid
+              connection from power rail to  power  stripe  in  the  specified
+              area.  By  default,  the valid connection would be searched from
+              the uppermost power rail layer to all the power  stripe  layers.
+              You  can  use  the  -layer_rail option to specify the power rail
+              layer, and the -layer_stripe option to limit  the  power  stripe
+              layers. With the -layer_rail and -layer_stripe options, only the
+              specified power rail and power stripes layers are used for valid
+              connection check.
+
+              The x and y values are floats in units of microns.
+
+              Refer to the Examples section for search range examples.
+
+       -selected
+              Checks  for  the  missing vias between the selected PG wires and
+              other intersecting selected/unselected PG wires. When this para-
+              meter is used with the -checkWirePinOverlap parameter, it checks
+              for the missing vias between the  intersection  of  selected  PG
+              wires  and pins of the selected instances. This parameter elimi-
+              nates the requirement of running the command on the  entire  de-
+              sign, and hence improves the run time.
+
+       -shielding
+              Specifies  that  shielding  wires should also be checked. By de-
+              fault, shielding wires are not checked.
+
+       -stackedVia
+              Checks for missing vias between all non-adjacent as well as  ad-
+              jacent layers.
+
+       -stripe_rule <value>
+              Specifies  in microns the distance for power via. Only the power
+              via above the power rail is checked. If the via to  via  center-
+              to-center  spacing is greater than the specified value, a viola-
+              tion marker is created.
+
+              You can specify the power rail layer with -layer_rail for check-
+              ing. By default, only the power via above  the  uppermost  power
+              rail is checked against the rule.
+
+              Refer to the Examples section for stripe rule examples.
+
+       -viaUtil <value>
+              Checks  if the cut area in the metal intersection area is suffi-
+              cient.
+
+       viaUtil = Total cut area / Metal intersect area
+
+              If the actual ratio is less than specified ratio, verifyPowerVia
+              marks it as violation.
+
+              By default, the metal intersection area  is  the  metal  overlap
+              area. If setAddStripeMode -via_using_exact_crossover_size is set
+              to  false, the partial overlapped metal will be extended to full
+              width intersection area.
+
+       -what_if_report <filename>
+              Writes out verifyPowerVia violations data into a ECO  file  that
+              can be used directly as input for whatIf rail analysis. When you
+              specify  this  parameter,  the missing via information generated
+              can be used as input for what-if virtual wires.
+
+       -widthRange <string>
+              Specifies the metal width to be considered. verifyPowerVia  uses
+              the  specified  width range to filter wires. Only the bottom and
+              top wires that fall in the range are checked.
+
+              The <string> value takes the following format:
+
+              -widthRange  {<minWidth>  maxWidth  [layerName  ...]  [<minWidth
+              maxWidth [layerName> ...]] ... }
+
+              * If  minWidth  is  0,  all wires with width less than specified
+                maxWidth will be checked.
+
+              * If maxWidth is 0, all wires with width greater than  specified
+                minWidth will be checked.
+
+              * If layerName is specified in the string, widthRange is enabled
+                only for the specified layer.
+
+              * If  no layerName is specified in the string, widthRange is en-
+                abled for all non-specified layers.
+
+              Refer to the Examples section for width range examples.
+
+              Note: Use braces or quotation marks to enclose the string  value
+              for widthRange.
+
+Examples
+              *
+
+                The  following  command specifies that all vias for all power-
+                grid nets will be checked, except for metal fill and shielding
+                wires, and reports it to a file called power_via.report:
+
+                verifyPowerVia -report power_via.report
+
+              *
+
+                The following command checks for missing stacked vias  between
+                METAL5 and METAL8 layer intersections on the VSS net. In addi-
+                tion,  it  checks  for  missing  vias  between  METAL5-METAL6,
+                METAL6-METAL7 and METAL7-METAL8 layer intersections. The  vio-
+                lations  are reported in the powerVia.rpt file and highlighted
+                in GUI.
+
+                verifyPowerVia -layerRange {METAL5 METAL8}  -net  VSS  -report
+                powerVia.rpt
+
+              * The following command checks that the overlapping power routes
+                on  adjacent  layers  have vias that cover at least 70% of the
+                overlap area..
+
+                verifyPowerVia -viaUtil 0.7
+
+              * The following command checks that the overlapping power routes
+                have vias that cover at least 70% of the overlap area for lay-
+                ers between METAL3 and METAL4.
+
+                verifyPowerVia -viaUtil 0.7 -layerRange {METAL3 METAL4}
+
+              * The following command checks for wires overlaps  for  all  pin
+                shapes included, enclosed, or touched by the specified area:
+
+                verifyPowerVia -area {100 100 1000 1000} -checkWirePinOverlap
+
+              *
+
+                The  following  command  checks  wires with width greater than
+                0.032 and less than 0.096 for all layers:
+
+                verifyPowerVia -widthRange {0.032 0.096}
+
+              *
+
+                The following command checks wires with width in the  0.032  ~
+                0.096  range  for 1/2 and width 0.038~0.114 for 3/4. For other
+                layers, there is no width control:
+
+                verifyPowerVia -widthRange {0.032 0.096 1 2 0.038 0.114 metal3
+                metal4}
+
+              *
+
+                The following command checks wires with width in the  0.032  ~
+                0.096  range  for  1/2. For other layers, it checks wires with
+                width in the 0.038~0.114 range:
+
+                verifyPowerVia -widthRange {0.032 0.096 1 2 0.038 0.114}
+
+              * The following command checks the via between power rail  layer
+                2  and  3. If the via's center-to-center distance is more than
+                17u, the tool reports a violation and places a marker  on  the
+                power rail wires.
+
+                verifyPowerVia -stripe_rule 17 -layer_rail 2
+
+              * The  following command checks the valid connection for 2 power
+                rail to stripe layer 4 and 5 with the  search  rectangle  area
+                10*5.  In the diagram below, there is no violation as the con-
+                nection is built from 2 to 4. If the  V34  vias  are  removed,
+                then  there  is  a violation as the connection cannot be built
+                from 2 to 4.
+
+                verifyPowerVia   -search_range   {10    5}    -layer_rail    2
+                -layer_stripe {4 5}
+
+Related Information
+              * editPowerVia
+
+              * "Prior  to  Running Early Rail Analysis" in the Power and Rail
+                Analysis chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025      verifyPowerVia(25.10)

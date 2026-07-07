@@ -1,0 +1,141 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+attachTerm(25.10)                                            attachTerm(25.10)
+
+Name
+       attachTerm - Attaches a terminal to a net
+
+Syntax
+       attachTerm
+
+       [-help]
+
+       [-moduleBased <verilogModule>]
+
+       [-noNewPort]
+
+       <instName>
+
+       <termName>
+
+       <netName>
+
+       [-port <portName>]
+
+       [-pin <refInstName><refPinName>]
+
+       Attaches  a  terminal  to  a net. If the terminal already connects to a
+       different net, the software first detaches the terminal from  the  cur-
+       rent net, then attaches it to the new net.
+
+       It  removes  term  order dependency while attaching multiple terms to a
+       net, especially when both output and input terms are involved.
+
+       Note: Detaching a terminal that drives an output terminal of  a  module
+       produces  a  Verilog  violation  at  the output terminal if you use de-
+       tachTerm. Instead, use attachTerm to attach the terminal to a new  net.
+       The attachTerm command automatically detaches the terminal from the net
+       connecting  to  the  output terminal, then attaches the terminal to the
+       net you specify. This command also enables you to specify a  hierarchi-
+       cal net name, in addition to a flat net name.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each attachTerm.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man attachTerm
+
+       <instName>
+              Specifies the instance containing the terminal. If the  instance
+              name  does not exist, the software displays an error message and
+              the command stops.
+
+       -moduleBased <verilogModule>
+              Attaches the terminal to the specified verilog module.
+
+       <netName>
+              Specifies the name of the net to attach to the terminal. If  the
+              net  name  does not exist, Innovus displays an error message and
+              the command stops.The reserved names of 1'b1  and  1'b0  can  be
+              used to set a constant directly on the terminal rather than con-
+              nect it to a net.
+
+       -noNewPort
+              Prohibits  Innovus  from creating hierarchical ports when it at-
+              taches a terminal. If the terminal cannot  connect  to  the  net
+              through  existing  ports,  Innovus displays an error message and
+              the command stops.
+
+              Default: If you do not specify this parameter,  Innovus  creates
+              hierarchical ports as needed.
+
+       -pin <refInstName refPinName>
+              Specifies  the  pin  <refPinName> on instance <refInstName> con-
+              nected to the net that Innovus connects  to  the  terminal.  You
+              cannot specify the -port parameter if you use this parameter.
+
+       -port <portName>
+              Specifies  the  hierarchical  port  used to connect the terminal
+              with the net. If you specify this  parameter,  the  hierarchical
+              port  must  exist  in the module that contains the instance. The
+              hierarchical port must connect to the net. This  parameter  lets
+              you  use  a specific port to maintain the same netlist topology,
+              which simplifies equivalence checking later in the design  flow.
+              You cannot specify the -pin parameter if you use this parameter.
+
+              Default:  If you do not specify this parameter, Innovus uses ex-
+              isting ports or creates new hierarchical ports as  necessary  to
+              connect the terminal to the net.
+
+       <termName>
+              Specifies  the name of the terminal that Innovus connects to the
+              specified net. If the terminal name does not exist, Innovus dis-
+              plays an error message and the command stops.
+
+Examples
+              * The  following  command  attaches  terminal  in1  of  instance
+                i1/i2/i3 to net i1/i2/net26:
+
+                attachTerm i1/i2/i3 in1 i1/i2/net26
+
+                If  i1/i2/i3  does  not  exist, or if in1 is not a terminal of
+                i1/i2/i3, or if i1/i2/net26 does not exist, the software  dis-
+                plays an error message and the command stops.
+
+              * The  following  command  attaches  terminal  in1  of  instance
+                i1/i2/i3 to net net27, using hierarchical port myPort:
+
+                attachTerm i1/i2/i3 in1 net27 -port myPort
+
+                The myPort port must exist in the module definition for i1/i2,
+                and myPort must already connect to net27. If this is  not  the
+                case,  the  software displays an error message and the command
+                stops.
+
+              * The  following  command  attaches  terminal  in3  on  instance
+                i1/i2/i3 through existing ports to net28:
+
+                attachTerm -noNewPorts i1/i2/i3 in3 net28
+
+                If  ports do not exist, the software displays an error message
+                and the command stops.
+
+              * The following command attaches terminal Y of instance testInst
+                to the verilog module hier_t3 using net testnet:
+
+                attachTerm -moduleBased hier_t3 testInst Y testnet
+
+              * The  following  command  attaches  terminal  A   of   instance
+                TDSP_CORE_INST/FE_OFC124_port_pad_data_out_3 to net net27, us-
+                ing hierarchical port myPort:
+
+                attachTerm    TDSP_CORE_INST/FE_OFC124_port_pad_data_out_3   A
+                net27 -port myPortThe following images show the above  example
+                in Design Browser and UI:
+
+Related Information
+              * detachTerm
+
+                           Fri Apr 04 01:25:37 2025          attachTerm(25.10)

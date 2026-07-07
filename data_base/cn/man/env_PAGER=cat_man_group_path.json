@@ -1,0 +1,45 @@
+{
+  "command": "group_path",
+  "is_cmd": true,
+  "summary": "在设计中分组路径，并用路径组名标识它们。",
+  "description": "此命令用于将设计中的路径进行分组，并为每个组分配一个名称。这些路径组名称可用于生成报告。需要注意的是，当软件处于MMMC模式时，不能在SDC文件中使用group_path语句（否则会发出警告），但支持在SDC文件之外使用此命令。路径组是全局性的，适用于所有视图，不支持基于MMMC模式进行特定设置。路径组在saveDesign和restoreDesign操作中会持久保存，存储在MMMC保存目录的<saveDir>/mmmc/pathgroup.sdc文件中。如果一个路径可以被包含在多个路径组中，它只会被包含在定义最具体的那个组中（例如，包含-from、-through、-to的定义比仅包含-from和-to的定义更具体，而后者又比仅包含-from的定义更具体）。",
+  "usage": "group_path [-help] [-comment <string>] -name <path_group_name> [[-from <from_list>] [-to <to_list>] [-through <through_list>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-comment",
+      "description": "允许插入注释。这些注释会被读取但会被忽略（伴随一次性警告），不用于时序分析报告，也不会在保存约束时写出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定路径组的名称。如果指定的路径组名称已存在，则指定的路径会被添加到现有的路径组中。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-from",
+      "description": "指定路径起点的引脚、实例或时钟列表。当指定一个时钟对象时，所有由该时钟触发的路径都会被包含在路径组中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-through",
+      "description": "指定路径经过的引脚或实例列表。当指定多个-through列表时，只有按指定顺序经过这些对象的路径才会被添加到路径组中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to",
+      "description": "指定路径终点的引脚、实例或时钟列表。必须在<to_list>中指定有效的端点，否则软件会忽略此约束。当指定一个时钟对象时，所有由该时钟检查的路径都会被包含在路径组中。如果在<to_list>中指定一个实例名称，则该实例的所有数据输入引脚都会被添加到路径组中。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

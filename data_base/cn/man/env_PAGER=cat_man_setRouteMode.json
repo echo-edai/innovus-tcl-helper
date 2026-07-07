@@ -1,0 +1,93 @@
+{
+  "command": "setRouteMode",
+  "is_cmd": true,
+  "summary": "设置早期全局布线或earlyGlobalRoute的全局参数",
+  "description": "setRouteMode命令用于设置早期全局布线器（Early Global Router）的全局参数。这些参数会在执行earlyGlobalRoute命令时自动使用，也会在布局优化、分区或布局等内部步骤中生效。该命令的参数设置会影响preRoute流程中所有步骤的早期全局布线结果，因此，修改这些设置会改变place_opt_design、ccopt_design和postCTS的结果。建议非必要情况下不要更改工具的技术设置。可以使用getRouteMode命令来查看当前的setRouteMode设置。早期全局布线支持嵌套分区，通过特定参数可以指定哪些分区需要遵循围栏（fence）和引脚（pin）约束进行布线。",
+  "usage": "setRouteMode [-help] [-reset] [-earlyGlobalEffortLevel {standard | medium | low }] [-earlyGlobalHonorMsvRouteConstraint {true|false}] [-earlyGlobalNumTracksPerClockWire <value>] [-earlyGlobalReverseDirection \"( <x1 y1 x2 y2> ) <Metal2:Metal2> (  <x3 y3 x4 y4> ) <Metal3:Metal3 ...> \"] [-earlyGlobalRoutePartitionAllowFeedthru <list_of_ptn_cell_names>] [-earlyGlobalRoutePartitionHonorFence <list_of_ptn_cell_names>] [-earlyGlobalRoutePartitionHonorPin <list_of_ptn_cell_names>] [-earlyGlobalRoutePartitionPinGuide {true|false}] [-earlyGlobalRouteSecondPG {true|false}] [-earlyGlobalRouteSelectedNetsOnly {true|false}] [-earlyGlobalRouteStripeLayerRange {<layerIdx1>:<layerIdx2>}] [-earlyGlobalSecondPGMaxFanout< integer>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出setRouteMode各参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有通过setRouteMode修改的参数恢复为默认设置。此参数必须是第一个指定的参数。如果单独使用-reset，软件会重置所有setRouteMode参数；如果在-reset后指定其他参数，则只重置那些参数。任何被重置且原值与默认值不同的参数将被报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-earlyGlobalEffortLevel",
+      "description": "指定拥塞优化力度等级。standard（标准）精度更高但运行时间更长；medium（中等）运行时间更短但精度降低；low（低）运行速度最快但精度最低。默认值为standard。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-earlyGlobalHonorMsvRouteConstraint",
+      "description": "决定早期全局布线是否遵循MSV（多电源电压）域约束。启用后，早期全局布线会尽可能在首选电源域内布线。默认值为false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-earlyGlobalNumTracksPerClockWire",
+      "description": "指定时钟线使用的特殊轨道数量。最大值为8，最小值为0。默认值为0。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-earlyGlobalReverseDirection",
+      "description": "在指定区域和层范围内反转布线方向，使早期全局布线器在该区域使用非首选方向布线。此参数仅影响拥塞值计算，不会在Innovus中显示反向布线线网。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-earlyGlobalRoutePartitionAllowFeedthru",
+      "description": "指定分区单元名称列表，早期全局布线器将遵循这些分区的围栏约束。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-earlyGlobalRoutePartitionHonorFence",
+      "description": "遵循分区围栏的单入口约束和固定引脚。确保布线不违反分区边界，支持嵌套分区，最多支持180个分区。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-earlyGlobalRoutePartitionHonorPin",
+      "description": "遵循分区围栏的单入口约束以及预分配引脚（标记为FIXED）和已分配引脚（标记为PLACED）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-earlyGlobalRoutePartitionPinGuide",
+      "description": "遵循分区引脚引导。使用版图规划文件中的引脚引导语句来指导通过分区引脚的布线。默认值为true。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-earlyGlobalRouteSecondPG",
+      "description": "指定是否对次级电源地（PG）引脚进行布线。启用后，将对setPGPinUseSignalRoute命令指定的引脚进行布线。默认值为false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-earlyGlobalRouteSelectedNetsOnly",
+      "description": "指定仅对数据库中选中的线网进行布线。默认值为false。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-earlyGlobalRouteStripeLayerRange",
+      "description": "指定布线到次级PG引带的条带层范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-earlyGlobalSecondPGMaxFanout",
+      "description": "指定次级PG引脚布线期间的最大扇出值。最小值为1，最大值为INT_MAX。默认值为2147483647。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

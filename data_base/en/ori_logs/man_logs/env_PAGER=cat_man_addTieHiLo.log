@@ -1,0 +1,189 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addTieHiLo(25.10)                                            addTieHiLo(25.10)
+
+Name
+       addTieHiLo  -  Adds instances of specified tie-off cells to the logical
+       hierarchy of the design and connects the tie-off pins  of  netlist  in-
+       stances to the tie-off pins of the added instances
+
+Syntax
+       addTieHiLo
+
+       [-help]
+
+       [-cell <cellNames>]
+
+       [-createHierPort {true | false}]
+
+       [-keepExisting {true | false}]
+
+       [-matchingPDs {true | false}]
+
+       [-postMask {true | false}]
+
+       [-powerDomain <powerDomainName>]
+
+       [-prefix <prefixName>]
+
+       [-reportHierPort {true | false}]
+
+       [-cellPin <cellName:cellPin> < >| -instancePin <fileName> | -excludePin
+       <fileName>]
+
+       Adds  instances  of specified tie-off cells to the logical hierarchy of
+       the design and connects the tie-off pins of netlist  instances  to  the
+       tie-off  pins of the added instances. Thus, these instances provide the
+       connectivity between the tie-high and tie-low pins of the  netlist  in-
+       stances  to  power and ground. Use this command after placing the stan-
+       dard cells in the flow.
+
+       Note: If you omit the -powerdomain option, the command will insert tie-
+       hilo on default power domains. To add tie-off cells to all domains, you
+       need to use the -matchingPDs option.
+
+       Note: If you do not specify parameters, this command  uses  the  global
+       parameters specified by the setTieHiLoMode command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each addTieHiLo parameter. For a detailed descrip-
+              tion of the command and all of its parameters, use the man  com-
+              mand:  man addTieHiLo.
+
+       -cell <cellNames>
+              Specifies the tie cells to add.
+
+              You  can only specify a maximum of two tie-cells, where one cell
+              must be a tie-high driver, and the other a tie-low  driver.  The
+              two tie-cell names must be surrounded by quotation marks.
+
+              This  parameter  overrides  cell  name(s)  specified by the set-
+              TieHiLoMode command.
+
+              Default: "" (empty string)
+
+       -cellPin <cellName:cellPin>
+              Specifies the cell pins that are to be  tied.  The  cell  format
+              could     be    "cellName1:cellPin    cellName2:cellPin    cell-
+              Name3:cellPin". Only the cell pins that have tie 0/1 connections
+              and are specified in -cellPin are changed to the tie  cell.  The
+              left tie connections do not change.
+
+              Default: ""(empty string)
+
+       -createHierPort {true | false}
+              Allows the added tie cells to connect to tie pins across hierar-
+              chical  boundaries  if other constraints, such as maximum fanout
+              and maximum distance, allow it.
+
+              Default: false
+
+       -excludePin <fileName>
+              Specifies the excludePin file name. The file format is  "instan-
+              ceName/instancePin". Each line in the file contains one instance
+              pin.  Only  the  instance pins that have tie 0/1 connections and
+              are not defined in this file are changed to the  tie  cell.  The
+              left tie connections do not change.
+
+              Default: ""(empty string)
+
+       -instancePin <fileName>
+              Specifies  the  instance pins file name. The file format is "in-
+              stanceName/instancePin". Each line in the file contains one  in-
+              stance pin. Only the instance pins that have tie 0/1 connections
+              and  are  defined  in this file are changed to the tie cell. The
+              left tie connections do not change.
+
+              Default: ""(empty string)
+
+       -keepExisting {true | false}
+              When set to true, preserves the existing tie-offs, added in  the
+              previous run, in the design and adds new ones.
+
+              Default: false
+
+       -matchingPDs {true | false}
+              Adds  tie-off cells to all power domains that have library bind-
+              ing containing the specified tie-off cell(s).
+
+              Default: false
+
+       -postMask {true | false}
+              Insert tie cells in post mask flow. Instructs  the  software  to
+              reuse  existing  tie  cells to tie off a newly created spare in-
+              stance in the design instead of adding or  deleting  tie  cells.
+              Searches  for input pins that are tied to logical 1 or logical 0
+              and attempts to tie them off to tie high or tie low cells.
+
+              Default: false
+
+       -powerDomain <powerDomainName>
+              Inserts tie-off cell to the named PD.
+
+              Default: ""(empty string)
+
+              Note: When this option is not specified, tool only  inserts  tie
+              cells in the "default" power domain
+
+       -prefix <prefixName>
+              Specifies a prefix for the added tie-cell instances.
+
+              Default: ""(empty string)
+
+       -reportHierPort {true | false}
+              When the value of -createHierPort is  true, reports created port
+              connections to a file named  tiehilo.rpt.
+
+              Default:  false
+
+Examples
+              * The  following  command adds tie-high and tie-low connectivity
+                for designs with libraries that have cell  named  TIEOFF  that
+                provides  both tie-high and tie-low connections. The instances
+                added are prefixed with tieOff:
+
+                addTieHiLo -cell TIEOFF -prefix tieOff
+
+              * The following command adds tie-high and  tie-low  connectivity
+                for  designs  with  libraries  that have separate tie-high and
+                tie-low cells named TIEHI and TIELO respectively:
+
+                addTieHiLo -cell "TIEHI TIELO"
+
+              * The following commands add tie-off connectivity  for  MSV  de-
+                signs  with two power domains named PD1 and PD2. The last com-
+                mand is necessary for the part of the design that  is  not  in
+                either of the two specified power domains.
+
+                addTieHiLo -cell "TIEHI TIELO" -powerDomain PD1
+
+                addTieHiLo -cell "TIEHI TIELO" -powerDomain PD2
+
+                addTieHiLo -cell "TIEHI TIELO"
+
+              * The following command add tie-off connectivity for MSV designs
+                where  all power domains whose library binding contains TIEOFF
+                cell:
+
+                addTieHiLo -cell TIEOFF -matchingPDs true
+
+              * The following command will connect all MUX/S  and  NOR/A  pins
+                that  have  the tie 0/1 connections to the tie cells. The left
+                tie connections do not change.
+
+                addTieHiLo -cellPin "MUX:S NOR:A"
+
+Related Information
+              * deleteTieHiLo
+
+              * getTieHiLoMode
+
+              * setTieHiLoMode
+
+              * verifyTieCell
+
+              * The following topic in the Innovus User Guide
+
+                * Adding Logical Tie-Off Cells
+
+                           Fri Apr 04 01:25:37 2025          addTieHiLo(25.10)

@@ -1,0 +1,264 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_ccopt_...tering_reasons(25.10)    report_ccopt_...tering_reasons(25.10)
+
+Name
+       report_ccopt_cell_filtering_reasons - Reports the reasons for filtering
+       the specified cell types
+
+Syntax
+       report_ccopt_cell_filtering_reasons
+
+       [-help]
+
+       [-cell_type buffer | inverter | logic | delay | clock_gate]
+
+       [-clock_trees {string1 string2 ...}]
+
+       [-file <file_name>]
+
+       [-power_domain <power_domain_name>]
+
+       [-tcl_list]
+
+       Reports  the reasons for filtering the specified cell types. The report
+       can be saved as a file by specifying the -file parameter of the command
+       or it can be viewed as a Tcl list by specifying the  -tcl_list  parame-
+       ter. The output of the command is also included in the log.
+
+       In  the report, "all" is used for the Clock tree names where the reason
+       is common to all clock_trees. Some of the reasons  for  filtering  that
+       are reported and their brief descriptions are provided below:
+
+              * Unbalanced  rise/fall delays : The difference between rise and
+                fall delays for the cell is bigger than 20%, or any of rise or
+                fall timing arcs is missing in the library.
+
+              * Too tall: The cell height is  bigger  than  the  maximum  cell
+                height specified using the max_cell_height property.
+
+              * Wrong  power  context : The cell does not match the power con-
+                text requirements. For example, do not have same power context
+                on all pins.
+
+              * Not available in all views : The cell is not available in  all
+                analysis  views  because  the library does not contain all the
+                specified views (corner cases) in the design for that specific
+                cell. To avoid this filtering, check  the  libraries  and  the
+                MMMC  configuration  to  see  why the cell is not available in
+                some views.
+
+              * Always on but not in cpf: The cell is marked as always on  but
+                does not match the CPF description. You can avoid this filter-
+                ing by checking/updating the CPF.
+
+              * Weak  max cap cell: The cell is unable to drive enough capaci-
+                tance at certain clock frequencies. This check  is  controlled
+                by  the  CCOpt  property,  frequency_dependent_max_cap_usabil-
+                ity_check_max_cap_fanout_factor. The  default  value  of  this
+                property  is  4. The cells that cannot drive four instances of
+                that cell are filtered. You can reduce this value to avoid the
+                filtering, for example, by relaxing the  requirement  so  that
+                the  cell  only  has to be able to drive one or two instances.
+                Alternatively, since this is controlled by the period  on  the
+                clock_tree,  you can check the effective_clock_period property
+                to see if those are correct.
+
+              * Library trimming: The cell was removed  automatically  because
+                it  is an inefficient cell. The cell was removed as an ineffi-
+                cient cell to reduce the library size  and  save  runtime.  To
+                avoid removing such cells, disable library trimming.
+
+              * Can't  use due to library mismatch: Check the library data for
+                the cell - both timing and physical  data  for  the  cell  are
+                needed.  There is a mismatch between LEF and liberty libraries
+                because the cell is missing in one of them.
+
+              * Invalid for balancing: The cell is  filtered  out  because  it
+                does  not  match  several predefined properties for balancing,
+                such as: 1) cell delay is too small;  2)cell  has  an  invalid
+                (rise/fall) timing arc.
+
+              * No test enable signal: The clock gate cell is filtered out be-
+                cause it does not have a test enable input.
+
+              *
+
+                Has  test  enable  signal: The clock gate cell is filtered out
+                because it has a test enable input.
+
+                Note: The above two cell filtering reasons are context  depen-
+                dent.  The  software  filters  all  clock gates, reporting the
+                clock gates with test enables as one set and the  clock  gates
+                without test enables as another set. A clock gate either has a
+                test  enable  or  it does not have one, so all clock gates are
+                listed in one of the two sets. However, if you  need  a  clock
+                gate  with  no test enable signal, but there are no such clock
+                gates, you can use a clock gate that has a test enable signal.
+                But the other way around is not possible, which means  if  you
+                need a clock gate with test enable signal but there is no such
+                clock  gate,  you cannot use one that does not have a test en-
+                able signal.
+
+              * Has observable output: Clock gates without observability  out-
+                puts  are preferred, if they are available. Normally any cells
+                with observability outputs will be filtered out.  But  if  all
+                the  available  cells have observability outputs they will not
+                be filtered.
+
+              * Edge sensitive: The clock gate cell is filtered out because it
+                is not positive edge sensitive.
+
+              * Cannot be legalized: The cell is filtered  because  it  cannot
+                physically be legalized in the power domain.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each  report_ccopt_cell_filtering_reasons  parame-
+              ter.  For  a  detailed description of the command and all of its
+              parameters, use the man command: man   report_ccopt_cell_filter-
+              ing_reasons.
+
+       -cell_type buffer | inverter | logic | delay | clock_gate
+              Restrict the report the specified library cell type.
+
+       -clock_trees {string1 string2 ...}
+              Restricts the report to the specified clock trees
+
+       -file <file_name>
+              Specifies  that  a  copy  of  the contents of the report will be
+              saved to the specified file name.
+
+       -power_domain <power_domain_name>
+              Restricts the report to the specified power domain.
+
+       -tcl_list
+              Returns the report as Tcl formatted data, and formats the  -file
+              as tcl, if specified.
+
+Examples
+              * Use  the  following  command  to filter reasons for clock gate
+                cell types:
+
+                report_ccopt_cell_filtering_reasons -cell_type clock_gate
+
+                Filtering reasons for cell type: clock gate cell
+
+                ================================================
+
+                ------------------------------------------------------------------------------------------------
+
+                Clock trees  Power  domain    Reason                   Library
+                cells
+
+                -------------------------------------------------------------------------------------------------
+
+                { clk4 }    auto-default   No test enable signal  { TLATNCAX12
+                TLATNCAX16 TLATNCAX2 TLATNCAX20
+
+                                                                              TLAT-
+                NCAX3 TLATNCAX4 TLATNCAX6
+
+                                                                              TLAT-
+                NCAX8 }
+
+                {  clk4  }     auto-default    Has  test enable signal { TLAT-
+                NTSCAX12 TLATNTSCAX16 TLATNTSCAX2
+
+                                                                              TLAT-
+                NTSCAX20 TLATNTSCAX3 TLATNTSCAX4
+
+                                                                              TLAT-
+                NTSCAX6 TLATNTSCAX8 }
+
+                --------------------------------------------------------------------------------------------------
+
+              * Use the following command to filter reasons  for  buffer  cell
+                types:
+
+                report_ccopt_cell_filtering_reasons -cell_type buffer
+
+                Example output format:
+
+                Filtering reasons for cell type: buffer
+
+                =======================================
+
+                ---------------------------------------------------------------------------------
+
+                Clock trees   Power domain   Reason             Library cells
+
+                ---------------------------------------------------------------------------------
+
+                all            AO              Library  trimming  { BUFFD12BWP
+                BUFFD2BWP BUFFD3BWP
+
+                                                                  BUFFD4BWP
+                BUFFD6BWP BUFFD8BWP
+
+                                                                  PTBUFFD2BWP
+                }
+
+                all          PLL              Unbalanced         {  BUFFD12BWP
+                BUFFD2BWP BUFFD3BWP
+
+                                             rise/fall    delays     BUFFD4BWP
+                BUFFD6BWP BUFFD8BWP
+
+                                                                PTBUFFD2BWP }
+
+                ---------------------------------------------------------------------------------
+
+              * Use the following command to filter reasons for inverter  cell
+                types:
+
+                report_ccopt_cell_filtering_reasons -cell_type inverter
+
+                Example output format:
+
+                Filtering reasons for cell type: inverter
+
+                =======================================
+
+                ---------------------------------------------------------------------------------
+
+                Clock trees   Power domain   Reason              Library cells
+
+                ---------------------------------------------------------------------------------
+
+                all            AO              Unbalanced          { INVD12BWP
+                INVD16BWP INVD1BWP
+
+                                             rise/fall  delays        INVD2BWP
+                INVD3BWP INVD4BWP
+
+                                                                   INVD6BWP
+                INVD8BWP }
+
+                all            PLL            Library Trimming     { INVD12BWP
+                INVD16BWP INVD1BWP
+
+                                                                   INVD2BWP
+                INVD3BWP INVD4BWP
+
+                                                                   INVD6BWP}
+
+                ---------------------------------------------------------------------------------
+
+Related Information
+              * The following properties:
+
+                * max_cell_height
+
+                * frequency_dependent_max_cap_usabil-
+                  ity_check_max_cap_fanout_factor
+
+                * effective_clock_period
+
+       For details, see the CCOpt  Properties  chapter  in  the  Innovus  User
+       Guide.
+
+              * The following topic in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                           Fri Apr 04 01:2r5e:p3o7rt2_0c2c5opt_...tering_reasons(25.10)

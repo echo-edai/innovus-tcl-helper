@@ -1,0 +1,120 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+place_partition_clone(25.10)                      place_partition_clone(25.10)
+
+Name
+       place_partition_clone  -  Places  the clones, set their orientation and
+       syncs up the data with other hierarchical instances (master and clones)
+       of the same module
+
+Syntax
+       place_partition_clone
+
+       [-help]
+
+       -hinst <partition_clone_hinst_name>
+
+       -location {<x y>}
+
+       [-orient {R0 R180 MX MY}]
+
+       [-skip_sync]
+
+       [-sync_objs {placeBlockage routeBlockage pinBlockage macros fences}]
+
+       Places the clones, set their orientation and syncs  up  the  data  with
+       other hierarchical instances (master and clones) of the same module.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each place_partition_clone parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man place_partition_clone
+
+       -hinst <partition_clone_hinst_name>
+              Specifies the name of partition clone hierarchical instance.
+
+              Data_type: string, required
+
+       -location {<x y>}
+              Specifies location of the clone partition.
+
+              Data_type: point, required
+
+       -orient {R0 R180 MX MY}
+              Specifies orientation of the clone  partition.  The  orientation
+              can be one of the following: R0, R180, MX, and MY
+
+              Data_type: enum, optional
+
+       -skip_sync
+              When  specified,  the  tool skips the sync-up of reference hinst
+              (-hinst) objects with other hinsts of the same module.
+
+              Data_type: bool, optional
+
+       -sync_objs {placeBlockage routeBlockage pinBlockage macros fences}
+              When specified, the tool does the sync-up of the  specified  ob-
+              jects from reference hinst with other hinsts of same module. The
+              objects that can be synced up include placeBlockage, routeBlock-
+              age, pinBlockage, macros, and  fences.
+
+              Data_type: string, optional
+
+Example
+       Hinst: A1 (master), A2 (clone), A3(clone), A4 (clone)
+
+              * The following commands places the clone A2 at location 2,5. If
+                partition  block  has FP/def/route objs/data present, the com-
+                mand will sync the data from A2 to all other hinsts (A1  (mas-
+                ter), A3 , A4 (clones)).
+
+                place_partition_clones -hinst A2 -location {2 5}
+
+              * The  following  commands places the clone A3 at location 12,15
+                and changes the orientation to R180 (if not already R180).  If
+                partition  block  has FP/def/route objs/data present, the com-
+                mand will sync the data from A3 to all other hinsts (A1  (mas-
+                ter), A2 , A4 (clones))
+
+                place_partition_clones  -hinst  A3  -location  {12 15} -orient
+                R180
+
+              * The following commands places the master A1 at location 22,25.
+                If partition block has  FP/def/route  objs/data  present,  the
+                command  will  sync  the data from A1 to all other hinsts (A2,
+                A3, A4 (clones)).
+
+                place_partition_clones -hinst A1 -location {22 25}
+
+              * The following commands places the master A1 at location 22,25.
+                If partition block has  FP/def/route  objs/data  present,  the
+                command will not sync any data to other hinsts.
+
+                place_partition_clones -hinst A1 -location {22 25} -skip_sync
+
+              * The  following  commands places the clone A3 at location 12,15
+                and changes the orientation to R180 (if not already R180).  If
+                partition  block  has FP/def/route objs/data present, the com-
+                mand will not sync any data to other hinsts.
+
+                place_partition_clones -hinst A3  -location  {12  15}  -orient
+                R180 -skip_sync
+
+              * The  following  commands places the clone A3 at location 12,15
+                and changes the orientation to R180 (if not already R180).  If
+                partition  block  has FP/def/route objs/data present, the com-
+                mand will sync the bus-guide data from A3 to all other  hinsts
+                (A1 (master), A2 , A4 (clones)).
+
+                place_partition_clones  -hinst  A3  -location  {12 15} -orient
+                R180 -sync_obj {bus_guide}
+
+Related Information
+              * clonePtnObj
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025place_partition_clone(25.10)

@@ -1,0 +1,192 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+insert_physical_cell(25.10)                        insert_physical_cell(25.10)
+
+Name
+       insert_physical_cell  -  Provides  a  flexible  way to insert and check
+       physical cells
+
+Syntax
+        insert_physical_cell
+
+       [-help]
+
+       [-cell <string>]
+
+       [-genTemplateOnly <string>]
+
+       [-inputFile <filename>]
+
+       [-insertRowAreaBoundary]
+
+       [-averageWindow | { [-insertNearBoundary  ]  [-box  {<x1  y1  x2  y2>}]
+       [-minimalNumberOfTCD <integer>]}]
+
+       [-verifyWindow {<x y>}[ [-verifyOnly ][-xStep <float>] [-yStep <float>]
+       ] ]
+
+       Provides  a  flexible way to insert and check physical cells. It can be
+       used to assign a specific area for physical insertion, not only the die
+       area.
+
+       Note: The insert_physical_cell command is suitable for inserting physi-
+       cal cells as a pattern. The class of these cells must be block and  not
+       core.  The  insert_physical_cell  command  is not when the class of the
+       physical cells is core and there is no requirement for inserting  cells
+       in a pattern.
+
+Parameters
+       -averageWindow
+              When  specified,  it  changes the window calculation approach to
+              average. The size of windows for inserting cell is  the  average
+              of  the  core box. The insertion will be done not exactly in ac-
+              cordance with the size defined in spec file.
+
+              Data_type: bool, optional
+
+       -box {<x1 y1 x2 y2>}
+              Specify the bounding box of the physical cell in <x1 y1 x2 y2>.
+
+              For example, the following command inserts the cell DTCDCELL  in
+              the (x1 y1 x2 y2) box.
+
+              insert_physical_cell -cell DTCDCELL -inputFile SPECFILE -box {x1
+              y1 x2 y2}
+
+              Data_type: box, optional
+
+       -cell <string>
+              Specify the physical cell name.
+
+              Data_type: string, optional
+
+       -genTemplateOnly <string>
+              Generates  a  template file to guide how to define spec file for
+              DTCD, ICOVL and LinerCell.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each insert_physical_cell parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man insert_physical_cell
+
+       -inputFile <filename>
+              Specify the spec file for physical cells.
+
+              Note: The inserted physical cells must be specified  in  a  spec
+              file.  This file specifies the information related to the dimen-
+              sions and spacing physical cells. The tool will insert  physical
+              cells according to these specifications.
+
+              Here is an example of a spec file:
+
+              *************************
+
+              DTCD Cell cell_name
+
+              WinSizeX          # x dimension of DTCD insertion grid box
+
+              WinSizeY          # y dimension of DTCD insertion grid box
+
+              MacroSpacing      # spacing between DTCD cell and macro
+
+              DTCDSpacing       # spacing between DTCD cells
+
+              PlaceBlockSizeX    #  x  dimension  of padded placement blockage
+              around DTCD cell
+
+              PlaceBlockSizeY   # y dimension  of  padded  placement  blockage
+              around DTCD cell
+
+              RouteBlockSizeX    #  x  dimension  of  padded  routing blockage
+              around DTCD cell
+
+              RouteBlockSizeY   #  y  dimension  of  padded  routing  blockage
+              around DTCD cell
+
+              End
+
+              *************************
+
+              Data_type: string, optional
+
+       -insertNearBoundary
+              Inserts physical cells near boundary.
+
+              Note:  When  the  window  size is not exactly divided by gridbox
+              size, you may not get physical cells near boundary.
+
+              For example:
+
+              insert_physical_cell -cell DTCDCELL -inputFile SPECFILE
+
+              insert_physical_cell -cell DTCDcell -inputFile SPECFILE -insert-
+              NearBoundary
+
+              Data_type: bool, optional
+
+       -insertRowAreaBoundary
+              Inserts LinerCell around row area boundary.
+
+              Data_type: bool, optional
+
+       -minimalNumberOfTCD <integer>
+              Specifies the the minimal number of DTCD that must be  inserted.
+              If  the  current windows size definition (WinSizeX and WinSizeY)
+              cannot fit this requirement, the window size is shrunk automati-
+              cally.
+
+              Data_type: int, optional
+
+       -verifyOnly
+              Only verifies the physical cells to inserted. It does not  actu-
+              ally insert them.
+
+              Note:  The -verifyWindow, -xStep, and -yStep parameters are used
+              to specify the size of the window to verify.
+
+              For example:
+
+              insert_physical_cell -cell DTCDCELL -inputFile SPECFILE -verify-
+              Window 100 100 -xStep 100 -yStep 100 -verifyOnly
+
+               insert_physical_cell -cell DTCDCELL -inputFile SPECFILE  -veri-
+              fyWindow 100 100 -xStep 100 -yStep 100
+
+              Data_type: bool, optional
+
+       -verifyWindow {<x y>}
+              Specifies the size of window for verifying the physical cells to
+              be inserted.
+
+              Data_type: point, optional
+
+       -xStep <float>
+              Specifies the x step of the verify window.
+
+              Data_type: float, optional
+
+       -yStep <float>
+              Specifies the y step of the verify window.
+
+              Data_type: float, optional
+
+Example
+              * The  following command inserts the cell DTCDCELL in the (x1 y1
+                x2 y2) box based on the spec specified in the SPECFILE.
+
+                insert_physical_cell -cell DTCDCELL -inputFile  SPECFILE  -box
+                {x1 y1 x2 y2}
+
+              * The  following  command only verifies the cell DTCDCELL in the
+                grid box. It does not insert the cell.
+
+                insert_physical_cell -cell DTCDCELL -inputFile SPECFILE -veri-
+                fyWindow 100 100 -xStep 100 -yStep 100 -verifyOnly
+
+Related Information
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025insert_physical_cell(25.10)

@@ -1,0 +1,196 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+generateCapTbl(25.10)                                    generateCapTbl(25.10)
+
+Name
+       generateCapTbl  -  Reads  in  the interconnect technology (ICT) process
+       file and generates a Capacitance table file
+
+Syntax
+        generateCapTbl
+
+       [-help]
+
+       [-cap <totalCapFactor>]
+
+       [-encrypt]
+
+       -output <fileName>
+
+       [-res <resistanceFactor>]
+
+       [-xcap <crossCouplingFactor>]
+
+       [-lef <fileName> [-shrinkFactor <value>]]
+
+       {-ict <fileName> | -incaptable <fileName>}
+
+       Reads in the interconnect technology (ICT) process file and generates a
+       Capacitance table file. The Capacitance table file  contains  a  header
+       having  a summary of process information and manufacturing effects fol-
+       lowed by tables containing coefficients used during RC extraction.
+
+       The capacitance table is used both for preRoute extraction (above 32nm)
+       and postRoute extraction -effortLevel low.
+
+       Note: For TQuantus, IQuantus, preRoute extraction (32nm and below), and
+       Standalone Quantus, a Quantus Techfile is needed instead of  a  Capaci-
+       tance table.
+
+       The  generateCapTbl command automatically omits the creation of coeffi-
+       cients for the poly layers, local interconnect layers, and mimcap  lay-
+       ers.   The   generateCapTbl  command  recognizes  poly  layers  by  the
+       gate_forming_layer true statement.
+
+       Note: The command accepts ICT files that contain the gate_forming_layer
+       true construct in multiple conductor sections to allow handling of dif-
+       fusion models as a conductor. In this case, the Innovus captable gener-
+       ation process ignores all but the  last  gate_forming_layer  true  con-
+       struct.  The  last  one is considered as poly and is used as the ground
+       plate level for the metal layers above.
+
+       The command does not support  grown_from_conformal  (non-planar  stack)
+       construct defined in the ICT file.
+
+       You can use the multi-CPU processing commands to generate a capacitance
+       table  in the parallel mode. However, this functionality is only avail-
+       able when invoking generateCapTbl from the  software  prompt,  and  not
+       from the standalone utility generateCapTbl.
+
+       To  generate  a  capacitance  table file in the parallel mode, you must
+       first set up the multiple-CPU processing mode  using  the  multiple-CPU
+       processing commands.
+
+       See  the  following  multiple-CPU processing commands for more informa-
+       tion:
+
+              * setDistributeHost
+
+              * setMultiCpuUsage
+
+       For more information, see Distributed Processing in Extraction  in  the
+       Innovus User Guide.
+
+       Examples
+
+              * To run the generateCapTbl command in the parallel mode on dif-
+                ferent hosts, specify the following commands:
+
+                setDistributeHost -rsh -add { host1 host2 host3 }
+
+                setMultiCpuUsage -remoteHost 3
+
+                generateCapTbl -ict sample.ict -output sample.capTbl
+
+              * To  run the generateCapTbl command with three threads, specify
+                the following commands:
+
+                setDistributeHost -local
+
+                setMultiCpuUsage -localCpu 3
+
+                generateCapTbl -ict sample.ict -output sample.capTbl
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each generateCaptbl parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command:
+
+               man generateCaptbl
+
+       -cap <totalCapFactor>
+              Specifies the capacitance scale factor. Use this parameter  with
+              the  -incaptable  parameter to generate a capacitance table with
+              capacitance values scaled by the specified scale factor.
+
+       -encrypt
+              Encrypts the generated capacitance table to protect the  process
+              information  in  the  capacitance table header. When you use the
+              create_rc_corner -cap_table command to read the encrypted capac-
+              itance table, the software writes the version  number  that  was
+              used  to  generate  the file, and the name of the process to the
+              log file.
+
+       -ict <fileName>
+              Specifies the name and path to the ICT (interconnect technology)
+              process file.
+
+              To support multiple process corners, a capacitance table  should
+              be created for each corner from the matching corner ICT file.
+
+       -incaptable <fileName>
+              Specifies  the  name  of  an existing capacitance table in ASCII
+              format. You use this parameter along with the -encrypt parameter
+              to create an encrypted version of an existing capacitance file.
+
+              Note: The -ict and -incaptable parameters are mutualy exclusive.
+              One of the two parameters must be specified.
+
+       -lef <fileName>
+              Specifies the name and the full path to the process LEF file for
+              optimal accuracy. With the LEF file, this parameter generates  a
+              capacitance  table  by using the actual wire widths as specified
+              in the non-default rules defined in the LEF.  Without  the  LEF,
+              the  software  uses generic widths and spacings, which might in-
+              crease the need for interpolation during extraction.
+
+       -output <fileName>
+              Specifies the output filename that contains the capacitance  ta-
+              ble. This is a required parameter.
+
+       -res <resistanceFactor>
+              Specifies  the  resistance scale factor. Use this parameter with
+              the -incaptable parameter to generate a capacitance  table  with
+              resistance values scaled by the specified scale factor.
+
+       -shrinkFactor <value>
+              Specifies  the  value  by which the measurements in the optional
+              LEF file have to be shrunk for the technology used with this de-
+              sign. Use this parameter only with the -lef parameter  and  when
+              the  LEF  technology does not match the target technology in the
+              ICT file. Innovus scales the dimensions  when  reading  the  LEF
+              file  using  the shrinkFactor specified. The ICT file should al-
+              ways refer to the target technology (min width and min spacing).
+
+              Note: When working on a design that needs to be scaled  down  in
+              Innovus,  you  must  also set the shrinkfactor in Design Import.
+              This tells the extractor to scale  down  all  geometries  before
+              processing.
+
+              When  the ICT file contains a layout_scale in the process decla-
+              ration part, you do not need to specify the  shrink  factor.  In
+              this  case,  the  embedded shrink factor will also be written in
+              the captable header. Also, there is then  no  need  to  set  the
+              shrink  factor  in  the  Design  Import  form. The embedded lay-
+              out_scale is used to support half nodes such as 40nm technology.
+
+              Default: 1.0
+
+       -xcap <crossCouplingFactor>
+              Specifies the cross-coupling capacitance scale factor. Use  this
+              parameter  with  the -incaptable parameter to generate a capaci-
+              tance table with cross-coupling capacitance values scaled by the
+              specified scale factor.
+
+Example
+       The following command reads in the ICT file test.ict, and  generates  a
+       new.capTbl output file:
+
+       generateCapTbl -ict test.ict -output new.CapTbl
+
+Related Information
+              * create_rc_corner
+
+              * extractRC
+
+              * setExtractRCMode
+
+              * setDistributeHost
+
+              * setMultiCpuUsage
+
+              * The following topic in the Innovus User Guide
+
+                     * Generating a Capacitance Table
+
+                           Fri Apr 04 01:25:37 2025      generateCapTbl(25.10)

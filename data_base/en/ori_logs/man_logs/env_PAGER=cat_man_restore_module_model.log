@@ -1,0 +1,237 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+restore_module_model(25.10)                        restore_module_model(25.10)
+
+Name
+       restore_module_model  -  Restores  a design from a default module model
+       repository
+
+Syntax
+       restore_module_model
+
+       [-help]
+
+       [-dynamic_view <string>]
+
+       [-hold_views <string>]
+
+       [-leakage_view <string>]
+
+       [-lef_files <string>]
+
+       [-mmmcFile <string>]
+
+       [-noTiming]
+
+       [-noTimingGraph]
+
+       [-setup_views <string>]
+
+       [-tag <tag_name>]
+
+       {<cell_name> | -cell <cell_name>}
+
+       [<options>]
+
+       [-add_ons {1801 mmmc spef eco latency scan_info timing_context  extrac-
+       tion_context pin_assign}]
+
+       Restores  a  design from a default module model repository. You can use
+       this command only after the default central directory  name  where  the
+       module  model  data  will  be saved/loaded has been specified using the
+       set_module_model -default_dir command.
+
+       The restore_module_model command provides you the following  flexibili-
+       ties:
+
+              * Ability to provide your own ECO script. The ECO script must be
+                located at <cell>/<tag>/eco/<cell>_eco.tcl.
+
+              * Ability to read/restore a design of a specific tag but its ECO
+                file can be loaded from a different tag.
+
+       This  feature  is  useful  when  the  ECO  changes are done with an old
+       netlist drop and a new netlist drop is saved with a different tag.
+
+       For example:
+
+       restore_module_model -cell tdsp_core -tag my_postcts  -add_ons  {anoth-
+       erTag/eco}
+
+       Supported short-hand restore_module_model usage model:
+
+       restore_module_model <dir>/<cell>/<tag> [-add_ons {add_on_type}]
+
+       restore_module_model <cell>/<tag> [-add_ons {add_on_type}] ;# Local di-
+       rectory
+
+       restore_module_model  <cell> -tag <tag> [-add_ons {add_on_type}] ;# De-
+       fault root dir
+
+Parameters
+       -add_ons {1801 mmmc spef eco latency scan_info timing_context extrac-
+       tion_context pin_assign}
+              Specifies the supplement model that can be  loaded  additionally
+              with an existing model or a design.
+
+              For example:
+
+              * The following command restores the ptn_wrapper design that has
+                my_extract_v1   tag  and  also bring in its extraction_context
+                add_on model:
+
+                restore_module_model ptn_wrapper -tag  my_extract_v1  -add_ons
+                {extraction_context}
+
+              *
+
+                The  following commands show the location from where mmmc data
+                will be loaded during restore_module_model according to  usage
+                of  -add_ons {mmmc}
+
+                * restore_module_model Ptn1 -tag  XYZ
+
+                  Uses  view  definition located inside .enc.dat in pnr direc-
+                  tory of tag XYZ
+
+                * restore_module_model Ptn1 -tag  XYZ -add_ons {ABCD/mmmc}
+
+                  Uses view definition from mmmc directory of tag ABCD
+
+                * restore_module_model Ptn1 -tag  XYZ -add_ons {mmmc}
+
+                  Uses view definition from mmmc directory of tag XYZ
+
+              Note: For more information about saving data  in  separate  tags
+              in the mmmc directory, see
+
+              saveTimingBudget -module_model_tag
+
+              Data_type: string, optional
+
+       <cell_name |>-cell< cell_name>
+              Specifies the module model name.
+
+              Note: This parameter must be specified.
+
+              Data_type: string, required
+
+       -dynamic_view <string>
+              Specifies the dynamic view.
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each restore_module_model parameter. For  a  de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man restore_module_model
+
+       -hold_views <string>
+              Specifies the hold views.
+
+              Note:  The  -setup_views  and -hold_views parameters specify the
+              active analysis views for the loaded design.
+
+              Data_type: string, optional
+
+       -leakage_view <string>
+              Specifies the leakage view.
+
+              Data_type: string, optional
+
+       -lef_files <string>
+              Specifies the lef file(s).
+
+              Data_type: string, optional
+
+       -mmmcFile <string>
+              Specifies the MMMC view file(s)
+
+              Data_type: string, optional
+
+       -noTiming
+              Ignores timing libraries and MMMC configuration
+
+              Data_type: bool, optional
+
+       -noTimingGraph
+              Specifies not to load timing graph.
+
+              Data_type: bool, optional
+
+       <options>
+              Specifies the restoreDesign options.
+
+              Data_type: string, optional
+
+       -setup_views <string>
+              Enables you to setup views.
+
+              Note: The -setup_views and -hold_views  parameters  specify  the
+              active analysis views for the loaded design.
+
+              Data_type: string, optional
+
+       -tag <tag_name>
+              Specifies the tag name of the flow.
+
+              Note:  If tag_name is not specified, 'latest' is used as the de-
+              fault tag value.
+
+              Data_type: string, optional
+
+Example
+              * The following  command  restores  the  dtmf_recvr_core  module
+                model that has the start tag.
+
+                restore_module_model -cell dtmf_recvr_core -tag start
+
+              * The  following  commands  restore the ptn_wrapper design along
+                with its DEF extraction context to do hierarchical extraction:
+
+                restore_module_model ptn_wrapper -tag  my_extract_v1  -add_ons
+                {extraction_context}
+
+                #Load in the detailed LEF abstract of ram_128x16_test
+
+                set_module_model  -cell  ram_128x16_test -type lef -tag my_ex-
+                tract_v1
+
+                commit_module_model
+
+                earlyGlobalRoute
+
+                setExtractRCMode -engine postRoute
+
+                extractRC
+
+                rcOut -spef with_detailed_def.spef
+
+              *
+
+Related Information
+              * check_module_model
+
+              * commit_module_model
+
+              * create_module_model
+
+              * report_module_model
+
+              * savePartition
+
+              * set_module_model
+
+              * update_module_model
+
+              * write_module_model_context
+
+              * Hierarchical and Prototyping Flow chapter in the Innovus  User
+                Guide
+
+                *
+
+                  Integrated Hierarchical Database Flow
+
+                           Fri Apr 04 01:25:37 2025restore_module_model(25.10)

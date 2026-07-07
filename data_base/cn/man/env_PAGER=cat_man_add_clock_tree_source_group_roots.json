@@ -1,0 +1,69 @@
+{
+  "command": "add_clock_tree_source_group_roots",
+  "is_cmd": true,
+  "summary": "在指定驱动根引脚下创建多树'源组'，更新设计和时钟树规范",
+  "description": "此命令用于更新设计和时钟树规范，在指定的驱动根引脚下创建一个多树'源组'。源组是一组逻辑上等效的多个时钟树，用于驱动一组时钟树接收器。具体的接收器分配到哪个源组根是在时钟树综合期间选择的。该命令执行以下任务：1. 将将成为时钟树根的实例插入网表中。它们的输入引脚将由根引脚驱动，而原来由根引脚驱动的扇出将被重新连接到单个根实例的输出。2. 在每个新插入的根实例的输出端定义时钟树。3. 定义一个时钟源组来组合这些时钟树。您可以插入一个抽头缓冲器网格，并省略位于被阻挡网格点的抽头缓冲器。为此，您可以指定网格坐标（一个{x y}的数值对），将源组驱动器放置在该位置。",
+  "usage": "add_clock_tree_source_group_roots [-help] -cell <driverCell> [-locations {{x1 y1} {x2 y2}...}] -name <sourceGroupName> -pin <rootPin> [-grid {columns rows} [[-adjust_grid_for_aspect_ratio] [-grid_rect {lx ly ux uy}] [-grid_search_area {width height}] [-grid_exclusion_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}]]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个add_clock_tree_source_group_roots参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cell",
+      "description": "指定用于新源组根（libCell/ptnCell）的缓冲器单元。这是一个必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-locations",
+      "description": "指定要创建的新根的位置（x,y）列表。指定的根将被插入到最近的法律位置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定要为根创建的源组的名称。该名称应是唯一的。多抽头根将使用此字符串作为前缀命名。这是一个必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定将驱动多抽头根输入的根引脚名称。该引脚必须是输出引脚并且必须驱动一个网络。这是一个必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-grid",
+      "description": "指定目标位置的网格。默认情况下，命令尝试创建一个由列和行组成的完整网格。但是，如果某个网格目标点落在使用-grid_exclusion_rects参数指定的排除矩形内，则该网格点将被跳过。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-adjust_grid_for_aspect_ratio",
+      "description": "指定时，交换行和列以匹配宽高比。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-grid_rect",
+      "description": "指定网格应覆盖的区域。此参数提供由-grid参数请求的抽头预期驱动的整体矩形。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-grid_search_area",
+      "description": "指定每个网格点周围的搜索区域大小。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-grid_exclusion_rects",
+      "description": "提供不应包含源组根的矩形区域的坐标。任何落在排除矩形内的网格将被忽略。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

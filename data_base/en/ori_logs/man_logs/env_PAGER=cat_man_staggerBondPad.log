@@ -1,0 +1,238 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+staggerBondPad(25.10)                                    staggerBondPad(25.10)
+
+Name
+       staggerBondPad  -  Generates a staggered wirebond pad pattern on top of
+       an existing I/O ring
+
+Syntax
+       staggerBondPad
+
+       [-help]
+
+       {-startIoInstName <instName> [-endIoInstName <instName>] | -ring  <num-
+       ber> |
+
+       -side {e | w | n | s} [-ring <number>] | -all}
+
+       {-pattern <pattern_string> | -startStaggerPosition {i | m | o}}
+
+       [-pad <position><padName position padName...>]
+
+       [-pinName <pinName>]
+
+       Generates  a  staggered  wirebond pad pattern on top of an existing I/O
+       ring. In this design methodology, bond pads are separate LEF macro def-
+       initions from the I/O driver cells, but are placed on top  of  the  I/O
+       driver cells to form the combined bond pad and I/O driver circuitry.
+
+       The command only supports CLASS PAD  instances.
+
+       To  produce  the staggered pattern, multiple bond pad cells are defined
+       in the LEF for each I/O cell, each with its bond pad in a specific  lo-
+       cation  corresponding  to  an outer, middle, or inner stagger position.
+       The bond pads are defined such that when placed on the  I/O  cell,  any
+       one  of  them  will  connect to the I/O cell pin with no or minimal RDL
+       routing.
+
+       Innovus generates a stagger pattern by selecting the outer, middle,  or
+       inner  stagger bond pad to place on each I/O cell based on the location
+       of that I/O instance in the I/O ring and the pattern that is being gen-
+       erated. If the order of the I/O cells is changed, or if cells are added
+       or deleted, the stagger pattern may be regenerated.  Because  the  bond
+       pad macros are separately defined, they can be easily swapped with bond
+       pads  of  different stagger positions without changing the logic of the
+       design.
+
+       To define the relationship between the bond pads and I/O cells  in  the
+       LEF file,
+
+       the  following  properties  must be defined in each LEF file where they
+       are referenced:
+
+       PROPERTYDEFINITIONS
+
+        PIN bondPadOuter STRING;
+
+        PIN bondPadMiddle STRING;
+
+        PIN bondPadInner STRING;
+
+        PIN ioCellOriginX REAL;
+
+        PIN ioCellOriginY REAL;
+
+        MACRO ioCellOffsetX REAL;
+
+        MACRO ioCellOffsetY REAL;
+
+        END PROPERTYDEFINITIONS
+
+       The LEF macros define the property values as follows:
+
+       MACRO IOCELL
+
+        CLASS PAD ;
+
+        ...
+
+        SIZE 50.0 BY 225 ;
+
+        ...
+
+        PIN PAD
+
+        PROPERTY bondPadOuter "BUMPA BUMPA1 BUMPD" ;
+
+        PROPERTY bondPadMiddle "BUMPB" ;
+
+        PROPERTY bondPadInner "BUMPC" ;
+
+        PROPERTY ioCellOriginX 25.0 ;
+
+        PROPERTY ioCellOriginY 0.0 ;
+
+        END PAD
+
+        END IOCELL
+
+       MACRO BUMPA
+
+        CLASS COVER BUMP
+
+        ...
+
+        PROPERTY ioCellOffsetX -40 ;
+
+        PROPERTY ioCellOffsetY -70 ;
+
+        END BUMPA
+
+       Innovus automatically names the stagger bond pads as:
+
+       <IoCellInstName>_PAD<#>
+
+       Here:
+
+              * <IoCellInstName> - Specifies the instance name of the I/O cell
+                on which the bond pad is being placed.
+
+              * <#> - Specifies the incremented bond pad number. The number  1
+                is  used  for  all single pad I/O cells. This number is incre-
+                mented when there are multiple bond pads on a single I/O cell.
+
+                For example, if I/O cell CKdiff contained two pins,  two  bond
+                pads would be placed on this cell and named as CKdiff_PAD1 and
+                CKdiff_PAD2.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each staggerBondPad parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man staggerBondPad
+
+       -all   Specifies that bond pads will be placed on all I/O instances.
+
+       -endIoInstName <instName>
+              Specifies the name of the last I/O instance of where  bond  pads
+              will  be  placed. You can use this parameter in conjunction with
+              the -startIoInstName parameter.
+
+              Note: Bond pads are placed in  a  clock-wise  pattern  from  the
+              starting  I/O  instance  (-startIoInstName)  to the last I/O in-
+              stance (-endIoInstName).
+
+       -pad <position><padName><position><padName>...
+              Specifies which bond pad and position to use when multiple  bond
+              pads are specified in the LEF file for a given inner (i), middle
+              (m), or outer (o) position.
+
+              For example, If there are three outer bond pads specified in the
+              LEF file, you can use this parameter to choose which bond pad to
+              use as the outer bond pad.
+
+              Default:  The  software  uses  the first bond pad in the list of
+              bond pads for a given position.
+
+       -pattern <pattern_string>
+              Specifies the stagger pattern of the bond pads on  the  I/O  in-
+              stances.  <pattern_string>  specifies  any combination of i (in-
+              ner), m (middle), and o (outer).
+
+       -pinName <pinName>
+              Specifies the name of the pin inside the instance.  If  the  in-
+              stance specified by the -startIoInstName parameter contains mul-
+              tiple pins, you use this parameter to specify which pin to start
+              with.
+
+       -ring <number>
+              Specifies  which  ring to operate on with ring 1 being the outer
+              most ring. The ring number is incremented  by  one  as  you  get
+              closer to the core. For a three-ring design, the inner most ring
+              is ring 3.
+
+       -side {e | w | n | s}
+              Specifies  the geographical side of the die. You can specify the
+              East (e), West (w), North (n), or South (s) side of the die.
+
+       -startIoInstName <instName>
+              Specifies the name of the first I/O instance of where bond  pads
+              will  be  placed. You can use this parameter in conjunction with
+              the -endIoInstName parameter. If multiple pins exist in the  in-
+              stance, you can use the
+
+              -pinName parameter to specify which pin to start with.
+
+              Note:  Bond  pads  are  placed  in a clock-wise pattern from the
+              starting I/O instance (-startIoInstName) to  the  last  I/O  in-
+              stance (-endIoInstName) if applicable.
+
+       -startStaggerPosition {i | m | o}
+              Specifies  the  starting  stagger position of the specified bond
+              pad (-pad) on the specified I/O instance
+
+              (-startIoInstName). You can start the stagger  position  of  the
+              bond pad using the inner (i), middle (m), or outer (o) position.
+              The  default stagger position sequence is inner (i), middle (m),
+              and outer (o). If you start with a stagger  position  of  middle
+              (m),  the  next bond pad is placed in an outer (o) stagger posi-
+              tion followed by a bond pad placed in an inner (i) stagger posi-
+              tion.
+
+Example
+              * The following command places bond pads on  all  I/O  instances
+                using  a stagger pattern of inner, outer, and middle and using
+                bond pad BUMPA1 at the outer position:
+
+                staggerBondPad -all -pattern iom -pad o BUMPA1
+
+              * The following command places bond pads on the I/O instances of
+                the outer most ring (East  side)  starting  with  a  bond  pad
+                placed in the middle stagger position:
+
+                staggerBondPad -side e -startStaggerPosition m -ring 1
+
+              * The  following  command places bond pads from I/O instance abc
+                to I/O instance xyz, starting with pin PAD of I/O instance abc
+                and using an inner, inner, outer stagger pattern:
+
+                staggerBondPad -startIoInstName abc -endIoInstName  xyz  -pin-
+                Name PAD -pattern iio
+
+Related Information
+              * checkBondPadSpacing
+
+              * fixBondPad
+
+              * getBondPad
+
+              * placeBondPad
+
+              * spaceBondPad
+
+              * unfixBondPad
+
+                           Fri Apr 04 01:25:37 2025      staggerBondPad(25.10)

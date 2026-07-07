@@ -1,0 +1,309 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setEcoMode(25.10)                                            setEcoMode(25.10)
+
+Name
+       setEcoMode   -   Controls  certain  behaviors  of  the  ecoAddRepeater,
+       ecoChangeCell, and ecoDeleteRepeater ECO commands
+
+Syntax
+       setEcoMode
+
+       [-help]
+
+       [-addPortAsNeeded {true|false}]
+
+       [-batchMode {true|false}]
+
+       [-reset]
+
+       [-honorDontTouch {true|false}]
+
+       [-honorDontUse {true|false}]
+
+       [-honorFixedNetWire {true|false}]
+
+       [-honorFixedStatus {true|false}]
+
+       [-honorPowerIntent {true|false}]
+
+       [-inheritNetAttr {true|false}]
+
+       [-LEQCheck {true|false}]
+
+       [-modifyOnlyLayers <bottom_layer>:<top_layer>]
+
+       [-prefixName <prefix>]
+
+       [-preserveModuleFunction {true|false}]
+
+       [-refinePlace {true|false}]
+
+       [-spreadInverter {true|false}]e
+
+       [-updateTiming {true|false}]
+
+       [-delayCalcEffort <effort_level>]
+
+       Controls certain behaviors of the  ecoAddRepeater,  ecoChangeCell,  and
+       ecoDeleteRepeater ECO commands.
+
+       Use the getEcoMode command to return the current settings for the setE-
+       coMode command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setEcoMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setEcoMode.
+
+       -addPortAsNeeded {true|false}
+              Controls whether interactive ECO adds ports to  the  lower-level
+              hierarchies  of the design. It only works during interactive ECO
+              and overwrites the value of setOptMode -addPortAsNeeded for  the
+              ECO  commands,  ecoAddRepeater,  ecoChangeCell, and ecoDeleteRe-
+              peater.
+
+              Default: true
+
+       -batchMode {true|false}
+              Speeds up the runtime in case the user performs lots of interac-
+              tive ECO operations. When the  user  specifies  batchMode  true,
+              various  ECO operations are performed in a batch and initializa-
+              tion steps are not performed for every ECO  call.  In  addition,
+              updating  timing  is  performed only once for all the ECO opera-
+              tions. Tool will only perform timing initialization at the first
+              ECO command in the batch mode and timing update at the  time  of
+              exiting  the batchMode. User needs to specify batchMode false to
+              exit the batchMode.
+
+              The batch mode is activated by setEcoMode  -batchMode  true  and
+              exited by setEcoMode -batchMode false, and only ecoAddRepeater ,
+              ecoDeleteRepeater  and  ecoChangeCell  could be given in between
+              setEcoMode -batchMode true and  setEcoMode -batchMode false:
+
+              setEcoMode -batchMode true
+
+              eco commands (ecoAddRepeater, ecoDeleteRepeater, ecoChangeCell)
+
+              setEcoMode -batchMode false
+
+              If a user activates the batch mode, then the user needs  to  re-
+              member to exit it. If the user does not exit the batch mode, the
+              user might see some unexpected results.
+
+              The refinePlace command will not be called in batchMode. It will
+              be  called  when the tool exits the batchMode and if refinePlace
+              is set to true.
+
+              All other setEcoMode settings should be made prior to activating
+              batch mode. If you would like to change setEcoMode settings, you
+              need to exit the batch mode first.
+
+              Note: This option supports all commit ECO  commands.  Evaluation
+              commands are not supported.
+
+       -delayCalcEffort  <effort_level>
+              Specifies  the  delay  calculation effort level { low | medium |
+              high } used in timing update.
+
+              Default: high
+
+       -honorDontTouch {true|false}
+              Checks for the don't touch attribute on nets and  instances.  If
+              you specify a terminal list, this parameter checks each terminal
+              for the don't touch attribute. The ecoAddRepeater command honors
+              the  don't  touch  nets. The ecoDeleteRepeater and ecoChangeCell
+              commands honor don't touch instances.
+
+              Default: true
+
+       -honorDontUse {true|false}
+              Checks for the don't use attribute on cells. The ecoAddRepeater,
+              ecoDeleteRepeater, and ecoChangeCell commands  honor  don't  use
+              cells.
+
+              Default: true
+
+       -honorFixedNetWire {true|false}
+              Checks for fixed net wires.
+
+              It  restricts  the addition or deletion on fixed net so that the
+              fixed status of the wires is not altered.
+
+              Default: true
+
+              When -honorFixedNetWire is set to false, ecoAddRepeater can  in-
+              sert  a cell on the wires with the FIXED/COVER status and change
+              the status of these wires from FIXED/COVER to ROUTED.
+
+       -honorFixedStatus {true|false}
+              Does not allow preplaced, fixed instances to be resized.
+
+              Default: true
+
+       -honorPowerIntent {true|false}
+              Performs MSV checks during ECO. When set to true:
+
+              * ecoChangeCell does not allow:
+
+                * Resizing a regular cell with an always-on  cell  (and  vice-
+                  versa).
+
+                * Resizing with cells belonging to different power domains.
+
+              * ecoAddRepeater does not allow:
+
+                * Adding buffer to a power domain it doesn't belong to.
+
+                * Buffering  a cross power domain net if it can cause MSV vio-
+                  lations.
+
+                * Adding a regular buffer to a net that requires an  always-on
+                  buffer.
+
+                * Adding an always-on buffer to a net that does not require an
+                  always-on buffer.
+
+              * ecoDeleteRepeater  does  not  allow deletion of a buffer or an
+                inverter-pair that will cause:
+
+                *
+                   A redundant isolation cell.
+
+                *
+                   A CPF-constrained net to be deleted.
+
+              Note:  To prevent buffer  insertion  failure  due  to  MSV  con-
+              straints, you need to set -honorPowerIntent to false.
+
+              Default: true
+
+       -inheritNetAttr {true | false}
+              Inherits the net attribute.
+
+              Default: true
+
+       -LEQCheck {true|false}
+              Enables functionality checking when swapping cells. The software
+              can swap cells that are logically equivalent.
+
+              When -LEQCheck is true:
+
+              * ecoAddRepeater adds inverter pair if the specified cell is in-
+                verter.
+
+              * ecoDeleteRepeater  deletes  inverter pair if the specified in-
+                stance is inverter.
+
+              * ecoChangeCell changes cell to another cell type with the  same
+                function as long as they have same number of pins.
+
+              When -LEQCheck is set to false:
+
+              * ecoAddRepeater  can add only one single inverter if the speci-
+                fied cell is inverter.
+
+              * ecoDeleteRepeater can delete only one single inverter  if  the
+                specified instance is inverter.
+
+              * ecoChangeCell can perform nonequivalent cell change as long as
+                they have same number of pins.
+
+              Default: true
+
+       -modifyOnlyLayers <bottom_layer>:<top_layer>
+              Modifies  routes only on metal layers in this range (both inclu-
+              sive).
+
+              Default:""
+
+       -prefixName <prefix>
+              Adds a prefix to the inserted cells.
+
+              Default: ECO
+
+              Note: If the prefix name for eco  cells  is  changed  using  the
+              -prefixName option, it is not honored when the ECO batch mode is
+              turned on.
+
+       -preserveModuleFunction {true|false}
+              Determines whether to preserve logical functions at hierarchical
+              module  ports.  It  only works for manual ECO commands and over-
+              writes the value of setOptMode  -opt_preserve_hpin_function  for
+              the    ECO    commands,   ecoAddRepeater,   ecoChangeCell,   and
+              ecoDeleteRepeater.
+
+              The setOptMode -preserveModuleFuntion setting overrides  setEco-
+              Mode  -preserveModuleFuntion  unless  you explicitly set the eco
+              mode.
+
+              Default: false
+
+       -refinePlace {true|false}
+              Legalizes placement whenever ecoAddRepeater or ecoChangeCell are
+              used. If false, you must run refinePlace after ECO if  you  want
+              to legalize placement.
+
+              Note:  Specifying  -refinePlace true can affect performance when
+              large numbers of cells are added or modified.
+
+              Default: true
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be  the first parameter specified. If you specify reset by
+              itself, the software resets all setEcoMode parameters  to  their
+              default  values.  If  you  specify  parameters after -reset, the
+              software resets only those parameters to their default values.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+       -spreadInverter {true|false}
+              Distributes  an  inverter pair evenly between the driver and the
+              sink. It works when the buffering nets have only one driver  and
+              one  sink. The design must be routed before you use this parame-
+              ter.
+
+              Default: true
+
+       -updateTiming {true|false}
+              Controls whether to eco* commands recompute timing. If true, the
+              eco* commands recompute timing. If false, the  commands  do  not
+              recompute  timing,  and us can later use report_timing to recom-
+              pute timing.
+
+              Default: true
+
+Examples
+              * The following command does  not  legalize  placement  whenever
+                ecoAddRepeater or ecoChangeCell are used:
+
+                setEcoMode -refinePlace false
+
+              * The  following command resets the -honorDontTouch parameter to
+                its default value:
+
+                setEcoMode -reset -honorDontTouch
+
+              * The following command  resets  all  setEcoMode  parameters  to
+                their default values:
+
+                setEcoMode -reset
+
+Related Information
+              * ecoAddRepeater
+
+              * ecoChangeCell
+
+              * ecoDeleteRepeater
+
+              * getEcoMode
+
+              * refinePlace
+
+              * report_timing
+
+              * setOptMode
+
+                           Fri Apr 04 01:25:37 2025          setEcoMode(25.10)

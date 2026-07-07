@@ -1,0 +1,45 @@
+{
+  "command": "genPinText",
+  "is_cmd": true,
+  "summary": "为网表和单元生成包含引脚文本信息的文件",
+  "description": "生成一个包含网表和单元引脚文本信息的文件。该文件可读入Dracula或Assura等版图与原理图比对（LVS）工具，用于调试问题区域。通常在Innovus中完成设计布局、布线和验证后使用此命令。注意：引脚标签附着在物理引脚图形上。如果物理引脚图形不存在，引脚文本将标记在任何实例引脚图形上。如果网表上既不存在物理引脚图形也不存在实例引脚图形，则不会在输出中生成引脚文本。",
+  "usage": "genPinText [-format {assura dracula pvs}] [-help] [-layerMap <fileName>] [-offset {<x> <y>}] {[-nets {<nets...>}] [-cells {<cells>...}]} <pin_text_file>",
+  "options": [
+    {
+      "name": "-format",
+      "description": "指定输出格式。可选值为 assura, dracula, pvs。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-help",
+      "description": "输出包含每个genPinText参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layerMap",
+      "description": "指定包含LEF层与LVS工具中定义的层之间映射关系的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-offset",
+      "description": "指定设计在GDSII输出文件中的位置（以微米为单位）。保存GDSII输出文件时，设计将移动到指定位置。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "列出需要生成引脚文本的网表名称列表。不能使用通配符(*)指定所有网表。必须使用大括号{}将网表列表括起来。如果希望与Dracula一起使用此文件，则不应与-cells参数同时指定；但如果使用Assura或第三方LVS工具，则可以同时指定这两个参数。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-cells",
+      "description": "指定要为其生成引脚文本信息的底层单元或顶层单元列表。单元列表可以在大括号或引号内指定。此外，可以使用\"*\"输出所有单元的引脚文本信息。生成的引脚文本的x y坐标是相对于该单元的本地用户单位坐标。如果希望与Dracula一起使用此文件，则不应与-nets参数同时指定；但如果使用Assura或第三方LVS工具，则可以同时指定这两个参数。",
+      "required": false,
+      "type": "inst+"
+    }
+  ]
+}

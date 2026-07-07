@@ -1,0 +1,199 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportCongestArea(25.10)                              reportCongestArea(25.10)
+
+Name
+       reportCongestArea - Reports the congestion hot spots in the design
+
+Syntax
+       reportCongestArea
+
+       [-help]
+
+       [-num [all | <numOfHotSpot>]]
+
+       [-cutOffRatio <cutOffRatioOfPeakHotSpot>]
+
+       [-cutOffValue <cutOffCongestNum>]
+
+       [-mode <modeName>]
+
+       [-step <num>]
+
+       [-cutoffArea <cutOffGcellNum>]
+
+       [-outfile <fileName>]
+
+       Reports the congestion hot spots in the design.
+
+       The  Innovus software uses the following algorithm to define the bound-
+       aries of hot spots:
+
+              * Finds the most over-congested gcell (that is, the  gcell  with
+                the  largest  overflow value) in the design. A gcell has over-
+                flow if its demand exceeds its supply. Typically,  the  supply
+                is  the  number of unobstructed tracks crossing the gcell, and
+                the demand is the number of wires assigned to it.
+
+              * Starting from the over-congested  gcell,  checks  a  specified
+                number  of gcells (using -step) in one direction  for  conges-
+                tion. If the gcells  have an overflow value that is less  than
+                the  specified  congestion  threshold  (using  -cutOffRatio or
+                -cutOffValue), the software determines this to be the boundary
+                for that side of the hot  spot, and begins checking in  a  new
+                direction.
+
+              * After  the  software  establishes the boundaries for the first
+                hot spot, it finds the next most over-congested gcell that  is
+                not  part  of the already defined hot spot and begins defining
+                the boundaries for it. You can use the reportCongestArea  com-
+                mand after running Early Global Route.
+
+Parameters
+       -cutoffArea <cutOffGcellNum>
+              Filters  out  any  hot  spots  that  have  an area (specified in
+              gcells) that is less than <cutOffGcellNum.>
+
+              Default: 0 (Reports all hot spots in the design)
+
+              Data_type: int, optional
+
+       -cutOffRatio  <cutOffRatioOfPeakHotSpot>
+              Specifies the minimum congestion threshold value  a  gcell  must
+              have  to  be  considered part of the hot spot, as a ratio of the
+              peak overflow value.
+
+              The software checks the congestion for the gcell by dividing the
+              overflow value of the most over-congested gcell  (that  is,  the
+              peak  overflow value) by the overflow value of the gcell. If the
+              resulting congestion value is less than  the  specified  <cutOf-
+              fRatioOfPeakHotSpot>,  the  software  determines  this to be the
+              boundary for that side of the hot spot, and begins checking in a
+              new direction.
+
+              Min: 0
+
+              Max: 1
+
+              Default: 0.01
+
+              Data_type: float, optional
+
+       -cutOffValue <cutOffCongestNum>
+              Specifies the minimum overflow value a gcell  must  have  to  be
+              considered part of the hot spot.
+
+              Default: -2
+
+              Data_type: int, optional
+
+       -mode <modeName>
+              Specifies  the  mode,  average  or  max, on which congestion hot
+              spots in the design are reported.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each reportCongestArea parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+               man reportCongestArea.
+
+       -num [all |<numOfHotSpot>]
+              Specifies how many hot spots to report.
+
+              Default: 10
+
+              * all: Reports all hot spots in the design.
+
+              * <numOfHotSpot>:  Reports  up  to  the  specified number of hot
+                spots in the design.
+
+              Data_type: string, optional
+
+       -outfile<fileName>
+              Outputs the hot spot report to the specified file.
+
+              Data_type: string, optional
+
+       -step<num>
+              Specifies the number of gcells to check for congestion.
+
+              Default: 3
+
+              Data_type: string, optional
+
+Examples
+              * The following command outputs a report describing up to10  hot
+                spots in the design that are found by checking three gcells at
+                a  time,  using  an  absolute congestion threshold of -2 and a
+                relative threshold value of 0.01:
+
+                reportCongestArea -step 3 -cutoffRatio  0.010000  -cutoffValue
+                -2 -num 10 -mode average
+
+                The  resulting report contains the following hot spot informa-
+                tion for vertical and horizontal congestion:
+
+                * The largest overflow value for the hot spot (#Peak)
+
+                * The location of the gcell that contains the largest overflow
+                  value (Location)
+
+                * The boundary coordinates for the hot spot (Boundary Box)
+
+                * The area of the hot spot, in gcells (Area)
+
+                * The following example shows the congestion hot  spot  report
+                  generated by the previous command:
+
+                  # Vertical Congestion Area Report
+
+                  #Peak          Location(X,Y)             Boundary        Box
+                  Area(#Gcell)
+
+                  -36       (1791.7,   376.4)     (1778,   332)  (1792,   786)
+                  (6x123)
+
+                  -23       (  607.2,   284.1)     (  580,   251) ( 607,  306)
+                  (12x15)
+
+                  -20       (1791.7,  2236.1)     (1778,  2214)  (1792,  2247)
+                  (6x9)
+
+                  -18       (  607.2,   125.5)     (  593,    92) ( 607,  148)
+                  (6x15)
+
+                  -15      ( 637.1,  380.1)     (  630,   347)  (  720,   435)
+                  (39x24)
+
+                  -14       (1791.7,   859.8)     (1778,   860)  (1792,   982)
+                  (6x33)
+
+                  # Horizontal Congestion Area Report
+
+                  #Peak          Location(X,Y)             Boundary        Box
+                  Area(#Gcell)
+
+                  -92        (1777.9,   114.4)      (1750,   4)   (1854,  114)
+                  (45x30)
+
+                  -60       (  623.3,  114.4)     (  472,  4)  (   816,   125)
+                  (150x33)
+
+              * The  following  line  from  the example shows that the largest
+                overflow value for one hot spot is -36, the  gcell  that  con-
+                tains the overflow value is located at 1791.7 376.4, the coor-
+                dinates for the hot spot boundary are (1778, 332) (1792, 786),
+                and the hot spot is 6 gcells by 123 gcells in size:
+
+                -36        (1791.7,    376.4)     (1778,   332)  (1792,   786)
+                (6x123)
+
+Related Information
+              * dumpCongestArea
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025   reportCongestArea(25.10)

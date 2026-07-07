@@ -1,0 +1,152 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setMaxTranPerFreq(25.10)                              setMaxTranPerFreq(25.10)
+
+Name
+       setMaxTranPerFreq  -  Adds  a maximum transition per frequency table to
+       the existing max_transition statement in the timing library
+
+Syntax
+       setMaxTranPerFreq
+
+       [-help]
+
+       [-lib libName]
+
+       [-force]
+
+       -freq {<freq1 ><freq2 freq3>...}
+
+       -tran {<tran1 ><tran2 tran3>...}
+
+       -pins {cell pin}
+
+       Adds a maximum transition per frequency table to the existing max_tran-
+       sition statement in the timing library. Timing analysis uses this table
+       to detect violations, and optDesign attempts to repair violations.
+
+       Use this command any time after loading the timing library files  (that
+       is, after importing or restoring the design).
+
+       The  timing  engine derives the frequency of an instance from the clock
+       domain to which it is connected (the fastest clock domain, if there  is
+       more  than  one). If the instance is a clock instance (that is, part of
+       the clock tree), the actual clock frequency is used. If the instance is
+       part of the combinational logic (that is, a  flip-flop,  or  the  logic
+       connected to the output of a flip-flop), the frequency used equals one-
+       half  of the associated clock domain frequency because a flip-flop out-
+       put can only toggle at one-half the rate of the input clock. For  exam-
+       ple,  a  clock  of  1.0 Mhz has 1,000,000 rise and fall transitions per
+       second; however the output of a flip-flop connected to a 1.0 Mhz  clock
+       can only have 500,000 rise and fall transitions per second.
+
+       Timing  analysis computes the frequency directly from the timing graph.
+       Use the dbSetNetFrequency command to write the effective frequency onto
+       the associated net in the database.  Use  the  dbNetFrequency  database
+       command  to check any given net's frequency value. The frequency values
+       are stored in Hertz in the database. Modifying this value with the  db-
+       SetNetFrequency database command only affects verifyACLimit.
+
+       Note:  This  command  supports MMMC and performs DRV computation as per
+       view frequency. This feature is enabled by  setting  the  below  global
+       variable to true.
+
+       set_global timing_report_drv_enable_frequency_per_view true
+
+       For  detailed  description of the variable, see the Timing Global Vari-
+       ables chapter.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each setMaxTranPerFreq parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man setMaxTranPerFreq
+
+       -force Computes  the maximum transition from the interpolated -freq and
+              -tran values only and ignores any previously defined max_transi-
+              tion values for these pins in the library.
+
+              Default: Uses the worst case (minimum value)  between  the  .lib
+              max_transition values and the interpolated -tran values.
+
+       -freq {<freq1 ><freq2 freq3>...}
+              Specifies  a  list of at least two frequency values that must be
+              greater than or equal to 0. You must specify the same number  of
+              -freq  and -tran values, and the frequency values must be speci-
+              fied in ascending order.
+
+              Type: Float, specified in units of Hz
+
+       -lib <libName>
+              Modifies only the matching cell-pins in the specified library.
+
+              Default: Modifies the matching cell-pins in all libraries.
+
+       -pins {<cell> <pin>}
+              Adds the new transition constraints  to  the  specified  set  of
+              cells  and  pins.  You can specify input, output, or inout pins.
+              The asterisk (*) wildcard character can be used in a cell or pin
+              name. If a table associated with the pin already exists,  it  is
+              replaced with the new table.
+
+              For  analysis  and  optimization, the software uses the most re-
+              strictive (the lowest transition) value from either the table or
+              the .lib max_transition. If you also specify the -force  parame-
+              ter, the max_transition value is ignored. The final value can be
+              further modified using .sdc set_max_transition statements.
+
+       -tran {<tran1 ><tran2 tran3>...}
+              Specifies  a list of transition values that must be greater than
+              or equal to 0. You must specify the same  number  of  -freq  and
+              -tran values.
+
+              The  software derives the maximum transition limit from a linear
+              interpolation (or extrapolation) for a given frequency value us-
+              ing two frequency values in the table.  For  interpolation,  the
+              software  uses  the  closest  value above the frequency, and the
+              closest value below the frequency. For extrapolation, the  soft-
+              ware uses the two closest values to the frequency.
+
+              Type: Float, specified in units of ns
+
+Examples
+       Assume  all output pins of a library have a max_transition value of 0.9
+       ns from the library file.
+
+              * The following command sets the frequency dependent max_transi-
+                tion to 1.0 ns at a frequency of 100 Mhz, and to 0.7 ns  at  a
+                frequency  of 200 Mhz, for pins matching in* of cells matching
+                * (that is, all cells) in the library named slow:
+
+                setMaxTranPerFreq -lib slow -freq  {100e6  200e6}  -tran  {1.0
+                0.7} -pins {* in*}
+
+                As  a result, at 300 Mhz, an and2 cell input pin named in1 has
+                an extrapolated max_transition value of 0.4ns.  An  extrapola-
+                tion  to  50 Mhz results in a max_transition value of 1.15 ns.
+                However, the 1.15 ns value is greater than the existing  .lib-
+                max_transition value of 0.9 ns; therefore timing analysis uses
+                the 0.9 value.
+
+              * The  following command applies the same constraints to all li-
+                braries with cell names matching dff* that have  a  pin  named
+                clk:
+
+                setMaxTranPerFreq  -force  -freq {100e6 200e6} -tran {1.0 0.7}
+                -pins {dff* clk}
+
+                Note: The original .libmax_transition value is ignored because
+                the -force parameter is specified; therefore an  extrapolation
+                to 50 Mhz results in a final max_transition limit of 1.15 ns.
+
+Related Information
+              * dbNetFrequency
+
+              * dbSetNetFrequency
+
+              * optDesign
+
+              * verifyACLimit
+
+                           Fri Apr 04 01:25:37 2025   setMaxTranPerFreq(25.10)

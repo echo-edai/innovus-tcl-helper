@@ -1,0 +1,184 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addDeCap(25.10)                                                addDeCap(25.10)
+
+Name
+       addDeCap  -  Adds the specified total decoupling capacitance to the de-
+       sign
+
+Syntax
+        addDeCap
+
+       [-help]
+
+       -totCap <total_cap_in_fF>< >
+
+       [-cells <cellName>]
+
+       [-addFixAttr]
+
+       [-area <x1 y1 x2 y2><| >-exclude {{<x1 y1 x2 y2>} ...}]
+
+       [-effort [low | high]]
+
+       [-prefix <prefixName>]
+
+       [-noFixDRC]
+
+       [-log <logName>]
+
+       [-maxNrIter <number>]
+
+       [-fromFile <fileName>]
+
+       [-pgNet <netName>]
+
+       Adds the specified total decoupling  capacitance  to  the  design.  The
+       software  chooses from the available decoupling capacitance cell candi-
+       dates, and adds enough cells until  their  combined  total  capacitance
+       value equals the user-specified value.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each addDeCap parameter. For a  detailed  descrip-
+              tion  of the command and all of its parameters, use the man com-
+              mand: man addDeCap.
+
+       -addFixAttr
+              Specifies that the decap cell being placed is  Fixed.  Use  this
+              parameter after inserting decoupling capacitance.
+
+       -area <x1 y1 x2 y2>
+              Defines an area within the design in which to add the decoupling
+              capacitance.
+
+              Default: Entire design area
+
+              x1: Specifies the area's lower left point on the x axis.
+
+              y1: Specifies the area's lower left point on the y axis.
+
+              x2: Specifies the area's upper right point on the x axis.
+
+              y2: Specifies the area's upper right point on the y axis.
+
+       -cells <cellName> ...
+              Specifies the cells to use for decoupling capacitance insertion.
+              The  specified  cells  must first be defined using the addDeCap-
+              CellCandidates command.
+
+              Default: Any cell previously defined with the addDeCapCellCandi-
+              dates command.
+
+              Note: The -cells parameter is order dependent.
+
+       -effort [low | high]
+              Specifies the approach to use when inserting decoupling  capaci-
+              tance.
+
+              Default: low
+
+              Specify one of the following:
+
+              Uses  a  homogeneous approach to add the decoupling capacitance.
+              That is, the software treats all areas the same when adding  de-
+              coupling capacitance cells.
+
+              Analyzes the peak current of the instances and tries to add more
+              cells to the areas with high peak current density.
+
+       -exclude {<x1 y1 x2 y2>} ...
+              Defines a blockage area within which decoupling capacitance can-
+              not be inserted. You can specify one or more blockage areas.
+
+              Note:  The parameters -exclude and -area are mutually exclusive.
+              When both parameters are specified on the command line, the tool
+              throws an error.
+
+       -noFixDRC
+              Disables correction of DRC errors.
+
+       -fromFile <fileName>
+              Performs decoupling capacitance insertion using the  information
+              in the specified log file (created from a previous addDeCap ses-
+              sion).
+
+              This  file can contain information for adding decoupling capaci-
+              tance cells and for  deleting  existing  decoupling  capacitance
+              cells.
+
+       -log <logName>
+              Outputs  a log file with the specified name that contains infor-
+              mation on where the decoupling capacitance cells were added.  It
+              can  also contain information on where cells were deleted due to
+              DRC violations.
+
+              The log file can be used for tracking the location of decoupling
+              capacitance and for debugging purposes. It can also be  used  to
+              insert decoupling capacitance cells in a different session.
+
+              The log file is output in the following format:
+
+              ADD <cellName><locationX><locationY> [<orientation>] [<instance-
+              Name>]
+
+              DEL <instanceName>
+
+              It  contains the cell name and the location where an instance of
+              it was placed. It can also contain the orientation  of  the  in-
+              stance,  and  a name for the instance, if that name has not been
+              used already.
+
+              For example, the following line shows that  a  new  instance  of
+              CELL_8  with  the name Instance100 was added at the location 100
+              200, with an orientation of R0:
+
+              ADD CELL_8 100 200 R0 Instance100
+
+       -maxNrIter <number>
+              Specifies the iteration for inserting decap if there is DRC.
+
+              Default: 10
+
+       -prefix <prefixName>
+              Defines the prefix to use for the decoupling capacitance cells.
+
+              Default: DECAP
+
+       -pgNet <netName>
+              Adds decap cells on the specified power rail.
+
+              Default: Add decap cells irrespective of power nets.
+
+       -totCap <total_cap_in_fF>
+              Specifies the total decoupling capacitance to add to the design,
+              in femtofarads (fF). The software uses the specified  decoupling
+              cell  candidates and adds cells until their combined capacitance
+              value equals <capacitance>.
+
+Command Order
+       Use this command after defining decoupling capacitance cell  candidates
+       with the addDecapCellCandidates command.
+
+Examples
+              * The  following  command adds 1000 fF of capacitance to the de-
+                sign using DECAP10 and DECAP8 cells, in that order:
+
+                addDeCap -totCap 1000 -cells DECAP10 DECAP8
+
+              * The following command adds 6367.341 fF of capacitance  to  the
+                specified area within the design, and marks the placement sta-
+                tus of all instances as Fixed:
+
+                addDeCap -totCap 6367.341 -area 600 600 900 900 -addFixAttr
+
+Related Information
+              * Placing the Design chapter in the Innovus User Guide
+
+                     * Adding Decoupling Capacitance
+
+Related Information
+              * deleteDeCap
+
+              * reportDeCap
+
+                           Fri Apr 04 01:25:37 2025            addDeCap(25.10)

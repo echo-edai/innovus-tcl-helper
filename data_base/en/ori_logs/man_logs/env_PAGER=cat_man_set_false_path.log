@@ -1,0 +1,237 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_false_path(25.10)                                    set_false_path(25.10)
+
+Name
+       set_false_path - Identifies false paths in a design, and breaks or dis-
+       ables specific instance timing arcs in a design
+
+Syntax
+        set_false_path
+
+       [-hold | -setup]
+
+       [-rise]
+
+       [-fall]
+
+       {[{-from | -rise_from | -fall_from} <from_list>]
+
+       [{-through | -rise_through | -fall_through} <through_list>]
+
+       [{-to | -rise_to | -fall_to} <to_list>]}
+
+       Identifies false paths in a design, and breaks or disables specific in-
+       stance timing arcs in a design.
+
+       To  break  combinational  loops, use the set_disable_timing command in-
+       stead of the set_false_path command.
+
+       The set_false_path command differs from the set_disable_timing  command
+       as follows:
+
+              * set_false_path  command  selectively disables the arrival time
+                information depending on the precedence rules.
+
+              * set_false_path command does not affect constant values.
+
+              * set_disable_timing command physically snips a timing arc  such
+                that  neither  arrival  times  nor  constant  values propagate
+                through it.
+
+              * set_disable_timing command is applied in all  cases  to  valid
+                timing arcs.
+
+       The  set_false_path  -from fpin command disables all timing paths whose
+       source pin is an fpin. Similarly, the set_false_path -to  tpin  command
+       disables  all  timing  paths  whose  sink  pin  is  a  tpin.  Using the
+       set_false_path -from fpin -to tpin command disables  all  timing  paths
+       whose source is fpin and sink is tpin.
+
+       Specify  a  group of pins by enclosing the group with curly braces ({})
+       within one set_false_path command.
+
+       To set a false path for any path beginning at p1 or p2 and  terminating
+       at t1 or t2, group the pins as follows:
+
+       set_false_path -from {p1 p2} -to {t1 t2}
+
+       Note:  This  method  of  pin grouping reduces the number of exceptions.
+       Having large numbers of exceptions adversely impacts the  run  time  of
+       the timing analysis commands.
+
+Parameters
+       -fall  Applies  the  assertion at the falling edge of the signal on the
+              path end points.
+
+       {-from | -rise_from | -fall_from} from_list
+              Specifies a list of timing paths start points.
+
+              The from_list argument can contain either object IDs or  hierar-
+              chical  names relative to the current module. The pins can be on
+              intermediate hierarchical boundaries. The from_list argument can
+              be a collection.
+
+              The valid start points are:
+
+              * Input port
+
+              * Bidirectional port
+
+              * Clock pin of sequential cell
+
+                Clock pin of sequential cell is one of the following:
+
+              * Structural clock pin that is part of latch or flip-flop.
+
+              * Inferred clock pin in cells like macro cells. A pin is an  in-
+                ferred  clock  pin if it is associated with one of the follow-
+                ing:
+
+              * Reference end of setup check
+
+              * Reference end of hold check
+
+              * Reference end of removal check
+
+              * Reference end of recovery check
+
+              * Minimum period check
+
+              * Minimum pulse width check
+
+              * Pin associated with set_input_delay
+
+              Specify one of the following: -from:
+
+              Applies the false path constraint to all paths originating  from
+              the from_list list. If a clock is specified as the -from object,
+              all  primary inputs and registers clocked by that clock are used
+              as start points.
+
+              By default, the -from option applies the constraint to both  the
+              rising  and  the  falling  edges.  -rise_from: Applies the false
+              path constraint at the rising edge of the  signal  on  the  from
+              pins.   -fall_from:  Applies  the  false  path constraint at the
+              falling edge of the signal on the from pins.
+
+       -hold/-setup
+              Sets false paths for either setup or hold analysis.
+
+              Note: If you do not specify -setup or -hold, the  software  sets
+              false paths for both setup and hold analysis.
+
+       -rise  Applies  the  assertion  at the rising edge of the signal on the
+              path endpoints.
+
+       {-through | -rise_through | -fall_through} through_list
+              Specifies a list of timing paths through points.
+
+              The through_list argument can contain either object IDs or hier-
+              archical names relative to the current module. The pins  can  be
+              on  intermediate hierarchical boundaries. The through_list argu-
+              ment can be a collection.
+
+              You can specify one of the following options:
+
+              * -through: When you use this parameter without using the  -from
+                or -to options, the false path constraint is set for all paths
+                that  go through the specified pins. When you use it with both
+                the -from and -to options, any path starting at any pin on the
+                -from list and going through any point  on  the  -through  pin
+                list and going to any point on the -to list is affected by the
+                constraint.
+
+                By default, the -through parameter applies constraints to both
+                the rising and falling edges.
+
+              * -rise_through:  Applies  the assertion at the rising edge of a
+                signal on the through pins.
+
+              * -fall_through: Applies the assertion at the falling edge of  a
+                signal on the through pins.
+
+              Note: The -through parameter does not support clock paths.
+
+       {-to| -rise_to | -fall_to} to_list
+              Specifies a list of timing paths end points.
+
+              The to_list argument can contain either object IDs or hierarchi-
+              cal names relative to the current module. The pins can be on in-
+              termediate  hierarchical boundaries. The to_list argument can be
+              a collection.
+
+              The valid end points are:
+
+              * Output port
+
+              * Bidirectional port
+
+              * Data pin of sequential cell
+
+                Data pin of sequential cell is one of the following:
+
+              * Structural data pin that is part of latch or flip-flop.
+
+              * Inferred data pin in cells like macro cells. A pin is  an  in-
+                ferred data pin if it is associated with one of the following:
+
+              * Signal end of setup check
+
+              * Signal end of hold check
+
+              * Signal end of non-sequential setup check
+
+              * Signal end of non-sequential hold check
+
+              * Signal end of removal check
+
+              * Signal end of recovery check
+
+              * Pin associated with set_external_delay
+
+              * Data pin of clock gating cell
+
+              Select from one of the following: -to:
+
+              Applies the false path constraint to all paths ending in the -to
+              pin list. If a clock is specified as the -to object, all primary
+              outputs  and  registers  clocked  by that clock are used as end-
+              point.
+
+              By default, the -to option applies the constraint  to  both  the
+              rising  and the falling edges.  -rise_to: Applies the false path
+              constraint at the rising edge of the  signal  on  the  to  pins.
+              -fall_to:  Applies the false path constraint at the falling edge
+              of the signal on the to pins.
+
+Examples
+              * The following command disables hold checking from ff1 to ff2:
+
+                set_false_path -hold -from ff1 -to ff2
+
+              * The following command sets all timing paths from ff1/CK  to  D
+                input  of  ff2  that pass through u1/Y and one or more of u2/Y
+                and u3/Y as false paths:
+
+                set_false_path -from ff1/CK  -through  {u1/Y}  -through  {u2/Y
+                u3/Y} -to ff2/D
+
+              * The  following  command sets all timing paths from the rise of
+                ff1/CK to ff2/D through one or more of u1/Y and u4/Y as  false
+                paths:
+
+                set_false_path  -rise_from  ff1/CK  -through  {u1/Y  u4/Y} -to
+                ff2/D
+
+Related Information
+              * set_disable_timing
+
+              * set_max_delay
+
+              * set_min_delay
+
+              * set_multicycle_path
+
+              * reset_path_exception
+
+                           Fri Apr 04 01:25:37 2025      set_false_path(25.10)

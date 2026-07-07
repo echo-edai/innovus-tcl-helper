@@ -1,0 +1,213 @@
+{
+  "command": "defOut",
+  "is_cmd": true,
+  "summary": "将指定信息写入 DEF 文件",
+  "description": "defOut 命令用于将设计信息写入 DEF 文件。默认情况下，该命令会写入版图规划信息以及所有已放置和未放置的标准单元信息到 DEF 文件中。该命令支持不规则芯片形状，但不支持每个区域有多个组。默认情况下，不会写出 LEF 文件中定义的任何非默认规则或通孔，需要通过设置全局环境变量来控制。可以在导入设计后使用此命令。",
+  "usage": "defOut [-help] <fileName> [-addHalfWireExtensionOnPin] [-allLayers] [-bumpAsPin] [-cutRow] [-cut_pg_rail] [-earlyGlobalRoute] [-flatten_via_pillar] [-floorplan] [-ioRow] [-netlist] [-noCoreCells] [-noPrintWildCard] [-noSpecialNet] [-noStdCells] [-noTracks] [-no_covered_wire_patch] [-no_virtual_trim] [-outputMaskLayers <listOfLayers>] [-scanChain] [-selected] [-skip_trimmetal_layers] [-specialRouteUserClass <user_class>] [-trimmetal_gap_fill] [-unit <unit_per_micron>] [-unplaced] [-useEEQCellWithLibertyInfo] [-usedVia] [-verilog_from_def_netlist_flow] [-withShield] [-routing  [-routing_to_specialnet  | -wrongway_routing_as_specialroute]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定 DEF 输出文件的名称。如果添加 .gz 后缀，命令会自动压缩生成的文件。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-addHalfWireExtensionOnPin",
+      "description": "强制将引脚上的零线宽扩展改为默认的半宽扩展，使 DEF 文件兼容不支持零线宽扩展的旧工具。注意：可能导致 DRC 违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allLayers",
+      "description": "将非布线层（如 MASTERSLICE、IMPLANT 层）上的线、通孔和形状写入 SPECIALNETS 部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bumpAsPin",
+      "description": "将凸块单元作为顶层引脚写入 PINS 部分，用于生成供 Quantus 门级提取使用的 DEF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cut_pg_rail",
+      "description": "切断电源地轨线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cutRow",
+      "description": "根据布局障碍、模块光晕或电源域围栏的最小间距切割行。默认：布局阻挡会写入 DEF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-earlyGlobalRoute",
+      "description": "将早期全局布线器生成的线信息写入 DEF 文件的 NETS 部分。此选项隐含 -routing 参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-flatten_via_pillar",
+      "description": "将通孔柱展平为多个独立的“普通”通孔，适用于不支持通孔柱的外部工具。注意：生成的 DEF 不应读回 Innovus。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-floorplan",
+      "description": "将版图规划数据（包括行、芯片尺寸、PAD 实例、BLOCK 实例和所有已放置的标准单元）写入 DEF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ioRow",
+      "description": "基于 I/O 焊盘布局生成 I/O 行，并将 I/O 行信息写入 DEF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-netlist",
+      "description": "将网表（即布线连接信息）写入 DEF 文件。通常在布局后使用。如果设计未布局，需与 -unplaced 一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCoreCells",
+      "description": "从 DEF 文件中排除核心单元信息，以减少导入 APD 的数据量。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noPrintWildCard",
+      "description": "禁止使用通配符格式表示特殊网络连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noSpecialNet",
+      "description": "从 DEF 文件中排除特殊通孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noStdCells",
+      "description": "从 DEF 文件中排除已放置和未放置的标准单元信息。如果与 -floorplan 或 -unplaced 一起指定，会覆盖它们的设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noTracks",
+      "description": "不向 DEF 文件输出轨道和 gcell 语句。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_covered_wire_patch",
+      "description": "排除被任何金属形状（如布线或物理引脚）完全覆盖的线补丁。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_virtual_trim",
+      "description": "排除虚拟修剪金属层上的修剪金属形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outputMaskLayers",
+      "description": "仅在指定层上输出 MASK 数据。有效值为 \"metal\"、\"cut\" 或由空格分隔的层列表（单层或范围）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scanChain",
+      "description": "将扫描链信息写入 DEF 文件，确保在另一个会话中重新加载 DEF 时，扫描链的 START/STOP 实例在时序/功耗收敛过程中得以保留。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "仅写出选定对象的信息，如选定的实例、网络、线段、通孔、凸块、阻挡或组。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_trimmetal_layers",
+      "description": "指定不将修剪金属形状写入 FILLS 部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-specialRouteUserClass",
+      "description": "指定特殊布线的用户类别。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-trimmetal_gap_fill",
+      "description": "将修剪金属间隙填充写入 SPECIALNETS 部分的一个虚拟网络 _TRIMMETAL_FILLS_RESERVED。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unit",
+      "description": "定义 DEF 文件的单位（每微米单位数）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-unplaced",
+      "description": "将未放置标准单元的信息写入 DEF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-useEEQCellWithLibertyInfo",
+      "description": "指定使用时序库信息中的 EEQ 单元作为叶实例的主单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-usedVia",
+      "description": "指定仅将使用的通孔写入 DEF 文件，忽略未使用的通孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog_from_def_netlist_flow",
+      "description": "协调由 loadDefFile 命令生成的 DEF 和 Verilog 文件中的名称，将转义字符转换回 DEF 文件中的原始名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-withShield",
+      "description": "写出电源/地网络上为选定网络提供屏蔽的布线。必须与 -routing 和 -selected 选项一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-routing",
+      "description": "将布线信息写入 DEF 文件的 NETS 部分。隐含 -netlist 参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-routing_to_specialnet",
+      "description": "将所有常规 NETS 布线写入 SPECIALNETS 部分，供某些分析工具使用。不能与 -earlyGlobalRoute 选项一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-wrongway_routing_as_specialroute",
+      "description": "将错误方向布线写入 SPECIALNETS 部分，作为带有 +SHAPE DRCFILL 的 RECT，供某些 RC 提取工具使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

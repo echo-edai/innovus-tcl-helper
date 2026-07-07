@@ -1,0 +1,334 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_ccopt_...tree_structure(25.10)    report_ccopt_...tree_structure(25.10)
+
+Name
+       report_ccopt_clock_tree_structure  - Reports the structure of the clock
+       network as a text report
+
+Syntax
+       report_ccopt_clock_tree_structure
+
+       [-help]
+
+       [-check_type {setup | hold}]
+
+       [-clock_trees {<list_of_clock_trees>}]
+
+       [-delay_corner <corner_name>]
+
+       [-delay_type {early | late}]
+
+       [-expand_below_logic]
+
+       [-expand_generated_clock_trees  {independently  |  inline  |   indepen-
+       dently_and_inline}]
+
+       [-include_reporting_only_skew_groups]
+
+       [-file <file>_<name>]
+
+       [-show_sinks]
+
+       [-update_timing]
+
+       Reports  the  structure of the clock network as a text report. When the
+       command is run without specfying the -update_timing parameter, the  re-
+       port format is as follows:
+
+              * The  summary  information is added below the name of the clock
+                tree
+
+              * The slew, capacitance, and co-ordinate information is not  in-
+                cluded
+
+              * The  input  and  output  pin information is merged in a single
+                line
+
+       For details, see the examples below.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each report_ccopt_clock_tree_structure parameter.
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man report_ccopt_clock_tree_structure
+
+       -check_type {setup | hold}
+              Specifies whether setup or hold views are used for  the  report.
+              By default, setup view is used for the report.
+
+       -clock_trees {<list_of_clock_trees>}
+              Restricts the report to the specified clock trees.
+
+       -delay_corner <corner_name>
+              Reports in the specified delay corner.
+
+              By  default, the software will use the primary-half delay corner
+              that is set using the CCOpt property, primary_delay_corner.  Use
+              the  get_ccopt_delay_corner  command to retrieve the name of the
+              CCOpt primary-half delay corner.
+
+       -delay_type {early | late}
+              Reports in the specified delay type, early or late.
+
+              When late is specified, only the late half of the delay  corners
+              are reported.
+
+              When  early  is specified, only the early half of the delay cor-
+              ners are reported.
+
+              By default, late half of the delay corners are reported.
+
+       -expand_below_logic
+              When this parameter is specified, the subtree below each  multi-
+              input logic will be printed in its entirety every time it is en-
+              countered.
+
+              When this parameter is not specified, then by default, the clock
+              tree  below  a  multi-input  clock  logic is reported only once,
+              which is at the first place it is  encountered  in  the  report.
+              Subsequent visitations of the subtree will simply note the pres-
+              ence of an omitted subtree, for example, "...71 fanout omitted".
+
+              Note:  For  clock  networks  with  ladders of reconverging clock
+              logic, this can produce large volumes of output.
+
+       -expand_generated_clock_trees {independently | inline | indepen-
+       dently_and_inline}
+              Specifies how generated clock trees  should  be  displayed.  The
+              following options are available:
+
+              independently:  display  generated clock trees at the top level.
+              This is the default display.
+
+              inline : display generated clock trees as fanout of their gener-
+              ator inputs
+
+              independently_and_inline: display generated clock trees both  at
+              the top level and as fanout of their generator inputs
+
+       -file <file_name>
+              Saves a copy of the report in the specified file.
+
+              Default: {}
+
+       -include_reporting_only_skew_groups
+              When  specified, the report additionally includes the reporting-
+              only skew groups. A reporting-only skew group is  a  skew  group
+              whose  constrains property is set to none. Such a skew group im-
+              poses no clock balancing constraint and will not  be  considered
+              by CTS.
+
+              By  default,  the reporting-only skew groups are not included in
+              the report.
+
+       -show_sinks
+              Includes all clock network sinks in the report.
+
+              This parameter controls whether the clock network  sinks,  which
+              are  the non-generator flops/latches, are included in the report
+              or not. By default, these are not included in  the  interest  of
+              minimizing  the report output. Instead, a count of the number of
+              sinks is displayed,for example. "... 209 sinks omitted".
+
+              When this parameter is specified, per-skew group  latencies  for
+              each sink are included.
+
+              Note: The report identifies macros in the clock tree. This means
+              that  if your clock sink is a macro, the report will show "macro
+              sink" instead of just "sink".
+
+       -update_timing
+              When specified, the report includes detailed timing  information
+              including  pin  slew,  capacitance,  and location along with the
+              clock tree structure.
+
+Examples
+              * Use the following command to report the structure of the clock
+                network for the specified clock trees, m_clk and m_digit_clk:
+
+       report_ccopt_clock_tree_structure -clock_trees {m_clk m_digit_clk}
+
+       A part of the report is shown below.
+
+       Clock tree m_clk:
+
+       Total FF: 115
+
+       Max Level: 5
+
+         (L1) TEST_CONTROL_INST/g137/ZN (ND2D1BWP)
+
+         \_  (L1) port TEST_CONTROL_INST/m_clk
+
+              \_ ... (21 sinks omitted)
+
+              \_  (L2) DMA_INST/CPF_LS_158_m_clk/I -> Z (LVLHLD2BWP)
+
+               |   \_ ... (8 sinks omitted)
+
+               |   \_   (L3)  DMA_INST/RC_CG_HIER_INST0/RC_CGIC_INST/CP  ->  Q
+       (CKLNQD1BWP)
+
+               |       \_ ... (8 sinks omitted)
+
+               \_  (L2) RESULTS_CONV_INST/CPF_LS_159_m_clk/I -> Z (LVLHLD2BWP)
+
+               |   \_ ... (15 sinks omitted)
+
+               |   \_  (L3) RESULTS_CONV_INST/RC_CG_HIER_INST1/RC_CGIC_INST/CP
+       -> Q (CKLNQD1BWP)
+
+               |   |   \_ ... (9 sinks omitted)
+
+               |   \_  (L3) RESULTS_CONV_INST/RC_CG_HIER_INST2/RC_CGIC_INST/CP
+       -> Q (CKLNQD1BWP)
+
+               |   |   \_ ... (16 sinks omitted)
+
+       Clock tree m_digit_clk:
+
+        Total FF: 9
+
+         Max Level: 3
+
+            (L1) TEST_CONTROL_INST/g141/ZN (IOA21D1BWP)
+
+             \_  (L1) port TEST_CONTROL_INST/m_digit_clk
+
+                      \_ ... (9 sinks omitted)
+
+              * Use the following command to report the structure of the clock
+                network  inlcuding  the  timing  information for the specified
+                clock tree, m_clk:
+
+       report_ccopt_clock_tree_structure -clock_trees {m_clk} -update_timing
+
+       Clock tree m_clk:
+
+        TEST_CONTROL_INST/g137/ZN root output at  (273.210,301.000),  lib_cell
+       ND2D1BWP, level 1, slew 9.719ns, wire_cap 0.096pF, load_cap 0.452pF
+
+        \_  port  TEST_CONTROL_INST/m_clk  port output, preserved by {sdc_con-
+       straint}, level 1, slew 0.000ns, wire_cap 0.000pF, load_cap 0.000pF
+
+          \_ ... (21 sinks omitted)
+
+          \_ DMA_INST/CPF_LS_158_m_clk/I  logic  input  at  (169.210,300.720),
+       lib_cell LVLHLD2BWP, level 2, slew 9.720ns
+
+          |  DMA_INST/CPF_LS_158_m_clk/Z  logic  output  at (169.770,300.860),
+       lib_cell LVLHLD2BWP, level 2, slew 0.431ns, wire_cap 0.008pF,
+
+            load_cap 0.006pF
+
+          | \_ ... (8 sinks omitted)
+
+          |  \_  DMA_INST/RC_CG_HIER_INST0/RC_CGIC_INST/CP  cgate   input   at
+       (115.450,305.760), lib_cell CKLNQD1BWP, level 3, slew 0.431ns
+
+          |      DMA_INST/RC_CG_HIER_INST0/RC_CGIC_INST/Q   cgate   output  at
+       (116.290,305.900), lib_cell CKLNQD1BWP, level 3, slew 0.298ns,
+
+               wire_cap 0.004pF, load_cap 0.005pF
+
+          |    \_ ... (8 sinks omitted)
+
+          \_    RESULTS_CONV_INST/CPF_LS_159_m_clk/I    logic     input     at
+       (199.170,320.880), lib_cell LVLHLD2BWP, level 2, slew 9.720ns
+
+          |     RESULTS_CONV_INST/CPF_LS_159_m_clk/Z     logic    output    at
+       (199.730,321.020), lib_cell LVLHLD2BWP, level 2, slew 0.714ns,
+
+            wire_cap 0.021pF, load_cap 0.015pF
+
+              * Use the following command to report the structure of the clock
+                network with  generated clock trees expanded  inline  for  the
+                specified clock trees, m_clk and m_digit_clk:
+
+                report_ccopt_clock_tree_structure      -clock_trees     {m_clk
+                m_digit_clk} -expand_generated_clock_trees inline
+
+       Clock tree m_clk:
+
+       Total FF: 115
+
+       Max Level: 5
+
+       (L1) TEST_CONTROL_INST/g137/ZN (ND2D1BWP)
+
+       \_  (L1) port TEST_CONTROL_INST/m_clk
+
+          \_ ... (21 sinks omitted)
+
+          \_   (L2) DMA_INST/CPF_LS_158_m_clk/I -> Z (LVLHLD2BWP)
+
+          |    \_ ... (8 sinks omitted)
+
+          |    \_ (L3) DMA_INST/RC_CG_HIER_INST0/RC_CGIC_INST/CP  ->  Q  (CKL-
+       NQD1BWP)
+
+          |        \_ ... (8 sinks omitted)
+
+          \_   (L2) RESULTS_CONV_INST/CPF_LS_159_m_clk/I -> Z (LVLHLD2BWP)
+
+          |    \_ ... (15 sinks omitted)
+
+          |    \_ (L3) RESULTS_CONV_INST/RC_CG_HIER_INST1/RC_CGIC_INST/CP -> Q
+       (CKLNQD1BWP)
+
+          |   |    \_ ... (9 sinks omitted)
+
+          |    \_ (L3) RESULTS_CONV_INST/RC_CG_HIER_INST2/RC_CGIC_INST/CP -> Q
+       (CKLNQD1BWP)
+
+          |   | \_ ... (16 sinks omitted)
+
+          |    \_ (L3) RESULTS_CONV_INST/RC_CG_HIER_INST3/RC_CGIC_INST/CP -> Q
+       (CKLNQD1BWP)
+
+          |   |    \_ ... (16 sinks omitted)
+
+          |    \_ (L3) RESULTS_CONV_INST/RC_CG_HIER_INST6/RC_CGIC_INST/CP -> Q
+       (CKLNQD1BWP)
+
+          |   |    \_ ... (6 sinks omitted)
+
+          |    \_ (L3) RESULTS_CONV_INST/RC_CG_HIER_INST7/RC_CGIC_INST/CP -> Q
+       (CKLNQD1BWP)
+
+          |        \_ ... (8 sinks omitted)
+
+          \_    (L2)  SPI_INST/RC_CG_HIER_INST17/RC_CGIC_INST/CP  ->  Q  (CKL-
+       NQD1BWP)
+
+                \_ ... (8 sinks omitted)
+
+       Clock tree m_digit_clk:
+
+       Total FF: 9
+
+       Max Level: 3
+
+       (L1) TEST_CONTROL_INST/g141/ZN (IOA21D1BWP)
+
+       \_   (L1) port TEST_CONTROL_INST/m_digit_clk
+
+            \_ ... (9 sinks omitted)
+
+Related Information
+              * get_ccopt_delay_corner
+
+              * The following property:
+
+                * primary_delay_corner
+
+       For details, see the CCOpt  Properties  chapter  in  the  Innovus  User
+       Guide.
+
+              * The following topic in the Innovus User Guide
+
+                * Clock Tree Network Structure Reporting
+
+                           Fri Apr 04 01:2r5e:p3o7rt2_0c2c5opt_...tree_structure(25.10)

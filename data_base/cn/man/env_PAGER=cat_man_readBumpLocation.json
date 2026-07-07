@@ -1,0 +1,123 @@
+{
+  "command": "readBumpLocation",
+  "is_cmd": true,
+  "summary": "根据相邻芯片的凸点位置，在当前芯片上创建或分配对象",
+  "description": "该命令根据相邻芯片上的凸点位置，在当前芯片上创建或分配相应的对象（如前/后侧凸点、TSV等）。在TSV设计中，相邻芯片上的微凸点应对齐并具有相同的信号。此命令用于同步芯片间的微凸点信息。首先，它会尝试在当前芯片上查找与相邻芯片凸点位置对齐的前侧凸点、后侧凸点或TSV。如果找到所有指定的凸点/TSV，则将它们分配为与相邻芯片凸点相同的信号；如果未找到任何指定的凸点/TSV，则会在对齐位置创建具有相同信号的凸点/TSV。该命令支持组合凸点和嵌入式凸点流程，应在使用readTSVConfig读取堆叠芯片配置文件（XML）后使用，因为凸点对齐需要芯片配置信息。",
+  "usage": "readBumpLocation [-help] <fileName> [-allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}] [-die_box] [-ignore_route_blockages] [-force_current_die] {[-frontBump <bumpCellName>] [-backBump <backBumpCellName>] [-bump_cell_from_bump_file ]} [{-backBump <backBumpCellName> | -bump_cell_from_bump_file } [-rotate_bump -prefix <prefixName>]] [{-frontBump <bumpCellName> | -bump_cell_from_bump_file }[-rotate_bump -prefix <prefixName>] [-stackViaUnderBump <stackViaName>]] [-prefix <prefixName> | -bump_name_from_bump_file {true | false}] [-checkAlignment ] [-nonFeedthru ] [-feedthru ] [-tsvViaName <viaCellName> [-feedthruSize <sizex sizey>] [-offset {x y}]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "显示命令帮助信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定相邻芯片的凸点位置文件名",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-allow_overlap_control",
+      "description": "指定重叠控制类型。可选值：keep_all（保留所有重叠凸点）、keep_existing_bumps（如果存在重叠，则保留调用readBumpLocation前已存在的凸点）、keep_new_bumps（移除调用readBumpLocation前已存在的凸点，并在重叠处放置新创建的凸点）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-die_box",
+      "description": "根据凸点文件中的DieBox值绘制芯片边界框",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_route_blockages",
+      "description": "允许在布线阻塞区域创建凸点。指定此选项后，工具在创建凸点时将忽略对布线阻塞的检查",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-force_current_die",
+      "description": "指定将凸点文件视为当前芯片的凸点文件。跳过检查指定的凸点文件是用于当前芯片、相邻芯片还是模块",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-frontBump",
+      "description": "在与相邻芯片凸点对齐的位置创建或分配前侧凸点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-backBump",
+      "description": "在与相邻芯片凸点对齐的位置创建或分配后侧凸点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bump_cell_from_bump_file",
+      "description": "使用凸点文件中定义的相同凸点单元创建凸点",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rotate_bump",
+      "description": "根据相邻芯片的芯片和凸点方向信息，在凸点映射期间旋转凸点",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-prefix",
+      "description": "在凸点创建和凸点映射期间为凸点添加前缀名称。默认凸点名称是frontBump_*或backBump_*加序列号。如果应用此选项，创建的凸点名称将为prefixName_frontBump_*或prefixName_backBump_*",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stackViaUnderBump",
+      "description": "指定前侧凸点下方的堆叠通孔名称。工具会自动将指定的通孔单元堆叠到前侧凸点的底层",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bump_name_from_bump_file",
+      "description": "使用凸点文件中定义的相同凸点名称创建凸点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-checkAlignment",
+      "description": "检查当前芯片与相邻芯片之间的对齐情况，并检查OBS层与凸点（前侧和后侧凸点）之间的重叠。指定此参数时，所有其他参数均无效",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonFeedthru",
+      "description": "仅创建或分配具有普通网络的凸点",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-feedthru",
+      "description": "仅创建或分配具有馈通网络的凸点。如果同时指定了-feedthruSize和-tsvViaName，则也会创建馈通的TSV和堆叠通孔",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tsvViaName",
+      "description": "在与相邻芯片凸点对齐（或如果指定了-offset则带有偏移）的位置创建或分配TSV",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-feedthruSize",
+      "description": "指定馈通的尺寸。此选项与-nonFeedthru选项互斥",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-offset",
+      "description": "指定TSV到相应凸点的偏移量。注意：也可以在凸点文件中通过在线条后附加-offset x y来指定偏移量。凸点文件中的偏移量优先级高于命令行中指定的偏移量。如果在命令行和凸点文件中都指定了-offset，程序将遵循凸点文件中指定的偏移量",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

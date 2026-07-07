@@ -1,0 +1,239 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+monitor_hosts(25.10)                                      monitor_hosts(25.10)
+
+Name
+       monitor_hosts
+
+Syntax
+       monitor_hosts
+
+       [-help]
+
+       [-log <string>]
+
+       [-overwrite]
+
+       [-period <integer>]
+
+       Monitors  hosts  and  periodically  prints the memory or CPU usage, and
+       temporary disk speed of the hosts. This  command  automatically  deter-
+       mines  the  hosts  to  be monitored. By default, after every 60 seconds
+       hosts are monitored and the disk information is written to a log file.
+
+       This command is helpful to analyze and debug the performance of a  ses-
+       sion  and helps check the machine load, the available memory, and track
+       possible reasons for a slow down or unexpected exit during a session.
+
+       The monitor_hosts command is supported in STA, DSTA, and DMMMC flows.
+
+       The monitor_hosts command output is described below:
+
+       ________________________________________________________
+
+       | Status     |  Memory     |  CPU Usage  |  Disk       |
+
+       |  Keys/Tags |   (%age     |             |   Speed     |
+
+       |            |  of         |             |   (Mb/sec)  |
+
+       |            |   Available |             |             |
+
+       |            |   Memory on |             |             |
+
+       |            |   the       |             |             |
+
+       |            |   correspon |             |             |
+
+       |            |  ding host) |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       | E -        |  Memory     |  CPU Usage  |  Disk       |
+
+       |  Excellent |   used less |  less       |   speed     |
+
+       |            |   than 75%  |  than 85%   |   more than |
+
+       |            |             |             |   250       |
+
+       |____________|_____________|_____________|_____________|
+
+       | G - Good   |  Memory     |  CPU Usage  |  Disk       |
+
+       |            |   used      |  between    |   speed     |
+
+       |            |   between   |   85% to    |   between   |
+
+       |            |   75% and   |   95%       |   125 and   |
+
+       |            |   85%       |             |   250       |
+
+       |____________|_____________|_____________|_____________|
+
+       | B - Bad    |  Memory     |  CPU Usage  |  Disk       |
+
+       |  (*)       |   used      |  between    |   speed     |
+
+       |            |   between   |   95% to    |   between   |
+
+       |            |   85% and   |   105%      |   50 and    |
+
+       |            |   99%       |             |   125       |
+
+       |____________|_____________|_____________|_____________|
+
+       | T -        |  Memory     |  CPU Usage  |  Disk       |
+
+       |            |   used      |  more       |   speed     |
+
+       | Terrible   |   above 99% |  than 105%  |   less than |
+
+       |  (**)      |             |             |   50        |
+
+       |____________|_____________|_____________|_____________|
+
+       The monitor_hosts command output will show host/machine specific infor-
+       mation and not process specific information. So if  multiple  processes
+       are  running on the same machine, then the command output will show the
+       combined impact of all the processes,  on  the  machine's  memory,  ma-
+       chine's CPU usage etc.
+
+       The "T" or "B" state denotes that a session may be thrashing or may not
+       give  the best results with respect to the performance. For better per-
+       formance, you must re-run this command with better machines.
+
+       Parameters
+
+       -help  Prints out the command usage. For a detailed description of  the
+              command and all of its parameters, use the man command: man mon-
+              itor_hosts.
+
+       -log <string>
+              Specifies the log file name.
+
+              Default: host-monitor.log
+
+       -overwrite
+              Overwrites the log file, if it already exists.
+
+       -period <integer>
+              Specifies  the  sampling  period after which hosts will be moni-
+              tored.
+
+              Default: 60
+
+       Examples
+
+              * A sample monitor log file is shown below:
+
+                Status keys: E excellent, G good, B bad, T terrible.
+
+                Memory values:
+
+                total = Real memory of host
+
+                progs = Real memory used  by  processes,  including  swappable
+                cache
+
+                used  =  Real  memory  used  by processes, excluding swappable
+                cache
+
+                Started at: 17/04/25 04:24:22
+
+                lgi15(0) TMPDIR is : /tmp/tempus_temp_20836_lgi15_ark_lEAcvw
+
+                =============        ========         ========================
+                ========================
+
+                Host           CPU       Memory  (GB)              TMPDIR (GB)
+                (Mb/s)
+
+                name(id)      util %   total progs used %used   total    avail
+                rate
+
+                =============    ========    =====    =====    =====    ======
+                ========================
+
+                04:24:52
+
+                lgi15(0)        6 E     32   24    15   46 E    100.74   94.67
+                E  262 E
+
+              * The  following  example output shows that host "sjfqos011" has
+                very high CPU utilization (123%) because of  multiple  clients
+                (client 1 and client 3) running on same host. Also, %used more
+                than  99T  shows  that  the  memory  is  ~100% consumed on the
+                "sjfqos011" and "sjfqos010" host machines.
+
+                Status keys: E excellent, G good, B bad, T terrible.
+
+                Memory values:
+
+                total = Real memory of host
+
+                progs = Real memory used  by  processes,  including  swappable
+                cache
+
+                used  =  Real  memory  used  by processes, excluding swappable
+                cache
+
+                Started at: 20/07/08 07:10:10
+
+                sjfqos009(0) TMPDIR is : /tmp/ssv_tmpdir_25921_eYAlmJ
+
+                sjfqos011(1) TMPDIR is : /tmp/ssv_tmpdir_26114_ZuTGDp
+
+                sjfqos010(2) TMPDIR is : /tmp/ssv_tmpdir_26124_pjq6Cp
+
+                sjfqos011(3) TMPDIR is : /tmp/ssv_tmpdir_26160_vxwbEp
+
+                sjfqos012(4) TMPDIR is : /tmp/ssv_tmpdir_26173_FC8xvo
+
+                ======================================================
+
+                Host CPU Memory (GB) TMPDIR (GB) (Mb/s)
+
+                name(id) util % total progs used %used total avail rate
+
+                ============= ======= === ===== ===== ====== ======= =
+
+                07:10:10
+
+                sjfqos009(0) 12 E 378 262 128 34 E 274.50 254.26 E N/A
+
+                sjfqos011(1) 16 E 378 262 138 36 E 274.50 254.25 E N/A
+
+                sjfqos010(2) 19 E 378 262 125 33 E 274.50 254.25 E N/A
+
+                sjfqos011(3) 16 E 378 262 138 36 E 274.50 254.25 E N/A
+
+                sjfqos012(4) 62 E 378 262 118 31 E 274.50 254.25 E N/A
+
+                07:11:10
+
+                sjfqos009(0) 12 E  378 262 133 36 E 274.50 254.26 E 127
+
+                sjfqos011(1) 123 T 378 262 168 44 E 274.50 245 E    145
+
+                sjfqos010(2) 91 G  378 262 138 36 E 274.50 254.25 E 103
+
+                sjfqos011(3) 123 T 378 262 143 38 E 274.50 245 E     14
+
+                sjfqos012(4) 82 E  378 262 131 35 E 274.50 254.25 E 135
+
+                07:12:10
+
+                sjfqos009(0) 12 E 378 262 138 36 E  274.50 254.26 E  125
+
+                sjfqos011(1) 99 B 378 378 378 100 T 274.50 254.25 E  145
+
+                sjfqos010(2) 97 B 378 262 373 99 T  274.50 254.25 E  103
+
+                sjfqos011(3) 99 B 378 378 378 100 T 274.50 254.25 E  12
+
+                sjfqos012(4) 86 G 378 262 138 36 E  274.50 254.25 E  133
+
+Related Information
+              * setMultiCpuUsage
+
+                           Fri Apr 04 01:25:37 2025       monitor_hosts(25.10)

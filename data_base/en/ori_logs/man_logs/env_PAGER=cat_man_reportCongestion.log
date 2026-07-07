@@ -1,0 +1,205 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportCongestion(25.10)                                reportCongestion(25.10)
+
+Name
+       reportCongestion - Reports the average congestion and the local hotspot
+       score
+
+Syntax
+       reportCongestion
+
+       [-help]
+
+       [-3d]
+
+       [-hotSpot]
+
+       [-includeBlockage]
+
+       [-num_hotspot <number>]
+
+       [-overflow]
+
+       Reports the average congestion and the local hotspot score. Route needs
+       be called before using this command.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reportCongestion parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man reportCongestion.
+
+       -3d    Honors 3d congestion map. When specified, it enables the  layer-
+              based congestion reporting.
+
+       -hotSpot
+              Reports  the local hotspot score. It reports the maximum and to-
+              tal hotspot area.
+
+              Hotspot score refers to the contiguous area of gcells (there  is
+              some normalization done internally) which have routing overflow.
+              Typically,  a  max hotspot score < 100 indicates that the design
+              is routable.
+
+              * Max hotspot - It is the largest contiguous area of gcells with
+                overflow
+
+              * Total hotspot - It is the total of all hotspots
+
+              Greater the number of adjacent gcells with overflow, bigger will
+              be the hotspot.
+
+              Note: You can use this parameter to view the congestion  hotspot
+              regions seen by the router after global route.
+
+       -includeBlockage
+              Includes blockage area in the hotspot report.
+
+       -num_hotspot <number>
+              Specifies the number of hotspots to be reported.
+
+       -overflow
+              Reports horizontal and vertical overflow.
+
+Examples
+              *
+
+                The following command reports the congestion:
+
+                reportCongestion -overflow
+
+                Output:
+
+                Usage:  (10.0%H  8.1%V)  =  (2.425e+05um 3.107e+05um) = (72854
+                61452)
+
+                Overflow: 210 = 7 (0.01% H) + 202 (0.33% V)
+
+                Congestion distribution:
+
+                Remain cntH cntV
+
+                --------------------------------------
+
+                 -5: 0 0.00% 1 0.00%
+
+                 -4: 0 0.00% 7 0.01%
+
+                 -3: 0 0.00% 18 0.03%
+
+                 -2: 1 0.00% 41 0.07%
+
+                 -1: 6 0.01% 97 0.16%
+
+                --------------------------------------
+
+                 0: 125 0.21% 256 0.42%
+
+                 1: 568 0.95% 685 1.13%
+
+                 2: 285 0.47% 7995 13.14%
+
+                 3: 889 1.48% 6145 10.10%
+
+                 4: 7457 12.41% 917 1.51%
+
+                 5: 50749 84.47% 44681 73.44%
+
+              *
+
+                The following command reports the local hotspot score:
+
+                reportCongestion -hotSpot
+
+                Output:
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+                [hotspot]  |  Top  |            hotspot  bbox                |
+                hotspot score |
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+                [hotspot]  |   1   |        32.16  262.56  216.48  400.80    |
+                54.89      |
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+                [hotspot] |   2   |        1.44  446.88  124.32  585.12      |
+                46.89      |
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+                [hotspot]  |   3   |       554.40  170.40  638.88  277.92    |
+                30.89      |
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+                [hotspot] |   4   |       477.60  708.00  585.12  800.16     |
+                25.22      |
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+                [hotspot]  |   5   |      62.88  108.96  185.76  170.40      |
+                21.22      |
+
+                [hotspot]
+                +-----+-------------------------------------+---------------+
+
+              *
+
+                The following command reports the local hotspot score:
+
+                reportCongestion -hotSpot -3d
+
+                [hotspot]
+                +------------+---------------+---------------+-------------------------------------+
+
+                [hotspot] |    layer   |   max  hotspot   |  total  hotspot  |
+                hotspot bbox             |
+
+                [hotspot]
+                +------------+---------------+---------------+-------------------------------------+
+
+                [hotspot]  |     M1(H)    |           0.00  |           0.00 |
+                (none)                            |
+
+                [hotspot] |     M2(V)    |          19.78  |         109.56  |
+                554.40   600.48   615.84   692.64 |
+
+                [hotspot]  |     M3(H)    |         174.33  |         693.67 |
+                47.52   201.12   293.28   723.36 |
+
+                [hotspot] |     M4(V)    |           0.89  |           6.67  |
+                247.20   354.72   277.92   385.44 |
+
+                [hotspot]  |     M5(H)    |           4.89  |          26.22 |
+                108.96   170.40   139.68   201.12 |
+
+                [hotspot]
+                +------------+---------------+---------------+-------------------------------------+
+
+                [hotspot] |   worst    |  (M3)    174.33  |  (M3)    693.67  |
+                |
+
+                [hotspot]
+                +------------+---------------+---------------+-------------------------------------+
+
+                [hotspot]  |  all  layers  |         168.89  |        654.89 |
+                |
+
+                [hotspot]
+                +------------+---------------+---------------+-------------------------------------+
+
+                Local HotSpot Analysis (3d): normalized  congestion  max/total
+                hotspot  area  =  168.89/654.89 (area is in unit of 4 std-cell
+                row bins)
+
+                           Fri Apr 04 01:25:37 2025    reportCongestion(25.10)

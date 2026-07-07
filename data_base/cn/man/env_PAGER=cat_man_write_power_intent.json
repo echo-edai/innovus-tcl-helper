@@ -1,0 +1,63 @@
+{
+  "command": "write_power_intent",
+  "is_cmd": true,
+  "summary": "写入 CPF/IEEE1801 文件",
+  "description": "该命令用于将低功耗设计意图写入 CPF（Common Power Format）或 IEEE1801（UPF）格式的文件。它支持多种模式，包括写入完整的 CPF 文件、为特定层次实例分区写入 CPF、写入完整的 IEEE1801 文件或进行增量式的 IEEE1801 写入。命令选项可以控制输出格式、目标实例以及是否包含工具自动添加的额外电源连接信息。",
+  "usage": "write_power_intent [-help] <fileName>{-cpf  [[-hierInst  -topHier] | [-inst]] | -1801 | -incremental_1801} [-no_extra_connects]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定输出的 IEEE1801 或 CPF 文件名。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-cpf",
+      "description": "指定输出 CPF 格式文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "指定层次实例名，用于为该实例分区写入 CPF 文件。必须与 -cpf 选项一起使用。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-hierInst",
+      "description": "与 -topHier 和 -cpf 一起使用时，写入顶层 CPF 文件，并将此选项指定的层次实例视为硬核模块。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-topHier",
+      "description": "与 -hierInst 和 -cpf 一起使用时，写入顶层 CPF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-1801",
+      "description": "从低功耗数据库写入 IEEE1801 文件。它会过滤掉原始文件中不存在的实例，并追加新插入的常开缓冲器的电源地连接、低功耗单元的 N 阱/P 阱连接以及沿电源域边界新创建端口的隔离/电平移位器策略（无隔离/移位器）等信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-incremental_1801",
+      "description": "指定进行增量式的 IEEE1801 功耗意图写入。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_extra_connects",
+      "description": "当与 -1801 选项一起使用时，指定此参数将阻止工具写入任何额外的 connect_supply_net（电源地连接）命令，即不包含工具自动追加但原始 UPF 中未包含的连接。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

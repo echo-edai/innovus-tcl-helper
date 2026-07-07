@@ -1,0 +1,1609 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_constraint(25.10)                              report_constraint(25.10)
+
+Name
+       report_constraint - Reports constraint information of current design
+
+Syntax
+        report_constraint
+
+       [-all_violators]
+
+       [-verbose]
+
+       [-late]
+
+       [-early]
+
+       [-em_type {peak | rms | avg | all}]
+
+       [-check_type  {  pulse_width  |  clock_period  |  recovery  | removal |
+       clock_gating_setup | clock_gating_hold | skew | pulse_clock_max_width |
+       pulse_clock_min_width | electromigration | rail_swing}]
+
+       [-clock]
+
+       [-connection_class]
+
+       [-data]
+
+        [-drv_fields {<field_list>}]
+
+       [-drv_output_format {txt|csv}]
+
+       [-drv_violation_type { max_capacitance | max_transition | max_fanout  |
+       min_capacitance | min_transition | min_fanout | pulse_clock_max_transi-
+       tion | pulse_clock_min_transition}]
+
+       [-max_pins_per_drv <integer>]
+
+       [-retime {aocv | path_slew_propagation | aocv_path_slew_propagation}]
+
+       [-retime_mode {path | exhaustive}]
+
+       [-view
+               <viewName>
+             ]
+
+       [-worst_drv_per_net]
+
+       [<pin_port_list>]
+
+       [{> | >>} filename[.gz]]
+
+       Reports  constraint  information of current design. The constraints in-
+       formation includes information such as whether or not constraint is vi-
+       olated, by how much amount, and the worst violator object.
+
+       The following timing checks are reported when you use  the  report_con-
+       straint command:
+
+              * All setup and hold checks
+
+              * DRV
+
+              * Clock  and  asynchronous checks including pulse_width, min_pe-
+                riod,  recovery,   removal,   clock_gating_setup,   clock_gat-
+                ing_hold, skew
+
+       The report_constraint command supports DRV constraints (set_min_fanout,
+       set_max_fanout, set_min_transition, set_max_transition, set_min_capaci-
+       tance, and set_max_capacitance) applied on library pins.
+
+       The  report_constraint  command  supports multi-threaded reporting. You
+       can make the following settings to enable multi-threaded reporting:
+
+       setMultiCpuUsage        -localCpu        <number_of_CPU>set_table_style
+       -no_frame_fix_width
+
+       By  default, the report_constraint command reports only the mean slews.
+       You can enable DRV checking to use mean as well  as  the  n-sigma  slew
+       values (in SOCV mode), with the following setting:
+
+       set timing_report_max_transition_check_using_nsigma_slew true
+
+Configurable DRV Reports
+       Tempus  allows you to perform design rule violation (DRV) checks to en-
+       sure that the netlist meets the design rule  constraints  specified  in
+       the  design  library. To enable configurable DRV reporting, you can use
+       the timing_report_constraint_format global variable. For example,
+
+       set timing_report_constraint_format {<list of DRV fields>}
+
+       report_constraint -drv_violation_type {<list of DRV checks>} \
+
+               -all_violators | pin_or_port_list
+
+       You can also use the following command to specify DRV fields:
+
+       report_constraint   -drv_violation_type   {<list   of   DRV    checks>}
+       -drv_fields <field_list>
+
+       The  field  list  specified  with  the -drv_fields parameter has higher
+       precedence and will override the field list  specified  with  the  tim-
+       ing_report_constraint_format  global  variable.  If  DRV fields are not
+       specified with this global  variable  (or  with  the  report_constraint
+       -drv_fields  command),  then the default set of DRV fields will be dis-
+       played. For a complete list of DRV fields, refer to the DRV Fields List
+       table.
+
+       For more details on DRV reporting, refer to the "Design Rule  Violation
+       (DRV) Reporting" section in the Tempus User Guide.
+
+Parameters
+       {> | >>} <filename>
+              When  specified  with >, writes the report to the specified file
+              name. If the file already exists, the software overwrites it.
+
+              When specified with >>, writes the report to the specified  file
+              name.  If the file already exists, the software concatenates the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the list.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default: Report is displayed on standard  output  without  being
+              saved.
+
+       -all_violators
+              Reports  negative  slack values for timing checks. The supported
+              check types are:
+
+              * setup
+
+              * hold
+
+              * clock_gating_setup
+
+              * clock_gating_hold
+
+              * recovery
+
+              * removal
+
+              * clock_period
+
+              * pulse_width
+
+              * max_capacitance
+
+              * max_transition
+
+              * max_fanout
+
+              * min_capacitance
+
+              * min_transition
+
+              * min_fanout
+
+              * skew
+
+              * pulse_clock_max_width
+
+              * pulse_clock_min_width
+
+              * pulse_clock_max_transition
+
+              * pulse_clock_min_transition
+
+              You can use the -all_violators parameter for reporting  specific
+              check  types  to  generate report for that particular check type
+              only. For example, you can use -all_violators with -late to  re-
+              port setup checks and path delays from set_max_delay.
+
+       -check_type
+              Reports setup or hold checks. The supported check types are:
+
+              * clock_gating_setup:  Reports  only  the  paths that end at the
+                clock_gating_setup timing check.
+
+              * clock_gating_hold: Reports only the  paths  that  end  at  the
+                clock_gating_hold timing check.
+
+              * electromigration:  Reports  signal  EM analysis related viola-
+                tions. When high density current passes through a  thin  metal
+                wire,  the high energy electrons exert forces on atoms causing
+                them to migrate. Electromigration (EM) can drastically  reduce
+                the  lifetime  of  a  chip  by increasing the resistivity of a
+                metal wire or creating a short circuit between adjacent lines.
+                When this option is specified, the software  reports  standard
+                cell level electromigration violations.
+
+              * recovery: Reports paths that end at the recovery timing check.
+
+              * removal: Reports paths that end at the removal timing check.
+
+                Note: The check types - recovery, removal, clock_gating_setup,
+                and clock_gating_hold are also supported in AOCV mode.
+
+              * pulse_width:   Reports   only   the  paths  that  end  at  the
+                pulse_width timing check.
+
+                If you do not specify the -all_violators parameter,  then  the
+                pulse_width option reports only one entry of the most critical
+                pulse_width  check.  The  DRV checks also report only the most
+                critical entry.
+
+                To report all the violated pulse_width  checks,  you  need  to
+                specify  report_constraint -check_type pulse_width -all_viola-
+                tors command (which is consistent with other  check  types  of
+                the report_constraint command).
+
+                To  report both violating and met entries, you can use the re-
+                port_min_pulse_width command.
+
+              * clock_period: Reports only the paths that end at the clock_pe-
+                riod timing check.
+
+              * skew: Reports skew checks.
+
+                The report_constraint command performs skew checks by default.
+
+                Skew checks are implemented as setup checks that are  reported
+                in  the  late  analysis or simultaneous mode. These checks are
+                not reported in the early mode. Skew checks are performed  as-
+                suming  the  signal  and  reference  clocks have the same fre-
+                quency. If the frequencies of the signal and reference  clocks
+                are different, a warning message is displayed.
+
+              * pulse_clock_max_width:  Reports  the maximum pulse clock width
+                checks set using the set using set_pulse_clock_max_width  com-
+                mand.
+
+              * pulse_clock_min_width:  Reports  the minimum pulse clock width
+                checks.
+
+              * rail_swing: Reports details related to the rail swing  checks.
+                For  rail  swing  check  settings,  you  can use the following
+                global variables:
+
+                * timing_rail_swing_checks_low_voltage_threshold
+
+                * timing_rail_swing_checks_high_voltage_threshold
+
+       -clock Specifies that the DRV checks will be restricted  to  the  clock
+              network.  If any pin is part of both the clock and data network,
+              it will be reported as a clock.
+
+       -connection_class
+              Reports violations if the connection  class  attributes  of  the
+              driving pin and receiving pin of a net are different.
+
+       -data  Specifies that the DRV check will be restricted to the data net-
+              work.  If any pin is part of both the clock and data network, it
+              will be reported as a clock network pin.
+
+              By default, the DRV checks are applied to both  clock  and  data
+              networks.
+
+       -drv_fields {<field_list>}
+              Allows  only  the specified fields to be included in the DRV re-
+              port - in the same order as defined.
+
+              For a complete list of DRV fields, refer to the DRV Fields  List
+              table.
+
+       -drv_output_format {txt | csv}
+              Specifies that DRV output format - txt or CSV. The default value
+              is "txt".
+
+       -drv_violation_type
+              Reports DRV violations. The supported DRV check types are:
+
+              * max_capacitance: Reports pins having the worst max_capacitance
+                constraint.  If  you specify the -all_violators parameter, you
+                can see all the pins whose actual capacitance is greater  than
+                the max_capacitance value specified in library and timing con-
+                straints file.
+
+              * min_capacitance: Reports pins having the worst min_capacitance
+                constraint.  If  you specify the -all_violators parameter, you
+                can see all the pins whose actual capacitance is less than the
+                min_capacitance value specified in the library and timing con-
+                straints file.
+
+              * max_transition: Reports pins having the  worst  max_transition
+                constraint.  If  you specify the -all_violators parameter, you
+                can see all the pins whose actual transition is  greater  than
+                the  max_transition  value specified in the library and timing
+                constraint file.
+
+                Note: These checks are not reported in hold analysis mode. The
+                setSIMode -enable_drv_with_delta_slew true setting is required
+                for max_transition DRV violations with SI slew.
+
+              * min_transition: Reports pins having the  worst  min_transition
+                constraint.  If  you specify the -all_violators parameter, you
+                can see all the pins whose actual transition is less than  the
+                min_transition  value specified in the library and timing con-
+                straints file.
+
+              * max_fanout: Reports pins  having  the  worst  max_fanout  con-
+                straint.  If you specify the -all_violators parameter, you can
+                see all the pins whose  actual  fanout  is  greater  than  the
+                max_fanout  value  specified  in  the  library and timing con-
+                straints file.
+
+              * min_fanout: Reports pins  having  the  worst  min_fanout  con-
+                straint.  If you specify the -all_violators parameter, you can
+                see all  the  pins  whose  actual  fanout  is  less  than  the
+                min_fanout  value  specified  in  the  library and timing con-
+                straints file.
+
+              * pulse_clock_max_transition: Reports maximum pulse clock  tran-
+                sition checks.
+
+              * pulse_clock_min_transition:  Reports minimum pulse clock tran-
+                sition checks.
+
+       -early Reports all of the hold checks,  including  regular,  clock_gat-
+              ing_hold, and data-to-data hold checks. Also reports path delays
+              from set_min_delay.
+
+              Note: This parameter does not report removal checks.
+
+       -em_type {peak | rms | avg | all}
+              Reports  DRV  violations  as  per  the  specified  EM type table
+              lookup.
+
+              When  this  parameter  is  specified,  the  software  reads  the
+              em_max_toggle_rate  table  in the Liberty library for the speci-
+              fied EM current type (RMS, peak, or average).
+
+       -late  Reports all of the setup checks, including  regular,  clock_gat-
+              ing_setup,  and data-to-data setup checks. Also reports path de-
+              lays from set_max_delay.
+
+              Note: This parameter does not report recovery checks.
+
+       -max_pins_per_drv
+              Reports the specified number of top  worst  violations  per  DRV
+              category,  such as, max_transition, max_capacitance. If this pa-
+              rameter is not specified, then by default 1000 entries  per  DRV
+              category will be reported.
+
+       <pin_port_list>
+              Controls  the output of DRV constraints. When specified, all DRV
+              violations are reported for the specified pins or ports only.
+
+       -retime {aocv | path_slew_propagation | aocv_path_slew_propagation}
+              Reanalyzes the  specified  set  of  paths  using  the  specified
+              method.
+
+              Note: The parameter supports setup/hold check types only.
+
+              aocv:  Re-evaluates  the given set of graph-based analysis (GBA)
+              paths by reverting back graph-based AOCV derate factors and  ap-
+              plying path- based AOCV derates instead of less pessimistic der-
+              ates.  In  this case the slew (and respective delays) values are
+              worst that are propagated during graph-based analysis.
+
+              aocv_path_slew_propagation: Re-evaluates the given set of graph-
+              based analysis (GBA) paths by using path-based AOCV derates  and
+              delays using actual path- based propagated slew.
+
+              path_slew_propagation: Re-evaluates the given set of graph-based
+              analysis  (GBA)  paths  by  recalculating the delay values based
+              upon actual propagated slew across the path. In  this  case  the
+              AOCV  derates  are the ones that are reported during graph-based
+              analysis.
+
+       -retime_mode {path | exhaustive}
+              Allows the report_constraint command to  be  run  in  exhaustive
+              path-based analysis (PBA) mode.
+
+              In  this  mode,  the  software  will exhaustively examine nworst
+              paths of the selected endpoints and then select the  true  worst
+              path  to  be reported - based on retimed slacks of all the exam-
+              ined paths.
+
+              To enable exhaustive mode, the use model is given below:
+
+              report_constraint -all_violators  -retime  path_slew_propagation
+              -retime_mode exhaustive
+
+              When you use this parameter, reporting can be run time intensive
+              as  the software needs to do an exhaustive search for true worst
+              paths. Therefore, it is recommended to use this  option  in  the
+              later  phases  of  sign-off stage when there are very few viola-
+              tions left for analysis.
+
+              Default: path
+
+       -verbose
+              Generates a report that displays the full data path with  accom-
+              panying required time and slack calculation.
+
+       -view <viewName>
+              Generates  a report containing endpoint and other constraint in-
+              formation for the specified analysis view.
+
+              You can only specify this parameter  when  the  software  is  in
+              multi-mode multi-corner analysis mode.
+
+              Default:  Generates  a  report containing the worst endpoint and
+              constraint information based on all of the analysis views.
+
+       -worst_drv_per_net
+              Reports only the worst DRV violation per net.
+
+DRV Fields List
+       ________________________________________________________
+
+       | Field Name      |  Report Column   |  Description     |
+
+       |_________________|__________________|__________________|
+
+       | pin             |  Pin             |  Reports the     |
+
+       |                 |                  |   pin or port on |
+
+       |                 |                  |   which DRV      |
+
+       |                 |                  |   check is       |
+
+       |                 |                  |   performed.     |
+
+       |_________________|__________________|__________________|
+
+       | pin_type        |  Type            |  Specifies       |
+
+       |                 |                  |   whether the    |
+
+       |                 |                  |   pin/port is    |
+
+       |                 |                  |  a data or a     |
+
+       |                 |                  |   clock          |
+
+       |                 |                  |   pin/port.      |
+
+       |                 |                  |  Any clock       |
+
+       |                 |                  |   network pin    |
+
+       |                 |                  |   will be        |
+
+       |                 |                  |   reported as    |
+
+       |                 |                  |   CLOCK. Any pin |
+
+       |                 |                  |   that belongs   |
+
+       |                 |                  |   to only data   |
+
+       |                 |                  |   network will   |
+
+       |                 |                  |   be reported as |
+
+       |                 |                  |   DATA. If a     |
+
+       |                 |                  |   pin/port       |
+
+       |                 |                  |   belongs to     |
+
+       |                 |                  |   both data      |
+
+       |                 |                  |  and clock       |
+
+       |                 |                  |   networks, it   |
+
+       |                 |                  |   will be        |
+
+       |                 |                  |   reported as    |
+
+       |                 |                  |   CLOCK.         |
+
+       |_________________|__________________|__________________|
+
+       | sequential      |  Sequential      |  Specifies if    |
+
+       |                 |                  |   the pin        |
+
+       |                 |                  |   belongs to a   |
+
+       |                 |                  |   sequential     |
+
+       |                 |                  |   cell or a      |
+
+       |                 |                  |                  |
+
+       |                 |                  |  combinational   |
+
+       |                 |                  |   cell. For      |
+
+       |                 |                  |   ports, the     |
+
+       |                 |                  |   report will    |
+
+       |                 |                  |   show "false".  |
+
+       |_________________|__________________|__________________|
+
+       | direction       |  Direction       |  Specifies the   |
+
+       |                 |                  |   pin or port    |
+
+       |                 |                  |   direction.     |
+
+       |_________________|__________________|__________________|
+
+       | ref_cell        |  Violating       |  Specifies the   |
+
+       |                 |   Libcell        |   reference      |
+
+       |                 |                  |   library cell   |
+
+       |                 |                  |   the            |
+
+       |                 |                  |  violating pin   |
+
+       |                 |                  |   is attached    |
+
+       |                 |                  |   to.            |
+
+       |_________________|__________________|__________________|
+
+       | partition       |  Partition       |  Specifies the   |
+
+       |                 |                  |   name of the    |
+
+       |                 |                  |   SPEF hierarchy |
+
+       |                 |                  |   the            |
+
+       |                 |                  |  violating pin   |
+
+       |                 |                  |   appears in.    |
+
+       |_________________|__________________|__________________|
+
+       | max_frequency_c |  Maximum         |  Specifies the   |
+
+       | lock            |   Frequency      |   name of the    |
+
+       |                 |   Clock          |   highest        |
+
+       |                 |                  |   frequency      |
+
+       |                 |                  |   clock          |
+
+       |                 |                  |   constraining   |
+
+       |                 |                  |   the pin.       |
+
+       |_________________|__________________|__________________|
+
+       | max_clock_frequ |  Frequency       |  Specifies the   |
+
+       | ency            |                  |   frequency of   |
+
+       |                 |                  |   the clock with |
+
+       |                 |                  |   the highest    |
+
+       |                 |                  |   frequency.     |
+
+       |_________________|__________________|__________________|
+
+       | max_transition  |  Required        |  Specifies the   |
+
+       |                 |   Transition     |   maximum        |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   limit for a    |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | min_transition  |  Required        |  Specifies the   |
+
+       |                 |   Transition     |   minimum        |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   limit for a    |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | max_capacitance |  Required        |  Specifies the   |
+
+       |                 |   Capacitance    |   maximum        |
+
+       |                 |                  |   capacitance    |
+
+       |                 |                  |   limit for a    |
+
+       |                 |                  |   pin.           |
+
+       |_________________|__________________|__________________|
+
+       | min_capacitance |  Required        |  Specifies the   |
+
+       |                 |   Capacitance    |   minimum        |
+
+       |                 |                  |   capacitance    |
+
+       |                 |                  |   limit for a    |
+
+       |                 |                  |   pin.           |
+
+       |_________________|__________________|__________________|
+
+       | max_fanout      |  Required        |  Specifies the   |
+
+       |                 |   Fanout         |   maximum fanout |
+
+       |                 |                  |   limit for a    |
+
+       |                 |                  |   pin.           |
+
+       |_________________|__________________|__________________|
+
+       | min_fanout      |  Required        |  Specifies the   |
+
+       |                 |   Fanout         |   minimum fanout |
+
+       |                 |                  |   limit for a    |
+
+       |                 |                  |   pin.           |
+
+       |_________________|__________________|__________________|
+
+       | transition_actu |  Actual          |  Specifies the   |
+
+       | al              |   Transition     |   actual         |
+
+       |                 |                  |   minimum/maximu |
+
+       |                 |                  |  m transition at |
+
+       |                 |                  |   a pin or port. |
+
+       |                 |                  |   This may be    |
+
+       |                 |                  |   base           |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |  or base plus    |
+
+       |                 |                  |   crosstalk-indu |
+
+       |                 |                  |  ced             |
+
+       |                 |                  |  transition      |
+
+       |                 |                  |   depending on   |
+
+       |                 |                  |   the            |
+
+       |                 |                  |   timing_max_tra |
+
+       |                 |                  |  nsition_use_si_ |
+
+       |                 |                  |  transition sett |
+
+       |                 |                  |  ing to false    |
+
+       |                 |                  |   (default) or   |
+
+       |                 |                  |   true, respecti |
+
+       |                 |                  |  vely.           |
+
+       |_________________|__________________|__________________|
+
+       | capacitance_act |  Actual          |  Specifies the   |
+
+       | ual             |   Capacitance    |   actual minimum |
+
+       |                 |                  |   or maximum     |
+
+       |                 |                  |   capacitance at |
+
+       |                 |                  |   a pin or port. |
+
+       |                 |                  |   This field     |
+
+       |                 |                  |  is used to      |
+
+       |                 |                  |   determine      |
+
+       |                 |                  |  the capacitance |
+
+       |                 |                  |   slack value.   |
+
+       |_________________|__________________|__________________|
+
+       | fanout_actual   |  Actual Fanout   |  Specifies the   |
+
+       |                 |                  |   actual minimum |
+
+       |                 |                  |   or maximum     |
+
+       |                 |                  |   fanout at a    |
+
+       |                 |                  |   pin or port.   |
+
+       |                 |                  |   This field     |
+
+       |                 |                  |  is used to      |
+
+       |                 |                  |   determine      |
+
+       |                 |                  |  the fanout      |
+
+       |                 |                  |   slack value.   |
+
+       |_________________|__________________|__________________|
+
+       | transition_si   |  SI Transition   |  Specifies only  |
+
+       |                 |                  |  the delta SI    |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   time at a      |
+
+       |                 |                  |  pin or port.The |
+
+       |                 |                  |   total          |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   time comprises |
+
+       |                 |                  |   of the base    |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   time           |
+
+       |                 |                  |   (transition    |
+
+       |                 |                  |   value          |
+
+       |                 |                  |  without SI      |
+
+       |                 |                  |   crosstalk      |
+
+       |                 |                  |   analysis) as   |
+
+       |                 |                  |   well as        |
+
+       |                 |                  |  delta SI        |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   time.          |
+
+       |_________________|__________________|__________________|
+
+       | transition_sigm |  Transition      |  Specifies the   |
+
+       | a               |   N-Sigma        |   N-Sigma        |
+
+       |                 |                  |   multiplier     |
+
+       |                 |                  |   defined for    |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   with the       |
+
+       |                 |                  |   set_socv_repor |
+
+       |                 |                  |  ting_nsigma_mul |
+
+       |                 |                  |  tiplier         |
+
+       |                 |                  |   -transition    |
+
+       |                 |                  |   <nsigma>     |
+
+       |                 |                  |   command.This   |
+
+       |                 |                  |   field will     |
+
+       |                 |                  |  be reported for |
+
+       |                 |                  |   SOCV STA,      |
+
+       |                 |                  |   under the      |
+
+       |                 |                  |   timing_report_ |
+
+       |                 |                  |  max_transition_ |
+
+       |                 |                  |  check_using_nsi |
+
+       |                 |                  |  gma_slew to     |
+
+       |                 |                  |   true           |
+
+       |                 |                  |   setting.This   |
+
+       |                 |                  |   is sensitive   |
+
+       |                 |                  |   to views and   |
+
+       |                 |                  |   -data and      |
+
+       |                 |                  |   -clock         |
+
+       |                 |                  |   specification. |
+
+       |                 |                  |  Note: This      |
+
+       |                 |                  |   field will     |
+
+       |                 |                  |   impact         |
+
+       |                 |                  |   transition_act |
+
+       |                 |                  |  ual and         |
+
+       |                 |                  |   transition_sla |
+
+       |                 |                  |  ck              |
+
+       |                 |                  |  computation for |
+
+       |                 |                  |   max_transition |
+
+       |                 |                  |  ,               |
+
+       |                 |                  |   min_transition |
+
+       |                 |                  |  ,               |
+
+       |                 |                  |   pulse_clock_ma |
+
+       |                 |                  |  x_transition,   |
+
+       |                 |                  |   and            |
+
+       |                 |                  |   pulse_clock_mi |
+
+       |                 |                  |  n_transition    |
+
+       |                 |                  |   checks.        |
+
+       |_________________|__________________|__________________|
+
+       | transition_slac |  Transition      |  Specifies the   |
+
+       | k               |   Slack          |   max_transition |
+
+       |                 |                  |  /min_transition |
+
+       |                 |                  |   slack at a     |
+
+       |                 |                  |   pin/port       |
+
+       |                 |                  |   pin/port.      |
+
+       |_________________|__________________|__________________|
+
+       | capacitance_sla |  Capacitance     |  Specifies the   |
+
+       | ck              |   Slack          |   max_cap/min_ca |
+
+       |                 |                  |  p slack at a    |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | fanout_slack    |  Fanout Slack    |  Specifies the   |
+
+       |                 |                  |   max_fanout/min |
+
+       |                 |                  |  _fanout slack   |
+
+       |                 |                  |   at a pin or    |
+
+       |                 |                  |   port.          |
+
+       |_________________|__________________|__________________|
+
+       | max_slack       |  Worst Setup     |  Specifies the   |
+
+       |                 |   Slack          |   worst setup    |
+
+       |                 |                  |   slack          |
+
+       |                 |                  |  through at a    |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | min_slack       |  Worst Hold      |  Specifies the   |
+
+       |                 |   Slack          |   worst hold     |
+
+       |                 |                  |   slack          |
+
+       |                 |                  |  through at a    |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | user_constraint |  User            |  Specifies user  |
+
+       |                 |   Constraint     |  defined         |
+
+       |                 |                  |   tran/cap/fanou |
+
+       |                 |                  |  t limit value   |
+
+       |                 |                  |   set by         |
+
+       |                 |                  |   constraints as |
+
+       |                 |                  |   command or     |
+
+       |                 |                  |   through SDC on |
+
+       |                 |                  |   the            |
+
+       |                 |                  |  violating       |
+
+       |                 |                  |  pin. If not     |
+
+       |                 |                  |   defined,       |
+
+       |                 |                  |   reports as     |
+
+       |                 |                  |   "NA".          |
+
+       |_________________|__________________|__________________|
+
+       | lib_constraint  |  Library         |  Specifies the   |
+
+       |                 |   Constraint     |   value of the   |
+
+       |                 |                  |   library        |
+
+       |                 |                  |   constraint     |
+
+       |                 |                  |  on the          |
+
+       |                 |                  |   violating pin. |
+
+       |                 |                  |   If not         |
+
+       |                 |                  |   defined,       |
+
+       |                 |                  |   reports as     |
+
+       |                 |                  |   "NA".          |
+
+       |_________________|__________________|__________________|
+
+       | drv_source      |  Source of DRV   |  Specifies the   |
+
+       |                 |                  |   source of      |
+
+       |                 |                  |  the DRV         |
+
+       |                 |                  |   constraint     |
+
+       |                 |                  |   which is       |
+
+       |                 |                  |  used for the    |
+
+       |                 |                  |   DRV check.     |
+
+       |                 |                  |   Reports        |
+
+       |                 |                  |   'library_const |
+
+       |                 |                  |  raint' or       |
+
+       |                 |                  |   'user_constrai |
+
+       |                 |                  |  nt' depending   |
+
+       |                 |                  |   on which DRV   |
+
+       |                 |                  |   violation      |
+
+       |                 |                  |   check is used. |
+
+       |_________________|__________________|__________________|
+
+       | driver_pin      |  Driver          |  Specifies the   |
+
+       |                 |                  |   leaf driver    |
+
+       |                 |                  |   pin or port    |
+
+       |                 |                  |   name.          |
+
+       |_________________|__________________|__________________|
+
+       | driver_ref_cell |  Driver Libcell  |  Specifies the   |
+
+       |                 |                  |   leaf driver    |
+
+       |                 |                  |   reference cell |
+
+       |                 |                  |   or port.       |
+
+       |_________________|__________________|__________________|
+
+       | driver_transiti |  Driver Actual   |  Specifies the   |
+
+       | on              |   Transition     |   actual         |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |  at driver pin   |
+
+       |                 |                  |   or port.       |
+
+       |_________________|__________________|__________________|
+
+       | driver_max_tran |  Driver          |  Specifies the   |
+
+       | sition          |   Required       |   max_transition |
+
+       |                 |   Maximum        |   limit at the   |
+
+       |                 |   Transition     |   driver pin     |
+
+       |                 |                  |  or port.        |
+
+       |_________________|__________________|__________________|
+
+       | driver_min_tran |  Driver          |  Specifies the   |
+
+       | sition          |   Required       |   min_transition |
+
+       |                 |   Minimum        |   limit at the   |
+
+       |                 |   Transition     |   driver pin     |
+
+       |                 |                  |  or port.        |
+
+       |_________________|__________________|__________________|
+
+       | driver_max_capa |  Driver          |  Specifies the   |
+
+       | citance         |   Required       |   max_capacitanc |
+
+       |                 |   Maximum        |  e limit at      |
+
+       |                 |   Capacitance    |  the driver      |
+
+       |                 |                  |  pin or port.    |
+
+       |_________________|__________________|__________________|
+
+       | driver_min_capa |  Driver          |  Specifies the   |
+
+       | citance         |   Required       |   min_capacitanc |
+
+       |                 |   Minimum        |  e limit at      |
+
+       |                 |   Capacitance    |  the driver      |
+
+       |                 |                  |  pin or port.    |
+
+       |_________________|__________________|__________________|
+
+       | net_fanout      |  Net Fanout      |  Specifies the   |
+
+       |                 |                  |   number of leaf |
+
+       |                 |                  |   level load     |
+
+       |                 |                  |   pins of the    |
+
+       |                 |                  |   net            |
+
+       |                 |                  |  connected to    |
+
+       |                 |                  |  a pin or port.  |
+
+       |_________________|__________________|__________________|
+
+       | driver_max_fano |  Driver          |  Specifies the   |
+
+       | ut              |   Required       |   worst          |
+
+       |                 |   Maximum Fanout |   max_fanout     |
+
+       |                 |                  |   limit on the   |
+
+       |                 |                  |   driver pin     |
+
+       |                 |                  |  or port.        |
+
+       |_________________|__________________|__________________|
+
+       | receiver_pin    |  Receiver        |  Specifies the   |
+
+       |                 |                  |   leaf           |
+
+       |                 |                  |  receiver pin    |
+
+       |                 |                  |   name.          |
+
+       |_________________|__________________|__________________|
+
+       | receiver_ref_ce |  Receiver        |  Specifies the   |
+
+       | ll              |   Libcell        |   leaf reference |
+
+       |                 |                  |   cell name of a |
+
+       |                 |                  |   receiver pin.  |
+
+       |_________________|__________________|__________________|
+
+       | receiver_transi |  Receiver        |  Specifies the   |
+
+       | tion            |   Actual         |   actual         |
+
+       |                 |   Transition     |   transition     |
+
+       |                 |                  |  at a receiver   |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | receiver_max_tr |  Receiver        |  Specifies the   |
+
+       | ansition        |   Required       |   max_transition |
+
+       |                 |   Maximum        |   limit at a     |
+
+       |                 |   Transition     |   receiver pin   |
+
+       |                 |                  |   or port.       |
+
+       |_________________|__________________|__________________|
+
+       | net             |  Net             |  Specifies the   |
+
+       |                 |                  |   top flat net   |
+
+       |                 |                  |   connected to   |
+
+       |                 |                  |   violating      |
+
+       |                 |                  |  pin (net name   |
+
+       |                 |                  |   at topmost     |
+
+       |                 |                  |   hierarchy)     |
+
+       |                 |                  |   flat net.      |
+
+       |_________________|__________________|__________________|
+
+       | net_type        |  Net Type        |  Specifies one   |
+
+       |                 |                  |   or more of the |
+
+       |                 |                  |   following      |
+
+       |                 |                  |   identifiers to |
+
+       |                 |                  |   indicate a     |
+
+       |                 |                  |   special        |
+
+       |                 |                  |   net:ideal: the |
+
+       |                 |                  |   net is         |
+
+       |                 |                  |  marked ideal    |
+
+       |                 |                  |   using the      |
+
+       |                 |                  |   set_ideal_netw |
+
+       |                 |                  |  ork             |
+
+       |                 |                  |   commandclock:  |
+
+       |                 |                  |   the net is     |
+
+       |                 |                  |   part of a      |
+
+       |                 |                  |   clock          |
+
+       |                 |                  |   networkconstan |
+
+       |                 |                  |  t: the net is   |
+
+       |                 |                  |   tied to        |
+
+       |                 |                  |  logic 1/0       |
+
+       |                 |                  |   respectivelymu |
+
+       |                 |                  |  ltidriven:      |
+
+       |                 |                  |  the net has     |
+
+       |                 |                  |   multiple       |
+
+       |                 |                  |   driverdont_tou |
+
+       |                 |                  |  ch: the net     |
+
+       |                 |                  |  is marked as    |
+
+       |                 |                  |   dont_touch     |
+
+       |                 |                  |   using          |
+
+       |                 |                  |   set_dont_touch |
+
+       |                 |                  |   command" -":   |
+
+       |                 |                  |   None of the    |
+
+       |                 |                  |   above          |
+
+       |_________________|__________________|__________________|
+
+       | total_capacitan |  TotalCapacitanc |  Total           |
+
+       | ce              |  e               |   capacitance of |
+
+       |                 |                  |   the net        |
+
+       |                 |                  |   connected to a |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | net_resistance  |  NetResistance   |  Resistance of   |
+
+       |                 |                  |   the net        |
+
+       |                 |                  |   connected to a |
+
+       |                 |                  |   pin or port.   |
+
+       |_________________|__________________|__________________|
+
+       | view            |  View            |  Name of the     |
+
+       |                 |                  |   pertaining     |
+
+       |                 |                  |   analysis view. |
+
+       |_________________|__________________|__________________|
+
+       | edge            |  Edge            |  The signal      |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |   direction on   |
+
+       |                 |                  |   the net.       |
+
+       |                 |                  |   Returns "rise" |
+
+       |                 |                  |   or "fall" if   |
+
+       |                 |                  |   the DRV report |
+
+       |                 |                  |   corresponds to |
+
+       |                 |                  |   a rising or    |
+
+       |                 |                  |   falling        |
+
+       |                 |                  |   transition     |
+
+       |                 |                  |  on the net.     |
+
+       |_________________|__________________|__________________|
+
+Examples
+              *
+
+                * Consider a design having 3 sequential endpoints:
+
+                * The report_constraint -drv_violation_type min_fanout command
+                  outputs the following:
+
+                  Check type : min_fanout
+
+                  ---------------------------
+
+                  Pin : F5/Q
+
+                  Fanout: 0.0000
+
+                  - min_fanout: 2.0000
+
+                  -----------------------------------------------------
+
+                  slack : -2.0000 ( VIOLATED )
+
+                *
+
+                  The report_constraints -check_type clock_period command  re-
+                  ports the following:
+
+                  Check type : clock_period
+
+                  ---------------------------------------------------------
+
+                  End Point                Slack      Cause
+
+                  ---------------------------------------------------------
+
+                  ffo_ram/mm0/mm1/CLKB f   -0.027     VIOLATED
+
+                  ---------------------------------------------------------
+
+                * The following example illustrates how to restrict the number
+                  of  DRV  violations to display for each of the specified DRV
+                  checks:
+
+                  report_constraint    -drv_violation_type     {max_transition
+                  max_capacitance}  -drv_fields {max_transition transition_ac-
+                  tual transition_slack max_capacitance capacitance_actual ca-
+                  pacitance_slack    max_slack    net      max_frequency_clock
+                  max_clock_frequency   pin_type   ref_cell   driver_pin  pin}
+                  -all_violators -max_pins_per_drv 6
+
+                  ###############################################################
+
+                  # format : frame 0 : split 0
+
+                  # Units: Time (1ns), Capacitance (1pf), Frequency (1MHz).
+
+                  Check type : max_transition
+
+                  ---------------------------
+
+                  ----------------------------------------------------------------------------------------------------------------------
+
+                  Required     Actual       Transition   Worst     Net    Max-
+                  imum     Frequency   Pin     Violating    Driver    Pin
+
+                  Transition   Transition   Slack        Setup            Fre-
+                  quency               Type    Libcell
+
+                                                         Slack
+                  Clock
+
+                  ----------------------------------------------------------------------------------------------------------------------
+
+                  0.002        0.120        -0.118       NA        clk1    CK1
+                  100.000     CLOCK   DFFRX2       clk1      ff1/CK
+
+                  0.002         0.120        -0.118       NA        clk2   CK2
+                  200.000     CLOCK   DFFRX2       clk2      ff2/CK
+
+                  0.002        0.059        -0.057       0.894     n4      CK1
+                  100.000     DATA    BUFX1        buf2/Y    buf2/Y
+
+                  0.002         0.059        -0.057       4.362     n4     CK1
+                  100.000     DATA    DFFRX2       buf2/Y    ff2/D
+
+                  0.002        0.059        -0.057       0.894     n4      CK1
+                  100.000     DATA    BUFX1        buf2/Y    buf3/A
+
+                  0.002         0.045        -0.043       3.840     n1     CK2
+                  200.000     DATA    BUFX1        buf0/Y    buf1/A
+
+                  Check type : max_capacitance
+
+                  ---------------------------
+
+                  ----------------------------------------------------------------------------------------------------------------------
+
+                  Required     Actual       Capacitance   Worst    Net    Max-
+                  imum     Frequency   Pin     Violating    Driver    Pin
+
+                  Capacitance  Capacitance  Slack         Setup           Fre-
+                  quency               Type    Libcell
+
+                                                          Slack
+                  Clock
+
+                  ----------------------------------------------------------------------------------------------------------------------
+
+                  0.002        0.004        -0.002        0.894    n4      CK1
+                  100.000     DATA    BUFX1        buf2/Y    buf2/Y
+
+                  0.002         0.002        -0.000        3.840    n1     CK2
+                  200.000     DATA    BUFX1        buf0/Y    buf0/Y
+
+                  0.002        0.002        -0.000        3.840    n2      CK2
+                  200.000     DATA    BUFX1        buf1/Y    buf1/Y
+
+                  0.002         0.002        -0.000        0.894    n3     CK1
+                  100.000     DATA    DFFRX2       ff1/Q     ff1/Q
+
+                * The following examples shows the pin-wise DRV report without
+                  the worst DRV per net:
+
+                  set timing_report_constraint_format "max_transition  transi-
+                  tion_actual transition_slack max_capacitance capacitance_ac-
+                  tual  capacitance_slack  max_slack  net  max_frequency_clock
+                  max_clock_frequency pin_type ref_cell driver_pin pin"
+
+                  report_constraint    -drv_violation_type     {max_transition
+                  max_capacitance} -all_violators
+
+                  ###############################################################
+
+                  # format : frame 0 : split 0
+
+                  # Units: Time (1ns), Capacitance (1pf), Frequency (1MHz).
+
+                  Check type : max_transition
+
+                  ---------------------------
+
+                  -------------------------------------------------------------------------------------------------------------------
+
+                  Required     Actual      Transition   Worst      Net    Max-
+                  imum    Frequency   Pin     Violating   Driver    Pin
+
+                  Transition   Transition  Slack        Setup             Fre-
+                  quency              Type    Libcell
+
+                                                        Slack
+                  Clock
+
+                  --------------------------------------------------------------------------------------------------------------------
+
+                  0.002         0.120       -0.118       NA         clk1   CK1
+                  100.000     CLOCK   DFFRX2      clk1      ff1/CK
+
+                  0.002        0.120       -0.118       NA         clk2    CK2
+                  200.000     CLOCK   DFFRX2      clk2      ff2/CK
+
+                  0.002         0.059       -0.057       0.894      n4     CK1
+                  100.000     DATA    BUFX1       buf2/Y    buf2/Y
+
+                  0.002        0.059       -0.057       4.362      n4      CK1
+                  100.000     DATA    DFFRX2      buf2/Y    ff2/D
+
+                  0.002         0.059       -0.057       0.894      n4     CK1
+                  100.000     DATA    BUFX1       buf2/Y    buf3/A
+
+                  0.002        0.045       -0.043       3.840      n1      CK2
+                  200.000     DATA    BUFX1       buf0/Y    buf1/A
+
+                  0.002         0.045       -0.043       3.840      n1     CK2
+                  200.000     DATA    BUFX1       buf0/Y    buf0/Y
+
+                  0.002        0.044       -0.042       3.840      n2      CK2
+                  200.000     DATA    BUFX1       buf1/Y    buf1/Y
+
+                  0.002         0.044       -0.042       3.840      n2     CK2
+                  200.000     DATA    DFFRX2      buf1/Y    ff1/D
+
+                  0.002        0.038       -0.036       0.894      n3      CK1
+                  100.000     DATA    BUFX1       ff1/Q     buf2/A
+
+                  0.002         0.038       -0.036       0.894      n3     CK1
+                  100.000     DATA    DFFRX2      ff1/Q     ff1/Q
+
+                  0.002        0.031       -0.029       1.208      out2    CK2
+                  200.000     DATA    DFFRX2      ff2/Q     ff2/Q
+
+                  0.002         0.030       -0.028       0.894      out1   CK1
+                  100.000     DATA    BUFX1       buf3/Y    buf3/Y
+
+                  Check type : max_capacitance
+
+                  ---------------------------
+
+                  -------------------------------------------------------------------------------------------------------
+
+                  Required    Actual      Capacitance  Worst    Net    Maximum
+                  Frequency  Pin    Violating  Driver   Pin
+
+                  Capacitance Capacitance Slack        Setup         Frequency
+                  Type   Libcell
+
+                                                       Slack         Clock
+
+                  --------------------------------------------------------------------------------------------------------
+
+                  0.002          0.004        -0.002       0.894    n4     CK1
+                  100.000    DATA   BUFX1     buf2/Y   buf2/Y
+
+                  0.002         0.002        -0.000       3.840    n1      CK2
+                  200.000    DATA   BUFX1     buf0/Y   buf0/Y
+
+                  0.002          0.002        -0.000       3.840    n2     CK2
+                  200.000    DATA   BUFX1     buf1/Y   buf1/Y
+
+                  0.002         0.002        -0.000       0.894    n3      CK1
+                  100.000    DATA   DFFRX2    ff1/Q    ff1/Q
+
+                * The  following  command  example shows pins per net with the
+                  worst DRV slack:
+
+                  report_constraint    -drv_violation_type     {max_transition
+                  max_capacitance}      -all_violators      -worst_drv_per_net
+                  -max_pins_per_drv 5
+
+                  ###################################################
+
+                  # format : frame 0 : split 0
+
+                  # Units: Time (1ns), Capacitance (1pf), Frequency (1MHz).
+
+                  Check type : max_transition
+
+                  ---------------------------
+
+                  ------------------------------------------------------------------------------------------------------------------
+
+                  Required     Actual      Transition   Worst     Net    Maxi-
+                  mum     Frequency   Pin     Violating   Driver   Pin
+
+                  Transition   Transition  Slack        Setup             Fre-
+                  quency               Type    Libcell
+
+                                                        Slack            Clock
+
+                  ------------------------------------------------------------------------------------------------------------------
+
+                  0.002         0.120        -0.118       NA        clk1   CK1
+                  100.000     CLOCK   DFFRX2      clk1     ff1/CK
+
+                  0.002        0.120       -0.118       NA         clk2    CK2
+                  200.000     CLOCK   DFFRX2      clk2     ff2/CK
+
+                  0.002         0.059        -0.057       0.894     n4     CK1
+                  100.000     DATA    BUFX1       buf2/Y   buf2/Y
+
+                  0.002        0.045       -0.043       3.840      n1      CK2
+                  200.000     DATA    BUFX1       buf0/Y   buf1/A
+
+                  0.002         0.044        -0.042       3.840     n2     CK2
+                  200.000     DATA    BUFX1       buf1/Y   buf1/Y
+
+                  Check type : max_capacitance
+
+                  ---------------------------
+
+                  ---------------------------------------------------------------------------------------------------------------
+
+                  Required     Actual      Capacitance   Worst    Net    Maxi-
+                  mum    Frequency   Pin    Violating   Driver   Pin
+
+                  Capacitance   Capacitance  Slack         Setup          Fre-
+                  quency              Type   Libcell
+
+                                                         Slack          Clock
+
+                  ---------------------------------------------------------------------------------------------------------------
+
+                  0.002        0.004       -0.002         0.894     n4     CK1
+                  100.000     DATA   BUFX1       buf2/Y   buf2/Y
+
+                  0.002         0.002        -0.000         3.840    n1    CK2
+                  200.000     DATA   BUFX1       buf0/Y   buf0/Y
+
+                  0.002        0.002       -0.000         3.840     n2     CK2
+                  200.000     DATA   BUFX1       buf1/Y   buf1/Y
+
+Related Information
+              * set_min_fanout
+
+              * set_max_fanout
+
+              * set_min_transition
+
+              * set_max_transition
+
+              * set_min_capacitance
+
+              * set_max_capacitance
+
+              * report_timing_format
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025   report_constraint(25.10)

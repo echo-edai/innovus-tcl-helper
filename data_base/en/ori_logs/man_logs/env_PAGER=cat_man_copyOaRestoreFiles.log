@@ -1,0 +1,87 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+copyOaRestoreFiles(25.10)                            copyOaRestoreFiles(25.10)
+
+Name
+       copyOaRestoreFiles  -  Copies  Innovus-specific  restore files from one
+       OpenAccess database to another
+
+Syntax
+       copyOaRestoreFiles
+
+       <fromLib fromCell fromView>
+
+       <toLib toCell toView>
+
+       Copies Innovus-specific restore files from one OpenAccess  database  to
+       another.  The  software  copies all of the files (except master.tag and
+       layout.oa) and renames those with the cell to  match  the  toCell  cell
+       name.  This  feature supports the ECO flow, where a cellview saved with
+       the saveDesign command and set of restore files is edited by an  exter-
+       nal  tool  (Virtuoso(R)  Chip  Editor), then saved to a new database to
+       avoid overwriting the unedited version. The external tool does not copy
+       the restore files to the new cellview.
+
+       If the originating database does not contain  restore  files  (such  as
+       cell.conf,  cell.mode,  siFix.options, and enc.pref.tcl, then the soft-
+       ware generates an error message such as the following:
+
+       ERROR: No restore Files found at specified source
+
+       /usr4/Tests/CE/OA22/PC44d_test/mydesign/top/layout
+
+       If the destination OpenAccess database already contains restore  files,
+       the software generates a warning message and overwrites the files.
+
+       You  can  use  the copyOaRestoreFiles command after you start a new In-
+       novus session, and before you use the restoreDesign -cellview command.
+
+Parameters
+       <fromLib> <fromCell> <fromView>
+              Specifies the location of the files to copy. This is the  design
+              from the previous Innovus session.
+
+       <toLib> <toCell> <toView>
+              Specifies  where  to  copy the files. This refers to the new de-
+              sign.
+
+Examples
+              * The following command copies  Innovus-specific  restore  files
+                from  myDesign/topCell/layout  to newDesign/newTopCell/newLay-
+                out:
+
+                copyOaRestoreFiles myDesign topCell layout  newDesign  newTop-
+                Cell newLayout
+
+              * The  following  procedure performs ECOs with the Virtuoso Chip
+                Editor:
+
+                * From an Innovus session, save the OpenAccess design.
+
+                  saveDesign -cellview {<lib> <cell> <view>}
+
+                * Exit the Innovus session.
+
+                * Open the OpenAccess database in  the  Virtuoso  Chip  Editor
+                  tool and edit the design. Exit the tool.
+
+                  Note:  You  must  use either of the following: Virtuoso Chip
+                  Editor, Virtuoso Layout XL , or Virtuoso Layout GXL.
+
+                * Start an Innovus session.
+
+                * Copy Innovus-specific files from the old design to  the  new
+                  design.
+
+                  copyOaRestoreFiles  <fromLib>  <fromCell> <fromView> <toLib>
+                  <toCell> <toView>
+
+                * Restore the OpenAccess design.
+
+                  restoreDesign -cellview {<lib> <cell> <view>}
+
+Related Information
+              * restoreDesign
+
+              * saveDesign
+
+                           Fri Apr 04 01:25:37 2025  copyOaRestoreFiles(25.10)

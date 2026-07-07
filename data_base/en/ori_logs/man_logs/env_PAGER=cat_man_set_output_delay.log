@@ -1,0 +1,178 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_output_delay(25.10)                                set_output_delay(25.10)
+
+Name
+       set_output_delay
+
+Syntax
+        set_output_delay
+
+       -clock <clock_name>
+
+       [-clock_fall]
+
+       [-rise] [-fall]
+
+       [-max] [-min]
+
+       [-add_delay]
+
+       [-network_latency_included]
+
+       [-source_latency_included]
+
+       [-reference_pin <pin_name>]
+
+       [-level_sensitive]
+
+       [-group_path <group_name>]
+
+       <delay_value>
+
+       <port_or_pin_list>
+
+       Specifies  the  data required time on output ports, hierarchical ports,
+       or internal output pins.
+
+Parameters
+       -add_delay
+              Adds delay information to the existing output delay.  The  addi-
+              tional  delay  information can be for multiple paths relative to
+              different clocks or clock edges leading to an input port or  in-
+              ternal  input pins. If you do not use the -add_delay option, the
+              software uses the last set_output_delay related to  a  pin  when
+              there are multiple set_output_delay statements for the same pin.
+
+       -clock <clock_name>
+              Specifies that the delay is relative to the specified clock.
+
+              You  cannot  use the set_output_delay command without the -clock
+              parameter. Such constraints are accepted but are ignored  during
+              timing analysis.
+
+              When  you  specify multiple clocks, an error occurs and the con-
+              straint is ignored.
+
+       -clock_fall
+              Specifies that the delays are with respect to the  falling  edge
+              of the clock waveform. If you do not specify the -clock_fall op-
+              tion,  the delay is with respect to the rising edge of the clock
+              waveform.
+
+              You cannot specify the -clock_fall parameter without the  -clock
+              parameter.
+
+       <delay_value>
+              Specifies the value for the path delay.
+
+       -fall  Specifies  that  the  output delay refers to the falling edge of
+              the signal at specified ports or pins. If you do not specify the
+              -fall option, the output delay applies to both the edges.
+
+       -group_path <group_name>
+              Specifies the group name where paths  ending  at  the  specified
+              ports or pins are to be added.
+
+              The  -group_path  parameter  is not honored in multi-mode multi-
+              corner (MMMC) designs. If specified, a warning is issued and the
+              constraints are applied as if the -group_path parameter  is  not
+              specified.
+
+       -level_sensitive
+              Models  output delay that is captured by a positive level sensi-
+              tive latch. For setup checks, the timing system checks  the  ar-
+              rival  time  at  the  output  port  with the opening edge of the
+              latch. The timing system treats any arrival time  exceeding  the
+              opening edge as negative slack. For hold checks, the timing sys-
+              tem  performs the checks with respect to the closing edge of the
+              latch.
+
+              Use the -clock parameter to model  a  positive  level  sensitive
+              latch,  or  the  -clock_fall parameter to model a negative level
+              sensitive latch.
+
+              You cannot use the -level_sensitive parameter without the -clock
+              parameter.
+
+       -max   Specifies that the delay refers to the setup analysis. If you do
+              not specify the -max parameter, the output delay applies to both
+              setup and hold analysis.
+
+       -min   Specifies that the delay refers to the hold analysis. If you  do
+              not specify the -min parameter, the output delay applies to both
+              setup and hold analysis.
+
+       -network_latency_included
+              Specifies  that the clock network latency should not be added to
+              the output delay value. If you do not specify this  option,  the
+              clock  network latency of the related clock is added to the out-
+              put delay value. This parameter has no effect if  the  specified
+              clock is in propagated mode.
+
+       <port_or_pin_list>
+              Specifies   a   list   of   output   port   or  pin  names.  The
+              port_or_pin_list argument can be a collection.
+
+       -reference_pin <pin_name>
+              Adds source and network latency of the specified  reference  pin
+              to the output delay value in propagated mode. A reference pin is
+              a  leaf  pin in the fanout cone of the clock source of the clock
+              that you specify using the -clock parameter.
+
+              You cannot specify multiple pins for  -reference_pin  parameter.
+              The command issues a warning and accepts the first pin.
+
+              You  cannot  use  the  -reference_pin  parameter  with the -net-
+              work_latency_included or -source_latency_included parameters.
+
+              You cannot use the -reference_pin parameter to  specify  hierar-
+              chical pins.
+
+       -rise  Specifies  that  output  delay  refers to the rising edge of the
+              signal at the specified ports or pins. If you do not specify the
+              -rise option, the output delay applies to the both edges.
+
+       -source_latency_included
+              Specifies that the clock source latency should not be  added  to
+              the output delay value.
+
+              With  different delay values for -rise/-fall and -min/-max, only
+              the last specified combination of -network_latency_included  and
+              -source_latency_included  parameters  is  honored. The specified
+              combination can be one of the following:
+
+              a) Either -network_latency_included or -source_latency_included
+
+              b) Both the parameters
+
+              c) None of these
+
+Examples
+              * The following example sets the input and output delays for the
+                bidirectional INOUT2 port.The input signal arrives  at  INOUT2
+                at 4.5 units after the falling edge of CLKB. The output signal
+                is  required  at INOUT2 at 2.5 units before the rising edge of
+                CLKD:
+
+                set_input_delay 4.5 -clock CLKB -clock_fall { INOUT2 }
+
+                set_output_delay 2.5 -clock CLKD { INOUT1 }
+
+              * The following example shows how to use the -group_path  option
+                to add ports into a named group:
+
+                set_output_delay   2.5   -max   -clock  CLK  -group_path  busC
+                {busC[*]}
+
+Related Information
+              * all_outputs
+
+              * create_clock
+
+              * report_ports
+
+              * set_input_delay
+
+              * set_load
+
+                           Fri Apr 04 01:25:37 2025    set_output_delay(25.10)

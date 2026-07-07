@@ -1,0 +1,183 @@
+{
+  "command": "addWellTap",
+  "is_cmd": true,
+  "summary": "在设计中插入阱接触单元的命令",
+  "description": "此命令用于在版图设计中插入阱接触（Well Tap）单元，以确保阱电位稳定，防止闩锁效应。它提供了多种参数来控制插入的区域、使用的单元类型、排列方式、间距、偏移量以及与电源域、边界、通道等特性的交互。用户可以通过指定不同的选项来精确控制阱接触单元的布局模式、位置和密度。",
+  "usage": "addWellTap [-help] [-area <box>] [-avoidAbutment] [-cell <string>] [-cellInterval <float>] [-channel_offset <float>] [-checkerBoard] [-fixedGap] [-inRowOffset <float>] [-powerDomain <name>] [-prefix <prefix>] [-siteOffset <siteNums>] [-skipRow <integer>] [-startRowNum <integer>] [{ -block_boundary_only flag }] [{{-termination_cell <cell_list> | {-top_termination_cell <cell_list> -bottom_termination_cell <cell_list>}} -column_cell <cell_list>} [-block_boundary_only flag]] [{-wellCutCell <string>} [-fixCutCell flag]] [-pitch <float> [-pitchOffset <float>]] [{-check_channel | -vertical_boundary_spacing <float> | -incremental <string>}] [{-insert_cells <string> | -incremental <string>}] [-safety_tmr [-safety_tmr_insts <instance_list>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定要插入阱接触的区域（框，可选）",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-avoidAbutment",
+      "description": "指定插入时是否避免在垂直和水平方向上的邻接（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-block_boundary_only",
+      "description": "指定是否仅在核心边界插入终止单元（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bottom_termination_cell",
+      "description": "指定底部要使用的终止单元列表（字符串，可选）",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-cell",
+      "description": "指定用作阱接触的单元（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cellInterval",
+      "description": "同一行中，从一个阱接触单元中心到下一个阱接触单元中心的距离（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-channel_offset",
+      "description": "指定通道中阱接触与阻挡层之间的偏移值（浮点数，可选，最小值=0）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-check_channel",
+      "description": "在通道内插入阱接触（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-checkerBoard",
+      "description": "以棋盘格方式放置阱接触（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-column_cell",
+      "description": "指定可以被终止单元替换的单元列表（字符串，可选）",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-fixCutCell",
+      "description": "固定所有属于wellCutCell列表的实例（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fixedGap",
+      "description": "确保始终维持指定的间隙（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inRowOffset",
+      "description": "指定一行中第一个阱接触与行起始位置之间的距离（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-incremental",
+      "description": "检查指定单元列表中是否有任何实例位于同一行中下一个阱接触单元的0.45倍-maxGap或-cellGap距离内。如果是，则不在该位置添加阱接触单元。（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-insert_cells",
+      "description": "插入混合阱接触，支持LUP层和边界规则（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitch",
+      "description": "指定当无法在cellInterval或maxGap处插入阱接触时，阱接触可以放置的位置（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pitchOffset",
+      "description": "指定用于间距计算的偏移值（浮点数，可选）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-powerDomain",
+      "description": "指定要为其插入阱接触的电源域（字符串，可选）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefix",
+      "description": "指定要插入的阱接触的前缀（字符串，可选）",
+      "required": false,
+      "type": "prefix"
+    },
+    {
+      "name": "-safety_tmr",
+      "description": "在每个TMR触发器（三模冗余触发器）的左右边缘相邻位置放置阱接触（布尔值，可选）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-safety_tmr_insts",
+      "description": "指定需要相邻放置阱接触的实例列表（字符串，可选）",
+      "required": false,
+      "type": "instance_list"
+    },
+    {
+      "name": "-siteOffset",
+      "description": "指定站点数量的偏移值，以便垂直阱接触需要感知（无符号整数，可选）",
+      "required": false,
+      "type": "siteNums"
+    },
+    {
+      "name": "-skipRow",
+      "description": "指定在相同图案的两行之间要跳过的行数（整数，可选）",
+      "required": false,
+      "type": "integer"
+    },
+    {
+      "name": "-startRowNum",
+      "description": "指定从设计底部或左侧开始计数的行号，阱接触单元必须放置在该行上（整数，可选）",
+      "required": false,
+      "type": "integer"
+    },
+    {
+      "name": "-termination_cell",
+      "description": "指定要使用的终止单元列表（字符串，可选）",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-top_termination_cell",
+      "description": "指定顶部要使用的终止单元列表（字符串，可选）",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-vertical_boundary_spacing",
+      "description": "指定与阱接触的垂直边界间距（浮点数，可选，最小值=-1）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-wellCutCell",
+      "description": "指定带有阱切割的单元列表（字符串，可选）",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

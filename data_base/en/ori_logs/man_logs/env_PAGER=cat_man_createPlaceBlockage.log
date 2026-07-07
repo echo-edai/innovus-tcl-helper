@@ -1,0 +1,426 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPlaceBlockage(25.10)                          createPlaceBlockage(25.10)
+
+Name
+       createPlaceBlockage - createPlaceBlockage
+
+       [-help]
+
+       [-pushdown]
+
+       {{[-box {<x1 y1 x2 y2>} | -polygon {{<x1 y1>} {<x2 y2>}...}
+
+         | -boxList {{<x1 y1>} {<x2 y2>}...}
+
+         | -allPartition | -allMacro ]
+
+         [-inst <inst_name> | -hinst <hinst_name>] }
+
+         [-name <place_blockage_name> | -prefixOn ]
+
+         [{-type {hard soft partial macroOnly}}
+
+         [-density <value>] [-excludeFlops ]]
+
+         [-noCutByCore]
+
+         [-snapToSite] }
+
+       [  {-inst <inst_name> | -hinst <hinst_name> | -allPartition | -allMacro
+       }
+
+         [-cover ]
+
+         [-innerRingBySide {<x1 y1 x2 y2>} |  -innerRingByEdge  {<edge1  edge2
+       edge3 ...>}]
+
+         [-outerRingBySide  {<x1  y1  x2 y2>} | -outerRingByEdge {<edge1 edge2
+       edge3 ...>}] ]
+
+       Creates cell placement blockages that can be placed
+
+Syntax
+       createPlaceBlockage
+
+       [-help]
+
+       [-pushdown]
+
+       {{[-box {<x1 y1 x2 y2>} | -polygon {{<x1 y1>} {<x2 y2>}...}
+
+         | -boxList {{<x1 y1>} {<x2 y2>}...}
+
+         | -allPartition | -allMacro ]
+
+         [-inst <inst_name> | -hinst <hinst_name>] }
+
+         [-name <place_blockage_name> | -prefixOn ]
+
+         [{-type {hard soft partial macroOnly}}
+
+         [-density <value>] [-excludeFlops ]]
+
+         [-noCutByCore]
+
+         [-snapToSite] }
+
+       [ {-inst <inst_name> | -hinst <hinst_name> | -allPartition |  -allMacro
+       }
+
+         [-cover ]
+
+         [-innerRingBySide  {<x1  y1  x2 y2>} | -innerRingByEdge {<edge1 edge2
+       edge3 ...>}]
+
+         [-outerRingBySide {<x1 y1 x2 y2>} |  -outerRingByEdge  {<edge1  edge2
+       edge3 ...>}] ]
+
+       Creates cell placement blockages that can be placed. A placement block-
+       age  is  a floorplan object used to block standard cell placements. Use
+       this command after importing the design.
+
+Parameters
+       -allMacro
+              For each macro creates a placement blockage covering that macro.
+
+              Data_type: bool, optional
+
+       -allPartition
+              For each partition creates a placement  blockage  covering  that
+              partition.
+
+              Data_type: bool, optional
+
+       -box {<x1 y1 x2 y2>}
+              Specifies the coordinates of the blockage area.
+
+              * x1:  Specifies  the lower left x coordinate of the obstruction
+                area.
+
+              * y1: Specifies the lower left y coordinate of  the  obstruction
+                area.
+
+              * x2:  Specifies the upper right x coordinate of the obstruction
+                area.
+
+              * y2: Specifies the upper right y coordinate of the  obstruction
+                area.
+
+              Note: You can enclose the coordinate values (x1...y2) in double-
+              quotes,  curly-braces,  [ list ... ], or just separate them with
+              spaces.
+
+              Data_type: box optional
+
+       -boxList {{<x1 y1> <x2 y2>} ...}
+              Specifies the coordinates of a list of blockage areas.
+
+              Data_type: box_list, optional
+
+       -cover By default the parameters  (-outerRingByEdge  and  -outerRingBy-
+              Side)  used  to create placement blockages around the outside of
+              the object, create toroidal placement blockages. The -cover  pa-
+              rameter combined with these parameters creates a solid placement
+              blockage, otherwise the -cover parameter does nothing.
+
+              Data_type: bool, optional
+
+       -density <value>
+              Specifies the maximum density allowed for partial or soft block-
+              ages.  The  value is in steps of 5 between 5 and 100, with units
+              of percent.
+
+              For example, a partial placement value of 75 means that up to 75
+              percent placement density is allowed in the area.
+
+              Note: The -density parameter can only  be  used  in  combination
+              with the -type partial or -type soft parameter.
+
+              Minimum: 5
+
+              Maximum: 100
+
+              Data_type: inst, optional
+
+       -excludeFlops
+              Specifies  that  flops  and  latches  will  not be placed in the
+              blockage during global placement.
+
+              Note: The -excludeFlops parameter can  only  be  used  with  the
+              -type partial and -density parameters.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each createPlaceBlockage parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createPlaceBlockage
+
+       -hinst <hinst_name>
+              Specifies the name of the hierarchical  instance  on  which  the
+              placement blockage is to be applied.
+
+              Data_type: (hInst), optional
+
+       -innerRingByEdge {<edge1 edge2 edge3 ...>}
+              Creates a hollow ring of placement blockage around the inside of
+              the  object(s)  specified.  edgeN is the width in microns of the
+              blockage created inside the Nth edge. edge1 is the vertical edge
+              starting at the left corner of the leftmost edge with the lowest
+              y coordinate as placed, and  proceeding  clockwise  through  the
+              other edges.
+
+              Note :
+
+              * The  -inst  ,  -hinst , -allMacro, or -allPartition parameters
+                must be specified with this parameter.
+
+              * There must be an edgeN specified for every  edge  of  the  ob-
+                ject(s).
+
+              * Enclose  the  edgeNs in double-quotes, curly braces, or [ list
+                ... ].
+
+              Data_type: string, optional
+
+       -innerRingBySide {<x1 y1 x2 y2>}
+              Creates a hollow ring of placement blockage around the inside of
+              the object(s) specified. bottom is the width in microns  of  the
+              blockage created on bottom edges, etc.
+
+              Note:
+
+              * The  -inst,  -hinst,  -allMacros,  or -allPartition parameters
+                must be specified with this parameter.
+
+              * The -innerRingBySide parameter can be  used  with  rectilinear
+                objects.
+
+              * Enclose   the   bottom...left  valuesin  double-quotes,  curly
+                braces, or [ list ... ]
+
+              Data_type: box, optional
+
+       -inst <inst_name>
+              Specifies the name of the instance on which the placement block-
+              age is to be applied.
+
+              Data_type: (inst), optional
+
+       -name <place_blockage_name>
+              Specifies the name of the placement blockage.
+
+              Note: Placement blockage names need not be unique.
+
+              Note: If neither -name nor -prefixOn parameters  are  specified,
+              then the created place blockage is named defScreenName.
+
+              Data_type: string, optional
+
+       -noCutByCore
+              Specifies  that  placement  blockages should not be truncated at
+              the core boundary. Placement blockage will always  be  truncated
+              at the die boundary.
+
+              Data_type: bool, optional
+
+       -prefixOn
+              Specifies  that  the  placement blockages should be named with a
+              prefix defined by  getFPlanMode  -defaultBlockageNamePrefix  at-
+              tribute. Names are of the form prefix_<int>
+
+              Data_type: bool, optional
+
+       -outerRingByEdge {<edge1 edge2 edge3 ...>}
+              Creates  a  hollow ring of placement blockage around the outside
+              of the object(s) specified. edgeN is the width in microns of the
+              placement blockage along the Nth edge.  edge1  is  the  vertical
+              edge  starting  at the left corner of the leftmost edge with the
+              lowest y coordinate as placed, and proceeding clockwise  through
+              the other edges.
+
+              Note:
+
+              * The  -inst,  -hinst  , -allMacros, or -allPartition parameters
+                must be specified with this parameter.
+
+              * There must be an edgeN specified for every  edge  of  the  ob-
+                ject(s).
+
+              * By  default, a toroid of blockage is created around the speci-
+                fied object(s). Use the -cover parameter  to  create  a  solid
+                blockage  over  the objects with the specified additional halo
+                of blockage.
+
+              * Enclose the edgeNs in double-quotes, curly braces, or  [  list
+                ... ].
+
+              Data_type: string, optional
+
+       -outerRingBySide {<x1 y1 x2 y2> <}>
+              Creates  a  hollow ring of placement blockage around the outside
+              of the object(s) specified. bottom is the width  in  microns  of
+              the  placement  blockage  along  the bottom edge(s) of object(s)
+              specified, etc.
+
+              Note:
+
+              * The -inst, -hinst, or -allPartition parameters must be  speci-
+                fied with this parameter.
+
+              * The  -outerRingBySide  parameter  can be used with rectilinear
+                objects.
+
+              * By default, a toroid of blockage is created around the  speci-
+                fied  object(s).  Use  the  -cover parameter to create a solid
+                blockage over the objects with the specified  additional  halo
+                of blockage.
+
+              * Enclose the bottom...left in double-quotes, curly braces, or [
+                list ... ].
+
+              Data_type: box, optional
+
+       -polygon {{<x1 y1>} {<x2 y2>} ...}
+              Specifies the polygon vertices of the blockage, in microns.
+
+              Data_type: point_list, optional
+
+       -pushdown
+              Set  pushdown  attribute for blockages. A blockage with pushdown
+              attribute is pushed down into the block from the  top  level  of
+              the design.
+
+              Note:  A normal routing blockage is just used to check for over-
+              laps with routes. A placement blockage with  pushdown  attribute
+              in  Smart Hier flow is used to restrict boundary area for place-
+              ment and assemble design does not bring it back.
+
+              Data_type: bool, optional
+
+       -snapToSite
+              Snaps the newly created placement blockage to a row site.
+
+              Data_type: bool, optional
+
+       -type {hard | soft | partial | macroOnly}
+              Specifies the type of blockage to be created.
+
+              * hard: Neither standard cell instances nor macros may be placed
+                in the blockage. This is the default.
+
+              * soft: Only buffers, inverters, isolation cells,  clock  gates,
+                tie  cells  and level shifters are allowed to be placed inside
+                the soft blockages. All other cells  are  placed  outside  the
+                soft  placement blockage. You can optionally specify cells and
+                instances that are allowed or forbidden to  be  placed  inside
+                soft  blockages  by  using the specifySelectiveBlkgGate or un-
+                specifySelectiveBlkgGate commands.
+
+              * partial: In conjunction with the -density parameter  alone  or
+                with  the -density and -excludeFlops parameters together, cre-
+                ates a placement blockage that has a maximum density as speci-
+                fied (and sometimes excludes flops and latches too).
+
+              * macro_only: Enables the proto_design command  to  keep  macros
+                out  of  the  placement blockage; however, it enables standard
+                cells to be placed  inside  the  box  as  if  no  blockage  is
+                present.  Macro-Only  blockage  is  represented as "0" percent
+                partial blockage in floorplan file, DEF file, and  in  Innovus
+                DB.
+
+              Default: hard
+
+              Note: Alternatively, you can create different types of placement
+              blockages using the Set Placement Blockage Options form or after
+              creating the placement blockage, you can double-click on the ob-
+              ject in the design display area to open the Attribute Editor and
+              select from four blockage types.
+
+              Data_type: enum, optional
+
+Example
+              * The  following  command creates a soft blockage, softBlockage2
+                in the design area:
+
+                createPlaceBlockage -type soft -box {  {  3442.3600  3739.2000
+                3511.6500 5716.6300 } } -name softBlockage2
+
+              * The following command creates a hard blockage covers the block
+                instance of DTMF_INST/PLLCLK_INST:
+
+                createPlaceBlockage  -type  hard  -inst  DTMF_INST/PLLCLK_INST
+                -cover
+
+                Before:
+                After:
+
+              * The following command creates a hard blockage for hierarchical
+                instance (Module) of DTMF_INST/TDSP_CORE_INST:
+
+                createPlaceBlockage -type hard -hinst DTMF_INST/TDSP_CORE_INST
+                -cover
+
+                Before:
+                After:
+
+              * The following command  creates  a  hollow  ring  of  placement
+                blockage inside of the object:
+
+                createPlaceBlockage  -type  hard  -inst  DTMF_INST/PLLCLK_INST
+                -innerRingByEdge {30 40 50 60}
+
+                Before:
+                After:
+
+                createPlaceBlockage  -type  hard  -inst  DTMF_INST/PLLCLK_INST
+                -innerRingBySide {30 40 50 60}
+
+                Before:
+                After:
+
+              *
+
+                The  following  command  shows the functionality of the option
+                noCutByCore:
+
+                createPlaceBlockage  -box  {952  1690  1291  1899}        cre-
+                atePlaceBlockage -box {952 1690 1291 1899} -noCutByCore
+
+              * The  following  command  shows the functionality of the option
+                prefixOn:
+
+                setFPlanMode -defaultBlockageNamePrefix prefix
+
+                createPlaceBlockage -box {932 1004 1286 1265}
+
+                createPlaceBlockage -box {932 1004 1286 1265} -prefixOn
+
+              * The following command  creates  a  hollow  ring  of  placement
+                blockage outside of the object:
+
+                createPlaceBlockage   -hinst   DTMF_INST/TDSP_CORE_INST   -in-
+                nerRingByEdge {20 30 40 50}
+
+                Before:
+                After:
+
+                createPlaceBlockage   -hinst   DTMF_INST/TDSP_CORE_INST   -in-
+                nerRingBySide {20 30 40 50}
+
+                Before:
+                After:
+
+Related Information
+              * setFPlanMode
+
+              * deletePlaceBlockage
+
+              * "Guiding Placement With Blockages" in the Innovus User Guide.
+
+              * Create Placement Blockage form in the Innovus Menu Reference.
+
+                           Fri Apr 04 01:25:37 2025 createPlaceBlockage(25.10)

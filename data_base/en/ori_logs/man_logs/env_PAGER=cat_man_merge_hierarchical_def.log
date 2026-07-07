@@ -1,0 +1,248 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+merge_hierarchical_def(25.10)                    merge_hierarchical_def(25.10)
+
+Name
+       merge_hierarchical_def  - Merges DEF data from various blocks to a sin-
+       gle chip database
+
+Syntax
+       merge_hierarchical_def
+
+       [-help]
+
+       <defFiles <...>>
+
+       [-add_blockage]
+
+       [-delete_blockages_over_partition_macro]
+
+       [-ignore_drcfill]
+
+       [-incremental_ilm_def]
+
+       [-preserve_shape]
+
+       [-rdl_def <string>]
+
+       [-rdl_orientation <orientation>]  [-rdl_placement {<x y>}]
+
+       [-secondary {{<suffix> <def_file_list>}...}]
+
+       [-skipNets]
+
+       [-skip_filler]
+
+       [-skip_pg]
+
+       [-skip_routing {[pg|signal] [regular|special] [high_layer_routing]}]
+
+       [-to_layer <routing_layer_name>]
+
+       [-top_scope]
+
+       [-topcell_orientation <orientation>]
+
+       [-topcell_placement {x y}]
+
+       [-transform_file <string>]
+
+       [-use_top_def_die_area]
+
+       [-modules <vCell>+ | -hInsts <hInst>+]
+
+       Merges DEF data from various blocks to  a  single  chip  database.  The
+       merge_hierarchical_def command provides the following features:
+
+              * Takes the TOP DEF file and a set of block DEF files and merges
+                them into a single chip database.
+
+              *
+
+                The  Verilog files for each of the blocks, and TOP, need to be
+                loaded up front .
+
+              * The block and TOP Verilog files (or their DEF  files)  can  be
+                specified  in  any  order. However, if there are empty Verilog
+                module stubs of blocks in some of the  parent  Verilog  files,
+                ensure  that  the  parent Verilog files are specified prior to
+                the child Verilog files.
+
+              * There is no need to specify the LEF files for the blocks.
+
+              * During the course of this command, TOP rows will be cut around
+                the block boundary, and all block rows will be brought back as
+                is.
+
+              * Partition definitions are created for each  of  the  assembled
+                block as per the DIE AREA statement in the block DEF.
+
+              * The  wire  at  the  block boundaries will be stitched with the
+                electrically connected net's wires at the TOP.
+
+              * All orientations of blocks are  supported  for  assembly.  Re-
+                peated  blocks  are also supported. Non-R0 master is also sup-
+                ported.
+
+Parameters
+       -add_blockage
+              Specifies that the netlist is a reduced one and converts the un-
+              defined instances into blockages.
+
+              Data_type: bool, optional
+
+       <defFiles <...>>
+              Specifies the DEF files to be merged.
+
+              Data_type: list, required
+
+       -delete_blockages_over_partition_macro
+              Deletes the top design placement and routing blockages  overlap-
+              ping partitions.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each merge_hierarchical_def parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man merge_hierarchical_def
+
+       -hInsts <hInst>+
+              Specifies the list of hierarchical instances for which  physical
+              data  needs  to  be  loaded.  The  tool then reads data from def
+              file(s) associated to the specified hInstance(s).
+
+              Data_type: (hInst)+, optional
+
+       -ignore_drcfill
+              Ignores the special routing with DRCFILL shape attribute.
+
+              Data_type: bool, optional
+
+       -incremental_ilm_def
+              Incrementally flattens the ILM def.
+
+              Data_type: bool, optional
+
+       -modules <vCell>+
+              Specifies the list of modules for which physical data  needs  to
+              be  loaded. The tool then reads data only from def file(s) asso-
+              ciated to the specified module(s).
+
+              Data_type: (vCell)+, optional
+
+       -preserve_shape
+              Preserve the shapes and geometries when the  DEF data from vari-
+              ous blocks is merged to a single chip database.
+
+              Data_type: bool, optional
+
+       -rdl_def <string>
+              Specifies the RDL def file.
+
+              Data_type: string, optional
+
+       -rdl_orientation <orientation>
+              Specifies the orientation for RDL def.
+
+              Data_type: enum, optional
+
+       -rdl_placement {<x y>}
+              Specifies the offset of RDL def.
+
+              Data_type: point, optional
+
+       -secondary {{<suffix> <def_file_list>}...}
+              Specifies the secondary DEF file(s) to load.
+
+              Data_type: string, optional
+
+       -skip_filler
+              Skips merging the filler and decap cells.
+
+              Data_type: bool, optional
+
+       -skip_pg
+              Skips merging the routing on pg nets.
+
+              Data_type: bool, optional
+
+       -skipNets
+              Skips merging the signal nets section.
+
+              Data_type: bool, optional
+
+       -skip_routing {[pg|signal] [regular|special] [high_layer_routing]}...
+              Skips merging  the routing based on the settings specified. This
+              setting can be any combination of the  three  optional  keywords
+              from the following set:
+
+              * [pg|signal]:  Specifies the type of the net on which the rout-
+                ing to be skipped. pg - pg net, signal - signal net,  both  if
+                not specified.
+
+              * [regular|special]:   Specifies  the  type  of  routing  to  be
+                skipped. regular - regular routing, special - special routing,
+                both if not specified.
+
+              *
+
+                [high_layer_routing]: Specifies that only the routing on  high
+                layers to be skipped, where the layers are calculated automat-
+                ically.  If  not   specified,  the  routing  on all layers are
+                skipped. The layers can be specified with -to_layer option. In
+                that case, the routing on the layers from top to the specified
+                layer are skipped.
+
+                Note: You must specify the -to_layer parameter  explicitly  if
+                high_layer_routing  is specified for -skip_routing. Otherwise,
+                high_layer_routing has no effect.
+
+              Data_type: string, optional
+
+       -to_layer <routing_layer_name>
+              Skips the routing of layers from top to the specified layer (in-
+              clusive) when the high_layer_routing option is specified for the
+              -skip_routing parameter.
+
+              Data_type: (layer), optional
+
+       -top_scope
+              Merges the routing only on top scope nets.
+
+              Data_type: bool, optional
+
+       -topcell_orientation <orientation>
+              Specifies the orientation for the topcell.
+
+              Data_type: enum, optional
+
+       -topcell_placement {<x y>}
+              Specifies the placement for the topcell.
+
+              Data_type: point, optional
+
+               -transform_file <string>" Specifies the name of  the  transform
+              file that contains the final x and y offsets, orientation in the
+              top-level  of  each  LEF block that got replaced by DEF, and the
+              block's origin.
+
+              Data_type: string, optional
+
+       -use_top_def_die_area
+              Enables the use of TOP DEF DIE AREA.
+
+              Data_type: bool, optional
+
+Example
+              * The following command merges  DEF  data  from  top.def.gz  and
+                blockA.def.gz to a single chip database.
+
+                merge_hierarchical_def top.def.gz blockA.def.gz
+
+Related Information
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 202m5erge_hierarchical_def(25.10)

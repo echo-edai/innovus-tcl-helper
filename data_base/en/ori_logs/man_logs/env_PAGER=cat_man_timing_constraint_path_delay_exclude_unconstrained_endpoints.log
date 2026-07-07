@@ -1,0 +1,48 @@
+env PAGER=cat man timing_constraint_path_delay_exclude_unconstrain ed_endpoints
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_constra...ined_endpoints(25.10)  timing_constra...ined_endpoints(25.10)
+
+Name
+       timing_constraint_path_delay_exclude_unconstrained_endpoints
+
+Syntax
+       timing_constraint_path_delay_exclude_unconstrained_endpoints
+
+       {true | false}
+
+       Default: false
+
+       Allows you to configure the valid endpoints.
+
+       When  path  delay  exceptions  are asserted (using the set_min_delay or
+       set_max_delay commands) with a complete -from  and  -to  specification,
+       the  exception  can  be  applied between any two data path pins. If the
+       constraint assertion includes only a -from  and/or  -through  argument,
+       then  a  set  of valid endpoints must be established to define the con-
+       strained paths. This global variable allows you to configure the set of
+       valid endpoints (inferred -to pins) that are selected.
+
+       When set to false, the set of allowed endpoints is simply  all  of  the
+       endpoints  in the combinational fanout of the -from and/or -through ar-
+       guments - essentially, wherever the path tracing stops. The path  delay
+       constraint  will  be  applied as if there were a -to argument specified
+       for each endpoint.
+
+       When set to true, the software uses different rules  to  determine  the
+       valid  set  of  inferred  -to  endpoints.  Only constrained pins in the
+       fanout of -from and/or -through arguments are considered as  valid  -to
+       endpoints  for  the  constraint.  A constrained endpoint will have some
+       type of timing check - such as Setup or Hold already in force  on  that
+       pin. Additionally, each transition at the endpoints will be examined to
+       determine  if each is individually constrained. The path exception will
+       only be applied to the edges that are constrained. As an example, if  a
+       register  preset or a clear pin was a potential endpoint, then only the
+       edge constrained by the recovery or removal check will  have  the  path
+       delay applied. To apply the path delay constraint to unconstrained end-
+       points  while  in  this mode, you must specify them explicitly with the
+       -to,  -rise_to,  or  -fall_to  parameters  of  the  set_min_delay   and
+       set_max_delay constraints.
+
+       To set this global variable, use the set command.
+
+                           Fri Apr 04 01:t2i5m:i3n7g_2c0o2n5stra...ined_endpoints(25.10)

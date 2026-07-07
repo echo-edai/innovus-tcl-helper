@@ -1,0 +1,143 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+place_connected(25.10)                                  place_connected(25.10)
+
+Name
+       place_connected  -  Places  the  specified  standard cells close to the
+       specified attractor with legal location
+
+Syntax
+       place_connected
+
+       [-help]
+
+       -attractor <macro/IO list>
+
+       [-fixed]
+
+       [-move_fixed]
+
+       [-placed]
+
+       {-level <integer>  | -sequential  all_connected  |  direct_connected  |
+       -stop_points  <instance_name>  |  -before_points <instance_name> | -in-
+       stance_pin <instance/pin>}
+
+       [{ -stop_points <instance_name> | -key_cell <cell_name> }]
+
+       [{ -instance_pin <instance/pin> | -key_cell <cell_name> }]
+
+       [{ -attractor_pin <pin_list> } [-instance_pin <instance/pin> ]]
+
+       Places the specified standard cells close to  the  specified  attractor
+       with legal location. The attractor can be IOs, hard macros, fixed stan-
+       dard cell. The recommended flow is to run this command before place_de-
+       sign.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each place_connected parameter.
+
+       -attractor <macro/IO list>
+              Specifies target hard macros, IOs, or fixed  standard  cell  for
+              attracting standard cells. Wildcards are supported.
+
+              Tool  processes  attractors in list one by one. If there are in-
+              stances shared by different attractors, the locations of  shared
+              instances  are  determined  by  the later one. In that case, the
+              placement result may vary with different  order  of  objects  in
+              list.
+
+       -attractor_pin <pin_list>
+              Places  only standard cells connected with specified pins of at-
+              tractors close to attractor. Wildcards are supported.
+
+              Without this setting, standard cells connected with all pins  of
+              attractors are pulled.
+
+       -before_points <instance_name>
+              The attractor stops attracting before these instances.
+
+       -fixed Sets the placement status as fixed.
+
+       -instance_pin <instance/pin>
+              Pulls all instances, instance pins, and IO pins specified in the
+              list  close to the attractor. This option requires only full in-
+              stance pin name. Wildcards are not supported.
+
+              Option -attractor_pin needs to be used with this option.
+
+       -key_cell <cell_name>
+              Places specified type of cells close to attractors, as  well  as
+              other  logics  between the key cell and attractor. Wildcards are
+              supported.
+
+              Without this setting, all standard cells connected with  attrac-
+              tors are pulled.
+
+       -level <integer>
+              Pulls all instances within certain logic level of connections to
+              the attractor close to attractors.
+
+              This  option  is  mutually  exclusive with -sequential, and user
+              must specify one of them.
+
+       -move_fixed
+              Specifies that instances with the fixed status can also be moved
+              close to the attractor.
+
+       -placed
+              Specifies instances being placed is in "placed" status.
+
+              By default, the pulled cells are marked as "softfixed".
+
+       -sequential <all_connected> | <direct_connected>
+              Pulls sequential cells connected with the attractor close to the
+              attractor.
+
+              all_connected: attracts all sequential cells from/to  attractor;
+              combinational logics between the sequential instance and attrac-
+              tor are attracted as well.
+
+              direct_connected:  attracts  sequential cells directly connected
+              with attractor.
+
+       -stop_points <instance_name>
+              Pulls all instances connected  between  the  attractor  and  the
+              specified  stop  point close to attractors. This option requires
+              full instance name or instance  pin  name.  Wildcards  are  sup-
+              ported.
+
+Examples
+              * The  following command places all instances directly connected
+                with all pins of RAM1 close to RAM1.
+
+                place_connected -attractor RAM1 -level 1
+
+              * The following command pulls all sequential cells from RAM1 and
+                all combinational cells between RAM1 and the sequential  cells
+                close to RAM1.
+
+                place_connected -attractor RAM1 -sequential all_connected
+
+              * Only  the  sequential  cells from "IN*" pins of RAM1 and their
+                combinational logics are caught to be placed nearby RAM1.
+
+                place_connected -attractor RAM1 -sequential all_connected -at-
+                tractor_pin IN*
+
+              * The following command picks out  instances  that  are  "BUF1X"
+                cell  type  and  directly connected with RAM1, and places them
+                close to RAM1 with "placed" status.
+
+                place_connected  -attractor  RAM1  -level1   -key_cell   BUF1X
+                -placed
+
+              * The  following  command  places instances, C1, C2, C3, C4, C6,
+                close to the attractor RAM1.
+
+                place_connected -attractor RAM1 -before_points {C5 C7}
+
+Related Information
+              * place_design
+
+                           Fri Apr 04 01:25:37 2025     place_connected(25.10)

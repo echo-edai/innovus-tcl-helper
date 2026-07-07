@@ -1,0 +1,355 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+writeFPlanScript(25.10)                                writeFPlanScript(25.10)
+
+Name
+       writeFPlanScript - Allows you to write out the specified floorplan sec-
+       tions and source the output file after init_design
+
+Syntax
+        writeFPlanScript
+
+       [-help]
+
+       [-appendToFile]
+
+       [-compactRow]
+
+       -fileName <fileName>
+
+       [-no_snap_to_grid]
+
+       [-selected | -sections {boundary row placeBlockages routeBlockages pin-
+       Blockages  groups  constraints pins ioPad areaIO bump partitions blocks
+       globalNetConnect  busSinkGroups  blackboxes  netGroupAndBusGuide  rela-
+       tivefplan pinGroups pinGuides customShape coverCell pg_pins}]
+
+       Allows you to write out the specified floorplan sections and source the
+       output file after init_design. With this command the tool would write a
+       file  that  you  can  examine, edit, and then source to selectively (or
+       completely) define your floorplan. You can specify the  floorplan  sec-
+       tion  to write out. The writeFPlanScript command writes out a file with
+       Tcl commands to recreate the floorplan. It  can  optionally  write  out
+       specific  floorplan sections listed with option -sections. The file in-
+       cludes commands to delete any existing data for each section if any ex-
+       ists.
+
+       Note: Unlike saveFPlan, the writeFPlanScript command does  not  include
+       special-routing  like P/G routing. You should use defOutBySection -spe-
+       cialNetRouting for that purpose.
+
+       Note: The createBusGuide -type {hard | soft} command supports soft/hard
+       constraints to guide Innovus routers. With the  hard  constraint  type,
+       after  running  Early  Global Route (eGR), NanoRoute (NR), or NanoRoute
+       High Frequency Router (NRHF), the route obeys the path of the bus guide
+       but with soft constraints the bus guide only guides the route path. The
+       tool can route the net out of the bus guide. The writeFPlanScript  com-
+       mand writes out these constraints types to the output file.
+
+Parameters
+       -appendToFile
+              Appends  new  data  to the file, by default it will write out to
+              the file specified by  -fileName.
+
+              Data_type: bool, optional
+
+       -compactRow
+              When specified, it enables the writeFPlanScript command to write
+              out the row-creation commands in a simple and compact way.
+
+              Data_type: bool, optional
+
+       -fileName <fileName>
+              Writes the floorplan Tcl commands to the specified file.
+
+              Data_type: string, required
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for each writeFPlanScript parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man writeFPlanScript
+
+       -no_snap_to_grid
+              Specifies that the object should not be snapped to the specified
+              grid  and  keep the location of object the same before and after
+              loading the dumped script.
+
+              Data_type: bool, optional
+
+       -sections {boundary row placeBlockages routeBlockages pinBlockages
+       groups constraints pins ioPad areaIO bump partitions blocks globalNet-
+       Connect busSinkGroups blackboxes netGroupAndBusGuide relativefplan pin-
+       Groups pinGuides customShape coverCell pg_pins}
+              Specifies one or more specific floorplan sections to  write  out
+              to the file.
+
+              * areaIO: Writes out areaIO information.
+
+              * blackboxes:  Writes  out  location,  shape, and orientation of
+                black box instances.
+
+              * blocks: Writes out placement and orientation of all blocks.
+
+              * boundary: Writes out the  floorplan  boundary,  including  the
+                boundary  to IO and core box spacing, and the global row para-
+                meters required by the floorPlan  command  to  regenerate  the
+                rows automatically.
+
+                Note:  The floorPlan command will auto-generate the rows also,
+                unless "rows" is included with -sections to override them with
+                the current rows.
+
+              * bump: Writes out all the bumps.
+
+              * busSinkGroups: Writes bus sink group information.
+
+              *
+
+                constraints: Writes out any  region,  fence,  and  guide  con-
+                straints for groups or hinsts.
+
+              * coverCell:  Writes out cover cell information.
+
+              * customShape: Writes out custom shape information.
+
+              *
+
+                globalNetConnect: Writes out all the global net connections.
+
+              *
+
+                groups: Writes out any group definitions (group names and list
+                of  instances).  It  also  writes  out the groups belonging to
+                power domains.
+
+              *
+
+                ioPad: Writes out all the IO pads.
+
+              *
+
+                netGroupAndBusGuide: Writes out all the  net  groups  and  bus
+                guides.
+
+              *
+
+                partitions: Writes out all the partitions.
+
+              * pg_pins:  Writes out all PG pins.
+
+              *
+
+                pinBlockages: Writes out all pin blockages.
+
+              * pinGroups: Writes out all the pin groups.
+
+              * pinGuides: Writes out all the pin guides.
+
+              *
+
+                pins: Writes out all the external IO pins.
+
+              *
+
+                placeBlockages: Writes out placement/density blockages.
+
+              * relativefplan:  Writes  out relative floorplan constraints and
+                all the placement relationship of floorplan  objects  indepen-
+                dently from the actual coordinates in a floorplan.
+
+                Note:  You can use writeFPlanScript -sections relativefplan to
+                save relative floorplan info.
+
+              *
+
+                routeBlockages: Writes out routing blockages.
+
+              *
+
+                row: Writes out all the core and IO rows.
+
+              Data_type: enum_list, optional
+
+       -selected
+              Specifies the floorplan object to write out.
+
+              Note: The tool does not support to write out standard cells.
+
+              Data_type: bool, optional
+
+Example
+              * The following command writes out the user specified (row) sec-
+                tion to the writeFPlanScript.tcl file.
+
+                writeFPlanScript   -sections   {row}   -fileName   writeFPlan-
+                Script.tcl
+
+                In  writeFPlanScript.tcl, something like the following will be
+                written out:
+
+                # Standard Cell Row
+
+                deleteRow -all
+
+                set rdagFPlanRowSpaceType 2
+
+                set rdagFPlanRowSpacing 0
+
+                createRow  -site  tsm3site  -area  335.280  335.440   1176.780
+                340.480 -flip1st -noCheck
+
+                createRow   -site  tsm3site  -area  335.280  340.480  1176.780
+                345.520 -noCheck
+
+                createRow  -site  tsm3site  -area  335.280  345.520   1176.780
+                350.560 -flip1st -noCheck
+
+                createRow   -site  tsm3site  -area  335.280  350.560  1176.780
+                355.600 -noCheck
+
+                createRow  -site  tsm3site  -area  335.280  355.600   1176.780
+                360.640 -flip1st -noCheck
+
+                createRow   -site  tsm3site  -area  335.280  360.640  1176.780
+                365.680 -noCheck
+
+                createRow  -site  tsm3site  -area  335.280  1172.080  1176.780
+                1177.120 -flip1st -noCheck
+
+                fpSetDefaultTechSite -site tsm3site
+
+              * The  following  command by default writes out all the sections
+                to the writeFPlanScript.tcl file
+
+                writeFPlanScript -fileName writeFPlanScript.tcl
+
+                In writeFPlanScript.tcl, something like the following will  be
+                written out:
+
+                # floorplan boundary
+
+                set  ret  [catch  {floorplan  -noResize -noSnapToGrid -b 0.000
+                0.000 1511.960  1512.120  235.000  235.000  1276.960  1277.120
+                335.280 335.440 1176.960 1177.120 }]
+
+                if {$ret != 0} {
+
+                 floorplan  -noSnapToGrid  -b  0.000  0.000  1511.960 1512.120
+                235.000 235.000 1276.960  1277.120  335.280  335.440  1176.960
+                1177.120
+
+                }
+
+                # Standard Cell Row
+
+                deleteRow -all
+
+                set rdagFPlanRowSpaceType 2
+
+                set rdagFPlanRowSpacing 0
+
+                createRow   -site  tsm3site  -area  335.280  335.440  1176.780
+                340.480 -flip1st -noCheck
+
+                createRow  -site  tsm3site  -area  335.280  340.480   1176.780
+                345.520 -noCheck
+
+                fpSetDefaultTechSite -site tsm3site
+
+                # Placement obstruction
+
+                deletePlaceBlockage -all
+
+                # Routing obstruction
+
+                deleteRouteBlk -all
+
+                # Pin blockage
+
+                deletePinBlkg -all
+
+                # Instance group
+
+                # Hierarchical Instance's constraint(Fence, Region or Guide)
+
+                # Pin
+
+                setPinAssignMode -pinEditInBatch true
+
+                setPinAssignMode -pinEditInBatch false
+
+                # IO pad
+
+                dbPlaceInst   [dbGetInstByName  IOPADS_INST/Pibiasip]  [uu2dbu
+                0.000] [uu2dbu 548.160] R270
+
+                setInstancePlacementStatus      -status      fixed       -name
+                IOPADS_INST/Pibiasip
+
+                # Area IO
+
+                # Bump
+
+                deleteBumps -all
+
+                # Block placement
+
+                unplaceAllBlocks
+
+                deleteHaloFromBlock -allBlock
+
+                placeInstance DTMF_INST/PLLCLK_INST 355.280 355.440 R0
+
+                addHaloToBlock 20 20 20 20 DTMF_INST/PLLCLK_INST
+
+                setInstancePlacementStatus  -status fixed -name DTMF_INST/PLL-
+                CLK_INST
+
+                # Global Net Connection
+
+                clearGlobalNets
+
+                globalNetConnect VDD -pin VDD -instanceBasename * -type  pgpin
+                -all
+
+                globalNetConnect  VSS -pin VSS -instanceBasename * -type pgpin
+                -all
+
+                applyGlobalNets
+
+                # partition
+
+                # netGroupAndBusGuide
+
+                # relative floorplan
+
+              * The following command writes  out  the  user  specified  (cus-
+                tomShape) section to the writeFPlanScript.tcl file
+
+                writeFPlanScript -sections {customShape} -fileName writeFPlan-
+                Script.tcl
+
+                In  writeFPlanScript.tcl, something like the following will be
+                written out:
+
+                # custom shapes
+
+                delete_gui_object -shape
+
+                add_gui_shape -layer <<layer>>  -line {<x1 y1 x2 y2>}
+
+                add_gui_shape -layer <<layer>>  -polygon {<x1 y1 x2 y2 ...>}
+
+Related Information
+              * saveFPlan
+
+              * defOutBySection
+
+              * createBusGuide
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                * Saving and Loading Floorplan Data
+
+                           Fri Apr 04 01:25:37 2025    writeFPlanScript(25.10)

@@ -1,0 +1,63 @@
+{
+  "command": "set_message",
+  "is_cmd": true,
+  "summary": "设置消息处理规则",
+  "description": "该命令用于配置工具中消息（如警告、错误、信息）的处理方式。可以指定特定的消息ID列表，并对其进行操作，例如修改消息的严重级别（如将警告提升为错误）、设置消息的显示次数限制、完全抑制（不显示）或取消抑制消息，以及定义当错误消息出现时工具的额外行为（如仅打印消息、立即退出或停止执行脚本）。此外，还可以为每个公共命令设置一个独立的停止脚本限制，当消息触发达到该次数时，工具将在当前Tcl命令完成后停止执行脚本并返回交互式提示符。",
+  "usage": "set_message [-help] [-id <list_of_msgIDs>] [-severity {warn error info reset} | -limit <number> | -no_limit  | -suppress  | -unsuppress  | -on_error {msg_only exit stop_script} | -stop_script_limit <number>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印此命令的使用说明。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-id",
+      "description": "指定要处理的消息ID列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-severity",
+      "description": "为正在处理的消息指定新的严重级别（警告、错误、信息或重置）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-limit",
+      "description": "为选定的消息设置显示次数限制。限制值必须为非负数。限制为零将抑制该消息。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-no_limit",
+      "description": "移除对选定消息的任何现有限制。（被抑制的消息不会被取消抑制。）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-suppress",
+      "description": "抑制（不显示）消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unsuppress",
+      "description": "取消抑制（恢复显示）消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-on_error",
+      "description": "对-id选项指定的错误消息采取额外操作。若无-id选项，则此操作适用于所有错误消息。可选操作包括：仅打印消息、立即退出、或等待命令完成并停止脚本执行。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stop_script_limit",
+      "description": "设置每个公共命令的消息触发次数限制。达到此限制后，工具将在当前Tcl命令完成后停止执行任何Tcl脚本，并返回交互式Tcl提示符。默认值为-1，表示无限制。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

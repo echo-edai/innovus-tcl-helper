@@ -1,0 +1,99 @@
+{
+  "command": "addRepeaterByRule",
+  "is_cmd": true,
+  "summary": "根据规则文件在网络上插入缓冲器和/或反相器",
+  "description": "此命令根据用户定义的规则文件，在指定的网络上插入缓冲器和/或反相器。与DRV修复不同，它不考虑转换时间违规或任何时序信息，而是约束最大总网络长度、最大半径长度、最大电容、最大扇出数等。默认情况下，它会插入满足规则且总面积成本最小的可用缓冲器/反相器。新添加的缓冲器不会自动合法化，需要用户手动将其移动到合法位置。该命令为顶层设计提供了一种高效的缓冲方法。规则文件包含两类约束：单个中继器规则（约束每个中继器的驱动能力）和全局默认规则（约束除新插入中继器外的所有其他实例）。命令支持多线程，并提供完整的MSV兼容性解决方案。",
+  "usage": "addRepeaterByRule [-help] [-allowMixedSignal] [-copyNetAttribute] [-excNet <excludeNetFile>] [-netMapping <fileName>] [-nets <list_of_nets>] [-outDir <directoryName>] [-preRoute | -postRoute | -alongRoute] [-reportIgnoredNets <ignoredNetFile>] [-rule <fileName>] [-selNet <selNetFile>] [-selected] [-template]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowMixedSignal",
+      "description": "允许在混合信号网络上进行缓冲。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-copyNetAttribute",
+      "description": "将原始网络上的网络属性复制到本命令插入的新网络上。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excNet",
+      "description": "指定一个文件，其中包含要从规则违规修复中排除的分层网络名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-netMapping",
+      "description": "生成一个文件，将原始网络名称映射到本命令插入的新网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要考虑添加缓冲器/反相器的网络列表。与 -selNet 和 -selected 参数互斥。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-outDir",
+      "description": "指定软件写入详细失败原因报告的目录。默认目录为 timingReports。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preRoute",
+      "description": "允许以不同的布线拓扑插入中继器。数据库应在调用此选项前完成全局布线和预布线RC提取。软件将探索不同的拓扑以最优地插入中继器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postRoute",
+      "description": "允许沿布线路径插入中继器。数据库应在调用此选项前完成详细布线和详细RC提取。会保留布线以最小化更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-alongRoute",
+      "description": "允许沿布线路径插入中继器。数据库应在调用此选项前完成全局布线和预布线RC提取。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reportIgnoredNets",
+      "description": "报告未插入缓冲器的网络及其被忽略的原因。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rule",
+      "description": "指定一个用户创建的文件，其中应列出缓冲器、反相器以及插入它们时的长度和电容规则。只有规则文件中包含的缓冲器和反相器才会被插入。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-selNet",
+      "description": "指定一个文件，其中包含本命令要考虑的分层网络名称。如果网络同时出现在 -excNet 和 -selNet 指定的文件中，则会被排除在规则违规修复之外。与 -nets 和 -selected 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selected",
+      "description": "指定后，addRepeaterByRule 命令仅对通过 selectNet 命令或在 GUI 中选择的网络进行操作。与 -nets 和 -selNet 参数互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-template",
+      "description": "写入一个规则文件模板。指定此参数时，软件将忽略此命令的任何其他参数。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

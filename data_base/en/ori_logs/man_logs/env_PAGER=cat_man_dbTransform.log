@@ -1,0 +1,110 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbTransform(25.10)                                          dbTransform(25.10)
+
+Name
+       dbTransform  -  Takes  coordinates  local to a cell and returns them in
+       context with the global design space
+
+Syntax
+       dbTransform
+
+       [-help]
+
+       [-d]{-inst instPtr | -hInst instPtr | {-cell cellPtr -orient orientEnum
+       -pt {x y}}}
+
+       {-localPt list | -globalPt list}
+
+       Takes coordinates local to a cell and returns them in context with  the
+       global  design  space. You can specify a specific instance of a cell in
+       the design, or you can specify a library cell and its location  in  the
+       design, and instruct the software to perform a "what-if" translation of
+       the coordinates within that cell.
+
+Parameters
+              -help" Prints a brief description that includes the type and de-
+              fault information for each dbTransform parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man dbTransform
+
+       -cell <cellPtr>
+              Specifies a pointer to a library cell. You must specify the  -pt
+              and -orient parameters with -cell.
+
+       -d     Specifies the values in database units, specified in integers.
+
+              This  is  an  optional  parameter. If you use the -d option, the
+              Boolean value is 1, so the value will be displayed  in  database
+              units. If you do not specify the -d option, the Boolean value is
+              0, the default.
+
+              Default: Specifies values in user units, in microns
+
+       -globalPt<globalPts>
+              Specifies  the  global coordinates to convert into local coordi-
+              nates.
+
+       -hInst Specifies the hierarchical instance of a database  object.  This
+              option is mandatory.
+
+       -inst <instPtr>
+              Specifies a pointer to a specific instance/bump of a cell in the
+              design.The  software derives the coordinates and the orientation
+              for the cell instance from the design.
+
+       -localPt <list>
+              Specifies the local coordinates to convert into  global  coordi-
+              nates
+
+       -orient <orientEnum>
+              Specifies  the orientation of the cell specified with -cell. You
+              must specify the -cell and -pt parameters with -orient.
+
+              Valid orientation values are: R0, R180, R90, R270, MY, MX, MX90,
+              MY90.
+
+       -pt <x y>
+              Specifies the coordinates for the cell specified with -cell. You
+              must specify the -cell and -orient parameters with -pt.
+
+Examples
+              * Assume that a shape exists on 1 within a NAND2 cell,  from  (1
+                1) to (2 2). If an instance of the NAND2 cell is placed at (10
+                10),  with  an  R0 (N) orientation, the following command con-
+                verts the local points (1 1 2 2 ) of the NAND2 cell into their
+                global coordinates:
+
+                dbTransform -cell [dbGet -p head.allCells.name NAND2] -pt  {10
+                10} -orient R0 -localPt {1 1 2 2}
+
+                The software returns the following information:
+
+                {11 11 12 12}
+
+              * Following  is  an example with the same scenario as above, ex-
+                cept that the orientation is MX instead of R0:
+
+                dbTransform -cell [dbGet -p head.allCells.name NAND2] -pt  {10
+                10} -orient MX -localPt {1 1 2 2}
+
+                The  software  takes  into account the orientation of the cell
+                and returns:
+
+                {11 13.04 12 14.04}
+
+              * Assume that the NAND2 cell is placed at (10 10),  with  an  R0
+                (N)  orientation  named i1. The following command converts the
+                local points (1 1 2 2) of i1 into their equivalent global  co-
+                ordinates:
+
+                dbTransform -inst [dbGet -p top.insts.name i1] -localPt {1 1 2
+                2}
+
+                The software returns the following information:
+
+                {11 11 12 12}
+
+                           Fri Apr 04 01:25:37 2025         dbTransform(25.10)

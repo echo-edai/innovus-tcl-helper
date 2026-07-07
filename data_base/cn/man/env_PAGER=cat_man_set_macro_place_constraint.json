@@ -1,0 +1,183 @@
+{
+  "command": "set_macro_place_constraint",
+  "is_cmd": true,
+  "summary": "设置宏单元与标准单元协同布局的约束",
+  "description": "该命令用于指定宏单元与标准单元协同布局时的约束条件。这些约束可用于将宏单元排列成阵列（或矩阵），并定义每个宏单元的相对位置。整个阵列可以像一个宏单元一样进行翻转或镜像（R0, MX, MY, R180）。使用此命令可以指定：宏阵列约束、组对齐约束、宏到宏以及宏到核心边界的间距约束、宏单元朝向约束、宏单元上方电源布线建模、最大堆叠长度、引脚布线预留空间以及I/O引脚禁止区域。注意：对于Integrity 3D-IC平台中的3D设计，每个芯片承载其自身的宏布局约束信息。在调用此命令前，必须先切换到特定的芯片。",
+  "usage": "set_macro_place_constraint [-help] [<array elements>] [-array <array_name> [-common_hier <name>][-valid_group_orients {R0 MX MY}] [-place_order {horizontal vertical}]] [{-insts <string> | -all_macros } {-orientation <string>} [-common_hier <name>]] [-cells <string> {-cell_obs <string> | -track_adjustment <string>}] [-cpg <string>] [[-max_io_pin_group_keep_out {<depth_value> [<side_value>]}] [-forbidden_space_to_core {<unified_value> | <horizontal_value vertical_value>}] [-forbidden_space_to_macro {<unified_value> | <horizontal_value vertical_value>}] [-min_space_to_core {<unified_value> | <horizontal_value vertical_value>}] [-min_space_to_macro {<unified_value> | <horizontal_value vertical_value>}] [-parallel_run_length {<unified_value> | <vertical_value horizontal_value>}] [-power_domain_as_core {true | false}] [-horizontal_stacking {<max_macro_stack_length min_space_between_macro_stack max_space_between_macros>}] [-vertical_stacking {<max_macro_stack_length min_space_between_macro_stack max_space_between_macros>}] [-honor_strict_spacing_constraint {true | false}] [-avoid_abut_macro_edge_with_pins {true | false}] [-same_length_site <integer>] [-pg_resource_model {<M1 value1 M2 value2 ...>}] [-macro_corner_keepout {<double_endcap_width> <double_endcap_height>}] [-halo_sharing {true | false}] [-parallel_run_length_for_stacking {<unified_value> | <vertical_value horizontal_value>}] ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<array_elements>",
+      "description": "指定阵列中一行或一列的实例成员信息，格式为：inst_name:orientation [spacing inst_name:orientation ] +。注意：应与 -array 参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-array",
+      "description": "指定宏阵列的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-common_hier",
+      "description": "为 <array_elements> 中的 <inst_name> 指定公共逻辑层次结构名称，以便可以使用简写格式指定 <inst_name>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-valid_group_orients",
+      "description": "指定整个组的有效朝向。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-place_order",
+      "description": "指定宏阵列的放置顺序：行优先（horizontal）或列优先（vertical）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-insts",
+      "description": "指定要设置朝向约束的宏单元。更多信息请参考 -orientation 参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-all_macros",
+      "description": "指定所有宏单元都应遵守约束。此选项在与 -orientation 选项一起使用时才有意义。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-orientation",
+      "description": "指定宏单元允许的朝向。可以通过 -insts 或 -all_macros 指定要约束朝向的宏实例。注意：指定的朝向会覆盖之前的定义。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cells",
+      "description": "与 -cell_obs 命令结合使用，为指定单元的所有实例指定约束。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_obs",
+      "description": "指定要在每个宏单元上添加单元阻挡的层宽和间距，以模拟电源走线。格式为：{{<Layer1_Name PowerStripeWidth SpacingBetweenStripes>} {<Layer2_Name ....>}}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-track_adjustment",
+      "description": "指定要在每个宏单元上添加轨道调整的层密度。格式为：{{<layer1 density1>} {<layer2> ....}}...。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cpg",
+      "description": "指定一个实例的 cpg 引导。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_io_pin_group_keep_out",
+      "description": "指定为 I/O 引脚自动添加仅宏阻挡的最大高度和（可选）侧边延伸。深度和侧边值以微米为单位指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-forbidden_space_to_core",
+      "description": "指定宏到核心边界的禁止间距值。如果宏与核心之间的空间小于此值，则宏单元会紧靠在一起。可以指定一个统一值或水平/垂直两个值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-forbidden_space_to_macro",
+      "description": "指定宏到宏边界的禁止间距值。如果宏之间的空间小于此值，则宏单元会紧靠在一起。可以指定一个统一值或水平/垂直两个值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-min_space_to_core",
+      "description": "指定宏到核心边界的最小间距值。如果宏与核心之间的空间小于此值但大于禁止空间，则宏单元会被推离核心到最小间距处。可以指定一个统一值或水平/垂直两个值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-min_space_to_macro",
+      "description": "指定宏到宏边界的最小间距值。如果宏之间的空间小于此值，则宏单元会对齐。可以指定一个统一值或水平/垂直两个值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-parallel_run_length",
+      "description": "指定用于 -min_space_to_macro 和 -forbidden_space_to_macro 检查的平行运行长度，只有平行运行长度大于指定值的宏才会进行间距约束检查。可以指定一个统一值或垂直/水平两个值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_domain_as_core",
+      "description": "指定工具在遵守某些宏布局约束时需要将电源域边界视为核心边界。这包括使用 -min_space_to_core、-forbidden_space_to_core 和 -avoid_abut_macro_edge_with_pins 参数设置的约束。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-horizontal_stacking",
+      "description": "指定最大水平堆叠深度和最小水平间距。格式为：<max_macro_stack_length min_space_between_macro_stack max_space_between_macros>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vertical_stacking",
+      "description": "指定最大垂直堆叠深度和最小垂直间距。格式为：<max_macro_stack_length min_space_between_macro_stack max_space_between_macros>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honor_strict_spacing_constraint",
+      "description": "当设置为 true 时，指定必须严格遵守禁止间距和最小间距约束。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-avoid_abut_macro_edge_with_pins",
+      "description": "当设置为 true 时，即使宏距离在禁止空间设置范围内，该命令也不会让宏边缘与引脚紧靠。宏单元将以 min_space_to_macro 距离分隔。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-same_length_site",
+      "description": "指定两个宏垂直边缘之间的最小站点数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pg_resource_model",
+      "description": "为协同宏布局指定电源地资源模型。格式为：<M1 value1 M2 value2 ...>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-macro_corner_keepout",
+      "description": "指定宏单元拐角间距约束，确保宏单元拐角之间有足够的空间来正确插入端接单元。格式为：<double_endcap_width> <double_endcap_height>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-halo_sharing",
+      "description": "启用后，紧靠的宏单元可以共享它们之间的光环。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-parallel_run_length_for_stacking",
+      "description": "指定用于 -horizontal_stacking 和 -vertical_stacking 检查的平行运行长度，只有平行运行长度等于或大于指定值的宏才会被计入堆叠长度。可以指定一个统一值或垂直/水平两个值。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

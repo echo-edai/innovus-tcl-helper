@@ -1,0 +1,266 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbQuery(25.10)                                                  dbQuery(25.10)
+
+Name
+       dbQuery - Returns a list of objects that overlap or abut specific areas
+       by default
+
+Syntax
+        dbQuery
+
+       [-help]
+
+       [-abut_only] | [-enclosed_only] | [-overlap_only]
+
+       [-areas {{<llx1 lly1 urx1 ury1>} {<llx2 lly2 urx2 ury2>} <...>}]
+
+       [-bbox_overlap]
+
+       [-d]
+
+       [-layers {<layer1 layer2 ...>} [-strict_via_inst_layer_check]]
+
+       [-objType  {bump  busGuide  inst instAllShapes instTerm term marker net
+       pBlkg pWire pgInstTerm rBlkg regular resizeBlkg  row  special  sViaInst
+       sWire  viaInst  wire  whatIfWire  whatIfVia  pinShape  guiRect  guiLine
+       guiPoly partition}]
+
+       [-polygons {<x11 y11 x12 y12 x13 y13> < ...>}]
+
+       [-threads]
+
+       Returns a list of objects that overlap or abut specific  areas  by  de-
+       fault. It uses the polygon outline of the objects to check for overlap,
+       as described in the description of the -objType parameter. This command
+       supports  all  types  of  routing  blockages such as partial, fill, and
+       slot.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each dbQuery parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man dbQuery
+
+       -abut_only
+              Returns only those objects that abut the search area. No part of
+              the object polygon overlaps the search area, but  at  least  one
+              point  or line of intersection occurs between the object polygon
+              and the search area. A single point of abutment (such as a  cor-
+              ner  or crossing edges) is also considered as abutted. When mul-
+              tiple areas are specified, the object is returned as long as  it
+              abuts one of the search areas.
+
+       -areas {{<llx1 lly1 urx1 ury1>} {<llx2 lly2 urx2 ury2>} ...}
+              Specifies  the  search  areas, where ll = lower left, ur = upper
+              right. By default, all the objects overlapping or abutting these
+              areas are returned, unless -abut_only, -enclosed_only, or -over-
+              lap_only is specified. The polygon shape of the object  is  used
+              for the overlap check.
+
+              The units are in microns (unless -d is specified).
+
+              The  input can be in either a single rect {llx1 lly1 urx1 ury1},
+              or a list of rects  {{llx1  lly1  urx1  ury1}  {llx2  lly2  urx2
+              ury2}}.  A  rect  using  "two  points" format like {{{llx1 lly1}
+              {urx1 ury1}} {{llx2 lly2} {urx2 ury2}}} is also allowed. But in-
+              put format like {llx1 lly1 urx1 ury1 llx2  lly2  urx2  ury2}  or
+              {{llx1 lly1} {urx1 ury1} {llx2 lly2} {urx2 ury2}} is illegal and
+              not allowed.
+
+              The  resulting  area  to  check  for overlap can be a rectangle,
+              line, or a point.
+
+              When one object intersects multiple search areas, it  will  only
+              be returned once.
+
+       -bbox_overlap
+              Uses bounding-box of the object rather than the polygon shape of
+              the  object  for overlap, abut, or enclosure check. For example,
+              an inst that is of L-shape, will not be returned if the   -areas
+              parameter  overlaps  only  the  upper-right  of the bounding-box
+              without  touching  any  part  of  the   L-shaped,   unless   the
+              -bbox_overlap parameter is included.
+
+       -d     Specifies  the  -areas  values that are in database units rather
+              than microns.
+
+              Default: um
+
+       -enclosed_only
+              Returns only those objects, which are completely enclosed inside
+              the search area. The object polygon is  fully  enclosed  by  the
+              search  area.  No  part of the object polygon sticks outside the
+              search area, although it may abut the search  area  edges.  When
+              multiple  areas  are  specified,  the object will be returned as
+              long as it is enclosed in one of the search areas.
+
+              Here, multiple areas specify the regions indicated  through  the
+              -areas <boxlist> or -polygons {<polygon1> <polygon2>} parameter.
+              When  a single <boxlist> is specified with the -areas parameter,
+              the objects placed on the boundary of the box will  not  be  re-
+              turned, even though they are inside the <boxlist>.
+
+              Following  are  few examples of using the -enclosed_only parame-
+              ter:
+
+              * dbQuery -enclosed_only -areas [dbShape <boxlist>-output rect]
+
+              * dbQuery -enclosed_only -areas [dbShape <boxlist>-output hrect]
+
+              * dbQuery -enclosed_only -areas [dbShape <boxlist>-output  poly-
+                gon]
+
+       -layers {<layer1 layer2 ...>}
+              Returns  only  those objects, which are on the specified layers.
+              This parameter applies only to object types:  pinShape,   pWire,
+              rBlkg,   regular,   special,  sViaInst,  sWire,  viaInst,  wire,
+              whatIfWire, and  whatIfVia. A  viaInst,  sViaInst, or  whatIfVia
+              object will be returned if any of the via's  bottom  layer,  cut
+              layer,  or  top  layer matches with one of the specified layers.
+              Other object types ignore this parameter and will always be  re-
+              turned.
+
+       -objType <objTypeList>
+              Specifies  a  list of object types to search for overlaps in the
+              area. Multiple object types can be searched at  the  same  time.
+              The  objects currently supported include: bump busGuide inst in-
+              stAllShapes instTerm term  marker  net  pBlkg  pWire  pgInstTerm
+              rBlkg regular resizeBlkg row special sViaInst sWire viaInst wire
+              whatIfWire whatIfVia pinShape guiRect guiLine guiPoly partition
+
+              Here:
+
+              * regular is the union of wire, pWire, and viaInst.
+
+              * special is the union of sWire and sViaInst.
+
+              Objects  with  multiple  shapes  or non-rectangular shapes use a
+              polygon to check for overlap, as described below.
+
+              * bump has no placement overlap area, so it uses the polygon  of
+                all the OBS and PIN shapes.
+
+              * inst uses the polygon of its placement overlap checks (for ex-
+                ample the LEF SIZE or OVERLAP shapes), including any placement
+                halo (if there is any) but not any routing halo. OBS shapes or
+                PIN  shapes (like standard-cell power-pins) that stick outside
+                the placement overlap area are not included.
+
+              * instAllShapes is the same as inst, except that it includes all
+                OBS shapes and PIN shapes  even  if  they  stick  outside  the
+                placement overlap area.
+
+              * instTerm  uses  the polygon of all the pin-shapes of the inst-
+                Term.
+
+              * pgInstTerm uses the polygon of all the pin-shapes of the pgIn-
+                stTerm.
+
+              * pinShape uses the polygon of all the shapes of  the  top-level
+                pinShapes.
+
+              * net uses the bounding-box of all the regular routing shapes on
+                the  net.  Pin-shapes  or special-route shapes attached to the
+                net are not included. If you want polygon-level checking,  you
+                must ask for wires and viaInsts instead.
+
+              * term  uses  the polygon of all the pin-shapes of the top-level
+                term.
+
+              * viaInst uses the polygon of all the shapes of the via.
+
+              * sViaInst uses the polygon of all the shapes of the via.
+
+              Default: inst
+
+       -overlap_only
+              Returns only those objects, which are partially overlapped  with
+              the  search  area.  Some part of the object polygon overlaps the
+              search area, whereas some of its  part  is  outside  the  search
+              area. A single point of contact is not considered as an overlap.
+              When  multiple  areas  are  specified, the object is returned as
+              long as it overlaps with one of the search areas.
+
+       -polygons {x11 y11 x12 y12 x13 y13<...>}
+              Specifies a polygon search area. By  default,  all  the  objects
+              overlapping  or  abutting  this  area  are returned on using the
+              -polygons parameter, unless the -abut_only,  -enclosed_only,  or
+              -overlap_only  parameter  is specified. The units are in microns
+              (unless -d is specified, which indicates  the  database  units).
+              The  format  can be in either like {x11 y11 x12 y12 x13 y13 ...}
+              or {{x11 y11} {x12 y12} {x13 y13}  ...}.  The  polygon  must  be
+              well-formed, not have zero area, and not have crossing edges.
+
+       -strict_via_inst_layer_check
+              Returns  only  those objects on the specified layer, which match
+              with one of the via's bottom, cut, or top layers. This parameter
+              does not return the objects of the via on the unmatched  layers.
+              It works only for sViaInst and viaInst.
+
+              This  parameter works only when the -layers parameter is used in
+              the background.
+
+       -threads
+              Queries objects in multiple-threads  mode.  Use  this  parameter
+              only  when  multiple  areas  are  specified and too much time is
+              costed.
+
+              This parameter  doesn't  work  in  multiple-threads  mode  while
+              querying special objects, such as sViaInst and sWire.
+
+Examples
+              * The  following  command returns all the instances and routing-
+                blockages on the metal6 and metal7 layers that  are  partially
+                overlapped, abutted, or enclosed in the given triangle area:
+
+                dbQuery  -objType  {inst rBlkg} -polygons {100 100 110 110 100
+                110} -layers {Metal6 Metal7}
+
+              * The following command returns all the instances  and  routing-
+                blockages  on  the metal6 and metal7 layers that are partially
+                overlapped, abutted, or enclosed in the  given  triangle  area
+                using the bounding-box of the objects:
+
+                dbQuery  -objType  {inst rBlkg} -polygons {100 100 110 110 100
+                110} -layers {Metal6 Metal7}} -bbox_overlap
+
+              * The following command returns all the  instances  and  regular
+                wires  on  the metal6 and metal7layers that are abutted in the
+                give search areas:
+
+                dbQuery -objType {inst wire} -areas {{0 0 100  100}  {150  100
+                200 200}} -layers {Metal6 Metal7}} -abut_only
+
+              * The  following  command  returns all the instances and regular
+                wires on the metal6 and metal7layers that are abutted  in  the
+                given search areas using the bounding-box of the objects:
+
+                dbQuery  -objType  {inst  wire} -areas {{0 0 100 100} {150 100
+                200 200}} -layers {Metal6 Metal7}} -abut_only -bbox_overlap
+
+              * Following are the figures to illustrate  each  position  rela-
+                tion.  The  instances presented by the red rectangles  are re-
+                turned with the specified parameter when the search area  pre-
+                sented in the blue rectangle  are specified.
+
+                * -abut_only
+
+                * -overlap_only
+
+                * -enclosed_only
+
+       Note:
+
+              * If  none  of  the above three parameters is specified, all the
+                instances presented by the red rectangles will be returned, by
+                default.
+
+              * For querying object with multi-shape (such as instTerm or pin-
+                Shape) in multiple search areas, if one of its shapes  is  en-
+                closed/abutted/overlapped with any one of the specified areas,
+                the object will be returned.
+
+                           Fri Apr 04 01:25:37 2025             dbQuery(25.10)

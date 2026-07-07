@@ -1,0 +1,75 @@
+{
+  "command": "assignBump",
+  "is_cmd": true,
+  "summary": "基于欧几里得距离，将凸块分配到最近的I/O单元，并在凸块上添加连接目标属性。",
+  "description": "此命令用于倒装芯片设计，通过计算欧几里得距离，将凸块分配到最近的I/O单元（包括Verilog网表中指定的信号凸块或命令行中指定的电源/地凸块），并在凸块上添加连接目标属性。凸块必须已创建或从I/O分配文件加载。该命令应在设计布局后使用。注意：此命令不会影响任何现有的分配，因此不会重新分配已有的电源/地分配。该命令支持LEF中端口的CLASS BUMP属性，允许为具有多个几何形状的端口分配多个凸块。",
+  "usage": "assignBump [-help] [{-area <x1 y1 x2 y2> | -selected }] [-constraint_file <file_name>] [-exclude_region <llx> <lly> <urx> <ury ...>] [-maxDistance <distance>] [-multiBumpToMultiPad] [{[[-pgnet   net_list]   |   [-exclude_pgnet   net_list]][-pginst   instance_list]} [-pgonly]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出assignBump每个参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定一个由坐标<x1>, <y1>, <x2>, <y2>定义的区域，仅对该区域内的对象进行分配。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selected",
+      "description": "将选中的凸块分配到最近的I/O实例，或将选中的I/O实例分配到最近的凸块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-constraint_file",
+      "description": "指定包含凸块分配约束的文件路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_region",
+      "description": "排除由左下角坐标<llx>, <lly>和右上角坐标<urx>, <ury>指定的区域内的凸块。可以指定多个不相交的区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-maxDistance",
+      "description": "指定寻找凸块连接的最大距离（单位：微米）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-multiBumpToMultiPad",
+      "description": "指定需要将多个焊盘分配到多个凸块。当需要基于最短距离将一个网络上的多个焊盘分配到多个凸块时，此参数很有用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pgnet",
+      "description": "指定凸块将被分配到的电源/地网络名称列表。网络名称应放在双引号或大括号中。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-exclude_pgnet",
+      "description": "指定必须从凸块分配中排除的电源/地网络名称列表。网络名称支持通配符，并应放在双引号或大括号中。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-pginst",
+      "description": "指定电源凸块将被分配到的电源/地实例名称列表。实例名称应放在双引号或大括号中。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-pgonly",
+      "description": "仅将电源/地网络分配到凸块。指定此选项时，信号不会被分配到凸块。注意：此选项需要配合-pginst或-pgnet|-exclude_pgnet使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

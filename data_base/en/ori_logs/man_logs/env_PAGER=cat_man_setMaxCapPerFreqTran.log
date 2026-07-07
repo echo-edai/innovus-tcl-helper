@@ -1,0 +1,144 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setMaxCapPerFreqTran(25.10)                        setMaxCapPerFreqTran(25.10)
+
+Name
+       setMaxCapPerFreqTran - Sets the maximum capacitance of a pin in the de-
+       sign
+
+Syntax
+       setMaxCapPerFreqTran
+
+       [-help]
+
+       -freq {<freq1><freq2 freq3>...}
+
+       -tran {<tran1><tran2 tran3>...}
+
+       -cap  {{<cap11 ><cap12 cap13>...} {{<cap21 ><cap22 cap23>...}} {{<cap31
+       ><cap32 cap33>...}}}
+
+       -pins {cell <outputpin>}
+
+       [-lib <libName>]
+
+       [-force]
+
+       [-inputpin <inputpin>]
+
+       Sets the maximum capacitance of a pin in the design. Considers both the
+       input transition time and the output frequency. If the maximum  capaci-
+       tance exceeds this value, the reportCapViolation command displays a ca-
+       pacitance violation.
+
+       You  can  use  this  command  any time after loading the timing library
+       files (that is, after importing or restoring the design).
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each  setMaxCapPerFreqTran  parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man setMaxCapPerFreqTran
+
+       -cap {{<cap11 ><cap12 cap13>...} {{<cap21 ><cap22 cap23>...}} {{<cap31
+       ><cap32 cap33>...}}}
+              Specifies a table of capacitance values with the maximum  output
+              pin capacitances associated with -freq and -tran values. The to-
+              tal  number of -cap values must be the total number -freq values
+              times the total number of -tran values. The -freq and -tran val-
+              ues must be specified before -cap.
+
+              The capacitance values are floats in units of pico farad and all
+              values must be greater than or equal to  zero.  The  capacitance
+              table uses frequency as the first index and the input transition
+              as  the  second  index. For example, cap11, cap12, and cap13 are
+              for freq1, while c12, c22, and c32 correspond to the input tran-
+              sition tran2.
+
+              The maximum capacitance is derived from a  linear  interpolation
+              (or  extrapolation) for a given frequency value and a transition
+              value using two frequency values and two transition values n the
+              table (closest above and below for interpolation, the two  clos-
+              est for extrapolation.
+
+              Type: Float, specified in units of pF
+
+       -force Computes  the  maximum  capacitance from the interpolated -freq,
+              -tran, and -cap values only, and ignores any previously  defined
+              max_capacitance values for these pins in the library.
+
+              Default: (-force not specified) Computes the maximum capacitance
+              using the worst case (minimum value) between the library max_ca-
+              pacitance values and the interpolated -cap values.
+
+       -freq {<freq1><freq2 freq3>...}
+              Specifies  a list of at least two frequency values with the tog-
+              gle frequencies at the output pin. Frequency values must be  in-
+              creasing, and the total number of frequency values cannot exceed
+              255.
+
+              Type:  Float, specified in units of Hz. All values must be equal
+              to or greater than 0.
+
+       -inputpin <inputpin>
+              Specifies the input pin name corresponding to the input  transi-
+              tion  values in -tran. If -<inputpin> is not given, -tran values
+              correspond to all input pins.
+
+       -lib <libName>
+              Specifies the library name from inside a .lib file to update the
+              cell-pins.
+
+              Default: If a library name is not specified, modifies the match-
+              ing cell-pins in all libraries
+
+       -pins {<cell> output<pin>}
+              Adds the new capacitance constraints to  the  specified  set  of
+              cells and pins. You can specify output or inout pins; input pins
+              are  ignored. The asterisk (*) wildcard character can be used in
+              a cell or pin name.
+
+              If there is already a table associated with the same  input-out-
+              put  pair  (input pins are specified using -inputpin), it is re-
+              placed with the new constraints; otherwise, it is added  to  the
+              output maximum capacitance table list.
+
+              For  analysis  and  optimization, the software uses the most re-
+              strictive (the lowest capacitance) value from either  the  table
+              or  the .lib max_capacitance. If you also specify the -force pa-
+              rameter, the max_capacitance value is ignored. The  final  value
+              can  be  further  modified using .sdc set_max_capacitance state-
+              ments.
+
+       -tran {<tran1><tran2 tran3>...}
+              Specifies a list of at least two transition values with the  in-
+              put  transition  times.  Transition  times must be increasing in
+              value, and the total number of transition  times  cannot  exceed
+              255.
+
+              Type:  Float,  specified in units of nanoseconds, and all values
+              must be equal to or greater than 0.
+
+Example
+       The following command establishes a maximum capacitance table  for  all
+       pins on all cells in all libraries.
+
+       setMaxCapPerFreqTran  -force -pins {* *} -freq {1e8 1.25e8 1.5e8} -tran
+       {450 475 500} -cap {{0.022 0.017 0.012} {0.02 0.014 0.01} {0.018  0.013
+       0.008}}
+
+       The table is shown below:
+
+Related Information
+              * dbNetFrequency
+
+              * dbSetNetFrequency
+
+              * optDesign
+
+              * reportCapViolation
+
+              * verifyACLimit
+
+                           Fri Apr 04 01:25:37 2025setMaxCapPerFreqTran(25.10)

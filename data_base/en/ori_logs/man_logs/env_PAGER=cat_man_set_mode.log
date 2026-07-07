@@ -1,0 +1,130 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_mode(25.10)                                                set_mode(25.10)
+
+Name
+       set_mode  - Specifies the Liberty timing library modes to be active for
+       a specific instance
+
+Syntax
+       set_mode
+
+       [-type cell]
+
+       <list_of_modes>
+
+       <object_list>
+
+       Specifies the Liberty timing library modes to be active for a  specific
+       instance.
+
+       A library mode is a subset of active timing arcs that is defined in the
+       timing  library.  Library modes are similar to conditional timing arcs,
+       but do not require the application of  constants  to  set.  Instead  of
+       changing a cell's mode by applying constants to its input pins, you can
+       use  the set_mode command to refer to sets of active arcs by name (such
+       as READ or WRITE, for a memory cell).
+
+       By default, all library modes in the timing library are active. If  you
+       specify  one or more library modes using the set_mode command, only the
+       timing arcs consistent with the specified mode(s) are  active  for  the
+       instance. All other library modes become inactive.
+
+       To reset the library modes for an instance, use the reset_mode command.
+
+Parameters
+       <object_list>
+              Specifies the instances to which to apply the library mode.
+
+       <list_of_modes>
+              Specifies the name of the library mode value defined in the tim-
+              ing  library.  You can specify one or more mode values, but only
+              one mode value per defined mode group in the Liberty library.
+
+       -type cell
+              Sets the library mode at the instance level.
+
+              Note: Setting the library mode at the instance level is the only
+              form of set_mode that is currently supported. This parameter ex-
+              ists to support constraints coming from external sources.
+
+Examples
+              * The following command specifies the test_mode library mode ac-
+                tive for instances of b1.
+
+                set_mode test_mode [get_cells b1]
+
+                The following command reports the status of all library  modes
+                associated with b1:
+
+                tempus > report_mode b1
+
+                 -------------------------------
+
+                 Mode Group test_mode of b1
+
+                 -------------------------------
+
+                 Mode     Status     Condition
+
+                 Name
+
+                 -------------------------------
+
+                 test_B   Inactive   !(Y)
+
+                 test_A   ACTIVE      Y
+
+                -------------------------------
+
+                The  above  report  shows that only the timing arcs consistent
+                with the test_A library mode are active for instances of b1  -
+                and test_B is inactive.
+
+              *
+
+                If  you  specify  the report_inactive_arcs command, the report
+                shows the disabled arcs for  the  b1  instance  are  from  the
+                test_mode library mode:
+
+                ----------------------------------------------------
+
+                Flags :  const propagated constant
+
+                         snipped loop snipped arcs
+
+                         disable set_disable_timing
+
+                         disable_clock_gating set_disable_clock_gating
+
+                         library_disable set_disable_cell_timing
+
+                         Missing_Phase No Arc Phase Data
+
+                From     To       DisableType   ArcType                 Reason
+
+                -----------------------------------------------------------------
+
+                u8/CK ^   u8/D ^   const        hold_rising_clk_rise    u8/D =
+                1
+
+                u8/CK ^   u8/D v   const        hold_falling_clk_rise   u8/D =
+                1
+
+                u8/CK ^   u8/D ^   const        setup_rising_clk_rise   u8/D =
+                1
+
+                u8/CK ^   u8/D v   const        setup_falling_clk_rise  u8/D =
+                1
+
+                -----------------------------------------------------------------
+
+Related Information
+              * reset_mode
+
+              * report_mode
+
+              * report_inactive_arcs
+
+              * get_cells
+
+                           Fri Apr 04 01:25:37 2025            set_mode(25.10)

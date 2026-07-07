@@ -1,0 +1,174 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dumpMultiBitFlopMappingFile(25.10)          dumpMultiBitFlopMappingFile(25.10)
+
+Name
+       dumpMultiBitFlopMappingFile - Dumps the multi-bit flip-flop (MBFF) map-
+       ping files in the specified directory with the specified prefix name
+
+Syntax
+       dumpMultiBitFlopMappingFile
+
+       [-help]
+
+       [-mapOutputPins {false | true | all}]
+
+       [-output <directory>]
+
+       [-prefix <fileName_prefix>]
+
+       Dumps the multi-bit flip-flop (MBFF) mapping files in the specified di-
+       rectory with the specified prefix name. The following files are dumped:
+
+              * multi_bit_pin_mapping
+
+                includes  multi-bit  input pin mapping information by default.
+                In addition, it appends the output pins when  the  -mapOutput-
+                Pins option is specified.
+
+              * multi_bit_mapping
+
+                includes multi-bit optimization mapping information
+
+       The  multi_bit_pin_mapping  file has two columns. The first column pro-
+       vides the full path name of the flop input D pin as it was in the  ini-
+       tial netlist. The second column provides the full path name of flop in-
+       put  D pin in the current state of the database that corresponds to the
+       first column. For example, if SBF1, SBF2,  SBF3,  SBF4  are  single-bit
+       flip-flops, and MBF1, and MBF2 are two-bit flip-flops, then,
+
+       The multi_bit_mapping file contains the following:
+
+       SBF1(SBCell1), SBF2(SBCell2) merged to MBF1(MBCell1)
+
+       MBF2(MBCell2) split to SBF3(SBCell3)SBF4(SBCell4)
+
+       The multi_bit_pin_mapping file by default contains the following:
+
+       SBF1/D    MBF1/D1
+
+       SBF2/D    MBF1/D2
+
+       MBF2/D1   SBF3/D
+
+       MBF2/D2   SBF4/D
+
+       Note:
+
+              * The multi_bit_pin_mapping file contains all information of the
+                flops  whose  input D pin names have changed. For example, see
+                the "Examples" section below.
+
+              * To generate a proper report for merge/split  mapping  informa-
+                tion,  the  command  should be executed as part of the flow in
+                the live session, for example, after running place_opt_design.
+                If the command is run on a restored session, it will  generate
+                an empty "multi_bit_mapping" file because the merge/split map-
+                ping information is not saved while saving the design.
+
+              *
+
+                You can use the write_do_lec command to facilitate the Logical
+                Equivalence  Checking  (LEC)  checking  of the MBFF instances.
+                This command writes out a dofile that contains the  name  map-
+                ping  information of the MBIT flops against their split/single
+                bit candidate.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each dumpMultiBitFlopMappingFile parameter. For a
+              detailed description of the command and all of  its  parameters,
+              use the man command: man dumpMultiBitFlopMappingFile.
+
+       -mapOutputPins {false | true | all}
+              When set to true, the software writes out only the mapped output
+              terms in the MBFF pin mapping file.
+
+              When  set  to false, the software writes out only input pin map-
+              ping in the pin mapping file. This is the default setting.
+
+              When set to all, the software writes out both input  and  output
+              pin mapping in the pin mapping file.
+
+              Example  of multi_bit_pin_mapping file when -mapOutputPins para-
+              meter is set to false:
+
+              MBF1/D1  SBF1/D
+
+              MBF1/D2  SBF2/D
+
+              Example of multi_bit_pin_mapping file when -mapOutputPins  para-
+              meter is set to true:
+
+              MBF1/Q1  SBF1/Q
+
+              MBF1/Q2  SBF2/Q
+
+              Example  of  multi_bit_pin_mapping  file when the -mapOutputPins
+              parameter is set to all:
+
+              MBF1/D1  SBF1/D
+
+              MBF1/D2  SBF2/D
+
+              MBF1/Q1  SBF1/Q
+
+              MBF1/Q2  SBF2/Q
+
+              Default: false
+
+       -output <directory>
+              Specifies the directory in which to dump the MBFF mapping files.
+
+              Default: ./
+
+       -prefix <fileName_prefix>
+              Specifies the prefix to the MBFF mapping files.
+
+              Default: without prefix
+
+       Examples
+       Consider a scenario in which the original netlist contains the  follow-
+       ing information:
+
+       4BitMBF1        (4 bit MBF, D1-4)
+
+       SBF1            (single bit FF)
+
+       Example of merging is as follows:
+
+       If  the  incoming netlist has 4BitMBF1/D4 dangling (no signal attached)
+       and MERGE, merged SBF1/D into 4BitMBF1/D4.  The following line will  be
+       included in multi_bit_pin_mapping file:
+
+       SBF1/D         4BitMBF1/D4
+
+       Example of splitting is as follows:
+
+       If  incoming  netlist  has valid signals for all 4 bits of 4BitMBF1 and
+       splits 4BitMBF1/D4 out to SDF2/D leaving 4BitMBF1/D4 dangling, then the
+       following lines will be included in multi_bit_pin_mapping file:
+
+       *VOID*         4BitMBF1/D4
+
+       4BitMBF1/D4    SBF2/D
+
+Related Information
+              * rename_obj
+
+              * ecoSplitFlop
+
+              * ecoSplitComplexFlop
+
+              * reportMultibit
+
+              * setOptMode
+
+              * setDesignMode
+
+              * write_do_lec
+
+              * The following topic in the Innovus User Guide
+
+                * Using the Multi-Bit Flip-Flop Flow
+
+                           Fri Apr 04 01:25:3d7um2p0M2u5ltiBitFlopMappingFile(25.10)

@@ -1,0 +1,81 @@
+{
+  "command": "route_opt_design",
+  "is_cmd": true,
+  "summary": "将布线流程和布线后优化流程合并为一个单一流程的命令。",
+  "description": "该命令将全局布线、详细布线、建立/保持时序优化以及DRV修复结合到一个流程中。其优势在于将优化步骤与布线步骤交错进行。当运行此命令时，软件会执行全局和详细布线、建立/保持时序优化以及DRV修复。route_opt_design命令可以替代使用以下两个单独命令：routeDesign 和 optDesign -postRoute -setup -hold。注意：route_opt_design流程与先执行routeDesign再执行optDesign -postRoute -setup -hold不同，因为route_opt_design命令在布线阶段执行更多优化。该命令具有拆分布线部分(-route)和优化部分(-opt)的参数。当指定这些参数时，流程将退出交错模式，回到使用单独命令的传统流程。这意味着route_opt_design -route等同于routeDesign，而route_opt_design -opt等同于optDesign -postRoute -setup -hold。默认情况下，route_opt_design的优化步骤在交错模式下同时修复建立和保持时序。若仅修复建立时序，请使用route_opt_design -setup。当指定-setup参数时，软件执行建立时序优化并跳过保持时序修复。任何使用-drv或-hold参数的部分优化无法在交错模式下工作。因此，如果指定了这些参数中的任何一个，软件将重定向到带有指定选项的optDesign -postRoute命令。",
+  "usage": "route_opt_design [-help] [-drv] [-hold] [-ideal_clock] [-incremental] [-num_paths <number_of_paths>] [-opt] [-out_dir <directory_name>] [-prefix <file_name_prefix>] [-route] [-setup] [-timing_debug_report]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个route_opt_design参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drv",
+      "description": "使用布线后优化流程修复最大电容(max_cap)和最大转换时间(max_tran)违规。这等同于optDesign -postRoute -drv。注意：使用此参数前需确保设计已完成布线；-drv参数只能与-opt参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hold",
+      "description": "当此参数不带-setup指定时，软件退出交错模式，并使用布线后优化流程修复保持时序违规。这等同于optDesign -postRoute -hold。注意：使用此参数前需确保设计已完成布线。当此参数与-setup参数一起指定时（-hold -setup 或 -setup -hold），将在交错模式下同时修复建立和保持时序违规。这是route_opt_design的默认行为。注意：设计应处于CCOpt后阶段才能使用route_opt_design；-hold和-drv参数互斥；-hold参数只能与-opt参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ideal_clock",
+      "description": "使用理想时钟而非传播时钟执行时序优化。使用理想时钟使您可以在不先构建时钟树的情况下优化时序，或忽略现有时钟树以关闭理想时序。如果未指定此参数，软件会假定时钟树已构建，并基于传播时钟优化时序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-incremental",
+      "description": "指定时，以增量模式执行布线后优化。当route_opt_design在第一次运行中无法关闭时序时使用此参数。它用于在第一次运行的基础上运行增量route_opt_design以进一步优化时序。默认情况下，同时修复建立和保持时序违规。当此参数与以下参数组合指定时，修复相应类型的违规：-setup：仅修复建立时序违规；-hold：仅修复保持时序违规；-drv：仅修复DRV违规。注意：此参数仅在route_opt_design命令运行后受支持；此参数与-opt和-route参数互斥；此参数遵循setOptMode -opt_allow_only_cell_swappingtrue设置，以在LEF安全模式下运行DRV/TNS/功耗/保持优化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-num_paths",
+      "description": "指定时序报告中生成的时序路径数量。默认情况下，报告所有时序路径。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-opt",
+      "description": "指定时，使用optDesign -postRoute -setup -hold命令，并为布线后优化流程修复建立和保持违规。软件退出交错模式并跳过布线。注意：使用此参数前需确保设计已完成布线。默认情况下，同时修复建立和保持时序违规。要限制优化范围，请将-setup、-hold和-drv参数与-opt参数一起使用。注意：参数-route和-opt互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-out_dir",
+      "description": "指定软件在运行此命令时写入生成的时序报告的目录。默认值：timingReports。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefix",
+      "description": "指定route_opt_design报告文件名的前缀。默认值：<DesignName_DesignStage>，其中<DesignStage>对于route_opt_design是postCTS或postRoute。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-route",
+      "description": "指定仅执行布线。这等同于routeDesign，但不在交错模式下执行轨道优化。注意：设计应处于CCOpt后阶段。注意：-route参数与以下参数互斥：-opt、-setup、-hold和-drv。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-setup",
+      "description": "在交错模式下修正建立违规。当不带-hold参数指定时，软件跳过保持时序违规的修复。注意：设计应处于CCOpt后阶段。注意：-setup和-drv参数互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-timing_debug_report",
+      "description": "指定时，在完成布线和布线后优化后生成机器可读的时序调试报告。此报告用于使用Innovus中的时序调试功能调试时序结果。注意：您可以使用-num_paths参数指定要报告的路径数量。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

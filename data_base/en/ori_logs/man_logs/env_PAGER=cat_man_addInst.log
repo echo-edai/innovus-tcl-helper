@@ -1,0 +1,143 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addInst(25.10)                                                  addInst(25.10)
+
+Name
+       addInst - Adds an instance and places it in the design
+
+Syntax
+       addInst
+
+       [-help]
+
+       [-dontSnapToPlacementGrid]
+
+       [-moduleBased <verilogModule>]
+
+       [-physical]
+
+       -cell <cellName>
+
+       -inst <instName>
+
+       [-loc {<x y>} [-ori {R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90}]]
+
+       [-place_status <placementStatus>]
+
+       Adds an instance and places it in the design.
+
+       When -inst is specified, the instance is bound with the correct cell in
+       the power domain.
+
+       When  -inst and -loc are specified, the location also gives a power do-
+       main, which is checked against the power domain of the instance. If the
+       power domains are different, a warning is issued.
+
+       In a MSV design, a cell specified using the -cell parameter should  ex-
+       ist in libraries bound to the power domain of the newly added instance.
+
+       When -loc is specified along with the -inst parameter, the power domain
+       given by the location should be consistent with the power domain of the
+       newly added instance.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each addInst parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the  man  command:
+
+              man addInst
+
+       -dontSnapToPlacementGrid
+              If -dontSnapToPlacementGrid is specified, Innovus places the in-
+              stance at the specified location even if the location is off the
+              placement grid. This parameter is used with -loc.
+
+              Default: false
+
+       -moduleBased <verilogModule>
+              Adds the new instance to the specified verilog module.
+
+       -physical
+              Places a physical instance without updating the netlist.
+
+       -cell<cellName>
+              Specifies the master of the instance.
+
+       -inst<instName>
+              Specifies the name of the instance to add and place.
+
+              If the instance name contains special characters,  you  need  to
+              start  the  part  of  the  instance name, which contains special
+              characters, with a backslash '\' and end it with a space.
+
+       -loc {<x y}>
+              Specifies the location of the placed instance.
+
+              Default: If you do not specify a location,  Innovus  places  the
+              instance at the design origin.
+
+       -ori {R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90}
+              Specifies orientation of the placed instance.
+
+              Default: If you do not specify an orientation, Innovus uses R0.
+
+       -place_status <placementStatus>
+              Specifies the placement status of the added instance.
+
+              You can specify the following as the placement status:
+
+              * cover:  Specifies  that  the  instance has a location and is a
+                part of a cover macro. It cannot be moved by  automatic  tools
+                or interactive commands. You must specify the instance's loca-
+                tion and its orientation.
+
+              * placed: The status of the added instance is placed.
+
+              * fixed: The status of the added instance is fixed.
+
+              * soft_fixed: The status of the added instance is soft_fixed. It
+                cannot  be  moved by global placement and can only be moved by
+                the legalization step of detail placement
+
+              * unplaced: The status of the added instance is unplaced.
+
+              Default: unplaced
+
+              Note: This option is used along with the -loc option. It  should
+              not be used along with the -moduleBased option.
+
+Examples
+              * The  following  command adds buffer instance i1/i2 at location
+                100, 200:
+
+                addInst -cell BUF1 -inst i1/i2 -loc 100 200
+
+              * The following command adds buffer instance insta to  the  ver-
+                ilog module HIER_2:
+
+                addInst -moduleBased HIER_2 -cell BUFX2_6 -inst insta
+
+              * The  following  command adds an instance with base name ant to
+                hierarchy DTMF_INST/TDSP_CORE_INST/TDSP_CORE_MACH_INST[0].g:
+
+                addInst                     -cell                      ANTENNA
+                -inst{DTMF_INST/TDSP_CORE_INST/TDSP_CORE_MACH_INST[0].g/ant}
+
+              * The   following  command  adds  an  instance  with  base  name
+                TDSP_CORE_INST/TDSP_CORE_MATCH_INST[0].g/ant   to    hierarchy
+                DTMF_INST:
+
+                addInst             -cell             ANTENNA            -inst
+                {DTMF_INST/TDSP_CORE_INST\/TDSP_CORE_MATCH_INST[9].g/ant}
+
+Related Information
+              * deleteInst
+
+              * ecoPlace
+
+              * ecoSwapSpareCell
+
+              * loadECO
+
+                           Fri Apr 04 01:25:37 2025             addInst(25.10)

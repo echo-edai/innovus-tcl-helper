@@ -1,0 +1,201 @@
+{
+  "command": "update_names",
+  "is_cmd": true,
+  "summary": "更新设计中对象（如模块、实例、网络、端口等）的名称，支持添加前缀/后缀、随机化名称、处理保留字和命名冲突等。",
+  "description": "该命令用于批量修改设计中的名称。可以针对特定对象类型（如实例、网络、端口、模块）进行重命名，支持添加前缀或后缀、生成随机名称、替换或避免使用特定字符串或保留字，并处理命名冲突。命令还提供日志记录和多种命名规则（如VHDL、Verilog、SystemVerilog兼容性）的选项。",
+  "usage": "update_names [-help] [-append_log] [-design] [-hport] [-inst] [-module] [-net] [-phys_inst] [-port] [-quiet] [-replace_string <string> ] [-log_file <out_file> ] [-prefix <string> [-name_collision ]] [-suffix <string> [-name_collision ]] [-random [-random_map_dir <out_dir>]] [-change_modules <hinsts_modules> [-local ]] [ -honor_dont_touch ] [[-random ] | [[-vhdl ] [-system_verilog ] [-verilog ] [-nocase ] [-restricted <string>] [-first_restricted <chars>] [-last_restricted <chars>] [-reserved_words <string>] [-replace_string <string>] [-regexp ] [-allowed <chars>] [-map <{from, to} ...>] [-max_length <num_chars>] [-prefix <string>] [-suffix <string>] [-name_collision ]]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowed",
+      "description": "指定名称中允许使用的字符。不在允许列表中的字符将在最终名称中被移除。最小指定长度为10个字符。要允许所有大小写字母a到z，必须全部指定。使用 -regexp 选项可将连字符'-'用作字符范围指示符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-append_log",
+      "description": "将报告追加到 -log_file 选项指定的 <out_file> 中。如果省略此选项，<out_file> 将被覆盖。仅当指定了 -log_file 选项时才能指定此选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-change_modules",
+      "description": "仅更改这些模块或hinsts模块内的名称。",
+      "required": false,
+      "type": "(hInst|vCell|topCell)+"
+    },
+    {
+      "name": "-design",
+      "description": "更改设计模块的名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-first_restricted",
+      "description": "指定不能在名称开头使用的字符。这些字符将被移除，包括重复的字符。例如，-first_restricted {_#%$} 会将 _$abc 更改为 abc。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honor_dont_touch",
+      "description": "不重命名设置了 dont_touch 属性的对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hport",
+      "description": "更改hinsts（非顶层设计）上的hport名称以及匹配的连接网络名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "更改实例名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-last_restricted",
+      "description": "指定不能在名称末尾使用的字符。这些字符将被移除，包括重复的字符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-local",
+      "description": "关闭递归下降，使更改仅对模块或设计本地有效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-log_file",
+      "description": "指定一个日志文件，用于输出显示任何名称更改的旧名称和新名称的报告。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-map",
+      "description": "接受一个字符串对列表，并将每对中的第一个字符串映射到第二个字符串。需要用大括号将每对括起来。为了与RTL编译器用法兼容，字符串周围可选地允许使用双引号。例如，-map {{\"from\" \"to\"} {\"AND\" \"and\"}} 和 -map {{from to} {AND and}} 将产生相同的输出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_length",
+      "description": "强制实施最大名称长度。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-module",
+      "description": "更改除设计模块名称之外的模块名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-name_collision",
+      "description": "仅当名称更改与现有名称冲突时，才添加 -prefix 或 -suffix 值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "更改Verilog网络名称，除非它与同一模块中同名的Verilog端口连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nocase",
+      "description": "更改忽略大小写时发生冲突的名称。例如，如果 net1 和 Net1 同时存在，其中一个将被更改（通过附加 _1 或 _2 等后缀）以解决冲突。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-phys_inst",
+      "description": "更改物理实例名称（例如填充单元），这些名称通常不会出现在Verilog输出中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port",
+      "description": "更改设计端口名称（非hinsts）以及匹配的连接网络名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-prefix",
+      "description": "为更改的名称添加前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-quiet",
+      "description": "抑制有关单个对象被重命名的消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-random",
+      "description": "所有修改后的名称将变为随机名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-random_map_dir",
+      "description": "每个随机名称的映射文件将写入 <out_dir> 目录内。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-regexp",
+      "description": "允许在 -allowed 选项中使用连字符'-'指定字符范围。这类似于正则表达式的单字符匹配用法。例如，要允许所有字母数字字符以及 _ 和 $ 作为合法字符，请使用：-allowed {a-zA-Z0-9_$}。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-replace_string",
+      "description": "指定用于替换保留字或 -restricted 字符串的字符串。其默认值为 '_'。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reserved_words",
+      "description": "指定要避免使用的单词列表（保留字），如 'begin end'。如果一个完整名称完全匹配其中一个保留字（而不仅仅是名称的子字符串），则该名称将被更改。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-restricted",
+      "description": "指定不能在名称内部使用的字符串列表。每个字符串都将被 -replace_string 字符串替换。例如，-restricted {ab bc} 将替换名称中所有的 'ab' 和 'bc' 字符串。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-suffix",
+      "description": "为更改的名称添加后缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-system_verilog",
+      "description": "替换SystemVerilog保留字。如果一个完整名称完全匹配其中一个保留字（而不仅仅是名称的子字符串），则该名称将被更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog",
+      "description": "替换Verilog保留字。如果一个完整名称完全匹配其中一个SystemVerilog保留字（而不仅仅是名称的子字符串），则该名称将被更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-vhdl",
+      "description": "将名称修改为符合VHDL标识符要求。它替换VHDL保留字。如果一个完整名称完全匹配其中一个VHDL保留字（而不仅仅是名称的子字符串），则该名称将被更改。它还隐式使用 first_restricted _0123456789 来移除任何前导 _ 或数字字符，并使用 last_restricted _ 来移除任何尾随 _ 字符，因此不能将 vhdl 与 first_restricted 或 last_restricted 一起使用。最后，此选项将移除任何名称中间重复的 _ 字符，并用单个 _ 字符替换，因为VHDL不允许重复的 _ 字符。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

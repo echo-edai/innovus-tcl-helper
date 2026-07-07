@@ -1,0 +1,135 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+specifyCellEdgeType(25.10)                          specifyCellEdgeType(25.10)
+
+Name
+       specifyCellEdgeType - Specifies edge type for cell edges as EDGETYPE in
+       macro LEF
+
+Syntax
+       specifyCellEdgeType
+
+       [-help]
+
+       {-left  <edgeType> | -right <edgeType> | -top <edgeType> | -bottom <ed-
+       geType> | -reset }
+
+       [{-left <edgeType> | -right <edgeType>} [-cellRow <rowNumber>]]
+
+       [{-left <edgeType> | -right <edgeType>} [-half {top | bottom}]]
+
+       [{-top <edgeType> | -bottom <edgeType>} [-range {x y}]]
+
+       [{-cell <cellName>} [-reset]]
+
+       Specifies edge type for cell edges as EDGETYPE in macro LEF. It  allows
+       to specify one edge at a time for a particular cell.
+
+       To  ensure  the correct edge type specification, edge types asserted by
+       specifyCellEdgeType command  should  be  pre-defined  by  the  specify-
+       CellEdgeSpacing command.
+
+       For example:
+
+       specifyCellEdgeSpacing grp1 grp2 0.18
+
+       specifyCellEdgeType -cell BUF1X -left grp1
+
+       If  the edge type is specified without corresponding spacing rule, tool
+       gives a warning and ignores the edge type specification.
+
+Parameters
+       -bottom <edgeType>
+              Specifies an edge type on the bottom side.
+
+       -cell <cellName>
+              Specifies cell to which to add edge constraint.
+
+       -cellRow <rowNumber>
+              Specifies the row number for horizontal edge type.
+
+              You can define different edge types for  each  row  of  multiple
+              height cells using -cellRow.
+
+              For example, there is triple height cell CKBUF.
+
+              The following commands define different edge types for different
+              rows of the CKBUF cell.
+
+              specifyCellEdgeType -cell CKBUF -right grp1 -cellRow 1
+
+              specifyCellEdgeType -cell CKBUF -right grp2 -cellRow 2
+
+              In  the  above example, grp1 is applied to the first row (bottom
+              row) of the right edge, grp2 is applied to  the  second  row  of
+              right  edge,  and no specific edge type is defined for the third
+              row of right edge and is of DEFAULT type.
+
+              The legal value of -cellRow is from 1 to n, where n is the  num-
+              ber of cell height of the cell.
+
+       -half {top bottom}
+              Defines  the  edge types corresponding to the top or bottom half
+              of the cell.
+
+              The following example associates the edge type 'grp1'  with  the
+              bottom row, top half of the multi-height cell SDFF8:
+
+              specifyCellEdgeType -cell SDFF8 -right grp1 -cellRow 1 -half top
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each specifyCellEdgeType parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man specifyCellEdgeType
+
+       -left <edgeType>
+              Defines the edge types corresponding to the top or  bottom  half
+              of the cell.
+
+              The  following  example associates the edge type 'grp1' with the
+              bottom row, top half of the multi-height cell SDFF8.
+
+              specifyCellEdgeType -cell SDFF8 -right grp1 -cellRow 1 -half top
+
+       -range {<x> <y>}
+              Specifies the range for the vertical edge type.
+
+              The range for the vertical edge type can also be negative.
+
+              The following example defines a partial range of  an  edge  that
+              the  type should be labeled.This could only be defined on TOP or
+              BOTTOM edges.
+
+              specifyCellEdgeType -cell A -top GROUP1 -range 0 0.1
+
+              specifyCellEdgeType -cell A -bottom GROUP1 -range 0 0.1
+
+              specifyCellEdgeType -cell A -top GROUP2 -range 0.2 0.3
+
+              specifyCellEdgeType -cell A -top GROUP3 -range 0.15 0.25
+
+       -reset Resets the specified cell constraint to the LEF status.
+
+       -right <edgeType>
+              Specifies an edge type on the right side.
+
+       -top <edgeType>
+              Specifies an edge type on the top side.
+
+Example
+       The following commands specify one edge at a time for the BUF1X cell
+
+              * specifyCellEdgeType -cell BUF1X -left grp1
+
+              * specifyCellEdgeType -cell BUF1X -right grp1 -cellRow 1
+
+              * specifyCellEdgeType -cell BUF1X -right grp1 -cellRow 2
+
+Related Information
+              * deleteCellEdgeSpacing
+
+              * report_cell_edge_spacing
+
+              * specifyCellEdgeSpacing
+
+                           Fri Apr 04 01:25:37 2025 specifyCellEdgeType(25.10)

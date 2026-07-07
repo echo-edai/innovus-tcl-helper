@@ -1,0 +1,658 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+fcroute(25.10)                                                  fcroute(25.10)
+
+Name
+       fcroute - Specifies that power routing and signal routing recognize the
+       bumps specified in a flip chip design
+
+Syntax
+       fcroute
+
+       [-help]
+
+       -type {power | signal}
+
+       [-area {<x1 y1 x2 y2>}]
+
+       [-connectInsideArea]
+
+       [-connectTsvToBump] | [-connectTsvToPad] | [-connectTsvToRingStripe]
+
+       [-constraintFile <filename>]
+
+       [-deleteExistingRoutes]
+
+       [-designStyle {aio | pio}]
+
+       [-doubleBendRoute]
+
+       [-eco | -incremental]
+
+       [-extraConfig <fileName>]
+
+       [-globalOnly]
+
+       [-jogControl  {preferWithChanges  |  preferSameLayer | preferDifferent-
+       Layer}]
+
+       [-keepDRC]
+
+       [-layerChangeBotLayer <layerName>]
+
+       [-layerChangeTopLayer <layerName>]
+
+       [-minEscapeDistance <unit>]
+
+       [-msgRate <int>]
+
+       [-nets {<net_name_list>| <filename | ~<filename}<|>-selected_bump]
+
+       [-overflowMap]
+
+       [-route_pg_style {none finger mesh}]
+
+       [-routeWidth <real>]
+
+       [-spreadWiresFactor <value>]
+
+       [-straightConnections [[straightWithDrcClean] [straightWithChanges]]
+
+       [-subclass <subclass_string>]
+
+       [-verbose]
+
+       Specifies that power routing and signal  routing  recognize  the  bumps
+       specified in a flip chip design.
+
+              * The command supports all the LEF 5.7 syntax to determine which
+                power/ground  pin  shape  on  the I/O driver cell must be con-
+                nected to a bump. For more information,  see  the  "Performing
+                Area I/O Placement" section in the Data Preparation chapter of
+                the Innovus User Guide.
+
+              * The  command supports mixed mode designs in the area I/O (AIO)
+                and peripheral I/O (PIO) mode.
+
+              * The command, by default, reads the FE database to get all  in-
+                formation.  The  default value of the variable, set rda_global
+                (srouteUseFEDB) must be set to 1. For the command to read  in-
+                formation  from  the  LEF  file,  the  set  rda_global  (srou-
+                teUseFEDB) variable must be set to 0.
+
+       Use this command after importing the design.
+
+       You can perform signal routing (-type signal)  using  the  AIO  or  PIO
+       routing  styles.  Each routing style supports a specific set of fcroute
+       command parameters. The following table lists the routing style support
+       for each parameter.
+
+       Note: The following table might not be readable when  viewed  with  the
+       Unix  man command. Check the fcroute command description in the Innovus
+       Text Command Reference to view the table.
+
+       ________________________________________________________
+
+       | fcroute         |  -designStyle                       |
+
+       |  Parameters     |                                     |
+
+       |____________________________________|__________________|
+
+       |                 |  aio             |  pio             |
+
+       |_________________|__________________|__________________|
+
+       | -area {x1 y1    |   X              |   X1             |
+
+       |  x2 y2}         |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -connectInsideA |  X               |                  |
+
+       | rea             |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -connectTsvToBu |  X               |                  |
+
+       | mp              |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -connectTsvToPa |  X               |                  |
+
+       |_________________|__________________|__________________|
+
+       | -connectTsvToRi |  NA              |  NA              |
+
+       | ngStripe        |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -constraintFile |  X               |  X               |
+
+       |  filename       |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -deleteExisting |  X               |  X               |
+
+       | Routes          |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -doubleBendRout |  X               |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -eco            |  X               |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -extraConfig    |  X               |  X               |
+
+       |  fileName       |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -globalOnly     |                  |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -incremental    |                  |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -jogControl     |  X               |                  |
+
+       |  {preferWithCha |                  |                  |
+
+       | nges |          |                  |                  |
+
+       |  preferSameLaye |                  |                  |
+
+       | r |             |                  |                  |
+
+       |  preferDifferen |                  |                  |
+
+       | tLayer}         |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -keepDRC        |  X               |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -layerChangeBot |  X               |  X               |
+
+       | Layer layerName |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -layerChangeTop |  X               |  X               |
+
+       | Layer layerName |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -minEscapeDista |  X               |  X               |
+
+       | nce unit        |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -msgRate int    |  X               |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -nets           |  X               |  X               |
+
+       |  {net_name_list |                  |                  |
+
+       |  |              |                  |                  |
+
+       | <filename |     |                  |                  |
+
+       |  ~<filename}    |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -overflowMap    |                  |  X               |
+
+       |_________________|__________________|__________________|
+
+       | -routeWidth     |  X               |  X               |
+
+       |  real           |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -selected_bump  |   X              |   X              |
+
+       |_________________|__________________|__________________|
+
+       | -spreadWiresFac |  X               |  X               |
+
+       | tor value       |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -straightConnec |  NA              |  NA              |
+
+       | tions           |                  |                  |
+
+       |  [straightWithD |                  |                  |
+
+       | rcClean]        |                  |                  |
+
+       |  [straightWithC |                  |                  |
+
+       | hanges]         |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -type {power |  |  NA              |  NA              |
+
+       | signal}         |                  |                  |
+
+       |_________________|__________________|__________________|
+
+       | -verbose        |  X               |  X               |
+
+       |_________________|__________________|__________________|
+
+       X1     When run incrementally, the fcroute PIO mode partially  supports
+              area-based routing in the specified coordinates
+
+              (fcroute  -area  {<x1  y1  x2 y2>} -incremental) for the area in
+              which the net is routed.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each fcroute parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man fcroute
+
+       -area {<x1><y1><x2><y2>}
+              Specifies the coordinates for area I/O routing. You must enclose
+              the x and y coordinates in curly braces and separate them with a
+              space.
+
+              Notes:
+
+              * A warning message is issued if you specify area constraints in
+                the flip chip route PIO mode. (fcroute -designStyle pio)
+
+              *
+
+                If  -route_pg_style  is  specified as finger, the PG finger is
+                routed in the area specified with -area. If -route_pg_style is
+                not specified or specified as none, area I/O routing  is  done
+                within the coordinates specified with -area.
+
+       -connectInsideArea
+              Specifies that connections from all sources within the specified
+              area can connect only to targets that are also inside that area.
+
+              Note:  This  parameter is only available if you also specify the
+              -area parameter.
+
+              Default: If you do not specify this option  the  software  makes
+              connections  from  all sources within the specified area to tar-
+              gets both inside and outside the specified area.
+
+       -connectTsvToBump
+              Connects TSVs to signal bumps. Use the -connectTsvToBump parame-
+              ter with -type signal.
+
+              This parameter cannot be used along  with  -connectTsvToPad  and
+              -connectTsvToRingStripe, which provide other routing options.
+
+              Note: Different layers have different types of bumps. It is rec-
+              ommended that you route the bump on the back side and front side
+              separately  using the srouteExcludeBumpType statement in the ex-
+              tra configuration file.
+
+       -connectTsvToPad
+              Connects TSVs to IO pads.  Use  the  -connectTsvToPad  parameter
+              with -type signal.
+
+       -connectTsvToRingStripe
+              Connects  TSV  with  power  net to the power mesh. Use the -con-
+              nectTsvToRingStripe parameter with -type power. For more  infor-
+              mation,  see  the "TSV/Bump/Back Side Metal Modeling in Innovus"
+              section in the Design Methodology for 3D IC with Through Silicon
+              Via chapter of the Innovus User Guide.
+
+       -constraintFile <filename>
+              Specifies the file that contains constraints for flip chip rout-
+              ing. For more information, see "Useful Constraints for Flip Chip
+              Routing" in the Flip Chip Methodologies chapter of  the  Innovus
+              User Guide.
+
+       -deleteExistingRoutes
+              Specifies that the software remove existing connections when you
+              use the fcroute command multiple times.
+
+              Default:  The  software maintains existing connections each time
+              you issue the fcroute command.
+
+              Note: If you specify the -area parameter,  existing  routes  are
+              always  preserved,  even if you also specify the -deleteExistin-
+              gRoutes parameter.
+
+       -designStyle {aio | pio}
+              Selects between area I/O and peripheral I/O routing styles.
+
+              The area I/O (aio) mode  supports  area-based  routing  (fcroute
+              -area).  However,  the  peripheral I/O (pio) mode partially sup-
+              ports area-based routing only if you set the -incremental  para-
+              meter.
+
+              You  can run fcroute in the PIO/AIO mode when pre-routes are al-
+              ready in the design, without deleting  or  re-routing  the  pre-
+              routes.  By default, this feature is true for fcroute -type sig-
+              nal -designStyle aio. For the pio mode, you should add the  -in-
+              cremental parameter to enable this feature.
+
+              Default: pio
+
+       -doubleBendRoute
+              Allows  double-bend routing on segments between a bump pin and a
+              pad pin.
+
+              Note: Segments that connect directly to a bump pin  or  pad  pin
+              are always routed at 90 degrees.
+
+              Default: Off
+
+       -eco   Enables  ECO mode flip chip routing. When you specify this para-
+              meter, fcroute automatically performs typical ECO routing steps,
+              such as deleting existing routing results or re-routing affected
+              nets, whenever there is an ECO change.
+
+              For more information, see the ECO Routing section in  the  "Flip
+              Chip Methodologies" chapter of the Innovus User Guide.
+
+              Note: The -eco parameter cannot be used along with -incremental.
+
+       -extraConfig <filename>
+              Specifies  the  name  of  an extra configuration file. This file
+              contains additional fcroute commands that provide  more  control
+              over the routes to bumps.
+
+              For  example, fcroute -type signal -designStyle PIO -extraConfig
+              mixmode.config
+
+              For more information, see "Useful Extra Configurations for  Flip
+              Chip  Routing" in the Flip Chip Methodologies chapter of the In-
+              novus User Guide.
+
+       -incremental
+              Runs the PIO mode incrementally when pre-routes are  already  in
+              the design, without deleting or re-routing the pre-routes.
+
+              Note: The -incremental parameter cannot be used along with -eco.
+
+       -globalOnly
+              Executes  the  global router to provide you with the routability
+              statistics.
+
+              When this option is specified, fcroute displays how  the  global
+              router distributes routing resources and finishes routing with a
+              minimum routing width.
+
+              This is helpful for optimizing mode.
+
+       -jogControl {preferWithChanges | preferSameLayer | preferDifferent-
+       Layer}
+              Specifies that jogs are allowed during routing to avoid DRC vio-
+              lations.
+
+              You  must  specify  either  the  -jogControl  parameter  or  the
+              -straightConnections parameter.
+
+              If you specify the -jogControl parameter, you can  also  specify
+              one of the following options:
+
+              * preferWithChanges: Specify this option if you prefer the soft-
+                ware  to  make  straight  connections  between targets, and to
+                change layers instead of jog to avoid DRC violations.  If  you
+                do  not specify this option, the route uses both layer changes
+                and jogging to avoid DRC violations.
+
+              * preferSameLayer: If the route must jog to avoid a  DRC  viola-
+                tion, the jog occurs on the same layer whenever possible. This
+                can result in routing in the non-preferred direction.
+
+              * preferDifferentLayer: If the route must jog to avoid a DRC vi-
+                olation,  the jog occurs on the layer that is in the preferred
+                routing direction whenever possible.
+
+       -keepDRC
+              If specified, the command clearDrc will not run implicitly  when
+              executing  the  fcroute  command, hence retaining the DRC viola-
+              tions. Otherwise, the command clearDrc runs implicitly when exe-
+              cuting the fcroute command by default, purging all the violation
+              markers.
+
+       -layerChangeBotLayer <layerName>
+              Specifies the bottom-most metal layer number / LEF  layer  names
+              that the software can use when routing bumps.
+
+              Default:  If  you  do not specify this parameter, all layers are
+              used.
+
+              For example, you can specify the metal layer numbers, 8  and  2,
+              as follows:
+
+              fcroute -type power -routeWidth 4.0 -layerChangeTopLayer 8 -lay-
+              erChangeBotLayer 2
+
+              You  can also specify the LEF layer names, METAL7 and METAL1, as
+              follows:
+
+              fcroute -type power -routeWidth 4.0 -layerChangeTopLayer  METAL7
+              -layerChangeBotLayer METAL1
+
+       -layerChangeTopLayer <layerName>
+              Specifies the top-most metal layer number / LEF layer names that
+              the software can use when routing bumps.
+
+              Default:  If  you  do not specify this parameter, all layers are
+              used.
+
+       -msgRate <int>
+              Specifies the interval at which progress messages are generated.
+              If you specify 1, the software generates every progress message;
+              if you specify 2, the software generates  every  other  progress
+              message, and so on.
+
+              Default:0
+
+       -minEscapeDistance <value>
+              Specifies  the  minimum distance from the edge of the pin to the
+              edge of the wire segment.
+
+       -nets {<net_name_list> | <filename | ~<filename}
+              Specifies the nets to be connected or excluded from connection.
+
+              Default: If you do not specify the -nets parameter, the software
+              connects all power and ground nets in the design.
+
+              Use one of the following options:
+
+              * <net_name_list>:Specifies names of the nets to  be  connected.
+                To  specify more than one net, enclose the net names in braces
+                and separate the names with a space.
+
+                Note: As the -nets option accepts a  maximum  of  4096  string
+                characters  directly, use the net_name_list option if the num-
+                ber of nets to be connected is not very high. If a large  num-
+                ber  of nets need to be connected, use the <filename option or
+                ~<filename option with -nets.
+
+              * <filename: Specifies the name of a text  file  containing  the
+                list of nets to be connected. Use this option if the number of
+                nets  to  be connected is high. In the text file, separate net
+                names with commas or the newline,  space,  or  tab  character.
+                Wildcards  can  be  used when specifying net names in the text
+                file.
+
+              * ~<filename: Excludes the nets in the specified text file  dur-
+                ing  flip  chip routing. Use this option if the number of nets
+                to be excluded is much lower than the number  of  nets  to  be
+                connected.  Wildcards can be used when specifying net names in
+                the text file.
+
+       -overflowMap
+              Displays the thermal map using the width and spacing  parameters
+              specified in the extra configuration file.
+
+              To display the thermal map in the floorplan view in the GUI, se-
+              lect All Colors which opens the Color Preferences form, then se-
+              lect GCell Overflow.
+
+              Note:  The  routing  congestion  can also be displayed using the
+              setLayerPreference  command.   (setLayerPreference   gcellOvflow
+              -isVisible 1)
+
+       -route_pg_style {none finger mesh}
+              Specifies the routing pattern for flip chip route power routing:
+
+              * none: For normal PG routing
+
+              * finger:  For  PG  finger  routing  style, in which you need to
+                specify the routing direction. This option must be  used  with
+                fcroute -area option. PG finger routing improves usability and
+                provides better IR drop by lowering rail resistance.
+
+              * mesh:  For  mesh-style  PG routing on the redistribution layer
+                (RDL). This option is used to  increase  PG  density.  If  you
+                specify  PG  mesh  routing, you must specify the main width of
+                the PG mesh by using the  setFlipChipMode  -pg_mesh_main_width
+                parameter.
+
+              Default: none
+
+       -routeWidth <real>
+              Connects  wires to bumps using the specified width only, regard-
+              less of the size of the bump or the source  to  which  the  bump
+              connects.
+
+              Default:  When  using  the PIO routing style, FCroute determines
+              the width of the route as the bump width or I/O cell  pin  width
+              that is connected to the bump, whichever is smaller.
+
+              When  using the AIO routing style, FCroute does not restrict the
+              size of the RDL route to the width of the I/O cell pin  and  can
+              route a wire that is larger in width than the specified I/O cell
+              pin width.
+
+              To override the above default setting for AIO routing style, you
+              can use the srouteUseSpecifiedWidthForTopLayer TRUE and srouteR-
+              outeWidthForLowerLayer <db_unit> variables in the extra configu-
+              ration  file.  This forces fcroute to use user-defined width for
+              the top layer connecting to the bump and the lower layer.
+
+              Note: The fcroute command considers the route width  value  from
+              the constraint file if it is higher than fcroute -routeWidth, to
+              enable splitting of wires.
+
+       -selected_bump
+              Routes  the  selected  bumps.  The  selected bumps can be either
+              power bumps or signal bumps.
+
+       -spreadWiresFactor <value>
+              Specifies automatic spreading of wires during  bump  routing  in
+              order  to prevent any SI violations. The <value> is applied as a
+              multiple of the minimum spacing that is required.
+
+       -straightConnections [straightWithDRCClean] [straightWithChanges]
+              Specifies that only straight connections are made  between  tar-
+              gets and that jogs are not allowed during routing.
+
+              This option is available only with fcroute -type power.
+
+              You  must  specify  either the -straightConnections parameter or
+              the -jogControl parameter.
+
+              If you specify the -straightConnections parameter, you can  also
+              specify one or both of the following options:
+
+              * straightWithDRCClean:  Leaves  a route open if a straight con-
+                nection cannot reach a target without causing a DRC violation.
+                If you do not  specify  this  option,  the  software  makes  a
+                straight  connection  to a target, even if the route creates a
+                DRC violations.
+
+              * straightWithChanges: Permits the route to  change  to  another
+                layer  to avoid DRC violations. If you do not specify this op-
+                tion, the software makes only straight connections on the same
+                layer.
+
+       -subclass <subclass_string>
+              Assigns specified string as a subclass name  to  the  wires  and
+              vias created.
+
+       -type {power | signal}
+              Specifies whether power or signal bumps are to be routed.
+
+              Note: For -type power:
+
+              * If -route_pg_style is specified as finger, the power bumps are
+                routed in the finger routing style.
+
+              * If  -route_pg_style is not specified or specified as none, the
+                power bumps are routed in normal PG routing style.
+
+       -verbose
+              Specifies that each progress message appears in the log file and
+              the console.
+
+Example
+              * The following set of commands can be used to route RDL  finger
+                in the South direction:
+
+                setFlipChipMode -route_pg_style finger
+
+                setFlipChipMode -finger_direction S
+
+                setFlipChipMode -finger_max_width 13
+
+                setFlipChipMode -finger_min_width 10
+
+                setFlipChipMode -finger_target_mesh_layer_range M4:M6
+
+                fcroute -type power -area {0 0 1446 1405}
+
+                The RDL finger routing result:
+
+Related Information
+              * addNetToNetGroup
+
+              * create_bump_cluster
+
+              * createNetGroup
+
+              * getFlipChipMode
+
+              * reportSpecialRoute
+
+              * setFlipChipMode
+
+              * verifyFlipChipRoutingConstraints
+
+              * Flip Chip Methodologies chapter in the User Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Flip Chip
+
+                * TSV
+
+                           Fri Apr 04 01:25:37 2025             fcroute(25.10)

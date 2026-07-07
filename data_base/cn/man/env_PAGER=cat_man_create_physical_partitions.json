@@ -1,0 +1,57 @@
+{
+  "command": "create_physical_partitions",
+  "is_cmd": true,
+  "summary": "为层次化布局布线创建临时的逻辑层次结构",
+  "description": "该命令基于现有的单元和宏单元布局，或基于指定的层次化实例和/或实例，为层次化布局布线实现创建临时的逻辑层次结构。create_physical_partitions 命令会自动修改/更新 SDC、UPF、TCF 和扫描链。它支持：将一个分区切割成两个、将两个分区合并为一个、混合和匹配分区。注意：创建新层次结构时，一些层次化实例可能会被解组，并且它们在所有相关文件（collaterals）中引用的层次化实例和层次化引脚可能会失效。一旦原始层次结构被解组，将无法恢复。此命令在此版本中是受限访问功能，需要通过 setLimitedAccessFeature 命令指定的变量启用。",
+  "usage": "create_physical_partitions [-help] {{<partition_spec> | -logical_spec <spec>} [-group_instance_suffix <string>] [-check_only] [[-undo [-pre_full_upf <string >[-incremental_block_upfs <string>]]]]}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 create_physical_partitions 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<partition_spec>",
+      "description": "定义新物理分区的名称和边界。规格必须按以下格式指定：{<newHierName1> {<boxes list1>} <newHierName2> {<boxes list2>} ...}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-logical_spec",
+      "description": "基于指定的层次化实例和/或实例创建新的逻辑层次结构。规格必须按以下格式指定：-logical_spec { newHierName1 {instName1 instName2 .. hinstName1 hinstName2 instName3 ...} newHierName2 {instName1 instName2 .. hinstName1 hinstName2 instName3 ...} }",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-group_instance_suffix",
+      "description": "指定组实例后缀。此后缀会添加到生成的层次化实例名称中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_only",
+      "description": "检查创建新物理分区的约束一致性。它会检测潜在问题并报告 UPF/SDC/层次化电源地连接相关的错误。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-undo",
+      "description": "撤销物理分区。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pre_full_upf",
+      "description": "指定在首次调用 create_physical_partitions 命令创建物理层次结构之前可用的原始全芯片 UPF 文件。注意：对于具有电源域的设计，必须指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-incremental_block_upfs",
+      "description": "指定在顶层和模块实现期间的额外 UPF 文件。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

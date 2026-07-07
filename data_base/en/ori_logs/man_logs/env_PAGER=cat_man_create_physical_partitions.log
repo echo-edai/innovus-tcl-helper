@@ -1,0 +1,162 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_physical_partitions(25.10)            create_physical_partitions(25.10)
+
+Name
+       create_physical_partitions  -  Creates  temporary logic hierarchies for
+       hierarchical placement and routing implementation based on the existing
+       cell and macro placement or based on  the  specified  hierarchical  in-
+       stances and/or instances
+
+Syntax
+       create_physical_partitions
+
+       [-help]
+
+       {{<partition_spec> | -logical_spec <spec>}
+
+       [-group_instance_suffix <string>]
+
+       [-check_only]
+
+       [[-undo [-pre_full_upf <string >[-incremental_block_upfs <string>]]]]}
+
+       Creates  temporary  logic  hierarchies  for  hierarchical placement and
+       routing implementation based on the existing cell and  macro  placement
+       or  based on the specified hierarchical instances and/or instances. The
+       create_physical_partitions command automatically  modifies/updates  the
+       SDC, UPF, TCF, and Scan-Chain.
+
+       It supports:
+
+              * Cutting a partition into two
+
+              * Merging two partitions into one
+
+              * Mixing and matching partitions
+
+       Note: To create a new hierarchy, some hinsts may be ungrouped and their
+       referenced hinsts and hpins in all collaterals may become invalid.
+
+       Note:  Once  the original hierarchies are ungrouped, they cannot be re-
+       covered back.
+
+       This command is a limited-access feature in this release. It is enabled
+       by a variable specified through the setLimitedAccessFeature command. To
+       use this feature, contact your Cadence representative to  explain  your
+       usage  requirements, and make sure this feature meets your needs before
+       deploying it widely.
+
+Parameters
+       -check_only
+              Checks the constraints consistency  for  creating  new  physical
+              partitions.  It  detects potential problems and reports error(s)
+              with UPF/SDC/hier PG connection.
+
+              Data_type: bool, optional
+
+       -group_instance_suffix <string>
+              Specifies the group instance suffix. This suffix is added to the
+              generated hinst name.
+
+              Default: i
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each create_physical_partitions parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man create_physical_partitions
+
+       -incremental_block_upfs <string>
+              Specifies extra UPFs during top and block implementations.
+
+              Data_type: string, optional
+
+       -logical_spec <spec>
+              Creates  new  logical  hierarchy  based  on the specified hinsts
+              and/or instances.
+
+              The specification must be specified in the following format:
+
+              -logical_spec { newHierName1 {instName1 instName2 ..  hinstName1
+              hinstName2 instName3 ...}
+
+                              newHierName2  {instName1 instName2 .. hinstName1
+              hinstName2 instName3 ...} }
+
+              Note: The parent hierarchy of hinsts and/or  instances  included
+              in the logical spec is ungrouped.
+
+              Note: If the create_physical_partitions command is used with the
+              -logical_spec parameter, partitions are not defined.
+
+              Data_type: string, optional
+
+       <partition_spec>
+              Defines the name and boundary of new physical partition(s).
+
+              The specification must be specified in the following format:
+
+              {<newHierName1>  {<boxes  list1>} <newHierName2> {<boxes list2>}
+              ...}
+
+              Note: When undoing a physical partition, if there is a  conflict
+              with instance names:
+
+              * The first hinst that is undone will not have a prefix.
+
+              * In  case of a name conflict, the instance name will be renamed
+                to <<instName>>_<<hinstName>>_<<index>>.
+
+              For example, if the instance name is i1  inside  a  hinst  named
+              acc2,  then when you ungroup or undo acc2, any conflict will re-
+              sult in renaming this instance i1 to i1_acc2_1.
+
+              Data_type: string, optional
+
+       -pre_full_upf <string>
+              Specifies the original full-chip UPFs that are available  before
+              calling  the  create_physical_partitions  command  for the first
+              time to create physical hierarchies.
+
+              Note: For designs that have power domains, this  parameter  must
+              be specified.
+
+              Data_type: string, optional
+
+       -undo  Undo physical partitions.
+
+              Data_type: bool, optional
+
+Example
+              * You  can  define  the  names  and  boundaries (abutted or non-
+                abutted) of new physical partitions in the following format:
+
+                set phys_ptn_spec {
+
+                  acc_sm2   {258.0000000000    16.1500000000    458.6000000000
+                459.0400000000}
+
+                  acc_sm1    {17.8000000000    16.1500000000    258.0000000000
+                459.0400000000}
+
+                }
+
+              *
+
+                The following command creates physical  partitions  using  the
+                phys_ptn_spec defined earlier:
+
+                create_physical_partitions $phys_ptn_spec
+
+              * The following command undos the physical partitions:
+
+                create_physical_partitions $phys_ptn_spec -undo
+
+Related Information
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37cr2e0a2t5e_physical_partitions(25.10)

@@ -1,0 +1,262 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_target_pg(25.10)                                      add_target_pg(25.10)
+
+Name
+       add_target_pg
+
+Syntax
+        add_target_pg
+
+       [-help]
+
+       [-area {<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...}]
+
+       [-force]
+
+        [-instance {<list_of_instances>}]
+
+        -nets {<list_of_nets>}
+
+        -pin_layer <layer>
+
+        [-stack_layer_config {<stack_layer_pattern>}]
+
+        [-stack_layer_config_file <filename>]
+
+        -target_layer {<layer1 layer2>}
+
+       [-uda <subclass_string>]
+
+       Creates  a  PG  path  for a certain cell or instance. There are several
+       cases where the IR drop hotspots occur only on certain cells, like high
+       driving strength clock buffer cell, and there are  some  cells  wherein
+       secondary  PG pins need to be connected with power mesh. So, instead of
+       increasing the density of regular PG mesh,  the  add_target_pg  command
+       allocates  a  dedicated  PG  path  from the top layer low resistance PG
+       stripe to these cells and solves most of the IR-drop hotspot issues. As
+       a result, more resources can be preserved for routing.
+
+       Parameters
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each add_target_pg parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man add_target_pg
+
+       -area {<x1 y1 x2 y2>}{<x1 y1 x2 y2 x3 y3 x4 y4> ...}
+              Signifies that an instance inside the specified area can be con-
+              nected.
+
+       -force Keeps the added PG even when the connection has a DRC, and  adds
+              a DRC marker. When this parameter is not set, the newly added PG
+              will remain DRC clean. In such a case, if the PG pin cannot con-
+              nect to the target layer with DRC clean, the added PG is deleted
+              and leaves the pin open.
+
+       -instance {<list_of_instances>}
+              Specifies  the  instances  to be connected. Note that only those
+              instances are connected, which belong to the cell defined by the
+              set_add_target_pg_mode -pins parameter.
+
+       -nets {<list_of_nets>}
+              Specifies the power/ground nets to be connected.
+
+       -pin_layer <layer>
+              Specifies the layer name of the cell pin to be connected.
+
+       -stack_layer_config {<stack_layer_pattern>}
+              Defines the pattern of the stripes on  intermediate  layers  be-
+              tween  the pin layer and target layer. The value of this parame-
+              ter is in the {layer1:n1:s1:w1:p1:g1 layer2:n2:s2:w2:p2;g2  ...}
+              format. Here:
+
+              * layer1, layer2, ...  specifies the layer names.
+
+              * n1, n2, ...  specifies the stapling count in a set.
+
+              * w1, w2, ...  specifies the stapling width.
+
+              * s1, s2, ...  specifies the spacing inside a stapling set.
+
+              * p1, p2, ...  specifies the pitch (set-to-set distance) between
+                the stapling sets.
+
+              * g1, g2, ...  specifies the grid or half grid.
+
+              Following  is  an  example  of the -stack_layer_config parameter
+              value:
+
+              -stack_layer_config {M3:2:0.12:0.04:0.36 M4:1:0.08:0.08:0.9}
+
+       -stack_layer_config_file <filename>
+              Specifies the stack layer configuration file defining  the  pat-
+              tern  of  the  stripes on intermediate layer between the pin and
+              target layers. Stack layer denotes the intermediate layer(s) be-
+              tween the cell pin and target stripe. Following is the syntax of
+              the stack layer configuration file:
+
+              STACKLAYER COUNT SPACING WIDTH PITCH SNAP
+
+              ...
+
+              <Mx> <nx> <spacingx> <widthx> <pitchx> <Grid/Half_Grid/->
+
+              ...
+
+              END STACKLAYER
+
+              Here:
+
+              * STACKLAYER: Specifies the LEF name of the layer.
+
+              * COUNT: Specifies the number of stripes on the layer.  The  de-
+                fault COUNT value is 1.
+
+              * WIDTH:  Specifies  the  stripe  width  in microns. The default
+                WIDTH value is the minimum width in LEF.
+
+              * SPACING: Specifies the stripe spacing in microns. The  default
+                SPACING value is the minimum spacing in LEF.
+
+              * PITCH: Specifies the set-to-set distance in a stripe. It indi-
+                cates  the  range  that  one stripe set can cover. The default
+                PITCH value is MAX, which means one set.
+
+              * SNAP: Controls the wires' snap to grid or half grid.  The  de-
+                fault value of SNAP is Grid.
+
+              COUNT,  WIDTH, SPACING, or SNAP can be omitted in the configura-
+              tion file by specifying a hyphen (-). For example, 2 stripes  on
+              M4 with minimum width and spacing can be described as:
+
+              M4 2 - -
+
+              If  the  entire  line  of  a layer is omitted, it means that the
+              layer will have one stripe with minimum width and spacing.
+
+              Following is an example of a pattern defined in the stack  layer
+              configuration file:
+
+              The  generation of each layer stapling depends only on its lower
+              and upper stapling. The added PG can be shifted to  find  a  DRC
+              clean  location. If a DRC clean location is not found, the added
+              PG of this pin is removed and kept open. The length  of  the  Mx
+              layer  depends on location of the Mx-1 and Mx+1 layers, as shown
+              in the figure below. The number of wires created on the Mx-1 and
+              Mx+1 layers needs to fulfill the defined count number criteria.
+
+              Note: This parameter is exclusive to the -stack_layer_config pa-
+              rameter.
+
+       -target_layer {<layer1 layer2>}
+              Defines one or two destination power/ground stripes by  specify-
+              ing the target layer names. In case two target layers are speci-
+              fied,  those  should  be  adjacent. In such a case, the software
+              connects to the closet wires of these two adjacent target layers
+              with DRC clean. The directions of these two  target  layers  are
+              orthogonal.  The  configuration  file  is  created  based on the
+              higher of these two layers. The lower target layer uses its  own
+              configuration file and the configuration files of the layers be-
+              tween the cell pin.
+
+              For  example,  the  stack.cfg  configuration file for a stack is
+              created based on the target layer M9. Its target layer  M8  uses
+              the  configuration  files  of the layers from M3 to M7, as shown
+              below:
+
+              add_target_pg -nets {VDD2} -target_layer {M9 M8}  -pin_layer  M2
+              -stack_layer_config stack.cfg
+
+              Following are the contents of the stack.cfg configuration file:
+
+              STACKLAYER   COUNT  SPACING  WIDTH  PITCH
+
+              M3           2      0.12     0.04   0.36
+
+              M4           2      0.12     0.04   0.9
+
+              M5           -      -        0.04   0.36
+
+              M6           2      0.12     0.04   0.9
+
+              M7           2      0.2      0.2    1.2
+
+              M8           -      0.2      0.2    1.2
+
+              END_STACK_LAYER_CONFIG
+
+              Following is the output of the above command:
+
+              As  shown  in the above output, since the first layer is not DRC
+              clean, the software  searches  for  the  second  closest  target
+              stripe to connect.
+
+       -uda <subclass_string>
+              Indicates the name string of the user-defined attribute subcalss
+              of wires to route.
+
+Examples
+              * The following command connects different cells and pins speci-
+                fying the -target_layer as M8 and -pin_layer as M1:
+
+                set_add_target_pg_mode  -pins  {cell1:VDD  cell1:VSS cell2:VDD
+                cell2:VSS} -share_resource false
+
+                add_target_pg -nets {VDD VSS} -target_layer M8  -pin_layer  M1
+                -stack_layer_config_file  target_pg.config
+
+                Following are the target_pg.config file contents:
+
+                STACKLAYER   COUNT        SPACING           WIDTH
+
+                M2           2            0.06              0.04
+
+                M3           2            0.12              -
+
+                M4           2            0.12              0.04
+
+                M5           -            -                 0.04
+
+                M6           2            0.12              0.04
+
+                M7           2            0.2               0.2
+
+                END STACKLAYER
+
+                Following is the output of this example:
+
+              * The following set of commands connect different cells and pins
+                specifying the -target_layer as M8 and -pin_layer as M2:
+
+                set_add_target_pg_mode -pins {cell:VDD} -share_resource true
+
+                add_target_pg  -nets  {VDD}  -target_layer  M8  -pin_layer  M2
+                -stack_layer_config_file  target_pg.config
+
+                Following are the target_pg.config file contents:
+
+                STACKLAYER   COUNT         SPACING       WIDTH        PITCH
+
+                M3           3             0.12          -            -
+
+                M4           2             0.12          0.04         0.5
+
+                M5           2             0.12          0.04         -
+
+                M6           2             -             0.08         0.5
+
+                M7           2             0.2           0.2          -
+
+                END STACKLAYER
+
+                Following is the output of this example:
+
+Related Information
+              * get_add_target_pg_mode
+
+              * set_add_target_pg_mode
+
+                           Fri Apr 04 01:25:37 2025       add_target_pg(25.10)

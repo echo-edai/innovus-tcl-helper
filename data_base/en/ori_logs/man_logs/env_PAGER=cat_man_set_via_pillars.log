@@ -1,0 +1,137 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_via_pillars(25.10)                                  set_via_pillars(25.10)
+
+Name
+       set_via_pillars  -  This command sets a via pillar list for a cell term
+       or a single via pillar for an instTerm
+
+Syntax
+       set_via_pillars
+
+       [-help]
+
+       {-term <term> | -instTerm <instTerm>}
+
+       <stack_via_rule+>
+
+       [-required {0 | 1 | 2 | 3 | 4}]
+
+       This command sets a via pillar list for a cell term  or  a  single  via
+       pillar for an instTerm.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each set_via_pillars parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man set_via_pillars
+
+       -instTerm <instTerm>
+              Specifies  the  instTerm name or pointer. Only one via pillar is
+              allowed for instTerm.
+
+       <stack_via_rule+>
+              Provides a list of via pillars for a cell term, or a single  via
+              pillar for a instTerm. This list further provides the candidates
+              of instTerm via pillar setting. On running:
+
+              set_via_pillars -term BUFX1/Z -required 1 {vp_rule1 vp_rule2}
+
+              set_via_pillars  automatically  sets the minimal cost via pillar
+              rule for the corresponding instTerm, which is vp_rule1. You  can
+              also set the other via pillar rule to the instTerm by running:
+
+              set_via_pillars -instTerm i1/i2/Y vp_rule2
+
+              An  empty <stack_via_rule> will remove the via pillar from inst-
+              Term:
+
+              set_via_pillars -instTerm i1/i2/Y -required 1 ""
+
+       -required {0 | 1 | 2 | 3 | 4}
+              Sets the .stackViaRuleRequired attribute for  the  <term>/<inst-
+              Term>  values  specified  by  the -term or -instTerm parameters.
+              Setting the .stackViaRuleRequired attribute  determines  whether
+              the stack vias are required for the specified term.
+
+              * When  set  to  0  for  a term, this parameter sets the .stack-
+                ViaRuleRequired attribute to 0, which ignores  this  term  for
+                stackViaRule  checking.  If the parameter is set to 0 only for
+                an instTerm, other instTerm values instantiated from the  same
+                term will not be affected.
+
+              * When  set  to  1  for  a term, this parameter sets the .stack-
+                ViaRuleRequired attribute to 1 on the term values. When set to
+                1 for an instTerm, it enforces the  via  pillar  only  on  the
+                specified  instTerm.  However, if the via pillar list is empty
+                for an instTerm, no via pillar is used even when the  required
+                bit  is  1.  If set to 1, the software performs min via pillar
+                insertion with dirty mode, in which the via pillars are  added
+                even if there is DRC.
+
+              * When  set  to  2  for  a term, this parameter sets the .stack-
+                ViaRuleRequired attribute to 2 on the term values. If  set  to
+                2,  the  software performs min via pillar insertion with clean
+                mode, in which the via pillars are not added if there is DRC.
+
+              * When set to 3 for a term,  this  parameter  sets  the  .stack-
+                ViaRuleRequired  attribute  to 3 on the term values. If set to
+                3, the software performs multiple tries from large to min  via
+                pillar insertion with dirty mode, in which the via pillars are
+                added even if there is DRC.
+
+              * When  set  to  4  for  a term, this parameter sets the .stack-
+                ViaRuleRequired attribute to 4 on the term values. If  set  to
+                4,  the software performs multiple tries from large to min via
+                pillar insertion with clean mode, in which the via pillars are
+                not added if there is DRC.
+
+              The 2, 3, and 4 values of this parameter are applicable only for
+              a term.
+
+       -term <term>
+              Specifies the Term name (cell name/term base_name) or pointer. A
+              via pillar list is allowed for  term.
+
+Examples
+              *
+
+                Where the cell of inst i1/i2 and i1/i3  are  both  BUFX1,  the
+                following  commands  indicate that instTerm i1/i2/Z requires a
+                via pillar M2M4_1X3:
+
+                set_via_pillars -term BUFX1/Z -required 1 {M2M4_1X2 M2M4_1X3}
+
+                set_via_pillars -instTerm i1/i2/Z -required 1 M2M4_1X3    #The
+                via  pillar for instTerm must be on the cell term's via pillar
+                list. Otherwise, a proper ERROR should be returned.
+
+              *
+
+                The following command removes the via pillar M2M4_1X3 from in-
+                stTerm i1/i2/Z:set_via_pillars -instTerm i1/i2/Z ""  -required
+                1
+
+              * The following command sets a via pillar list on a cell pin:
+
+                set_via_pillars -term BUFX1/Z -required 1 {M2M4_1X2 M2M4_1X3}
+
+              * The  following  command sets a via pillar with via pillar list
+                of the corresponding cell pin on a instTerm; the cell of  inst
+                i1/i2 is BUFX1:
+
+                set_via_pillars -instTerm i1/i2/Z M2M4_1X3
+
+              * The   following   command   sets   via   pillar  to  cell  pin
+                AN2_NOM_D16*/Z:
+
+                foreach  cell  [dbGet  head.libCells.name   -e   AN2_NOM_D16*]
+                {set_via_pillars -term $cell/Z -required 0 {VPPERF_M2_M4_1_2_1
+                VPPERF_M2_M5_1_2_2_1 VPPERF_M2_M9_1_2_2_2_2_2_2_1} }
+
+Related Information
+       get_via_pillars
+
+                           Fri Apr 04 01:25:37 2025     set_via_pillars(25.10)

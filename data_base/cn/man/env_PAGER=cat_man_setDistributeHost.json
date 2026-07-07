@@ -1,0 +1,129 @@
+{
+  "command": "setDistributeHost",
+  "is_cmd": true,
+  "summary": "指定用于分布式处理或超级线程的多CPU处理配置",
+  "description": "该命令用于指定分布式处理或超级线程的多CPU处理配置。软件会从分布式处理或超级线程命令开始前最后指定的 setDistributeHost 命令中查找主机。使用 getDistributeHost 可以显示当前 setDistributeHost 命令的设置。此命令是进行分布式处理和超级线程所必需的。",
+  "usage": "setDistributeHost [-help] [-add <string>] [-args <string>] [-custom] [-custom_script <string>] [-custom_script_list <string>] [-local] [-lsf] [-nc] [-noWaitTaskComeUp] [-queue <string>] [-remove <string>] [-reportLsfInfo] [-resource <string>] [-rsh] [-shellTimeout <integer>] [-single_cpu_lsf_args <string>] [-ssh] [-timeOut <integer>] [-env_script <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add",
+      "description": "将指定的主机添加到 rsh/ssh 配置中。如果指定多个主机，请用空格分隔每个主机名。每次指定一个主机，软件就会用它来运行一个客户端进程。若要在同一主机上运行多个客户端进程，请多次指定该主机。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-args",
+      "description": "指定需要提供给 Sun Grid Engine (SGE) 或 Load Sharing Facility (LSF) 作业提交命令的任何附加参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-custom",
+      "description": "指定使用自定义作业提交脚本进行分布式处理。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-custom_script",
+      "description": "指定用于运行分布式处理的自定义脚本。此参数只能与 -custom 一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-custom_script_list",
+      "description": "根据这些作业所需的资源，指定自定义启动多个作业。此参数允许您按优先级顺序指定多个启动字符串，并为每个字符串设置最大允许作业数。如果请求 N 个作业，命令将从 <string1> 开始提交作业，直到达到相应的计数，然后开始提交列表中的下一个字符串。因此，命令使用 <string1> 提交前 \"<count1>\" 个作业，使用 <string2> 提交接下来的 \"<count2>\" 个作业，依此类推。当提交的作业总数达到请求的数量 (N) 时停止。注意：此参数只能与 -custom 参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-env_script",
+      "description": "指定一个用户定义的 shell 环境脚本，该脚本将在每个从属主机上运行。该参数允许您通过将这些环境设置包含在 shell 环境脚本中来传递给从属主机。软件使用的许可证变量也会自动传递给从属主机以避免许可证错误。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-local",
+      "description": "在主机器上运行所有分布式处理作业。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lsf",
+      "description": "指定 Load Sharing Facility 配置。如果不为 -lsf 指定任何参数，软件将使用默认设置。注意：要使用此参数，必须已设置好 LSF（通常通过指定 LSF_ENVDIR 和 LSF_SERVERDIR 环境变量），并且 bsub 必须在您的搜索路径中。详情请咨询您的 LSF 管理员。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nc",
+      "description": "使用 NC 命令（来自 RTDA 的网络计算机）进行分布式处理。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noWaitTaskComeUp",
+      "description": "不允许软件等待那些被延迟或不太可能发生的任务。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-queue",
+      "description": "为 LSF 或 SGE 配置指定队列。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-remove",
+      "description": "从 rsh/ssh 配置中移除指定的主机或所有主机。如果指定多个主机，请用空格分隔每个主机名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reportLsfInfo",
+      "description": "指定在单个报告中报告 LSF 信息。此参数允许您收集有关分布式作业状态的系统统计信息。它包含以下信息：* 主任务和 LSF 任务的主机名 * 每台机器上被进程使用的 CPU 数量 * 每个任务进程的作业 ID/PID * 每台机器上使用的总内存 * 每台机器上使用的总虚拟内存 * 每台机器上使用的总 CPU 时间。必须与 -lsf 参数一起指定此参数。要获取 LSF 信息，请指定 getDistributeHost -reportLsfInfo 命令参数。必须在 LSF 任务退出后指定 getDistributeHost -reportLsfInfo 才能获取任务 CPU 时间。如果在任务退出前指定此命令，命令会给出警告信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-resource",
+      "description": "为 SGE 或 LSF 队列指定资源字符串。注意：正确的资源字符串取决于您的具体安装。请咨询您的 LSF 管理员以获取适当的参数和值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rsh",
+      "description": "指定远程 shell 配置。有关信息，请参阅 rsh 文档。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-shellTimeout",
+      "description": "指定主机等待 rsh/ssh 机器变为可用于多 CPU 处理的秒数。默认值：5",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-single_cpu_lsf_args",
+      "description": "指定 bsub 选项。有关信息，请参阅 LSF 文档。注意：必须使用此参数来调整单 CPU 应用程序的 LSF 参数。或者，使用 -args 参数来调整在超级线程模式下运行的应用程序的 LSF 参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ssh",
+      "description": "指定安全 shell 配置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-timeOut",
+      "description": "指定已提交但永远不会启动的作业的默认超时时间。此功能可防止客户端因某些原因无法启动时主机器挂起。超时后，会出现警告信息，通知您分布式 CPU 未在预期时间内上线。主机器将继续等待客户端，由您决定是继续等待还是因分布式资源管理 (DRM) 系统出现问题而终止运行。默认值：所有模式（LSF、NC、SGE、RSH、SSH、local 和 custom）均为 3600。注意：当未指定 set_distribute_host 命令时，软件将默认模式设置为 local，EDP 超时为 3600 秒。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_cppr(25.10)                                          report_cppr(25.10)
+
+Name
+       report_cppr  -  Reports  the clock reconvergence pessimism value at the
+       common branching point of the early and late paths in the clock network
+       of the specified data path
+
+Syntax
+       report_cppr
+
+       [-help]
+
+       [-check_type {setup | hold | clock_gating_setup |  clock_gating_hold  |
+       clock_gating_pulse_width  | data_setup | data_hold | recovery | removal
+       |  pulse_width   |   clock_period   |   clock_separation   |   skew   |
+       no_change_setup | no_change_hold | time_borrow}]
+
+       -from <pin_or_port>
+
+       -to <pin_or_port>
+
+       [-from_clock <clkname>]
+
+       [-to_clock <clkname>]
+
+       [-early | -late]
+
+       [-view <view_name>]
+
+       [> <filename>]
+
+       Reports the clock reconvergence pessimism value at the common branching
+       point of the early and late paths in the clock network of the specified
+       data path.
+
+       The  report_cppr  command  reports separate values for both opening and
+       closing edges for paths with latches as destinations.  If  both  source
+       and destination flops are triggered by multiple clocks, then one report
+       is generated for each separate clock.
+
+       When  the  software  is  in  multi-mode multi-corner analysis mode, re-
+       port_cppr reports the results for each active analysis view.
+
+       To use the report_cppr command, you must first set the following global
+       variables:
+
+              * timing_cppr_transition_sense
+
+              * timing_cppr_threshold_ps
+
+Parameters
+       -help  Prints out the command usage.
+
+       -check_type {setup | hold | clock_gating_setup | clock_gating_hold |
+       clock_gating_pulse_width | data_setup | data_hold | recovery | removal
+       | pulse_width | clock_period | clock_separation | skew |
+       no_change_setup | no_change_hold | time_borrow}
+              Reports the CPPR for the paths that end at the specified  timing
+              check.
+
+              The  following  check types are reported when the software is in
+              setup   analysis   mode:   setup,   pulse_width,   clock_period,
+              clock_gating_setup, clock_gating_pulse_width, data_setup, recov-
+              ery, skew, clock_separation, time_borrow, and no_change_setup.
+
+              The  following  check types are reported when the software is in
+              hold analysis mode: hold, clock_gating_hold, data_hold, removal,
+              and no_change_hold.
+
+              If the software is in simultaneous setup and hold analysis mode,
+              all of the check types listed above are reported.
+
+       > <filename>
+              Writes the report to the specified file name. If  the  file  al-
+              ready exists, the software overwrites it.
+
+              The <filename> parameter must be the last argument in the list.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -early Reports the hold analysis clock reconvergence pessimism value.
+
+              You can specify this parameter when  the  software  is  in  hold
+              analysis  mode,  or in simultaneous setup and hold analysis mode
+              (set_global timing_enable_simultaneous_setup_hold_mode true).
+
+       -from <pin_or_port>
+              Reports the clock reconvergence pessimism value for paths start-
+              ing from the specified clock pin of the source flop, or from the
+              specified port.
+
+       -from_clock <clkname>
+              Reports the clock reconvergence pessimism value for  paths  with
+              the specified triggering clock. Use this parameter when there is
+              more than one clock triggering the source flop.
+
+       -late  Reports the setup analysis clock reconvergence pessimism value.
+
+              You  can  specify  this  parameter when the software is in setup
+              analysis mode, or in simultaneous setup and hold  analysis  mode
+              (set_global timing_enable_simultaneous_setup_hold_mode true).
+
+       -to <pin_or_port>
+              Reports the clock reconvergence pessimism value for paths ending
+              at  the  specified  clock pin of the destination flop, or at the
+              specified port.
+
+       -to_clock <clkname>
+              Reports the clock reconvergence pessimism value for  paths  with
+              the  specified capturing clock. Use this parameter when there is
+              more than one clock capturing the destination flop.
+
+       -view <view_name>
+              Reports the clock reconvergence pessimism values  for  paths  in
+              the specified analysis view only. You can specify this parameter
+              only  when  the  software  is  in multi-mode multi-corner timing
+              analysis mode.
+
+Examples
+       Here are some examples.
+
+              * When the software is in multi-mode multi-corner timing  analy-
+                sis  mode,  you  can specify the -view parameter to report the
+                CPPR values for a specific analysis view:
+
+                report_cppr -from CLK3 -to seg3/u14/CK
+
+                Start Clock Pin: CLK3  (Triggered  by  rising  edge  of  clock
+                CLK_W_3)
+
+                End  Clock Pin: seg3/u14/CK (Triggered by rising edge of clock
+                CLK_W_3)
+
+                Analysis Type: Setup
+
+                Analysis View: setup_view1
+
+                Common Branch Point : seg3/u17_c/Y
+
+                Launching Edge Type At Common Point : Rising
+
+                Capturing Edge Type At Common Point : Rising
+
+                Pessimism Threshold Value : 0.020
+
+                -------------------------------------
+
+                Arrival   Late    Early   Pessimism
+
+                Times
+
+                -------------------------------------
+
+                Rise      0.549   0.366   0.183
+
+                Fall      0.400   0.267   0.133
+
+                -------------------------------------
+
+                Edge Selection Mode : Normal
+
+                Edge Selection : Match, Using Rise
+
+                CPPR Adjustment : 0.183
+
+              * The following report shows sigma and mean values:
+
+                report_cppr -from FF01/CP -to FF02/CP
+
+                Start Clock Pin: FF01/CP (Triggered by rising  edge  of  clock
+                CK)
+
+                End Clock Pin: FF02/CP (Triggered by rising edge of clock CK)
+
+                Analysis Type: Setup
+
+                Analysis View: view1
+
+                Common Branch Point : CK
+
+                Launching Edge Type At Common Point : Rising
+
+                Capturing Edge Type At Common Point : Rising
+
+                Pessimism Threshold Value : 0.020
+
+                +-----------------------------------------------------------------------------+
+
+                |  Arrival  | Late  | Late  | Early | Early | Pessimism | Pes-
+                simism | Pessimism |
+
+                | Times   | Mean  | Sigma | Mean  | Sigma | Mean      |  Sigma
+                |           |
+
+                |---------+-------+-------+-------+-------+-----------+-----------+-----------|
+
+                |  Rise    | 0.000 | 0.000 | 0.000 | 0.000 | 0.000     | 0.000
+                | 0.000     |
+
+                | Fall    | 0.000 | 0.000 | 0.000 | 0.000 | 0.000     |  0.000
+                | 0.000     |
+
+                +-----------------------------------------------------------------------------+
+
+                Edge Selection Mode : Normal
+
+                Edge Selection : Match, Using Rise
+
+                CPPR Adjustment : 0.000 (+3.00S) | 0.000 | 0.00
+
+Related Information
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025         report_cppr(25.10)

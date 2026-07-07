@@ -1,0 +1,120 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+flattenPartition(25.10)                                flattenPartition(25.10)
+
+Name
+       flattenPartition  -  Uncommits  (flattens) the partition back to normal
+       module status
+
+Syntax
+       flattenPartition
+
+       [-help]
+
+       [<partition_name>]
+
+       [-bringBackRow]
+
+       [-keepPinGeometry]
+
+       [-noUninheritPhysical]
+
+       Uncommits (flattens) the partition back to normal module  status.  This
+       command  should also be used to unassign blackbox pins after the black-
+       box is committed. To unassign blackbox pins before the blackbox is com-
+       mitted, use the setPtnPinStatuscommand. This command  unassigns  parti-
+       tion  pins  as well. To bring back row information for a partition, use
+       the -bringBackRow parameter. If the partition rows are non-integer-mul-
+       tiple-height rows or are not aligned with the top-level rows, the flat-
+       tenPartition command will automatically create a power  domain  associ-
+       ated with the partition. The power domain will have the following char-
+       acteristics:
+
+              * The timing library will the same as that for the top level.
+
+              * If  a global net connection is defined in the partition block,
+                the power domain will have the  same  global  net  connection.
+                Otherwise  the global net connection for the power domain will
+                be set to the top-level net connection.
+
+              * The minimum gap values will be the same as the placement  halo
+                values for the partition.
+
+       The recommended use model for bringing back non-integer-multiple height
+       rows or unaligned rows is as follows.
+
+       Top-down flow:
+
+              * Create a power domain at full chip-level design.
+
+              * Specify the same hierarchical instance as the partition
+
+       Bottom-up flow:
+
+              * Create a power domain at top-level design.
+
+              * Assign the instance block as a member of the power domain cre-
+                ated in step 1.
+
+       The  flattenPartition  command  supports partitions with FlexModels. It
+       restores back FlexModel information if the committed  partition  has  a
+       FlexModel netlist.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each flattenPartition parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man flattenPartition
+
+       -bringBackRow
+              Specifies that partition row information should be brought  back
+              for cases where:
+
+              * the  partition  is  not  a power domain and row information in
+                partition is different from top-level design, and
+
+              * after uncommiting the partition, the  rows  of  the  partition
+                space are not aligned with the top-level rows
+
+              When  you  use this parameter, a power domain is created for the
+              partition.
+
+              Default: If you do not specify this parameter, the row  informa-
+              tion is not brought back in such cases.
+
+              Data_type: bool, optional
+
+       -keepPinGeometry
+              Specifies  that  for every partition pin, a DRCFILL metal of the
+              type special route is placed on top of the partition pins.
+
+              Data_type: bool, optional
+
+       -noUninheritPhysical
+              Specifies that physical only cell instances are  removed  during
+              flattenPartition.
+
+              Data_type: bool, optional
+
+       <partitionName>
+              Specifies  the  name(s) of the partition(s). You can specify any
+              number of partitions.
+
+              Data_type: string, optional
+
+Example
+       The following command uncommits  the  partition  status  of  partitions
+       sheet17 and sheet25:
+
+       flattenPartition sheet17 sheet25
+
+Related Information
+              * setPtnPinStatus
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025    flattenPartition(25.10)

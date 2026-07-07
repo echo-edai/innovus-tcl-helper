@@ -1,0 +1,404 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportMultibit(25.10)                                    reportMultibit(25.10)
+
+Name
+       reportMultibit  -  Reports  all the multi-bit flip-flops that have been
+       identified during loading the design
+
+Syntax
+       reportMultibit
+
+       [-help]
+
+       [-bit <bit_width>]
+
+        [-outFile <file_name>]
+
+       [-cell <cell_name> | -library |  -reasonNotMerged  <unmerged_reason>  |
+       -notMergedSummary | -equiv]
+
+       [-cell <cell_name> | -type {comb | latch | flop | seq | iso | ls}]
+
+       [-hinst <hinst_name> | -library | -cell <<cell name>> | -equiv]
+
+       Reports  all  the multi-bit flip-flops that have been identified during
+       loading the design. Use  this  command  after  all  the  libraries  are
+       loaded.  When  this  command is specified with no parameters, a default
+       summary report is printed.  By default, the sequential  cells  will  be
+       reported. Both, the multi-bit percentages of flops that are merged, and
+       a summary of flops that are not merged is printed.
+
+       There are three basic types of multibit:  sequential, combo, and isola-
+       tion/level shifter. This command supports specifying the type of multi-
+       bit to report. The -type parameter is a global filter for all other op-
+       tions.
+
+       The  default  option  is seq. If -type option is not specified then re-
+       porting will take place for sequential cells.
+
+       A set of options separated by a "|" in one "[ ]" listed below cannot be
+       used together and the software will report an error in that  case.  Al-
+       though  options  from different "[ ]" can be coupled together. The sets
+       of mutually exclusive options are provided below.
+
+              * [-cell <cell name> | -library |  -reason_not_merged  <unmerged
+                reason> | -not_merged_summary | -equiv ]
+
+              * [-cell <cell name> | -type <type>]
+
+              * [-hinst <hinst> | -library | -cell <cell name> | -equiv ]
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each reportMultibit parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man reportMultibit.
+
+       -bit <bit_width>
+              Reports  the  multibit iso/ls cells for the specified bit width.
+              The value bit_width can be an integer that represents  the  bit-
+              width of the queried isolation/level shifter (iso/ls) cell.
+
+              This  parameter  is  required to be specified when reporting the
+              multibit iso/ls cells.
+
+              Example:
+
+              To report 2-bit MB isolation (iso) cells in the design, use  the
+              following command:
+
+              reportMultibit -type iso -bit 2
+
+       -cell <cell_name>
+              Reports the cell details and equivalence information of a single
+              library cell.
+
+       -equiv Reports equivalence summary of the library cells of the selected
+              type.
+
+       -hinst <hinst_name>
+              Specifies  the  hinst  on which the reporting is to be done. The
+              default is the design.
+
+       -library
+              Reports the flip-flop/latch equivalence.
+
+              This parameter honors the -type parameter setting.
+
+       -notMergedSummary
+              When specified, reports the summary of unmerged instances.
+
+       -outFile <file_name>
+              Specifies the name of the output file.
+
+       -reasonNotMerged {All Area BankLabelPartition BankLabelRegister Bus
+       CellEquivalent Constraint DRV Distance Legalization Location Partition
+       Power ScanConnection Timing Unknown UnmatchedPins User}
+              Reports the instances that could not be merged for the specified
+              reason. The instance names along with their base cell names  are
+              reported.  Specify any of the reasons in the argument or specify
+              all to report all instances, their base cell names, and the rea-
+              son why they could not be merged.
+
+              All: All the reasons of not merging
+
+              Area: Merging the instances causes area degradation
+
+              BankLabelPartition: Instances belong  to  different  bank  label
+              partition
+
+              BankLabelRegister: No equivalent cells available in the library
+
+              Bus: Non-bus flops
+
+              CellEquivalent: No usable equivalent multi-bit flip-flop cell
+
+              Constraint: Constraints by sdc, rule, or user settings
+
+              Distance:  Instances not merged due to distance greater than the
+              threshold
+
+              Legalization: MultiBit instance could not be legalized
+
+              DRV: Merging the instances degrades the drv
+
+              Location: Too far away from other flops in the same group
+
+              Partition: Odd number of flops in one partition
+
+              Power: All available multi-bit cells causing power degradation
+
+              ScanConnection: No scan connection to other flops  in  the  same
+              group
+
+              Timing:  Exceed critical path threshold or MBFF merging that de-
+              grades timing
+
+              Unknown: The instance cannot be identified
+
+              UnmatchedPins: Number of pins are different on the instances
+
+              User: User set to be excluded in flop merge
+
+              The report format is as follows:
+
+              Reason of not merging:  <>
+
+              Unmerged Sequential instances (<>):
+
+              -----------------------------------
+
+              Instance_name cell_name
+
+              Example:
+
+              reportMultibit -type seq -reasonNotMerged <>
+
+              Reason of not merging:  <>
+
+              Unmerged Sequential instances (<>):
+
+              -----------------------------------
+
+              Instance_name cell_name
+
+              udec1/g24106  ND2D3ULVT
+
+              udec1/g24274  ND2D3ULVT
+
+              udec1/g24323  ND2D4ULVT
+
+              udec1/g24335  ND2D2ULVT
+
+       -type {comb | latch | flop | seq | iso | ls}
+              Reports for the specified type of cells. By  default,  only  se-
+              quentials  are reported. You can specify anyone of the following
+              reports:
+
+              comb: reports all multibit cells  implementing  a  combinational
+              function. For example, a cell implementing 3 ANDs - so, 6 inputs
+              and 3 outputs
+
+              latch:  reports multi-bit latches in the design.
+
+              flop: reports multi-bit flops.
+
+              seq: reports all sequential cells.
+
+              isolation/level shifter (iso/ls): reports multi-bit cells imple-
+              menting  a  low  power  function.  For  example, as 8-bit level-
+              shifter cell.
+
+              Default: seq
+
+Examples
+       Use the following command to print a default  summary  report.  By  de-
+       fault, the sequential cells will be reported..
+
+       reportMultibit
+
+       The software returns the following information:
+
+       =========================================================================
+
+       Current Design Sequential Cells Statistics
+
+       =========================================================================
+
+       +--------------------------------+----------+---------------+------------+
+
+       |                                 |  Latches  |  Flops        | All Seq
+       Cells |
+
+       +--------------------------------+----------+---------------+------------+
+
+       |  Single-Bit  Count                |  1157     |  101          |  1258
+       |
+
+       |  Multi-Bit  Count                 |  0        |  2657         |  2657
+       |
+
+       |  2-Bit Count (Used-Bit %)      | 0       | 29(100.00)  | 29  (100.00)
+       |
+
+       |   4-Bit  Count  (Used-Bit  %)       |  0        |  2628(100.00)| 2628
+       (100.00) |
+
+       | Total Bit  Count                 |  1157     |  10671        |  11828
+       |
+
+       |   -Merged                        |  0        |  10570        |  10570
+       |
+
+       |   -Un-Merged                     |  1157     |  101          |   1258
+       |
+
+       |  Total  Cell  Count                |  1157     |  2758         | 3915
+       |
+
+       |  Total  Cells  With  Unused  Bits    |  0        |  0            |  0
+       |
+
+       |  Total  Unused  Bits  Count (%)    | 0 (0.00)| 0 (0.00)    | 0 (0.00)
+       |
+
+       | Bits  per  cell                   |  1.00     |  3.87         |  3.02
+       |
+
+       |  Total  Clock  Pin  Cap             | 675.69  | 1602.71     | 2278.40
+       |
+
+       | Multibit Conversion  %           |  0.00     |  99.05        |  89.36
+       |
+
+       +-------------------------------+----------+---------------+-------------+
+
+       ===============================================================
+
+       Sequential Multibit Cells Usage Statistics
+
+       ===============================================================
+
+       +---------------------------+---------+-------+---------------+
+
+       |                           | Latches | Flops | All Seq Cells |
+
+       +---------------------------+---------+-------+---------------+
+
+       | Usable 2-bit cell         | 0       | 6     | 6             |
+
+       | Dont-use/touch 2-bit cell | 0       | 0     | 0             |
+
+       | Usable 4-bit cell         | 0       | 6     | 6             |
+
+       | Dont-use/touch 4-bit cell | 0       | 0     | 0             |
+
+       +---------------------------+---------+-------+---------------+
+
+       ====================================================
+
+       Sequential Multibit cells usage statistics
+
+       ====================================================
+
+       +------------------------+------+----------+-------+
+
+       | Seq_Mbit libcell       | FF/L | Bitwidth | Count |
+
+       +------------------------+------+----------+-------+
+
+       | HD40DG_LH_2SDFPQX4_P4  | FF   | 2        | 3     |
+
+       | HD40DG_LH_2SDFPRQX4_P4 | FF   | 2        | 26    |
+
+       | HD40QG_LH_4SDFPQX4_P4  | FF   | 4        | 2325  |
+
+       | HD40QG_LH_4SDFPRQX4_P4 | FF   | 4        | 303   |
+
+       +------------------------+------+----------+-------+
+
+       | Total                  |      |          |  2657 |
+
+       ================================================================================
+
+       Rejection Reason Summary
+
+       ================================================================================
+
+       +-----------------+------------+-----------------------------------------------+
+
+       | Category        | Rej. Count | Reason |
+
+       +-----------------+------------+-----------------------------------------------+
+
+       |  Partition        | 19         | Odd number of flops in one partition
+       |
+
+       | Cell Equivalent | 7          | No usable equivalent  multi-bit  flip-
+       flop cell
+
+                                        (check 'Ignored single-bit flop-flop'
+
+                                        in  the 'Pre-merge design statistics')
+       |
+
+       | Constraint      | 71         | Constraints by sdc,rule or  user  set-
+       tings
+
+                                        (check  'Nonremovable single-bit flip-
+       flop'
+
+                                        in the 'Pre-merge design statistics')
+
+       +-----------------+------------+------------------------------------------------+
+
+       When the -reasonNotMerged parameter is specified, the report lists  the
+       reasons  and  a  detailed listing of each of the cells. By default, the
+       sequential cells are reported.
+
+       reportMultibit -reasonNotMerged Partition
+
+       The software returns the following information:
+
+       Reason of not merging:     Partition    Odd number of flops in one par-
+       tition
+
+       Unmerged Sequential instances (19):
+
+       -----------------------------------
+
+       ethreg1/MIIADDRESS_1/DataOut_reg[4]
+
+       ethreg1/MIICOMMAND0/DataOut_reg[0]
+
+       ethreg1/MIICOMMAND1/DataOut_reg[0]
+
+       ethreg1/MIICOMMAND2/DataOut_reg[0]
+
+       ethreg1/SetTxCIrq_reg
+
+       ethreg1/TXCTRL_2/DataOut_reg[0]
+
+       maccontrol1/receivecontrol1/ByteCnt_reg[4]
+
+       maccontrol1/receivecontrol1/Divider2_reg
+
+       macstatus1/DeferLatched_reg
+
+       macstatus1/ReceiveEnd_reg
+
+       miim1/shftrg/LinkFail_reg
+
+       rxethmac1/CrcHashGood_reg
+
+       rxethmac1/rxcounters1/DlyCrcCnt_reg[0]
+
+       rxethmac1/rxcounters1/IFGCounter_reg[4]
+
+       txethmac1/txstatem1/StateJam_q_reg
+
+       wishbone/RxBDReady_reg
+
+       wishbone/TxPointerRead_reg
+
+       wishbone/rx_fifo/cnt_reg[4]
+
+       wishbone/tx_fifo/cnt_reg[4]
+
+Related Information
+              * ecoSplitFlop
+
+              * ecoSplitComplexFlop
+
+              * dumpMultiBitFlopMappingFile
+
+              * setOptMode
+
+              * setDesignMode
+
+              * The following topic in the Innovus User Guide
+
+                * Reporting the MBFFs
+
+                           Fri Apr 04 01:25:37 2025      reportMultibit(25.10)

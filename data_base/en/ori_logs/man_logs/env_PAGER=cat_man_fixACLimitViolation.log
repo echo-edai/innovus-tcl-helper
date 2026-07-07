@@ -1,0 +1,222 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+fixACLimitViolation(25.10)                          fixACLimitViolation(25.10)
+
+Name
+       fixACLimitViolation  -  Repairs  violations  associated with AC current
+       density, wire-self-heat, Joules heat, or electromigration, mostly in  a
+       postRoute stage
+
+Syntax
+       fixACLimitViolation
+
+       [-help]
+
+       [-excludeIO {true | false}]
+
+       [-excludeNetFile <filename>]
+
+       [-fixNetCategory {dataOnly | clockOnly | clockAndData}]
+
+       [-fixingMethod  {route_rule  |  down_size  |  buffer | size_or_buffer |
+       route_size_or_buffer}]
+
+       [-postCTS]
+
+       [-selectNetFile <filename>]
+
+       [-useReportFile <filename>]
+
+       [-useSegmentBasedNDR {true | false}]
+
+       Repairs violations associated with AC current density,  wire-self-heat,
+       Joules  heat,  or electromigration, mostly in a postRoute stage. Fixing
+       methods are applying routing rules,  downsizing  drivers  or  adding  a
+       buffer  to split up the net load on the violated nets. Use this command
+       in conjunction with the verifyACLimit command. The  verifyACLimit  com-
+       mand  can mark the violating net for the fixACLimitViolation command to
+       repair, and it can generate the report  file  that  fixACLimitViolation
+       can read.
+
+        The fixACLimitViolation command only applies a single fixing method to
+       fix  EM  violations. You can select the fixing method by specifying the
+       -fixingMethod parameter. If the method is not  specified,  the  command
+       will  fix  EM violations by setting route rules on violating nets.  For
+       example, the following usage will apply route rules for both clock  and
+       data nets while excluding nets with I/O pins:
+
+       fixACLimitViolation -fixNetCategory clockAndData -excludeIO true
+
+       Before running fixACLimitViolation, you can generate an incoming EM vi-
+       olation report using the verifyACLimit command. This operation will en-
+       sure  that  the appropriate data for fixACLimitViolation is included in
+       the violation report.  After that, this report should be provided as an
+       input to fixACLimitViolation using the  -useReportFile  parameter.  The
+       following is an example of the sequence of operations:
+
+       verifyACLimit -report beforeFix.rpt -view hold_view
+
+       fixACLimitViolation -useReportFile beforeFix.rpt
+
+       verifyACLimit -report afterFix.rpt -view hold_view
+
+       By  default,  verifyACLimit  will  calculate EM currents using the hold
+       view.  This means that verifyACLimit will internally invoke a hold tim-
+       ing update.  If it is desired to  maintain  the  current  setup  timing
+       graph  in  memory for use after EM fixing, the -forceHoldView parameter
+       should be provided to verifyACLimit so  that  the  hold  timing  update
+       doesn't  nullify  the  setup timing graph.  Below is an example of this
+       scenario:
+
+       timeDesign -postRoute
+
+       verifyACLimit -report beforeFix.rpt -forceHoldView
+
+       fixACLimitViolation -useReportFile beforeFix.rpt
+
+       verifyACLimit -report afterFix.rpt -forceHoldView
+
+       Note:  It is important to set the right switching  activity  factor  on
+       the  nets  before  using  the  verifyACLimit  command.   Refer  to  the
+       set_power_analysis_mode, set_default_switching_activity and set_switch-
+       ing_activity commands for further details on the default  behaviors  of
+       the software and how to modify them. The example below shows how to set
+       the  global switching activity for verifying and fixing AC limit viola-
+       tions.
+
+       set_default_switching_activity -global_activity 0.2
+
+       propagate_activity -set_net_freq true
+
+       verifyACLimit -use_db_freq -report em.report
+
+       fixACLimitViolation -useReportFile em.report
+
+       Alternatively, verifyACLimit -toggle parameter can  be  used  for  more
+       pessimistic analysis. In this case, modifying set_default_switching_ac-
+       tivity is not needed. The following is an example of forcing every sig-
+       nal net to toggle at 50% of the clock rate:
+
+       verifyACLimit -toggle 0.5 -report em.report
+
+       fixACLimitViolation -useReportFile em.report
+
+       See verifyACLimit for further command parameters and usage.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each fixACLimitViolation parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man fixACLimitViolation
+
+       -excludeIO {true | false}
+              If set to true, excludes nets connected to I/O pins during  vio-
+              lation fixing.
+
+              Default: false
+
+       -excludeNetFile <filename>
+              Specifies a file that contains the names of nets to exclude from
+              AC limit violation repair.
+
+       -fixNetCategory { dataOnly | clockOnly | clockAndData}
+              Specifies  fixing net types. For dataOnly, fixes data nets only.
+              If clockOnly is specified, fixes clock nets. If clockAndData  is
+              specified, fixes clock and data nets.
+
+              Note:  For clock nets, only route rules will be used for fixing.
+              Downsizing or buffering will not be used.
+
+              Default: dataOnly
+
+       -fixingMethod {route_rule | down_size | buffer | size_or_buffer |
+       route_size_or_buffer}
+              Specifies the fixing method for correcting  EM  violations.  You
+              can specify any of the following:
+
+              * route_rule: Apply routing rules to signal EM violating nets.
+
+              * down_size: Apply driver cell downsizing to signal EM violating
+                nets.
+
+              * buffer: Apply buffering to signal EM violating nets.
+
+              *
+
+                size_or_buffer:   Apply  sizing or buffering to signal EM vio-
+                lating nets. This option is  only  applicable  to  data  nets.
+                Clock nets will be skipped from sizing or buffering.
+
+              * route_size_or_buffer:  Apply  routing, sizing, or buffering to
+                signal EM violating nets. Routing can be applied to both clock
+                and data nets. However, sizing or buffering will only  be  ap-
+                plied to data nets.
+
+              Default: route_rule
+
+       -postCTS
+              If  specified,  enables fix for the clock nets, for postCTS DBs.
+              This parameter should be used only with  -fixNetCategory  clock-
+              Only.
+
+              Default: omitted
+
+       -selectNetFile <fileName>
+              Specifies  a  file  that contains the names of nets for which to
+              perform AC limit violation repair.
+
+       -useReportFile <filename>
+              Reads the verifyACLimit report, and uses the violation  informa-
+              tion from the report file to set up a proper routing rules. This
+              is recommended for the best fixing performance.
+
+       -useSegmentBasedNDR {true | false}
+              Enables/disables segment-based route rules. If set to true, gen-
+              erates  and  applies segment-based route rules for fixing viola-
+              tions. This approach enables you to specify  the  desired  width
+              and distance for each layer of the violated net.
+
+              Default: true
+
+Examples
+              * The  following  command  performs buffering only, for the nets
+                specified in the netFile.txt only:
+
+                fixACLimitViolation -fixingMethod buffer -selectNetFile  "net-
+                File.txt"
+
+              * To use downsizing, excluding nets with I/O pins:
+
+                fixACLimitViolation -fixingMethod down_size -excludeIO true
+
+              * To fix both clock and data nets with route rules:
+
+                fixACLimitViolation -fixNetCategory clockAndData
+
+              * The  following  example shows how to feed verifyACLimit report
+                through the -useReportFile parameter.
+
+                fixACLimitViolation -useReportFile em.report
+
+Related Information
+              * set_power_analysis_mode
+
+              * set_default_switching_activity
+
+              * set_switching_activity
+
+              * timeDesign
+
+              * verifyACLimit
+
+Related Information
+              * The following chapters in the Innovus User Guide:
+
+                * Identifying and Viewing Violations
+
+                * "Optimizing Signal EM Violations at PostRoute Stage" in  the
+                  Optimizing Timing chapter
+
+                           Fri Apr 04 01:25:37 2025 fixACLimitViolation(25.10)

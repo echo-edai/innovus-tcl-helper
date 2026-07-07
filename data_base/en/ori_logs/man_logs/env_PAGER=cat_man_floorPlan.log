@@ -1,0 +1,340 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+floorPlan(25.10)                                              floorPlan(25.10)
+
+Name
+       floorPlan - Specifies the floorplan dimensions by size; or by die, I/O,
+       or core coordinates
+
+Syntax
+        floorPlan
+
+       [-help]
+
+       [-adjustToSite]
+
+       [-coreMarginsBy {io | die}]
+
+       [-dieSizeByIoHeight {min |max}]
+
+       [-flip {f | s | n}]
+
+       [-fplanOrigin {center | llcorner}]
+
+       [-noResize]
+
+       [-noSnapToGrid]
+
+       [-overlapSameSiteRow]
+
+       {-b {<die_box io_box core_box>} |
+
+        -s {<W H Left Bottom Right Top>}  |
+
+        -d {<W H Left Bottom Right Top>}  |
+
+        -r {<aspectRatio >[<rowDensity> [<Left Bottom Right Top>]]}|
+
+        -su {<aspectRatio> [<stdCellDensity> [<Left Bottom Right Top>]]}|
+
+        -keepShape <util>}
+
+       [-site <name >| -siteOnly <name>]
+
+       Specifies the floorplan dimensions by size; or by die, I/O, or core co-
+       ordinates.  The  floorPlan  command initializes the floorplan and calls
+       the add_trackscommand to create new routing  tracks.  By  default   the
+       add_tracks  command  calculates  the optimum spacing between tracks and
+       ignores the pitch values in the tech LEF.  When  you  use  the  Specify
+       Floorplan  form  (or  specify  the floorplan through the floorPlan com-
+       mand), the floorplan is resized automatically  -  relatively  floorplan
+       constraints  are  automatically  derived  on  the fly for blocks, fixed
+       standard cells, fixed pre-routes, and blockages.
+
+       The floorplan is linearly adjusted as follows:
+
+              * Spacing among blocks is evenly adjusted
+
+              * The size of the modules and black boxes is evenly adjusted.
+
+              * The fixed pre-routes and I/Os are automatically adjusted.
+
+       Note: The floorPlan command checks if the specified IO box and core box
+       is within limits of die box and displays an error message if  they  are
+       outside the die box.
+
+Parameters
+       -adjustToSite
+              Adjusts  the  width  of  the die area such that it is an integer
+              multiple of the width of the IO site or core site.
+
+              Data_type: bool, optional
+
+       -b {<die_box io_box core_box>}
+              Specifies all three boxes of  the  floorplan,  die_box,  io_box,
+              core_box.
+
+              The following command creates floorplan by specifying a core box
+              size of 1200 x 1200,io box size of 1600 x 1600  and die box size
+              of 2000 x 2000.
+
+              floorPlan -b {0 0 2000 2000 200 200 1800 1800 400 400 1600 1600}
+
+              Data_type: list, required
+
+       -coreMarginsBy {io | die}
+              Specifies  whether  the  core  margins  are calculated using the
+              core-to-IO boundary or the core-to-die boundary.
+
+              Default: io
+
+              Data_type: enum, optional
+
+        -d {<W H Left Bottom Right Top>}
+              Specifies the die size and the spacing, in micrometers,  between
+              the  die  edge,  which is the margin between the outside edge of
+              the die.
+
+              * W: Specifies the die's width value.
+
+              * H: Specifies the die's height value.
+
+              * Left: Specifies the margin from the outside edge of  the  core
+                to the left of the I/O boundary.
+
+              * Bottom: Specifies the margin from the outside edge of the core
+                to the bottom of the I/O boundary.
+
+              * Right:  Specifies the margin from the outside edge of the core
+                to the right of the I/O boundary.
+
+              * Top: Specifies the margin from the outside edge of the core to
+                the top of the I/O boundary.
+
+                The following command creates floorplan by  specifying  a  die
+                box  size  of 1500 x 1500,and the spacing between core edge to
+                each die edge of 300.
+
+                floorPlan -d {1500 1500 300 300 300 300}
+
+              Data_type: list, required
+
+       -dieSizeByIoHeight {min | max}
+              Specifies whether the maximum I/O  height  or  the  minimum  I/O
+              height should be used for die size calculation.
+
+              Default: min
+
+              Data_type: enum, optional
+
+       -flip {f | s | n}
+              Specifies the orientation of the bottom row in the core area.
+
+              * f: Specifies that the first row flips from the bottom up.
+
+              * n: Specifies no row flipping.
+
+              * s: Specifies that the second row flips from the bottom up.
+
+              floorPlan -b {0 0 2000 2000 200 200 1800 1800 400 400 1600 1600}
+              -flip f
+
+              floorPlan -b {0 0 2000 2000 200 200 1800 1800 400 400 1600 1600}
+              -flip s
+
+              floorPlan -b {0 0 2000 2000 200 200 1800 1800 400 400 1600 1600}
+              -flip n
+
+              Default: <f>
+
+              Data_type: enum, optional
+
+       -fplanOrigin {center | llcorner}
+              Specifies  whether  the origin of the floorplan should be at the
+              center or at the lower left corner.
+
+              Default: llcorner (lower left corner)
+
+              Data_type: enum, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each floorplan parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man floorplan
+
+       -keepShape <util>
+              Specifies the target utilization after resize.
+
+              Data_type: float, required
+
+       -noResize
+              Checks  if  there is a need to do floorplan if everything is the
+              same.
+
+              Data_type: bool, optional
+
+       -noSnapToGrid
+              Specifies that the core box (or die box) boundary  will  not  be
+              snapped  to the nearest metal pitch even if the if the specified
+              die/ core box size is not an integer multiple  of  the  smallest
+              metal  pitch. This prevents the input floorplan boxes from being
+              changed.
+
+              Data_type: bool, optional
+
+       -overlapSameSiteRow
+              Specifies that same-site rows can overlap with one another. Sin-
+              gle height rows must not overlap. Only double or multiple-height
+              rows can overlap, and in sections that are  multiple  of  single
+              height  any other overlap section size will cause the rows to be
+              ignored.
+
+              Example: floorPlan -s {1000 1000 300 300 300 300}  -overlapSame-
+              SiteRow
+
+              Before:
+
+              After:
+
+              Data_type: bool, optional
+
+       -r {<aspectRatio >[<rowDensity> [<Left Bottom Right Top>]]}
+              Specifies  the chip's core dimensions as the ratio of the height
+              divided by the width. If a value of 1.0 is used, a  square  chip
+              is defined. A value of 2.0 will define a
+
+              rectangular  chip  with height dimension that is twice the width
+              dimension.
+
+              * <aspectRatio>: Specifies the aspect ratio value.
+
+              * rowDensity: Specifies a row density value.
+
+                rowDensity = (std area + block/macro area) / core area
+
+              * <Left>: Specifies the margin from the outside edge of the core
+                box to the left.
+
+              * Bottom: Specifies the margin from the outside edge of the core
+                box to the bottom.
+
+              * Right: Specifies the margin from the outside edge of the  core
+                box to the right.
+
+              * Top:  Specifies  the  margin from the outside edge of the core
+                box to the top.
+
+                The following command creates floorplan by specifying the core
+                dimensions aspect ratio of  1.0,row  density  of  0.5,and  the
+                spacing between core edge to each io box edge of 300.
+
+                floorPlan  -site  tsm3site -r {1.0 0.5 300 300 300 300} -core-
+                MarginsBy io
+
+              Data_type: list, required
+
+       -s {<W H Left Bottom Right Top>}
+              Specifies the core size and the spacing, in micrometers, between
+              the core edge, which is the margin between the outside  edge  of
+              the core (head) box.
+
+              * W: Specifies the core box's width value.
+
+              * H: Specifies the core box's height value.
+
+              * Left:  Specifies  the margin from the outside edge of the core
+                box to the left.
+
+              * Bottom: Specifies the margin from the outside edge of the core
+                box to the bottom.
+
+              * Right: Specifies the margin from the outside edge of the  core
+                box to the right.
+
+              * Top:  Specifies  the  margin from the outside edge of the core
+                box to the top.
+
+                The following command creates floorplan by specifying  a  core
+                size of 1000 x 1000, and the spacing between core edge to each
+                die edge of 300.
+
+                floorPlan -site tsm3site -s {1000 1000 300 300 300 300} -core-
+                MarginsBy die
+
+              Data_type: list, required
+
+       -site <name>
+              Specifies a core row site.
+
+              Data_type: (site), optional
+
+       -siteOnly <name>
+              Creates rows only for the specified site.
+
+              Data_type: (site), optional
+
+       -su {<aspectRatio> [<stdCellDensity> [<Left Bottom Right Top>]]}
+              Determines the core and module sizes by standard cell density.
+
+              * <aspectRatio>: Specifies the aspect ratio value.
+
+              * <stdCellDensity>: Specifies a standard cell density value.
+
+                stdCellDensity =  std cell area/(core area - block/macro area)
+
+              * Left:  Specifies  the margin from the outside edge of the core
+                box to the left.
+
+              * Bottom: Specifies the margin from the outside edge of the core
+                box to the bottom.
+
+              * Right: Specifies the margin from the outside edge of the  core
+                box to the right.
+
+              * Top:  Specifies  the  margin from the outside edge of the core
+                box to the top.
+
+                The following command creates floorplan by specifying the core
+                dimensions  aspect  ratio  of  1.0,standard  cell  density  of
+                0.5,and  the  spacing between core edge to each io box edge of
+                300.
+
+                floorPlan -su {1.0 0.5 300 300 300 300}
+
+              Data_type: list, required
+
+Examples
+              * The following command creates a new floorplan  containing  all
+                the sites in the original floorplan
+
+                floorPlan -s {...}
+
+              * The  following  command  automatically  shrinks or expands the
+                block-level floorplan boundary, proportionally, in the X and Y
+                directions, trying to meet the specified target core  utiliza-
+                tion 75.
+
+                floorPlan -keepShape 75
+
+Related Information
+              * add_tracks
+
+              * checkFPlan
+
+              * floorPlan
+
+              * getFPlanMode
+
+              * loadFPlan
+
+              * initCoreRow
+
+              * saveFPlan
+
+              * Specify Floorplan form in the Innovus Menu Reference.
+
+              * Floorplanning the Design chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025           floorPlan(25.10)

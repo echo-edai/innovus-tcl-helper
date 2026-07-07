@@ -1,0 +1,429 @@
+{
+  "command": "report_power",
+  "is_cmd": true,
+  "summary": "生成功耗分析报告",
+  "description": "该命令用于生成设计的功耗分析报告。它可以报告总功耗、泄漏功耗、开关功耗等，并支持按层次结构、实例、单元类型、时钟域等进行筛选和分组。报告可以输出到文件或控制台，并支持多种格式和单位。此外，它还提供高级功能，如时钟门控效率分析、寄存器门控效率分析、功耗密度图生成以及热分析相关的功耗映射文件生成。",
+  "usage": "report_power [-help] [-block <string>] [-cap] [-cap_unit {F mF uf nF pF fF}] [-cell <string>] [-cell_list_file <string>] [-cell_type <string>] [-clock_domain <string>] [-clock_gating_efficiency] [-clock_network <string>] [-cluster_gating_efficiency] [-comb_seq_power] [-compress <integer>] [-count_seq_elements_in_clock_network] [-die_instance_name <string>] [-distribute] [-exclude_cells <string>] [-exclude_cells_file <string>] [-exclude_instances <string>] [-exclude_instances_file <string>] [-float_precision <float>] [-format <string>] [-group_type <string>] [-hierarchical_instances <string>] [-hierarchy <string>] [-include_group_instance_count] [-inst_list_file <string>] [-instances <string>] [-leakage] [-net] [-no_wrap] [-nworst <string>] [-o <string>] [-outfile <string>] [-output <string>] [-pg_net <string>] [-pg_pin] [-power_db_directory <string>] [-power_density_tiles <string>] [-power_density_tiles_row_col <string>] [-power_density_tiles_size <string>] [-power_domain <string>] [-power_unit <string>] [-print_memory_power] [-register_gating_efficiency] [-report_prefix <string>] [-sort <string>] [-stat] [-thermal_conductivity_inputs <string>] [-thermal_leakage_temp <string>] [-thermal_leakage_temperature_scale_table <string>] [-thermal_leakage_temperature_scale_table_file <string>] [-thermal_material_file <string>] [-thermal_power_map_SI_unit <string>] [-thermal_power_map_bottom_layer <string>] [-thermal_power_map_densitytable_tile <string>] [-thermal_power_map_file <string>] [-thermal_power_map_format <string>] [-thermal_power_map_format_version <string>] [-thermal_power_map_header_include_file <string>] [-thermal_power_map_powertable_tile <string>] [-thermal_power_map_tile <string>] [-thermal_power_map_top_layer <string>] [-threshold <string>] [-threshold_voltage_group <string>] [-time_based_report] [-time_unit <string>] [-toggle_rate] [-use_geometry_cell_size <string>] [-view <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-block",
+      "description": "为指定模块创建功耗报告",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cap",
+      "description": "报告网络电容和引脚电容",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cap_unit",
+      "description": "电容单位。默认值：pF (皮法拉)",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要报告的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_list_file",
+      "description": "包含要报告的单元列表的文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_type",
+      "description": "指定功耗报告中包含的单元类型。默认值：all",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_domain",
+      "description": "指定功耗报告中的时钟域",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_gating_efficiency",
+      "description": "生成包含所有时钟门控实例以及设计中不同层次结构的时钟门控效率(CGE)的报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock_network",
+      "description": "报告时钟网络的功耗，包括生成时钟的功耗。默认值：all",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cluster_gating_efficiency",
+      "description": "指定在RGE报告中生成集群效率报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-comb_seq_power",
+      "description": "指定生成一个报告，给出给定层次结构所有模块的组合逻辑功耗与时序逻辑功耗的比率",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-compress",
+      "description": "压缩功耗报告生成",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-count_seq_elements_in_clock_network",
+      "description": "在时钟功耗中包含时序元件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-die_instance_name",
+      "description": "指定芯片名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-distribute",
+      "description": "创建分布式功耗分析设置",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_cells",
+      "description": "排除指定的单元列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_cells_file",
+      "description": "包含要排除的单元列表的文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_instances",
+      "description": "排除指定的实例列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_instances_file",
+      "description": "包含要排除的实例列表的文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-float_precision",
+      "description": "浮点数精度控制",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-format",
+      "description": "指定静态功耗报告所需的报告摘要类型。有效值：{simple | detailed}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-group_type",
+      "description": "基于用户定义单元组的功耗摘要",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hierarchical_instances",
+      "description": "指定报告指定层次实例/模块的所有功耗内容",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-hierarchy",
+      "description": "指定功耗报告中包含的层次级别",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_group_instance_count",
+      "description": "在分组功耗部分报告每个类别的实例数量",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst_list_file",
+      "description": "包含要报告的实例列表的文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instances",
+      "description": "指定功耗报告中包含的实例",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leakage",
+      "description": "仅报告设计的泄漏功耗",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "报告网络开关功耗，以及设计中每个网络的负载电容、翻转率和开关值",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_wrap",
+      "description": "不对长行进行换行",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nworst",
+      "description": "报告具有最高网络开关功耗的网络数量",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-o",
+      "description": "指定保存功耗报告的功耗分析输出目录的名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outfile",
+      "description": "指定写入功耗消耗信息顶层摘要的报告文件的名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-output",
+      "description": "输出目录",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pg_net",
+      "description": "报告连接到指定电源网络列表的每个实例消耗的功耗。默认值：all",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pg_pin",
+      "description": "在功耗报告中包含电源引脚名称",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-power_db_directory",
+      "description": "功耗数据库目录路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_density_tiles",
+      "description": "功耗密度瓦片数量",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_density_tiles_row_col",
+      "description": "在X/Y维度上划分指定区域的瓦片数量",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_density_tiles_size",
+      "description": "用于划分指定区域的瓦片大小",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_domain",
+      "description": "要报告的电源域列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_unit",
+      "description": "功耗数值单位",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-print_memory_power",
+      "description": "将内存功耗作为单独类别打印",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-register_gating_efficiency",
+      "description": "生成包含所有时序单元实例以及设计中不同层次结构的寄存器门控效率(RGE)和数据感知门控效率(DAGE)的报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-report_prefix",
+      "description": "为写入功耗消耗信息顶层摘要的报告指定前缀",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sort",
+      "description": "按内部功耗、开关功耗、泄漏功耗或总功耗对基于实例的功耗消耗数据进行排序。默认值：total",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stat",
+      "description": "报告网络统计信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-thermal_conductivity_inputs",
+      "description": "指定包含各层热导率值的文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_leakage_temp",
+      "description": "定义用于计算功耗映射文件泄漏功耗的温度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_leakage_temperature_scale_table",
+      "description": "定义每个温度点上的全局泄漏功耗缩放因子",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_leakage_temperature_scale_table_file",
+      "description": "定义每个温度点上基于库/单元/实例的泄漏功耗缩放因子",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_material_file",
+      "description": "指定一个文件，允许用户设置层厚度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_SI_unit",
+      "description": "对热导率使用SI单位",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_bottom_layer",
+      "description": "报告低于此层的零金属密度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_densitytable_tile",
+      "description": "定义X和Y方向上的金属密度表瓦片数量。默认使用10*10",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_file",
+      "description": "在输出目录中生成指定名称的功耗映射文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_format",
+      "description": "以简单或堆栈格式生成基于瓦片的功耗映射文件，以执行精确的热分析",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_format_version",
+      "description": "功耗映射文件中用于不同格式的版本标签",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_header_include_file",
+      "description": "指定一个文件，用于在功耗映射文件头中添加额外行",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_powertable_tile",
+      "description": "定义X和Y方向上的功耗表瓦片数量。默认使用10*10",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_tile",
+      "description": "定义X和Y方向上的瓦片数量。默认使用10*10",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-thermal_power_map_top_layer",
+      "description": "报告高于此层的零金属密度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-threshold",
+      "description": "过滤掉总功耗消耗小于指定值的实例。默认值：0",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-threshold_voltage_group",
+      "description": "在功耗报告中按电压阈值组报告泄漏功耗。默认值：all",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-time_based_report",
+      "description": "写出详细的VCD分析报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-time_unit",
+      "description": "时间单位",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-toggle_rate",
+      "description": "指定将基于实例的活动性转储到输出文件。如果多个时钟到达该实例，则使用最快的时钟作为参考",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_geometry_cell_size",
+      "description": "指定使用几何形状或布局作为sclp PGV单元大小",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "为指定的视图执行功耗分析。默认值：使用Tempus中的当前视图",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

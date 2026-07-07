@@ -1,0 +1,244 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoClone(25.10)                                                ecoClone(25.10)
+
+Name
+       ecoClone  -  Clones combinational logic if logic does not have any user
+       constraints like don't size/touch and so on
+
+Syntax
+       ecoClone
+
+       [-help]
+
+       [-allow_sequential]
+
+       [-auto]
+
+       [-balance <num>]
+
+       [-cells <list_of_cells>]
+
+       [-delete_buffer_trees]
+
+       [-dont_legalize]
+
+       [-dont_resize]
+
+        [-force]
+
+       [-from <pin names>]
+
+       [-instances <instance names>]
+
+       [-locs <list_of_locations>]
+
+       [-loop <number>]
+
+       [-max_levels <integer>]
+
+       [-max_num_loads <integer>]
+
+       [-min_num_loads <integer>]
+
+       [-nets <list_of_nets>]
+
+       [-numClones <number>]
+
+       [-preview]
+
+       [-radius <number>]
+
+       [-same_hier_only]
+
+       [-terms <list_of_term_lists>]
+
+       [-to <pin names>]
+
+       [-verbose]
+
+       Clones combinational logic if logic does not have any user  constraints
+       like  don't size/touch and so on. This command is used when you want to
+       clone combinational logic as manual ECO. It does not work  for  sequen-
+       tial logic like flops. The -from and -to parameters are used to specify
+       the 'from' and 'to' pins for cloning.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each ecoClone parameter. For a  detailed  descrip-
+              tion  of the command and all of its parameters, use the man com-
+              mand:  man ecoClone
+
+       -allow_sequential
+              Used with -auto to try cloning at the sequential gates too.
+
+       -auto  Applies cloning and buffering automatically. The software  iden-
+              tifies  and  clones  combinational  logic based on critical end-
+              points distance-based clustering.
+
+       -balance <number>
+              When specified, forces the number of loads on each clone  to  be
+              within the specified number percentage (<num %>).
+
+              The default balance is 10%.
+
+       -cells <list_of_cells>
+              Specifies the list of cells to use for the clones.
+
+              Note:
+
+                     * If this parameter is not specified, the clones have the
+                       same cell as the original gate.
+
+                     * If  only  one  cell  is  specified in the list, all the
+                       clones are created with that cell.
+
+                     * If the -locs and -terms parameters are  not  specified,
+                       you can only specify one cell in that list.
+
+                     * If  the  -locs  and/or -terms parameters are specified,
+                       you can also specify numClones cells, which is one cell
+                       for each clone.
+
+                     * It is not possible to specify a new cell for the origi-
+                       nal gate, so the original gate is not resized.
+
+       -delete_buffer_trees
+              When specified, the software attempts  to  delete  buffer  trees
+              driven by instances to clone.
+
+              Note:  The  deletion  of  buffer  trees with user constraints is
+              skipped.
+
+       -dont_legalize
+              When specified, the software may leave  cloned  instances  over-
+              lapped with the original ones.
+
+              This means the software will not try to legalize instances. This
+              means  that if space is available, it will place legally, other-
+              wise it will leave cloned instances overlapped with the original
+              ones.
+
+       -dont_resize
+              Specifies that neither the original nor  the  new  (cloned)  in-
+              stances should be resized.
+
+       -force When  specified, forces instance cloning, even if it worsens QoR
+              or causes illegal placement.
+
+       -from <pin names>
+              Specifies 'from' pins. You can specify a single pin or a list of
+              pins.
+
+       -instances <instance names>
+              Specifies the instances to be cloned. You can specify  a  single
+              instance or a tcl list of instances to be cloned.
+
+       -locs <list_of_locations>
+              Specifies  the  location  of  each clone. This parameter is used
+              along with the -numClones  parameter.  When  this  parameter  is
+              specified, a location should be specified for each clone, so the
+              length  should  be  numClones. The length can be numClones+1, in
+              which case, the first location is used for  the  original  gate.
+              When  the  locations  are specified, the sink partitions are as-
+              signed to the closest clone.
+
+       -loop <number>
+              Repeat cloning at most <number> times, as far as  new  instances
+              are  being  created.  The  original and new instances within the
+              min/max number of loads range are valid targets at  each  itera-
+              tion.
+
+              Default: 0 (means no limit)
+
+       -max_levels <integer>
+              Specifies the level of instances that the software needs to tra-
+              verse  for  cloning.  Zero  value  means the software will clone
+              everything till the origin of logic.
+
+              Default: 0 (meaning infinite)
+
+       -max_num_loads <integer>
+              Specifies that cloning should be skipped for  instances  driving
+              more than the specified number of loads.
+
+              Default: 50000
+
+       -min_num_loads <integer>
+              Specifies that cloning should be skipped for instances with less
+              than or equal to the specified number of loads.
+
+              Note:  The -min_num_loads and -numClones parameters are mutually
+              exclusive.
+
+       -nets <list_of_nets>
+              Specifies the nets to be cloned. You can specify a single net or
+              a tcl list of nets to be cloned.
+
+              Note: The -nets and -instances parameters  are  mutually  exclu-
+              sive. Wildcards are allowed for this parameter.
+
+       -numClones <number>
+              Specifies the number of clones to create. The default value is 0
+              and in that case, it is computed from the -min_num_loads parame-
+              ter.
+
+              Note:  The -min_num_loads and -numClones parameters are mutually
+              exclusive.
+
+              Default: 0
+
+       -preview
+              When specified, provides a preview of what would be done,  while
+              leaving the netlist untouched. This means that the software will
+              report  instances  that will be cloned and the changes that will
+              be applied to the netlist without actually changing the netlist.
+
+       -radius <number>
+              Specifies that the clones should be placed within  a  radius  of
+              the specified number of rows from their preferred location based
+              on  the original instance location and the center of mass of the
+              new set of loads.
+
+              Default: 10
+
+       -same_hier_only
+              Specifies that only those loads will be considered that  are  in
+              the same hierarchy as the driver.
+
+       -terms <list_of_term_lists>
+              Specifies  the  partitions,  so it is a list of term lists. This
+              parameter is used along with the -numClones parameter.
+
+              When this parameter is specified, there should be one  partition
+              for  each  clone,  so  the length should be numClones. The terms
+              that are not in any partition are assigned to the partition dri-
+              ven by the original gate. The  length  can  be  numClones+1,  in
+              which case the first partition is for the original gate. In that
+              case, all the sinks should be in a partition.
+
+       -to <pin names>
+              Specifies  'to'  pins. You can specify a single pin or a list of
+              pins.
+
+       -verbose
+              When  specified,  verbose  messages  are  displayed  during  the
+              cloning of instances.
+
+Example
+       The  following  command will clone logic till $to pins with more then 6
+       loads, while forciby deleting the buffer tree:
+
+       ecoClone -to $to -verbose  -min_num_loads 6 -delete_buffer_trees -force
+
+Related Information
+              * ecoCloneFlop
+
+              * setOptMode
+
+              * setDesignMode
+
+              * The following chapter in the Innovus User Guide
+
+                * Optimizing Timing
+
+                           Fri Apr 04 01:25:37 2025            ecoClone(25.10)

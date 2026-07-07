@@ -1,0 +1,51 @@
+{
+  "command": "read_design_stack_config",
+  "is_cmd": true,
+  "summary": "读取并加载3D-IC堆叠配置文件，用于定义芯片的垂直结构和连接关系。",
+  "description": "此命令用于加载描述3D-IC（三维集成电路）顶层结构的堆叠配置文件（*.xml）。它让Innovus工具理解芯片的垂直堆叠关系，包括各芯片的位置、朝向以及接触层的映射关系。该命令可以在init_design命令之前或之后使用。如果在init_design之前使用，除了将堆叠信息加载到内存中，它还会在init_lef_file和init_verilog变量未设置的情况下，自动修补3DIC顶层单元的虚拟技术LEF和Verilog网表。如果在init_design之后使用，此时顶层设计（网表、技术LEF）已加载但缺少XML文件，此命令可补充堆叠信息，使Innovus能正确进行GUI显示和接触层映射。当顶层网表缺失时，此命令可帮助生成一个虚拟网表（仅包含顶层，引脚悬空），以便通过iHDB加载3D-IC设计，并内部调用addInst来添加其他芯片实例。",
+  "usage": "read_design_stack_config [-help] [-avoid_floorplan_change] [-chipName <NameOfChip>] [-manufacturing_grid <grid>] [-power_config_file <PowerConnectionFile>] [-topNetlist <VerilogFileName>] [-xml <StackedDieFileName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出read_design_stack_config命令各参数的简要描述和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-avoid_floorplan_change",
+      "description": "指定此选项时，将不会创建布局规划和芯片实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-chipName",
+      "description": "指定当前芯片被实例化时所使用的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-manufacturing_grid",
+      "description": "指定制造网格。但如果制造网格已由技术LEF（TLEF）设置，则此命令不会更新制造网格并会打印错误信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_config_file",
+      "description": "指定电源连接配置文件的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-topNetlist",
+      "description": "指定顶层网表Verilog文件的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-xml",
+      "description": "指定堆叠芯片描述文件（XML格式）的文件名。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

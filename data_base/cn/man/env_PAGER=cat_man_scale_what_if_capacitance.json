@@ -1,0 +1,87 @@
+{
+  "command": "scale_what_if_capacitance",
+  "is_cmd": true,
+  "summary": "缩放单元本征电容值以确定可在区域中添加多少额外电容来降低动态IR压降",
+  "description": "此命令用于缩放单元的本征电容值，以评估在特定区域（全局、指定区域、特定单元或实例）内可以添加多少额外的电容，从而帮助降低动态IR压降。它支持对内部栅电容、负载电容和电源网格电容进行缩放，并可以指定在特定金属层或所有层上操作。通过`-add`参数，可以将提供的电容值视为要添加的绝对值，而非默认的缩放因子。",
+  "usage": "scale_what_if_capacitance [-help] -reset | {{-global | -region <x1 y1 x2 y2> | -cell <cell_name> | -instance <inst_name> | -file <filename>} [-instrinsic_cap <value>] [-loading_cap <value>] [-grid_cap <value>] [-add] [-layer <name>] [-net <net_name | all>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令及其参数的简要描述和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "重置所有先前通过此命令进行的设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-global",
+      "description": "对整个设计应用指定的电容缩放。必须与`-region`二选一。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-region",
+      "description": "在指定的矩形区域（坐标x1 y1 x2 y2）内应用电容缩放。坐标默认单位为数据库单位。必须与`-global`二选一。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "对指定名称的单元（cell）应用电容缩放。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance",
+      "description": "对指定名称的实例（instance）应用电容缩放。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-file",
+      "description": "指定一个文件，其中包含使用相同缩放因子的实例和单元列表。文件格式为：CELL <cellname> 或 INSTANCE <instancename>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-intrinsic_cap",
+      "description": "将实例的内部栅电容缩放到指定的缩放因子。默认缩放值为1。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-loading_cap",
+      "description": "将实例的负载电容缩放到指定的缩放因子。默认缩放值为1。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-grid_cap",
+      "description": "将设计的电源网格电容缩放到指定的缩放因子。默认缩放值为1。此参数需与`-global`或`-region`配合使用，不支持与`-cell`或`-instance`一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add",
+      "description": "指定在电源网格的特定层和区域上添加电容（法拉）。当使用此参数时，`-intrinsic_cap`、`-grid_cap`和`-loading_cap`提供的值将被视为要添加的绝对值，而非默认的缩放因子。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layer",
+      "description": "指定在其上进行电容缩放的LEF层名称。可以多次使用该命令来缩放多个层。使用`all`参数可缩放所有层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "对指定名称的线网（net）应用电容缩放。使用`all`参数可将缩放值同时应用于所有线网。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createPhysicalPin(25.10)                              createPhysicalPin(25.10)
+
+Name
+       createPhysicalPin  -  Adds a new physical pin-shape to a top-level term
+       (DEF PIN)
+
+Syntax
+        createPhysicalPin
+
+       [-help]
+
+       <pinName>[-allowOutsideBoundary]
+
+       [-net <netName>]
+
+       [-samePort]
+
+       {{ -layer <layerName> {-rect {<x1 y1 x2 y2>} | -polygon {<x1 y1  x2  y2
+       ... xn yn>}}}}
+
+       Adds  a  new  physical pin-shape to a top-level term (DEF PIN). You can
+       use this command to add more PG (power/ground) pin-shapes to an  exist-
+       ing  PG term. It will also create a new PG term if there is not already
+       a PG term.
+
+       Note: It can add shapes to top-level signal terms, but this is not rec-
+       ommended.  Multiple shapes for a signal term may  cause  flow  problems
+       (the router will not connect the different pin shapes, etc.) and should
+       only  be  done  with expert knowledge of the flow implications. It will
+       not create a new signal term (You must use ECO commands to  add  a  new
+       signal term).
+
+Parameters
+       -allowOutsideBoundary
+              Do  not  check whether the specified rectangle is inside the de-
+              sign boundary.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each createPhysicalPin parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createPhysicalPin
+
+       -layer <layerName>
+              Specifies the LEF (or OA) layer name, or the routing layer index
+              value.  For  example,  1  for  first routing layer, 2 for second
+              routing layer.
+
+              Data_type: string, optional
+
+       -net <netName>
+              Specifies the name of the net.  This is ignored if  a  top-level
+              term named pinName already exists.
+
+              Data_type: string, optional
+
+       <pinName>
+              Specifies the name of the top-level term (DEF PIN) to add shapes
+              to.  If it does not exist, then -net <netName> is used to find a
+              top-level term instead. If <netName> does  not  already  have  a
+              top-level  term, and it is a PG net, then a new term named <pin-
+              Name> will be created for <netName>.
+
+              Data_type: string, required
+
+       -polygon {<x1 y1 x2 y2 ... xn yn>}
+              Specifies the coordinates of each vertex of the shape.
+
+              Data_type: (point)+, optional
+
+       -rect {<x1 y1 x2 y2>}
+              Specifies the coordinates of the rectangular shape.
+
+              * x1 Specifies the lower-left x coordinate, in microns,  of  the
+                physical pin.
+
+              * <y1>:  Specifies  the  lower-left y coordinate, in microns, of
+                the physical pin.
+
+              * <x2>: Specifies the upper-right x coordinate, in  microns,  of
+                the physical pin.
+
+              * <y2>:  Specifies  the upper-right y coordinate, in microns, of
+                the physical pin.
+
+              Data_type: rect, optional
+
+       -samePort
+              Specifies that the physical pin shapes  will  be  added  to  the
+              first  DEF  PORT.  If  this parameter is not specified, each pin
+              shape is created on a separate DEF port. Normally each PG  shape
+              should be on a separate port so each one is connected separately
+              to the PG mesh at the next level up.
+
+              Data_type: bool, optional
+
+Examples
+              * The  following  command  adds a physical pin-shape to the top-
+                level term named VSS (e.g. DEF PIN named VSS).
+
+                createPhysicalPin VSS -layer Metal2 -rect {7 3 17 23}
+
+Related Information
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025   createPhysicalPin(25.10)

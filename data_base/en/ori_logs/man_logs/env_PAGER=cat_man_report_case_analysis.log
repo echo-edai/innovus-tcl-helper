@@ -1,0 +1,218 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_case_analysis(25.10)                        report_case_analysis(25.10)
+
+Name
+       report_case_analysis  - Generates a User Case Analysis table, which re-
+       ports ports and pin that have a set_case_analysis constraint
+
+Syntax
+        report_case_analysis
+
+       [-all]
+
+       [-nosplit]
+
+       [-dir]
+
+       [-view <view_name>]
+
+       [-propagated]
+
+       [-verbose]
+
+       [<pins_and_ports_list>]
+
+       [{> | >>}<filename> | -tcl_list]
+
+       Generates a User Case Analysis table, which reports ports and pin  that
+       have  a set_case_analysis constraint. These ports and pins are constant
+       only for timing analysis. You can optionally generate a Logic  Constant
+       Value table, which reports ports and pins whose constant status is part
+       of  the design. Information from this table includes ports or pins with
+       set_logic constraints (set_logic_zero and set_logic_one),  netlist  ex-
+       plicit constants, and output pins with constant output functions.
+
+Parameters
+       {> | >>} <filename>
+              When  specified  with >, writes the report to the specified file
+              name. If the file already exists, the software overwrites it.
+
+              When specified with >>, writes the report to the specified  file
+              name.  If the file already exists, the software concatenates the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the  list.
+              The  <filename> and -tcl_list parameters are mutually exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default: Report is displayed on standard  output  without  being
+              saved.
+
+       -all   Specifies  that  the  Logic  Constant Value table report pins or
+              ports with set_logic constants, constants in  the  netlist,  and
+              output pins with a constant function. These output pins are from
+              library cells or netlist modules.
+
+       -nosplit
+              Specifies  that  reports  with long names will not be split into
+              multiple lines.
+
+              Note:  The   -nosplit   parameter   works   if   set_table_style
+              -no_frame_fix_width command is specified.
+
+       -dir   Specifies  that  the  report include the direction of the pin or
+              port, which is reported as input,  output,  or  inout  (internal
+              pins may not have constant constraints).
+
+       <pins_and_ports_list>
+              Generates  a report only for the pins and ports in the specified
+              list.
+
+              Default: Generates a report for all pins and ports  in  the  de-
+              sign.
+
+       -propagated
+              Generates  a  report  that includes all constant pins, including
+              pins with propagated constants. When specified, the report  col-
+              umn header for constant values changes to Constant value.
+
+              Default:  Generates  a  report  that  includes  only pins with a
+              set_case_analysis constraint. (The column header  for  the  con-
+              stant values is labeled as User case analysis value.)
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -verbose
+              Generates a report in which each pin is  listed  on  a  separate
+              line  with a cause. If the pin is a propagated constant, a table
+              is included that reports a chain of constants from  an  original
+              cause to the reported pin.
+
+              Default: All pins are reported in a table.
+
+       -view <view_name>
+              Generates  a User Case Analysis table for the specified analysis
+              view only. To specify this parameter, the software  must  be  in
+              multi-mode multi-corner (MMMC) analysis mode.
+
+              Default:  When  in MMMC analysis mode, generates a table for all
+              active analysis views
+
+Examples
+              * The following command uses the -dir option, which shows that 1
+                is on the input part of the timing_const_on_Z/Z pin:
+
+                report_case_analysis -dir
+
+                The following report is generated:
+
+       -------------------------------------------------
+
+        Pin name        Dir               User case
+
+                                        Analysis value
+
+        ------------------------------------------------
+
+        gscanmode       input            0
+
+        gscanenable     input            0
+
+        ------------------------------------------------
+
+              * The following command generates a  report  that  includes  all
+                constant  pins, including pins with propagated constants. When
+                specified,  the  report  column  header  for  constant  values
+                changes to Constant value.
+
+                report_case_analysis -propagated
+
+                The following report is generated:
+
+       -------------------------------------------
+
+        Pin name                   Constant value
+
+        -------------------------------------------
+
+        clockandlatch/U8/TE        0
+
+        clockandlatch_dup1/U8/TE   1
+
+        clockandlatch_dup2/U8/TE   1
+
+        clockandlatch_dup3/U8/TE   0
+
+        ------------------------------------------
+
+              * The  following command generates a report in which each pin is
+                listed on a separate line. The report  includes  all  constant
+                pins,  including  pins  with  propagated  constants.  The  pin
+                clockandlatch_dup3/U8/TE   is   reported    because    of    a
+                set_case_analysis 0 assertion on pin gscanenable.
+
+                report_case_analysis     -propagated     -verbose    clockand-
+                latch_dup3/U8/TE
+
+                The following report is generated:
+
+       ------------------------------------------------
+
+        Pin name                         Constant value
+
+        ------------------------------------------------
+
+        gscanenable                     0
+
+        FE_OFC306_gscanenable/I         0
+
+        FE_OFC306_gscanenable/ZN        1
+
+        FE_OFC307_gscanenable/I         1
+
+        FE_OFC307_gscanenable/ZN        0
+
+        FE_OFC315_gscanenable/I         0
+
+        FE_OFC315_gscanenable/Z         0
+
+        coreclockandlatch_dup3/U8/TE    0
+
+        ------------------------------------------------
+
+              * The following report shows that there are no set_case_analysis
+                constraints but there are logical constraints:
+
+                report_case_analysis -propagated -verbose core_q_reg_1_/SI
+
+       ---------------------------------------------
+
+        Pin name               Logic constant value
+
+        ---------------------------------------------
+
+        ram256x10/TEST1        0
+
+        ram1024x32/TEST1       0
+
+        core_q_reg_2_/SI       1
+
+        core_q_reg_11_/SI      0
+
+        core_q_reg_1_/SI       1
+
+        ---------------------------------------------
+
+Related Information
+              * set_case_analysis
+
+                           Fri Apr 04 01:25:37 2025report_case_analysis(25.10)

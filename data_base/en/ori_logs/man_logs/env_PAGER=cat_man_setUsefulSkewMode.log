@@ -1,0 +1,169 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setUsefulSkewMode(25.10)                              setUsefulSkewMode(25.10)
+
+Name
+       setUsefulSkewMode - Sets global parameters for the skewClock command
+
+Syntax
+       setUsefulSkewMode
+
+       [-help]
+
+       [-opt_skew_apply_delay_limits_to_full_flow {true|false}]
+
+       [-opt_skew_delay_pre_cts {true|false}]
+
+       [-opt_skew_macro_only {true | false}]
+
+       [-opt_skew_max_allowed_delay <delay>]
+
+       [-opt_skew_min_allowed_delay <delay>]
+
+       [-opt_skew_no_boundary {true | false}]
+
+       [-reset]
+
+       Sets global parameters for the skewClock command.
+
+       Use  the  getUsefulSkewMode  to return the current settings for the se-
+       tUsefulSkewMode command.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each setUsefulSkewMode parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man setUsefulSkewMode
+
+       -opt_skew_apply_delay_limits_to_full_flow {true | false}
+              When  set to true, specifies that the useful skew limit is to be
+              applied to the whole flow. With this setting,  the  Early  Clock
+              Flow  is  modified  so  that  pre-existing tool-generated useful
+              skews count towards the limit imposed by  the  -opt_skew_max_al-
+              lowed_delay  parameter. The tool-generated useful skew comprises
+              any  pin  insertion  delay  (PID)  of  category  useful_skew  or
+              global_skew. PIDs of other categories are not considered.
+
+              By default, this parameter is set to false, which means the pre-
+              existing  skews  are  not considered while calculating the limit
+              imposed by using the -opt_skew_max_allowed_delay parameter.
+
+              Default: false
+
+       -opt_skew_delay_pre_cts {true |false}
+              Specifies that the useful skew feature is allowed to  delay  se-
+              quential elements in preCTS stage, in addition to just advancing
+              them.  This  enables a more aggressive algorithm which is recom-
+              mended when timing closure is gated by optimal skewing.
+
+              Default:true
+
+       -opt_skew_macro_only {true | false}
+              Allows you to limit skewing only for macro cells. When  enabled,
+              regular  sequential  elements  (such  as flip-flops) will not be
+              skewed.
+
+              Default: false
+
+       -opt_skew_max_allowed_delay <delay>
+              Limits the amount of slack (in nanoseconds)  that  the  software
+              can  borrow  from  neighboring flip-flops when performing useful
+              skew operations. The Innovus delay calculation and RC extraction
+              methods might differ from those  of  sign-off  tools,  so  other
+              setup  violations  might  occur if the software borrows too much
+              slack. By having control over slack borrowing, you  can  prevent
+              these  setup  violations. Limiting borrowed skew also limits the
+              clock tree skew to avoid large hold violations.
+
+              Value Range: min=0 max=1000
+
+              Default: 1ns
+
+              Note:
+
+              * This parameter is not honored in the  postCTS  mode  of  skew-
+                Clock.
+
+              * In  the  non-early clock flow, when skewClock is triggered in-
+                side optDesign, and this  parameter  is  set  to  its  default
+                value,  the default value of this parameter will change from 1
+                to become a certain percentage of clock cycle. This is  deter-
+                mined by the software on the basis of internal calculations.
+
+       -opt_skew_min_allowed_delay <delay>
+              Allows  the  tool to skip any skewing that would be smaller than
+              the minimum delay that is set. The purpose is to avoid  creating
+              very  small delay macro models which would not be correctly hon-
+              ored during CTS stage but also to reduce  the  amount  of  macro
+              models generated.
+
+              Value Range: min=0 max=1000
+
+              Default: 0
+
+              Note:
+
+              * This is supported in both standalone skewClock command and for
+                -usefulSkew called within optDesign.
+
+              * Enable  the  -usefulSkew parameter in optDesign by setting se-
+                tOptMode -opt_skew true
+
+       -opt_skew_no_boundary {true |false}
+              Excludes or includes boundary sequential cells  in  addition  to
+              ordinary sequential elements in useful skew calculations.
+
+              Note:  This  parameter  is  applicable  to  preCTS, postCTS, and
+              postRoute useful skew behaviors.
+
+              Default: false
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify only -re-
+              set, the software resets  all  setUsefulSkewMode  parameters  to
+              their  default  values.  If you specify parameters after -reset,
+              the software resets only those parameters to their default  val-
+              ues.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+Examples
+              * The following command resets the -delayPreCts parameter to its
+                default value:
+
+                setUsefulSkewMode -reset -opt_skew_delay_pre_cts
+
+              * The following command resets all setUsefulSkewMode  parameters
+                to their default values:
+
+                setUsefulSkewMode -reset
+
+              * The  following  command  forces the tool to skew at minimum by
+                30ps any elements that can be skewed to improve the setup tim-
+                ing slack:
+
+                setUsefulSkewMode -opt_skew_min_allowed_delay 0.03
+
+                skewClock /optDesign -preCts
+
+              * The following command allows the user to  limit  skewing  only
+                for macro cells:
+
+                setUsefulSkewMode -opt_skew_macro_only true
+
+                skewClock or optDesign -preCts/-postCts
+
+Related Information
+              * getUsefulSkewMode
+
+              * setOptMode
+
+              * skewClock
+
+              * The following topic in the Innovus User Guide
+
+                * Optimizing Timing using Useful Skew
+
+                           Fri Apr 04 01:25:37 2025   setUsefulSkewMode(25.10)

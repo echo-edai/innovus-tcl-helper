@@ -1,0 +1,141 @@
+Usage: update_names [-help] [-append_log] [-design] [-hport] [-inst] [-module]
+                    [-net] [-phys_inst] [-port] [-quiet] [-replace_string <string> ] [-log_file <out_file> ] [-prefix <string> [-name_collision ]] [-suffix <string> [-name_collision ]] [-random [-random_map_dir <out_dir>]] [-change_modules <hinsts_modules> [-local ]] [ -honor_dont_touch ] [[-random ] | [[-vhdl ] [-system_verilog ] [-verilog ] [-nocase ] [-restricted <string>] [-first_restricted <chars>] [-last_restricted <chars>] [-reserved_words <string>] [-replace_string <string>] [-regexp ] [-allowed <chars>] [-map <{from, to} ...>] [-max_length <num_chars>] [-prefix <string>] [-suffix <string>] [-name_collision ]]]
+
+-help                                # Prints out the command usage
+-allowed <chars>                     # Specifies the characters that are
+                                     # allowed in the names. Any characters
+                                     # that are not in the allowed list will be
+                                     # removed in the final name. The minimum
+                                     # specification is 10 characters. To allow
+                                     # all the letters from a to z in capital
+                                     # and lower case letters, you must specify
+                                     # all of them. Use -regexp to allow dash
+                                     # '-' as a character range indicator.
+                                     # (string, optional)
+-append_log                          # Appends the report to <out_file>
+                                     # specified with the -log_file option. If
+                                     # you omit this option, <out_file> is
+                                     # overwritten. You can specify this option
+                                     # only if you have specified the -log_file
+                                     # option. (bool, optional)
+-change_modules <hinsts_modules>     # Only change names inside these modules
+                                     # or modules of the hinsts
+                                     # ((hInst|vCell|topCell)+, optional)
+-design                              # Change the design module name
+                                     # (bool, optional)
+-first_restricted <chars>            # Specifies the characters that cannot be
+                                     # used in the beginning of the name. Those
+                                     # will be removed, including repeated
+                                     # characters. So -first_restricted {_#%$}
+                                     # will change _$abc to just abc.
+                                     # (string, optional)
+-honor_dont_touch                    # Don't rename objects that have the
+                                     # dont_touch attribute set (bool, optional)
+-hport                               # Change hport names on hinsts (but not
+                                     # the top-level design) and matching
+                                     # connected net names. (bool, optional)
+-inst                                # Change instance names. (bool, optional)
+-last_restricted <chars>             # Specifies the characters that cannot be
+                                     # used at the ending of a name. Those will
+                                     # be removed, including repeated chars.
+                                     # (string, optional)
+-local                               # Turn off recursive descent, so changes
+                                     # are local to the module or design
+                                     # (bool, optional)
+-log_file <out_file>                 # Specifies a log file for the output
+                                     # report that shows the old name and the
+                                     # new name for any name changes.
+                                     # (string, optional)
+-map <{from, to} ...>                # Takes a list of string pairs and maps
+                                     # the first string to the second string in
+                                     # each pair. You need to enclose each pair
+                                     # in braces. To be compatible with RTL
+                                     # Compiler usage, double quotes are
+                                     # optionally allowed around the strings.
+                                     # For example, both -map {{"from" "to"}
+                                     # {"AND" "and"}} and -map {{from to} {AND
+                                     # and}} will result in the same output.
+                                     # (string, optional)
+-max_length <num_chars>              # Enforce maximum name length
+                                     # (int, optional)
+-module                              # Change module names except for the
+                                     # design module name (bool, optional)
+-name_collision                      # Only add -prefix or -suffix values if a
+                                     # name change collides with an existing
+                                     # name. (bool, optional)
+-net                                 # Changes Verilog net names except if it
+                                     # connects to a Verilog port in the same
+                                     # module with the same name. (bool, optional)
+-nocase                              # Changes names that collide if the case
+                                     # is ignored. For example, if both net1
+                                     # and Net1 exist, one of them will be
+                                     # changed to resolve the collision by
+                                     # appending a suffix, such as _1 or _2.
+                                     # (bool, optional)
+-phys_inst                           # Change physical inst names (e.g. filler
+                                     # cells) that do not normally appear in
+                                     # the Verilog output (bool, optional)
+-port                                # Change the design port names (but not
+                                     # hinsts) and matching connected net
+                                     # names. (bool, optional)
+-prefix <string>                     # Adds a prefix to the names that are
+                                     # changed. (string, optional)
+-quiet                               # Suppress messages about individual
+                                     # objects being renamed (bool, optional)
+-random                              # All modified names will become random
+                                     # names. (bool, optional)
+-random_map_dir <out_dir>            # A map-file for each random name is
+                                     # written inside <out_dir>.
+                                     # (string, optional)
+-regexp                              # Allows specifying character ranges with
+                                     # a dash '-' in the -allowed option. This
+                                     # is similar to regexp single character
+                                     # matching usage. For example, to allow
+                                     # all alphanumerical characters, along
+                                     # with _ and $ as legal chars, use:
+                                     # -allowed {a-zA-Z0-9_$} (bool, optional)
+-replace_string <string>             # Specifies the replacement string for the
+                                     # reserved words, or -restricted strings.
+                                     # Its default value is '_'.
+                                     # (string, optional)
+-reserved_words <string>             # Specifies a list of words to be avoided
+                                     # (reserved words), like 'begin end'. If a
+                                     # complete name exactly matches one of the
+                                     # reserved words (not just a sub-string of
+                                     # the name), then the name will be
+                                     # changed. (string, optional)
+-restricted <string>                 # Specifies a list of strings that cannot
+                                     # be used inside a name. Each string is
+                                     # replaced with the -replace_string
+                                     # string. For example, -restricted {ab bc}
+                                     # will replace all 'ab' and 'bc' strings
+                                     # inside the names. (string, optional)
+-suffix <string>                     # Adds a suffix to the names that are
+                                     # changed. (string, optional)
+-system_verilog                      # Replaces SystemVerilog reserved words.
+                                     # If a complete name exactly matches one
+                                     # of the reserved words (not just a
+                                     # sub-string of the name), then the name
+                                     # will be changed. (bool, optional)
+-verilog                             # Replaces Verilog reserved words. If a
+                                     # complete name exactly matches with one
+                                     # of the SystemVerilog reserved words (not
+                                     # only a sub-string of the name), then the
+                                     # name will be changed. (bool, optional)
+-vhdl                                # Fixes names to meet VHDL identifier
+                                     # requirements. It replaces VHDL reserved
+                                     # words. If a complete name exactly
+                                     # matches one of the VHDL reserved words
+                                     # (not only a sub-string of the name),
+                                     # then the name will be changed. It also
+                                     # implicitly uses first_restricted
+                                     # _0123456789 to remove any leading _ or
+                                     # digit chars, and last_restricted _ to
+                                     # remove any trailing _ chars, so you
+                                     # cannot use vhdl together with
+                                     # first_restricted or last_restricted.
+                                     # Finally, this option will remove any
+                                     # repeated _ chars in the middle of any
+                                     # name, and replace it with a single _
+                                     # char because VHDL does not allow
+                                     # repeated _ chars. (bool, optional)

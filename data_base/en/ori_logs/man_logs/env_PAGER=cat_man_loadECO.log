@@ -1,0 +1,186 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+loadECO(25.10)                                                  loadECO(25.10)
+
+Name
+       loadECO  -  Reads  a  file  containing  ECO  directives and applies the
+       changes to the current netlist
+
+Syntax
+       loadECO
+
+       [-help]
+
+       [-postMask | -useGACells <GACoreSiteName>]
+
+       [-suffix <suffix>]
+
+       [-verbose]
+
+       <fileName ... >
+
+       Reads a file containing ECO directives and applies the changes  to  the
+       current netlist.
+
+       You can use this command at any time after you import the design.
+
+       This  command  also  performs consistency checks while the ECO commands
+       are applied and after the changes are complete. It also checks for  and
+       observes  power  domains. This command produces results compatible with
+       ecoDefIn, so you will use ecoPlace and ecoRoute  to  complete  the  ECO
+       process.
+
+       The  ECO  directives  do  not  affect  routing, except in the following
+       cases:
+
+              * DELETENET deletes routing attached to a specified deleted net.
+
+              * DELETEINST deletes an instance but leaves the  wires  attached
+                to  the  instance dangling. You can then repair dangling wires
+                with the router after ECO is complete.
+
+       If you want to reroute the entire design, delete routing before running
+       the loadECO command.
+
+       This command supports ECOs for gate array designs through  the  -useGA-
+       Cells and -postMask parameters.
+
+       If  an  error  occurs  when the loadECO command reads the ECO file, the
+       loadECO command stops without reading more commands from the file,  and
+       writes error messages to the innovus.log file.
+
+       Note: The first line of the ECO file you read must be the following:
+
+       FORMATVERSION 2
+
+       For  information  on  the  commands  you can include in the ECO command
+       file, see "ECO Directives," in the Innovus User Guide.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each loadECO.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man loadECO
+
+       <fileName>
+              Specifies the name of the file that contains the ECO directives.
+              You can specify more than one file. File names must be separated
+              by one space.
+
+       -suffix
+              Specifies the suffix this command adds to spare cells created by
+              deleting instances. The default suffix is SPARE.
+
+       -useGACells <GACoreSite>
+              Uses  gate  array  cells when adding or deleting instances. This
+              parameter applies to gate array  designs  only.  If  ADDINST  is
+              specified  in the ECO file, the default behavior for ADDINST ap-
+              plies. If DELETEINST is included in the ECO file,  the  software
+              deletes an instance if the instance master uses the same site as
+              the  specified  <GACoreSite>,  which can be the name of any gate
+              array site defined in the LEF file. If you do not  specify  this
+              parameter, DELETEINST removes the instance from the netlist.
+
+       -postMask
+              When  adding an instance, the new cell will be unplaced. The un-
+              placed cell will map to the spare cell during placement with the
+              ecoPlace -useSpareCells command.
+
+              When the software deletes an instance, it renames  the  instance
+              to  an instance name at the original level of hierarchy, and ap-
+              pends the specified suffix. If you do not  specify  the  -suffix
+              parameter, this parameter appends SPARE.
+
+       -verbose
+              Provides  a report for nets without drivers and the instance in-
+              put pins with no net connections.
+
+Example
+              * The following command reads myfile and runs the  ECO  commands
+                it contains:
+
+                loadECO myfile
+
+              * The loadECO command issues a summary report on completion, for
+                example:
+
+       ***************** Load ECO Summary *****************
+
+       Number of New Nets:                             0
+
+       Number of New Instances:                        0
+
+       Number of New Ports:                            0
+
+       Number of New Assigns:                          0
+
+       Number of New Feedthroughs:                     0
+
+       Number of Changed Connections:                  0
+
+       Number of Changed Instances:                    0
+
+       Number of Deleted Nets:                         0
+
+       Number of Deleted Instances:                    1
+
+       Number of Deleted Ports:                        0
+
+       Number of Deleted Assigns:                      0
+
+       Number of Deleted Feedthroughs:                 0
+
+              * The following ECO summary is the output of the loadECO command
+                with -verbose options:
+
+       ***************** Load ECO Summary *****************
+
+       Number of New Nets:                                0
+
+       Number of New Instances:                           1
+
+       Number of New Ports:                               0
+
+       Number of New Assigns:                             0
+
+       Number of New Feedthroughs:                        0
+
+       Number of Changed Connections:                     0
+
+       Number of Changed Instances:                       0
+
+       Number of Deleted Nets:                            0
+
+       Number of Deleted Instances:                       0
+
+       Number of Deleted Ports:                           0
+
+       Number of Deleted Assigns:                         0
+
+       Number of Deleted Feedthroughs:                    0
+
+       Nets With No Driver:
+
+               n_23
+
+               u_counter_1/cnt[30]
+
+       Number of Nets With No Drivers:                   2
+
+       Input Instance Pins With No Net Connection:
+
+               A of inst newInst
+
+               TE of inst u_counter_2/ECO_reg_iflg_reg
+
+       Number of Input Instance Pins With No Net Connection:   2
+
+Related Information
+              * endECO
+
+              * For  an  example of an ECO file, see "Example ECO File" in the
+                ECO Directives chapter of the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025             loadECO(25.10)

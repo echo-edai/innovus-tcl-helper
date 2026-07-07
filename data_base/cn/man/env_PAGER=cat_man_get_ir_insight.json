@@ -1,0 +1,117 @@
+{
+  "command": "get_ir_insight",
+  "is_cmd": true,
+  "summary": "获取IR压降的详细分析和报告，包括分布、违规分析、影响者分析、预测及ECO支持。",
+  "description": "get_ir_insight命令用于执行以下功能：\n* 根据指定的IR阈值报告IR压降分布和摘要，包括最差实例电压降(WIV)、总实例电压降(TIV)和违规实例电压降数量(NVIV)。\n* 根据指定的违规和影响者限制进行影响者IR影响分析和报告。\n* 支持各种Tempus IR-ECO流程（基于违规或影响者的流程，包含影响者IR影响分析和ECO IR估计）。\n* 对输入的ECO更改进行IR压降预测/估计。\n* 按区域报告IR违规。\n必须在运行analyze_rail命令后指定此命令。该命令需要invs_vi（Innovus Voltus InsightAI Option）许可证。",
+  "usage": "get_ir_insight [-help] -domain <domainname> -domain_threshold <value> [-eco_list <list_of_instances> ] [-eco_mode {violation | aggressor | both}] [-ir_drop_histogram_bin_size <absolute_value_in_volts>] [-ir_drop_histogram_lower_limit <absolute_value_in_volts>] [-ir_drop_histogram_upper_limit <absolute_value_in_volts>] [-mode  summary_only | report_by_region | predict_ir | report_aggressor | eco_report] [-nregion <value>] [-nworst_aggressors <value>] [-nworst_instances <value>] -output_directory <directoryname> [-pdn_model <directoryname>] [-reset_predict] -state_directory <directoryname> [-watch_box <filename>] [-watch_inst <filename>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个get_ir_insight参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-domain",
+      "description": "指定电源域的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-domain_threshold",
+      "description": "指定被分析域的最小允许电压，值为百分比。此参数行为与set_rail_analysis_domain -threshold参数相同。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-eco_list",
+      "description": "为-mode predict_ir指定已更改的实例列表。文件格式为：<原始x>,<原始y>,<原始方向>,<原始单元>,<x>,<y>,<方向>,<单元>,<实例>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-eco_mode",
+      "description": "指定与-mode eco_report参数一起使用的模式，用于生成ECO报告。可能选项：violation（生成违规列表）、aggressor（生成影响者列表）、both（生成包含违规和影响者的报告）。默认：violation。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ir_drop_histogram_bin_size",
+      "description": "控制EIV直方图箱大小，默认值为0.005。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ir_drop_histogram_lower_limit",
+      "description": "指定EIV直方图范围的下限，必须与-mode summary_only一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ir_drop_histogram_upper_limit",
+      "description": "指定EIV直方图范围的上限，必须与-mode summary_only一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mode",
+      "description": "指定命令的操作模式。可能选项：eco_report（生成用于Tempus-ECO流程修复IR压降违规的eco.ird文件）、predict_ir（为-eco_list指定的ECO更改生成IR预测）、report_aggressor（报告用户指定影响者实例的影响）、report_by_region（按区域报告IR压降值）、summary_only（在日志和报告文件中报告IR分布摘要）。默认：summary_only。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nregion",
+      "description": "指定要分析的区域数量，默认：3。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-nworst_aggressors",
+      "description": "指定应为每个违规报告的影响者数量，默认：50。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-nworst_instances",
+      "description": "指定要报告的最差实例数量，默认：5。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-output_directory",
+      "description": "指定输出目录，用于保存洞察（IR压降和EM违规）结果。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-pdn_model",
+      "description": "指定包含灵敏度数据库的rail状态目录。可通过指定set_rail_analysis_mode -create_sensitivity_db true启用灵敏度数据库生成。此参数必须与-mode {report_aggressor | predict_ir}和-eco_mode {aggressor | both}参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset_predict",
+      "description": "指定重置所有先前的ECO更改。如果未指定此参数，则-eco_list中的先前更改将保留用于-mode predict_ir运行。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-state_directory",
+      "description": "指定由动态IR压降分析生成的顶级状态目录。此状态目录包含与电源域相关的所有网络的分析。这是analyze_rail命令结果存储的输出目录（例如，core_25C_dynamic_1）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-watch_box",
+      "description": "指定一个包含区域列表的文件，其中仅报告这些区域内实例的预测。可在文件中写入多个区域。此参数与-mode predict_ir参数一起使用。文件格式：{{x1,y1}{x2,y2}} {{x3,y3}{x4,y4}}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-watch_inst",
+      "description": "指定一个包含要报告预测的实例列表的文件。可在文件中写入多个实例。此参数与-mode predict_ir参数一起使用。文件格式：instance_1 Instance_2。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

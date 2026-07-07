@@ -1,0 +1,185 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+showPtnWireX(25.10)                                        showPtnWireX(25.10)
+
+Name
+       showPtnWireX  -  Displays  and  writes  a file of wires that physically
+       cross over partitions
+
+Syntax
+        showPtnWireX
+
+       [-help]
+
+       [ptnName]
+
+       [-outfile <fileName>]
+
+       [-excludeNet <exNetFileName>]
+
+       [-excludeClock]
+
+       [-excludeTri]
+
+       [-excludeHighFan <nrFan>]
+
+       [-allNets]
+
+       [-delta]
+
+       Displays and writes a file of wires that physically cross  over  parti-
+       tions. You can use this command after routing the design.
+
+       Note: The showPtnWireX command supports designs with nested partitions.
+
+Parameters
+       -allNets
+              Reports  nets  that  cross  partitions  that also connect to the
+              ports of partitions. If this parameter is  not  specified,  only
+              nets that cross the partitions are reported.
+
+              Data_type: bool, optional
+
+       -delta Reports the total segment length of the wires crossing the block
+              in the X and Y directions.
+
+              Data_type: bool, optional
+
+       -excludeClock
+              Excludes clock nets from the wire crossing information.
+
+              Data_type: bool, optional
+
+       -excludeHighFan <nrFan>
+              Excludes nets with fanouts over nrFan from the display.
+
+              Data_type: int, optional
+
+       -excludeNet <exNetFileName>
+              Specifies  the  filename  that contains nets to be excluded from
+              the display.
+
+              Data_type: string, optional
+
+       -excludeTri
+              Excludes all tristate nets from the display.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for each showPtnWireX parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command:
+
+              man showPtnWireX
+
+       -outfile <fileName>
+              Specifies  the name of the output file of wire crossing informa-
+              tion.
+
+              Default: If you do not specify this parameter, the detailed  in-
+              formation  is  output  to  the  ptnName.wireCrossing file, where
+              ptnName is the name of the partition.
+
+              For master clone designs, three output files are created.  These
+              files  can  be used by the insertPtnFeedthrough command for path
+              based feedthrough insertions in master and clone designs.
+
+              For example, when you specify,
+
+              showPtnWireX -outFile abc
+
+              The following files are generated:
+
+              * abc.mc_connected_nets.txt:  For all  nets  connected  to  mas-
+                ter/clone partitions.
+
+              * abc.mc_crossing_nets.txt:  For  all  nets with wires over mas-
+                ter/clone partitions (but not in the above file) and not intra
+                partition nets.
+
+              * abc.non_mc.txt:  For all remaining nets which are not in above
+                files and are not intra partition nets.
+
+              Note: The default output file,  abc.wireCrossing,  is  now  only
+              valid  for  non master/clone designs and has no significance for
+              master and clone designs.
+
+              Note: It is not  recommended  to  use  the  insertPtnFeedthrough
+              -routeBased option for the nets in abc.mc_connected_nets.txt and
+              abc.mc_crossing_nets.txt.
+
+              Data_type: string, optional
+
+       <ptnName>
+              Specifies  the  name  of the partition to show wire crossing. If
+              you choose this option with other options, it must be the  first
+              specified when running this command.
+
+              Default:  If you do not specify this parameter, it will show all
+              partition wire crossings.
+
+              Data_type: string, optional
+
+Example
+       The following command displays  the  routes  crossing  over  partition,
+       sheet17,  and  outputs the detail information into file, sheet17.cross-
+       ing:
+
+       showPtnWireX sheet17 -outfile sheet17.crossing
+
+       The wire crossing report section lists the nets, their wire lengths, in
+       micrometers, and the shape of the wire in relation to the partition.
+
+       For example, the following report segment is  for  a  partition  module
+       named sheet17:
+
+       #########################################################
+
+       # Nets that cross partition module sheet17
+
+       # Box (335 335) (833 567)
+
+       # Format: Net <netName> <wireLength> <shape>
+
+       #########################################################
+
+       Net A 65 I
+
+       Net B 80 L
+
+       Net C 1050 T
+
+       Net D 132 X
+
+       The  first net in the report, A, has a wire length of 65 micrometers in
+       an `I' shape, which indicates that the net crosses the partition on op-
+       posite sides, as follows:
+
+       Net A 65 I
+
+       The second net in the report, B, has a wire length of 80 micrometers in
+       an `L' shape, which indicates that the net crosses the partition on ad-
+       jacent sides, as follows:
+
+       Net B 80 L
+
+       The third net in the report, C, has a wire length of 105 micrometers in
+       an `T' shape, which indicates that the net  crosses  the  partition  on
+       three sides, as follows:
+
+       Net C 105 T
+
+       The  fourth  net in the report, D, has a wire length of 132.30 microme-
+       ters in an `X' shape, which indicates that the net crosses  the  parti-
+       tion on all four sides, as follows:
+
+       Net D 132 X
+
+Related Information
+              * insertPtnFeedthrough
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Generating the Wire Crossing Report
+
+                           Fri Apr 04 01:25:37 2025        showPtnWireX(25.10)

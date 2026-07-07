@@ -1,0 +1,141 @@
+{
+  "command": "assembleDesign",
+  "is_cmd": true,
+  "summary": "将指定的模块数据带回顶层设计以进行芯片组装",
+  "description": "该命令用于将指定的模块数据带回顶层设计以进行芯片组装。顶层设计应将每个模块实例化为一个硬宏，其大小与模块实现时使用的设计尺寸相匹配。命令完成后，结果是一个全芯片设计，其中包含一个或多个模块，这些模块被合并到先前作为硬宏实例化的位置。该命令应在具有完整芯片级版图的目录中运行，适用于自顶向下的层次化流程。它支持完整模式和增量模式两种主要操作模式，并支持Innovus数据库格式和OpenAccess设计。命令会自动处理全局网络连接、颜色问题，并生成摘要报告。",
+  "usage": "assembleDesign [-help] [-dontMergeBlockPGNets] [-keepPGPinGeometry] [-keep_block_halo] [-outFile <fileName>] [-skipNets] { { [-topDir <dirname> [-mmmcFile <mmmcFile>] [-cpfFile <cpfFile>] ] {[-blockDir <dirname> [ [-fplan ]]][-blockData {<defFileName> <netListFileName>} | {-fplan } ] } } | {[-topDesign {<topLib topCell topView>} [-mmmcFile <mmmcFile>] [-cpfFile <cpfFile>] ] {[-block {<blockLib blockCell blockView>} | -blockCell <blockCell> ] [-allTimingBlocks [-exceptBlocks {<list of blocks>}] [-reportOnly ]]}} } [-fplan ] [-keepPinGeometry ] [{-blockData {<defFileName> <netListFileName>} } [-skipCells ] [-skipComponents ] [-skipSpecialNets ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个assembleDesign参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dontMergeBlockPGNets",
+      "description": "如果没有物理连接，则阻止内部PG线网名称与顶层PG线网名称合并。这可以防止自动线网合并，并将模块PG线网与顶层线网隔离。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepPGPinGeometry",
+      "description": "保留分区PG引脚几何形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_block_halo",
+      "description": "指定后，assembleDesign命令将保留模块的布局和布线halo。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outFile",
+      "description": "指定输出文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skipNets",
+      "description": "跳过合并信号布线。它不加载DEF中的NETS部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-topDir",
+      "description": "指定由saveDesign -def创建的顶层设计的路径。此设计目录应包含Verilog网表和DEF文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mmmcFile",
+      "description": "指定用于提供MMMC信息的（芯片级）MMMC文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cpfFile",
+      "description": "指定包含电源意图和时序信息的（芯片级）CPF文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockDir",
+      "description": "指定模块级设计的路径。此目录应由saveDesign -def命令生成。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fplan",
+      "description": "指定仅组装版图数据。指定后，它将分区模块的版图更改带回全芯片级设计。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-blockData",
+      "description": "指定DEF文件名和Verilog网表文件名。如果Verilog网表文件名或DEF文件名与单元或模块名称不同，请使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-topDesign",
+      "description": "指定保存到OpenAccess数据库中的设计的顶层库、单元和视图名称。此参数用于从OpenAccess数据库带回顶层数据时。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block",
+      "description": "指定保存到OpenAccess数据库中的设计的模块级库、单元和视图名称。此参数用于从OpenAccess数据库带回分区模块数据时。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockCell",
+      "description": "指定模块单元的单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-allTimingBlocks",
+      "description": "启用自动检测和组装具有数字内容的模块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exceptBlocks",
+      "description": "指定即使包含数字内容也要从组装中排除的模块名称列表。此选项仅适用于使用-allTimingBlocks的情况。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reportOnly",
+      "description": "启用后，assembleDesign命令仅报告将要组装的模块列表，而不执行实际组装。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepPinGeometry",
+      "description": "指定对于每个分区引脚，在分区引脚顶部放置一个类型为特殊布线的DRCFILL金属。该参数用于分析（RC提取和DRC检查）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipCells",
+      "description": "跳过合并标准单元。它不加载DEF中的标准单元部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipComponents",
+      "description": "跳过合并所有组件。它不加载DEF中的COMPONENT部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipSpecialNets",
+      "description": "跳过合并特殊布线。它不加载DEF中的SPECIALNETS部分。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+define_add_on_module_model(25.10)            define_add_on_module_model(25.10)
+
+Name
+       define_add_on_module_model  -  Allows you to define the add_on types or
+       supplemental models that can be loaded additionally  with  an  existing
+       model or a design
+
+Syntax
+       define_add_on_module_model
+
+       [-help]
+
+       [-commit_callback <string>]
+
+       -type <string >
+
+       {[-create_callback <string>]
+
+       [-set_callback <string>]
+
+       [-restore_callback <string>]
+
+       [-write_context_callback <string>]}
+
+       Allows  you  to define the add_on types or supplemental models that can
+       be loaded additionally with an existing model or a design. These  user-
+       defined add_on types can be used with the create_module_model, set_mod-
+       ule_model,  restore_module_model,  and  write_module_model_context com-
+       mands. You must provide a TCL file containing callback  procedures  for
+       each  applicable  Integrated  Hierarchical Database (iHDB) flow command
+       that will be run when this command is called.
+
+       In the TCL file, the TCL callback procedures must  be  defined  in  the
+       following format and must include the specified arguments:
+
+       <proc <callBackTCLProcName> {dir cell tag args} {...}>
+
+       Where,
+
+       dir,  cell, and tag represent values that will be automatically derived
+       by the iHDB capability.
+
+       args can be set using  set_module_model  -default_commit_options  {<op-
+       tions>} -type <add_ons_type>
+
+Parameters
+       -commit_callback <string>
+              Specifies  the  user-defined TCL procedure that is executed when
+              the commit_module_model command  is  called  with  this  add_ons
+              type.
+
+              Data_type: string, optional
+
+       -create_callback <string>
+              Specifies  the  user-defined TCL procedure that is executed when
+              the create_module_model command  is  called  with  this  add_ons
+              type.
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each define_add_on_module_model parameter. For a
+              detailed description of the command and all of  its  parameters,
+              use the man command:
+
+              man define_add_on_module_model
+
+       -restore_callback <string>
+              Specifies  the  user-defined TCL procedure that is executed when
+              the restore_module_model command is  called  with  this  add_ons
+              type.
+
+              Data_type: string, optional
+
+       -set_callback <string>
+              Specifies  the  user-defined TCL procedure that is executed when
+              the set_module_model command is called with this add_ons type.
+
+              Data_type: string, optional
+
+       -type <string >
+              Specifies the newly added add_ons model type name.
+
+              Data_type: string, required
+
+              -write_context_callback <string>" Specifies the user-defined TCL
+              procedure that is executed when  the  write_module_model_context
+              command is called with this add_ons type.
+
+              Data_type: string, optional
+
+Example
+              *
+
+                Following  is an example of defining the "attrs" add_ons model
+                type. First this 'attrs' attribute must be  defined  with  the
+                define_add_on_module_model  command  with its associated call-
+                back TCL procedures:
+
+                source dump_attrs.tcl
+
+                set_module_model  -default_commit_options   {-keepPinGeometry}
+                -type pnr
+
+                define_add_on_module_model    -type   attrs   -create_callback
+                ihdb_create_attrs -set_callback ihdb_read_attrs
+
+                Where dump_attrs.tcl contains:
+
+                proc ihdb_create_attrs {dir cell tag args} {    ;#This  format
+                is fixed
+
+                  write_block_attrs $dir/$cell/$tag/attrs/db.attrs
+
+                }
+
+                proc  ihdb_read_attrs {dir cell tag args} {  ;# This format is
+                fixed
+
+                  read_block_attrs $dir/$cell/$tag/attrs/db.attrs
+
+                }
+
+                ...
+
+              * Block Level. The following command creates user defined  attrs
+                type of module model that has the merge_attribute tag.
+
+                create_module_model -type attrs -tag merge_attribute
+
+                create_module_model -tag merge_attribute
+
+              * Top-Level.  The  following commands configures and commits the
+                merge_attribute module model using the attrs add-on associated
+                with the pnr model type:
+
+                set_module_model -cell  dcm  -tag  merge_attribute  -type  pnr
+                -add_ons {attrs}
+
+                set_module_model  -cell  lsu  -tag  merge_attribute  -type pnr
+                -add_ons {attrs}
+
+                commit_module_model
+
+Related Information
+              * check_module_model
+
+              * commit_module_model
+
+              * create_module_model
+
+              * report_module_model
+
+              * restore_module_model
+
+              * savePartition
+
+              * update_module_model
+
+              * write_module_model_context
+
+              * Hierarchical and Prototyping Flow chapter in the Innovus  User
+                Guide
+
+                *
+
+                  Integrated Hierarchical Database Flow
+
+                           Fri Apr 04 01:25:37de2f0i2n5e_add_on_module_model(25.10)

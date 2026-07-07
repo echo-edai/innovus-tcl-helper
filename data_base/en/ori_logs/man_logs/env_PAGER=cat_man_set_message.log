@@ -1,0 +1,148 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_message(25.10)                                          set_message(25.10)
+
+Name
+       set_message  -  Specifies  to change the message severity levels, INFO,
+       WARNING or ERROR, at the beginning of the message
+
+Syntax
+       set_message
+
+       -help
+
+       -id <list_of_msg_ids>
+
+       [-severity {warn error info reset} |  -limit  <number>  |  -no_limit  |
+       -suppress  |  -unsuppress  |  -on_error  {msg_only  exit  stop_script |
+       -stop_script_limit <limitNumber>}]
+
+       Specifies to change the message severity levels, INFO, WARNING  or  ER-
+       ROR,  at  the beginning of the message. This command allows you to con-
+       trol the messages that are displayed for a particular design. For exam-
+       ple, if there are some warnings that are critical for the  design,  you
+       can  change the message severity to ERROR. Similarly, if there are mes-
+       sages that you want to ignore, you can change the message  severity  to
+       INFO.
+
+       An  example  of  an  ERROR  message  is: **ERROR: (GLOBAL-105): Unknown
+       global 'timing_enable_socv_analysis' specified.
+
+       All  ERROR  and  WARN  message  begin  with  a  header  like:  **ERROR:
+       (<msg_id>):**WARN: (<msg_id>):
+
+       The  <msg_id>  format  is:  <prefix>-<num> ("GLOBAL" is the prefix, and
+       "105" is the num in the example above).
+
+       You can use the msg_id to change how that specific message  is  handled
+       using the options below.
+
+Parameters
+       <-help>
+              Outputs  a  brief description that includes type and default in-
+              formation for each set_message parameter.
+
+       -id <list_of_msg_ids>
+              Specifies the list of message IDs that require a change. If  you
+              do  not  specify  any  message IDs, the change is applied to all
+              message IDs.
+
+              Data_type: string, optional
+
+       -limit <number>
+              Sets the message limit to <number> per every public command. The
+              default limit is 20, so any specific message will be written out
+              20 times for one command and then further output of that message
+              will be disabled (along with an additional  message  saying  the
+              message limit has been exceeded). If the number is set to 0, the
+              message  will  be completely suppressed for the next public com-
+              mand that triggers the message. You can unsuppress  the  message
+              by setting the number greater than 0.
+
+              Data_type: int, optional
+
+       -no_limit
+              Removes any existing limit on the selected messages.
+
+              Note:  Suppressed  messages  remain suppressed until the -unsup-
+              press option is applied.
+
+              Data_type: bool, optional
+
+       -on_error {msg_only exit stop_script}
+              Specifies an extra action for error messages (not  for  warn  or
+              info  messages).  If no message is specified, the action applies
+              to all error messages.
+
+              * msg_only: Prints error message only, and the command  proceeds
+                as it normally would. This is the default.
+
+              * exit: Exits immediately and returns to Linux.
+
+              * stop_script: Waits for the current Tcl command to finish, then
+                stops executing any Tcl script, and returns to the interactive
+                Tcl prompt.
+
+              Note, if a message severity is changed from error to either warn
+              or info, it will no longer trigger this extra action.
+
+              Data_type: enum, optional
+
+       -severity {warn error info reset}
+              Specifies the new severity level for the message being modified.
+              The  reset argument sets the message severity back to its origi-
+              nal state.
+
+              Normal INFO messages do not have a message ID, but if a warn  or
+              error message severity is changed to info, the INFO message will
+              include  the  message ID in the message header. For example, the
+              INFO header might look like:
+
+              INFO: (MSG-123): ...
+
+              Data_type: enum, optional
+
+       -stop_script_limit <limitNumber>
+              Sets the message limit per every public command.
+
+              If you set -stop_script_limit 10, at the 10th time  the  message
+              being  triggered for one command, the tool will wait for current
+              Tcl command to finish, then stop executing any Tcl  script,  and
+              return to the interactive Tcl prompt.
+
+              The default value is -1, which is unlimited.
+
+              Data_type: int, optional
+
+       -suppress
+              Suppresses the message completely. There is no warning about ex-
+              ceeding message limits given.
+
+              Data_type: bool, optional
+
+       -unsuppress
+              Unsuppresses the message.
+
+              Data_type: bool, optional
+
+Examples
+              * The  following  command  changes  two  messages  from ERROR to
+                WARN:
+
+                set_message -id {IMPLF-81 ENCLF-95} -severity warn
+
+              * The following command returns all messages to  their  original
+                severity:
+
+                set_message -severity reset
+
+              * The  following  command  resets  the  specified message to its
+                original severity:
+
+                set_message -id IMPLF-81 -severity reset
+
+Related Information
+              * setMessageLimit command
+
+              * get_message command
+
+                           Fri Apr 04 01:25:37 2025         set_message(25.10)

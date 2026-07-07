@@ -1,0 +1,699 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setFlipChipMode(25.10)                                  setFlipChipMode(25.10)
+
+Name
+       setFlipChipMode - Loads data for placePIO and fcroute commands
+
+Syntax
+       setFlipChipMode
+
+       [-help]
+
+       [-reset]
+
+       [-allow_layer_change {true | false}]
+
+       [-auto_pairing_file <fileName>]
+
+       [-bump_use_oct_shape {true | false}]
+
+       [-check_bump_access_directions {true|false}]
+
+       [-compaction {true | false}]
+
+       [-connectPowerCellToBump {true | false}]
+
+       [-constraintFile <fileName>]
+
+       [-drop_via_on_all_geometries {true | false}]
+
+       [-drop_via_on_power_mesh <layerName>]
+
+       [-extraConfig <fileName>]
+
+       [-finger_direction {N|E|S|W}]
+
+       [-finger_max_width <real_value>]
+
+       [-finger_min_width <real_value>]
+
+       [-finger_target_mesh_layer_range {<topLayer> [<bottomLayer>]}]
+
+       [-honor_bump_connect_target_constraint {true | false}]
+
+       [-ignore_pad_type_check {true | false}]
+
+       [-layerChangeBotLayer <layerName>]
+
+       [-layerChangeTopLayer <layerName>]
+
+       [-lower_layer_prevent_45_routing {true | false}]
+
+        [-lower_layer_route_width <value>]
+
+       [-merge_nearby_pin {true | false}]
+
+       [-multi_pad_routing_style {default|serial|star}]
+
+       [-multipleConnection {multiPadsToBump | multiBumpsToPad | default}]
+
+       [-pg_mesh_direction {default | horizontal | vertical}]
+
+       [-pg_mesh_main_width <real_value>]
+
+       [-pg_mesh_max_width <real_value>]
+
+       [-pg_mesh_width <value>]
+
+       [-prevent_diagonal_wire_access_bumps {true | false}]
+
+       [-prevent_via_under_bump {true | false}]
+
+       [-prevent_via_under_bump_extension <real_value>]
+
+       [-route_bump_cluster {true|false}]
+
+        [-route_pg_style {none | finger | mesh}]
+
+       [-route_style {manhattan | 45DegreeRoute}]
+
+       [-routeWidth <real_value>]
+
+       [-via_abut_bump {true | false}]
+
+       [-wire_to_pad_honor_min_spacing <float_value>]
+
+       Loads  data  for  placePIO and fcroute commands. Both, placePIO -optIOs
+       -assignBump -noRandomPlacement and fcroute commands use the  same  data
+       for I/O optimization, bump assignment, and flip chip routing.
+
+       You need to first execute setFlipChipMode command followed by placePIO,
+       and fcroute commands.
+
+       Use  the getFlipChipMode command to return the current settings for the
+       setFlipChipMode command.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each setFlipChipMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setFlipChipMode
+
+       -reset Resets  parameters to their default values. The -reset parameter
+              must be the first parameter specified. If you specify -reset  by
+              itself,  the  software  resets all setFlipChipMode parameters to
+              their default values. Any values that do not already  match  the
+              default value and are reset will be reported.
+
+              If you specify parameters after -reset, the software resets only
+              those parameters to their default values.
+
+       -allow_layer_change {true | false}
+              Turns  on  the  layer change feature, when set to true. Only the
+              PIO mode supports this feature.  Both  Manhattan  and  45-degree
+              routing support this constraint.
+
+              Different setting for routing layers will have the different be-
+              haviors  as  shown in the following examples. Assume the top RDL
+              is TOP_RDL and the second top RDL is 2nd_RDL:
+
+              * Use TOP_RDL as much as possible and 2nd_RDL is used only  when
+                a single layer cannot finish routing in case of cross-over:
+
+                -layerChangeBotLayer TOP_RDL -layerChangeTopLayer TOP_RDL
+
+              * Freely  change  layers so that the tool will use the layer re-
+                sources by its intelligence
+
+                -layerChangeBotLayer 2nd_RDL -layerChangeTopLayer TOP_RDL
+
+              Default :  false
+
+       -auto_pairing_file <fileName>
+              Makes fcroute dump out auto-pairing  information.  This  enables
+              you  to  check  whether or not fcroute auto pairing and optimize
+              pairing result based on the port number property.
+
+              Depending on the design, the format of the output file can be as
+              follows:
+
+              * If the connection between the bump and the instance is  known,
+                the format is:
+
+                addBumpConnectTargetConstraint  -bump bumpName -instName inst-
+                Name
+
+              * If the connection between the bump and  the  instance  pin  is
+                known, the format is:
+
+                addBumpConnectTargetConstraint  -bump bumpName -instName inst-
+                Name -pinName pinName
+
+              * If the connection between the bump and the pin port of the in-
+                stance is known, the format is:
+
+                addBumpConnectTargetConstraint -bump bumpName -instName  inst-
+                Name -pinName pinName -portNum portNumber
+
+              See Examples section for an example.
+
+       -bump_use_oct_shape {true | false}
+              Controls how fcroute handles special bumps with multiple shapes:
+
+              * When this parameter is set to true, the tool uses an octagonal
+                shape to mimic the special bump.
+
+              * When this parameter is set to false, the tool:
+
+                * Uses  the bump's exact LEF description if the bump is simple
+                  enough.
+
+                * May replace the bump shape with an octagonal  shape  if  the
+                  bump  is  not simple according to the tool's internal crite-
+                  rion.
+
+              Note: When the special bump is replaced with an octagonal shape,
+              the routing quality may be improved, but there may be DRC viola-
+              tions.
+
+              Default :  false
+
+       -check_bump_access_directions {true | false}
+              Specifies whether fcroute should check the access  direction  of
+              bump cells. Use this parameter if you have an octagonal bump pad
+              structure  with a pre-drawing wire for outside access, where the
+              pre-drawing wire is a pin in the bump LEF. When  -check_bump_ac-
+              cess_directions  is  set to true, fcroute checks the bump LEF to
+              detect the bump access direction before routing.  Then,  fcroute
+              connects  the  pad to the bump pre-routed wire based on this di-
+              rection. If the pre-routed wire is a 45-degree wire, the manhat-
+              tan routing style is not supported.
+
+              Note that one bump cell can have multiple access directions.
+
+              Note: The -check_bump_access_directions parameter is  applicable
+              only  for  fcroute  -type  signal.  If  this  option is used for
+              fcroute -type power, fcroute will ignore the setting and display
+              a warning.
+
+              Default: false
+
+       -compaction {true | false}
+              Turns on compaction routing, when set to true.
+
+              In the flip  chip  post-route  stage,  the  compaction  function
+              pushes  the  routing  as  close as possible to bumps in order to
+              leave more routing resource for subsequent routing  steps,  such
+              as P/G bump connections or general power routing.
+
+              Note:  This  feature  cannot  be used with resistance driven and
+              diffpair routings because the compaction action may  change  the
+              wire  length  and routing pattern. This feature does not support
+              two-layer RDL routing.
+
+              Default :  false
+
+       -connectPowerCellToBump {true | false}
+              Connects all power bumps to the I/O cell pin. It does  not  con-
+              nect to a power or ground stripe or ring.
+
+              When  used with the fcroute -type signal parameter, you can con-
+              nect power bumps to I/O power pads. To make this type of connec-
+              tion, you need the following information:
+
+              * The Verilog netlist must contain the I/O power pad, for  exam-
+                ple:
+
+                VDDCELL VDD_INST (.PAD());
+
+              * The  LEF  macro  pin must contain the USE POWER statement, for
+                example:
+
+                MACRO VDDCELL
+
+                PIN PAD
+
+                USE POWER;
+
+              To improve the quality of routing in situations where there  may
+              be  many  power bumps in the design, you can pair power bumps to
+              power cells by using this  parameter  in  conjunction  with  the
+              fcroute -constraintFile parameter. For example:
+
+              setFlipChipMode   -connectPowerCellToBump  true  -constraintFile
+              pair.const
+
+              where pair.const specifies the following information:
+
+              ### Syntax: <net> <pad> [<pad2>] <bump> [<bump2>] ###
+
+              PAIR
+
+              VDD IOPADS_INST/esd Bump_90_9_8
+
+              END PAIR
+
+              Default: false
+
+       -constraintFile <fileName>
+              Specifies the file that contains constraints for flip chip rout-
+              ing. For more information, see "Useful Constraints for Flip Chip
+              Routing" in the Flip Chip Methodologies chapter of  the  Innovus
+              User Guide.
+
+       -drop_via_on_all_geometries {true | false}
+              Drops vias on all defined geometries. Consider the pin shape be-
+              low.
+
+              For  the given shape, the routing result will be as follows when
+              -drop_via_on_all_geometries is set to true:
+
+              Default: false
+
+       -drop_via_on_power_mesh <layerName>
+              Specifies the number or name of the metal layer that can be used
+              by the tool for dropping a via on a PG mesh.  fcroute  automati-
+              cally drops a via on the PG mesh on the specified metal layer if
+              the PG RDL route crosses the PG mesh. For example:
+
+              setFlipChipMode -drop_via_on_power_mesh M6
+
+              setFlipChipMode -connectPowerCellToBump true
+
+              fcroute -type signal -designStyle pio
+
+              The  via is dropped only if there is no DRC violation due to the
+              via drop.
+
+              Note: The -drop_via_on_power_mesh parameter does not affect  the
+              routing results from PG bumps to pad.
+
+              Default: ""
+
+       -extraConfig <fileName>
+              Specifies  the name of an extra configuration file that uses op-
+              tions defined in sroute.
+
+       -finger_direction {N|E|S|W}
+              Specifies the main expansion direction for  PG  finger  routing.
+              The default direction is North.
+
+              Default: N
+
+       -finger_max_width <real_value>
+              Specifies  the maximum routing width for one wire segment of the
+              PG finger. By default, there is no constraint on the max  width;
+              fcroute  uses  MAXWIDTH in LEF. If this constraint is not speci-
+              fied in LEF, fcroute uses the maximum width possible.
+
+              If there is a conflict between the user-specified constraint and
+              the LEF rule, the LEF rule is used as the maximum width.
+
+              Default: 0
+
+       -finger_min_width <real_value>
+              Specifies the minimum routing width for one wire segment of  the
+              PG  finger. The default is the RDL minimum width defined in LEF.
+              If there is a conflict between the user-specified constraint and
+              the LEF rule, the LEF rule is used as the minimum width.
+
+              Default: 0
+
+       -finger_target_mesh_layer_range {<topLayer> [<bottomLayer>]}
+              Specifies the target mesh layer range of  the  power  mesh  that
+              will be connected for finger routing. If not specified, no layer
+              of the power mesh will be connected.
+
+              Default: ""
+
+       -honor_bump_connect_target_constraint {true | false}
+              Enables port numbering routing, when set to true.
+
+              Default: false
+
+       -ignore_pad_type_check {true | false}
+              Specifies  whether  or  not CLASS PAD cells are supported in the
+              flip chip flow. When set to true, this option equals  with  fol-
+              lowing settings:
+
+              * set flipchip_allow_class_pad true
+
+              * PADANYTYPE in the fcroute constraint file
+
+              * srouteGrouteCheckPadClass  FALSE in the fcroute extra configu-
+                ration file.
+
+              Default: true
+
+       -layerChangeBotLayer <layerName>
+              Specifies the bottom-most metal layer that the software can  use
+              when  routing  bumps.  You can specify the layer either by layer
+              number or layer name.
+
+       -layerChangeTopLayer <layerName>
+              Specifies the top-most metal layer that  the  software  can  use
+              when  routing  bumps.  You can specify the layer either by layer
+              number or layer name.
+
+       -lower_layer_prevent_45_routing {true | false}
+              Prevents 45-degree routing for lower layer, when set to true.
+
+              Default:  false
+
+       -lower_layer_route_width <value>
+              Specifies a different width value for the lower  routing  layer.
+              The unit is in microns.
+
+              Default = 0, Min = 0.000000, Max = 10000000000.000000
+
+       -merge_nearby_pin {true | false}
+              Merges  pins  that are close but not touching. If this parameter
+              is set to true and there are multiple non-overlapping pin shapes
+              sharing the same net, the tool will merge these pins and drop  a
+              via  automatically  on  these  pin shapes at the same time while
+              connecting the bumps to pins. A single shape  in  the  specified
+              layer that contains an array of vias is transferred to flip chip
+              route  by VIAGEN. The array of vias is the largest via that fits
+              on each of the multiple physical pin shapes.
+
+              * The merged pins must have the same net on the same layer.
+
+              * The distance between these merged pins  should  be  small  and
+                there should be no other objects between the pins.
+
+              * The pin shapes should be aligned with each other.
+
+              Default:  false
+
+       -multi_pad_routing_style {default | serial | star}
+              Specifies the routing style for multi-pad routing:
+
+              * default  -  The  flip chip router (fcroute) connects a bump to
+                multiple pads with multiple different wires as shown below:
+
+              * serial - fcroute connects a bump first to one pad and then  to
+                the other pad, as shown below, provided that the distance from
+                the  bump  to either pad is more than the distance between the
+                two pads:
+
+                If the distance from the bump to any pad is shorter  than  the
+                distance  between the two pads, fcroute reverts to the default
+                behavior of multiple wire connection even if  -multi_pad_rout-
+                ing_style is set to serial.
+
+                This mode supports only two-pad routing.
+
+              * star  -  fcroute  connects a bump first to the closest pad. It
+                then finds a minimum cost point on its routing path  and  con-
+                nects this point to another pad as shown below:
+
+                The  minimum cost point could be anywhere on the first routing
+                path, including its beginning and end.
+
+              Both the serial and star modes are useful for saving routing re-
+              sources in complex designs as they  share  the  routing  between
+              pads.  However,  the  serial mode supports only two-pad routing.
+              Use the star mode if you want to route more than two pads.
+
+              Note: The setFlipChipMode -multi_pad_routing_style works only if
+              the setFlipChipMode -multipleConnection multiPadsToBump is spec-
+              ified. For example, to use star mode,  you  should  specify  the
+              following commands before running fcroute:
+
+              setFlipChipMode -multipleConnection multiPadsToBump
+
+              setFlipChipMode -multi_pad_routing_style star
+
+              Default: default
+
+       -multipleConnection {multiPadsToBump | multiBumpsToPad | default}
+              Specifies routing connections between multiple pads and bumps.
+
+              * multiPadsToBump  -  Enables  routing from multiple pads to one
+                bump in parallel. This parameter is supported by both, fcroute
+                AIO and PIO routing styles.
+
+              * multiBumpsToPad - Enables routing from multiple bumps  to  one
+                pad  in parallel. This parameter is supported by both, fcroute
+                AIO and PIO routing styles.
+
+              * default -Enables routing from one bump to one pad in parallel.
+                This means there is no multiple connection.
+
+              Default: default
+
+       -pg_mesh_direction {default | horizontal | vertical}
+              Specifies the main routing direction of the  PG  mesh.  You  can
+              specify one of the following values for this option:
+
+              * default  - Uses the preferred routing direction defined in the
+                Tech LEF.
+
+              * horizontal - Uses the horizontal routing direction.
+
+              * vertical - Uses the vertical routing direction.
+
+              The  -pg_mesh_direction  parameter   can   be   used   only   if
+              -route_pg_style mesh is specified.
+
+              Default: default
+
+       -pg_mesh_main_width <real_value>
+              Specifies the main width of the PG mesh. This option can be used
+              only if -route_pg_style mesh is specified.
+
+              Default: 0;  Min: 0; Max: 10000000000
+
+       -pg_mesh_max_width <real_value>
+              Specifies  the  maximum  width of the routing wire in a PG mesh.
+              This option can be used only if -route_pg_style mesh  is  speci-
+              fied.  By  default, there is no constraint on the maximum width.
+              fcroute uses MAXWIDTH in the Tech LEF. If there  is  a  conflict
+              between  the  value  you specify and the LEF rule, the tool uses
+              the LEF rule as the maximum width.
+
+              Default: 0;  Min: 0; Max: 10000000000
+
+       -pg_mesh_width <value>
+              Specifies the exact routing width of the PG  mesh.  This  option
+              can  be  used only if -route_pg_style mesh is specified. If only
+              one value is specified with -pg_mesh_width, the value is applic-
+              able for the width of both horizontal and vertical wires. If two
+              values are specified, the first  value  is  applicable  for  the
+              width of horizontal wires and the second value is applicable for
+              the width of vertical wires.
+
+              Default: ""
+
+       -prevent_diagonal_wire_access_bumps {true | false}
+              Specifies  whether  or  not diagonal wires can be used to access
+              bumps.
+
+              Default: false
+
+       -prevent_via_under_bump {true | false}
+              Specifies that vias are generated next to the  bump  instead  of
+              directly on the bump. If you do not specify this parameter, vias
+              generated connect directly to the bump.
+
+              This  option  is  available  for  both  signal  and  power bumps
+              (fcroute -type signal and fcroute -type power, respectively.)
+
+              Default: false
+
+       -prevent_via_under_bump_extension <real_value>
+              Specifies a spacing value to define an extension area around the
+              bump in which vias should not be dropped. The spacing value must
+              be greater than or equal to 0.
+
+              This parameter can be used only  if  -prevent_via_under_bump  is
+              set to true.
+
+              Check the Examples section to see how this parameter can be used
+              in  conjunction with prevent_via_under_bump to control the spac-
+              ing around bumps when vias are dropped.
+
+              Default: 0
+
+       -route_bump_cluster {true|false}
+              Routes bump clusters to IO and probing pads.
+
+              Default: false
+
+       -route_pg_style {none | finger | mesh}
+              Specifies the routing pattern for fcroute -type power routing:
+
+              * none: For normal PG routing
+
+              * finger: For PG finger routing style,  in  which  you  need  to
+                specify  the  routing direction. This option must be used with
+                fcroute -area option.
+
+              * mesh: For mesh-style PG routing on  the  redistribution  layer
+                (RDL).  This  option  is  used  to increase PG density. If you
+                specify PG mesh routing, you must specify the  main  width  of
+                the PG mesh by using the -pg_mesh_main_width parameter.
+
+              Default: none
+
+       -route_style {manhattan | 45DegreeRoute}
+              Determines  the  type of routing, either manhattan or 45DegreeR-
+              oute.
+
+              Default: 45DegreeRoute
+
+              Note:  45DegreeRoute does not work in conjunction with the  fol-
+              lowing fcroute parameter:
+
+              * -doubleBendRoute
+
+       -routeWidth <real_value>
+              Specifies  the routing width. Wires are connected to bumps using
+              the specified route width not wider than the I/O pad pin.
+
+              Default: 0
+
+       -via_abut_bump {true | false}
+              Specifies that via should abut the bump only if routing  can  be
+              done successfully.
+
+              * With -via_abut_bump set to true
+
+              * Without -via_abut_bump set to true
+
+                In this case, via is dropped inside bump as shown above.
+
+                This is the default setting.
+
+              Default: false
+
+       -wire_to_pad_honor_min_spacing <float_value>
+              Specifies the minimum spacing between the bump/pad and a wire.
+
+              Default: 0
+
+Examples
+              * The  following  examples  illustrate  how the -prevent_via_un-
+                der_bump and -prevent_via_under_bump_extension parameters  can
+                be  used  to  control  the  spacing around bumps when vias are
+                dropped:
+
+                * In the example below, no vias are dropped directly under the
+                  bump as -prevent_via_under_bump is set to true:
+
+                  > setFlipChipMode -prevent_via_under_bump true
+
+                  > fcroute -type signal -designStyle pio
+
+                  Additionally, if -prevent_via_under_bump_extension is set to
+                  0, the same result is achieved.
+
+                * In the example below, no vias are dropped in  the  extension
+                  area defined around the bump:
+
+                  > setFlipChipMode -prevent_via_under_bump true
+
+                  > setFlipChipMode -prevent_via_under_bump_extension 1.2
+
+                  > fcroute -type signal -designStyle pio
+
+                * In  the  example  below, vias are dropped directly under the
+                  power bumps as -prevent_via_under_bump is set to false:
+
+                  > setFlipChipMode -prevent_via_under_bump false
+
+                  > fcroute -type power
+
+                * In the example below, no vias are dropped in  the  extension
+                  area defined around the power bumps:
+
+                  > setFlipChipMode -prevent_via_under_bump true
+
+                  > setFlipChipMode -prevent_via_under_bump_extension 1.2
+
+                  > fcroute -type power
+
+              * The  following  command specifies the flip chip constraints in
+                the constraint file CFG/res.constr  enabling  routing  from  a
+                single  bump  to single power cell in parallel, having a route
+                width of 10 micrometers on the metal layer 8:
+
+                setFlipChipMode -connectPowerCellToBump true \
+
+                -constraintFile CFG/res.constr \
+
+                -extraConfig CFG/ex.cfg \
+
+                -layerChangeBotLayer 8 \
+
+                -layerChangeTopLayer 8 \
+
+                -multipleConnection default \
+
+                -routeWidth 10
+
+              * Consider the connection displayed below.
+
+                For  this  connection,  the  setFlipChipMode   -auto_pair_file
+                pair.rpt command generates the following report:
+
+                In pair.rpt file:
+
+                addBumpConnectTargetConstraint -bump bump1 -instName DDR -pin-
+                Name vdd -portNum 1
+
+                 addBumpConnectTargetConstraint   -bump  bump2  -instName  DDR
+                -pinName vss -portNum 4
+
+                 addBumpConnectTargetConstraint  -bump  bump3  -instName   DDR
+                -pinName vdd -portNum 4
+
+                 addBumpConnectTargetConstraint   -bump  bump4  -instName  DDR
+                -pinName pad -portNum 1
+
+                 addBumpConnectTargetConstraint  -bump  bump5  -instName   DDR
+                -pinName pad -portNum 1
+
+                 addBumpConnectTargetConstraint   -bump  bump6  -instName  IO1
+                -pinName pad -portNum 1
+
+                 addBumpConnectTargetConstraint  -bump  bump7  -instName   IO2
+                -pinName pad -portNum 2
+
+              *
+
+                In  the  example  below, fcroute checks the bump LEF to detect
+                the bump access directions and then connects the pads  to  the
+                bump pre-routed wires based on the detected directions:
+
+                > setFlipChipMode -check_bump_access_directions true
+
+                > fcroute -type signal -designStyle pio
+
+Related Information
+              * addBumpConnectTargetConstraint
+
+              * create_bump_cluster
+
+              * getFlipChipMode
+
+              * fcroute
+
+              * placePIO
+
+              * sroute
+
+              * verifyFlipChipRoutingConstraints
+
+              * Flip Chip Methodologies chapter in the User Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Flip Chip
+
+                * TSV
+
+                           Fri Apr 04 01:25:37 2025     setFlipChipMode(25.10)

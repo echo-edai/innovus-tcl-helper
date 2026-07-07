@@ -1,0 +1,408 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_power_rail_results(25.10)              report_power_rail_results(25.10)
+
+Name
+       report_power_rail_results   -   Generates   RLRP,   region-based,   and
+       rail/power/capacitance reports
+
+Syntax
+        report_power_rail_results
+
+       [-help]
+
+       [-append]
+
+       [-enable_filter_summary]
+
+       [-filename <file>]
+
+       [-filter_max <max_value>]
+
+       [-filter_min <min_value>]
+
+       [-ignore_limit_bound]
+
+       [-layers  {All,<layer_names>} ]
+
+       [-limit <N>]
+
+       [-nets {all | all_pwr | all_gnd | <net_names>}]
+
+       [-plot <plot_type>]
+
+       [-range_max <max_value>]
+
+       [-range_min <min_value>]
+
+       [-region <x1><y1><x2><y2>]
+
+       [-rlrp_inst {<instance_name>}]
+
+       Generates RLRP, region-based, and rail/power/capacitance reports.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each report_power_rail_results parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man report_power_rail_results.
+
+       -append
+              Appends instance reports to the current report file.
+
+       -enable_filter_summary
+              Displays  a  summary of the filtered data in the histogram given
+              in the Summary tab of the Result Browser form.
+
+       -filename <file>
+              Specifies the name of the text based violation report file to be
+              created. The default file name is:
+
+              * for region-based report: region_x1_y1_x2_y2.rpt
+
+              * for RLRP report: rlrp_instname.rpt
+
+              * for plot-based report: power_rail_<plot>.rpt
+
+       -filter_max <max_value>
+              Specifies the maximum value to include in the report.  Use  this
+              option  to  further  filter out the data within the range speci-
+              fied. This is used to obtain statistic of filter range.
+
+              Optional, but if specified, the - plot option is  required,  and
+              requires both -filter_min and - filter_max to be specified.
+
+       -filter_min <max_value>
+              Specifies  the  minimum value to include in the report. Use this
+              option to further filter out the data within  the  range  speci-
+              fied. This is used to obtain statistic of filter range.
+
+              Optional,  but  if specified, the - plot option is required, and
+              requires both -filter_min and - filter_max to be specified.
+
+       -ignore_limit_bound
+              Specifies to ignore the maximum upper limit of  10000,  and  in-
+              stead  use the higher value given with the  -limit parameter for
+              specifying the number of  data  points  to  be  printed  in  the
+              power/rail report.
+
+       -layers  {all,<layer_names>}
+              Specifies the layers to be reported. You can use all for report-
+              ing  all  layers, or list the specific layers that are to be re-
+              ported. If this parameter is specified,  you  must  specify  the
+              -plot parameter.
+
+       -limit <N>
+              Specifies  the  number  of data points printed in the report. If
+              this parameter is specified, you must specify the -plot  parame-
+              ter.
+
+              Default : first 1000 data points
+
+       -nets {all | all_pwr | all_gnd | <net_names>}
+              Specifies  the  nets  to be used for analysis reporting. You can
+              use all for reporting all nets, all_pwr for reporting all  power
+              nets,  all_gnd  for  reporting all ground nets, or list the spe-
+              cific nets that are to be reported. If this parameter is  speci-
+              fied, you must specify the -plot parameter.
+
+              This  parameter  also allows you to specify the switched and al-
+              ways-on nets to be used for analysis reporting.
+
+              The following is the use model to  generate  a  report  for  the
+              specified switched net:
+
+              report_power_rail_results -plot ir -nets {<switchedNetName>}
+
+              The  following  is  the  use  model to generate a report for the
+              specified always-on net, including its switched nets:
+
+              report_power_rail_results  -plot  ir  -nets  {<alwaysOnNetName>}
+              -all
+
+              You  must  specify  -all to include all switched nets associated
+              with the specified always-on net.
+
+       -plot <plot_type>
+              Plots the specified plot type. See Plot Types for a  description
+              of each of the plot types.
+
+       -range_max <max_value>
+              Specifies  the  maximum value to report. Optional, but if speci-
+              fied,  the  -  plot  option  is  required,  and  requires   both
+              -range_min and  - range_max to be specified.
+
+       -range_min <min_value>
+              Specifies  the  minimum value to report. Optional, but if speci-
+              fied,  the  -  plot  option  is  required,  and  requires   both
+              -range_min and  - range_max to be specified.
+
+       -region <x1 y1 x2 y2>
+              Measures  tap  current and capacitance information in the speci-
+              fied region defined by x1, y1, and x2 y2 coordinates, and prints
+              results in the log file.
+
+       -rlrp_inst <instance_name>
+              Reports the RLRP path for the specified  instance.  The  default
+              file  name of the RLRP path report is <<rlrp_instname>.rpt>. You
+              can modify the file name using the  -filename parameter.
+
+Plot Types
+       Plot Type
+              Description
+
+       ac     Available/feasible capacitance (Farad)
+
+              Displays the feasible decoupling capacitance that can  be  added
+              in  the area. The feasible capacitance in the area is calculated
+              based on the filler cells placement.  The  program  matches  the
+              placed filler cells with the decap cells available in the power-
+              grid  library and computes the feasible capacitance. The capaci-
+              tance of the decap cell is stored in the power-grid library.
+
+       activity
+              Displays the worst activity for the output  and  inout  pins  of
+              every instance.
+
+       cap    Grid capacitance (Farad)
+
+              Plots the capacitance of the extracted power-grid network.
+
+       dd     Decoupling capacitance (decap) density (Farad/um 2 )
+
+              Plots decap density of the design. The decap density is the cell
+              internal decoupling capacitance in the unit area (<mu>m 2 ).
+
+       ivdn   Instance Voltage Drop (Volts) - net-based
+
+              Plots the net-based instance voltage drop.
+
+       ivdn   Instance Voltage Drop (Volts) - domain-based
+
+              Plots  the domain-based instance voltage drop. For domain based,
+              at least one power and one ground net must be selected.
+
+       fd     Filler cell density (1/<mu>m 2 )
+
+              Displays the filler cell density per unit area (<mu>m 2  ).  The
+              plot  can  be  used  to  analyze the feasibility of adding decap
+              cells by replacing the filler cells and not changing the  place-
+              ment of the logic cells.
+
+       freq   Frequency domain (Hz)
+
+              Displays  the associated clock frequency of all instances in the
+              design. The instances associated with multiple clock domains are
+              displayed using the fastest clock frequency. This  plot  can  be
+              used to analyze and debug the power distribution in the design.
+
+       ip     Instance total power (mW)
+
+              The  total power consumed by each instance is displayed. The to-
+              tal power is the sum of  the  internal,  switching  and  leakage
+              power  of  the  instance.  The power data is read from the power
+              database and can be specified using the -power_db option  or  it
+              is  queried  directly  from  memory, if power calculation is run
+              during the session.
+
+       ip_i   Instance internal power (mW)
+
+              The power consumed by charging and discharging of  the  internal
+              interconnect and device capacitances of the instance.
+
+       ip_l   Instance leakage power (mW)
+
+              The power consumed by devices when not switching.
+
+       ip_s   Instance switching power (mW)
+
+              The  power consumed by charging and discharging of the intercon-
+              nect or output load.
+
+       ipd_i  Specifies internal power density in mW/um 2 .
+
+       ipd_l  Specifies leakage power density in mW/um 2 .
+
+       ipd_s  Specifies switching power density in mW/um 2 .
+
+       ipd_t  Specifies total power density in in mW/um 2 .
+
+       ip_tr  Displays toggle rates for all instances. The toggle rate for  an
+              instance  is  calculated  as  the average of toggle rates of all
+              outputs of the instance.
+
+              This plot allows you to determine the design area  that  toggles
+              more than the others.
+
+       ir     IRdrop or voltage drop (Volts)
+
+              Displays  the IRdrop across each extracted power-grid segment in
+              the design.
+
+       jrms   Specifies current density as j/jmax based on the  Irms  current.
+              This plot is only supported for dynamic analysis.
+
+              A  jrms gif file will be saved in the state directory that shows
+              where the Irms based EM violation occurred. This plot  type  al-
+              lows you to verify the analysis results of "jrms" using the GUI.
+
+       load   Loading capacitance (Farad)
+
+              Displays  the output loading capacitance driven by the instance.
+              This plot can be used to analyze and debug the regions with high
+              switching power.
+
+       pi     Power-switch (gate) current violation: I/Idsat
+
+              Displays the ratio of current through the power-switch  and  the
+              saturation current (Idsat) of the power-switch.
+
+              This  plot  can be used to analyze and debug whether the current
+              through power-switches exceeds the saturation current character-
+              ized for the power-switch devices. The  saturation  current  and
+              on-resistance of the power-switches are characterized and stored
+              inside  the power-grid library of the power-switch cell. A ratio
+              of greater than 1 means that  the  current  requirement  of  the
+              power-gated  block  can  not be met with placed power-switch in-
+              stance. Either the power-switch  needs  to  be  made  larger  or
+              power-switch instances need to be added.
+
+       pv     Voltage drop across power-switch (Volt)
+
+              Displays the IRdrop across power-switch instances.
+
+              This plot can be used to analyze and debug the IRdrop inside the
+              power-gated  block,  e.g. if the IRdrop across power-switches is
+              already high, the IRdrop inside the power-gated  block  will  be
+              much  higher. In this case, the power-switch placement will have
+              to be refined in order to resolve the IRdrop problem.
+
+       rc     Resistor current (Amp)
+
+              Displays the current across power-grid resistor segments.
+
+              This plot can be used to analyze and debug how the current flows
+              from the voltage sources into the rest of the design, e.g.  high
+              current  should  flow  from  pads to the top-level routing level
+              layers and then to the lower level metal layers. This  plot  can
+              also be used to debug current density violations (rj).
+
+       rlrp   The  total  resistance of the instance along the least resistive
+              path.
+
+              Displays the total resistance of the instance  along  the  least
+              resistive path, meaning the resistance of the instance along the
+              path  from  where  it gets the most amount of current. This plot
+              can be used to analyze and debug the power-grid integrity  early
+              in  the design stage. An instance with high resistance is likely
+              to have high static or dynamic IRdrop depending  on  the  vector
+              that  is  simulated  later in the design cycle. This plot can be
+              also used during decap optimization, since regions with high dy-
+              namic IRdrop and high resistance may not  be  improved  upon  by
+              adding  decaps,  because the effectiveness of decoupling capaci-
+              tance depends on the resistance of the power-grid network.
+
+              You can also highlight the least resistive path of the  instance
+              using the GUI and selecting the instance with left mouse button.
+              The RLRP Path checkbox should be enabled.
+
+       res    Displays  the  total resistance of the least resistive path from
+              each node to voltage source.
+
+              This plot can be used to view high  resistance  regions  of  the
+              power-grid.  It  is  useful  during IRdrop and decap analysis to
+              identify weak power-grid connectivity.
+
+       rj     Resistor current density, J/Jmax.
+
+              Displays the current density (current per unit  area)  violation
+              on each power-grid segment using the ratio of calculated current
+              density  and maximum allowed current density. A ratio of greater
+              than 1 means that the current density limit of  the  segment  is
+              violated. The current density limits are supplied by the foundry
+              and can be read during analysis using the set_rail_analysis_mode
+              -em_models command.
+
+       rs     Specifies the plot type for resistor sensitivity.
+
+       slack  Instance slack (Seconds)
+
+              Displays  worst  instance  slack. The slack data is queried from
+              either the timing database or if the power database is specified
+              using -power_db option, then the worst slack data is  read  from
+              the  power  database. When using an external TWF, the slack data
+              is read from the TWF.
+
+       tc     Tap current (Amp)
+
+              Displays the current consumed by the instance devices or current
+              taps. During rail analysis, it is based on the power consumption
+              of the instance and is distributed inside the cell. The  current
+              distribution  inside  the  cell is based on the extracted device
+              netlist stored inside the power-grid library of  the  cell.  The
+              current  distribution  is  generally  based on the device width,
+              length, and spice models.
+
+              This plot can be used to analyze and  debug  IRdrop  inside  the
+              macro.
+
+       td     Transition density (Hz)
+
+              Displays  the worst transition density (activity * frequency) of
+              the instance. This plot can be used to analyze and debug  activ-
+              ity distribution and high power density regions.
+
+       tpd    Displays power density map with user-specified grid size.
+
+       unc    Unconnected segments
+
+              Displays  power-grid  segments  that  are  disconnected from the
+              voltage source (power pads).
+
+              This plot can be used to debug unusually high IRdrop in the  re-
+              gion.
+
+       vc     Voltage source current (Amp)
+
+              Displays current through the voltage sources (power pads).
+
+              This  plot  can be used to analyze the current carrying capacity
+              of the power-pad.
+
+       vu     Voltage drop across package (Volt)
+
+              Displays voltage drop across package. If analysis  is  run  with
+              package model attached to the power pads, this plot displays the
+              IRdrop due to package RLCK elements.
+
+Examples
+              * The following command will report the worst 100 IR segments on
+                Metal 1 of the VDD net:
+
+                report_power_rail_results -plot ir -layers M1 -limit 100 -nets
+                VDD
+
+              * The  following command will report the IR drop of the VDD_ring
+                switched net:
+
+                report_power_rail_results -plot ir -net {VDD_ring}
+
+              * The following command will report the IR drop  of  the  VDD_AO
+                always-on net, including its switched nets:
+
+                report_power_rail_results -plot ir -net {VDD_AO} -all
+
+              * The  following  command filters the data such that it does not
+                display the data points below 200 in the Result  Browser  his-
+                togram:
+
+                report_power_rail_results  -plot  ivdd  -filter_min  200  -en-
+                able_filter_summary
+
+Related Information
+              * read_power_rail_results
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+                           Fri Apr 04 01:25:37r2e0p2o5rt_power_rail_results(25.10)

@@ -1,0 +1,109 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+writeTimingCon(25.10)                                    writeTimingCon(25.10)
+
+Name
+       writeTimingCon  -  Generates the timing constraints file in Design Com-
+       piler format
+
+Syntax
+       writeTimingCon
+
+       [-help]
+
+       [<<filename>>]
+
+       [-clocks <<string>>]
+
+       [-commands <<string>>]
+
+       [-exclude_annotated {delays | checks | transitions}]
+
+       [-pins <<string>>]
+
+       [-view <<viewName>>]
+
+       Generates the timing constraints file in Design Compiler format.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -clocks <string>
+              Specifies the name of the clocks to be included in the SDC file.
+
+       -commands <string>
+              Specifies the name of the commands to be  included  in  the  SDC
+              file.
+
+       -exclude_annotated {delays | checks | transitions}
+              Disables listing of annotated constraints.
+
+              * delays: Suppresses dumping of set_annotated_delay constraints.
+
+              * checks: Suppresses dumping of set_annotated_check constraints.
+
+              * transitions:  Suppresses  dumping  of set_annotated_transition
+                constraints.
+
+       <filename>
+              Specifies the name of the constraints file. By default, the con-
+              straint file is generated in the current directory. To save to a
+              different directory, you need to specify the complete path.
+
+       -pins <string>
+              Specifies the name of the pins to be included in the SDC file.
+
+       -view <viewname>
+              Specifies a view name to obtain the desired SDC.
+
+Command Order
+       Use this command after reading in a timing constraints file.
+
+Examples
+              * The following command  generates  constraints  file  newc  and
+                saves the generated file in the directory new:
+
+                writeTimingCon new/newc
+
+              * Specifying  the following constraints will have new entries in
+                the output constraints file:
+
+                set_annotated_delay -from u1/A -to u1/Y -cell 2
+
+                set_annotated_check 2 -setup -from f0/CK -to f0/D
+
+                The output constraint file constr.pt will have  the  following
+                new entries:
+
+                set_annotated_delay   -cell  2  -from  [get_pins  {u1/A}]  -to
+                [get_pins {u1/Y}]
+
+                set_annotated_check  -setup  -from  [get_pins   {f0/CK}]   -to
+                [get_pins {f0/D}] 2
+
+              * For the following constraints in the design :
+
+                set_annotated_delay -from u1/A -to u1/Y -cell 2
+
+                set_annotated_transition 2 u1/A
+
+                set_annotated_check 2 -setup -from f0/CK -to f0/D
+
+                The  output  constraint file constr.pt will have the following
+                entries :
+
+                set_annotated_transition 2 [get_pins {u1/A}]
+
+                set_annotated_check  -setup  -from  [get_pins   {f0/CK}]   -to
+                [get_pins {f0/D}] 2
+
+                set_annotated_check   -setup   -from  [get_pins  {f0/CK}]  -to
+                [get_pins {f0/D}] 2
+
+Related Information
+              * set_annotated_delay
+
+              * set_annotated_transition
+
+              * set_annotated_check
+
+                           Fri Apr 04 01:25:37 2025      writeTimingCon(25.10)

@@ -1,0 +1,156 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+oaIn(25.10)                                                        oaIn(25.10)
+
+Name
+       oaIn  -  Restores floorplan, placement, and routing data using the Ope-
+       nAccess format
+
+Syntax
+       oaIn
+
+       [-help]
+
+       <lib>
+
+       <cell>
+
+       <view>
+
+       [-filter {block_insts  blockages  boundary  fixed_core_insts  floorplan
+       pad_insts  pin_shapes  regions regular_routing special_routing bump_in-
+       sts}]
+
+       [-net {<netnames>}]
+
+       Restores floorplan, placement, and routing data  using  the  OpenAccess
+       format.  This  command only reads physical information from the OpenAc-
+       cess database. For information on restoring an OpenAccess database, see
+       restoreDesign.
+
+       You can use the oaIn command after importing the design.
+
+       Notes
+
+              * Innovus supports only the following begin/end extension values
+                for DEF NETS style wiring segments: 0, width/2  or  LEF  LAYER
+                WIREEXTENSION.  If  any of the wire extensions has unsupported
+                extension value, then Innovus converts it to  a  special  wire
+                (DEF  SPECIALNETS).  While  writing  back OpenAccess (oaOut or
+                saveDesign -cellview), these special wires will again be  con-
+                verted back to DEF NETS style wiring.
+
+              * oaIn issues an error if the DESIGNRULEWIDTH attribute is spec-
+                ified in blockage for 20nm and below design nodes. As a lot of
+                spacing  rules  in  advanced nodes no longer just rely on wire
+                width, DESIGNRULEWIDTH is not allowed for 20nm and below nodes
+                and a SPACING override should be used instead.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each parameter of the oaIn command.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man oaIn.
+
+       <lib>  Specifies the OpenAccess library name.
+
+       <cell> Specifies the name of the top cell to import.
+
+       <view> Specifies cell view name to import.
+
+       -filter {block_insts blockages boundary fixed_core_insts floorplan
+       pad_insts pin_shapes regions regular_routing special_routing bump_in-
+       sts}
+              Lists the OpenAccess cellview information data to be read.
+
+              When  not specified, all information is read from the OpenAccess
+              cellview. When -filter is specified, only the object types  that
+              are  chosen  will be read. Additionally, when reading pin_shapes
+              or instances, information in the cellview that refers to  termi-
+              nals or instances that do not exist in memory will be ignored.
+
+              The legal -filter options are:
+
+              * block_insts  - Indicates that any CLASS BLOCK instances should
+                be updated. Physical-only block instances may be added to  the
+                database if the placement status is fixed or cover.
+
+              * blockages - Indicates that blockages should be processed. If a
+                blockage is attached to an instance that does not exist in the
+                in-memory database, then it is ignored.
+
+              * boundary - Indicates that the design boundary information, in-
+                cluding  rows  and tracks, should be updated. When boundary is
+                specified, the design boundary, rows and  tracks  are  created
+                from the new boundary.
+
+              * fixed_core_insts  -  Indicates  that  any CLASS CORE instances
+                that have placement status fixed or cover should  be  updated.
+                Physical-only  core  instances may be added to the database if
+                the placement status is fixed or cover.
+
+              * floorplan - Is equivalent to specifying "block_insts blockages
+                boundary fixed_core_insts pad_insts  pin_shapes  regions  spe-
+                cial_routing"
+
+              * pad_insts  -  Indicates that any CLASS PAD instances should be
+                updated. Physical-only pad instances may be added to the data-
+                base if the placement status is fixed or cover.
+
+              * pin_shapes - Indicates that pin shapes should  be  read.  When
+                pin_shapes is specified, the existing pins are replaced by the
+                ones being read from the cellview.
+
+              * regions - Indicates regions should be updated.
+
+              * regular_routing  - Indicates that nets should be processed and
+                regular routing (and associated shield  net  wiring)  and  net
+                constraints updated.
+
+              * special_routing  - Indicates that nets should be processed and
+                special routing (except shield nets wiring) should be read.
+
+              * bump_insts - Indicates that bump instances from the cell  view
+                need to be read.
+
+              Use  oaIn  -filter to read floorplanning information from a cel-
+              lview whose connectivity does not match the current Innovus  in-
+              memory  connectivity.  The-filter option allows you to load some
+              data selectively, while not  loading  others.  When  -filter  is
+              used,  error checking for database consistency (nets, instances,
+              terminals, etc.) is disabled. While  similar  to  Virtuoso  Load
+              Physical View (LPV), the -filter option is only a subset and not
+              intended to be a complete replacement.
+
+       -net {<netnames>}
+              Specifies  the  list of nets whose routing (routing and special)
+              and constraints have to be read with the -filter option. Shield-
+              ing wiring/vias are also read in if they are used to shield  any
+              of  the  specified nets. If this option is used, typically regu-
+              lar_routing is not specified as part of the -filter objects.
+
+Example
+              * The following command restores data using OpenAccess:
+
+                oaIn design amba_usb layout
+
+Related Information
+              * oaOut
+
+              * restoreDesign
+
+              * saveDesign
+
+              * setOaxMode
+
+              * Mixed Signal (MS) Interoperability Guide
+
+                * Design Data Preparation chapter
+
+                * Schematic-Driven Mixed Signal Design Flow chapter
+
+                * Virtuoso Digital Implementation chapter
+
+                * Chip Finishing and ECO Flows chapter
+
+                           Fri Apr 04 01:25:37 2025                oaIn(25.10)

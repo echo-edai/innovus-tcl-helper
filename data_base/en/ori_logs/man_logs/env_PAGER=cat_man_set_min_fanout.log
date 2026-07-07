@@ -1,0 +1,105 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_min_fanout(25.10)                                    set_min_fanout(25.10)
+
+Name
+       set_min_fanout  -  Sets the minimum fanout load limit constraint on the
+       specified input ports of the top cell
+
+Syntax
+       set_min_fanout
+
+       [-help]
+
+       <fanout_limit><object_>list
+
+       [-override]
+
+       Sets the minimum fanout load limit constraint on  the  specified  input
+       ports of the top cell.
+
+       When  set  on  a port, the fanout load of the net connected to the port
+       must be greater than or equal to the specified limit value to meet  the
+       constraint.  The fanout load of a net is the sum of the fanout loads of
+       the pins driven by the net. When set on a module, the limit applies  to
+       all  the  nets  of that module. The libraries and library cell pins may
+       also have the minimum fanout load limit. In this  case  the  most  con-
+       straining limit is applied to the nets.
+
+       The constraint will not be used in optimizations.
+
+       Fanout load limit can be asserted on input ports, output pins, bidirec-
+       tional  pins,  or  ports and library pins. The constraint cannot be ap-
+       plied on input pins and output ports.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <fanout_limit>
+              Specifies the value of the minimum fanout load limit constraint.
+              The specified value must be greater than or equal to zero.
+
+       <object_><list>
+              Specifies a list of objects - ports, instance pins, modules,  or
+              library cell pins.
+
+       -override
+              Overrides the minimum fanout load limit from other sources, such
+              as, library or constraints.
+
+              This  parameter can be used to force a specific constraint value
+              for a specified list of instance pins/port/library cell  pins  -
+              this overrides the maximum/minimum values set prior to this set-
+              ting.
+
+              To enable this feature, make the following setting:
+
+              set timing_constraint_enable_drv_limit_override true
+
+Examples
+              * The  following  example  sets  a  minimum fanout load limit of
+                0.001 units on all the ports of the top  cell:  set_min_fanout
+                0.001 [get_ports *]
+
+              * The  following  example  shows  a report of the minimum fanout
+                load limit set on ports using  the  report_ports  command,  as
+                shown in the following example:
+
+                set_min_fanout    5.0   [get_ports   *]   report_ports   -type
+                fanout_load_limit -pin [get_ports *]
+
+                Example: Minimum Fanout Load Limit Set On Ports Report
+
+                > report_ports -type fanout_load_limit -pin [get_ports *]
+
+                -------------------------------------------
+
+                Pin      Dir  Assertion           Value
+
+                Name
+
+                -------------------------------------------
+
+                CLK2     IN   fanout_load_limit   5.000
+
+                CLK1     IN   fanout_load_limit   5.000
+
+                in2      IN   fanout_load_limit   5.000
+
+                in1      IN   fanout_load_limit   5.000
+
+                -------------------------------------------
+
+Related Information
+              * get_ports
+
+              * report_ports
+
+              * set_fanout_load
+
+              * set_max_capacitance
+
+              * set_max_transition
+
+              * report_constraint
+
+                           Fri Apr 04 01:25:37 2025      set_min_fanout(25.10)

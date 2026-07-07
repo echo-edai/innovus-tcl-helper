@@ -1,0 +1,130 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_lib_cells(25.10)                                      get_lib_cells(25.10)
+
+Name
+       get_lib_cells  -  Creates a collection of library cells from the loaded
+       libraries whose name matches the supplied pattern list
+
+Syntax
+       get_lib_cells
+
+       [-help]
+
+       [-filter <expr>]
+
+       [-regexp]
+
+       [-nocase]
+
+       [-quiet]
+
+       {<pattern_list> | -of_objects <object_list>}
+
+       Creates a collection of library cells from the loaded  libraries  whose
+       name matches the supplied pattern list. Assign these library cells to a
+       variable  or pass them to another command. If no objects match the cri-
+       teria, an empty collection is returned.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -filter <expr>
+              Filters the collection with the specified  expression.  For  any
+              library cells that match the pattern, the software evaluates the
+              expression based on the attribute of the library cell.
+
+              You can filter library cells using any of the library cell prop-
+              erties supported through the get_property command.
+
+              For  details  on  how to create filter expressions, refer to the
+              filter_collection command.
+
+       -nocase
+              Specifies that pattern matching is not case sensitive.
+
+              Note: You must specify -regexp in order to use this parameter.
+
+       -of_objects <object_list>
+              Creates a collection of all library cells associated
+
+              with the specified library pins or cells or libs. You can  spec-
+              ify a list of
+
+              library  pins or a list of cells or a list of libs, but you can-
+              not specify a
+
+              list that contains mixed of library pins and cells and libs. You
+              can specify
+
+              patterns for the library pin or cell or lib names, a  collection
+              of library pins
+
+              or cells or libs, or a combination of patterns and a collection.
+
+       <pattern_list>
+              Returns  only  those  libraries  in  the  collection  whose name
+              matches one or more of  the  patterns  specified  in  the  <pat-
+              tern_list>  argument. The characters ? and * are wild cards. The
+              ? character matches any one  character  while  the  *  character
+              matches  zero  or more characters. If a library matches multiple
+              patterns, it appears multiple times in the collection.
+
+              A pattern can have only one  hierarchical  separator  character.
+              The left part of the pattern is the library name pattern and the
+              right  part  is  the cell name pattern. If there is no separator
+              character, the pattern is compared to cell names in all the  li-
+              braries.
+
+              A  pattern  can  have only one hierarchical separator character,
+              dividing the pattern into one or two parts. If the  hierarchical
+              separator is /, the alternatives are:
+
+              * <cell_name_pattern>
+
+                Selects  all  cells whose name matches the <cell_name_pattern>
+                from all libraries.
+
+              * <lib_name_pattern>/<cell_name_pattern>
+
+                Selects all cells whose name matches  the  <cell_name_pattern>
+                from all libraries whose name matches the <lib_name_pattern>.
+
+       -quiet Suppresses  all  error  and  warning messages generated when the
+              get_lib_cells command is run.
+
+       -regexp
+              Treats the specified patterns as regular expression patterns.
+
+              Default: Treats the specified pattern as wildcard
+
+Examples
+              * The following command prints all cells for all libraries:
+
+                get_lib_cells *
+
+              * The following command prints a collection with  all  cells  in
+                the lca500kv lib library:
+
+                get_lib_cells lca500kv/*
+
+              * The following command prints a collection with all cells whose
+                names starts with AN in all libraries starting with lca:
+
+                get_lib_cells lca*/AN*
+
+              * The  following command disables delay arcs on the EF11L050032A
+                library cell. The set_disable_cell_timing command effects  all
+                instantiations of the specified cell, and lets you disable de-
+                lay arcs from and to internal pins.
+
+                set_disable_timing   -from   WACLK   -to  RBO1  [get_lib_cells
+                {EF11L050032A}]
+
+Related Information
+              * get_cells
+
+              * get_libs
+
+              * get_lib_pins
+
+                           Fri Apr 04 01:25:37 2025       get_lib_cells(25.10)

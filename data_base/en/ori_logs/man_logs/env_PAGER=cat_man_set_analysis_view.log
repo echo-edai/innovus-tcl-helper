@@ -1,0 +1,176 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_analysis_view(25.10)                              set_analysis_view(25.10)
+
+Name
+       set_analysis_view  -  Defines  the  analysis views to use for setup and
+       hold analysis and optimization.You must define at least one  setup  and
+       one hold analysis view
+
+Syntax
+       set_analysis_view
+
+       [-help]
+
+       [-drv <string>]
+
+       [-dynamic <string>]
+
+       -hold <list_of_views>
+
+       [-inactive <string>]
+
+       [-leakage <string>]
+
+       -setup <list_of_views>
+
+       [-update_timing]
+
+       Defines the analysis views to use for setup and hold analysis and opti-
+       mization.You must define at least one setup and one hold analysis view.
+       The  "active" views represent the different design variations that will
+       be analyzed. These views can be changed throughout the flow to  utilize
+       different  subsets of views. The libraries and data are loaded into the
+       system that are required to support the selected set of active views.
+
+       When the set_analysis_view command is issued, it will cause a full tim-
+       ing reset. During a timing reset, all the interconnect parasitics,  de-
+       lays, and timing slacks will be recalculated.
+
+       The  order in which you specify the views with the -setup and -hold pa-
+       rameters is important. By default,  the  first  views  defined  in  the
+       -setup  and  -hold lists are the default views. The default views serve
+       two purposes:
+
+              * Provide the library data that is used during the  design  ini-
+                tialization process.
+
+              * Indicate to parts of the application, that are not MMMC-aware,
+                which view's information to use for a particular analysis step
+                (in  most  cases,  the default view is the first setup or hold
+                view). You can use the set_default_view command to change  the
+                default  view to any currently active view without incurring a
+                timing reset. This control is not frequently used  since  most
+                applications  either  support MMMC or provide a direct control
+                for selecting the appropriate view to use  for  that  specific
+                analysis.
+
+       Using the set_default_view command does not affect software performance
+       because  it  only  uses views that are already active in the design. If
+       you use the set_analysis_view command to change the default views,  the
+       existing timing and delay calculation data is reset.
+
+       Use  this command after creating multiple analysis views (create_analy-
+       sis_view).
+
+       Note: The set_analysis_view command does not  work  in  an  incremental
+       manner for setting parameters. Each invocation of this command must in-
+       clude  the  full  specification  of  all  the active views required for
+       analysis.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -drv <string>
+              Selects specific views for DRV  analysis,  e.g.,  max_transition
+              and max_capacitance checking.
+
+              When  this parameter is specified, additional analysis views are
+              specified for DRV analysis, so  the  timing  system  efficiently
+              computes the required data for these checks. This methodology is
+              efficient  with  respect  to memory and performance, because all
+              the views as full Setup views are not included.
+
+              The following guidelines should be followed when  selecting  DRV
+              views:
+
+              * Any setup views that require DRV analysis should not be speci-
+                fied  as  DRV views. The setup views are automatically consid-
+                ered for DRV.
+
+              * If a subset of hold-only  views  require  DRV  analysis,  they
+                should  be  specified  as DRV views as well. The timing system
+                will augment the timing information normally computed for Hold
+                views with additional data required for the DRV analysis.
+
+              * Additional views that are not active setup or hold  views  can
+                be  specified  as  DRV only views. The system will efficiently
+                compute the required data for performing accurate DRV checks.
+
+       -dynamic <string>
+              Sets a view as a dynamic view.
+
+              Delay calculation is required to provide transition times. Delay
+              calculation should not perform SI analysis if the  delay  corner
+              is  only  required  for  the dynamic power. The timer is not re-
+              quired to propagate required times  or  perform  slack  computa-
+              tions.
+
+       -hold <list_of_views>
+              Sets the active views for hold analysis.
+
+       -inactive <string>
+              Sets views as inactive for timing analysis.
+
+       -leakage <string>
+              Sets a view as a leakage view.
+
+              The  Timing libraries must be loaded, if not already in use. The
+              Timer constant propagation is required, whereas  delay  calcula-
+              tion is not required.
+
+       -setup <list_of_views>
+              Sets the active views for setup analysis.
+
+       -update_timing
+              Reloads  the  configuration  described by the MMMC view and mode
+              objects. When the timing global timing_defer_mmmc_object_updates
+              is set to true, this parameter is required to  update  the  MMMC
+              timing environment.
+
+              The -update_timing parameter may be specified without any -setup
+              or  -hold  arguments. In this case, the data associated with the
+              current set of setup and/or hold views will be loaded. If no ac-
+              tive setup or hold views exist, then using this parameter  alone
+              may display an error.
+
+              The  -update_timing  parameter  may  also be used in conjunction
+              with the -setup and -hold options. In this case, the newly spec-
+              ified setup/hold view configuration will be loaded with the  up-
+              dated MMMC object information.
+
+       When you issue the set_analysis_view command, the software will perform
+       a  timing reset, so that only the new active view information is loaded
+       up. The software requires the -setup and -hold view  parameters  to  be
+       explicitly  specified  for each set_analysis_view command run. If these
+       parameters are not specified, the software issues an error message. Any
+       optional settings, such as, -leakage or -dynamic views will be reset if
+       they are not specified with the new set_analysis_view command.
+
+       Note: It is recommended to use the same power view for both leakage and
+       dynamic, that is, both the -dynamic and -leakage parameters should have
+       the same user-specified view settings.
+
+Examples
+              * The following command sets missionWCCOM and  mission2WCCOM  as
+                the  active  views  for  setup  analysis, and missionBCCOM and
+                testBCCOM as the active views for hold analysis:
+
+                set_analysis_view -setup  {missionWCCOM  mission2WCCOM}  -hold
+                {missionBCCOM testBCCOM}
+
+Related Information
+              * Performing  Multi-Mode  Multi-Corner Timing Analysis and Opti-
+                mization chapter in the Innovus User Guide.
+
+Related Information
+              * create_analysis_view
+
+              *
+
+                update_analysis_view
+
+              *
+
+                set_default_view
+
+                           Fri Apr 04 01:25:37 2025   set_analysis_view(25.10)

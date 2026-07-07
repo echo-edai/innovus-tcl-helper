@@ -1,0 +1,292 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+connectMacroFeedthrough(25.10)                  connectMacroFeedthrough(25.10)
+
+Name
+       connectMacroFeedthrough  - Connects predefined feedthrough pins in cus-
+       tom macros to overlapping nets that have wires crossing over the custom
+       macros, based on the routing information
+
+Syntax
+       connectMacroFeedthrough
+
+       [-help]
+
+       [-selectNet <string> | -excludeNet <string> | -selectMarkedNet]
+
+       [-selectInst <string> | -excludeInst <string>]
+
+       [-ecoFile <string> | -checkOnly]
+
+       [-portMap <string>]
+
+       [-verbose]
+
+       [-maxSearchDistance <float]>
+
+       [-searchAllSides]
+
+       [-abutment <float>]
+
+       [-abutmentFile <string>]
+
+       [-floatingPortList <string>]
+
+       Connects predefined feedthrough pins in custom  macros  to  overlapping
+       nets  that  have  wires  crossing  over the custom macros, based on the
+       routing information. The feedthrough connectivity details  are  defined
+       in  a  mapping file, which is specified through the -portmap <filename>
+       parameter. You can include or exclude specific nets or instances.  This
+       command  deletes  routing  only for the modified nets. You can run this
+       command after placing the design and running Early Global Route.
+
+Parameters
+       -abutment <float>
+              Specifies the distance that pins on the  same  track  and  layer
+              must have from one another so as to be considered as abutted. If
+              two or more pins are considered as abutted, any feedthrough path
+              that  passes through one of the pins will pass through the other
+              pin(s) as well.
+
+              Default: If this parameter is not specified, the  default  value
+              is 1 micron.
+
+              Data_type: float, optional
+
+       -abutmentFile <string>
+              Reports,  in  the file specified, the list of pins that are con-
+              sidered as abutted. In the file, each feedthrough path is traced
+              from the first input pin to the last input  pin.  Each  path  is
+              preceded  by  the  word  Begin on a new line and followed by the
+              word End on a new line.
+
+              Here is the extract from an example file:
+
+              Begin
+
+              Inst [Inst1], Term In [A1] Term Out [X1]
+
+              Inst [Inst2], Term In [A2] Term Out [X2]
+
+              End
+
+              In the previous example, the out term X1 of  instance  Inst1  is
+              abutted with the in term A2 of instance Inst2.
+
+              Data_type: string, optional
+
+       -checkOnly
+              Specifies that only a report of the messages should be displayed
+              but no changes should be made to the netlist.
+
+              Data_type: bool, optional
+
+       -ecoFile <string>
+              Specifies the name of the ECO file that will contain a report of
+              the changes. You can use this file while performing ECO changes.
+
+              Here is a sample report generated through this parameter:
+
+              FORMATVERSION 2
+
+              ATTACHTERM eco_instance1 inputbuf2[2] testnet
+
+              ADDNET FE_FTM_1_testnet
+
+              ATTACHTERM   eco_instance1  outputbuf2[2]  FE_FTM_1_testnet  AT-
+              TACHTERM i1 A  FE_FTM_1_testnet  ATTACHTERM  eco_instance1  rstb
+              FE_FTM_1_testnet
+
+              Data_type: string, optional
+
+       -excludeInst <string>
+              Prevents  feedthrough buffers from being added for the specified
+              instance. The names of the instances are specified  in  a  file,
+              specified  by <fileName>. In the file, you can specify wildcards
+              (*) for the instance names to exclude.
+
+              Default: All instances  of  the  cell  types  specified  in  the
+              portmap file are considered.
+
+              Data_type: string, optional
+
+       -excludeNet <string>
+              Prevents  feedthrough  buffers from being added to the specified
+              net. The names of the nets are specified in a file, specified by
+              <fileName>. In the file, you can specify wildcards (*)  for  the
+              net names to exclude.
+
+              Default: All nets or bus names are considered.
+
+              Data_type: string, optional
+
+       -floatingPortList <string>
+              Specifies  that  the list of unused ports should be saved in the
+              specified file. The file lists the instance  name  and  the  pin
+              name for each unused port.
+
+              After  running  the  connectMacroFeedthrough command, the unused
+              ports should be manually tied. You can  use  this  parameter  to
+              save the list of the unused ports to a file.
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each connectMacroFeedthrough parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man connectMacroFeedthrough
+
+       -maxSearchDistance <float>
+              Specifies the distance in microns from the  wire  crossing  till
+              which the command should search to find a connected feedthrough.
+
+              Note:  Specifying a large value for this parameter might have an
+              adverse impact on the Quality of Results (QoR).
+
+              Data_type: float, optional
+
+       -portMap <string>
+              Specifies the name of the file  that  contains  the  feedthrough
+              connectivity definitions.
+
+              Default: If you do not specify a file name, a file with the name
+              portmap in the current directory is used.by default.
+
+              Note:  A  file with the feethrough connectivity definitions must
+              be available.
+
+              The syntax of the file is as follows:
+
+              MACRO <MacroName>Macro definition section
+
+              END MACRO
+
+              The definition of the macro is provided in  the  <Macro><defini-
+              tion>  section,  which  can contain one or more feedthrough sec-
+              tions. The name of the feedthrough section is optional.
+
+              The syntax of the Feedthrough section is as follows:
+
+              Feedthrough [FeedthroughName]
+
+              Pin Section
+
+              END FEEDTHROUGH
+
+              Each Feedthrough section contains one section for the INPUT  PIN
+              and one section for the output pin.
+
+              Note: Multi-fanout feedthrough sections are not supported.
+
+              The syntax of the pin section is as follows:
+
+              PIN PinName
+
+              DIRECTION {in | out };
+
+              SIDE {left | right | top | bottom};
+
+              END PIN
+
+              If  the  pin direction is not specified, it is read from the LEF
+              file. If you specify a value for pin direction, ensure  that  it
+              is consistent with the description in the LEF file.
+
+              Note: The pin direction inout is not supported.
+
+              Note: All the predefined macro feedthrough pins should be float-
+              ing pins.
+
+              Here is an example of a mapping file:
+
+              MACRO RAMXXX
+
+              FEEDTHROUGH feedthrough1
+
+              PIN feedthrough1_in
+
+              END PIN
+
+              PIN feedthrough1_out
+
+              END PIN
+
+              END FEEDTHROUGH
+
+              FEEDTHROUGH feedthrough2
+
+              PIN feedthrough2_in
+
+              END PIN
+
+              PIN feedthrough2_out
+
+              END PIN
+
+              END FEEDTHROUGH
+
+              END MACRO
+
+              Data_type: string, optional
+
+       -searchAllSides
+              Specifies  that  if the closest available feedthrough pin on the
+              same side cannot be connected, the command should search for the
+              feedthrough pins on other sides as well.
+
+              When you specify this parameter, it is recommended to limit  the
+              distance  of  the  search using the -maxSearchDistance option to
+              get good QoR.
+
+              Default: The command searches for a feedthrough whose in and out
+              pins lie on the same sides of the macro on which the wires enter
+              and exit the macro.
+
+              Data_type: bool, optional
+
+       -selectInst <string>
+              Specifies that the feedthrough buffers should be added only  for
+              the specified instances.
+
+              Data_type: string, optional
+
+       -selectMarkedNet
+              Specifies  that  feedthrough buffers should be added only to the
+              nets that are currently selected.
+
+              Default: All nets.are considered.
+
+              Data_type: bool, optional
+
+       -selectNet <string>
+              Specifies that the feedthrough buffers should be added  only  to
+              the specified nets.
+
+              Data_type: string, optional
+
+       -verbose
+              Provides additional messages, for example net-specific messages.
+
+              Data_type: bool, optional
+
+Example
+       The following command connects predefined feedthrough buffers in custom
+       macros  for  nets  that are listed in the file named NetsToIncludeFile.
+       The command searches for a distance of 10 microns. The feedthrough con-
+       nectivity is described in a file named portmapFileForNets.
+
+       connectMacroFeedthrough portMap portmapFileForNets -selectNet NetsToIn-
+       cludeFile
+
+       -maxSearchDistance 10
+
+Related Information
+              * insertPtnFeedthrough
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Utilizing Pre-defined Feedthrough Pins in Custom Macros
+
+                           Fri Apr 04 01:25:37 20c2o5nnectMacroFeedthrough(25.10)

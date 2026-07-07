@@ -1,0 +1,150 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ccopt_pro(25.10)                                              ccopt_pro(25.10)
+
+Name
+       ccopt_pro  - Repairs clock tree design rule violations (DRVs) and skews
+       that have occurred in the clock tree across a routing step
+
+Syntax
+           ccopt_pro
+
+       [-help]
+
+       [-enable_average_id_reduction {true | false}]
+
+       [-enable_downsizing_pass {true | false}]
+
+       [-enable_drv_fixing {true | false}]
+
+       [-enable_drv_fixing_by_rebuffering {true | false}]
+
+       [-enable_refine_place {true | false}]
+
+       [-enable_routing_eco {true | false}]
+
+       [-enable_skew_fixing {true | false}]
+
+       [-enable_skew_fixing_by_rebuffering {true | false}]
+
+       Repairs clock tree design rule violations (DRVs) and  skews  that  have
+       occurred in the clock tree across a routing step. DRVs and skews can be
+       fixed  either  by sizing existing clock instances or by adding buffers.
+       Use this command to enable or disable average  insertion  delay  reduc-
+       tion,  global  cell  downsizing  pass,  refine placement of design, ECO
+       routing, legalizer sharing, and the timing update step.
+
+       This command can be run at the following stages:
+
+              * After  ccopt_design - when only the clock is routed
+
+              * After routeDesign, but before optDesign-postRoute - when  both
+                clock and datapath are routed.
+
+       By  default  a post ccopt_design call to this command will fix DRVs and
+       skew violations by resizing instances. It will also fix persistent DRVs
+       by adding buffers. However, when called post routeDesign, this  command
+       is less disruptive by default and will only
+
+       perform  resizing to fix DRVs.  The ccopt_pro log will report a list of
+       "active optimizations" for clarification of what  steps  will  be  exe-
+       cuted.
+
+       By  default, the command will modify the clock to reduce violations and
+       then call refinePlace and ecoRoute to patch  up  the  modified  routes.
+       Both  refinePlace  and ecoRoute parts may be disabled to reduce runtime
+       for user experimentation.  But they will need to be called  eventually,
+       either with a final call to ccopt_pro or manually. Without them, timing
+       measurements will be inaccurate.
+
+       Note:
+
+              * This command is integrated within the ccopt_design command and
+                is  run  after  clock  routing.   It  can be identified in the
+                ccopt_design log with a search for "PostConditioning....".
+
+              * This command is integrated  within  the  optDesign  -postRoute
+                command.   It  can  be  identified in the optDesign log with a
+                search for "PRO...".
+
+              * If this command is called  after  running  ccopt_design  (when
+                only  the clock is routed), it will also call earlyGlobalRoute
+                on the datapath nets.
+
+              * The ccopt_pro command and the clock DRV  fixing  performed  by
+                running  optDesign -postRoute do not work when signoff effort-
+                level for extraction is specified using setExtractRCMode  -ef-
+                fortLevel  signoff.  The  signoff  effort-level for extraction
+                should be used only for ECO flows, after  postRoute  optimiza-
+                tion.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each ccopt_pro parameter. For a detailed  descrip-
+              tion  of the command and all of its parameters, use the man com-
+              mand:  man ccopt_pro.
+
+       -enable_average_id_reduction  {true | false}
+              Enables or disables average insertion delay reduction.
+
+       -enable_downsizing_pass  {true | false}
+              Enables or disables a global cell downsizing pass.
+
+       -enable_drv_fixing {true | false}
+              Enables or disables DRV fixing.
+
+       -enable_drv_fixing_by_rebuffering {true | false}
+              Enables or disables DRV fixing by adding buffers.
+
+       -enable_refine_place {true | false}
+              Enables or disables refine placement of design.  Disabling  this
+              may result in instance overlaps.
+
+       -enable_routing_eco {true | false}
+              Enables or disables the ECO routing step, which corrects routing
+              for new instance locations. Disabling this will leave inaccurate
+              routing in place and lead to timing inaccuracy.
+
+       -enable_skew_fixing {true | false}
+              Enables or disables fixing of clock tree skew.
+
+              Note the following:
+
+              * When -enable_skew_fixing is set to false then whether the -en-
+                able_skew_fixing_by_rebuffering parameter is specified as true
+                or false,  there is no skew fixing during ccopt_pro.
+
+              * When   -enable_skew_fixing   is   set   to  true,  while  -en-
+                able_skew_fixing_by_rebuffering parameter is set to false, the
+                software resizes cells to fix skew.
+
+              * When  -enable_skew_fixing  is  set   to   true,   while   -en-
+                able_skew_fixing_by_rebuffering  parameter is set to true, the
+                software not only resizes cells but also does  rebuffering  to
+                fix skew.
+
+       -enable_skew_fixing_by_rebuffering {true | false}
+              Enables or disables fixing of clock tree skew by adding buffers.
+              This will only help with lengthening short paths.
+
+Related Information
+              * ccopt_design
+
+              * clock_opt_design
+
+              * ecoRoute
+
+              * earlyGlobalRoute
+
+              * refinePlace
+
+              * routeDesign
+
+              * optDesign
+
+              * setExtractRCMode
+
+              * The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:25:37 2025           ccopt_pro(25.10)

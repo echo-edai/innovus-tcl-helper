@@ -1,0 +1,258 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_min_pulse_width(25.10)                    report_min_pulse_width(25.10)
+
+Name
+       report_min_pulse_width  -  Reports  a set of minimum pulse width viola-
+       tions on pins and ports on the clock network
+
+Syntax
+       report_min_pulse_width
+
+       [-verbose]
+
+       [-clock <object_list>]
+
+       [-path_type {summary | short | full_clock}]
+
+       [-pins <object_list>]
+
+       [-net]
+
+       [-violation_only]
+
+       [-view <view_name>]
+
+       [-waveform_aware_type {regular | waveform_aware | both}]
+
+       [ { > | >> } <filename> | -tcl_list]
+
+       Reports a set of minimum pulse width violations on pins  and  ports  on
+       the  clock  network. The report shows the required pulse width, the ac-
+       tual pulse width, and by how much the constraint is  violated  or  met.
+       This  is  reported  separately for sequential elements and instances on
+       the clock tree.
+
+       You can customize pulse width reporting format by using the report_tim-
+       ing_format global variable.
+
+       The report header shows clock edge information to make  it  more  intu-
+       itive for clock style checks.
+
+Parameters
+       {> | >>} <filename>
+              When  specified  with >, writes the report to the specified file
+              name. If the file already exists, the software overwrites it.
+
+              When specified with >>, writes the report to the specified  file
+              name.  If the file already exists, the software concatenates the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the  list.
+              The  <filename> and -tcl_list parameters are mutually exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default: Report is displayed on standard  output  without  being
+              saved.
+
+       -clock <object_list>
+              Specifies  a  set  of  clocks to for which to report the minimum
+              pulse width.
+
+       -net   Reports the net arcs.
+
+              This parameter can be specified with the  -path_type  full_clock
+              option only.
+
+       -path_type {summary | short | full_clock}
+              Specifies the type of report to generate.
+
+              Default: summary
+
+              * summary: Generates a summary report for each pulse width check
+                that  shows  the required width, the actual width, and the re-
+                sulting slack.
+
+              * short: Generates a path report for each pulse width check that
+                lists the latency of each edge of the pulse as a single lumped
+                value, instead of reporting a detailed path report.
+
+              * full_clock: Generates a path report for each pulse width check
+                that shows the detailed pin-to-pin path for each edge  of  the
+                pulse.
+
+              Note: The -path_type full_clock parameter may cause an increased
+              runtime.  In  that case you can use the -path_type short parame-
+              ter.
+
+       -pins object_list
+              Specifies a set of ports and pins on the clock network. If  this
+              list is not specified, then the report contains all the pins and
+              ports in the current design.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -verbose
+              Provides detailed information about minimum pulse width calcula-
+              tions.
+
+              Note: This parameter is obsolete. The parameter still  works  in
+              this  release, but to ensure compatibility with future releases,
+              use the -path_type parameter instead.
+
+       -view <view_name>
+              Generates the report for the specified analysis view  only.  You
+              can  specify  this parameter only when the software is in multi-
+              mode multi-corner timing analysis mode.
+
+       -violation_only
+              Reports only the negative slack minimum pulse width violations.
+
+       -waveform_aware_type {regular | waveform_aware | both}
+              Reports the waveform-aware pulse width checks. You  can  specify
+              the following options:
+
+              * waveform_aware:  Reports  only  the waveform-aware pulse width
+                checks.
+
+              * both: Reports waveform-aware as well as  regular  pulse  width
+                checks.
+
+              * regular:  Reports  regular pulse width checks. This is the de-
+                fault setting.
+
+Examples
+              * The report_min_pulse_width will generate a summary  report  as
+                shown below:
+
+                report_min_pulse_width
+
+                -----------------------------------------------------
+
+                SEQUENTIAL CLOCK PULSE WIDTH
+
+                -----------------------------------------------------
+
+                Pin                Required     Actual Pulse   Slack
+
+                                   Pulse Width  Width
+
+                -----------------------------------------------------
+
+                seg3/u14/CK (high) 0.169        0.860         0.691
+
+                seg3/u3/CK (high)  0.169        0.875         0.706
+
+                seg3/u9/CK (high)  0.169        0.875         0.706
+
+                seg3/u3/CK (low)   0.195        1.083         0.888
+
+                seg3/u9/CK (low)   0.195        1.083         0.888
+
+                ----------------------------------------------------
+
+              * A  short report can be generated at any clock pin having pulse
+                width check, as shown below. The pulse width is shown  as  se-
+                quential  clock  pulse width in case it is reported on sequen-
+                tial pins:
+
+                report_min_pulse_width -path_type short
+
+                SEQUENTIAL CLOCK PULSE WIDTH
+
+                ----------------------------
+
+                Path 1: MET PulseWidth Check with Pin seg3/u14/CK
+
+                Ending Clock Edge: seg3/u14/CK (v) checked with trailing  edge
+                of 'CLK_W_3'
+
+                Beginning  Clock  Edge:  seg3/u14/CK  (^) triggered by leading
+                edge of 'CLK_W_3'
+
+                Other End Arrival Time 1.503
+
+                - PulseWidth 0.169
+
+                + Phase Shift 0.000
+
+                = Required Time 1.334
+
+                - Arrival Time 0.621
+
+                = Slack Time 0.714
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.621
+
+                = Beginpoint Arrival Time 0.621
+
+                -----------------------------------------
+
+                Pin         Cell     Delay  Arrival  Edge
+
+                                            Time
+
+                ------------------------------------------
+
+                seg3/u14/CK DFF             0.621   ^
+
+                ------------------------------------------
+
+                Path 2: MET PulseWidth Check with Pin seg3/u3/CK
+
+                Ending Clock Edge: seg3/u3/CK (v) checked with  trailing  edge
+                of 'CLK_W_3'
+
+                Beginning Clock Edge: seg3/u3/CK (^) triggered by leading edge
+                of 'CLK_W_3'
+
+                Other End Arrival Time 1.578
+
+                - PulseWidth 0.169
+
+                + Phase Shift 0.000
+
+                = Required Time 1.409
+
+                - Arrival Time 0.682
+
+                = Slack Time 0.727
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.682
+
+                = Beginpoint Arrival Time 0.682
+
+                ----------------------------------------
+
+                Pin        Cell    Delay  Arrival   Edge
+
+                                          Time
+
+                ---------------------------------------
+
+                seg3/u3/CK DFF            0.682     ^
+
+                ---------------------------------------
+
+Related Information
+              * report_analysis_coverage
+
+              * report_timing
+
+              * set_min_pulse_width
+
+              * reset_min_pulse_width
+
+                           Fri Apr 04 01:25:37 202r5eport_min_pulse_width(25.10)

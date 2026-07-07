@@ -1,0 +1,85 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verifyWellAntenna(25.10)                              verifyWellAntenna(25.10)
+
+Name
+       verifyWellAntenna - Checks for any CORE rows that have well-process-an-
+       tenna violations
+
+Syntax
+       verifyWellAntenna
+
+       [-help]
+
+       [-needToProtect {<cell_list>}]
+
+       [-changeToProtect {<cell_list>}]
+
+       [-changeToNotProtect {<cell_list>}]
+
+       [-report <filename> [-detailed]]
+
+       Checks  for  any  CORE  rows that have well-process-antenna violations.
+       Well-process-antenna violations are normally caused by rows with  decap
+       cells  that do not have any protecting cells in the same row. This com-
+       mand marks with a violation marker any such CORE  cell.  You  can  then
+       write  a Tcl script to put in a well-antenna cell next to the violation
+       marker.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each verifyWellAntenna parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man verifyWellAntenna
+
+       -changeToNotProtect {<cell_list>}
+              Specifies the cell names that are to be marked as cells that  do
+              not  protect rows. By default, the cells with LEF class CORE but
+              without a subclass (e.g. normal BUF and AND2 cells) are  assumed
+              to  have a well discharge path that protects a row from well-an-
+              tenna violations. Use -changeToNotProtect option to override the
+              default for any of these cells that do not protect a  row.  Pat-
+              tern matching with * is allowed in cell names.
+
+       -changeToProtect {<cell_list>}
+              Specifies  the  cell  names  that are to be marked as protection
+              cells.  By  default,  cells  with  CLASS  CORE  and  a  subclass
+              {FEEDTHRU  |  TIEHIGH | TIELOW | SPACER | ANTENNACELL | WELLTAP}
+              or cells with class ENDCAP (with or without any subclass) do not
+              have a well-discharge path to protect a row. Use the  -changeTo-
+              Protect  option  to  override the default for any of these cells
+              that do protect the row. Pattern matching with * is allowed.
+
+       -needToProtect {<cell_list>}
+              Specifies the cell names that need protection  (typically  decap
+              cells).  This  option also indicates that the specified cells do
+              not protect the row they are in. Pattern matching with * is  al-
+              lowed in cell names.
+
+       -report <filename>
+              Specifies  the report file name. By default, the report includes
+              information about only the cells that you specified with the op-
+              tions.
+
+       -detailed
+              If you specify -detailed,  verifyWellAntenna reports every class
+              CORE and  ENDCAP cell with its subclass and protection status to
+              the  <filename> report.
+
+Example
+       Normally, the decap cells are the only cells that need protection. How-
+       ever, if the standard-cell library in your design has one of the ENDCAP
+       cells with a well-antenna protection device built-in, and  the  filler,
+       well-tap,  tie-high  and  tie-low cells are just class CORE rather than
+       with the correct CORE sub-class, you can use the following command:
+
+       verifyWellAntenna -needToProtect decap* -changeToProtect  wellAntEndCap
+       -changeToNotProtect {filler* welltap* tie*} -report wellant.rpt
+
+Related Information
+       "Verifying  Well-Process-Antenna  Violations"  in  the  Identifying and
+       Viewing Violations chapter of User Guide.
+
+                           Fri Apr 04 01:25:37 2025   verifyWellAntenna(25.10)

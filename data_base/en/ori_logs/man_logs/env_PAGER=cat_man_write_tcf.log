@@ -1,0 +1,112 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_tcf(25.10)                                              write_tcf(25.10)
+
+Name
+       write_tcf - Writes out the propagated switching activity information to
+       a toggle count format (TCF) file
+
+Syntax
+        write_tcf <file>
+
+       [-block <block_name>]
+
+       [-exclude_hier_insts <list_of_instances>]
+
+       [-primary_input]
+
+       [-seq_output]
+
+       [-pin]
+
+       [-macro_output]
+
+       Writes  out  the  propagated switching activity information to a toggle
+       count format (TCF) file. The TCF file contains switching  activity  in-
+       formation,  toggle count information, and the probability of the net or
+       pin being in the logic1 state.
+
+       You must specify this command after the set_power_analysis_mode command
+       and before the report_power command.
+
+       Following is the behavior of the write_tcf command in different modes:
+
+              * Command File Mode: If the write_tcf command is specified  mul-
+                tiple  times  within a command file, only the last instance of
+                the command will be honored. This means that any  earlier  in-
+                stances will be overridden by the final specification.
+
+              * Interactive  Mode:  In  contrast,  if the write_tcf command is
+                specified multiple times during an interactive  session,  each
+                instance  of the command will be honored. This allows for mul-
+                tiple configurations or actions to be performed in sequence.
+
+Parameters
+       -block <block_name>
+              Specifies to generate the block-level TCF from the top-level de-
+              sign. When specified, it writes out the block-level duty and ac-
+              tivity in the generated TCF file.
+
+              The use model of this parameter is:
+
+              write_tcf -pin -block <blockname> <TCF_filename>
+
+       -exclude_hier_insts <list_of_instances>
+              Excludes the specified hierarchical modules  or  instances  when
+              writing out a pin-based TCF. This parameter allows you to ignore
+              the activity generated for the excluded instances.
+
+              The use model of this parameter is:
+
+              write_tcf -pin -exclude_hier_insts {<list_of_instances>}
+
+       -macro_output
+              Specifies  to  generate a TCF file that includes all the activi-
+              ties for the macro outputs in the design.
+
+       -pin   Specifies to write out pin-based TCF.
+
+       -primary_input
+              Generates a TCF file that includes only the  primary  inputs  in
+              the design.
+
+       -seq_output
+              Generates  a  TCF  file that includes all the activities for the
+              sequential outputs in the design.
+
+       <file> Specifies the name of the output TCF file.
+
+Example
+              * The following command writes the propagated switching activity
+                information to TCF file mmm.tcf:
+
+                write_tcf mmm.tcf
+
+              * The following command writes a pin-based TCF for the whole de-
+                sign:
+
+                write_tcf -pin pin_design.tcf
+
+              * The following command writes out a TCF which only includes ac-
+                tivity information for the primary inputs and sequential  out-
+                puts in the design:
+
+                write_tcf -primary_input -seq_output Power.tcf
+
+              * The following command writes out a pin-based TCF that excludes
+                the specified hierarchical instances:
+
+                write_tcf    -pin   -exclude_hier_insts   {DTMF_INST/CORE_INST
+                DTMF_INST/RAM_128x16 DTMF_INST/RESULTS_INST }
+
+Related Information
+              * set_power_analysis_mode
+
+              * report_power
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025           write_tcf(25.10)

@@ -1,0 +1,147 @@
+{
+  "command": "create_what_if_shape",
+  "is_cmd": true,
+  "summary": "用于在设计中添加、选择、取消选择、删除、列出和显示假设性导线/通孔形状的命令",
+  "description": "该命令用于管理假设性分析中的导线和通孔形状。用户可以通过指定区域、层、网络、间距、间距等参数，创建、修改、查询或删除假设性的布线形状，以进行电源完整性、信号完整性或设计空间探索等分析。支持多种操作模式，如添加、选择、取消选择、删除、列出和保存/加载形状文件。",
+  "usage": "create_what_if_shape [-help] [-area {<llx lly urx ury>}] [-display] [-direction {hor | ver}] [-offset {X Y}] [-add -method {auto | exact}] [-layer <layerName>] [-nets<{net1net2net3...}>] [-spacing <value>] [-objects {selected | all} ] [-add | -select | -deselect | -delete | -list | -save <filename> | -load <filename>] [-pitch <pitch>] [-add -width <width>] [-type {wire | via} ] [-format {txt def}] [-save <filename> -append ] [-remove_existing_wires]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定生成假设性导线/通孔的矩形区域，格式为左下角坐标(llx, lly)和右上角坐标(urx, ury)",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-display",
+      "description": "在图形界面模式下调用GUI显示假设性形状并缩放到选定的形状",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-direction",
+      "description": "控制所添加导线的方向，可选水平(hor)或垂直(ver)",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-offset",
+      "description": "指定从区域加上偏移量(X, Y)来创建金属/通孔。用于在多次运行命令时保持相同区域但使用不同偏移",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add",
+      "description": "指定添加假设性导线/通孔",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-method",
+      "description": "指定添加通孔的方法：auto（自动在指定区域和层对的所有交点添加通孔）或exact（在指定区域和层对添加一个与区域大小完全相同的通孔）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定要添加导线的LEF层名称，或要添加通孔的层对",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要为其创建假设性导线/通孔的网络名称列表。假设性引擎将基于网络模式创建形状",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定每个网络之间的间距。用于控制网络间的间距。指定的-pitch值应大于网络数 * (宽度+间距)",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-objects",
+      "description": "与-delete或-list参数结合使用，以删除或列出选定的假设性形状。也可用于删除或列出所有假设性形状。默认值为all",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-select",
+      "description": "根据网络/层/类型约束选择所有假设性形状。可与-area参数结合使用以选择与指定区域重叠的形状",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-deselect",
+      "description": "根据网络/层/类型约束取消选择所有假设性形状。可与-area参数结合使用以取消选择与指定区域重叠的形状",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delete",
+      "description": "根据网络/层/类型约束删除所有或选定的假设性形状。可与-objects参数结合使用",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-list",
+      "description": "根据网络/层/类型约束列出所有或选定的假设性形状。可与-objects参数结合使用",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-save",
+      "description": "将所有内存中的假设性导线/通孔保存到指定文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-load",
+      "description": "指定加载已保存的假设性形状文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitch",
+      "description": "指定在指定区域和指定层的首选方向上绘制的两条相邻假设性导线中心线之间的距离（间距）。如果未提供此参数，则创建一个大小为{llx,lly,urx,ury}的单个矩形形状",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-width",
+      "description": "指定假设性导线的宽度。可为每个网络指定单独的宽度值",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定要创建的形状类型：导线(wire)或通孔(via)",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "指定输出文件格式。def格式指定创建增量DEF以使用read_def -top加载到GUI中。默认输出格式为txt",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-append",
+      "description": "指定将所有假设性导线/通孔追加到使用-save <filename>参数指定的现有文件中",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-remove_existing_wires",
+      "description": "指定在添加假设性形状之前，从指定的层和区域移除导线和连接的通孔",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

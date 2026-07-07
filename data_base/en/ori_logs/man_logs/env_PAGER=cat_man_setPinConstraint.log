@@ -1,0 +1,299 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setPinConstraint(25.10)                                setPinConstraint(25.10)
+
+Name
+       setPinConstraint  -  Sets  the constraints for partition pins or an I/O
+       pins
+
+Syntax
+       setPinConstraint
+
+       [-help]
+
+       {[-global | -cell <cell_name> | -matchEarlyGlobalRoute ]
+
+        [-global | -pin <pin_name_list>| -area {<x1 y1 x2 y2>} | -side  <side>
+       <_name> | -matchEarlyGlobalRoute ]
+
+        [-global | -layer {<layer_id_or_name_list>} | -loc {<x> <y> z}]
+
+        [-global  |  -loc  {<x>  <y> z} | -edge <edge_numbers> | -corner <cor-
+       ner_number>]
+
+        [[-pin <pin_name_list> [-loc {<x > <y> z}] [-edge <edge_numbers>]] |
+
+        [[-loc {<x> <y> z}] [-edge <edge_numbers>]] |
+
+        [-corner_to_pin_distance <pin_distance> [-corner <corner_number>]]]
+
+        [{-pin <pin_name_list> | -pinTemplate {<layer_id_or_name_list>}}
+
+        [-use_min_width_as_depth | -depth <depth>] [-width <width>]]
+
+        [[-layer {<layer_id_or_name_list>} [-side <side_names>]] |
+
+       [-pinTemplate {<layer_id_or_name_list>} [-use_min_width_as_depth ]]]
+
+       [-spacing <spacing> [-area {<x1 y1 x2 y2>}] [-side <side_names>]]}
+
+       [-depth <depth> [-special_wire ]]
+
+       Sets the constraints for partition pins or an I/O  pins.  You  can  use
+       this  command  before assigning pins. The constraints can be applied on
+       three different levels:
+
+              * Global pin constraint
+
+              * Cell specific pin constraint
+
+              * Pin specific constraint
+
+       If no pin specific constraints exist, then the cell  level  constraints
+       are  applied.  If  cell  specific pin constraints are not defined, then
+       global constraints are applied.
+
+       Note: To retrieve the pin constraints specified  using  the  setPinCon-
+       straint  command, use the getPinConstraint  command. To remove the con-
+       straints for a partition pin, use the unsetPinConstraint command.
+
+Parameters
+       -area {<x1 y1 x2 y2>}
+              Specifies an area overlapping with partition where spacing  con-
+              straint.
+
+              Data_type: rect, optional
+
+       -cell <cell_name>
+              Specifies  the  name  of  the module. The module name is not re-
+              quired if the command is run on a top-level module. You can  use
+              wildcards (*?) with this parameter.
+
+              Data_type: string, optional
+
+       -corner <corner_number>
+              Specifies the corner of the partition block.
+
+              Data_type: int, optional
+
+       -corner_to_pin_distance <pin_distance>
+              Specifies the corner to pin distance in tracks.
+
+              Data_type: int, optional
+
+       -depth <depth>
+              Specifies the pin depth in microns.
+
+              Data_type: float, optional
+
+       -edge <edge_numbers>
+              Specifies  the  integer  value  where edge numbering starts from
+              lower-left corner of a partition clock-wise.
+
+              Edge 0 is the edge that has the smallest y value.
+
+              You can set multiple sides in the -edge option. This allows  you
+              to set multiple sides in a rectilinear design.
+
+              Data_type: string, optional
+
+       -global
+              Specifies  that  the  global constraints for spacing, width, and
+              depth to be honored.
+
+              Note: If no pin specific constraints exist, then the cell  level
+              constraints  are  applied.  If cell specific pin constraints are
+              not defined, then global constraints are applied.
+
+              For example, the following command  specifies  that  the  global
+              constraints are to be honored.
+
+              setPinConstraint  -global -spacing 2 -width 2 -pinTemplate { 2 3
+              4 }
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each
+
+              setPinConstraint parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setPinConstraint
+
+       -layer {<layer_id_or_name_list>}
+              Specifies the metal layers for the partition pin. If you specify
+              multiple  layers, separate the layer names with a space. In this
+              case, the command will constrain the pin to one of the specified
+              layers.
+
+              Notes:
+
+              * This parameter does not restrict the pin to a location on  the
+                layer.  If you want to restrict a pin on a particular location
+                on a particular layer, use the -loc parameter instead.
+
+              * The -layer parameter cannot be used with the -loc parameter.
+
+              * The -layer parameter cannot be used with the -spacing  parame-
+                ter.
+
+              * Layers  can be specified using the LEF layer names or layer ID
+                numbers.
+
+              Data_type: string, optional
+
+       -loc {<x><y z>}
+              Specifies the x and y locations and z layer  ID  number  of  the
+              partition  pin.  The x and locations are calculated with respect
+              to the distance in microns from the lower  left  corner  of  the
+              module.  The layer number specified should be a preferred layer.
+              Otherwise, the command will move the pin to a  preferred  layer.
+              For  example,  -loc  {10  12 7} specifies that the pin should be
+              constrained to a location 10 microns on the x axis  and  12  mi-
+              crons on the y axis from the lower left corner of the partition.
+              on layer Metal7.
+
+              Notes:
+
+              * If  the pin location as per the specified x and y locations is
+                not on a track, the pin is snapped to the nearest track on the
+                specified layer.
+
+              * If you specify this parameter, the assigned pins have a Placed
+                status.
+
+              * The -loc parameter cannot be used with the -layer parameter.
+
+              Data_type: string, optional
+
+       -matchEarlyGlobalRoute
+              When specified, it changes the pin constraints to make them com-
+              pliant with earlyGlobalRoute and does the  following  for  every
+              partition:
+
+              * Allows all layers from setDesignMode -topRoutingLayer to -bot-
+                tomRoutingLayer.
+
+              * Sets pin spacing as 1
+
+              Note:  The  changes  in pin constraints impact the output of the
+              pin assignment commands - assignPtnPin, assignIoPins, and  edit-
+              Pin.
+
+              Data_type: bool, optional
+
+       -pin<pin_name_list>
+              Specifies  the  name of the partition pin. You can use wildcards
+              (*?) with this parameter.
+
+              Data_type: string, optional
+
+       -pinTemplate {<layer_id_or_name_list>}
+              Specifies the metal layers for the  width,  depth,  and  spacing
+              constraints at global level and cell level
+
+              Data_type: string, optional
+
+       -side <side> <_name>
+              Specifies  name of the side. Valid values are { N S E W } or { L
+              B T R } or all.
+
+              Data_type: string, optional
+
+       -spacing <spacing>
+              Specifies the minimum spacing between pins in pin  pitch  value,
+              that is, the distance between tracks.
+
+              For  example, if you specify a value of 2, the minimum pin spac-
+              ing will be equal to the distance between track 1 and track 3.
+
+              Data_type: int, optional
+
+       -special_wire
+              Specifies the depth constraint to be set and honored for special
+              wire pins. When -special_wire parameter is  specified  with  the
+              -depth, -cell and -pinTemplate  parameters, it enables the depth
+              on  desired  layers of specified cells to be honored for special
+              wire pins by the partition command only.
+
+              Data_type: bool, optional
+
+       -use_min_width_as_depth
+              Minimum width should be used as the pin depth.
+
+              Data_type: bool, optional
+
+       -width <width>
+              Specifies the pin width in microns.
+
+              Data_type: float, optional
+
+Example
+              * The following command specifies a width of 10 micrometers  for
+                all  partition  pins in the partition sheet14. These pins will
+                be placed either on layer 2 or on layer 4.
+
+                setPinConstraint -cell sheet14 -pin * -layer {Metal2 Metal4}
+
+              * The following commands set the pin width and  depth  of  layer
+                Metal2 for partition cell ALU to 0.4 and 0.6 respectively.
+
+                setPinConstraint -cell ALU -layer Metal2 -width 0.4
+
+                setPinConstraint -cell ALU -layer Metal2 -depth 0.6
+
+              * The following commands set the pin width of pin pGroup1 to 0.3
+                and reset the pin depth of pin pGroup1 to default.
+
+                setPinConstraint -cell ALU -pin pGroup1 -width 0.3
+
+                unsetPinConstraint -cell ALU -pin pGroup1 -depth
+
+                With this example, all the pins of pGroup1 will have the width
+                0.3 and the default depth.
+
+              * The following commands set the minimum pin spacing for top and
+                bottom edge of partition cell ALU to 1 track.
+
+                setPinConstraint -cell ALU -edge T -spacing 1
+
+                setPinConstraint -cell ALU -edge B -spacing 1
+
+              * The  following  command sets minimum pin spacing for all edges
+                of partition cell TDSP to 3 tracks
+
+                setPinConstraint -cell TDSP -all -spacing 3
+
+              *
+
+                The following command sets the sides, T and B, of layer 3  and
+                5 of partition cell ptn4
+
+                setPinConstraint -cell ptn4 -layer {3 5} -side {T B}
+
+              *
+
+                The  following  command  sets the edges, 2 and 0, of partition
+                cell ptn4
+
+                setPinConstraint -cell ptn4 -pin * -edge {2 0}
+
+              * The following commands sets the pin depth of layer M5 for par-
+                tition cell P to 0.3 using the -special_wire parameter so that
+                it is honored only by the partition command.
+
+                setPinConstraint -cell  P  -depth  .3  -pinTemplate  M5  -spe-
+                cial_wire;
+
+                partition
+
+Related Information
+              * getPinConstraint
+
+              * unsetPinConstraint
+
+              * Setting Pin Constraints in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025    setPinConstraint(25.10)

@@ -1,0 +1,113 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_wire_load_mode(25.10)                            set_wire_load_mode(25.10)
+
+Name
+       set_wire_load_mode - Controls how the software searches through the de-
+       sign  hierarchy to find the appropriate wire load model for a net, or a
+       hierarchical part of a net
+
+Syntax
+       set_wire_load_mode
+
+       [-help]
+
+       {top | enclosed | segmented}
+
+       Controls how the software searches through the design hierarchy to find
+       the appropriate wire load model for a net, or a hierarchical part of  a
+       net.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each set_wire_load_mode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man set_wire_load_mode.
+
+       <{top | enclosed | segmented}>
+              Specifies the wire load model. You can specify one of  the  fol-
+              lowing options.
+
+              * enclosed
+
+              * segmented
+
+              * top
+
+       enclosed:  Selects  the  wire load model using an area lookup table for
+       the module that is at the lowest level in the design hierarchy and con-
+       tains the entire net.
+
+              When you set the mode to enclosed, the software uses the area of
+              the smallest block enclosing the net to  select  the  wire  load
+              model.
+
+              In  the  enclosed mode, the software uses the following order of
+              precedence to search the wire load model in:
+
+              * The inner-most block enclosing the net on which  you  set  the
+                wire  load  selection  group  using  the  set_wire_load_selec-
+                tion_group command,  if  the  auto_wire_load_selection  global
+                variable is enabled.
+
+                Or:
+
+                The  inner-most  block  enclosing the net on which you set the
+                wire load model using the set_wire_load_model command.
+
+              * Each higher level hierarchical block for  a  set_wire_load_se-
+                lection_group  assertion,  all  the  way  up  to the top-level
+                block, if the auto_wire_load_selection global variable is  en-
+                abled.
+
+                Or:
+
+                Each higher level hierarchical block for a set_wire_load_model
+                assertion, all the way up to the top-level block.
+
+              * The  default_wire_load_selection field in the first timing li-
+                brary.
+
+                Or,
+
+                The default_wire_load field in the first timing library.
+
+                Note: If even the default values are not present in the timing
+                library, you will not be able to use the wire load model func-
+                tionality.
+
+       segmented: Selects the wire load model in a way similar to the enclosed
+       mode except that each hierarchical segment of the net is treated  sepa-
+       rately.
+
+              In the segmented mode:
+
+              * A  segment  is  defined  by pins (including hierarchical pins)
+                connected to a particular net.
+
+              * When counting the drivers and receivers, only  the  pins  con-
+                nected  to  the segment are considered. This information along
+                with the wire load models determine the parasitic  information
+                for the segment.
+
+              * The  parasitics  of each segment sum up to form the parasitics
+                for the entire net.
+
+                Note: Each segment may have different wire load models.
+
+       top: Selects the wire load model in a way similar to enclosed and  seg-
+       mented  except  that  all nets use the wire load selection or wire load
+       models defined by the top-level (largest) block enclosing the net.
+
+              Note: If the first library read in does not define  the  default
+              wire load mode, the software uses top as the default mode.
+
+Examples
+              * The following command sets the wire load mode to enclosed:
+
+                set_wire_load_mode enclosed
+
+Related Information
+              * reset_wire_load_mode
+
+                           Fri Apr 04 01:25:37 2025  set_wire_load_mode(25.10)

@@ -1,0 +1,45 @@
+{
+  "command": "reportGateCount",
+  "is_cmd": true,
+  "summary": "报告导入设计的规模，以门数量衡量",
+  "description": "该命令用于报告导入设计的规模，以门数量（gate count）进行衡量。软件使用以下公式计算模块的门数量：gateCount = moduleArea / gateSize。其中，moduleArea是模块的面积，默认包含模块内所有实例（标准单元、模块块和I/O单元）的面积之和；若指定-stdCellOnly参数，则仅包含标准单元的面积。gateSize的计算公式为：gateSize = dbgStdCellHgt x dbgDBUPerIGU x dbgSitesPerGate，其中dbgStdCellHgt是标准单元行高，dbgDBUPerIGU是M2层间距，dbgSitesPerGate是用户定义的全局变量，用于确定计算门数量时软件假设的门尺寸（例如，默认值3表示假设的门尺寸等于1个标准单元行高和3个M2层间距宽度）。用户可以在导入设计后使用此命令。",
+  "usage": "reportGateCount [-help] [-hinst <hinst_name>] [-level <level>] [-limit <gateCount>] [-stdCellOnly] [-outfile <fileName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个reportGateCount参数类型和默认信息的简要描述。有关命令及其所有参数的详细说明，请使用man命令：man reportGateCount。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst",
+      "description": "指定要为其生成门数量报告的分层实例。默认：为与设计顶层单元对应的分层实例生成门数量报告。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-level",
+      "description": "将模块扩展到指定层级。例如，指定1则CTS将指定模块扩展一级，满足-limit参数条件的模块的所有“子”模块的门数量将包含在门数量报告中；指定2则扩展两级，所有“子”和“孙”模块的门数量将包含在报告中。默认：模块不扩展，CTS仅报告模块本身的门数量（相当于指定层级0）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-limit",
+      "description": "指示CTS忽略门数量低于指定限制的模块。此类模块在扩展和报告期间将被忽略。默认：CTS在扩展和报告期间忽略门数量为1000或更少的模块。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-stdCellOnly",
+      "description": "仅基于指定模块内的标准单元计算门数量。模块内的模块块和I/O单元将被忽略。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outfile",
+      "description": "将门数量报告写入指定的文件名。默认文件扩展名为.gateCount。默认：仅在Innovus控制台中显示门数量报告。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

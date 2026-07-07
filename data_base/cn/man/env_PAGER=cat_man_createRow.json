@@ -1,0 +1,81 @@
+{
+  "command": "createRow",
+  "is_cmd": true,
+  "summary": "为指定站点创建行",
+  "description": "为指定的站点创建行。行边界可以通过核心区域或用户指定的区域来定义。此命令支持创建重叠的行，并且只能创建水平行。默认情况下，交替的行会被翻转，并且所有行都是相邻的（行之间没有间隔）。使用此命令时需注意：行可以在核心区域内部和外部（但在芯片边界内）创建；在同一区域创建的所有新行必须是该区域任何现有行高度的整数倍；非整数倍高度的行不能在电源域外部创建。此命令应在导入设计后使用。",
+  "usage": "createRow [-help] -site <siteName> [-area  {<x1  y1  x2  y2>}  |  -boxList {{<x1 y1>} {<x2 y2>} <...>}< >| -polygon {{<x1 y1>} {<x2 y2>}...}] [-spacing <distance>] [-limitInCore] [-noAbut | -noAbut1st] [-flip1st] [-noCheck] [-noFlip]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数的简要描述、类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-site",
+      "description": "指定用于创建行的站点名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-area",
+      "description": "在指定的矩形区域内创建行（默认在核心框内）。坐标值为浮点数，单位为微米。行在芯片框边界处被截断。可以使用Tcl列表或4个单独的参数。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-boxList",
+      "description": "指定一系列点对来定义多个矩形区域，行将在这些矩形的并集中创建。坐标值为浮点数，单位为微米。",
+      "required": false,
+      "type": "point_list"
+    },
+    {
+      "name": "-polygon",
+      "description": "指定一系列点对来定义一个多边形区域，行将在该多边形内创建。坐标值为浮点数，单位为微米。",
+      "required": false,
+      "type": "point_list"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定在某些行之间插入的间隔宽度。默认值为0.0微米。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-limitInCore",
+      "description": "当指定了-area、-polygon或-boxList时，默认行在芯片框与指定形状的交集内创建。若同时指定此选项，则行在核心框与指定形状的交集内创建。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noAbut",
+      "description": "控制行间间隔的插入位置。默认情况下，间隔插入在行对之间。启用此选项后，间隔插入在每一行之后。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noAbut1st",
+      "description": "控制第一个行间间隔的插入位置。默认第一个间隔插入在第一对行之后。启用此选项后，第一个间隔插入在第一行之后。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-flip1st",
+      "description": "控制第一行（最底部）的方向。默认方向为R0。启用此选项后，第一行的方向为MX。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCheck",
+      "description": "指定行不应与现有行对齐，并支持重做/撤销操作。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noFlip",
+      "description": "默认行具有交替方向（...MX R0 MX R0...）。启用此选项后，所有行具有相同的方向（...R0 R0 R0... 或 ...MX MX MX...）。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

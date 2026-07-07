@@ -1,0 +1,195 @@
+{
+  "command": "create_bump",
+  "is_cmd": true,
+  "summary": "Creates bump.",
+  "description": "Creates bump.",
+  "usage": "create_bump [-help] [-allow_outside_of_die] [-allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}] -cell <bumpcell_name> [-check_drc] [-edge_spacing <left bottom right top>] [-exclude_bump_area {rect_list}] [-loc <x y>] [-loc_type {cell_center cell_lowerleft geometry_center geometry_lowerleft}] [-name_format {string, %i, %r, %c}] [-orientation {R0 R90 R180 R270 MX MX90 MY MY90}] [-respect_placement_blockage] [-return_bumps_name] [-start_index <index>] [-pitch <x y> [-pattern_full_chip  | -pattern_side {side width} | -pattern_array {row colunm} | -pattern_ring <width> | -pattern_center {row column}]] [-stagger_type <type> [-stagger_offset <value>]] [ [-keep_out_region <width height>] | [-keep_out_pitch <value>] ] [-relative_type {embedded_bump inst_pin_port block} [[-relative_object {inst_pin_port_list}] [-relative_block <inst+>] [-relative_block_constraint <fileName>] [-relative_assignment ] [-relative_offset <x y>]]] [{-pattern_full_chip  | -pattern_array {row colunm} | -pattern_center {row column}} [-start_from <type>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "Prints out the command usage",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_outside_of_die",
+      "description": "Allow bumps to be created outside of die area.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_overlap_control",
+      "description": "{keep_all keep_existing_bumps keep_new_bumps} It specifies the overlap control type.",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-cell",
+      "description": "It specifies the name of bump cell, which is used to create bumps.",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-check_drc",
+      "description": "It checks drc rules and does not create bump at the spot where exists violation.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-edge_spacing",
+      "description": "It specifies the minimum distances in micron to the edge of the chip from the lower left or center of the outermost bumps. The -loc_type value determines which point of the bump (lower-left or center of the cell or geometry) is used to compute the distance to the edge. The arrays start at the left, bottom location, and extend to the right and top.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_bump_area",
+      "description": "It specifies the areas not to allow bump placement.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keep_out_pitch",
+      "description": "It specifies a pitch with bump center as the center, where bump is not going to be created, if there are existing bumps violating center-to-center pitch.",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-keep_out_region",
+      "description": "It specifies a region with width and height with bump center as the center, where bump is not going to be created, if there are existing bumps.",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-loc",
+      "description": "It specifies the x and y coordinates of the start point for bump creation based on location type.",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-loc_type",
+      "description": "{cell_center cell_lowerleft geometry_center geometry_lowerleft} It specifies the location type for bump creation.",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-name_format",
+      "description": "It specifies the format of bump name like a printf format except it uses %i for index, %r for row number and %c for column number. By default the format is 'Bump_%i'.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-orientation",
+      "description": "{R0 R90 R180 R270 MX MX90 MY MY90} It specifies the orientation of bump for bump generation.",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-pattern_array",
+      "description": "It creates an array of bumps. The bump starts at the coordinates specified by -loc, and extends to the number of <row> and <column> values given from the start corner specified by -start_from.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern_center",
+      "description": "It creates an array of bumps that is centered on the center of chip and that extends for the <row> and <column> values given. The center point can optionally be set directly with -loc. The start corner of array can be specified by -start_from.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern_full_chip",
+      "description": "It creates an array of bumps covering the chip. The array starts at the most closest to boundary point set by -edge_spacing at the corner specified by -start_from, and extends until within -edge_spacing of the chip boundary for the opposite sides. You can optionally directly specify the -loc value for the start point, in which case -edge_spacing only affects the two opposite edges of the array.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pattern_ring",
+      "description": "It creates a ring of bumps around the boundary of the chip that is <width> bumps wide. The ring extends until within -edge_spacing of the chip boundary, starting at the lower-left value allowed by -edge_spacing. You can optionally directly specify the -loc value for the lower-left bump location, in which case -edge_spacing only affects the right and top edges of the array. The -pitch x value is the spacing between bumps inside one ring, and the -pitch y value is the spacing between one ring to the next ring.",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pattern_side",
+      "description": "It creates an array of bumps along one side of the chip. The array is the length of the side, and <width> bumps wide. The legal <side> names are: left, top, right, bottom. <Width> is integer. The array starts at the left/bottom controlled by -edge_spacing, and extends until within -edge_spacing of the top/right sides. You can optionally directly specify the -loc value for the lower-left bump location for bottom/left sides, the upper-left bump for the top side, and lower-right for the right side.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pitch",
+      "description": "It specifies the distance between bump centers in microns.",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-relative_assignment",
+      "description": "It assigns the corresponding net of relative object to bump.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-relative_block",
+      "description": "It specifies the block list. ((inst)+, optional)",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_block_constraint",
+      "description": "It specifies the file name of block constraint.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_object",
+      "description": "It specifies the inst pin port list. Format is {inst:pin:port ...} and port is int type.",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_offset",
+      "description": "It specifies the offset of bump location compared with the relative object.",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-relative_type",
+      "description": "{embedded_bump inst_pin_port block} It specifies the type of relative object.",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-respect_placement_blockage",
+      "description": "It does not create bump overlapping with place blockage.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-return_bumps_name",
+      "description": "It returns names of generated bumps.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stagger_offset",
+      "description": "It specifies the offset between different rows or columns in microns.",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-stagger_type",
+      "description": "{odd_rows odd_columns even_rows even_columns trapezoid} It specifies the stagger type.",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-start_from",
+      "description": "{lower_left upper_left lower_right upper_right} It specifies the starting corner for an array of bumps creation.",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-start_index",
+      "description": "It specifies the starting number of the index for bumps to be created.",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

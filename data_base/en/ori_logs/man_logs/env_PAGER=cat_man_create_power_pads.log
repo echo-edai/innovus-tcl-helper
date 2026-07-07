@@ -1,0 +1,299 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_power_pads(25.10)                              create_power_pads(25.10)
+
+Name
+       create_power_pads - Returns a list of DC sources from your design
+
+Syntax
+       create_power_pads
+
+       [-append_to_vsrc_file]
+
+       [-auto_fetch]
+
+       [-cell {<cell_list>} ]
+
+       [-cell_pin {{<cellname1> <pinname1}>...{<cellnamen> <pinnamen>}+} ]
+
+       [-clear]
+
+       [-display]
+
+       [-format {padcell xy tsv}]
+
+       [-honor_pin_connection]
+
+       [-instance {<inst_list>} ]
+
+       [-instance_pin {{<instname1> <pinname1}>...{<instnamen> <pinnamen>}+} ]
+
+       [-layer {<layername>}]
+
+       [-net <netname>]
+
+       [-package_resistance <value> ]
+
+       [-package_capacitance <value> ]
+
+       [-package_inductance <value> ]
+
+       [-region {<x1> <y1> <x2> <y2>}]
+
+       [-region_pitch {<xpitch> <ypitch>}]
+
+       [-snap_distance { true|false }]
+
+       [-vsrc_file <vsrc_filename>]
+
+       [[-add | -delete] -loc {x y}]
+
+       [-list]
+
+       Returns  a  list of DC sources from your design. DC sources are identi-
+       fied in the LEF file as CLASS PAD POWER, or in the DEF file as PIN with
+       +USE POWER/GROUND. If a single port shape is connected to N  number  of
+       wires, N number of DC sources are reported for that port shape.
+
+       You can use one of the following three methods to fetch voltage sources
+       into the database:
+
+              * fetch all voltage sources
+
+              * fetch  the  voltage sources within the specified region of the
+                specified layer controlled by the specified xPitch/yPitch
+
+                 If the voltage sources with the specified  xPitch/yPitch  are
+                not on the stripe, you can use the -snap_distance parameter to
+                snap the voltage sources to the stripe. As a result, the volt-
+                age  sources  are  generated  only  on  the  stripes  and  the
+                xPitch/yPitch is honored. Use this feature  to  generate  mesh
+                type voltage sources on any process layer.
+
+              * fetch  voltage  source  for  the  specified  cell/cell pin/in-
+                stance/instance pin
+
+       You can edit the fetched voltage sources before saving them to a  volt-
+       age source file. To save the fetched list to a file, use the -vsrc_file
+       parameter. By default, voltage sources will not be displayed on GUI af-
+       ter they are saved to file.
+
+       The   create_power_pads  command supports hierarchical IR drop analysis
+       for a TSV design. When you specify  the  create_power_pads  command  to
+       fetch  the  voltage  sources  from  the  LEF file, the command not only
+       searches for the P/G pin of the pad connected to the specified P/G net,
+       but also fetches for the embedded bump TSV property definition for  the
+       P/G  pin connected to the P/G net. The port that contains the point de-
+       fined in the embedded bump property is considered as the embedded bump.
+
+Parameters
+       -add   Adds the location of a new voltage source to memory.
+
+       -append_to_vsrc_file
+              Appends the fetched voltage  sources  to  the  existing  voltage
+              source file. You can use this parameter to fetch voltage sources
+              in the incremental mode.
+
+       -auto_fetch
+              Specifies to fetch all voltage sources.
+
+       -cell {<cell_list>}
+              Specifies the cells from which voltage sources are determined.
+
+       -cell_pin {{<cellname1> <pinname1}>...{<cellnamen> <pinnamen}+>}
+              Specifies  the  cells  and their pins from which voltage sources
+              are determined.
+
+       -clear Clears the display of the DC sources that were specified in  the
+              Edit Pad Location form.
+
+       -delete
+              Deletes the location of a voltage source from memory.
+
+       -display
+              Loads  and  displays  the  pad  location data from the specified
+              file.
+
+       -format  {padcell | xy | tsv}
+              The format of the saved pad location file. The choices  are  Pad
+              File  (VoltageStorm), XY File (xy coordinates), and TSV. You can
+              create and save the voltage sources location file with a  unique
+              name for the voltage sources (both VDD and VSS).
+
+              Default: xy
+
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       -honor_pin_connection
+              Honors pin wire connection when fetching voltage source location
+              from  a  power  pad.  When you specify this parameter, only pins
+              with wire connection are output as voltage sources.
+
+              You have the choice to specify whether real wire  connection  is
+              to  be  honored  or  not.  Typically, during the sign-off stage,
+              power pads are already fully routed  so  the  unconnected  power
+              pads  should not be counted in as voltage sources. You can spec-
+              ify this using  the  -honor_pin_connection  parameter.  Alterna-
+              tively,  in  the early stage, power pads may not have been fully
+              routed so you do not need to set this parameter.
+
+              Note: For a port with shapes at multiple layers, all layer  con-
+              nected shapes are fetched as voltage sources.
+
+       -instance {<inst_list>}
+              Specifies  the  instances  from which voltage sources are deter-
+              mined.
+
+       -instance_pin {{<instname1> <pinname1}>...{<instnamen> <pinnamen}+>}
+              Specifies the  instances  and  their  pins  from  which  voltage
+              sources are determined.
+
+       -layer layerName
+              Specifies  the process layer in LEF on which the voltage sources
+              are to be generated.
+
+              When the -layer parameter is specified in conjunction  with  the
+              -region  {x1 y1 x2 y2} and -region_pitch {xpitch ypitch} parame-
+              ters, the layer set here is the layer for which voltage  sources
+              are  to be fetched. If the -layer parameter is not used together
+              with the -region {x1 y1 x2 y2} and -region_pitch {xpitch ypitch}
+              parameters, the layer set here is for the lowest layer  to  snap
+              (the default value is M5).
+
+       -list  Loads and displays all voltage sources from memory.
+
+       -loc {x y}
+              Specifies  the location at which the specified voltage source is
+              to be added or deleted.
+
+       -net <netname>
+              Specifies the name of a power net for which to list DC sources.
+
+              Default: If you do not specify a net name,  the  power  analyzer
+              automatically lists DC sources for all nets.
+
+       -package_resistance <value>
+              Specifies  the resistance value of the package resistance-induc-
+              tance-capacitance (RLC) model in Ohm.
+
+       -package_capacitance <value>
+              Specifies the capacitance value of the package resistance-induc-
+              tance-capacitance (RLC) model in Farad (F).
+
+       -package_inductance <value>
+              Specifies the inductance value of the package  resistance-induc-
+              tance-capacitance (RLC) model in Henry (H).
+
+       -region {<x1> <y1> <x2> <y2>}
+              Generates the voltage sources in the specified region.
+
+       -region_pitch {<xpitch> <ypitch>}
+              Specifies  the  region  pitch  in  the x and y direction for the
+              voltage sources.
+
+       -snap_distance <value>
+              Specifies the snapping distance constraint from IO/pad pins.  If
+              this  parameter  is not specified with a value, no snapping will
+              be done.
+
+              Default: 0
+
+              Specifies whether to snap DC sources from I/O pad pins  to  some
+              location  on the power structure. When set to true, the software
+              performs autofetch with snapping.
+
+              For I/O pad pins that are connected to core ring,  the  software
+              selects the highest layer and center of the pin as the DC source
+              location.  When I/O pad pins are not connected to core ring, the
+              software snaps the location of the I/O pad to somewhere  on  the
+              core  ring. The DC source location should be within the distance
+              of snapping distance constraint from I/O pad pins, and the layer
+              should not be lower than the lowest layer snap constraint.
+
+       -vsrc_file <vsrc_filename>
+              Specifies the name of the voltage source file that  is  required
+              to save the auto fetched result.
+
+Examples
+              *
+                 The  following command fetches all voltage sources of the net
+                VDD:
+
+                create_power_pads -net VDD -auto_fetch
+
+              * The following command loads and displays all  voltage  sources
+                from memory:
+
+                create_power_pads -list
+
+              * The  following  command  specifies  the  location at which the
+                specified voltage source is to be added:
+
+                create_power_pads -add -net VDD -layer METTOP -loc {500 500}
+
+              * The following command specifies the location  from  which  the
+                specified voltage source is to be deleted:
+
+                create_power_pads  -delete  -loc  {500 500} -layer METTOP -net
+                VDD
+
+              *
+
+                The following command fetches the voltage sources  within  the
+                specified  region of the layer METAL6 controlled by the speci-
+                fied xpitch/ypitch, and saves the sources to the file  report2
+                in the xy format:
+
+                create_power_pads  -net  VDD  -region  100  100 3000 3000 -re-
+                gion_pitch 555 444 -layer METAL6 -format xy -snap_distance 100
+                -vsrc_file report2.pp
+
+                In the first example, the output was not saved but it  remains
+                in  the  memory  till  you  specify the second example. Before
+                loading and saving the output of the second example, the first
+                example output in the memory is saved to an auto generated  dc
+                source  file incrementally, like pp.src, pp1.src, pp2.src, and
+                so on.
+
+              *
+
+                The following command fetches  voltage  source  for  the  cell
+                BUMPCELL in the xy format:
+
+                create_power_pads -net VDD -cell BUMPCELL -format xy
+
+              * The  following command clears the voltage sources displayed in
+                the GUI and the fetched voltage sources in the database:
+
+                create_power_pads -clear
+
+              * The following command displays the fetched and  saved  voltage
+                sources for the net VDD in the file report2 :
+
+                create_power_pads  -net  VDD -auto_fetch -vsrc_file report2.pp
+                -display
+
+              * The following command displays voltage sources in the  GUI  by
+                loading the saved voltage source file  report1:
+
+                create_power_pads -vsrc_file report1.pp -display
+
+              *
+
+                The following command saves the fetched voltage sources to the
+                voltage source file report1.pp:
+
+                create_power_pads -vsrc_file report1.pp
+
+Related Information
+              * set_rail_analysis_mode
+
+              * analyze_rail
+
+              * "Static  Power, IRdrop and EM Analysis" in the Voltus IC Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025   create_power_pads(25.10)

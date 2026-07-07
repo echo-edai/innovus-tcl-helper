@@ -1,0 +1,57 @@
+{
+  "command": "route_fix_ir",
+  "is_cmd": true,
+  "summary": "使用NanoRoute引擎修复IR压降（电压降）违规",
+  "description": "使用NanoRoute引擎修复IR压降（电压降）违规。它基于轨道分析结果，创建从顶层电源地（PG）条带到底层PG轨道形状的额外PG连接路径。此方法还可以同时布线信号网络和用于IR压降修复的PG网络。它具有拥塞驱动和时序感知能力。您可以在布线后（postroute）使用此命令。",
+  "usage": "route_fix_ir [-help] [-concurrent_pg_and_signal {0 1}] -ground_net <string> [-hotspot_boxes {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}] [-irdrop_threshold <float>] -power_net <string> [-rail_path <string>] -top_layer <string>",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个route_fix_ir参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-concurrent_pg_and_signal",
+      "description": "设置为1时，NanoRoute路由器同时布线信号网络和用于IR压降修复的PG网络。设置为0时，NanoRoute路由器仅布线PG网络线，不触碰信号网络。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-ground_net",
+      "description": "指定用于IR压降修复的地网络名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-hotspot_boxes",
+      "description": "指定热点区域的坐标框。注意：指定此选项时，将忽略 -rail_path 选项。",
+      "required": false,
+      "type": "box_list"
+    },
+    {
+      "name": "-irdrop_threshold",
+      "description": "指定被分析域允许的最小电压IR压降值。注意：此选项与 -rail_path 选项配合使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-power_net",
+      "description": "指定用于IR压降修复的电源网络名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-rail_path",
+      "description": "指定轨道分析结果的路径。NanoRoute路由器随后会调用调试IR压降功能来创建热点文件。注意：如果未指定轨道分析路径目录，NanoRoute路由器会自动调用功耗分析、轨道分析和调试IR压降功能来创建热点文件。注意：此选项与 -irdrop_threshold 选项配合使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_layer",
+      "description": "指定用于连接IR压降修复PG网络的顶层条带层。",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "command": "attachTerm",
+  "is_cmd": true,
+  "summary": "将终端连接到指定网络",
+  "description": "attachTerm 命令用于将一个终端（terminal）连接到指定的网络（net）。如果该终端已连接到其他网络，软件会先将其从当前网络断开，再连接到新网络。此命令消除了在向一个网络连接多个终端（尤其是同时涉及输出和输入终端）时的顺序依赖问题。注意：对于驱动模块输出终端的终端，不应使用 detachTerm 命令来断开，因为这会在输出终端处产生 Verilog 违规。应使用 attachTerm 命令将其连接到新网络，该命令会自动处理断开旧连接的过程。此外，该命令支持指定层次化网络名和平坦网络名。",
+  "usage": "attachTerm [-help] [-moduleBased <verilogModule>] [-noNewPort] <instName> <termName> <netName> [-port <portName>] [-pin <refInstName><refPinName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令的简要描述，包括各参数的类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-moduleBased",
+      "description": "将终端连接到指定的 Verilog 模块。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noNewPort",
+      "description": "禁止 Innovus 在连接终端时创建新的层次化端口。如果无法通过现有端口连接，命令将报错停止。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<instName>",
+      "description": "指定包含该终端的实例名称。如果实例不存在，命令将报错停止。",
+      "required": true,
+      "type": "inst+"
+    },
+    {
+      "name": "<termName>",
+      "description": "指定要连接到网络的终端名称。如果终端不存在，命令将报错停止。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "<netName>",
+      "description": "指定要连接终端的网络名称。如果网络不存在，命令将报错停止。保留名称 1'b1 和 1'b0 可用于直接将常量值设置到终端，而非连接到网络。",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-port",
+      "description": "指定用于连接终端和网络的层次化端口名称。该端口必须存在于包含实例的模块中，且已连接到指定网络。使用此参数可维持特定的网表拓扑，便于后续等价性检查。不能与 -pin 参数同时使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定实例 <refInstName> 上的引脚 <refPinName>，该引脚已连接到网络，Innovus 将通过此引脚连接终端。不能与 -port 参数同时使用。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

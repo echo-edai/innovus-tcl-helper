@@ -1,0 +1,160 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+route_pg(25.10)                                                route_pg(25.10)
+
+Name
+       route_pg
+
+Syntax
+       route_pg
+
+       [-help]
+
+       [-check_psdl_only]
+
+       [-delete_floating]
+
+       [-fast]
+
+       [-psdl_file <file_name>]
+
+       [-skip_block_pin]
+
+       [-skip_partial_overlap_via]
+
+       [-skip_physical_pin]
+
+       [-skip_via]
+
+       [-stop_on_error]
+
+       [-use_full_pattern]
+
+       [-use_namespace]
+
+       [-write_psdl <output_file>]
+
+       Uses  the  Innovus  database,  builds the region with the help of PSDL,
+       where the PG structure is to be created, and parses  it.  This  command
+       also uses all the syntax in PSDL to build the PG structure.
+
+       The  following  figure  presents the process of developing a PG routing
+       flow using the route_pg command:
+
+       Parameters
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each route_pg parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man route_pg
+
+       -check_psdl_only
+              Performs sanity check only on the PSDL input file.
+
+       -delete_floating
+              Removes floating wires.
+
+       -fast  Generates PG routing flow in the Fast PG mode.
+
+       -psdl_file <file_name>
+              Specifies the PSDL input file.
+
+       -skip_block_pin
+              Skips the formation of connection to the block pins.
+
+       -skip_partial_overlap_via
+              Skips building of via on partial overlap intersection.  See  the
+              example below:
+
+       -skip_physical_pin
+              Skips  generation  of  physical pins, when the stripes touch the
+              design boundary.
+
+       -skip_via
+              Skips building via object.
+
+       -stop_on_error
+              Stops the PG route process if there is any critical or non-crit-
+              ical/recoverable error in the PSDL file. When this parameter  is
+              not  specified,  the  Flash PG engine stops the PG route process
+              only if there is any critical error in the PSDL file.
+
+              Critical errors in the PSDL file include:
+
+              * Syntax errors
+
+              * NRPG-75 warning
+
+              * When the specified variable name does not exist
+
+              * When the specified Tcl variable does not exist  or  its  value
+                does not meet the required format
+
+              Non-critical/recoverable errors in the PSDL file include:
+
+              * Missing  values that can easily be extracted/obtained from the
+                design data or tech LEF
+
+              * Duplicate definitions/syntaxes
+
+       -use_full_pattern
+              Allows route_pg to accept only a whole pattern set for  building
+              the PG structure region when Flash PG reaches the end of the re-
+              gion, or when there are DRC violations in its surrounding.. When
+              this  parameter is not specified,  route_pg can also accept par-
+              tial region set.
+
+       -use_namespace
+              Uses namespace for metal Id.
+
+       -write_psdl <output_file>
+              Writes a PSDL file to ensure that the input numerical/string Tcl
+              variable is correctly calculated and applied.
+
+Examples
+              * The following command checks the -psdl_file syntax only (with-
+                out running the route_pg command):
+
+                route_pg -fast -psdl_file <filename> -check_psdl_only
+
+              * The following command removes a floating wire:
+
+                route_pg -fast -psdl_file <psdl_file> -delete_floating
+
+              * The following command does not generate via while running  the
+                route_pg command:
+
+                route_pg -fast -psdl_file <psdl_file> -skip_via
+
+              * The following command skips partial generated vias:
+
+                route_pg   -fast  -psdl_file  <psdl_file>  -skip_partial_over-
+                lap_via
+
+              * The following command generates a PG structure in the Fast  PG
+                mode and writes a PSDL file during its run:
+
+                route_pg   -fast   -psdl_file  <file_name>  -write_psdl  <out-
+                put_file>
+
+              * The following command generates a PG structure in the Complete
+                PG mode and writes a PSDL file during its run:
+
+                route_pg -psdl_file <file_name> -write_psdl <output_file>
+
+              * The following command checks the PSDL syntax and writes a PSDL
+                file without generating the PG structure:
+
+                route_pg -psdl_file <file_name>  -check_psdl_only  -write_psdl
+                <output_file>
+
+Related Information
+       The following sections in Innovus User Guide:
+
+              * PG Network Synthesis
+
+              * PG Structure Description Language
+
+                           Fri Apr 04 01:25:37 2025            route_pg(25.10)

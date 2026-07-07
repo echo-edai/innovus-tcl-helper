@@ -1,0 +1,51 @@
+{
+  "command": "set_clock_groups",
+  "is_cmd": true,
+  "summary": "定义具有指定时钟定义的时钟组",
+  "description": "此命令用于定义时钟组，并指定组内时钟的关系（如逻辑互斥、物理互斥或异步）。软件会将在此命令之后定义的所有时钟分配到一个默认时钟组中。该命令不会将主时钟上的时钟分组应用于生成的子时钟。如果时钟组规范存在重叠，软件将按以下优先级顺序解析行为：物理互斥 > 异步 > 逻辑互斥。软件会丢弃使用此命令设置为物理互斥、逻辑互斥或异步的时钟之间的任何显式虚假路径断言。作为替代方案，可以使用多模式机制。在实现流程中，通常不能使用顺序设置活动时钟的方法。对于不同模式的并发分析，可以使用基于多模式的方法来驱动IPO，而不是使用set_clock_groups命令。",
+  "usage": "set_clock_groups [-name <name>] [-comment <string>] [-logically_exclusive] | [-physically_exclusive] | [[-asynchronous] [-allow_paths]] [-group <clock_list>]",
+  "options": [
+    {
+      "name": "-name",
+      "description": "指定要添加的时钟组的名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-comment",
+      "description": "允许插入注释。注释会被读取但会被忽略（伴随一次性警告信息），不用于时序分析报告，也不会在保存约束时写出",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-logically_exclusive",
+      "description": "定义逻辑互斥的时钟组。组内时钟之间没有功能路径，但在设计中同时存在。软件在信号完整性分析中会考虑这些时钟之间的攻击者交互，但在时序分析中将其视为虚假路径。注意：此参数对SI分析没有影响。例如，通过时钟多路选择器选择的时钟",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-physically_exclusive",
+      "description": "定义物理互斥的时钟组。组内时钟不能在设计中同时存在。软件在信号完整性分析中不考虑物理互斥时钟组之间的攻击者交互。从SI分析的角度看，所有与受害网络物理互斥的攻击者网络在毛刺和噪声延迟分析中都会被忽略。属于物理互斥组的攻击者网络不能一起攻击。在这种情况下，会评估所有物理互斥组中的所有攻击者集合，并选择对SI分析影响最大的一组网络。对于时序分析，软件将这些时钟组视为虚假路径。例如：定义在同一源引脚上的多个时钟",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-asynchronous",
+      "description": "定义具有异步时钟的时钟组。异步时钟没有指定的相位关系。软件在信号完整性分析中认为异步网络具有无限的时序窗口重叠，并在时序分析中将其视为虚假路径。使用 -allow_paths 参数可以在时序分析中追踪这些路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_paths",
+      "description": "允许在时序分析中追踪异步时钟组之间的路径。默认情况下这些路径被阻塞。使用此选项时，软件在信号完整性考虑中仍将这些路径视为异步。信号完整性分析不支持 -allow_paths 参数。此参数需与 -asynchronous 参数一起使用",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-group",
+      "description": "定义一组时钟，这些时钟与所有其他组中定义的时钟是互斥的或异步的。如果只定义一个组，则所有不在该组中的时钟隐式属于一个默认时钟组。软件会自动将在此 set_clock_groups 命令之后定义的任何新时钟添加到此默认时钟组中",
+      "required": true,
+      "type": "clock_list"
+    }
+  ]
+}

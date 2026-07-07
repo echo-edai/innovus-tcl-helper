@@ -1,0 +1,75 @@
+{
+  "command": "trim_pg",
+  "is_cmd": true,
+  "summary": "提供一种半自动化机制，基于IR压降分析报告，利用现有电源网格模式来修剪冗余的电源地（PG）走线和通孔。",
+  "description": "该命令提供一种半自动化机制，帮助修剪冗余的电源地（PG）走线和通孔。它利用现有的电源网格模式，并基于IR压降分析报告进行操作。此命令消除了手动调整电源结构以减少电源网格在面积、时序或功耗方面的悲观估计的需求。",
+  "usage": "trim_pg [-help] [-area {<x1, y1, x2, y2>} | -candidate_file <file_name>] -net {<list_of_nets>} {{-layer {<layer_name1> [<layer_name2>]} -pattern {<str1> [<str2> ... <strN>]} -type {stripe |  via}}  |  -candidate_file <file_name>} [-exclude_local_grid  {{<lx1  ly1  ux1  uy1>} {<lx2 ly2 ux2 uy2>}...} | -candidate_file <file_name>] [-exclude {{<lx1 ly1 ux1  uy1>}  {<lx2  ly2  ux2  uy2>}...}  |  -candidate_file <file_name>] [-keep_dangling_via] [-threshold <threshold_value> | -candidate_file <file_name>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个trim_pg参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "定义需要修剪走线和通孔的区域。与-area定义的方框重叠的走线将被修剪。默认值为整个核心区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-candidate_file",
+      "description": "指定候选文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要修剪的电源或地网列表。",
+      "required": true,
+      "type": "net+"
+    },
+    {
+      "name": "-layer",
+      "description": "指定用于走线和通孔修剪的金属层名称。修剪走线时，指定走线所在的<layer_name1>。修剪通孔时，指定通孔堆栈所在的<layer_name2>。第一个层在应用通孔修剪模式时用作参考层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern",
+      "description": "指定修剪模式。修剪走线时，指定<str1>，该字符串是由'0'和'1'组成的序列，指示是修剪还是保留走线。修剪通孔时，<str1>和多个字符串（如果需要）定义了一个多维修剪模式。每个字符串是由'0'和'1'组成的序列，指示是否沿着参考层上的相应走线修剪或保留堆栈通孔。参考层是-layer参数中的第一个层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定修剪类型，可以是针对层的走线或两层之间的堆栈通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_local_grid",
+      "description": "排除整个走线被跳过修剪的区域。如果一条走线完全位于某个-exclude_local_grid方框内（可以接触边界），则将其从修剪候选对象中排除，并且在应用修剪模式时不计数。当在大面积区域进行修剪但该区域内存在可能影响全局修剪模式的局部走线时，此参数很有用。排除方框可以与-area方框部分重叠。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude",
+      "description": "排除走线和通孔中不需要修剪部分条纹的方框区域。此参数与-area参数一起使用以指定排除区域。如果一条走线与排除区域部分重叠，则重叠的走线段不会被修剪。排除方框可以与-area方框部分重叠。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-keep_dangling_via",
+      "description": "在修剪走线时保留悬空通孔。默认情况下，悬空通孔会被移除。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-threshold",
+      "description": "指定走线合并的阈值。中心线间距小于或等于该阈值的走线将被考虑进行修剪。默认值为0。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

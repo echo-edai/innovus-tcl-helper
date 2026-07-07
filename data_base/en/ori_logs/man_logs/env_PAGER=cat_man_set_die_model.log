@@ -1,0 +1,97 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_die_model(25.10)                                      set_die_model(25.10)
+
+Name
+       set_die_model - Specifies to import a die model on die Interposer or on
+       package netlist
+
+Syntax
+       set_die_model
+
+       [-help]
+
+       [-subckt <subcircuitname>]
+
+       {-reset   |  [[-die_instance_name  <dieinstname>  [-spice  <model_file>
+       [-mapping <mapping_file>]]] ]
+
+       }
+
+       Specifies to import a  die  model  on  die  Interposer  or  on  package
+       netlist.
+
+       This command gives information about the die model that will be used in
+       the  rail  analysis  of  another die, wherein the two die are connected
+       through die Interposer die or package netlist. For example, if you  are
+       performing  IR  drop analysis for a die (die2) on an Interposer/package
+       design that is connected to another die (die1),  and  if  the  two  die
+       share  the  power/ground  network,  it  is imperative to import the die
+       model of die1 during IR drop analysis of die2.
+
+       You can import multiple die models by specifying multiple set_die_model
+       commands.
+
+Parameters
+       -die_instance_name <dieinstname>
+              Mandatory parameter. Specifies the die  instance  name  for  die
+              model.  This  is  the  die model of the die that needs to be im-
+              ported.
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each set_die_model parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man set_die_model.
+
+       -mapping <mapping_file>
+              Mandatory parameter. Specifies the name of the mapping file that
+              contains  the  port connection mapping between the die model and
+              voltage source of the chip to be analyzed.
+
+              The two mapping file formats are:
+
+              * Mapping when die model on LEF/DEF-based Interposer Die
+
+                #port_of_die_model  cell   die_name/VSRC_pad_name
+
+                VDD_Bump_VDD_9_0    cell   Interposer/Bump_DIE0_VDD_0
+
+                VDD_Bump_VDD_9_0    cell   Interposer/Bump_DIE0_VDD_1
+
+              * Mapping when die model on Package Design
+
+                #port_of_die_model  pkg    port_of_pkg_netlist
+
+                VDD_Bump_VDD_9_0    pkg    VDD_3
+
+                VDD_Bump_VDD_9_0    pkg    VDD_4
+
+       -reset Resets all the previous set_die_model command  settings  to  the
+              default settings.
+
+       -spice<model_file>
+              Mandatory parameter. Specifies a file containing a SPICE subcir-
+              cuit describing the die model.
+
+       -subckt <subcircuitname>
+              Defines the top-level subcircuit in package files. When this pa-
+              rameter is not specified, the first circuit in the Spice file is
+              used as the default top circuit.
+
+Examples
+              * The following command imports two die models Die1 and Die2:
+
+                set_die_model  -die_instance_name  Die1  -spice die1_model.ckt
+                -mapping die1_port.txt
+
+                set_die_model -die_instance_name  Die2  -spice  die2_model.ckt
+                -mapping die2_port.txt
+
+Related Information
+              * set_package
+
+              * create_die_model
+
+              * "Package Analysis" in the Voltus Stylus Common UI User Guide
+
+                           Fri Apr 04 01:25:37 2025       set_die_model(25.10)

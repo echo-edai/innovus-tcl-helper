@@ -1,0 +1,121 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_data_check(25.10)                                reset_data_check(25.10)
+
+Name
+       reset_data_check  - Removes specified data-to-data checks that you have
+       specified using the set_data_check command
+
+Syntax
+       reset_data_check
+
+       {-from | -rise_from | -fall_from} <pin_or_port_list>
+
+       {-to | -rise_to | -fall_to} <pin_or_port_list>
+
+       [-setup]
+
+       [-hold]
+
+       [-clock <clock_object>]
+
+       Removes specified data-to-data checks that you have specified using the
+       set_data_check command.
+
+Parameters
+       -clock <clock_object>
+              Removes the data check with a related (-from) pin event that  is
+              triggered by the specified clock.
+
+              Use  this  parameter  only  if  the original set_data_check con-
+              straint also used the -clock parameter to  specify  an  explicit
+              clock relationship.
+
+       -from |-rise_from | -fall_from <pin_or_port_list>
+              Specifies  the related pins of the data-to-data checks to be re-
+              moved.
+
+              The <pin_or_port_list> list can contain either object IDs or hi-
+              erarchical names relative to the  current  module.  Leaf  design
+              cells (instances) can also be specified.
+
+              Use only one -from, -rise_from, or -fall_from parameter per com-
+              mand.
+
+              By default, the -from parameter removes checks for both the ris-
+              ing and the falling edges.
+
+              Using  -rise_from parameter removes checks at the rising edge of
+              the signal on the from pins.
+
+              Using -fall_from parameter removes checks at the falling edge of
+              the signal on the from pins.
+
+       -setup/-hold
+              Specifies whether the data check to be removed is for  setup  or
+              hold check. If you do not specify either -setup or -hold option,
+              both setup and hold checks are removed.
+
+       -to | -rise_to | -fall_to <pin_or_port_list>
+              Specifies  the constrained pins of data-to-data checks to be re-
+              moved.
+
+              The <pin_or_port_list> list can contain either object IDs or hi-
+              erarchical names relative to the  current  module.  Leaf  design
+              cells (instances) can also be specified.
+
+              Use only one -to, -rise_to, or -fall_to parameter per command.
+
+              By  default,  the -to parameters removes both the rising and the
+              falling edges.
+
+              Using -rise_to parameter removes the rising edge of  the  signal
+              on the to pins.
+
+              Using  -fall_to parameter removes the falling edge of the signal
+              on the to pins.
+
+Examples
+              * The following commands set and  reset  the  data  checks  from
+                port30 to port28:
+
+                set_data_check 0.345 -rise_from port30 -to port28
+
+                report_timing -rise_from port30 -to port28
+
+                The following report is displayed:
+
+                Path 1: VIOLATED Data To Data Setup Check with Pin port30
+
+                Endpoint: port28 (v) checked with leading edge of 'PH1'
+
+                Beginpoint: U2/Q (v) triggered by leading edge of 'PH1'
+
+                Other End Arrival Time 0.465
+
+                - Data Check Setup 0.345
+
+                + Phase Shift 0.000
+
+                = Required Time 0.120
+
+                - Arrival Time 0.309
+
+                = Slack Time -0.189
+
+                reset_data_check -rise_from port30 -to port28
+
+                report_timing -rise_from port30 -to port28
+
+                The following information is displayed:
+
+                No constrained timing paths with given description found.
+
+                Paths  may  be  unconstrained (try '-unconstrained' option) or
+                may not exist.
+
+Related Information
+              * set_data_check
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025    reset_data_check(25.10)

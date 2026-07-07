@@ -1,0 +1,135 @@
+{
+  "command": "report_ccopt_skew_groups",
+  "is_cmd": true,
+  "summary": "显示偏斜组中的偏斜和插入延迟信息",
+  "description": "此命令用于显示偏斜组中的偏斜和插入延迟信息。默认情况下，report_ccopt_skew_groups 命令会在报告开头显示两个汇总表。第一个表列出了每个时序角中每个偏斜组的插入延迟和偏斜（以及目标值）。第二个表列出了偏斜组中最小和最大路径的起点和终点。报告的其余部分包含每个时序角中每个偏斜组的详细最小和最大路径信息。可以通过配置 set_ccopt_property skew_group_report_columns 来自定义偏斜组报告中包含的列。可以通过配置 set_ccopt_property skew_group_report_histogram_bin_size 来自定义直方图范围的大小。",
+  "usage": "report_ccopt_skew_groups [-help] [-delay_corners {<list_of_delay_corners>} | -views {<list_of_views>}] [-exclude_pin_insertion_delay] [-exclude_source_latency] [-file <file_name>] [-from <sources>] [-histograms] [-include_voltage {on | off | auto} | -summary] [-no_invalidate] [-paths <number_of_paths>] [-skew_groups <list_of_skew_groups | -include_reporting_only_skew_groups] [-skip_timing_update] [-summarize_stage_depth <cell_type_list>] [-tcl_list] [-through <list_of_pins>] [-to <list_of_sinks>] [-early | -late]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 report_ccopt_skew_groups 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delay_corners",
+      "description": "指定报告将仅限于指定的延迟角。注意：-delay_corners 和 -views 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-views",
+      "description": "将报告限制在与指定视图关联的延迟角。注意：-delay_corners 和 -views 参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_pin_insertion_delay",
+      "description": "指定应从报告中排除引脚插入延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_source_latency",
+      "description": "指定应从报告中排除时钟的源延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-file",
+      "description": "指定将报告内容的副本保存到指定的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from",
+      "description": "指定要考虑报告的偏斜组的源列表。如果指定，则仅报告从指定源之一开始的路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-histograms",
+      "description": "指定将显示关键信息的直方图。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-include_voltage",
+      "description": "打印电压列。可用选项：on（始终打印额外电压列）、off（不打印额外电压列）、auto（仅当电压不同时打印额外电压列）。注意：此参数与 -summary 参数互斥。默认值：auto。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_reporting_only_skew_groups",
+      "description": "指定时，报告额外包含仅报告偏斜组。仅报告偏斜组是其约束属性设置为 none 的偏斜组。此类偏斜组不施加时钟平衡约束，并且 CTS 不考虑。默认情况下，仅报告偏斜组不包含在报告中。如果使用 -skew_groups 参数明确指定了仅报告偏斜组，则该偏斜组始终包含在报告输出中。注意：-include_reporting_only_skew_groups 和 -skew_groups 参数互斥。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_invalidate",
+      "description": "指定不应使时序引擎失效。时序引擎用于计算报告中显示的时序数据。默认情况下，生成报告时会使其失效，因此所有时序数据都会重新计算。这会增加生成报告的时间。使用 -no_invalidate 选项可重用现有的时序数据生成报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-paths",
+      "description": "指定每个时序角要报告的路径数量。默认值：1。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-skew_groups",
+      "description": "将报告限制在指定的偏斜组。默认情况下，显示所有定义的偏斜组。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_timing_update",
+      "description": "指定不应更新时序引擎。时序引擎用于计算报告中显示的时序数据。默认情况下，生成报告时会重新计算时序数据。这会增加生成报告的时间。指定此参数可跳过时序数据的计算。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-summarize_stage_depth",
+      "description": "指定命令在报告时将考虑树中指定类型单元的数量，而不是考虑延迟。可能的值包括 buffer、inverter、logic、clock_gate 和 generator。也可以指定 * 以包含所有单元类型。注意：* 设置不与其他任何单元类型组合使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-summary",
+      "description": "指定报告中仅显示汇总表。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "指定报告将创建为 Tcl 数据而非文本报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-through",
+      "description": "提供表示所有报告路径必须经过的点的引脚对象列表。路径必须经过指定的引脚之一。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to",
+      "description": "提供表示要考虑报告的偏斜组的所有汇点的引脚对象列表。如果指定，则仅报告在指定汇点之一终止的路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-early",
+      "description": "指定仅报告延迟角的早期部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-late",
+      "description": "指定仅报告延迟角的晚期部分。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

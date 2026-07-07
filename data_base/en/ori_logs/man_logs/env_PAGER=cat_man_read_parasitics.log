@@ -1,0 +1,151 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+read_parasitics(25.10)                                  read_parasitics(25.10)
+
+Name
+       read_parasitics  - Reads the SPEF and RCDB-based RC parasitics informa-
+       tion and information from the RCDBs already created in Innovus
+
+Syntax
+       read_parasitics
+
+       [-help]
+
+       [-force]
+
+       {[{{[-rc_corner <string>]}}]}
+
+       [-starN]
+
+       [-via_variation_file <viaVariationFile>]
+
+       Reads the SPEF and RCDB-based RC parasitics information and information
+       from the RCDBs already created in Innovus.  For  hierarchical  designs,
+       use this command to read top-level as well as block-level parasitic in-
+       formation.
+
+       Note:  The  following  are important aspects to be considered for using
+       this command:
+
+              * The RCDB parasitic file must have the .rcdb.d extension.
+
+              * The RCDB-based parasitic data that is  provided  as  input  to
+                this  command must be the one that was saved in the same major
+                release of the software. The command will not  read  the  RCDB
+                data  saved in a previous release. For example, if you provide
+                RCDB saved in the software's 10.1.x release as  input  to  the
+                read_parasitics  command in the software's 11 release, then it
+                cannot be read.
+
+              * Only the RCDB parasitic data on systems that are same as those
+                used for saving the data can be read. For example, if the data
+                is saved on Linux in 64-bit mode, you can only restore  it  on
+                Linux 64-bit mode.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each read_parasitics parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command:
+
+               man read_parasitics
+
+       -force Allows reading of parasitic data even  when  block  level  RCDB/
+              SPEF is missing for a corner.
+
+              Note:  This  parameter  is  only applicable for hierarchical de-
+              signs. It is required that the top cell  should  have  parasitic
+              data specified for all the active RC corners.
+
+       -rc_corner <list of RCcorner specific RCDBs/SPEFs for hierarchical de-
+       sign >| <RCcorner specific RCDB/SPEF>
+              Specifies  the  RC corner name along with a corner-specific RCDB
+              or SPEF for both top and block levels. For hierarchical designs,
+              this parameter lists the corner-specific  SPEFs/RCDBs  for  both
+              top and block levels.
+
+              To  read multi-value SPEFs, specify the spef_list. The spef_list
+              provides the list of SPEFs and spef_field  provides  the  corre-
+              sponding SPEF fields to read for the specified RC corner.
+
+              In  the  example  below,  for  RC  corner RC1, spef_field 2 from
+              <spef1> and spef_field 3 from <spef2> will be read.
+
+              read_parasitics \
+
+              -rc_corner RC1 {spef_list {<spef1> <spef2>} spef_field {2 3}}
+
+              Similarly, you can specify this for multiple RC corners.
+
+              -rc_corner RC2 {spef_list {<spef3> <spef4>} spef_field {1 3}} \
+
+              -rc_corner RC3 .... \
+
+              Note: A corner-specific RCDB parasitic file can only be provided
+              as input to the RC corner for which it was generated. It  cannot
+              be provided as input to other RC corners.
+
+       -starN Specifies  whether  to  read the *N statements in the SPEF file.
+              The *N statements define the location of the RC nodes.
+
+              When this parameter is specified, the *N  statements  are  read,
+              otherwise the *N statements are ignored.
+
+       -via_variation_file <viaVariationFile>
+              Specifies  the  name of the file for modeling via variation. The
+              contents of the file include all the via layer  names  with  the
+              corresponding  MEAN_SHIFT  and STDDEV so that all the VIA resis-
+              tance in SPEF can be mapped to their own  variation  multiplier.
+              This  option is used to specify the via_variation file only when
+              the design has a single corner.
+
+              For example,
+
+              read_parasitics
+
+                 -rc_corner rcCornerName \
+
+                 -via_variation_file <viaVariationFileName>
+
+Examples
+              * The example below is for hierarchical  design  with  Top  (T),
+                Block 1(B1) and Block 2(B2), and two active RC corners, C1 and
+                C2.
+
+                     * The  following  command  specifies  the RC corner names
+                       along with corner-specific RCDB and SPEF for  both  top
+                       and block levels:
+
+                       read_parasitics \
+
+                       -rc_corner      C1      Top_C1.spef      Block1_C1.spef
+                       Block2_C1.spef.gz \
+
+                       -rc_corner     C2     Top_C2.rcdb.d      Block1_C2.spef
+                       Block2_C2.rcdb.d
+
+              * The  example  below  is  for hierarchical design with Top (T),
+                Block 1(B1) and Block 2(B2), and three active RC corners,  C1,
+                C2, and C3.
+
+                     * The  following  command specifies the multi-corner RCDB
+                       database to be read for both top and block levels and a
+                       single RCDB will be generated for the complete design:
+
+                       read_parasitics \
+
+                       -rc_corner C1 Top_C1.spef.gz \
+
+                       -rc_corner C2 Top_C2.compressed.rcdb.d \
+
+                       -rc_corner C3 Top_C3.rcdb.d
+
+Related Information
+              * extractRC
+
+              * setExtractRCMode
+
+              * The following chapter in the Innovus User Guide
+
+                * RC Extraction
+
+                           Fri Apr 04 01:25:37 2025     read_parasitics(25.10)

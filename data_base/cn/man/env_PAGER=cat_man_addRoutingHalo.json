@@ -1,0 +1,75 @@
+{
+  "command": "addRoutingHalo",
+  "is_cmd": true,
+  "summary": "为黑盒、硬宏或模块级设计添加布线光晕",
+  "description": "为黑盒、硬宏或模块级设计添加布线光晕。布线光晕能显著减少指定区域内长线布线的可能性，从而有助于减少顶层和/或模块级设计中的信号完整性违规。布线光晕仅由信号布线器遵循。信号布线器将布线光晕区域内特定布线层上的布线视为成本极高的布线。但是，垂直于光晕的布线或直接连接到引脚的连接是可接受的。特殊布线器（如时钟树布线器）不遵循布线光晕。要阻止特殊布线，请使用布线阻塞。可以为以下对象指定布线光晕：* 硬宏或黑盒 * 模块级设计 * 分区。对于自底向上的层次化流程，使用此命令在顶层设计或模块级设计中为模块指定布线光晕。布线光晕可以作为实例和/或设计属性存储，并可以通过实例块的属性编辑器查看。布线光晕可以保存到或从布局规划文件恢复。在导入设计后使用此命令。注意：* 对于自顶向下的层次化流程，通过 definePartition 命令或指定分区表单为分区指定布线光晕。* 不允许在标准单元（具有 CLASS CORE SITE 的单元）上设置光晕，并在 DEF 中写为 ROUTEHALO。设计光晕在 DEF 中写为设计 FE_ROUTING_HALO 属性，而光刻光晕写为 DEF 组件 LITHOHALO 属性。",
+  "usage": "addRoutingHalo [-help] [-orientation <string>] { {-bottom {auto | <bottom_layer_name>} -space {<left bottom right top>} -top {auto | <top_layer_name>}} | -lithoHalo } {-allBlocks | -block <block_name_list> | -cell <cell_name_list> | -inst <instance_name> | -designHalo }",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 addRoutingHalo 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-orientation",
+      "description": "指定应用光晕值的实例的方向值。方向值可以是 R0, R90, R180, R270, MX, MX90, MY, 或 MY90。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom",
+      "description": "指定布线光晕的底层。'auto'：为黑盒、硬宏或模块级设计自动检测层。它考虑最底层的背面（如果有背面引脚）或最底层的正面（类型为 ROUTING）PIN 层作为底层。'<bottom_layer_name>'：指定底层名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-space",
+      "description": "为不同边缘指定不同的间距。可以以微米为单位为左、下、右、上不同方向指定布线光晕值。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-top",
+      "description": "指定布线光晕的顶层。'auto'：为黑盒、硬宏或模块级设计自动检测层。它考虑最顶层的正面 PIN 层作为顶层。'<top_layer_name>'：指定顶层名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-lithoHalo",
+      "description": "为每个定义了 LEF LITHOMACROHALO 的布线层上的实例添加光刻光晕。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allBlocks",
+      "description": "指定应将布线光晕添加到设计中的所有模块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-block",
+      "description": "指定应将布线光晕添加到指定的模块。模块名称必须是实例名称，而不是单元主名称。指定的模块应使用空格分隔。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-cell",
+      "description": "指定应将布线光晕添加到指定单元名称的所有实例。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-inst",
+      "description": "指定应将布线光晕添加到指定的实例。此参数对于为 I/O 单元添加光晕很有用。",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-designHalo",
+      "description": "指定应在设计边界内添加布线光晕。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

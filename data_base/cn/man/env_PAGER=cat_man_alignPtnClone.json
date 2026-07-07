@@ -1,0 +1,129 @@
+{
+  "command": "alignPtnClone",
+  "is_cmd": true,
+  "summary": "将分区克隆与主分区在电源网格和布线轨道上对齐",
+  "description": "在指定主分区和克隆分区后，使用此命令将分区克隆与主分区在电源网格和布线轨道上对齐。这可以避免克隆中的引脚偏离轨道，并避免因克隆内部电源网格未对齐而导致的潜在DRC违规。该命令可以从顶层单元推导用户定义的网格，无需分区信息，并在控制台窗口和输出报告文件中生成包含间距、偏移量和推导网格的详细报告。注意：电源网格必须是规则的，此命令才能正常工作。该命令还会检测并高亮显示在拼接式平面规划中创建的任何围栏间隙或重叠。",
+  "usage": "alignPtnClone [-help] [<ptnName>] [-outFile <filename>] [-checkOnly | -snapAllCorners ] [[-stripeOffset ] | [[-pgHGrid ] [-pgVGrid ] [-pgLayer {<layeridList>}] [-updateUserGrid ] [-snapAllCorners ] [-skipFinFETGrid ]  [-includeStdCellPinLayers {<layeridList>}]]  | [[-symmetryPatternReference  <string>[-symmetryPatternTarget  <string>[ [-targetOrientation {R0 R90 R180 R270 MX MX90 MY MY90}] [-targetOrigin {<x y>}] ]]]] | [-symmetricOrientation ]] [-pgLayer {<layeridList>} [-pgNet <pgNetName> | -pgCenterLine <float>]] [-pgPitch <float>[-pgCenterLine <float>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<ptnName>",
+      "description": "指定分区的名称。如果未指定分区名称，则对所有分区运行该命令。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outFile",
+      "description": "指定输出文件的名称，用于保存包含详细信息的母版和克隆对齐报告。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-checkOnly",
+      "description": "指定不应修改设计。启用时，仅报告消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snapAllCorners",
+      "description": "将母版及其克隆分区的所有角点捕捉到用户网格。此参数可修复分区重叠。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stripeOffset",
+      "description": "指定时确保向后兼容，并启用已过时的 -snap、-track、-useUserGrid、-skip_row 和 -layer 参数的使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pgHGrid",
+      "description": "提供水平PG网格的信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pgVGrid",
+      "description": "提供垂直PG网格的信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pgLayer",
+      "description": "指定PG条带的层。此选项可以重复。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-updateUserGrid",
+      "description": "用新值更新用户网格。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skipFinFETGrid",
+      "description": "禁用与FinFet网格的对齐。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includeStdCellPinLayers",
+      "description": "指定除用户指定的引脚层外，还应对齐的标准单元引脚层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-symmetryPatternReference",
+      "description": "指定用作参考集的分区名称，以维持组中另一组克隆分区的对称模式。列表中的第一个分区被视为种子分区，从中计算列表中其余分区的相对位置和方向。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-symmetryPatternTarget",
+      "description": "指定用作目标集的分区名称，以相对于组中的参考集分区维持对称模式。分区数量及其顺序必须与 -symmetryPatternReference 参数指定的相同。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-targetOrientation",
+      "description": "指定目标分区集（-symmetryPatternTarget）种子分区的新方向。指定的方向会覆盖种子分区的当前方向，使您能够维持不同克隆对的相对方向。母版分区的方向无法更改。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-targetOrigin",
+      "description": "指定目标分区集（-symmetryPatternTarget）种子分区的新原点。指定的位置会覆盖目标种子分区的当前位置。它不允许目标种子分区超出核心边界。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-symmetricOrientation",
+      "description": "检查每对分区之间的方向，并通过找到克隆的最佳对称方向来修复对称性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pgNet",
+      "description": "指定PG条带网络的名称。此选项可以重复。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pgCenterLine",
+      "description": "指定第一个虚拟对称PG条带的中心线（以微米为单位）。此选项可以重复。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pgPitch",
+      "description": "指定PG条带网络的间距（以微米为单位）。此选项可以重复。",
+      "required": false,
+      "type": "float"
+    }
+  ]
+}

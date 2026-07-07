@@ -1,0 +1,1599 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_power(25.10)                                        report_power(25.10)
+
+Name
+       report_power
+
+Syntax
+        report_power
+
+       [-block <block_name>]
+
+       [-cap]
+
+       [-cell {<cell_list>}]
+
+       [-cell_type  {all  |  {macro io combinational sequential clock_combina-
+       tional clock_sequential}}]
+
+       [-clock_domain {<clock_domain_list>}]
+
+       [-clock_network {all | {<clock_list>}}]
+
+       [-count_seq_elements_in_clock_network]
+
+       [-die_instance_name <dieinstname>]
+
+       [-exclude_cells {<cell_list>}]
+
+       [-exclude_cells_file <filename> ]
+
+       [-exclude_instances {<instance_list>}]
+
+       [-exclude_instances_file <filename> ]
+
+       [-include_group_instance_count]
+
+       [-instances {<instance_list>}]
+
+       [-hierarchy {all | <hierarchy_level}>]
+
+       [-hierarchical_instances {<hierarchy_inst_list>}]
+
+       [-leakage]
+
+       [-net [-nworst<number_of_nets>]]
+
+       [-no_wrap]
+
+       [-outfile <filename>]
+
+       [-pg_net {all | <pg_net_name_list>}]
+
+       [-power_domain {all | {<power_domain_list>}<}>]
+
+       [-sort {internal | switching | leakage | total}]
+
+       [-threshold <value>]
+
+       [-view <view_name>]
+
+       [-threshold_voltage_group { all | <group_name>}]
+
+       [-clock_gating_efficiency]
+
+       [-register_gating_efficiency]
+
+       [-cluster_gating_efficiency]
+
+       [-thermal_leakage_temp {<temp_list>}]
+
+       [-thermal_power_map_file <file_name>]
+
+       [-thermal_power_map_tile {<Xint> <Yint>}]
+
+       [-thermal_power_map_format {simple | stack }]
+
+               [-pg_pin]
+
+       [-thermal_conductivity_inputs <file_name>]
+
+       [-output <directory>]
+
+       [-o <directory>]
+
+       [-report_prefix <prefix>]
+
+       [-toggle_rate]
+
+       [-format { simple | detailed }]
+
+       [-comb_seq_power]
+
+       [-group_type <user_defined_group_name>]
+
+       [-distribute]
+
+       [-print_memory_power]
+
+       [-cap_unit <unit>]
+
+       [-cell_list_file <filename>]
+
+       [-float_precision <value>]
+
+       [-inst_list_file <filename>]
+
+       [-power_db_directory <directory>]
+
+       [-power_unit <unit> ]
+
+       [-time_unit <unit>]
+
+       [-power_density_tiles <value>]
+
+       [-power_density_tiles_row_col {<value1> <value2>}]
+
+       [-power_density_tiles_size {<value1> <value2>}]
+
+       [-compress <compression_ratio>]
+
+       [-stat]
+
+       [-time_based_report]
+
+       [-thermal_power_map_header_include_file <filename>]
+
+       [-thermal_leakage_temperature_scale_table_file <filename>]
+
+       [-thermal_leakage_temperature_scale_table   {$<temp1>   $<scalefactor1>
+       $<temp2> $<scalefactor2> $<temp3> $<scalefactor3> .....}]
+
+       [-thermal_material_file <filename>]
+
+       [-thermal_power_map_SI_unit {true | false}]
+
+       [-thermal_power_map_powertable_tile {<Xint> <Yint>}]
+
+       [-thermal_power_map_densitytable_tile {<Xint> <Yint>}]
+
+       [-thermal_power_map_format_version {new|default}]
+
+       [-thermal_power_map_bottom_layer <layer_name>]
+
+       [-thermal_power_map_top_layer <layer_name>]
+
+       [-use_geometry_cell_size {true | false}]
+
+       Reports  global  power,  specific  instance power, clock network power,
+       clock domain power, and net switching power. The command  also  reports
+       the  power  for  power  domains and specific power nets. The power unit
+       used throughout the reports is Milliwatt.
+
+       This command starts the execution of power analysis  (both  static  and
+       dynamic). The report_power command has a character limit of 1015.
+
+       The  parameters  of  the report_power command, except -cap, -clock_gat-
+       ing_efficiency, -register_gating_efficiency, and  -cluster_gating_effi-
+       ciency,  are  not  supported in the dynamic-only mode (set_power_analy-
+       sis_mode -disable_static true). These parameters are only supported  in
+       the  static mode. However, the -power_domain parameter is not supported
+       even if the static power mode is enabled.   The  set_power_include_file
+       command can be used to pass the report_power command options in the dy-
+       namic analysis mode.
+
+       The  report_power  command  allows generation of multiple power reports
+       with a single report_power command. It can be used to generate all  the
+       static  reports  during  dynamic  analysis. report_power eliminates the
+       need to run incremental report_power in static power analysis  using  a
+       Verilog  netlist.  By  default,  a detailed power summary report, and a
+       short summary will be printed at the beginning of all reports.  To  en-
+       able this flow, specify the following parameters:
+
+              * -output/o
+
+              * -report_prefix
+
+       The  following  report_power  command  parameters  are supported by the
+       multi-report flow, both in static and dynamic power analysis:
+
+              * -cell
+
+              * -clock_gating_efficiency
+
+              * -register_gating_efficiency
+
+              * -cluster_gating_efficiency
+
+              * -net
+
+              * -instances
+
+              * -pg_net
+
+              * -clock_network
+
+              * -hierarchy
+
+       The following parameters are not supported in the multi-report flow:
+
+              * -cell_type
+
+              * -power_domain
+
+              * -clock_domain
+
+              * -clock_gating_efficiency and -clock_network in the same run
+
+       In the static power analysis flow, you can run the report_power command
+       after the restore_power_database command without  loading  the  design.
+       The following command is an example of the use model:
+
+       restore_power_database -file power.db
+
+       report_power  -output  same  -report_prefix report -clock_network {all}
+       -instances {*}
+
+       The following parameters of  the  report_power  command  are  supported
+       without design loading:
+
+              * -cell
+
+              * -cell_type
+
+              * -instances
+
+              * -clock_network
+
+              * -clock_domain
+
+              * -pg_net
+
+              * -pg_net -format detailed
+
+              * -hierarchy
+
+              * -hierarchical_instances
+
+Parameters
+       -block <block_name>
+              Specifies to generate the different power analysis reports for a
+              block.  This  parameter is useful in viewing and debugging power
+              consumption issues for a specific block after the power  run  is
+              complete.
+
+              Example:
+
+              The following command will create the summary and pg_net reports
+              for the design block {A/B}:
+
+              report_power  -block  {A/B}  -outfile blockB.rpt -pg_net -pg_pin
+              {all} -instances {*}
+
+              Following are the sample block-specific reports:
+
+              blockB.rpt.avppower
+
+              blockB.rpt.pgnetpwr
+
+              blockB.rpt.pgpinpwr
+
+              blockB.rpt.instpwr
+
+       -cap   Dumps out the list of net, pin, and total capacitances in  three
+              different columns.
+
+       -cap_unit <unit>
+              Sets  the  capacitance  unit to be used for power report genera-
+              tion. The default unit is pF (picoFarads).
+
+              By default, the capacitance unit in report_power is  Farad  (F).
+              To  get  the  capacitance  in  pF,  use the command report_power
+              -cap_unit pf.
+
+       -cell {<cell_list>}
+              Specifies the cells to be included in the power report.  Accepts
+              wildcards (*)
+
+       -cell_list_file <filename>
+              Specifies  a  file containing a list of cells that are to be in-
+              cluded in the power reports.
+
+       -cell_type {all | {macro io combinational sequential clock_combina-
+       tional clock_sequential}}
+              Specifies the cell types to be included in the power report.
+
+              Default: all
+
+              When you specify the cell types, -cell_type combinational or se-
+              quential, the power report does not show the combinational clock
+              or sequential clock cells.
+
+       -clock_domain <{clock_domain_list}>
+              Generates detailed instance  power  reports  for  the  specified
+              clock domains. Wildcards are not accepted.
+
+              When  this  parameter is not specified, the report_power command
+              provides a summary of clock power for instances with  the  clock
+              pins  driven  by  a  clock  domain.  In  contrast,  report_power
+              -clock_domain reports a clock power summary for  instances  with
+              any  pin driven by a clock domain, provided the instance is part
+              of the clock network.
+
+              Usage
+
+              report_power -clock_domain <{clock_domain_list}> -outfile  file-
+              name
+
+       -clock_gating_efficiency
+              Generates  a  report  that  includes the Clock Gating Efficiency
+              (CGE) for all clock gating instances, as well as different hier-
+              archies in the design. Average CGE for different hierarchies  is
+              also reported.
+
+              Clock Gating Efficiency is calculated as:
+
+              CGE  = (toggles at clock gate output / toggles at clock gate in-
+              put)
+
+              Average CGE = (avg of all CGEs above)
+
+              When a CGE report is generated using  the  command  report_power
+              -clock_gating_efficiency  -outfile  <cge.rpt>, the following in-
+              formation will be displayed:
+
+              * Clock-gating Efficiency Report - for each clock domain, it in-
+                cludes the toggle rate, number of registers, number  of  clock
+                gates,  average clock toggle at registers, average toggle sav-
+                ings at registers, and average toggle savings histogram.
+
+              * Hierarchical View of Average Toggle Savings - number of  clock
+                gates  and average toggle savings for each hierarchical module
+                in the design.
+
+       -clock_network {all | {<clock_list>}}
+              Reports the power consumption of the clock  networks,  including
+              the power for the generated clocks.
+
+              Use clock_list to report the power consumed by specific clocks.
+
+              Default: all
+
+       -cluster_gating_efficiency
+              Generates  a  cluster  efficiency report in the RGE report. This
+              report shows the CGE/RGE metrics for the registers at  the  fan-
+              out of each clock gate instance in the design.
+
+       -comb_seq_power
+              Generates  a report that shows the ratio of combinational versus
+              sequential power for all modules of a given hierarchy. This  pa-
+              rameter must be specified with the -instances parameter.
+
+       -compress <compression_ratio>
+              Specifies to compress the power analysis report files in the GNU
+              Zip format. The compressed files will have the suffix .gz.
+
+              <compression_ratio>  is  from  0-9.  0 indicates that the report
+              files are not to be compressed. The compression levels vary from
+              1 to 9. 1 provides the fastest compression speed but at a  lower
+              ratio,  so  the file size will be larger. 9 provides the highest
+              compression ratio but at a lower speed.
+
+              Default: 0
+
+       -count_seq_elements_in_clock_network
+              Includes the leaf flip-flop power in the clock network power re-
+              port.
+
+              Default: The leaf flip-flop power will not be  included  in  the
+              clock network power report.
+
+       -die_instance_name <dieinstname>
+              Specifies the die instance name for multi-die analysis.
+
+       -distribute
+              Enables standalone distributed power analysis. This parameter is
+              used  for  running  dynamic power analysis in the multi-CPU mode
+              without running rail analysis.
+
+       -exclude_cells {<cell_list>}
+              Specifies a list of cells that should  be  excluded  from  power
+              analysis.
+
+       -exclude_cells_file <filename>
+              Specifies a file containing a list of cells (one per line) which
+              should be excluded from power analysis.
+
+       -exclude_instances {<instance_list>}
+              Specifies a list of instances that should be excluded from power
+              analysis.
+
+              This  parameter  is supported only with the dynamic vector-based
+              power analysis (set_power_analysis_mode -method vector_profile).
+
+       -exclude_instances_file <filename>
+              Specifies a file containing a list of instances (one  per  line)
+              which should be excluded from power analysis.
+
+              This  parameter  is supported only with the dynamic vector-based
+              power analysis (set_power_analysis_mode -method vector_profile).
+
+       -float_precision <value>
+              Sets the precision value to be used for power report generation.
+              The default value is 4.
+
+       -format { simple | detailed }
+              Specifies the type of report summary required for  static  power
+              reporting. The possible arguments of this parameter are:
+
+              * simple  -  reports  the  amount of power consumed by all power
+                nets in a condensed format, breaking down power based  on  the
+                switching, internal, and leakage components.
+
+              * detailed  -  reports the amount of power consumed by all power
+                nets in a detailed format. The detailed format includes  addi-
+                tional information, such as output pin capacitance (Cpin Sum),
+                output  net  capacitance  (Cnet  Sum),  Total Load Capacitance
+                (Cpin Sum + Cnet Sum = Total Load_Cap), maximum  frequency  at
+                the  input  and  output  pins (Max_Clk_Freq), maximum activity
+                factor at the input and output pins (Max_Activity), cell  name
+                of the instance (Cell Name), clock or data cell (C/D), and li-
+                brary  used in power analysis for the specific cell (Lib). The
+                libraries are numbered in the header section.
+
+              The name of the generated report file is  report.*.detailed.rpt.
+              Currently, the -format detailed parameter is only available when
+              it is used with the -pg_net parameter.
+
+       -hierarchical_instances {<hierarchy_inst_list>}
+              Specifies  to report all the power content for the specified hi-
+              erarchical instances/ blocks. It  reports  the  Total  Power  (a
+              breakup  of  power  components) and Group (a breakup of power by
+              cell type) of the specified block at each hierarchy.
+
+              To generate a complete hierarchical instance power report, it is
+              recommended to specify -hierarchical_instances with -report_pre-
+              fix. The report is written in the specified output directory. If
+              you specify -outfile instead of -report_prefix, an instance file
+              is output without hierarchy-level details.
+
+              -report_prefix generates the following 3 reports:
+
+              * <<prefix>>.rpt - reports power details for  all  instances  in
+                the design.
+
+              * <<prefix>>.hierpwr.rpt  - reports hierarchical power, that is,
+                power summary, internal, switching, leakage, and  total  power
+                for all hierarchical instances.
+
+              * <<prefix>>.hierinstpwr.rpt - reports power details for the re-
+                quested block instances.
+
+              Note:  -hierarchical_instances must be specified with -hierarchy
+              to include hierarchy-level power report. When  -hierarchical_in-
+              stances  is  used  without -hierarchy, only top-level summary of
+              the power consumption is written.
+
+       -hierarchy {all | <hierarchy_level>}
+              Specifies the hierarchy level that is included in the power  re-
+              port.  You  can  specify  the <hierarchy_level> as a number that
+              corresponds to a specific hierarchy level in the design. A  <hi-
+              erarchy_level> of 0 specifies the top level.
+
+              Default: all
+
+       -include_group_instance_count
+              Specifies  to report the instance count for each cell type. When
+              specified, you can view the number of instances for the  sequen-
+              tial, macro, IO, combinational, clock sequential, and clock com-
+              binational cell types in the power report (power.rpt). The para-
+              meter is supported in both the static and dynamic power analysis
+              flows.  This  parameter  allows  you  to verify if there are any
+              missing instances.
+
+       -instances {instance_list}
+              Specifies the instances to include  in  the  power  report.  The
+              power  report  provides the amount of power consumed by a speci-
+              fied  list  of  hierarchical  or  leaf-level   instances.   <in-
+              stance_list>  accepts  wildcards  (*)  for  leaf-level instances
+              only. An instance with 0 power will not be listed in  the  power
+              report.
+
+       -inst_list_file<filename>
+              Specifies  a  file containing a list of instances that are to be
+              included in the power reports.
+
+       -leakage
+              Reports leakage power of the design.
+
+       -net   Reports the net switching power, load capacitance, toggle  rate,
+              and switching values for each net in the design.
+
+       -no_wrap
+              Displays the report_power -cell_type all output on a single line
+              in the output report file.
+
+       -nworst<number_of_nets>
+              Provides  n  top  windows  with maximum activity or power in the
+              vector profile report. The default value is 10.
+
+              Note: The -nworst parameter must be specified with the -net  pa-
+              rameter.
+
+       -output/-o <directory>
+              Specifies the name of the directory where the power analysis re-
+              ports  are  saved. The default is the current working directory.
+              This parameter eliminates the  need  to  specify  set_power_out-
+              put_dir.    However,   if   both    report_power   -output   and
+              set_power_output_dir are specified,  -output has  higher  prior-
+              ity.
+
+       -outfile <filename>
+              Specifies  the  name  of the report file to which the power con-
+              sumption information is written.  Hierarchical  directory  names
+              can be included.
+
+              You  can  convert a power report file to the gzip file format by
+              specifying -outfile <filename.gz>.
+
+              Note: If you do not specify this parameter, the software directs
+              the power report to the command line, as well as the  log  file,
+              and no power report is written to a separate file.
+
+       -pg_net {all | <pg_net_name_list>}
+              When  set to all, the amount of power consumed by all power nets
+              is reported. If a list of nets is specified, the power  consump-
+              tion  of  each instance that is connected to the specified power
+              net is separately reported.
+
+              Note: When using this parameter, the  static  power  calculation
+              engine always performs propagation and power calculation.
+
+              Default: all
+
+       -pg_pin
+              Reports power consumed by all power pins in a design.
+
+       -power_db_directory <directory>
+              Specifies the location of the power database that the Power Cal-
+              culation engine uses for generating standalone power reports.
+
+       -power_domain {all | {<power_domain_list>}<}>
+              When  set to all, the power consumed by all power domains is re-
+              ported. If a list of power domains is specified,  the  reporting
+              will  be  limited  to  those  power  domains. A summary of power
+              break-down for each domain, before listing power  for  each  in-
+              stance in the domain, is also generated.
+
+       -power_density_tiles <value>
+              Specifies  the  number  of tiles used for power density calcula-
+              tion.
+
+              Default: 100
+
+              Note: When dividing a design into equal-sized  tiles,  it  might
+              not always fit perfectly into a square grid. For example, if you
+              want  to  create NxN tiles for the top design, the design's size
+              might not align exactly with these dimensions.  This  means  the
+              tiles  in the last row and the last column could be different in
+              size to cover the remaining part of the design. All other tiles,
+              however, in the (N-1)x(N-1) area, will be the same size.
+
+       -power_density_tiles_row_col {<value1> <value2>}
+              Defines the number of tiles by rows * columns.   value1  is  the
+              number of tile rows and value2 is the number of tile columns.
+
+              The  following  example specifies to perform power density aware
+              vector profiling using 2 tile rows and 2 column rows:
+
+              set_power_analysis_mode  -method   vector_profile   -vector_pro-
+              file_mode power_density -worst_step_size 10ns
+
+              report_power       -power_density_tiles_row_col       {2      2}
+              -time_based_report -outfile tiling1.rpt
+
+              The following is the vector profile report for this command:
+
+              Tile 0_0_0 5.06 5.33 14.95 14.555
+
+              Tile 1_0_1 14.95 5.33 24.84 14.555
+
+              Tile 2_1_0 5.06 14.555 14.95 23.78
+
+              Tile 3_1_1 14.95 14.555 24.84 23.78
+
+              Note: When dividing a design into equal-sized  tiles,  it  might
+              not always fit perfectly into a square grid. For example, if you
+              want  to  create NxN tiles for the top design, the design's size
+              might not align exactly with these dimensions.  This  means  the
+              tiles  in the last row and the last column could be different in
+              size to cover the remaining part of the design. All other tiles,
+              however, in the (N-1)x(N-1) area, will be the same size.
+
+       -power_density_tiles_size {<value1> <value2>}
+              Defines the absolute tile size. value1 is the  horizontal  width
+              of  a  tile  (in  micron) and value2 is the vertical height of a
+              tile (in micron).
+
+       -power_unit <unit>
+              Sets the power unit to be used for power report generation.  The
+              default unit is mW (miliAmps).
+
+       -print_memory_power
+              Specifies  to report power values for the memory and macro cells
+              under separate groups (Memory and Macro).
+
+              The following is a snapshot of the power report showing separate
+              groups for memory and macro cells:
+
+       -group_type <user_defined_group_name>
+              Specifies to report power (internal/switching/leakage/total) for
+              a user-defined collection of cells that are stated under a power
+              group in the power summary report. The following Tempus commands
+              can be used to create power groups:
+
+              * define_property - define a property.
+
+              * set_property - assign the defined property  (group  type)  and
+                its value (power group) to a list of cells.
+
+              The use model of the -group_type parameter is:
+
+              report_power -group_type <user_defined_group_type>
+
+              Here,  <user_defined_group_type> is the user-defined power group
+              type  applied  to  a  list  of  cells  in  a  design.  When  the
+              -group_type  parameter  is  specified, the command reports power
+              for the power groups associated with the specified group type in
+              the power summary report.
+
+              Example:
+
+              The following command  defines  the  poly_bias  property  (group
+              type) on library cells:
+
+              define_property poly_bias -object_type lib_cell -type string
+
+              The  following  commands  apply  the property poly_bias with the
+              group name P0 and P10 to the collection of cells:
+
+              set_property [get_lib_cells -of_objects [get_cells -hier * -fil-
+              ter {ref_name=~*PB0*}]] poly_bias  P0
+
+              set_property [get_lib_cells -of_objects [get_cells -hier * -fil-
+              ter {ref_name=~*PB10*}]] poly_bias  P10
+
+              The following command reports power for the  user-defined  power
+              groups that are associated with the property poly_bias:
+
+              report_power -outfile basic_group_type.rpt -group_type poly_bias
+
+              The  following  is  a snippet of the power report that shows the
+              user-defined power groups P0 and P10 that  are  associated  with
+              the  property poly_bias, in addition to the existing groups (se-
+              quential, macro, IO, and so on):
+
+       -register_gating_efficiency
+              Generates a report that includes the Register Gating  Efficiency
+              (RGE) and Data Aware Gating Efficiency (DAGE) for all sequential
+              cell  instances, as well as different hierarchies in the design.
+              Average RGE and DAGE for different hierarchies is  reported.  It
+              also displays a section on ICG cluster information, that is, in-
+              formation  about  registers  at the fan-out of each ICG instance
+              along with their RGE metrics.
+
+              Register Gating Efficiency is calculated as:
+
+              RGE = 1 - (toggles at register clock pin/root clock toggles)
+
+              When an RGE report is generated using the  report_power  -regis-
+              ter_gating_efficiency  -outfile  rge.rpt  command, the following
+              information will be included:
+
+              * Register-gating Efficiency Report - for each clock domain,  it
+                includes the toggle rate, number of registers, number of clock
+                gates,  average clock toggle at registers, average toggle sav-
+                ings at registers, and average toggle savings histogram.
+
+              * Register Gating Opportunities Report - this report  is  sorted
+                based on the Q/CLK toggle ratio. When a register's Q/CLK ratio
+                is  greater than .25 (25%), Q toggles every other clock cycle.
+                However, when it is less than 25%, there is a gating  opportu-
+                nity to reduce power.
+
+              Data Aware Gating Efficiency is calculated as:
+
+              DAGE  =  1  - ((toggles at clock pin - 2*toggles at Q pin)/(root
+              clock toggles))
+
+       -report_prefix <prefix>
+              Specifies a prefix for the report in which the top-level summary
+              of the power consumption information  is  written.  All  reports
+              will be named <prefix>.*.rpt. The detailed summary will be named
+              prefix.rpt.
+
+       -sort {internal | switching | leakage | total}
+              Sorts  the  instance-based  power  consumption data by internal,
+              switching, leakage, or total power.
+
+              Default: total
+
+       -stat  Reports a set of statistics on the net status after propagation,
+              for example, duty, transition density, or activity. This parame-
+              ter is useful in viewing  and  debugging  user-defined  activity
+              factors after the power run is complete.
+
+              Example:
+
+              report_power  -time_based_report  -distribute -outfile power.rpt
+              -stat
+
+              -------------------------------------------------------------------------------------------
+
+              -- Net status after propagation --
+
+              -------------------------------------------------------------------------------------------
+
+              Net          Transition Density         Duty            Activity
+              Ref. Freq
+
+              -------------------------------------------------------------------------------------------
+
+              VDDA1                  0                   1                   0
+              1.25e+08
+
+              VSSA1                 0                   0                    0
+              1.25e+08
+
+       -thermal_conductivity_inputs <file_name>
+              Specifies  a  file containing the thermal conductivity value for
+              layers. You can use this parameter to include the  thermal  con-
+              ductivity value of the following layers in the power map file:
+
+              * Silicon
+
+              * Metal
+
+              * Dielectric
+
+              * Micro Bump (optional for 3DIC design)
+
+              * Fill material in micro bump layer  (optional for 3DIC design)
+
+              The thermal conductivity file format is:
+
+              Section 1 (layer type based thermal conductivity value)
+
+              #default
+
+              $layer_type1 $thermal_conductivity_parameter1
+
+              $layer_type2 $thermal_conductivity_parameter2
+
+              Section 2 (layer name based thermal conductivity value)
+
+              #perlayer
+
+              $layer1_name  $thermal_conductivity_parameter1 $dielectric_ther-
+              mal_conductivity_1
+
+              $layer2_name $thermal_conductivity_parameter2  $dielectric_ther-
+              mal_conductivity_2
+
+              Here,
+
+              * You  can  either specify both Section 1 (layer type based) and
+                Section 2 (layer name based), or specify one of the  two  sec-
+                tions.  If  both sections are specified, then layer name based
+                section takes precedence over layer type based section.
+
+              * The layer name based section has  thermal  conductivity  value
+                and its dielectric layer's thermal conductivity value for each
+                metal/via layer.
+
+              * If  section 2 has no parameters defined, the software will use
+                the default parameters defined in the section 1.
+
+              Example:
+
+              ###default
+
+              Metal      430
+
+              Silicon    250
+
+              Dielectric 0.6
+
+              ###Perlayer
+
+              Metal1    430    0.4
+
+              Via1      410    0.5
+
+              Metal2    390    0.5
+
+              Via2      410    0.5
+
+              For information on the thermal conductivity input file and power
+              map file, refer to the "Static Power, IRdrop  and  EM  Analysis"
+              chapter in the Voltus User Guide.
+
+       -thermal_leakage_temp {<temp_list>}
+              Defines  the  temperature to calculate leakage for the power map
+              file.
+
+       -thermal_leakage_temperature_scale_table {$<temp1> $<scalefactor1>
+       $<temp2> $<scalefactor2> $<temp3> $<scalefactor3> .....}
+              Specifies the global scale factor for a temperature value to en-
+              able scaling of the leakage power values coming from  the  input
+              dotlib file. This parameter allows you to scale the power values
+              only at certain specific temperatures.
+
+              This  parameter allows you to generate a multi-temperature leak-
+              age power map table from a single input dotlib file in the power
+              map generation flow. -thermal_leakage_temperature_scale_table
+                   and -thermal_leakage_temperature_scale_table_file
+                   are mutually exclusive.
+
+       -thermal_leakage_temperature_scale_table_file <filename>
+              Specifies a file containing the user-defined temperature  values
+              and  the  corresponding scale factors for each library, cell, or
+              instance. The format of the file is:
+
+              #Type Name temp1 temp2 temp3 temp4
+
+              Lib      <library_name>      <scalefactor@temp1>      <scalefac-
+              tor@temp2>  <scalefactor@temp3>   <scalefactor@temp4>
+
+              Cell      <cell_name>         <scalefactor@temp1>     <scalefac-
+              tor@temp2>  <scalefactor@temp3>   <scalefactor@temp4>
+
+              inst     <instance_name>     <scalefactor@temp1>      <scalefac-
+              tor@temp2>  <scalefactor@temp3>   <scalefactor@temp4>
+
+              This  parameter allows you to generate a multi-temperature leak-
+              age power map table from a single input dotlib file in the power
+              map generation flow.  -thermal_leakage_temperature_scale_table
+                   and -thermal_leakage_temperature_scale_table_file
+                   are mutually exclusive.
+
+              File Format Example for the Type Lib:
+
+              #Type Name         25 50 125 150
+
+              Lib   fast         1 2 10 100
+
+              Lib   bufao        1 2 10 100
+
+              Lib   header       1 2 10 100
+
+              Lib   pso_ring_wc  1 2 10 100
+
+       -thermal_material_file <filename>
+              Specifies the name of a file containing the user-specified  sub-
+              strate  layer thickness. The layer thickness value for the power
+              map generation flow can either be a user-specified value or  de-
+              rived  from  the  technology file. If both the values are avail-
+              able, the user-specified value takes precedence.
+
+       -thermal_power_map_bottom_layer <layer_name>
+              Writes zero metal density tables for layers lower than the user-
+              specified layer in the power map file. This  parameter  prevents
+              duplication  of  metal  density  tables when merging the top and
+              block thermal power map files.
+
+       -thermal_power_map_densitytable_tile {<Xint> <Yint>}
+              Specifies the number of tiles in the X and Y directions for  the
+              metal density table.
+
+       -thermal_power_map_file <file_name>
+              Generates the power map file with the specified name in the out-
+              put directory.
+
+       -thermal_power_map_format {simple | stack }
+              Generates  a  tile-based  power  map file in the simple or stack
+              format to perform accurate thermal analysis.  The  stack  format
+              must  be  used to support multiple dies in a package for thermal
+              analysis.
+
+       -thermal_power_map_format_version {new|default}
+              Determines whether to generate the default or the new power  map
+              file  format.  When  set  to new, the power map file format with
+              non-uniform tile numbers for the power  (-thermal_power_map_pow-
+              ertable_tile)  and metal density tables (-thermal_power_map_den-
+              sitytable_tile) can be generated.
+
+              The following are the features of the new report format:
+
+              *
+
+                version number added to the header "Version : 2020.0"
+
+              *
+
+                nx/ny under the "DIE_AREA" section has been removed
+
+              *
+
+                XCOR/YCOR for each layer has been removed
+
+              *
+
+                nx/ny has been added for the POWER and METAL_DENSITY sections
+
+       -thermal_power_map_header_include_file <filename>
+              Specifies a file that contains comments or  additional  informa-
+              tion to be included in the header section of the power map file.
+
+       -thermal_power_map_powertable_tile {<Xint> <Yint>}
+              Specifies  the number of tiles in the X and Y directions for the
+              power table.
+
+       -thermal_power_map_top_layer <layer_name>
+              Writes zero metal density tables  for  layers  higher  than  the
+              user-specified  layer in the power map file. This parameter pre-
+              vents duplication of metal density tables when merging  the  top
+              and block thermal power map files.
+
+       -thermal_power_map_SI_unit {true | false}
+              Specifies  to  change  chip thermal power map units to SI in the
+              thermal power map file. This parameter was introduced to support
+              the thermal power map file format used by  foundry.   When  this
+              parameter is set to true, the values for all the power map para-
+              meters  (length,  power,  and  thermal conductivity) will be re-
+              ported in the SI units.
+
+              * Length Unit:  default is um and SI is m
+
+              * Power Unit: default is mW and SI is W
+
+              * Metal/Silicon Thermal Conductivity Unit: default is  mW/(um  *
+                C) and SI is W/(m * C)
+
+              Default : true
+
+       -thermal_power_map_tile {<Xint> <Yint>}
+              Defines  the  tile  number  in the X and Y direction. By default
+              10*10 will be used.
+
+       -threshold <value>
+              Filters out the instances whose total power dissipation is  more
+              than the specified value. The power unit used is Milliwatt.
+
+              Default: 0
+
+       -threshold_voltage_group { all | <group_name>}
+              Reports  leakage by voltage threshold group in the power report.
+              This parameter supports the argument all or  any  other  string,
+              such as hvt or lvt.
+
+              Default: all
+
+       -time_based_report
+              Writes  out  a  detailed VCD profiling report into the file that
+              you specify.
+
+       -time_unit <unit>
+              Sets the time unit to be used for power report  generation.  The
+              default unit is ns (nanoseconds).
+
+       -toggle_rate
+              Specifies  to  print instance-based activity to the outfile. The
+              toggle rate for each instance is calculated based on  the  clock
+              domain  to which it belongs. If multiple clocks are reaching the
+              instance, then the fastest clock is used as a reference.
+
+       -use_geometry_cell_size {true | false}
+              Specifies whether to use the actual geometry or placement bound-
+              ing box for macro PGV cell size during generation of  tile-based
+              power  map  file. This parameter is used when a macro's power is
+              distributed across multiple tiles. When this parameter is set to
+              true, the geometry-based bounding box will be used for power map
+              generation and power will be distributed evenly across tiles.
+
+              Default : false
+
+       -view <view_name>
+              Specifies the active timing view  that  was  created  using  the
+              multi-mode  multi-corner  (MMMC)  set_analysis_view -setup|-hold
+              command. Power analysis is performed for the specified view. The
+              command prints the MMMC view name in the output file even if you
+              do not specify the -view parameter.
+
+              If report_power -view <view_name> is set, it will  override  the
+              view  set in the set_power_analysis_mode -view command. However,
+              if you specify the set_analysis_view -dynamic and -leakage para-
+              meters, then the view set using these set_analysis_view  command
+              parameters  has higher priority over the report_power -view com-
+              mand.
+
+              Default : Uses current view in Innovus.
+
+Examples
+              * The following command reports the amount of power consumed  by
+                the  clock  nets  clk  and  test_clk (including leaf flip-flop
+                power) and writes the output information  to  a  power  report
+                file named clk_pwr.rep:
+
+                report_power -clock_network{clk test_clk} \
+
+                 -count_seq_elements_in_clock_network -outfile clk_pwr.rep
+
+              * The  following  command  reports  the amount of power consumed
+                down to hierarchy level 3 from the top and writes  the  output
+                information to a power report file named hier.rep:
+
+                report_power -hierarchy 3 -outfile hier.rep
+
+              * The following command reports the power consumption and writes
+                the  power  report file pg_net.rep in the compressed gzip for-
+                mat:
+
+                report_power -outfile pg_net.rep.gz
+
+              * The following command reports the amount of power consumed  by
+                leaf-level instances that match ECO* and writes the output in-
+                formation to a power report file named inst.rep:
+
+                report_power -instances ECO* -outfile inst.rep
+
+              * The  following command reports the amount of power consumed by
+                all cells that match buf*6 and writes the  output  information
+                to a power report file named cell.rep:
+
+                report_power -cell buf*6 -outfile cell.rep
+
+              * The  following command reports the amount of power consumed by
+                all I/O and sequential cells and writes the output information
+                to a power report file named cell_type.rep:
+
+                report_power -cell_type {io sequential} -outfile cell_type.rep
+
+              * The following command sorts the instance-based power  consump-
+                tion  data  by leakage power and writes the output information
+                to a power report file named sort.rep:
+
+                report_power -sort leakage -outfile sort.rep
+
+              * The following command reports the total power of all instances
+                whose total power dissipation is less  than  1  milliwatt  and
+                writes  the  output  information  to a power report file named
+                threshold.rep:
+
+                report_power -threshold 1 -outfile threshold.rep
+
+              * The following command reports the net  switching  power,  load
+                capacitance, toggle rate, and switching values for each net in
+                the  design,  reports  the  top  100 nets with the highest net
+                switching power, and writes the output information to a  power
+                report file named net.rep:
+
+                report_power -net -nworst 100 -outfile net.rep
+
+              * The  following command reports the amount of power consumed by
+                each power domain and writes the output information to a power
+                report file named pd_all.rep:
+
+                report_power -power_domain all -outfile pd_all.rep
+
+              * The following command reports the amount of power consumed  by
+                each  power  domain PD2 and writes the output information to a
+                power report file named pd.rep:
+
+                report_power -power_domain PD2 -outfile pd.rep
+
+              * The following command reports the amount of power consumed  by
+                view  view_max-hp-max-lp1 and writes the output information to
+                a power report file named view.rep:
+
+                report_power -view view_max-hp-max-lp1 -outfile view.rep
+
+              * The following command reports the amount of power consumed  by
+                each  instance connected to power nets vdd and vdd1 and writes
+                the  output  information  to  a  power   report   file   named
+                pg_net.rep:
+
+                report_power -pg_net {vdd vddl} -outfile pg_net.rep
+
+              * The  following  command  reports the leakage for the threshold
+                voltage group HVT:
+
+                report_power -leakage -threshold_voltage_group { HVT }
+
+              * The following command writes out a detailed  vector  profiling
+                report  for the combinational and macro cell types in the vec-
+                torprofile.rpt file:
+
+                report_power  -time_based_report  -outfile   vectorprofile.rpt
+                -cell_type {combinational macro}
+
+              * The following command is an example of generating multiple re-
+                ports at the same time:
+
+                report_power  -output  static_power -report_prefix design -net
+                {name1} -instance {inst_name}
+
+                The following reports will be generated:
+
+                static_power/design.rpt
+
+                static_power/design.netpwr.rpt
+
+                static_power/design.instpwr.rpt
+
+              * The following command specifies to report power  for  combina-
+                tional cells on the clock network.
+
+                report_power   -cell_type   clock_combinational  -output  sta-
+                tic_power -report_prefix power_clk
+
+              *
+
+                The following command generates a power map file in the simple
+                format for the specified tile:
+
+                report_power -outfile  powermeter.txt  -thermal_power_map_file
+                powermap.txt   -thermal_power_map_tile   {   4   6   }  -ther-
+                mal_power_map_format simple
+
+              * The following command specifies to report  the  power  content
+                for  the  inst1  hierarchical instance in the report.hierinst-
+                pwr.rpt report:
+
+                report_power -output static -report_prefix report  -clock_net-
+                work  {all} -instances * -no_wrap -hierarchy {all} -hierarchi-
+                cal_instances inst1 -cell_type {all}
+
+              * Example of the output of the power report.
+
+                *----------------------------------------------------------------------------
+
+                *        -  - Version  64-bit
+
+                *       Date  &  Time:     2008-Jan-27  15:49:51  (2008-Jan-27
+                23:49:51 GMT)
+
+                *----------------------------------------------------------------------------
+
+                *       Design: dtmf_chip
+
+                 *
+
+                 *       Liberty Libraries used:
+
+                 *                                        /sev//DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_rvt_ss_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_rvt_ss_0p8v_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_rvt_ss_0p8v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_lvt_ss_1p08v_125c.lib
+
+                 *                                          /sevDTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_lvt_ss_0p8v_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_lvt_ss_0p8v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_hvt_ss_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_hvt_ss_0p8v_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetropmk_cmos10lp_hvt_ss_0p8v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetro_cmos10lp_rvt_ss_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetro_cmos10lp_rvt_ss_0p8v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetro_cmos10lp_lvt_ss_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetro_cmos10lp_lvt_ss_0p8v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetro_cmos10lp_hvt_ss_1p08v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/scmetro_cmos10lp_hvt_ss_0p8v_125c.lib
+
+                 *     /sev/TIMING/max/rom_512x16A_ss_1v08_125c_syn.lib
+
+                 *     /sev/DTMF_CHIP/TIMING/max/pllclk_slow.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/iometroil_cmos10lp_hvt_ss_1p08v_2p3v_2p5v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/max/iometroil_cmos10lp_hvt_ss_0p8v_2p3v_2p5v_125c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/scmetropmk_cmos10lp_rvt_ff_1p32v_m40c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/scmetropmk_cmos10lp_rvt_ff_1p1v_1p32v_m40c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/scmetropmk_cmos10lp_lvt_ff_1p32v_m40c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/scmetropmk_cmos10lp_lvt_ff_1p1v_1p32v_m40c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/scmetropmk_cmos10lp_hvt_ff_1p32v_m40c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/scmetropmk_cmos10lp_hvt_ff_1p1v_1p32v_m40c.lib
+
+                 *
+
+                /sev/DTMF_CHIP/TIM-
+                ING/min/scmetro_cmos10lp_rvt_ff_1p32v_m40c.lib
+
+                 *
+
+                 /sev/DTMF_CHIP/TIM-
+                ING/min/scmetro_cmos10lp_lvt_ff_1p32v_m40c.lib
+
+                 *
+
+                 /sev/DTMF_CHIP/TIM-
+                ING/min/scmetro_cmos10lp_hvt_ff_1p32v_m40c.lib
+
+                 *
+
+                 /sev/DTMF_CHIP/TIMING/min/rom_512x16A_ff_1v32_m40c_syn.lib
+
+                 *
+
+                 /sev/DTMF_CHIP/TIMING/min/pllclk_fast.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/iometroil_cmos10lp_hvt_ff_1p32v_2p7v_2p5v_m40c.lib
+
+                 *                                         /sev/DTMF_CHIP/TIM-
+                ING/min/iometroil_cmos10lp_hvt_ff_1p1v_2p7v_2p5v_m40c.lib
+
+                 *
+
+                 *       Power Domain used:
+
+                 *               Rail:     VDD_AO        Voltage:       1.32
+
+                 *               Rail: VDD_TDSPCore      Voltage:       1.32
+
+                 *               Rail: VDD_TDSPCore_R    Voltage:       1.32
+
+                 *
+
+                 *       Parasitic Files used:
+
+                 * /sev/DTMF_CHIP/SPEF/dtmf_chip.decoup.spef
+
+                 *
+
+                 *       DEF Files used:
+
+                 * /sev/DTMF_CHIP/DEF/dtmf_chip.def
+
+                 *
+
+                 *       Power Units = 1mW
+
+                 *       Time Units = 1e-09 secs
+
+                 *       report_power
+
+                 -----------------------------------------------------------------------------
+
+                  Total Power
+
+                 -----------------------------------------------------------------------------
+
+                 Total Internal Power:      0.01943(62.6774%)
+
+                 Total Switching Power:     0.01057(34.0968%)
+
+                 Total Leakage Power:       0.001(3.2258%)
+
+                 Total Power:               0.031
+
+                 -----------------------------------------------------------------------------
+
+                Group       Internal       Switching      Leakage        Total
+                Percentage
+
+                 Power      Power         Power         Power  (%)
+
+                 -----------------------------------------------------------------------------
+
+                 Sequential     0.0006738    0.0002215   4.045e-05   0.0009358
+                3.019
+
+                 Macro         0.0004916   1.515e-05    0.0002609    0.0007677
+                2.477
+
+                 IO             0.01743      0.009085     0.0003172    0.02683
+                86.56
+
+                 Combinational 0.0008324    0.001247     0.0003815    0.002461
+                7.941
+
+                 -----------------------------------------------------------------------------
+
+                 Total 0.01943     0.01057       0.001       0.031         100
+
+                 -----------------------------------------------------------------------------
+
+                 Rail                   Voltage   Internal   Switching   Leak-
+                age  Total   Percentage                        Power     Power
+                Power        Power  (%)
+
+                 -----------------------------------------------------------------------------
+
+                 VDD_AO                     1.32     0.0008238       0.0003404
+                0.0002694    0.001434       4.625
+
+                 VDD_TDSPCore               1.32       0.001126       0.001022
+                0.0003931    0.002541       8.197
+
+                 VDD_TDSPCore_R            1.32      5.833e-06       3.253e-07
+                8.371e-07   6.996e-06     0.02257
+
+                Clock                      Internal     Switching      Leakage
+                Total  Percentage
+
+                                              Power       Power          Power
+                Power  (%)
+
+                 -----------------------------------------------------------------------------
+
+                m_digit_clk                   0               0              0
+                0           0
+
+                 m_ram_clk                    0              0               0
+                0           0
+
+                 m_dsram_clk                   0              0              0
+                0           0
+
+                 m_spi_clk             1.018e-06       1.09e-06      2.572e-08
+                2.134e-06    0.006884
+
+                 m_rcc_clk              1.282e-05      1.513e-05     2.672e-07
+                2.821e-05     0.09103
+
+                 m_clk                 5.039e-05      7.278e-05      7.658e-07
+                0.0001239      0.3998
+
+                 refclk                 1.11e-05      3.017e-05      2.488e-07
+                4.152e-05       0.134
+
+                 -----------------------------------------------------------------------------
+
+                 Total                 7.533e-05      0.0001192      1.307e-06
+                0.0001958      0.6317
+
+                 -----------------------------------------------------------------------------
+
+                *       Power Distribution Summary:
+
+                 *   Highest  Average  Power:      IOPADS_INST/Prefclkip (PBC-
+                SCT2B):     0.003727
+
+                 *    Highest   Leakage   Power:   DTMF_INST/ROM_512x16_0_INST
+                (rom_512x16A): 8.899e-05
+
+                 *               Total Cap:      2.46221e-10 F
+
+                 *               Total instances in design:  8525
+
+                 *                Total  instances  in  design  with no power:
+                24
+
+                 *                 Total instances in design with no  activty:
+                24
+
+                 *               Total Fillers and Decap:     8
+
+                 -----------------------------------------------------------------------------
+
+              * The  following  command  creates a leakage report (see example
+                report below):
+
+                report_power -leakage
+
+                *----------------------------------------------------------------------------
+
+                 *    Tempus  Timing  Signoff  Solution  08.10-b050_1  (64bit)
+                08/21/2008 19:23 (Linux 2.6)
+
+                 *
+
+                 *
+
+                 *        Date  &  Time:     2008-Aug-24 21:34:17 (2008-Aug-25
+                04:34:17 GMT)
+
+                 *
+
+                 *----------------------------------------------------------------------------
+
+                 *
+
+                 *       Design: dma_mac
+
+                 *
+
+                 *       Liberty Libraries used:
+
+                 *                                                   DATA/tim-
+                ing_libs//tcbn65lp_LVL_c060217wc0d90d9.lib
+
+                 *               DATA/timing_libs//tcbn65lpcgwc.lib
+
+                 *               DATA/timing_libs//tcbn65lplvtwc.lib
+
+                 *               DATA/timing_libs//tcbn65lpwc.lib
+
+                 *                                                   DATA/tim-
+                ing_libs//tsdn65lpa1024x32m8f_100a_wc.lib
+
+                 *                                                   DATA/tim-
+                ing_libs//tsdn65lpa128x16m8f_100a_wc.lib
+
+                 *               DATA/timing_libs//tcbn65lpcgwc0d72.lib
+
+                 *               DATA/timing_libs//tcbn65lplvtwc0d72.lib
+
+                 *               DATA/timing_libs//tcbn65lpwc0d72.lib
+
+                 *                                                   DATA/tim-
+                ing_libs//tsdn65lpa1024x32m8f_0p84v_wc.lib
+
+                 *                                                   DATA/tim-
+                ing_libs//tsdn65lpa128x16m8f_0p84v_wc.lib
+
+                 *
+
+                 *       Power Domain used:
+
+                 *               Rail:      VDDlu        Voltage:       0.84
+
+                 *               Rail:       VDDm        Voltage:       1.08
+
+                 *               Rail:        VDD        Voltage:       1.08
+
+                 *
+
+                 *       Power Units = 1mW
+
+                 *
+
+                 *       Time Units = 1e-09 secs
+
+                 *
+
+                 *       report_power -outfile Leakage.rep -leakage
+
+                 *
+
+                 -----------------------------------------------------------------------------
+
+                 Total Power
+
+                 -----------------------------------------------------------------------------
+
+                 Total Leakage Power:       0.1879
+
+                 -----------------------------------------------------------------------------
+
+                 Group                           Leakage       Percentage
+
+                                                 Power         (%)
+
+                 -----------------------------------------------------------------------------
+
+                 Sequential                        0.0127       6.756
+
+                 Macro                               0.1556        82.8
+
+                 IO                                     0           0
+
+                 Combinational                    0.01962       10.44
+
+                 -----------------------------------------------------------------------------
+
+                 Total                             0.1879         100
+
+                 -----------------------------------------------------------------------------
+
+                 Rail                  Voltage   Leakage       Percentage
+
+                                                 Power         (%)
+
+                 -----------------------------------------------------------------------------
+
+                 VDDau                       0          0           0
+
+                 VDDlu                    0.84    0.06477       34.47
+
+                 VDDm                     1.08   0.003587       1.909
+
+                 VDD                      1.08     0.1195       63.62
+
+                 Clock                           Leakage       Percentage
+
+                                                 Power         (%)
+
+                 -----------------------------------------------------------------------------
+
+                 phy_rxclk_2                            0           0
+
+                 phy_txclk_2                    0.0004786      0.2547
+
+                 phy_rxclk_1                            0           0
+
+                 phy_txclk_1                     3.39e-05     0.01804
+
+                 clk                             0.001723      0.9171
+
+                 -----------------------------------------------------------------------------
+
+                 Total                           0.002236        1.19
+
+                 -----------------------------------------------------------------------------
+
+                -----------------------------------------------------------------------------
+
+                *       Power Distribution Summary:
+
+                 *                   Highest     Average     Power:     ether-
+                net_mac_2/tx_fifo_module_from_dma/fifo1/dual_port_
+
+                    ram_4_tx_fifo/ram2P1024x32/ram      (TSDN65LPA1024X32M8F):
+                0.02424
+
+                 *                   Highest     Leakage     Power:     ether-
+                net_mac_2/tx_fifo_module_from_dma/fifo1/dual_port_
+
+                    ram_4_tx_fifo/ram2P1024x32/ram      (TSDN65LPA1024X32M8F):
+                0.02424
+
+                 *               Total Cap:      1.01625e-10 F
+
+                 *               Total instances in design: 29235
+
+                 *                Total  instances  in  design  with no power:
+                3596
+
+                 *          Total instances in design with no activty:   115
+
+                 *               Total Fillers and Decap:     0
+
+                 -----------------------------------------------------------------------------
+
+                Total leakage power = 0.187903 mW
+
+                  Cell usage statistics:
+
+                  Library tsdn65lpa128x16m8f_1v08,  1  cells  (  0.003900%)  ,
+                0.01016 mW (    5.407063%  )
+
+                  Library  tsdn65lpa1024x32m8f_1v08,  6  cells  (  0.023402%),
+                0.145427 mW (    77.394568%  )
+
+                  Library   tcbn65lp_LVL_c060217wc0d90d9   ,   120   cells   (
+                0.468037%), 0.000175605 mW    ( 0.093455%  )
+
+                  Library unknown , 3881 cells ( 15.137096%) , 0.00630072 mW (
+                3.353178%  )
+
+                  Library  tcbn65lpcgwc , 118 cells ( 0.460236%) , 0.000625092
+                mW ( 0.332667%  )
+
+                  Library tcbn65lplvtwc , 3762 cells ( 14.672959%) , 0.0110529
+                mW ( 5.882233%  )
+
+                  Library tcbn65lpwc , 17751 cells ( 69.234370%)  ,  0.0141619
+                mW ( 7.536835%  )
+
+Related Information
+              * set_power_analysis_mode
+
+              * "Static  Power, IRdrop and EM Analysis" in the Voltus IC Power
+                Integrity Solution User Guide
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025        report_power(25.10)

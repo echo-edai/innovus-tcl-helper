@@ -1,0 +1,771 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbGet(25.10)                                                      dbGet(25.10)
+
+Name
+       dbGet  -  Returns  object  and  attribute information for the specified
+       database object in the design
+
+Syntax
+       dbGet
+
+       [-help]
+
+       [. <objType> ]...[. <attrName>  | .? | .?? | .?h]
+
+       [-d]
+
+       [-e]
+
+       [expression]
+
+       [-i <num>]
+
+       [-l]
+
+       {<obj>
+              |
+               <objList>
+              | head | top | selected}
+
+       [-p <num>]
+
+       [<pattern>]
+
+       [-regexp]
+
+       [-u]
+
+       [-v]
+
+       Returns object and attribute information for the specified database ob-
+       ject in the design. The dbGet command takes an object or object list as
+       a starting point, then uses a period to traverse to other  related  ob-
+       jects,  or to access attributes. Additional periods can be used to con-
+       tinue traversing the database schema.
+
+       For example, the following command returns the master  cell  names  for
+       all of the instances in the design:
+
+       dbGet top.insts.cell.name
+
+              * top is a pointer to the top cell.
+
+              * insts is a list of pointers to the instances in the top cell.
+
+              * cell  is  a  list of pointers to the master cells for each in-
+                stance.
+
+              * name is the master cell name.
+
+       Copying and pasting pointers in an active session may cause the tool to
+       crash. To prevent this situation, do not:
+
+              * Copy pointers from the output of the dbGet command  and  paste
+                to another command as input.
+
+              * Copy a pointer from one session to another.
+
+       The  dbGet  command is case insensitive. An empty field returns a value
+       of 0x0.
+
+       For a list of the object attributes that can be  queried  for  informa-
+       tion, or changed, see Innovus Database Object Information.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each dbGet parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man dbGet
+
+       -e     To  avoid  NULL  (0x0)  pointers and results from being printed.
+              This is an optional option of type boolean and would effect  all
+              kinds of outputs.
+
+              In cases of nested dbGet statements:
+
+              * The option should not be used in the inner dbGet statement.
+
+              Correct  usage  example:  dbGet -e [dbGet -p2 [dbGet -p  top.in-
+              sts.pStatus fixed].cell.name INV1]
+
+              * If none of the instances have 'fixed'  placement  status,  the
+                outer  dbGet will not return a 0x0 but an empty list which TCL
+                would not consider as a list element. For example,
+
+              dbGet   [dbGet    -p2    [dbGet    -p    -e    top.insts.pStatus
+              fixed].cell.name INV1]
+
+       -i <num>
+              For selecting a specific element from the list being returned as
+              output.  The option -i <num>would select the the <num>th element
+              starting from 0. The option would also reduce a starting '{' and
+              ending '}' for box and pt type attributes
+
+              Example : dbGet top.nets.name sum* -p -i 0
+
+              The option would return first pointer in the list  of  the  nets
+              whose name matches the pattern sum*
+
+       -l     Returns the result with auto-newline.
+
+       -p <num>
+              Specifies  the  level to traverse back through the specified ob-
+              jects for the query.
+
+              For example, if you specify -p or -p1,  the  software  traverses
+              one  level  back  through  the specified objects. If you specify
+              -p2, the software traverses two levels back through  the  speci-
+              fied objects.The -p parameter is used with pattern name matching
+              (<pattern>) to create a subset of names by which to query.
+
+       -u     Removes duplicate objects from the query results so that the re-
+              sults list only contains unique entries.
+
+              For  information  such  as cell names, the results list can have
+              the same entry multiple times. You can use the -u  parameter  to
+              filter  the  results, so that the software only returns a unique
+              list of different cell names.
+
+       -regexp
+              Uses regular expression pattern matching (Tcl regexp command).
+
+              Default: Uses simple wild card pattern matching
+
+       -d     Returns values in database integers.
+
+              Default: Returns values in floating point user units
+
+       {<objList> | head | top | selected}
+              Specifies the starting point for the query.
+
+              * objList: Specifies one or more object pointers as the starting
+                point. You can specify a homogeneous or heterogeneous list.
+
+              * head: Specifies the pointer for the root, or head of  the  de-
+                sign as the starting point (also known as dbgHead).
+
+              * top:  Specifies  the  pointer to the top cell in the design as
+                the starting point (also known as dbgTopCell).
+
+              * selected: Specifies that the selected objects are the starting
+                point.
+
+       .<objType>*
+              Specifies the object type to query.
+
+       {<attrNname>| .? | .?? | .?h}
+              Specifies the type of information to return.
+
+              *
+
+              *
+
+                The software returns the object and attribute names only,  not
+                their values.
+
+                For  a list of objects, the field information is returned once
+                for each type of object in the list.
+
+                Most lists are of the same type; therefore, returning the same
+                fields many times does not make sense.
+
+              *
+
+                Use the setdbGetMode command to set  controls  for  displaying
+                .?? query information.
+
+              *
+
+                * A short description for each object and attribute.
+
+                * The type for each object.
+
+                * The legal enum values for each attribute.
+
+                * Whether  the  attribute  value can be set (whether it is ed-
+                  itable).
+
+       <pattern>
+              Specifies a string expression to use  to  match  object  or  at-
+              tribute names, or attribute values.
+
+              When  you  use  <pattern>to match object or attribute names, the
+              <pattern>is case insensitive. For example the following commands
+              all return the instance placement status  (inst:  pStatus):dbGet
+              top.insts.? ps*
+
+               dbGet top.insts.? PS*
+
+               dbGet top.insts.? pS*
+
+               dbGet top.insts.? pstatus
+
+               dbGet top.insts.? PSTATUS
+
+               dbGet top.insts.? pStatus
+
+              When  you  use  <pattern>to  match  attribute values (strings or
+              enums), the <pattern>is case sensitive. For example, the follow-
+              ing command returns the list of pointers for the instances  that
+              have placed status: dbGet -p top.insts.pStatus placed
+
+              However,  the following command returns 0x0, because PLACED does
+              not match the legal placed enum value: dbGet -p  top.insts.pSta-
+              tus PLACED
+
+              Default: The software uses simple wildcard matching (*, ?).
+
+       <expression>
+              Specifies  a  Tcl expression where values of attributes and also
+              of objects can be accessed and utilized in Tcl "expr" style com-
+              parisons.
+
+              Note: Only child attributes and  objects  of  the  obect  to  be
+              tested can be accessed, no additional traversal is allowed.
+
+              dbGet top.insts {.cell.name == "myBlock"}
+
+              is not allowed, the correct usage would be:
+
+              set myBlock [dbGet -p head.allCells.name myBlock]
+
+              dbGet top.insts {.cell == $myBlock}
+
+              For example,
+
+              * Instead of a limited search like:
+
+                dbGet -p head.allCells.numRefs 5
+
+              Which is now equivalent to:
+
+              dbGet head.allCells {.numRefs == 5}
+
+              The  search  can also include a number of attributes and objects
+              inside a Tcl expression, such as:
+
+              dbGet head.allCells {.numRefs > 5 && [string  match AND* .name]}
+
+              * For objects, note that the search will be limited to the chil-
+                dren of the current object.
+
+              By a normal dbGet <pattern>method you use:
+
+              dbGet -p2 top.nets.sWires.layer.extName metal2
+
+              When you use the the <expression>method:
+
+              set L2 [dbGet -p head.layers.extName metal2]
+
+              dbGet top.nets.sWires {$L2 == .layer}
+
+              * Logical matching:
+
+              dbGet top.nets {.name ne "clk"}
+
+              Returns a list of pointers to nets  whose  names  do  not  match
+              "clk".
+
+       -v     Returns all attributes that do not match the pattern/ expression
+
+              or  Reverses  the result of pattern/expression matching. This is
+              similar to the grep -v option in UNIX.
+
+              Example:
+
+              dbGet -v top.nets.name clk*
+
+              Returns all net names that do not match the clk* pattern
+
+              * Expanded numeric matching:
+       dbGet top.nets {.numInputTerms > 5}" Returns a list of pointers to nets
+       that have more than five input terminals.
+
+              * Multiple attribute matching: accessing multiple attributes  of
+                the same object.
+
+              dbGet top.nets {.name ne "clk" && .numInputTerms > 5 }
+
+              Returns  list  of  pointers to nets with at least one input, but
+              less than or equal to five input.
+
+              Note: The dbGet command can not be executed inside a  prior  in-
+              stance of dbGet.
+
+              Tokens in the expressions which begin a `.' and that are not in-
+              tened  to  reference  an attribute should be passed inside a Tcl
+              variable, otherwise the expression will try and reference an at-
+              tribute that does not exist (example:
+
+              > dbGet top.insts {[string match .xyzzy .name]}
+
+              should be changed to
+
+              > set test_name .xyzzy
+
+              > dbGet top.insts {[string match $test_name .name]}
+
+       Note 1: The system  can make suggestions or auto-complete entries using
+       predictive text in case you enter a wrong dbGet command. The system  no
+       longer  throws  up  errors,  instead it lists all the probable commands
+       starting with the letters entered so that you can choose which the  one
+       which you want to use. This behavior is implemented with the use of the
+       tab, like when you press the Esc key in UNIX.
+
+       For example,
+
+       innovus 1> dbGet top.n<tab>
+
+       name numInputs numPGTerms numPhysTerms
+
+       nets numInsts numPhysInsts numTerms
+
+       numBidirs numNets numPhysNets
+
+       innovus 1> dbGet top.<tab>
+
+       bumps numPhysNets statusPlaced
+
+       fPlan numPhysTerms statusPowerAnalyzed
+
+       hInst numTerms statusRCExtracted
+
+       insts objType statusRouted
+
+       markers pgTerms statusScanOpted
+
+       name physInsts symmetryR90
+
+       nets physNets symmetryX
+
+       numBidirs physTerms symmetryY
+
+       numInputs pinToCornerDist terms
+
+       numInsts props texts
+
+       numNets statusClockSynthesized
+
+       numPGTerms statusGRouted
+
+       numPhysInsts statusIoPlaced
+
+       innovus 1> dbGet top.insts.<tab>
+
+       box isJtagElem pHaloBot pgCellTerms rHaloTopLayer
+
+       boxes isPhysOnly pHaloBox pgTermNets
+
+       cell isSpareGate pHaloLeft props
+
+       instTerms name pHaloRight pt
+
+       isDontTouch objType pHaloTop rHaloBotLayer
+
+       isHaloBlock orient pStatus rHaloSideSize
+
+       innovus 1> dbGet top.insts.instTerms.name
+
+       Note  2: The "return" value from dbGet is always a list or a string, so
+       when the attribute that is being queried is a list (like  pt  and  rect
+       attributes)  the  return  result  is a list-of-lists structure, even if
+       there is only one internal list being returned. For example:
+
+       $instPtrList is a pointer to a list of instances
+
+       $instPtr is a pointer to a single instance
+
+       > dbGet $instPtrList.pt
+
+       {65.34 85.68} {81.84 65.52} {83.16 85.68} ...
+
+       What is listed above is what is printed to the screen.  But  since  the
+       value is a string and the quotes (") are not displayed.
+
+       The actual return result from a scripting point of view is:
+
+       "{65.34 85.68} {81.84 65.52} {83.16 85.68} ..."
+
+       Similarly, in case of a single instance:
+
+       > dbGet $instPtr.pt
+
+       {65.34 85.68}
+
+       What  is  listed  above is what is printed to the screen. But since the
+       value is a string and the quotes (") are not displayed, the actual  re-
+       turn result from a scripting point of view is:
+
+       "{65.34 85.68}"
+
+       So, to access the X value for the instance,
+
+       set x [lindex [lindex [dbGet $instPtrList.pt] 0] 0]
+
+       or
+
+       set x [lindex [join [dbGet $instPtrList.pt]] 0]
+
+       Usage  in  foreach,  as foreach breaks down the list-of-lists into each
+       pt.
+
+       foreach pt [dbGet $instPtrList.pt] {puts "X= [lindex $pt 0]"}
+
+       As the behavior of dbGet always returns  the  list-of-lists  form,  the
+       foreach can be used even if there is only a single internal list.
+
+Frequently used queries
+       Get the attributes of the selected object
+              dbGet selected.??
+
+       Find all nets with name including "clk"
+              dbGet top.nets.name *clk*
+
+       All instance pointers of a particular cell type
+              dbGet -p2 top.insts.cell.name INV1
+
+       Get all of the inverter lib cells
+              dbGet [dbGet -p head.libCells.isInverter 1].name
+
+       All the cell names, which are used in the design
+              dbGet -u top.insts.cell.name
+
+       The num of insts in the design
+              dbGet top.numInsts
+
+       All the physical only insts
+              dbGet [dbGet -p top.insts.isPhysOnly 1].name
+
+       Get all power and ground name in the design
+              dbGet [dbGet -p top.nets.isPwrOrGnd 1].name
+
+       Find the cell name of an instance
+              dbGet     [dbGet    -p    top.insts.name    pm_arbiter/mc_pm_ar-
+              biter_regs/U290].cell.name
+
+       Pointers to all registers in the design
+              dbGet -p2 top.insts.cell.isSequential 1
+
+       All blocks/macros
+              dbGet -p2 top.insts.cell.subClass block
+
+       All top level ports
+              dbGet top.terms.name
+
+       Pointers to all CTS clock nets
+              dbGet -p1 top.nets.isCTSClock 1
+
+       All of the nets skipped during routing
+              dbGet [dbGet top.nets.skipRouting 1 -p].name
+
+       Find the net connected to a pin
+              dbGet   [dbGet    -p    top.insts.instTerms.name    <full    pin
+              name>].net.name
+
+       Pointers to all fixed nets
+              dbGet -p2 top.nets.wires.status fixed
+
+       Pointers to all donttouch insts
+              dbGet top.insts.isDontTouch 1 -p
+
+       Find all the power domains
+              dbGet top.fplan.groups.pd.name
+
+       Find nets with no DEF SPECIALNETS wiring
+              dbGet [dbGet top.nets {.sWires == 0x0 && .sVias == 0x0}].name
+
+       Find the metal2 routing pitch (X)
+              dbGet   [dbGet  -p  [dbGet  -p1  head.layers.type  routing].name
+              *2].pitchX
+
+              or
+
+              dbGet [dbGet head.layers.name metal2 -p].pitchX
+
+       Find all instance connected to a port
+              dbGet   [dbGet    -p    top.terms.name    <port_name>].net.inst-
+              Terms.inst.name
+
+       Pointers to AND gates that used more than 5 times in the design
+              dbGet head.allCells {.numRefs > 5 && [string match AND* .name]}
+
+       Pointers to cells that are used more than 10 times in the design
+              dbGet [dbGet -p head.allCells.objType libCell] {.numRefs > 10}
+
+       Pointers to cells that have 4 or less inputs and more than 2 PG terms
+              dbGet  [dbGet -p head.allCells.objType libCell] {.numInputs <= 4
+              && .numPGTerms > 2}
+
+       Pointers to non-clk nets that have more than five input terminals
+              dbGet top.nets {.name ne "clk" && .numInputTerms > 5 }
+
+Examples
+              * The following command returns the instance names for  the  in-
+                stances with names that match the *reg* pattern:
+
+                dbGet top.insts.name *reg*
+
+              * The following command returns the names of all nets that start
+                with  the  letter  I. Specifying this command returns the same
+                information as specifying the dbFindNetsByName
+                     I* command.
+
+                dbGet top.nets.name I*
+
+              * The following command returns the names of all terminals  that
+                start  with  the letter I. Specifying this command returns the
+                same information as specifying the dbFindTermsByName
+                     I* command.
+
+                dbGet top.terms.name I*
+
+              * The following command returns a list of pointers  to  the  in-
+                stances that have a placement status of Fixed:
+
+                dbGet -p top.insts.pStatus fixed
+
+              * The  following  command  returns a list of names for instances
+                that have a placement status of Fixed:
+
+                dbGet [dbGet -p top.insts.pStatus
+                     fixed].name
+
+              * The following commands also return a list  of  instance  names
+                for instances that have a placement status of Fixed:
+
+                set fixedInst [dbGet -p top.insts.pStatus fixed]
+
+                dbGet $fixedInsts.name
+
+              * The  following  command  returns the status of the top cell in
+                the design:
+
+                dbGet top.?? status*
+
+                The software displays the following information:
+
+                statusClockSynthesized: 0
+
+                statusGRouted: 0
+
+                statusIoPlaced: 1
+
+                statusPlaced: 1
+
+                statusPowerAnalyzed: 0
+
+                statusRCExtracted: 0
+
+                statusRouted: 0
+
+                statusScanOpted: 0
+
+              * The following command returns a list of the available  objects
+                and attributes for instances of the top cell:
+
+                dbGet top.insts.?
+
+                The software displays the following information:
+
+                inst: box cell instTerms
+                     isDontTouch isHaloBlock isJtagElem isPhysOnly isSpareGate
+                name objType
+                     orient pStatus pgCellTerms pgTermNets pt
+
+              * The  following  command displays the available objects and at-
+                tributes, and their values, for the instances in the top cell.
+                By default, the software displays information for the first 10
+                instances only. Use the setdbGetMode  command  to  change  the
+                display limit.
+
+                dbGet top.insts.??
+
+                The software displays the following information:
+
+                box: {314.16 302.4 316.8
+                     307.44}
+
+                cell: 0x12186fa8
+
+                instTerms: 0x1330fa38
+                     0x1330fa6c
+
+                isDontTouch: 0
+
+                isHaloBlock: 0
+
+                isJtagElem: 0
+
+                isPhysOnly: 0
+
+                isSpareGate: 0
+
+                name: i_10181
+
+                objType : inst
+
+                orient : MX
+
+                pStatus : placed
+
+                pgCellTerms: 0x13811088
+                     0x138110cc
+
+                pgTermNets: 0x0
+
+                pt: {314.16 302.4}
+
+                box: {258.72 282.24 261.36
+                     287.28}
+
+                cell: 0x12186c38
+
+                instTerms: 0x1330faa0
+                     0x1330fad4
+
+                isDontTouch: 0
+
+                isHaloBlock: 0
+
+                isJtagElem: 0
+
+                isPhysOnly: 0
+
+                isSpareGate: 0
+
+                name: i_10177
+
+                objType : inst
+
+                orient : MX
+
+                pStatus : placed
+
+                pgCellTerms: 0x13810ef0
+                     0x13810f34
+
+                pgTermNets: 0x0
+
+                pt: {258.72 282.24}
+
+              * The  following command returns a list of the available objects
+                and attributes for instances of the  top  cell.  The  software
+                also  displays  a  short  description  for each object and at-
+                tribute, the type of each object, the legal  enum  values  for
+                each  attribute, and whether the attribute value can be set by
+                the user.
+
+                dbGet top.insts.?h
+
+                The software displays the following information:
+
+                ===========================================================================
+
+                inst: Instance - canonical
+                     (flat), equivalent to DEF COMPONENT. Points to a  libCell
+                or ptnCell
+
+                ===========================================================================
+
+                box: rect, Bounding box of
+                     instance
+
+                cell: obj(libCell ptnCell),
+                     Pointer to child cell master or ptnCell
+
+                instTerms: objList(instTerm),
+                     List of pointers to instance terminal
+
+                isDontTouch: bool, Indicates
+                     that the instance is marked Don't Touch
+
+                isHaloBlock: bool, Indicates
+                     that the instance is a halo block
+
+                isJtagElem: bool, Indicates
+                     that the instance is a Jtag element
+
+                isPhysOnly: bool, Indicates
+                     that the instance is physicl only
+
+                isSpareGate: bool, Indicates
+                     that the instance is a spare gate
+
+                name: string, Fully qualified
+                     (path) name of the instance
+
+                objType: enum(bndry
+                     densityShape  fPlan group hInst hInstTerm hNet hTerm head
+                inst instTerm
+                     layer libCell net netGroup pBlkg pd pinGroup prop ptnCell
+                rBlkg sNet sWire
+                     shape stdRow term topCell vCell via wire),  Object  type:
+                Instance
+
+                orient(settable): enum(MX MX90
+                     MY  MY90  R0  R180  R270 R90 Unknown), Instance placement
+                orientation
+
+                pStatus(settable): enum(cover
+                     fixed placed unplaced), Instance placement status
+
+                pgCellTerms: objList(term),
+                     List of pointers to the instance's power terminals
+
+                pgTermNets: objList(net), List
+                     of pointers to nets attached to P/G terminals
+
+                pt(settable): pt, Location of
+                     the instance
+
+                b
+
+              * In order to query all nets that have  no  wiring  (regular  or
+                special) more efficently, use:
+
+                set netsWithNoRouting [dbGet
+                     top.nets {.wires == 0x0 && .vias == 0x0 && .sWires== 0x0
+                     && .sVias == 0x0} ]
+
+                foreach netWithNoRouting
+                     $netsWithNoRouting  { Puts "** Net [dbGet $netWithNoRout-
+                ing.name]
+                     has no wiring."}
+
+              * In order to display the Power/Ground connections for a  speci-
+                fied instance, use:
+
+                set inst [dbGet -p
+                     top.insts.name my_inst_name]
+
+                foreach
+                     pgCellTermName  [dbGet $inst.pgCellTerms.name] pgTermNet-
+                Name [dbGet
+                     $inst.pgTermNets.name]
+
+                {Puts
+                     "Instance \"[dbGet $inst.name]\" terminal
+                     \"$pgCellTermName\" is connected to net
+                     \"$pgTermNetName\"."}
+
+              * Finding nets with no DEF SPECIALNETS wiring
+
+                set netNames [dbGet [dbGet top.nets {.sWires == 0x0 &&  .sVias
+                == 0x0}].name] foreach netName $netNames {
+                    Puts  "$netName  has  no  special wiring" } vs foreach net
+                [dbGet top.nets] {
+                    if { [dbGet $net.sWires] == 0x0 && [dbGet  $net.sVias]  ==
+                0x0 } {      Puts "[dbGet $net.name] has no special wiring"
+                    } }
+
+       The  first  method calls dbGet once to access the DEF SPECIALNETS data,
+       the second makes 2xN calls (where N is the number of nets  in  the  de-
+       sign)  to  access the DEF SPECIALNETS data. The calls to access the DEF
+       SPECIALNETS data do an internal initialization that can be expensive on
+       large designs, so minimizing the  number  of  times  that  happens  can
+       greatly improve the run time of a proc/script.
+
+                           Fri Apr 04 01:25:37 2025               dbGet(25.10)

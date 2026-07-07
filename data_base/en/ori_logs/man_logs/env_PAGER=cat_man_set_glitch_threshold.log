@@ -1,0 +1,186 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_glitch_threshold(25.10)                        set_glitch_threshold(25.10)
+
+Name
+       set_glitch_threshold
+
+Syntax
+       set_glitch_threshold
+
+       [-help]
+
+       [-cell <string>]
+
+       [-failure_point {none | input | internal | last}]
+
+       [-glitch_type {both | vl | vh | vlu | vho | vl_vh | vlu_vho}]
+
+       [-library_pins <string>]
+
+       [-nets <string>]
+
+       [-pins <string>]
+
+       [-pin_type {clock | data | latch | all}]
+
+       [-threshold_type {failure | reporting | propagation}]
+
+       -value <float>
+
+       [-views <string>]
+
+       Allows  for additional control of failure criteria for SI glitch analy-
+       sis.
+
+       Parameters
+
+       -help  Prints out the command usage. For a detailed description of  the
+              command  and  all  of  its  parameters, use the man command: man
+              set_glitch_threshold.
+
+       -cell <<string>>
+              Specifies list of library cell names.
+
+       -failure_point {none | input | internal | last}
+              Specifies where the failure or reporting criteria applies.
+
+              *
+
+                * none: Criteria does not apply.
+
+              *
+
+                * input: Threshold applies when the failure point  is  at  the
+                  input pin of the receiver cell.
+
+                * internal: Threshold is applied when the failure point is in-
+                  ternal  to  the cell. This occurs for multi-stage cells. The
+                  failure point will be the output of the first  stage  inside
+                  the cell.
+
+                * last:  Threshold  is  applied  when the failure point is the
+                  output of the cell. This occurs for single-stage cells, such
+                  as, inverters.
+
+              Default: internal and last
+
+       -glitch_type {both | vl | vh | vlu | vho | vl_vh | vlu_vho}
+              Specifies the glitch type the command applies to.
+
+              * both: Refers to vl and vh type of glitches.
+
+              * vl_vh: Includes VL and VH noise.
+
+              * vlu_vho: Includes VLU and VHO noise.
+
+              Default: both
+
+       -library_pins <string>
+              Specifies a list of library pin names.
+
+       -nets <string>
+              Specifies the list of nets the command applies to.
+
+              Default is not net-specific.
+
+       -pins <string>
+              Specifies the list of pins or primary ports.
+
+              Default is not pin-specific.
+
+       -pin_type {clock |data | latch |all}
+              Specifies the pin type the command applies to.
+
+              Default: all
+
+       -threshold_type {failure | reporting | propagation}
+              Specifies whether the command options apply to failure,  report-
+              ing, or propagation criteria.
+
+              In case of VL/VH glitch analysis, it is mandatory to specify the
+              -threshold_type  parameter.  This  is  because when the computed
+              glitch (ROP) at any given stage exceeds  the  failure  threshold
+              (when  glitch propagation is enabled), then it is not propagated
+              and is flagged as failure in the noise report.
+
+              With the -threshold_type failure setting, the  propagation  will
+              stop  as  per  the  new threshold, and the failure flagging will
+              change accordingly. However, with the -threshold_type  reporting
+              setting,  the  propagation  threshold remains unchanged, but the
+              failure reporting is updated.
+
+              When -threshold_type propagation is used,  the  software  allows
+              for  failing  nets  with  ROP  values  less than the propagation
+              threshold to propagate through single stage cells.
+
+              In case of VLU/VHO glitch analysis, it is optional  to  use  the
+              -threshold_type parameter because the above flow is not applica-
+              ble.
+
+              Default: failure
+
+       -value <float>
+              Specifies  the  value  for the threshold as a ratio of the local
+              VDD.
+
+              Default: 0.1
+
+       -views <string>
+              Specifies a list of view names.
+
+Examples
+       Here are some examples.
+
+              * The following command moves the failure point from ROP to  RIP
+                for inst1/a1 and uses a RIP failure of 0.2*ReceiverVDD:
+
+                set_glitch_threshold   -failure_point   input   -pin  inst1/a1
+                -threshold_type failure -value 0.2
+
+              * The following command sets clock failure criteria to  0.1*VDD,
+                latch  failure  criteria  to  0.2*VDD  and  all  other nets to
+                0.3*VDD (set before update_glitch):
+
+                set_glitch_threshold  -threshold_type  failure  -pin_type  all
+                -failure_point last -value 0.3
+
+                set_glitch_threshold  -threshold_type  failure -pin_type clock
+                -failure_point last -value 0.2
+
+                set_glitch_threshold -threshold_type failure  -pin_type  latch
+                -failure_point last -value 0.1
+
+              * The following command sets the failure threshold at the output
+                of  the 1st channel connect inside all the instances of macro1
+                to be 0.2 (set before update_glitch):
+
+                set_glitch_threshold -threshold_type  failure  -cell  {macro1}
+                -failure_point internal -value 0.2
+
+              * The  following  command  changes  the  reporting  criteria for
+                latches to be 0.15*VDD (set after update_glitch):
+
+                set_glitch_threshold -threshold_type reporting -pin_type latch
+                -value 0.15
+
+                If you need to set all the data failure criteria  to  be  0.3,
+                then you need to make the following settings:
+
+                set_glitch_threshold -failure_point internal \
+
+                -threshold_type failure -value 0.3 \
+
+                -pin_type data
+
+                set_glitch_threshold -failure_point last \
+
+                -threshold_type failure -value 0.3 \
+
+                -pin_type data
+
+Related Information
+              * get_glitch_threshold
+
+              * update_glitch
+
+                           Fri Apr 04 01:25:37 2025set_glitch_threshold(25.10)

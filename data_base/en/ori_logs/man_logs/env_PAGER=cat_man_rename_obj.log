@@ -1,0 +1,144 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+rename_obj(25.10)                                            rename_obj(25.10)
+
+Name
+       rename_obj  -  Renames  the  base_name of a single design object, which
+       could only be a inst, hinst, design, module, port, hport, or hnet
+
+Syntax
+       rename_obj
+
+       [-help]
+
+       [-escape_ok]
+
+       [-flexible]
+
+       <inst|hinst|module|design|port|hport|hnet|test_clock|test_clock_domain>
+
+       <new_name>[-quiet]
+
+       Renames the base_name of a single design object, which could only be  a
+       inst, hinst, design, module, port, hport, or hnet. This command changes
+       only  the  base_name  of  the  specified objects, and cannot move those
+       across the netlist hierarchy. This command also returns the new name of
+       the renamed object.
+
+       The names used for SDC timing constraints can only  be  modified  using
+       this command, if they have been loaded into the memory. So, ensure that
+       all the timing views are loaded using the set_analysis_view command be-
+       fore running the rename_obj command so that the SDC constraints are up-
+       dated  properly. The modified SDC files can be retrieved after renaming
+       the objects.
+
+       The rename_obj command cannot  update  the  names  used  inside  a  CPF
+       power_intent  file.  This is because the CPF usage assumes that the CPF
+       file is golden and should not be modified. To change the names used in-
+       side a CPF file, first update the CPF file manually, and then  use  the
+       updated CPF file to run the rename_obj command.
+
+       An  IEEE1801  power_intent file is allowed to be changed during the de-
+       sign flow. So, changing names using the rename_obj command  will  auto-
+       matically  update the IEEE1801 object names. You can use the rename_obj
+       command to write out the new IEEE1801 file with the updated names.
+
+Parameters
+       -help  Provides a brief description of the command  that  includes  the
+              type  and default information for its parameters. For a detailed
+              description of the command and all its parameters, use  the  man
+              command:
+
+              man rename_obj
+
+       <-escape_ok>
+              Allows  new_name  to  have either the hierarchy chars '/' or the
+              bus-bit chars '[]' in it, which will automatically  be  escaped.
+              If this parameter is not specified, any set of '/' or '[]' chars
+              in  new_name  will cause an error and the object will not be re-
+              named.
+
+              Data_type: bool, optional
+
+       -flexible
+              If new_name coincides with an existing name, this parameter  ap-
+              pends  a suffix (such as _1 and _2) to differentiate it. If this
+              parameter is not specified, a name collision in such a  scenario
+              causes an error, and the specified object is not renamed.
+
+              Data_type: bool, optional
+
+       <inst|hinst|module|design|port|hport|hnet|test_clock|test_clock_domain>
+              Specifies the object to be renamed.
+
+              If  <object>  is  a port or hport, any hnet connected to it with
+              the same base_name is also renamed to keep it matched (for exam-
+              ple,     renaming      hport:top/i1/clkin      also      renames
+              hnet:top/i1/clkin).
+
+              If <object> is an hnet that is connected to a port or hport with
+              the  same  base_name,  an error occurs. In such a case, you must
+              change the port or hport name to proceed.
+
+              If an hnet name matches with its associated net name (for  exam-
+              ple, get_db $my_hnet .net), then the net name is also renamed on
+              using    the   rename_obj   command.   For   example,   renaming
+              hnet:top/net1 also renames net:top/net1. Therefore, to rename  a
+              net, you need to rename the hnet with the same name.
+
+              This  command  does  not allow renaming a bus-bit object. So any
+              port, hport, or hnet that has a .base_name like busA[0] (a  bus-
+              bit object), cannot be renamed, While a .base_name with a scalar
+              name (like busA\[0\]) can be changed.
+
+              Data_type:                                (inst|hinst|module|de-
+              sign|port|hport|hnet|test_clock|test_clock_domain), required
+
+       <new_name>
+              Specifies the new base_name for the specified object.
+
+              Data_type: string, optional
+
+       -quiet Suppresses messages about renamed objects.
+
+              Data_type: string, optional
+
+Examples
+              *
+
+                The following command renames an inst base_name to i2_new:
+
+                rename_obj inst:top/i1/i2 i2_new
+
+                 inst:top/i1/i2_new               #returned  object  with  new
+                name
+
+              * The  following  command  renames an inst base_name i2\/i3 with
+                escaped hierarchy:
+
+                rename_obj {inst:top/i1/i2\/i3} i2/i3_new -escape_ok
+
+                 inst:top/i1/i2\/i3_new           #returned  inst  object,  no
+                hierarchy change
+
+              * The  following  command  renames a scalar hport name to remove
+                escaped bus-bit chars:
+
+                rename_obj {hport:top/i1/busA\[0\]} busA_0
+
+                 hport:top/i1/busA_0              #returned hport object
+
+                Note:hnet:top/i1/busA\[0\]     is     also     renamed      to
+                hnet:top/i1/busA_0.
+
+              * The following command renames a port name:
+
+                rename_obj port:top/clkin clkin_new
+
+                 port:top/i1/clkin_new            #returned port object
+
+                Note: Both hnet:top/i1/clkin and net:top/i1/clkin are renamed.
+
+Related Information
+       update_names
+
+                           Fri Apr 04 01:25:37 2025          rename_obj(25.10)

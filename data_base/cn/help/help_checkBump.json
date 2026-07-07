@@ -1,0 +1,123 @@
+{
+  "command": "checkBump",
+  "is_cmd": true,
+  "summary": "检查凸块（Bump）的设计规则约束",
+  "description": "该命令用于检查凸块（Bump）相关的多种设计规则约束，包括凸块间距、凸块到引脚间距、凸块到边缘间距、凸块与引脚的重叠、凸块是否在指定网格上，以及与相对对象（如嵌入式凸块、实例引脚或端口）的位置和网络分配关系。用户可以通过指定区域、选择特定凸块或网络来限定检查范围，并可将违规结果输出到文件。",
+  "usage": "checkBump [-help] [-bumpToPinOverlap <inst+>] [-outfile <string>] [-resetViolationMarker] [-select_violation_bumps] [-selected  | -area {x1 y1 x2 y2}] [-relative_type {embedded_bump inst_pin_port} [[-relative_object {inst_pin_port_list}] [-relative_assignment ] [-relative_offset <x y>]]] [ [[-relative_type {embedded_bump inst_pin_port}] [-bumpToPinPitch {pitch_value {[bump_name] [inst_pin_name [pin_x pin_y]]}}]] | -nets <net+> ] [-bumpToEdgePitch <pitch_value> [-edgeOffset {offset [cornerOffset]}]] [ [[-bumpPitch {pitch_value [bump_name]}] [-bumpToPinPitch {pitch_value {[bump_name] [inst_pin_name [pin_x pin_y]]}}]] | -bumpMaxPitch <max_pitch_value> | -bumpToEdgePitch <pitch_value> ] [-onBumpGrid  [-onBumpGridTolerance <bump_grid_name value>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法说明。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "检查指定矩形区域（单位：微米）内的凸块约束。若与-bumpPitch联用，则仅检查该区域内凸块的间距；否则，检查该区域内凸块的默认约束。",
+      "required": false,
+      "type": "box"
+    },
+    {
+      "name": "-bumpMaxPitch",
+      "description": "检查相邻凸块之间的最大中心距（单位：微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-bumpPitch",
+      "description": "检查凸块之间的中心距（单位：微米）。可指定凸块名称（支持通配符）进行特定凸块间的间距检查；若未指定，则对设计中或由-selected/-area指定的所有凸块进行检查。可多次使用此选项。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bumpToEdgePitch",
+      "description": "检查凸块中心到保护环边缘的间距（单位：微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-bumpToPinOverlap",
+      "description": "检查凸块是否与指定模块（instance）的引脚重叠。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-bumpToPinPitch",
+      "description": "检查凸块与引脚之间的间距（单位：微米）。支持多次使用此选项进行多次间距检查。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-edgeOffset",
+      "description": "定义与芯片边界不同的保护环边缘形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要检查的网络名称。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-onBumpGrid",
+      "description": "检查凸块是否在凸块网格上。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-onBumpGridTolerance",
+      "description": "指定检查凸块是否在凸块网格上时的容差值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outfile",
+      "description": "指定输出结果的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_assignment",
+      "description": "检查凸块的网络分配是否与对应的相对对象等效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-relative_object",
+      "description": "指定相对对象的实例引脚端口列表。格式为 {inst:pin:port ...}，其中端口为整数类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_offset",
+      "description": "指定凸块位置相对于对应相对对象的偏移量。",
+      "required": false,
+      "type": "point"
+    },
+    {
+      "name": "-relative_type",
+      "description": "指定相对对象的类型（枚举值：embedded_bump, inst_pin_port）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-resetViolationMarker",
+      "description": "重置违规标记，忽略其他选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-select_violation_bumps",
+      "description": "自动选择违规的凸块。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "检查所选凸块的约束。若与-bumpPitch联用，则仅检查所选凸块的间距；否则，检查所选凸块的默认约束。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

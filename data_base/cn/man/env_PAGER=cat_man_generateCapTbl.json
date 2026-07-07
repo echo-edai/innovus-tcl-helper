@@ -1,0 +1,69 @@
+{
+  "command": "generateCapTbl",
+  "is_cmd": true,
+  "summary": "读取互连技术（ICT）工艺文件并生成电容表文件",
+  "description": "该命令用于读取互连技术（ICT）工艺文件并生成一个电容表文件。电容表文件包含一个工艺信息和制造效应摘要的头部，以及用于RC提取过程中的系数表。该电容表用于32nm以上的预布线提取以及后布线提取（-effortLevel low）。注意：对于TQuantus、IQuantus、32nm及以下的预布线提取以及独立Quantus，需要的是Quantus技术文件而非电容表。该命令会自动忽略为多晶硅层、局部互连层和MIM电容层创建系数。它通过gate_forming_layer true语句识别多晶硅层。该命令不支持ICT文件中定义的grown_from_conformal（非平面堆叠）结构。可以使用多CPU处理命令在并行模式下生成电容表，但此功能仅在从软件提示符调用generateCapTbl时可用，而非从独立实用程序generateCapTbl调用。",
+  "usage": "generateCapTbl [-help] [-cap <totalCapFactor>] [-encrypt] -output <fileName> [-res <resistanceFactor>] [-xcap <crossCouplingFactor>] [-lef <fileName> [-shrinkFactor <value>]] {-ict <fileName> | -incaptable <fileName>}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个generateCaptbl参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cap",
+      "description": "指定电容比例因子。与 -incaptable 参数一起使用，以生成电容值按指定比例因子缩放的电容表。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-encrypt",
+      "description": "加密生成的电容表以保护电容表头中的工艺信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-output",
+      "description": "指定包含电容表的输出文件名。这是一个必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-res",
+      "description": "指定电阻比例因子。与 -incaptable 参数一起使用，以生成电阻值按指定比例因子缩放的电容表。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-xcap",
+      "description": "指定交叉耦合电容比例因子。与 -incaptable 参数一起使用，以生成交叉耦合电容值按指定比例因子缩放的电容表。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-lef",
+      "description": "指定用于最佳精度的工艺LEF文件的名称和完整路径。使用LEF文件时，此参数通过使用LEF中定义的非默认规则指定的实际线宽来生成电容表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shrinkFactor",
+      "description": "指定可选LEF文件中的测量值必须为此设计所用技术缩小的值。仅与 -lef 参数一起使用，并且当LEF技术与ICT文件中的目标技术不匹配时使用。默认值：1.0。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-ict",
+      "description": "指定ICT（互连技术）工艺文件的名称和路径。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-incaptable",
+      "description": "指定现有ASCII格式电容表的名称。与 -encrypt 参数一起使用以创建现有电容文件的加密版本。注意：-ict 和 -incaptable 参数是互斥的。必须指定两者之一。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

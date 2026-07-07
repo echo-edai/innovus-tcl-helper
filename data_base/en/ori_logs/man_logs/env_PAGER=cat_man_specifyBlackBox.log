@@ -1,0 +1,383 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+specifyBlackBox(25.10)                                  specifyBlackBox(25.10)
+
+Name
+       specifyBlackBox - Converts a hard macro into a blackbox
+
+Syntax
+       specifyBlackBox
+
+       [-help]
+
+       [-coreSpacing {<left right top bottom>}]
+
+       [-minPitchLeft <integer>]
+
+       [-minPitchRight <integer>]
+
+       [-minPitchTop <integer>]
+
+       [-minPitchBottom <integer>]
+
+       [-pinLayerLeft {<list_of_layers>}]
+
+       [-pinLayerRight {l<ist_of_layers>}]
+
+       [-pinLayerTop {<list_of_layers>}]
+
+       [-pinLayerBottom {<list_of_layers>}]
+
+       [-reservedLayer {<list_of_layers>}]
+
+       [-placementHalo {<left right top bottom>}]
+
+       [-routingHalo <float>]
+
+       [-routingHaloTopLayer <integer>]
+
+       [-routingHaloBottomLayer <integer>]
+
+       [-noRebuildTiming]
+
+       [ -cell <string>| -masterInst <string>]
+
+       {-size {<x y>} | -area <float> | -gateCount <string>
+
+          | {-gateArea <float >[-cellUtil <float>]
+
+       [ -includeMacroArea {0 | 1}
+
+       {-macroArea <float >| -macroList {<macroName> [<count>]}}]}}
+
+       [{-area <float >| -gateCount <string>}
+
+       [-minWidth <float> | -minHeight <float>
+
+       | -fixedWidth <float> | -fixedHeight <float> ]]
+
+       [-minWidth <float> | -minHeight <float>
+
+       |  -fixedWidth  <float> | -fixedHeight <float> |-aspectRatioRange {<min
+       max>}]
+
+       [-aspectRatio <float >|-aspectRatioRange {<min max>}]
+
+       Converts a hard macro into a blackbox. It is also used  for  specifying
+       an  instance  to  be the master of multiplying instantiated blackboxes.
+       You can use this command after importing the design.
+
+       Note: You can convert a hard macro into a  blackbox;  however,  Cadence
+       does not recommend this because it will not update the blockage defini-
+       tions when you change the blackbox size.
+
+       Note:  For  designs  that have backside metal layers, both the backside
+       and frontside layers are accepted. However, the automatic  pin  assign-
+       ment  flow  is not impacted with the support for backside metal layers.
+       It assigns pins on front layers only.
+
+Parameters
+       -area <float>
+              Specifies the total area in square micrometers. If  you  specify
+              the  block  size  area, the default for the created block aspect
+              ratio is 1.
+
+              Data_type: float, optional
+
+       -aspectRatio <float>
+              Specifies the aspect ratio value. This value combined  with  the
+              area information determines the width and height.
+
+              Data_type: float, optional
+
+       -aspectRatioRange {<min max>}
+              Sets  the minimum and maximum values for the aspect ratio range.
+              This value combined with the specified related area  information
+              enables  the  blackbox to be reshaped while maintaining the cur-
+              rent area.
+
+              Data_type: point, optional
+
+       -cell <string>
+              Specifies the name of the cell.
+
+              Data_type: string, optional
+
+       -cellUtil <float>
+              Specifies the cell utilization. This value is used to derive the
+              area of the blackbox, which is calculated  using  the  following
+              formula:Blackbox  area = (standard cell area / cell utilization)
+              + macro area
+
+              Default: The default value of cell utilization is 1 (100%).
+
+              Data_type: float, optional
+
+       -coreSpacing {<left right top bottom>}
+              Specifies the space, in micrometers, between the module boundary
+              and core design area of the module on the left, right, top,  and
+              bottom sides respectively. The partition pins will be located at
+              the partition instance boundary and the core area.
+
+              Data_type: string, optional
+
+       -fixedHeight <float>
+              Specifies the fixed height of the module.
+
+              Data_type: float, optional
+
+       -fixedWidth <float>
+              Specifies the fixed width of the module.
+
+              Data_type: float, optional
+
+       -gateArea <float>
+              Specifies  the  gate area. If the value of the -includeMacroArea
+              parameter is 0, the gate area is  equal  to  the  standard  cell
+              area.  If the value of the -includeMacroArea parameter is 1, the
+              gate area also includes the macro area.
+
+              Data_type: float, optional
+
+       -gateCount <string>
+              Specifies a gate count value. The total cell area  is  equal  to
+              the  specified  gate  count multiplied by the specified area per
+              gate.
+
+              * count: Specifies the gate count value.
+
+              * areaPerGate: Specifies an area per gate value  in  square  mi-
+                crometers.  To  get the cell area, this value is multiplied by
+                the specified gate count.
+
+              * <utilization>Value: Specifies the cell utilization. This value
+                derives the area that is reserved for routing. The final block
+                size is equal to the total cell area plus the routing area.
+
+              Default: The default value is 0.7 (70%)
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each specifyBlackBox parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man specifyBlackBox
+
+       -includeMacroArea {0 | 1}
+              A  value  of 0 specifies that the gate area does not include the
+              macro area specified through the -macroArea  or  the  -macroList
+              parameter.
+
+              A  value  of  1  specifies that the gate area includes the macro
+              area specified through the -macroArea or the -macroList  parame-
+              ters.
+
+              Default: The default value is 0.
+
+              Data_type: enum, optional
+
+       -macroArea<float>
+              Specifies the total area of the macro(s) in square microns.
+
+              * If the value of the -includeMacroArea parameter is set to 0:
+
+                Total  blackbox  area = (gate area / cell utilization value) +
+                macro area
+
+              * If the value of the -includeMacroArea parameter is set to 1:
+
+                Total blackbox area = ((gate area - macro area)  /  cell  uti-
+                lization value) + macro area
+
+              Data_type: float, optional
+
+       -macroList {<macroName> [<count>]}
+              Specifies the name of the hard macro whose area will be included
+              while  calculating  the  total gate area. The macroName argument
+              specifies the name of the macro, and the count  argument  speci-
+              fies the number of times the macro is referenced. Thus, by spec-
+              ifying  a  value  for count, you avoid repeating the macro names
+              for macros that are referenced multiple times.
+
+              * If the value of the -includeMacroArea parameter is set to 0:
+
+                Total blackbox area = (gate area / cell utilization  value)  +
+                macro area
+
+              * If the value of the -includeMacroArea parameter is set to 1:
+
+                Total  blackbox  area  = ((gate area - macro area) / cell uti-
+                lization value) + macro area
+
+              Default: The default value of <count> is 1.
+
+              Data_type: string, optional
+
+       -masterInst<string>
+              Specifies the name of the master blackbox.
+
+              Data_type: string, optional
+
+       -minHeight <float>
+              Specifies the minimum height of the specified module.
+
+              Data_type: float, optional
+
+       -minPitchLeft <integer>-minPitchRight <integer>-minPitchTop <inte-
+       ger>-minPitchBottom <integer>
+              Specifies the pin pitch dimension for the Left, Right, Top,  and
+              Bottom  blackbox  sides.  The default is 2, which places one pin
+              for every two metal tracks. The actual pin pitch depends on  the
+              pin's metal layer.
+
+              Data_type: int, optional
+
+       -minWidth <float>
+              Specifies the minimum height of the specified module.
+
+              Data_type: float, optional
+
+       -pinLayerLeft {<list_of_layers> }
+
+              -pinLayerRight  {<list_of_layers>}  -pinLayerTop  {<list_of_lay-
+              ers>} -pinLayerBottom {<list_of_layers> }" Specifies  the  metal
+              layers  to  use for the blackbox. The metal layers correspond to
+              the sides of the blackbox, where the vertical metal layers  (for
+              example,  Metal2,  Metal4, and so on) are for the Top and Bottom
+              sides, and horizontal metal layers (for example, Metal3, Metal5,
+              and so on) are for the Left and Right  sides  of  the  blackbox.
+              Specify this value in integers, for example -pinLayerTop {2 4}.
+
+              Data_type: string, optional
+
+       -placementHalo {left right top bottom}
+              Specifies  extra spacing, in micrometers around the sides (left,
+              bottom, right and top respectively) of the blackbox that  should
+              not be used for placement.
+
+              At  the  top-level  design, this information is saved as part of
+              the partition section in a floorplan file. This  information  is
+              also saved in a partition floorplan file when saving partitions.
+              By default, the value is 0 for all the sides.
+
+              Data_type: string, optional
+
+       -reservedLayer { <list_of_layers> }
+              Specifies the metal layers that are used for routing in the par-
+              tition  and generating partition pins. Any metal layers that are
+              not specified, usually the top-most metal layers, are allowed to
+              route over the partition. A normal six-metal layer specification
+              is Metal1, Metal2, Metal3,  Metal4  and  Metal5  specified,  and
+              Metal6 unspecified. When saving the partition, the LEF generated
+              for  this  partition will have routing blockages on their layers
+              so that the top-level router is aware of which metal layers  are
+              being used in the partition.
+
+              Data_type: string, optional
+
+       -routingHalo<float>
+              Specifies  routing  spacing, in micrometers, around the sides of
+              the blackbox. You can specify a positive or a negative value for
+              the routing halo. A positive value means that the halo  will  be
+              outside  the blackbox. A negative value means that the halo will
+              be applicable during block implementation, inside of the  black-
+              box. The same value is used for all sides of the blackbox.
+
+              Data_type: float, optional
+
+       -routingHaloBottomLayer <integer>
+              Specifies the bottom partition layer for which routing halo will
+              be created.
+
+              Default: By default, the bottom layer reserved for the partition
+              is used.
+
+              Data_type: int, optional
+
+       -routingHaloTopLayer <integer>
+              Specifies the top partition layer for which routing halo will be
+              created.
+
+              Default: By default, the top layer reserved for the partition is
+              used.
+
+              Data_type: int, optional
+
+       -size x <y>
+              Specifies  fixed  width and height of a specified module, in mi-
+              crometers.
+
+              Data_type: point, optional
+
+       -noRebuildTiming
+              Skips re-building the time graph  and  re-initializing  the  top
+              cell  information in order to improve the run time of the black-
+              box specification for designs with a large number of blackboxes.
+
+              Note: Since the timing graph only needs to build  for  the  last
+              blackbox,  you  must  specify  the final specifyBlackBox command
+              without this parameter. For example, if your  design  has  three
+              blackboxes,  the  first  two  specifyBlackBox commands should be
+              specified with the -noRebuildTiming  parameter  while  the  last
+              specifyBlackBox command should be specified without this parame-
+              ter.
+
+              Data_type: bool, optional
+
+Examples
+              * The  following  command  converts  the hard macro hn246 into a
+                black box. The gate area is specified as 100000 square microns
+                and the specified macro area is 220 square microns.  The  cell
+                utilization  value  is not specified, and so the default value
+                of 1 is used. The -includeMacroArea parameter is not specified
+                and so the default value of 0 is used.
+
+                When the -includeMacroArea parameter is 0, the  blackbox  area
+                is calculated using the formula:
+
+                Total  blackbox  area = (gate area / cell utilization value) +
+                macro area
+
+                The total black box area in this case is, therefore, (100000 /
+                1) + 220 that is 100220 square microns.
+
+                specifyBlackBox -cell hn246 -gateArea 100000 -macroArea 220
+
+              * The following command is similar to the command in the  previ-
+                ous  example, except that the value of -includeMacroArea para-
+                meter is set to 1 and the value of the -cellUtil parameter  is
+                set to .7
+
+                When the -includeMacroArea parameter is set to 1, the blackbox
+                area is calculated using the formula
+
+                Total  blackbox area = ((gate area - macro area)/cell utiliza-
+                tion value) + macro area
+
+                The total blackbox area in this case is,  therefore,  ((100000
+                -220) /.7 + 220) that is 142762.86 square microns.
+
+                specifyBlackBox -cell hn246 -gateArea 100000 -includeMacroArea
+                1 -macroArea 220 -cellUtil 0.7
+
+              * The following command converts the macro hn246 into a blackbox
+                and  specifies  that the areas of macros macro_2A and macro_2B
+                should be added while calculating the blackbox area. The macro
+                named macro_2A is included four  times  and  the  macro  named
+                macro_2B is included three times.
+
+                specifyBlackBox   -cell   hn246  -gateArea  100000  -macroList
+                macro_2A 4 macro_2B 3
+
+Related Information
+              * getBlackBoxArea
+
+              * unspecifyBlackBox
+
+              * saveBlackBox
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Defining Blackboxes
+
+                           Fri Apr 04 01:25:37 2025     specifyBlackBox(25.10)

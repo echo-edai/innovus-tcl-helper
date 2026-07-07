@@ -1,0 +1,200 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+init_design(25.10)                                          init_design(25.10)
+
+Name
+       init_design - Initializes a design using the Tcl globals
+
+Syntax
+       init_design
+
+       [-help]
+
+       [-setup <setup_view_list> <-hold hold_view_list>]
+
+       Initializes a design using the Tcl globals. These globals are listed in
+       the Related Globals section. The init_design flow replaces the configu-
+       ration-file-based  flow.  init_design  can be called only if design/li-
+       brary information is not already loaded. When calling init_design,  you
+       need  to  specify the -setup and -hold options depending on the follow-
+       ing:
+
+              * If a view definition file  (view_definition.tcl)  is  provided
+                that  properly  initializes  the  system  with  the set_analy-
+                sis_view command, init_design  does  not  require  -setup  and
+                -hold.  However,  if  you  do  specify  the active views using
+                -setup and -hold and these conflict with the active view  set-
+                ting  in  the view definition file, the tool informs you about
+                the conflict and then initializes the system with  the  active
+                views specified in the init_design invocation.
+
+                Note:  If the view definition file is provided but it does not
+                properly initialize the system with the set_analysis_view com-
+                mand (i.e the system is not in MMMC mode  after  sourcing  the
+                view  definition  file)  and the -setup and -hold active views
+                were not specified for init_design, the tool returns an error.
+
+              * If you are not providing a separate view definition  file  and
+                are  coding  the MMMC objects inline in the script, the -setup
+                and -hold options are required in the init_design  invocation.
+                If the -setup and -hold options are not specified, you receive
+                the following warning:
+
+                Active  setup and hold analysis views were not provided by the
+                -setup and -hold arguments to init_design. The system requires
+                at least one active setup and hold analysis  view  to  be  de-
+                clared  before  any timing commands can be run. If you need to
+                run timing commands, you can add the -setup and -hold  options
+                to  your  init_design  invocation.  You can use the all_analy-
+                sis_view command to identify the currently available views.
+
+       In Legacy mode, eval_common_ui {read_mmmc, read_physical, read_netlist,
+       init_design} will give an error message, because Stylus  initialization
+       is not supported in Legacy.
+
+       Additionally, the init_design command:
+
+              *
+
+                Initializes  the  default bounding box of square size with 70%
+                utilization
+
+              *
+
+                Creates default rows, the site of row depends on the height of
+                the cell used in the netlist
+
+              *
+
+                Creates track in the box based on the tech LEF
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each init_design parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man init_design
+
+       -hold <hold_view_list>
+              Specifies  the  hold  analysis view list. The system requires at
+              least one active hold analysis view to be  declared  before  the
+              design  can  be  initialized.  You can use the all_analysis_view
+              command to identify the currently available views.
+
+              Note: Active hold analysis view should be provided in either the
+              view definition file or by the -hold argument to init_design.
+
+       -setup <setup_view_list>
+              Specifies the setup analysis view list. The system  requires  at
+              least  one  active setup analysis view to be declared before the
+              design can be initialized. You  can  use  the  all_analysis_view
+              command to identify the currently available views.
+
+              Note:  Active  setup  view should be provided in either the view
+              definition file or by the -setup argument to init_design.
+
+Examples
+              * The following set of commands initialize  the  design  from  a
+                Verilog netlist using the top cell you specify (myTopCell):
+
+                set init_verilog ./myVerilog.v
+
+                set init_design_settop 1
+
+                set init_top_cell myTopCell
+
+                set  init_design_netlisttype Verilog # optional, since Verilog
+                is the detault
+
+                #set other initialization globals as required....
+
+                init_design
+
+              * The following set of commands load the design from  a  Verilog
+                netlist. The top cell is determined automatically:
+
+                set init_verilog ./myVerilog.v
+
+                set init_design_settop 0
+
+                set  init_design_netlisttype Verilog # optional, since Verilog
+                is the detault
+
+                #set other initialization globals as required....
+
+                init_design
+
+              * The following set of commands initializes the design using the
+                myDesignLib/myTopCell/myViewName cellview  as  the  source  of
+                connectivity:
+
+                set init_oa_design_cell myTopCell
+
+                set init_oa_design_lib myDesignLib
+
+                set init_oa_design_view myViewName
+
+                set init_design_netlisttype OA
+
+                #set other initialization globals as required....
+
+                init_design
+
+Related Information
+              * cds_lib
+
+              * fp_vertical_row
+
+              * init_abstract_view
+
+              * init_cpf_file
+
+              * init_design_netlisttype
+
+              * init_design_settop
+
+              * init_gnd_net
+
+              * init_import_mode
+
+              * init_io_file
+
+              * init_layout_view
+
+              * init_lef_file
+
+              * init_mmmc_file
+
+              * init_mmmc_version
+
+              * init_oa_default_rule
+
+              * init_oa_design_cell
+
+              * init_oa_design_lib
+
+              * init_oa_design_view
+
+              * init_oa_foundry_rule
+
+              * init_oa_ref_lib
+
+              * init_oa_search_lib
+
+              * init_oa_special_rule
+
+              * init_pwr_net
+
+              * init_top_cell
+
+              * init_verilog
+
+              * read_power_intent
+
+              * Importing  and  Exporting  Designs chapter in the Innovus User
+                Guide
+
+                * The init_design Import Flow
+
+                           Fri Apr 04 01:25:37 2025         init_design(25.10)

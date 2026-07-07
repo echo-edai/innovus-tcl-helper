@@ -1,0 +1,158 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+genPinText(25.10)                                            genPinText(25.10)
+
+Name
+       genPinText  - Generates a file containing pin text information for nets
+       and cells
+
+Syntax
+       genPinText
+
+       [-format {assura dracula pvs}]
+
+       [-help]
+
+       [-layerMap <fileName>]
+
+       [-offset {<x> <y>}]
+
+       {[-nets {<nets...>}]
+
+       [-cells {<cells>...}]}
+
+       <pin_text_file>
+
+       Generates a file containing pin text information for  nets  and  cells.
+       You can read this file into Layout Versus Schematic (LVS) tools such as
+       Dracula(R) and Assuratm for debugging problem areas.
+
+       You  can  use  the  genPinText command after you have finished placing,
+       routing, and verifying your design in Innovus.
+
+       Note: Pin label is attached to physical pin  shapes.  If  physical  pin
+       shapes  do  not  exist, the pin text is labeled on any one instance pin
+       shape. If both physical pin and instance pin shapes do not exist on the
+       net, no pin text is generated in the output.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each genPinText parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man genPinText.
+
+       -cells {<cells> ...}
+              Specifies the list of leaf-level cells or top cell for which the
+              pin  text  information is to be generated. The list of cells can
+              be specified within braces or quotes. Additionally, pin text in-
+              formation can be output for all the cells using  "*".  The  x  y
+              values  generated for the pin text are coordinates in user units
+              local to the cell. You should not specify  this  parameter  with
+              the
+
+              -nets  parameter if you want to use this file with Dracula; how-
+              ever, you can specify both parameters if you  use  Assura  or  a
+              third-party LVS tool.
+
+       -format {assura dracula pvs}
+              Specifies the output format.
+
+       -layerMap <fileName>
+              Specifies the name of the file that contains the mapping between
+              LEF  layers  and  layers  defined in the LVS tool. The layer map
+              file has the following format:
+
+              LEF_LAYER_NAME VERIF_LAYER_NAME
+
+              If you do not specify this parameter, Innovus assumes  that  the
+              LEF layer names and LVS layer names are identical.
+
+       -nets {<nets> ...}
+              Lists  the  name  of the nets for which you want to generate pin
+              text. You cannot use a wildcard (*) to  specify  all  nets.  You
+              must  use  braces  to  enclose  the list of nets. You should not
+              specify this parameter with the -cells parameter if you want  to
+              use  this file with Dracula; however, you can specify both para-
+              meters if you use Assura or a third-party LVS tool.
+
+       -offset {<x> <y>}
+              Specifies, in microns, the location of the design in  the  GDSII
+              output  file.  When  the  GDSII output file is saved, the design
+              shifts to the specified location.
+
+       <pin_text_file>
+              Specifies the pin text output file name. For  information  about
+              the output file format see the Examples section below.
+
+       Examples
+
+              * The  genPinText  command creates a file containing one line of
+                data for each cell or net you specify. The line has  the  fol-
+                lowing format:
+
+                name X=<x> Y=<y> ATTACH=<verif_layer_name cell_name>
+
+                The elements are
+
+       <name> Specifies  the  net  name (from the -nets parameter) or pin name
+              (from the -cell parameter).
+
+       X=<x> Y=<y>
+              Specifies the x and y coordinates for the pin text.
+
+       ATTACH=<verif_layer_name>
+              Specifies the layer name used in the LVS tool.
+
+       <cell_name>
+              Specifies the cell name. The default is the top cell name.
+
+              * The following command creates a file, pins.txt, containing pin
+                text information for clk1 and VDD:
+
+                getPinText -nets {clk1 VDD} pins.txt
+
+                The output file would resemble the following:
+
+                clk1 X=0.0 Y=10.0 ATTACH=metal1 top_cell
+
+                VDD X=-10.0 Y=-10.0 ATTACH=metal2 top_cell
+
+                VDD X=20.0 Y=20.0 ATTACH=metal3 top_cell
+
+              * The following command creates a file, hedtext.txt,  for  cells
+                block1 and block2:
+
+                genPinText -cells {block1 block2} hedtext.txt
+
+                The output file would resemble the following:
+
+                pin1b1 X=0.0 Y=0.0 ATTACH=metal1 block1
+
+                pin2b1 X=1.0 Y=1.0 ATTACH=metal2 block1
+
+                and  so  on, until all pins for block1 are listed. Coordinates
+                are local to block1.
+
+                pin1b2 X=0.0 Y=0.0 ATTACH=metal2 block2
+
+                pin2b2 X=1.0 Y=1.0 ATTACH=metal2 block2
+
+                and so on, for all pins for block2.
+
+              * The following command creates a file, pins.txt, containing pin
+                text information for clk1,clk2, and rst pins of the  top  cell
+                myTopCell:
+
+                getPinText -nets {clk1 clk2 rst} -cells {myTopCell} pins.txt
+
+                The output file would resemble the following:
+
+                clk1 X=204.27 Y=157.64 ATTACH=METAL2 myTopCell
+
+                clk2 X=152.13 Y=0.28 ATTACH=METAL2 myTopCell
+
+                rst X=0.33 Y=167.72 ATTACH=METAL2 myTopCell
+
+                           Fri Apr 04 01:25:37 2025          genPinText(25.10)

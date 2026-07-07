@@ -1,0 +1,426 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setSrouteMode(25.10)                                      setSrouteMode(25.10)
+
+Name
+       setSrouteMode - Comprises some of the sroute -extraConfig options
+
+Syntax
+       setSrouteMode
+
+       [-help]
+
+       [-allowWrongWayRoute {true | false}]
+
+       [-avoidOverCoreRowLayer <layerName>]
+
+       [-blockPinConnectRingPinCorners {true | false}]
+
+       [-blockPinRouteWithPinWidth {true | false}]
+
+       [-connectBrokenCorePin {true | false}]
+
+       [-corePinIgnoreObs   {none   |   placement_blockage   |  overlap_obs  |
+       block_halo}]
+
+       [-corePinJoinLimit <value>]
+
+       [-corePinLength <value>]
+
+       [-corePinMaxViaScale <widthPct heightPct>]
+
+       [-corePinSiteRailWidth {{<site1 layer11 Width11 layer12  Width12>  ...}
+       {<site2 layer21 Width21 layer22 Width22> ...} ...}]
+
+       [-corePinSnapTo {M1_pin | opt_routing_track | grid | half_grid}]
+
+       [-corePinStopRoute {RowEnd | CellPinEnd}]
+
+       [-corePinReferenceMacro {<macro1 macro2> ...}]
+
+       [-corePinReferToFollowPin {true | false}]
+
+       [-extendNearestTarget {true | false}]
+
+       [-jogThresholdRatio <value>]
+
+       [-layerNormalCost layer1 cost1 layer2 cost2 ...]
+
+       [-layerWrongWayCost layer1 cost1 layer2 cost2 ...]
+
+       [-padPinMinViaSize <viaSizePercent>]
+
+       [-padRingLefConvention {true | false}]
+
+       [-secondaryPinMaxGap <value>]
+
+       [-secondaryPinRailWidth <value>]
+
+       [-signalPinAsPG {true | false}]
+
+       [-splitLongVia      {<threshold_value      step_value      offset_value
+       height_value>}]
+
+       [-targetNumber <value>]
+
+       [-targetSearchDistance dist]
+
+       [-timeLimit <value>]
+
+       [-treatEndcapAsCore {true | false}]
+
+       [-treatWelltapAsEndcap <cell_name_list>]
+
+       [-viaConnectToShape {padring | ring | stripe | blockring |  blockpin  |
+       coverpin | noshape | blockwire | corewire | followpin | iowire}]
+
+       [-viaThruToClosestRing {true | false}]
+
+       [-corePinLengthAsInstance {true | false}]
+
+       [-padPinSplit  {<width  spacing>  |  <width1  spacing1  width2 spacing2
+       width3 spacing3 ...>}]
+
+       [-srpgAonCellPin {cellName:pinName}]
+
+       [-reset]
+
+       Comprises some of the sroute -extraConfig options. It is recommended to
+       use setSrouteMode for sroute.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each setSrouteMode parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man setSrouteMode
+
+       -allowWrongWayRoute {true | false}
+              Allow wrong way routing.
+
+              Default: false
+
+              Note: If the metal1 preferred routing direction is vertical  and
+              standard  cells  have  their  VDD  and VSS pins on layer metal1,
+              sroute will route metal1 wires on horizontal direction  to  con-
+              tinue  extending the followpin connections to core rings by this
+              option.
+
+       -avoidOverCoreRowLayer <layerName>
+              Specifies the number of layers to avoid routing of block pin and
+              pad pin over the core row area.
+
+              Default: max layer of standard cell pin
+
+       -blockPinConnectRingPinCorners {true|false}
+              Specifies whether to extend the ring pins at corners.
+
+              Default: false
+
+       -blockPinRouteWithPinWidth {true|false}
+              Specifies that the block wire used for a connection is  to  have
+              the same width as the pin from which it connects.
+
+              Default: false
+
+       -corePinJoinLimit <value>
+              Joins  follow  pin  rail gaps smaller than this variable, bigger
+              gaps will remain open. The option is of type float.
+
+              Default: 0
+
+       -corePinLength <value>
+              Connects core pins of specified length. The option  is  of  type
+              float.
+
+              Default: 0
+
+       -corePinLengthAsInstance {true | false}
+              Connects  core  pins  whose length equals or is greater than the
+              length of instance.
+
+              Default: false
+
+       -corePinMaxViaScale <widthPct heightPct>
+              Controls the length and width of vias at the crossover  of  core
+              pin  rails and stripes. Specify this value as percentages of the
+              width of the via at the top of the  stack.  Smaller  vias  leave
+              room for more routing tracks on layers between the vias.
+
+              Default: If you do not specify this parameter, the software uses
+              a value of 100, which specifies a full-size via.
+
+       -connectBrokenCorePin {true | false}
+              When  set  to  true,  sroute checks the signal pin, second power
+              pin, and obs, and then breaks the followpin to avoid violations.
+              When set to false, sroute does not check internal geometries and
+              does not break the followpin.
+
+              Note that for ABUTMENT standardcell  pins,  followpins  will  go
+              through  the  pin;  for  FEEDTHRU standard cell pins, followpins
+              will break at the at the pin edge on the standard cell boundary.
+              Refer to LEF/DEF Language Reference for more details.
+
+              See the examples below for understanding the usage of this para-
+              meter:
+
+              For ABUTMENT Standard Cell Pins:
+
+              setSrouteMode -connectBrokenCorePin false
+
+              setSrouteMode -connectBrokenCorePin true
+
+              For FEEDTHRU Standard Cell Pins:
+
+              setSrouteMode -connectBrokenCorePin false
+
+              setSrouteMode -connectBrokenCorePin true
+
+              Default: false
+
+       -corePinIgnoreObs {none | placement_blockage | overlap_obs |
+       block_halo}
+              Ignores the specified blockage while connecting the follow pin.
+
+       -corePinReferenceMacro {<macro1 macro2> ...}
+              Uses specified standard cell master's cell  name  as  references
+              for followpin creation. If you specify multiple macros for a row
+              height,  the  software  picks the first macro as reference. This
+              parameter is of <string >type.
+
+              Default: ""
+
+       -corePinSiteRailWidth {{<site1 layer11 Width11 layer12 Width12> ...}
+       {<site2 layer21 Width21 layer22 Width22> ...} ...}
+              Defines the followpin layer width for the  specified  site  rail
+              for  followpin  generation.  The followpin width defined by this
+              parameter has higher priority than the width of the  same  layer
+              defined  in  the  macro  LEF, but lower than that defined by the
+              sroute -corePinWidth parameter.
+
+              Following are the values used with this parameter:
+
+              * site: Specifies the site name defined in the LEF file.
+
+              * layer: Specifies the name of the  layer  defined  in  the  LEF
+                file.
+
+              * width:  Specifies  the  followpin  width on the top and bottom
+                sides of the defined site.
+
+       -corePinSnapTo {M1_pin | opt_routing_track | grid | half_grid}
+              Snaps metal2 followpins in the location to save  routing  tracks
+              in a preventive manner. When set to:
+
+              * M1_pin: Generated metal2 followpins are snapped to metal1 std-
+                cell pin center.
+
+              * opt_routing_track:  Generated metal2 followpins are snapped to
+                track or half track to save routing tracks.
+
+              * grid: Generated metal2 followpins are snapped to  the  nearest
+                routing track.
+
+              * half_grid:  Generated  metal2  followpins  are  snapped to the
+                nearest half routing track.
+
+              Default: M1_pin
+
+              Note: This option can only work when the option -corePinReferTo-
+              FollowPin is set to true.
+
+       -corePinStopRoute {RowEnd | CellPinEnd}
+              Allows the command to extend the follow pin wire. Following  are
+              the parameter values:
+
+              * RowEnd: Extends the follow pin wire to the row-end.
+
+              * CellPinEnd: Extends the follow pin wire to the cell-end.
+
+              Default: RowEnd
+
+       -corePinReferToFollowPin {true | false}
+              If  set  to true, sroute generates followpins based on the stan-
+              dard followpins, whether or not there are standard cell pins  on
+              the  defined  metal layer. Standard followpins refer to the fol-
+              lowpins on the first routing layer. This parameter can  be  used
+              with any set of layers with same direction. Following is a usage
+              example of this parameter:
+
+              setSrouteMode -corePinReferToFollowPin 1 ...
+
+              sroute -corePinLayer M2 -corePinWidth w1 ... #w0 is the standard
+              followpin's width
+
+              Following is the output of the above command:
+
+              Default: false
+
+       -extendNearestTarget {true | false}
+              Extends  the nearest target so that it can be connected. The op-
+              tion is of type bool.
+
+              Default: false
+
+       -jogThresholdRatio <value>
+              Defines the distance  ratio  between  a  jogging  target  and  a
+              straight target. The option is of type float.
+
+              Default: 10
+
+       -layerNormalCost<layer1 cost1 layer2 cost2 ...>
+              Specifies  layer  cost  of preferred direction. The option is of
+              type: string.
+
+              Default: ""
+
+       -layerWrongWayCost <layer1 cost1 layer2 cost2  ...>
+              Specifies layer cost of non-preferred direction.
+
+              Default: ""
+
+       -padPinMinViaSize viaSizePercent
+              Permits the software to reduce the size of vias at pad pins when
+              changing layers, if there is not enough room for a standard size
+              via.
+
+              Default: If you do not specify this parameter, the software uses
+              a value of 20, which permits vias that are 20% of  the  standard
+              via size.
+
+       -padPinSplit {<width spacing> | <width1 spacing1 width2 spacing2 width3
+       spacing3 ...>}
+              Splits the width and spacing to connect wide pad pins.
+
+              When you use {<width spacing>}, sroute repeats it to connect the
+              wide pad pins. It stops when the rest distance cannot put a full
+              width  wire.  When  you  use  {<width1  spacing1 width2 spacing2
+              width3 spacing3 ...>}, sroute sets the connection for  wide  pad
+              pins  only  once.  It  stops when the rest distance cannot put a
+              full width wire.
+
+              Refer to the command usage in various  cases  and  corresponding
+              outputs below:
+
+              setSrouteMode -padPinSplit {width spacing}
+
+              setSrouteMode -padPinSplit {W1 S1 W2 S2 W3 S3}
+
+              setSrouteMode -padPinSplit {W1 S1 W2 S2 W3 S3 W4 S4 W5 S5 W6 S6}
+
+              Default: ""
+
+       -padRingLefConvention {true | false}
+              Routes  the  pad rings based on the information specified in the
+              LEF file. If set to 0, Innovus chooses the  pad  pin  connection
+              style  (ABUTMENT or FEEDTHRU) when routing pad rings, disregard-
+              ing what is specified in the LEF file. The  option  is  of  type
+              Boolean.
+
+              Default: true
+
+       -reset Resets  all  or  specified  options to default value. Any values
+              that do not already match the default value and are reset.  will
+              be reported.
+
+       -secondaryPinMaxGap <value>
+              Specifies  variable  value for gaps bigger than this value cause
+              level shifter rail to break. The option type is float.
+
+              Default: 0
+
+       -secondaryPinRailWidth <value>
+              Specifies width of followpin rail. The option type is float.
+
+              Default: 0
+
+       -signalPinAsPG {true | false}
+              Specifies signal pins as PG pins in pad ring creation. When this
+              parameter is set to true, the sroute  -nets  parameter  supports
+              wildcard characters (like * and ?).
+
+              Default: false
+
+       -splitLongVia {<threshold_value step_value offset_value height_value>}
+              Splits  vias  longer than the specified length (threshold_value,
+              in micrometers) into smaller vias with specified  center-to-cen-
+              ter spacing (step_value, in micrometers), left/bottom end offset
+              (offset_value,  in  micrometers)  and vertical/horizontal height
+              (height_value, in micrometers) values . This is  independent  of
+              the option -split_via.
+
+              Default: If you do not specify this parameter, the software does
+              not split vias.
+
+              Note: If the offset_value is given as negative, the vias will be
+              placed  symmetrically  on  both  ends. The default value of off-
+              set_value is -1.
+
+       -srpgAonCellPin {<cellName: pinName>}
+              Lists the cell/pin information NOT extracted from CPF.
+
+              Default: ""
+
+       -targetNumber <value>
+              Specify number of target to connect. The option type is int.
+
+              Default: 0 (minimum). Maximum is 100000.
+
+       -targetSearchDistance <dist>
+              Specifies target search distance. The option type is float.
+
+              Default: 0
+
+       -timeLimit <value>
+              Specify time limit (in seconds) that the router  is  allowed  in
+              routing each port. The option type is float.
+
+              Default: 0
+
+       -treatEndcapAsCore {true | false}
+              Specifies  to  treat Endcap macro as core macro. The option type
+              is bool.
+
+              Default: false
+
+       -treatWelltapAsEndcap <cell_name_list>
+              Enables sroute to treat the Welltap cells as the  Endcap  cells.
+              Additionally,  the  ENDCAP  class  cells are ignored by default,
+              when generating the followpin wires.
+
+              Default: ""
+
+       -viaConnectToShape {padring | ring | stripe | blockring | blockpin |
+       coverpin | noshape | blockwire | corewire | followpin | iowire}
+              Specifies which shapes vias can connect to.
+
+              The option type is enum.
+
+               Default:  padring  ring  stripe  blockring  blockpin   coverpin
+              noshape blockwire corewire followpin iowire
+
+       -viaThruToClosestRing {true | false}
+              Specifies  that  a  via  should connect only to the closest ring
+              layer when multiple rings overlap.
+
+              Default: If you do not specify this parameter, vias  connect  to
+              all overlapping rings.
+
+Examples
+       The following command defines followpin layer width for generating fol-
+       lowpins:
+
+       setSrouteMode  -corePinSiteRailWidth  {{site1  layer1 w1} {site2 layer1
+       w2}}
+
+       Following is the output of the above command:
+
+Related Information
+              * sroute
+
+              * getSrouteMode
+
+              * Power Planning and Routing chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025       setSrouteMode(25.10)

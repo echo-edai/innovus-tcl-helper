@@ -1,0 +1,351 @@
+{
+  "command": "report_timing",
+  "is_cmd": true,
+  "summary": "生成时序分析报告",
+  "description": "该命令用于生成设计的时序分析报告。它可以报告建立时间、保持时间、时钟门控、恢复时间、移除时间、脉冲宽度、时钟周期、时钟分离、偏移、最大/最小延迟等多种时序检查类型。用户可以通过多种选项来过滤路径（如指定起点/终点、路径类型、时钟、过渡边沿）、控制报告格式（如文本、CSV、二进制）、设置报告详细程度（如完整路径、摘要、仅端点松弛）、以及进行高级分析（如重新定时分析、最坏RC角点分析）。报告可以输出到屏幕、文件或GUI窗口，并支持机器可读格式。",
+  "usage": "report_timing [-help] [-analysis_summary_csv_extended_file <string>] [-analysis_summary_csv_file <string>] [-analysis_summary_file <string>] [-check_clocks] [-check_type {setup hold clock_gating_setup clock_gating_hold clock_gating_pulse_width data_setup data_hold recovery removal pulse_width clock_period clock_separation skew no_change_setup no_change_hold max_delay min_delay}] [-debug {unconstrained time_borrow cppr_point constraint_arc context wire_variation vt_skew}] [-delay_limit <float>] [-derate_summary] [-format <column_list>] [-gui] [-hpin] [-max_slack <float>] [-min_slack <float>] [-net] [-output_format {text csv gtd binary}] [-path_exceptions {applied ignored all}] [-path_group <groupname_list>] [-path_type {end summary full full_clock end_slack_only summary_slack_only}] [-retime {aocv path_slew_propagation aocv_path_slew_propagation}] [-retime_delaycal_pins <pin_name>] [-retime_format {manual retime_compare retime_replace}] [-retime_mode {path exhaustive}] [-skip_io_paths] [-through <object_list>] [-through_fall <object_list>] [-through_rise <object_list>] [-unique_pins] [-worst_rc_corner] [> <filename[.gz]>] [>> <filename[.gz]>] [-late | -early ] [-rise | -fall ] [-begin_end_pair | [[ -max_paths <integer>] [-nworst <integer>]]] [-unconstrained | -point_to_point ] [-collection | -machine_readable | -tcl_list ] [-not_through <object_list> | -not_rise_through <object_list> | -not_fall_through <object_list> ] [ [-from <object_list> | -from_rise <object_list> | -from_fall <object_list> ] [-clock_from <clk_signame_list> [-edge_from {lead trail}]] [-to <object_list> | -to_rise <object_list> | -to_fall <object_list> ] [-clock_to <clk_signame_list> [-edge_to {lead trail}]] ] [-view <viewName> ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-analysis_summary_csv_extended_file",
+      "description": "生成用于合并的CSV文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-analysis_summary_csv_file",
+      "description": "生成分析摘要CSV文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-analysis_summary_file",
+      "description": "生成分析摘要文件",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-begin_end_pair",
+      "description": "报告唯一源和目标起始/结束引脚之间的所有违规路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-check_clocks",
+      "description": "基于时钟网络上的时序路径（而非标准的数据端点时序）生成报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-check_type",
+      "description": "仅报告在指定时序检查类型处结束的路径",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-clock_from",
+      "description": "报告经过指定发射时钟的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_to",
+      "description": "报告经过指定捕获时钟的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-collection",
+      "description": "返回一个时序路径的集合",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-debug",
+      "description": "用于调试路径的各种特性",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-delay_limit",
+      "description": "非约束路径的路径延迟限制",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-derate_summary",
+      "description": "除了时序报告外，还为发射和捕获路径生成LOCV降额摘要表",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-early",
+      "description": "为早期路径生成时序报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-edge_from",
+      "description": "报告经过指定发射时钟边沿的路径",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-edge_to",
+      "description": "报告经过指定捕获时钟边沿的路径",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-fall",
+      "description": "报告端点处为下降沿的路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-format",
+      "description": "根据列列表格式化报告",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from",
+      "description": "报告经过指定起始引脚、端口或单元的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_fall",
+      "description": "报告经过指定起始引脚、端口或单元的下降过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from_rise",
+      "description": "报告经过指定起始引脚、端口或单元的上升过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gui",
+      "description": "在GUI窗口中呈现报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hpin",
+      "description": "在report_timing表的hpin列下打印弧的所有层次交叉点",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-late",
+      "description": "为晚期路径生成时序报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-machine_readable",
+      "description": "以机器可读格式生成详细的时序报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max_paths",
+      "description": "报告设计中指定数量的最差路径，不考虑端点",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_slack",
+      "description": "仅报告松弛度小于或等于指定浮点值的路径",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-min_slack",
+      "description": "仅报告松弛度大于指定值的路径",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-net",
+      "description": "为网络弧添加一行",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-not_fall_through",
+      "description": "报告不经过指定对象列表下降过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-not_rise_through",
+      "description": "报告不经过指定对象列表上升过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-not_through",
+      "description": "报告不经过指定对象列表的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nworst",
+      "description": "指定为每个端点枚举的路径数量",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-output_format",
+      "description": "以不同格式生成详细的时序报告",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-path_exceptions",
+      "description": "包含应用于所报告路径的路径例外信息",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-path_group",
+      "description": "仅报告包含在groupname_list中指定组内的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-path_type",
+      "description": "该选项允许您按路径类型选择报告的格式",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-point_to_point",
+      "description": "追踪一对起止引脚之间的最差延迟路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-retime",
+      "description": "使用指定方法重新分析指定的路径集",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-retime_delaycal_pins",
+      "description": "指定需要PBA的RDC的引脚",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-retime_format",
+      "description": "重新定时格式选项允许您设置重新定时相关字段的报告格式",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-retime_mode",
+      "description": "使用指定方法重新分析指定的路径集",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-rise",
+      "description": "报告端点处为上升沿的路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-skip_io_paths",
+      "description": "指定是否忽略I/O路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "以Tcl列表格式而非表格格式生成报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-through",
+      "description": "报告经过指定引脚、端口、单元或网络的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-through_fall",
+      "description": "报告经过指定引脚、端口、单元或网络的下降过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-through_rise",
+      "description": "报告经过指定引脚、端口、单元或网络的上升过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to",
+      "description": "报告经过指定目标引脚、端口或单元的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to_fall",
+      "description": "报告经过指定目标引脚、端口或单元的下降过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to_rise",
+      "description": "报告经过指定目标引脚、端口或单元的上升过渡的路径",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-unconstrained",
+      "description": "仅报告非约束路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unique_pins",
+      "description": "报告经过唯一引脚集的路径",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "仅为指定的分析视图生成时序报告。默认情况下分析所有活动视图",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-worst_rc_corner",
+      "description": "识别导致最小松弛度（期望值）的最差互连参数组合，并为该角点生成报告",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": ">",
+      "description": "将输出重定向到指定文件",
+      "required": false,
+      "type": "redirect_operator"
+    },
+    {
+      "name": ">>",
+      "description": "将输出重定向到指定文件",
+      "required": false,
+      "type": "redirect_operator"
+    }
+  ]
+}

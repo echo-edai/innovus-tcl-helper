@@ -1,0 +1,310 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addTSV(25.10)                                                    addTSV(25.10)
+
+Name
+       addTSV  -  Adds TSVs, front-side bumps, and backside bumps under speci-
+       fied conditions
+
+Syntax
+       addTSV
+
+       [-help]
+
+       [-noRouteBlkg]
+
+       {[-frontBump <bumpCellName>]  [-backBump  <bumpCellName>]  [-tsvViaName
+       <viaName>]}
+
+       [-frontBump   <bumpCellName>  [-loc_type  {geometry_center|cell_center}
+       -prefix <prefixName>] [-stackViaUnderBump <stackViaName>]]
+
+       [-backBump  <bumpCellName>   [-loc_type   {geometry_center|cell_center}
+       -prefix <prefixName>]]
+
+       [-tsvViaName <viaName> [-noPlaceBlkg  | -spacing s]
+
+           [[[-tsvFeedthru  {x  y}  [-stackViaTopLayer <layer>]] | [-stripeNet
+       <pgnetName>
+
+           -stripeLayer <layerNum>]] | [-stackViaName <stackViaName>  [-stack-
+       ViaMarkerLayer      <markerLayerName>][-stack_via_array      {x      y}
+       -stack_via_pitch {x y}]]]]
+
+       {-lowerLeftLoc {x y}}
+
+        [-relative_bump_cell   <bumpCell>   |    -relative_selected_bump    ]}
+       {[-pitchxy  {x  y}]  [-relative_bump_cell  <bumpCell>  |  -relative_se-
+       lected_bump ]}
+
+       {[-upperRightLoc {x y} | -numxy {x y}] [-relative_bump_cell  <bumpCell>
+       | -relative_selected_bump ]}}
+
+       [{-relative_bump_cell  <bumpCell>  |  -relative_selected_bump } [-rela-
+       tive_min_pitch <float>] [-relative_offset {x  y}]  [-relative_bump_type
+       {signal power ground}]]
+
+       [-perim <n>]
+
+       [-stagger]
+
+       Adds  TSVs, front-side bumps, and backside bumps under specified condi-
+       tions. Use this command to create TSVs  and  bumps  after  the  initial
+       floorplan is loaded.
+
+Parameters
+       -tsvViaName <viaName>
+              Specifies  the name for TSV via defined in the LEF file. If this
+              option is not specified, no TSV will be created.
+
+              The following arguments are used only with tsvViaName:
+
+              * noPlaceBlkg
+
+              * spacing
+
+              * tsvFeedthru
+
+              * stackViaTopLayer
+
+              * stripeNet
+
+              * stripeLayer
+
+       -frontBump<bumpCellName>
+              Specifies the name for the front-side bump cell. If this  option
+              is not specified, no front-side bump will be created.
+
+       -backBump <bumpCellName>
+              Specifies the name for the backside bump cell. If this option is
+              not specified, no backside bump will be created.
+
+       -loc_type {geometry_center|cell_center}
+              Specifies the location type for bump creation.
+
+              * geometry_center:  Specifies to use bump pin geometry to create
+                bump
+
+              * cell_center: Specifies to use bump bounding box to create bump
+
+              This option is used with the -frontBump and -backBump options.
+
+       -lowerLeftLoc x y
+              Specifies (in microns) the lower left coordinate of the  box  in
+              which TSV/Bumps will be created.
+
+       -numxy x y
+              Specifies (in microns) the count of the TSV/bump in the horizon-
+              tal and vertical direction.
+
+       -perim <n>
+              Creates  TSV,  front-side  bumps,  and  backside bumps along the
+              rings on the perimeter.
+
+              If -perim is specified, <n>defines the number of rings. Then you
+              can create TSV in the following ways:
+
+              * Define the lower left and upper right location of the ring  by
+                -lowerLeftLoc  and -upperRightLoc, and then the pitch value of
+                x and y direction by -pitchxy. For example, the following com-
+                mand creates TSV in which the lower-left is at {x1 y1} and the
+                upper-right is at {x2 y2}
+
+                addTSV -lowerLeftLoc {x1 y1} -upperRightLoc {x2  y2}  -pitchxy
+                {px py} -stagger -perim 1
+
+                                 *********
+
+                                 *       *
+
+                                 *       *
+
+                                 *       *
+
+                                 *       *
+
+                                 *********
+
+              * Define  the  lower left location of the ring by -lowerLeftLoc,
+                and then specify the number and pitch value of tsv in x and  y
+                directions  by -numxy and -pitchxy, respectively. For example,
+                the following command creates TSV in which the lower  left  is
+                at {x1 y1}
+
+                -lowerLeftLoc {x1 y1} -numxy {12 8} -pitchxy {px py} -perim 2
+
+                                 ************
+
+                                 ************
+
+                                 **        **
+
+                                 **        **
+
+                                 **        **
+
+                                 **        **
+
+                                 ************
+
+                                 ************
+
+       -prefix <prefixName>
+              Adds a prefix name for a bump during bump creation and bump map-
+              ping. The prefix name is not added to the TSV.
+
+       -relative_bump_cell <bumpCell>
+              Creates  TSV or bumps by default at the geometry center of bumps
+              with specified bump cell.
+
+       -relative_bump_type {signal power ground}
+              Creates the relative bump type, TSV, or bumps by default at  the
+              geometry center of bumps with the specified bump type.
+
+       -relative_min_pitch <minPitch>
+              Specifies  the minimum pitch between the created bumps/TSVs. The
+              pitch between all the created bumps/TSV should  be  larger  than
+              specified  min pitch. The -relative_min_pitch option is optional
+              and  can  be  used  only  if   -relative_bump_cell/-relative_se-
+              lected_bump is specified.
+
+       -relative_offset {x y}
+              Specifies  the offset of created bump/TSV location compared with
+              the relative bump. The geometry center of the  created  bump/TSV
+              is the geometry center of the relative bumps plus the offset.
+
+              -relative_offset  is  optional  and  can  be used only if -rela-
+              tive_bump_cell/-relative_selected_bump is specified.
+
+       -relative_selected_bump
+              Creates TSV or bumps by default at the geometry  center  of  the
+              selected bumps.
+
+       -upperRightLoc x y
+              Specifies  (in microns) the upper right coordinate of the box in
+              which TSV/Bumps will be created.
+
+       -pitchxy <x y>
+              Specifies (in microns) the distance between TSV centers in the x
+              and y direction.
+
+       -stagger
+              Staggers (offsets) the TSV/bump array. For example:
+
+              without -stagger       with -stagger
+
+               * * * * *             * * * * *
+
+               * * * * *              * * * *
+
+               * * * * *             * * * * *
+
+               * * * * *              * * * *
+
+              * * * * *            * * * * *
+
+       -noPlaceBlkg
+              The placement blockage overlapped with TSV cut will be added  as
+              default if -noPlaceBlkg is not specified.
+
+       -noRouteBlkg
+              The  routing  blockage  for each crossing layer will be added if
+              -noRouteBlkg is not specified.
+
+       -tsvFeedthru <sizex sizey>
+              Creates the feedthru. sizeX and sizeY are the dimensions, in mi-
+              crons, for the stack vias aligned with the TSV.
+
+              Note: Feedtrhu is a collection of components including TSV,  the
+              stacked via (from the first metal to the top metal) aligned with
+              the TSV, and two bumps on the frontside and backside.
+
+       -stackViaMarkerLayer <markerLayerName>
+              Specifies the mark layer name.
+
+              Mark cut layer of stack via as specified mark layer.
+
+       -stackViaName <stackViaName>
+              Specifies the stack via cell name.
+
+              The  tool  automatically adds the specified via cell stacking to
+              the top layer of long TSV.
+
+       -stackViaTopLayer <layer>
+              Defines the top layer that the TSV structure should connect  to.
+              For  example, if you specify M5 for this parameter, Innovus will
+              create a structure like TSV+VIA12+M2+VIA23+M3+.....+M5. This pa-
+              rameter must be used with  -tsvFeedthru.
+
+       -stackViaUnderBump <stackViaName>
+              Specifies the stack via name under the front bump.
+
+              The tool automatically adds the specified via cell  stacking  to
+              the bottom layer of front-side bump.
+
+       -stripeNet <pgnetName>
+              Declares  that the TSV will be added beneath the power stripe, a
+              stack via will be generated to touch the power stripe,  and  the
+              new added TSV will be assigned by the power or ground net of the
+              power stripe.
+
+              Note:  This  options  should be used along with the -stripeLayer
+              option.
+
+       -stack_via_array {x y}
+              Specifies the number of columns and rows for the stack  via  ar-
+              ray.
+
+              The  -stack_via_array  and  -stack_via_pitch options can only be
+              specified when  -stackViaName is specified. -stack_via_array and
+              -stack_via_pitch are specified at the same time.  The  value  of
+              -stack_via_pitch  should  be  larger than stack via size. Other-
+              wise, the stack via will overlap each other and cause DRC.
+
+       -stack_via_pitch {x y}
+              Specifies the pitch_x and pitch_y of the stack via.
+
+              The -stack_via_array and -stack_via_pitch options  can  only  be
+              specified when  -stackViaName is specified. -stack_via_array and
+              -stack_via_pitch  are  specified  at the same time. The value of
+              -stack_via_pitch should be larger than stack  via  size.  Other-
+              wise, the stack via will overlap each other and cause DRC.
+
+       -stripeLayer <layerNum>
+              Specifies the layer number or layer name for the stripe net when
+              adding TSV under stripe net.
+
+              Note: This option should be used along with -stripeNet option.
+
+       -spacing s
+              Specifies  the  placement blockage size. Blockage size = TSV cut
+              size + 2*s. If this option is not specified, "s"  will  be  with
+              the value defined in LAYER TSV session in LEF file.
+
+        At least one option of the following arguments is required for the ad-
+       dTSV command:
+
+              * tsvViaName
+
+              * frontBump
+
+              * backBump
+
+Examples
+              * The following command creates a 10 x 10 TSV array with a pitch
+                of 40 microns and the lower left at (300 300):
+
+                addTSV -lowerLeftLoc 300 300 -numxy 10 10 -pitchxy 40 40 -tsv-
+                ViaName TSVVIA
+
+              * The following command creates a backside array in box (300 300
+                700 700) with a pitch of 40 microns:
+
+                addTSV  -lowerLeftLoc  300 300 -upperRightLoc 700 700 -pitchxy
+                40 40 -backBump BUMPCELL
+
+Related Information
+              * assignTSV
+
+              * deleteTSV
+
+                           Fri Apr 04 01:25:37 2025              addTSV(25.10)

@@ -1,0 +1,384 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addRepeaterByRule(25.10)                              addRepeaterByRule(25.10)
+
+Name
+       addRepeaterByRule  -  Inserts  buffers and/or inverters to nets, as de-
+       fined in a rule file
+
+Syntax
+       addRepeaterByRule
+
+       [-help]
+
+       [-allowMixedSignal]
+
+       [-copyNetAttribute]
+
+       [-excNet <excludeNetFile>]
+
+       [-netMapping <fileName>]
+
+       [-nets <list_of_nets>]
+
+       [-outDir <directoryName>]
+
+       [-preRoute | -postRoute | -alongRoute]
+
+       [-reportIgnoredNets <ignoredNetFile>]
+
+       [-rule <fileName>]
+
+       [-selNet <selNetFile>]
+
+       [-selected]
+
+       [-template]
+
+       Inserts buffers and/or inverters to nets, as defined in a rule file. By
+       default, inserts available buffers and/or inverters with  the  smallest
+       total  area cost while satisfying the rules. As compared to DRV fixing,
+       addRepeaterByRule does not consider transition violations (maxTran)  or
+       any  timing  information.  Instead, it constrains max total net length,
+       max radius length, max capacitance, max fanout count, and so on.  Also,
+       addRepeaterByRule   does  not legalize newly added buffers. You need to
+       legalize the added buffers to a legal location.
+
+       The command provides an efficient, buffering method for  top-level  de-
+       signs.
+
+       Note: Max radius length refers to the sum of wire lengths from the dri-
+       ver  to  the farthest sink and max total net length refers to the total
+       (sum) wire lengths throughout the target net.
+
+       The command has the following features:
+
+              *
+
+                Supports multiple buffer/inverter/AO cells simultaneously
+
+              *
+
+                Supports multiple types of constrains simultaneously
+
+              *
+
+                Provides complete MSV compatibility solution
+
+              *
+
+                It is multithreaded
+
+       The rule file may contain two categories  of  constraints,  where  each
+       category  further  breaks  down  to  several constraint types. All con-
+       straints share the same syntax of `command value'.
+
+       1. Individual repeaters' rule: constrains each repeater's driving capa-
+       bility.
+
+              * max net total length (um): SetInverterMaxNetLength, SetBuffer-
+                MaxNetLength,  SetBufferMinLayerMaxNetLength,  SetInverterMin-
+                LayerMaxNetLength
+
+              * max radius length (um): SetInverterMaxRadiusLength, SetBuffer-
+                MaxRadiusLength
+
+              * max capacitance (pF): SetInverterMaxCap, SetBufferMaxCap
+
+              * max fanout count: SetInverterMaxFanout, SetBufferMaxFanout
+
+              * max fanout at sink count: SetMaxFanoutAtSink
+
+              * max  wirelength  (um)  of  the net driving the sink term: Set-
+                MaxNetLengthAtSink
+
+        2. Global default rule: constrains all other  instances  beyond  those
+       newly inserted repeater instances.
+
+              * default  max  net  total  length (um): SetDefaultMaxNetLength,
+                SetDefaultMinLayerMaxNetLength
+
+              * default max radius length(um): SetDefaultMaxRadiusLength
+
+              * default max cap length (pF): SetDefaultMaxCap
+
+              * default max fanout count: SetDefaultMaxFanout
+
+              * default max sink radius length (um): SetDistLastRepToSink
+
+              * default max wirelength (um) of the net driving the sink  term:
+                SetMaxNetLengthAtSink
+
+       Those  constraints  can  be  used individually or combined. However, at
+       least one valid repeater must be specified in the  rule  file.  If  the
+       global  default  rule  for  certain constraint type is omitted from the
+       rule file, the command automatically picks the tightest constraint from
+       the repeaters defined in the rule file under  the  same  type  of  con-
+       straint  as  the default constraint. A sample rule file is shown in the
+       "Example" section.
+
+       The following three layer-based rules are provided to support  specify-
+       ing net length constraints independently for each user specified layer:
+
+              * minimum  layer for max net total length (um): SetBufferMinLay-
+                erMaxNetLength and SetInverterMinLayerMaxNetLength
+
+              * default minimum layer for max net total  length  (um):  SetDe-
+                faultMinLayerMaxNetLength
+
+       Note:  You  must  specify  the  bottom_preferred_routing_layer/top_pre-
+       ferred_routing_layer attribute  for  the  nets  that  need  layer-based
+       buffering.   If  no  attribute is present, the net will be routed  with
+       the default rule on default layers.
+
+       Use Model
+
+       When max layer constraint is specified:
+
+       SetBufferMaxNetLength BUF_X4M_A9TR 300.0
+
+       In the above scenario, ARR will buffer the  net  with  BUF_X4M_A9TR  at
+       length intervals of 300um.
+
+       When  minimum layer support is also specified along with max layer con-
+       straint, then the following two scenarios are possible:
+
+       Example 1:
+
+       SetBufferMaxNetLength          BUF_X4M_A9TR     300.0
+
+       SetBufferMinLayerMaxNetLength  BUF_X4M_A9TR 6   500.0
+
+       In the above example,  layers 2-5 will have a 300um max length, and be-
+       casue there is a minimum layer constraint on the  net  of  layer  6  or
+       higher, the length constraint will be increased from 300 to 500um.
+
+       Example 2:
+
+       When multiple minimum layer constraints are specified:
+
+       SetBufferMaxNetLength            BUF_X4M_A9TR     300.0
+
+       SetBufferMinLayerMaxNetLength    BUF_X4M_A9TR 6   500.0
+
+       SetBufferMinLayerMaxNetLength    BUF_X4M_A9TR 11  800.0
+
+       In  the  above example, layers 2-5 will have a 300um max length; layers
+       6-9 will have a 500um max length;  and  11+  will  have  an  800um  max
+       length.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each addRepeaterByRule parameter. For  a  detailed
+              description  of  the  command and all of its parameters, use man
+              addRepeaterByRule.
+
+       -allowMixedSignal
+              When specified, allows buffering on mixed signal nets.
+
+       -alongRoute
+              Allows repeater insertion along the route. The  database  should
+              be global-routed with preRoute RC extraction before calling this
+              option.
+
+              Note:  Run  refinePlace and ecoRoute if you specify this parame-
+              ter.
+
+       -copyNetAttribute
+              When this parameter is specified, the net attributes set on  the
+              original nets are copied to the nets inserted by this command.
+
+       -excNet <fileName>
+              Specifies a file that contains the names of hierarchical nets to
+              exclude  from  rule  violation  repair.  If a net appears in the
+              files specified by both -excNet and -selNet, it is excluded from
+              rule violation repair.
+
+       -netMapping <fileName>
+              When specified, generates a file  that  maps  the  original  net
+              names  to  the  nets inserted by this command. An example of the
+              file format is provided below. In this example,  netA  is  split
+              into two nets: FE_new_net1_netA and FE_new_net2_netA.
+
+               netA FE_new_net1_netA
+
+               netA FE_new_net2_netA
+
+              If,  in the next iteration, FE_new_net1_netA is split again, the
+              file    would     contain     the     following:FE_new_net1_netA
+              FE_new_net1_FE_new_net1_netA
+
+               FE_new_net1_netA FE_new_net2_FE_new_net1_netA
+
+       -nets <list_of_nets>
+              Specifies  the  list of nets to be considered for adding buffers
+              and/or inverters.
+
+              Note: The -nets, -selNet, and -selected parameters are  mutually
+              exclusive.
+
+       -outDir <directoryName>
+              Specifies the directory where the software writes detailed fail-
+              ure  reason  report that is generated when this command runs. By
+              default, the failure reason report is dumped  in  the  timingRe-
+              ports/ARRFailureReason/<design> directory. For example,
+
+              timingReports/ARRFailureReason/<design>.arr.preRoute.rpt.gz
+
+              Default: timingReports
+
+       -postRoute
+              Allows  repeater  insertion along the route. The database should
+              be detailed-routed with detailed RC  extraction  before  calling
+              this option. Preserves routing so that changes are minimized.
+
+              Note: Run refinePlace  and ecoRoute  if you specify this parame-
+              ter.
+
+       -preRoute
+              Allows repeater insertion with different routing topologies. The
+              database should be global-routed with preRoute RC extraction be-
+              fore calling this option.
+
+               When this parameter is specified, the software explores differ-
+              ent typologies to optimally insert repeaters.
+
+       -reportIgnoredNets <fileName>
+              Reports  the  nets where no buffers were inserted and the reason
+              the nets were ignored.
+
+       -rule <fileName>
+              Specifies a file you create that should list the buffers and in-
+              verters and the length and capacitance rules for inserting  each
+              of  them.  Only  buffers and inverters included in the rule file
+              are inserted.
+
+       -selected
+              When this parameter is specified, the addRepeaterByRule  command
+              operates  only on nets that are selected either by the selectNet
+              command or in the GUI.
+
+              Note: The -nets, -selNet, and -selected parameters are  mutually
+              exclusive.
+
+       -selNet <fileName>
+              Specifies  a  file  that contains the names of hierarchical nets
+              considered by this command. If a net appears in the files speci-
+              fied by both  -excNet  and  -selNet , it is excluded  from  rule
+              violation repair.
+
+              Note:  The -nets, -selNet, and -selected parameters are mutually
+              exclusive.
+
+       -template
+              Writes a template rule file.
+
+              Note: When the -template parameter is  specified,  the  software
+              does not honor any other parameters for this command.
+
+Examples
+              * The  following  command explores different typologies to opti-
+                mally insert repeaters:
+
+                addRepeaterByRule -rule rule1 -preRoute
+
+              * In a detailed routed database with RC extraction, the  follow-
+                ing  command  inserts  repeaters along the route and preserves
+                routing, so that changes are minimized:
+
+                addRepeaterByRule -rule rule1 -postRoute
+
+              * The following command inserts repeaters on those  nets  speci-
+                fied in the file, net_file1:
+
+                addRepeaterByRule -rule rule1 -selNet net_file1
+
+              * The following is an example of a template rule file:
+
+                ##########################################################################
+
+                ###################   addRepeaterByRule   template  rule  file
+                ####################
+
+                #############################################################################
+
+                # constraintType             cellName               constraint
+                value
+
+                #
+                Length(um)/cap(pF)/count
+
+                #############################################################################
+
+                ########### max net total Lengths for individual repeaters
+
+                  SetInverterMaxNetLength    HS65_LH_IVX7         150.0
+
+                  SetBufferMaxNetLength      HS65_LS_BFX7         300.0
+
+                ########### max radius Lengths for individual repeaters
+
+                  SetInverterMaxRadiusLength HS65_LH_IVX7         100.0
+
+                  SetBufferMaxRadiusLength   HS65_LS_BFX7         240.0
+
+                ########### max capacitance for individual repeaters
+
+                  SetInverterMaxCap         HS65_LH_IVX7          10.0
+
+                  SetBufferMaxCap           HS65_LS_BFX7          20.0
+
+                ########### max fanout for individual repeaters
+
+                  SetInverterMaxFanout      HS65_LH_IVX7          20
+
+                  SetBufferMaxFanout        HS65_LS_BFX7          30
+
+                ########### default max net total Lengths
+
+                  SetDefaultMaxNetLength                          100.0
+
+                ########### default max radius Lengths
+
+                  SetDefaultMaxRadiusLength                       200.0
+
+                ########### default max capacitance
+
+                  SetDefaultMaxCap                                15.0
+
+                ########### default sink max radius length
+
+                  SetDistLastRepToSink                            50.0
+
+                ########### max net lengths from sink
+
+                   SetMaxNetLengthAtSink                           100.0
+
+                ########### default max fanout
+
+                  SetDefaultMaxFanout                             20
+
+                ################################################################################
+                'DrivingStrength'  constrains  both  max radius Length and max
+                cap.
+                ################################################################################
+                constraintType                cellName              Length(um)
+                cap(pF)
+                ###############################################################################
+                SetInverterDrivingStrength       HS65_LH_IVX7            100.0
+                10.0            SetBufferDrivingStrength          HS65_LS_BFX7
+                240.0                20.0            SetDefaultDrivingStrength
+                200.0           15.0
+
+Related Information
+              * ecoRoute
+
+              * refinePlace
+
+              * The following topics in the Innovus User Guide
+
+                * Optimizing Timing Using a Rule File
+
+                * Viewing the Added Buffers, Instances, and Nets  after  Opti-
+                  mization
+
+                           Fri Apr 04 01:25:37 2025   addRepeaterByRule(25.10)

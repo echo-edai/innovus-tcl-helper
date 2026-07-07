@@ -1,0 +1,187 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setIlmMode(25.10)                                            setIlmMode(25.10)
+
+Name
+       setIlmMode - Controls certain behaviors of ILM commands
+
+Syntax
+       setIlmMode
+
+       [-help]
+
+       [-reset]
+
+       [-filterInternalPath {true|false}]
+
+       [-keepAsync {true|false}]
+
+       [-keepHighFanoutPorts {true|false}]
+
+       [-keepInstInSdc {true|false}]
+
+       [-ilm <ilmName>]
+
+       [-ilmCell <ilmCellName>]
+
+       [-keepFlatten {true|false}]
+
+       [-keepLoopBack {true|false}]
+
+       [-map {view|corner}]
+
+       [-maxNumInsts <maxInstances>]
+
+       [-maxNumRegisters <maxRegisters>]
+
+       [-resetMap {view|corner}]
+
+       [-slackDriven {true|false}]
+
+       [-top <topViewName>]
+
+       Controls certain behaviors of ILM commands.
+
+       Use  the  getIlmMode  command  to  display the current settings for the
+       setIlmMode command.
+
+       You can set certain options through setIlmMode which  can  control  how
+       ILMs are created or the way top level is mapped to ILMs in case of mis-
+       match between view/corner naming between block and top.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setIlmMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setIlmMode.
+
+       -filterInternalPath {true|false}
+              Filters the internal path kept by ILM. When set to  true,  group
+              paths  are  created  for internal paths with slack adjustment of
+              9999. Therefore, all internal paths are filtered  out  from  the
+              timing report.
+
+              Default: false
+
+       -keepAsync {true | false}
+              Keeps  paths from asynchronous input ports when ILMs are created
+              by createInterfaceLogic. For example, paths from an  input  port
+              to  the  reset pin of interface sequential instances, but not to
+              the internal sequential instances.
+
+              Default: false
+
+       -keepHighFanoutPorts {true | false}
+              Keeps high-fanin outputs and high-fanout inputs  when  ILMs  are
+              created by createInterfaceLogic.
+
+              Default: true
+
+       -keepInstInSdc {true|false}
+              Keeps instances which have constraints on it.
+
+              Default: false
+
+       <-ilm ilmViewName>|<ilmCornerName>
+              Specifies the view or corner name of an ILM that is to be mapped
+              to the top level.
+
+       -ilmCell <ilmCellName>
+              Specifies  the  cell name of an ILM that has view or corner map-
+              ping to the top level.
+
+       -keepFlatten {true|false}
+              Makes flow work under the flattenIlm mode.
+
+              Default: true
+
+       -keepLoopBack {true | false}
+              Keeps loop back paths when ILMs are created by createInterfaceL-
+              ogic.
+
+              When set to true, then any path touching a net used for the  ILM
+              model  is also included. This is done for better model accuracy,
+              so that the actual capacitance on an output  port  could  affect
+              the delay on a net which feeds an internal path that is normally
+              not  included in the ILM model. This also degrades the reduction
+              ratio (#ILM_insts/#all_inst) for the block.
+
+              Default: false
+
+       -map {view | corner}
+              Maps a view or corner specified in an ILM to a view or corner of
+              the top-design analysis.
+
+              Default: view
+
+       -maxNumInsts <maxInstances>
+              Specifies the maximum number of instances.
+
+              Default:1000
+
+       -maxNumRegisters <maxRegisters>
+              Specifies the maximum number of registers per port to be consid-
+              ered as high fanout ports.  This  setting  will  be  honored  by
+              -keepHighFanoutPorts.
+
+              Default: 40
+
+       -reset Resets all or specified options to default value.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+       -resetMap {view | corner}
+              Resets view or corner mapping between an ILM and the top level.
+
+              Default: view
+
+       -slackDriven {true|false}
+              Specifies slack driven ILM generation.
+
+              Default: false
+
+       -top <topViewName>|<topCornerName>
+              Specifies the view or corner name of top design  analysis  while
+              creating the mapping between the ILM and the top level.
+
+              Default: ""
+
+       Loop-Back Paths
+
+Examples
+              * The  following  command  does  not keep high fanout ports when
+                ILMs are created by createInterfaceLogic:
+
+                setIlmMode -keepHighFanoutPorts false
+
+              * The following command resets the -keepHighFanoutPorts  parame-
+                ter to its original value:
+
+                setIlmMode -reset -keepHighFanoutPorts
+
+              * The  following  command  undoes  all  the view mapping for ILM
+                modA:
+
+                setIlmMode -resetMap view -ilmCell modA
+
+              * The following command maps the view of maxCnr_setup of the ILM
+                blkA to the top design analysis view of rcMAX_setup:
+
+                setIlmMode -map view -top rcMAX_setup -ilmCell blkA -ilm  max-
+                Cnr_setup
+
+              * The  following  command  undoes all the corner mapping for ILM
+                blkA:
+
+                setIlmMode -resetMap corner -ilmCell blkA
+
+Related Information
+              * createInterfaceLogic.
+
+              * getIlmMode
+
+              * Top-level Timing Closure Methodologies chapter of Innovus User
+                Guide.
+
+                           Fri Apr 04 01:25:37 2025          setIlmMode(25.10)

@@ -1,0 +1,187 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoPlace(25.10)                                                ecoPlace(25.10)
+
+Name
+       ecoPlace - Incrementally places the unplaced standard cells
+
+Syntax
+       ecoPlace
+
+       [-help]
+
+       [-fixPlacedInsts {true|false}]
+
+       [-place_detail_use_GA_filler_groups {true|false}]
+
+       [-reportSpareCells <fileName>]
+
+       [-saveODInfoOnly {true|false}]
+
+       [-timing_driven {true|false}]
+
+       [-useGACells <GACoreSite>]
+
+       [-useGAFillerCells <GAFillerCells>]
+
+       [-useSpareCells {true|false}]
+
+       Incrementally  places  the  unplaced standard cells. For pre-mast flow,
+       you need to run ecoPlace without any spare cell and GA filler  options.
+       In a pre-mask flow, this command moves the unplaced standard cells into
+       the core area. During an ECO loop, some new unplaced standard cells may
+       get introduced. If the goal is to move the unplaced standard cells into
+       the  core area and place them without disturbing the original placement
+       (pre-mask flow), it is recommended to run ecoPlace at this stage.
+
+       The ecoPlace command supports both the GA filler  flow  and  the  spare
+       cell  flow  in  the post-mask flow. In a post-mask flow, if you specify
+       -useSpareCells, the software can map the unplaced cells to  the  avail-
+       able  spare  cells.  Spare  cells  are added by addSpareInstance at the
+       placement stage.
+
+       When one of the GA options is provided in a post-mask flow, the command
+       can map existing unplaced cells to placed GAFillers in the design.  The
+       GA   filler   options  are  -useGACells,  -useGAFillerCells,  place_de-
+       tail_use_GA_filler_groups.
+
+       You can use this command after the ecoDefIn  command  when  some  newly
+       added cells are still unplaced.
+
+Parameters
+       -fixPlacedInsts {true | false}
+              Specifies that instances with the PLACED status are not moved.
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each ecoPlace parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man ecoPlace.
+
+       -reportSpareCells <fileName>
+              Specifies to report the spare gates that are selected to map the
+              unplaced instances. This option works with -useSpareCells only.
+
+       -saveODInfoOnly {true|false}
+              Saves the snapshot of the site OD information to the DB.
+
+              * When set to true, it is executed separately  to  save  the  OD
+                Info snapshot which is needed for the following ECO flow.
+
+              * When  set  to  false, the snapshot is removed. The DH cell ECO
+                flow switches off.
+
+              If there is already a saved snapshot in DB, you can refresh  the
+              OD info snapshot by running ecoPlace -saveODInfoOnly true again.
+
+              When  there  is  an  OD  info snapshot inside the DB, checkPlace
+              prints the instance info in the report file. However, checkPlace
+              will report the violation if you specify the report file. If you
+              remove the ODInfo snapshot using ecoPlace -saveODInfoOnly false,
+              checkPlace will not check the violation. In case of the OD  mis-
+              match  violation, checkPlace will report the following violation
+              in the violation browser.
+
+              Instance $inst_name has OD mismatch compared to  the  golden  OD
+              info in DH eco flow.
+
+       -timing_driven {true|false}
+              Turns on the slack-driven placement for ecoPlace.
+
+              Default: false
+
+       -useGACells <GACoreSite>
+              Selects and places the unplaced instances with techSite matching
+              the provided GACoreSite. It is expected that there is free space
+              to  place the instances. If not, GA fillers could be deleted be-
+              fore ecoPlace -useGACells and re-inserted after the command. You
+              can use this parameter only for post-mask ECO.
+
+              Note: You cannot specify the -useGAFillerCells parameter if  you
+              use this parameter.
+
+       -useGAFillerCells <GAFillerCells>
+              Specifies  a list of Gate Array (GA)-style filler cells that the
+              tool can replace with GA cells during  post-mask  ECO.  You  can
+              only  use  this parameter in a post-mask ECO flow. The new logic
+              instances adding during a post-mask flow must already be present
+              in the netlist.
+
+              Note: You cannot specify the -useGACells parameter  if  you  use
+              this parameter.
+
+       -place_detail_use_GA_filler_groups {true|false}
+              Specifies  that  filler  cell instances will only be replaced by
+              logic instances that belong to the same GA groups.
+
+              This option can only be used when there is a filler  group  cre-
+              ated     by     createGAFillerGroup.     ecoPlace     -place_de-
+              tail_use_GA_filler_groups first finds the optimal  location  for
+              each  instance  based on its connectivity, then searches for the
+              nearest GA filler cell that  is  included  in  the  same  filler
+              group,  places  a GA cell at the GA filler location, and deletes
+              the original GA filler.
+
+              If the GA cell is smaller than the GA filler, the placer creates
+              a new GA filler instance using the list of GA  filler  cells  in
+              the same filler group and places the filler in the gap.
+
+              If there is only one filler group created, it equals to ecoPlace
+              - useGAFillerCells.
+
+              Default: false
+
+       -useSpareCells {true | false}
+              Maps  unplaced  cells  to  spare  cells during placement. First,
+              checks whether all  unplaced  cells  match  spare  cells.  Next,
+              chooses  a  spare  cell and changes the connections from the un-
+              placed cell to the selected spare cell. Finally, deletes the un-
+              placed cell. You can use this parameter only for post-mask ECO.
+
+              This option observes the power domain when selecting  the  spare
+              cell  and  maps  an unplaced cell to the spare cell in the power
+              domain, based on the instance name of the cell. For example,  if
+              module A/B is defined for power domain PD2, this option will map
+              an unplaced cell A/B/inst1 to a spare cell in module A/B.
+
+              Default: false
+
+Examples
+              * The following command performs incremental placement:
+
+                ecoPlace -useSpareCells true
+
+              *
+
+                The   flowing  command  places  the  GA-ECO  cells  on  GACORE
+                site.ecoPlace -useGACells GACoreSite
+
+              *
+
+                The following command places GA-ECO cells on the specified GA-
+                Fillers and fills remaining gaps with GA-Fillers.
+
+                ecoPlace -useGAFillerCells {GAFiller1 GAFiller2 ...}
+
+              *
+
+                The following commands create GA Filler group that  associates
+                GA-Function  cells  with GA-Fillers. Then, ecoPlace will place
+                GA-ECO cells on same group GA-Fillers.
+
+                createGAFillerGroup   -group   GROUP1   -ga_cells    {GA_Cell1
+                GA_Cell2... } -ga_fillers {GA_Filler1 GA_Filler2...}
+
+                ecoPlace -place_detail_use_GA_filler_groups true
+
+Related Information
+              * addSpareInstance
+
+              * checkPlace
+
+              * createGAFillerGroup
+
+              * ecoDefIn
+
+              * ecoOaDesign
+
+                           Fri Apr 04 01:25:37 2025            ecoPlace(25.10)

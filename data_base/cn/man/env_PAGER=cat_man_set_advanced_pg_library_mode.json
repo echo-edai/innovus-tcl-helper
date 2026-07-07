@@ -1,0 +1,327 @@
+{
+  "command": "set_advanced_pg_library_mode",
+  "is_cmd": true,
+  "summary": "指定高级电源网格库生成功能",
+  "description": "该命令用于配置高级电源网格库生成的各种特性，以控制库生成过程中的提取、仿真、节点生成、电流分布、ESD分析等行为。如果该命令被指定两次，则最后一次指定的命令生效。",
+  "usage": "set_advanced_pg_library_mode [-abort_on_extraction_errors {true|false}] [-add_port_labels <file_name>] [-assume_foreigns {true | false}] [-assume_foreigns_mode [1 | 0]] [-cell_accura_data_file <file>] [-cell_per_distributed_host <value>] [-cell_pinnet_map_file <file>] [-circuit_include_file <thunder.inc>] [-cluster_via_rule {{<via_layer1 number_of_equidistant_vias>}...}] [-cluster_via_size <value>] [-common_supply_pins {<net_name+>}] [-create_static_view_from_dynamic_view {true | false}] [-damping_decap_cell_list {<cell1> <cell2> ..}] [-damping_decap_frequency <value>] [-decap_frequency <value>] [-default_frequency <value>] [-default_power_voltage <value>] [-delete_ddv_fsdb_files {true|false} ] [-disable_powergate_rampup_simulation {true | false}] [-distribute_current_to_switch_net {true | false}] [-enable_ac_simulation_for_IO_characterization {true | false}] [-enable_spectre_netlist_flow  {true | false} ] [-enable_subconductor_layers {true | false}] [-enable_via_based_current_distribution {true | false}] [-esd_cells {<cell_list>}] [-esd_cells_list_file <filename>] [-esd_device_list {<device1> <device2> .... <deviceN>}] [-esd_parameters_file <filename>] [-esd_pin_list {<pin1> <pin2> .... <pinN>}] [-exclude_tap_region_file <filename>] [-extraction_command_file <file>] [-followpins_tap_layer {lowest_lef_pin_layer | highest_lef_pin_layer  | all_lef_pin_layers}] [-followpins_interface_node_layer    {lowest_lef_pin_layer    |   highest_lef_pin_layer | all_lef_pin_layers}] [-force_tap_node_distance {true | false}] [-generate_bulk_pin_cap_separately {true | false}] [-generate_graybox_data {true | false} ] [-generate_itfnode_x_direction {true | false}] [-generate_itfnode_y_direction {true | false}] [-generate_itfnodes_at_via_layer {true | false}] [-generate_pin_intrinsic_cap {true | false}] [-generate_pin_intrinsic_cap_list {<netname1 netname2...>}] [-ignore_pg_nets {{<cellname>  <netname>}+}] [-import_xdspf_list_file <filename>] [-input_port_value_list {<pin1>  <value1>  <pin2>  <value2>  ....<pinN> <valueN>}] [-interface_node_location_file <filename>] [-lef_layer_ignore_list {<lef_layername> +}] [-lef_layer_ignore_list_file <filename>] [-lef_pin_short {true | false}] [-lef_pin_short_cell_file <file>name] [-lef_pin_short_cell_list {<cell1> cell2 ...}] [-libgen_command_file <file>] [-macro_parasitic_file <filename>] [-marker_layermap <filename>] [-mcpu_rerun_count <count>] [-pg_arc_file <filename>] [-pgdb_layermap <filename>] [-pgdb_list_file <filename>] [-powergate_characterization_voltages { <val1> <val2> <val3> .... }] [-powergate_multi_enable_characterization_method   {enable_all   |  enable_single} ] [-process_bulk_diffusion_ports {true|false}] [-remove_emview_dangling_resistor {true|false}] [-retain_generated_pgv_on_error {true | false}] [-ron_measure_threshold <value>] [-schematic {true|false} ] [-skip_switch_net_extraction {true | false}] [-source_location_file {<filename>}] [-spectre_path <value>] [-stdcell_characterization_voltage_value  {<val1>  <val2>  <val3> ...}] [-strict_input_check {true|false}] [-tap_node_distance <value>] [-techgen_dir <directory>] [-thunder_command_file <file>] [-trim_metal_layer_map <file>] [-use_embedded_spectre {true | false}] [-use_peak_current_distribution {true | false}] [-verbosity {true | false}] [-via_based_current_config_file filename] [-well_cap_file <filename>] [-xdspf_layermap <filename>] [-xtc_command_file <filename>] [-xtc_include_file_for_qdv <filename>]",
+  "options": [
+    {
+      "name": "-abort_on_extraction_errors",
+      "description": "指定软件在遇到提取错误时是退出并显示错误消息还是继续运行。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add_port_labels",
+      "description": "指定包含开关轨标签详细信息的文件名。如果开关轨未被标记，可以使用此参数在指定的端口文件中手动为其添加标签。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-assume_foreigns",
+      "description": "使库表征引擎能够处理在宏定义中未定义 FOREIGN 语句的 LEF 文件。生成详细电源网格视图时，引擎假定 FOREIGN 语句在 LEF 文件的宏定义中定义。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-assume_foreigns_mode",
+      "description": "确定库表征引擎如何处理假定 FOREIGN 语句的单元。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-cell_accura_data_file",
+      "description": "指定包含单元电气特性数据的文件名。Voltus 库仿真器在生成电源网格视图时需要此数据来生成电流。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_per_distributed_host",
+      "description": "指定在分布式 PGV 生成中每个主机提交的单元数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-cell_pinnet_map_file",
+      "description": "指定单元 LEF 引脚名称与这些引脚所连接网络内部名称之间的映射文件。当多个引脚连接到单个网络时使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-circuit_include_file",
+      "description": "指定库表征命令文件中 Voltus 库仿真器的输入文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cluster_via_rule",
+      "description": "控制按层聚类通孔的数量。使用此参数指定的 VIA 聚类规则将覆盖 PGV 生成的默认聚类规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cluster_via_size",
+      "description": "指定库单元的电源网格提取需要在 PGV 内对所有 VIA1 以上的通孔层执行指定大小的通孔聚类。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-common_supply_pins",
+      "description": "识别可作为电源或地网络的通用供电网络。不允许对网络名称使用通配符。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-create_static_view_from_dynamic_view",
+      "description": "指定通过在多模式表征流程中平均动态电流来生成静态电源网格视图。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-damping_decap_cell_list",
+      "description": "指定阻尼去耦电容单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-damping_decap_frequency",
+      "description": "指定阻尼去耦电容单元的工作频率。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-decap_frequency",
+      "description": "指定 PGV 生成期间使用的去耦电容频率。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-default_frequency",
+      "description": "指定信号网络的默认频率（赫兹），用于在创建详细电源网格视图期间计算电流和电容值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-default_power_voltage",
+      "description": "指定电源网络的默认电压。此参数为未使用 -power_pins 参数定义电压的电源网络分配默认值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-delete_ddv_fsdb_files",
+      "description": "指定删除在电流表征的 Spice 网表（用户指定）方法中生成的中间 FSDB 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-disable_powergate_rampup_simulation",
+      "description": "指定是否在电源网格视图生成期间运行电源门斜坡上升仿真。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-distribute_current_to_switch_net",
+      "description": "将指定给常开电源网络的 PWL 波形分布到常开电源网络和相关开关电源网络的抽头点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enable_ac_simulation_for_IO_characterization",
+      "description": "指定对 IO 单元执行基于 AC 分析的耦合电容计算。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enable_spectre_netlist_flow",
+      "description": "指定使用 Spectre 仿真器读取标准单元表征流程的 Spice/Spectre 网表。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enable_subconductor_layers",
+      "description": "允许控制 PGV 中子导体层的生成。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-enable_via_based_current_distribution",
+      "description": "指定在基于 GDS 的宏电源网格视图生成期间启用基于位置的通孔电流建模。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-esd_cells",
+      "description": "指定静电放电 (ESD) 单元列表。可使用此参数来表征 ESD 单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_cells_list_file",
+      "description": "指定包含 ESD 单元列表的文件，这些单元稍后在加载电源网格视图库时用于 ESD 分析流程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_device_list",
+      "description": "指定 ESD 设备列表。ESD 设备信息用于精确的 ESD 分析，因为它考虑了从端口到 ESD 设备的内部网格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_parameters_file",
+      "description": "指定 ESD 单元表征期间以下类型 ESD 单元的电阻信息：二极管和 RC 钳位。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-esd_pin_list",
+      "description": "指定 ESD 引脚列表。此参数在运行 analyze_esd_network 命令之前将用户指定的引脚标记为 ESD 引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_tap_region_file",
+      "description": "指定在宏 PGV 生成期间排除某些抽头点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extraction_command_file",
+      "description": "指定提取命令文件的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-followpins_tap_layer",
+      "description": "指定用于生成电流抽头的 LEF 金属层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-followpins_interface_node_layer",
+      "description": "指定用于生成接口节点的 LEF 金属层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force_tap_node_distance",
+      "description": "指定在用户指定的距离处精确创建接口节点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_bulk_pin_cap_separately",
+      "description": "指定在库报告中为体偏置引脚生成单独的电容值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_graybox_data",
+      "description": "控制灰盒数据的生成及其在单元库中的存储。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_itfnode_x_direction",
+      "description": "当 LEF 端口几何形状大于抽头节点距离时，会生成多个接口节点。可指定此参数以沿 X 方向生成接口节点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_itfnode_y_direction",
+      "description": "当 LEF 端口几何形状大于抽头节点距离时，会生成多个接口节点。可指定此参数以沿 Y 方向生成接口节点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_itfnodes_at_via_layer",
+      "description": "指定在抽头电流源是 VIA 层的情况下，在通孔位置生成接口节点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_pin_intrinsic_cap",
+      "description": "当设置为 true 时，将使用从 LibGen 获得的本征电容作为所有网络的本征电容。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-generate_pin_intrinsic_cap_list",
+      "description": "指定要为基于数据表的电流表征方法设置本征电容的网络列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ignore_pg_nets",
+      "description": "在 PGV 生成中跳过指定的电源或地网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-import_xdspf_list_file",
+      "description": "指定由库表征引擎导入以创建 PGDB 的 xDSPF（第三方网表）寄生文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-input_port_value_list",
+      "description": "指定电源网格库表征期间信号输入的电压条件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-interface_node_location_file",
+      "description": "指定包含要生成抽头电流的接口节点位置的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lef_layer_ignore_list",
+      "description": "指定电源网格库生成在创建单元库时要忽略的 LEF 层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lef_layer_ignore_list_file",
+      "description": "指定包含电源网格库生成在创建单元库时要忽略的 LEF 层列表的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lef_pin_short",
+      "description": "启用未连接的 LEF 引脚和端口的短路以建立电气连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lef_pin_short_cell_file",
+      "description": "指定包含单元列表以及每个层的网络名称、金属层名称和电阻值的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lef_pin_short_cell_list",
+      "description": "指定 LEF 引脚和端口通过默认电阻值 0.001 欧姆短路的单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-libgen_command_file",
+      "description": "指定电源网格库生成命令文件的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-macro_parasitic_file",
+      "description": "指定在库表征中创建详细动态视图时提供信号网络寄生的 SPEF 文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-marker_layermap",
+      "description": "指定包含在 XTC 处理期间用于层操作的标记 GDS 层列表的 GDS 层映射文件。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_clock_propagation(25.10)                report_clock_propagation(25.10)
+
+Name
+       report_clock_propagation  - This command provides the ability to deter-
+       mine clocks that do not propagate to a particular node in the  network,
+       and report the causes for such occurrences
+
+Syntax
+       report_clock_propagation
+
+       [-help]
+
+       -clock <clock_list>
+
+       [-max_paths <number of paths>]
+
+       -to <pin_port_list>
+
+       [-verbose]
+
+       [-view <viewName>]
+
+       [> <filename[.gz]>]
+
+       [>> <filename[.gz]>]
+
+       This command provides the ability to determine clocks that do not prop-
+       agate  to  a  particular node in the network, and report the causes for
+       such occurrences.
+
+Parameters
+       -help  Prints out the command usage
+
+       -clock <clock_list>
+              List or collection of clocks that are to be checked.
+
+       -max_paths <number of paths>
+              Reports number of maximum clock paths per clock.
+
+       -to <pin_port_list>
+              Specifies the pin/port list.
+
+       -verbose
+              Generates a verbose report for clock propagation stop reason.
+
+       -view <viewName>
+              Generates a report for the specified analysis view.
+
+       > <filename[.gz] |>>> <filename[.gz]>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+Examples
+              *
+
+                The  following  command shows that clock propagation stops due
+                to an inactive timing arc from b12/A to b12/Y
+
+                set_disable_timing -from A -to Y b12
+
+                report_clock_propagation -to u99/CK -clock CLK_W_4
+
+                Clock: CLK_W_4
+
+                Point: u99/CK
+
+                Reason 1: The clock 'CLK_W_4' propagation stops due to the in-
+                active timing arc:
+
+                (b12/A->b12/Y)
+
+                The partial clock path:
+
+                -------------------------------------------------
+
+                Source    Sink      ArcType         ArcSense
+
+                -------------------------------------------------
+
+                CLK4     b11/A   (net)           (net)
+
+                b11/A    b11/Y   combinational   positive_unate
+
+                b11/Y    b12/A   (net)           (net)
+
+                b12/A    b12/Y   combinational   positive_unate
+
+                -------------------------------------------------
+
+              * The following command shows that clock propagation  stops  due
+                to no clock source found:
+
+                report_clock_propagation  -to  launchff/Q  -clock  [get_clocks
+                gen_clk]
+
+                report_clock_propagation -to seg3/u15/Q -clock CLK_W_5_gen
+
+                Clock: CLK_W_5_gen
+
+                Point: seg3/u15/Q
+
+                Reason 1: The generated clock `CLK_W_5_gen could not  be  cre-
+                ated  on  its  root  pin  `seg3/u15/Q' because no clock source
+                found for it
+
+              * The following command shows that clock  propagation  stops  at
+                the  register  clock pin as all the arcs from the clock pin of
+                the register have been disabled:
+
+                set_disable_timing -from A -to Y seg3/u17_a
+
+                report_clock_propagation -to seg3/u14/CK -clock CLK_W_3
+
+                Clock: CLK_W_3
+
+                Point: seg3/u14/CK
+
+                Reason 1: The clock 'CLK_W_3' propagation stops due to the in-
+                active timing arc:
+
+                (seg3/u17_a/A->seg3/u17_a/Y)
+
+                The partial clock path:
+
+                --------------------------------------------------------------
+
+                Source          Sink          ArcType         ArcSense
+
+                --------------------------------------------------------------
+
+                CLK3           seg3/u16/A     (net)           (net)
+
+                seg3/u16/A     seg3/u16/Y     combinational   positive_unate
+
+                seg3/u16/Y     seg3/u17/A     (net)           (net)
+
+                seg3/u17/A     seg3/u17/Y     combinational   positive_unate
+
+                seg3/u17/Y     seg3/u17_a/A   (net)           (net)
+
+                seg3/u17_a/A   seg3/u17_a/Y   combinational   positive_unate
+
+                --------------------------------------------------------------
+
+Related Information
+              * set_disable_timing
+
+                           Fri Apr 04 01:25:37 2r0e2p5ort_clock_propagation(25.10)

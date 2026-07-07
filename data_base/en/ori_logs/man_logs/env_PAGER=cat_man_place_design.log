@@ -1,0 +1,244 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+place_design(25.10)                                        place_design(25.10)
+
+Name
+       place_design  -  Places standard cells based on the global settings for
+       placement, RC extraction, timing analysis, and early global routing
+
+Syntax
+       place_design
+
+       [-help]
+
+       [-concurrent_macros]
+
+       [-incremental]
+
+       [-noPrePlaceOpt]
+
+       [-sdp]
+
+       Places standard cells based on the global settings  for  placement,  RC
+       extraction, timing analysis, and early global routing. It also relieves
+       the congestion and reorders the scan cells. Also performs the following
+       operations:
+
+              * Pre-placement optimization
+
+              * Scan tracing and scan reordering
+
+              * Placement optimization during the placement process
+
+              * Incremental placement on an already placed design
+
+       By default, place_design performs timing-driven placement with scan re-
+       ordering,  except during prototyping, when it runs in non-timing-driven
+       mode. To change this behavior, run setPlaceMode with the following  pa-
+       rameters prior to running place_design:
+
+              * -place_global_reorder_scan false
+
+              * -place_global_timing_effort medium
+
+       Or, in prototyping mode:
+
+              * -place_design_floorplan_mode
+
+       If  there  are  no timing constraints, place_design assumes non-timing-
+       driven mode.
+
+       Note: This command supports multiple-CPU processing.  For  information,
+       see  "Multiple-CPU  Processing  Commands"  and "Accelerating the Design
+       Process by Using Multiple-CPU Processing".
+
+       Notes:
+
+              *
+
+                * The get_metric command can be  used  with  the  place_design
+                  command to retrieve metrics.
+
+                * The place_design command:
+
+                * Supports multithreading
+
+                * Honors the set_proto_mode -place_effort setting
+
+                * Honors  instance  padding  constraint as a hard rule if set-
+                  PlaceMode -place_detail_honor_inst_pad is set to true.
+
+                * Honors settings for the following commands with  the  excep-
+                  tions noted in the table below:
+
+       Command
+              Exceptions/Notes
+
+       setAnalysisMode
+
+       * Does  not  honor -checkType hold. If you specify -checkType hold, is-
+         sues a warning and assumes -checkType setup mode.
+
+         * Does not honor -clockPropagation sdcControl. If you specify -clock-
+           Propagation sdcControl, assumes -clockPropagation forcedIdeal.
+
+         * Does not honor -clkSrcPath true. If you specify  -clkSrcPath  true,
+           assumes -clkSrcPath false.
+
+       setExtractRCMode
+         Does  not honor -detail. If you specify -detail, issues a warning and
+         assumes -default mode.
+
+       setOptMode
+         All parameters honored
+
+       setPlaceMode
+         If you specify -place_global_clock_gate_aware,  you  must  specify  a
+         clock specification file before running place_design.
+
+       setScanReorderMode
+         You  must specify scan chain information or import a scan DEF file or
+         the software issues a warning message and skips scan reordering.
+
+       setRouteMode
+         All parameters honored
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each place_design parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man place_design.
+
+       -concurrent_macros
+              When  this  option  is  enabled, place_design will do concurrent
+              timing driven placement of macros and  standard  cells.  By  de-
+              fault, the place_design -concurrent_macros command does not call
+              the  refine_macro_place  command  to  legalize the macros. It is
+              recommended to check the "brut" mixed placer result  before  in-
+              voking  the  refine_macro_place  command.  When the place_design
+              -concurrent_macros command is run, it sets  the  value  of  set-
+              PlaceMode -place_opt_run_global_place to seed.
+
+              Flow usage is as follows:
+
+              place_design -concurrent_macros
+
+              saveDesign macroPlace.enc
+
+              ...
+
+              refine_macro_place
+
+              saveDesign macroRefine.enc
+
+              place_opt_design
+
+              Note: When the -place_global_place_io_pins parameter of the set-
+              PlaceMode  command  is  set  to  true, the place_design -concur-
+              rent_macros command places the placed and unplaced I/O  pins  in
+              the  mixed  placer  flow  and optimize their locations to reduce
+              wire length and congestion.
+
+              This support is a limited-access feature in this release. It  is
+              enabled  by  a variable specified using the setLimitedAccessFea-
+              ture command. To use this feature, contact your  Cadence  repre-
+              sentative to explain your usage requirements, and make sure this
+              feature meets your needs before deploying it widely.
+
+       -incremental
+              Runs placement incrementally. This parameter works only when the
+              design is already placed.
+
+              Note: Using this parameter defaults to -noPrePlaceOpt.
+
+       -noPrePlaceOpt
+              Disables pre-place optimization during the placement run. By de-
+              fault,  the  command removes all cells with the specified buffer
+              footprint (same as with the  deleteBufferTree  command),  except
+              when using the -incremental parameter.
+
+       -sdp   Enables SDP-aware (Structured Data Path) placement.
+
+Command Order
+       Use  the  place_design  command after performing general floorplanning,
+       including macro placement, regioning (if applicable), and  power  plan-
+       ning  on the design. The design could be in the unplaced state, or in a
+       state that the existing placement is to be replaced.
+
+              *
+
+                * To run timing-driven placement (the default), make sure  the
+                  timing constraints are loaded in the design.
+
+              *
+
+                * To run scan reorder (the default), specify the scan chain or
+                  import the scan DEF data before running this command.
+
+Examples
+              *
+
+                * The following commands perform non-timing-driven placement:
+
+                  setPlaceMode -place_global_timing_effort medium
+
+                  place_design
+
+              *
+
+                * The following commands disable scan chain reordering:
+
+                  setPlaceMode -place_global_reorder_scan false
+
+                  place_design
+
+              *
+
+                * The  following  command  disables the pre-placed buffer tree
+                  removal:
+
+                  place_design -noPrePlaceOpt
+
+              *
+
+                * After the design is placed, the following  command  performs
+                  incremental  placement,  and  disables the pre-placed buffer
+                  tree removal:
+
+                  place_design -incremental
+
+Related Information
+              *
+
+                * get_metric
+
+                * place_connected
+
+                * refine_macro_place
+
+                * saveDesign
+
+                * setAnalysisMode
+
+                * setExtractRCMode
+
+                * setOptMode
+
+                * setPlaceMode
+
+                * setScanReorderMode
+
+                * setRouteMode
+
+                * Placing the Design chapter in the Innovus User Guide
+
+                * Accelerating the Design Process by Using  Multiple-CPU  Pro-
+                  cessing chapter in Innovus User Guide
+
+                * Multiple-CPU Processing Commands chapter of the Innovus Sys-
+                  tem Text Command Reference
+
+                * Multiple  CPU  Processing  form in the Tools Menu chapter of
+                  Innovus Menu Reference
+
+                           Fri Apr 04 01:25:37 2025        place_design(25.10)

@@ -1,0 +1,358 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+deriveTimingBudget(25.10)                            deriveTimingBudget(25.10)
+
+Name
+       deriveTimingBudget - Generates timing budgets for partitions for stand-
+       alone implementation
+
+Syntax
+       deriveTimingBudget
+
+       [-help]
+
+       [-parameterized]
+
+       [-cycleRatio | -stageBased]
+
+       [-allIlmHinsts | -inst <instanceName >| -ptn <partitionName>]
+
+       [-verbose]
+
+       [-views <string>]
+
+       Generates  timing budgets for partitions for standalone implementation.
+       This command can also generate timing budgets on an instance basis  in-
+       stead of partitions. The generated timing constraint files allow you to
+       do  standalone block implementation. In case of partition based budget-
+       ing, it also generates timing models that will allow you to  do  stand-
+       alone top level implementation. This command also directs summary files
+       into the default budget justification directory.
+
+       Note: You must free the timing graph to use multiple deriveTimingBudget
+       commands with different options.
+
+       Innovus  operates in multi-mode multi-corner (MMMC) mode, and generates
+       viewFilesautomatically for partition implementation and top-level  chip
+       assembly.  Note that the deriveTimingBudget command does not generate a
+       timing graph, if it already exists. Additionally,  user  will  have  to
+       provide  a  timing graph generated without using deriveTimingBudget and
+       must set the value of the setBudgetingMode -virtualOptEngine  parameter
+       same as that of the command used to generate the timing graph.
+
+       When  the  deriveTimingBudget command is run, all the public setBudget-
+       ingMode parameters with their non-default values are  displayed  before
+       the  intended  output of the deriveTimingBudget command, in an informa-
+       tion message. This information message follows the format shown below:
+
+       This command "deriveTimingBudget" required an extra checkout of license
+       invs_hier. Additional license(s) checked out: 1 'Innovus_Hier_Opt'  li-
+       cense(s)
+
+       **INFO: User settings:
+
+       setBudgetingMode -abutted true
+
+       setBudgetingMode -fixTopLevelPaths all
+
+       setBudgetingMode -masterClone merged
+
+       setBudgetingMode -noHoldView true
+
+Parameters
+       ________________________________________________________
+
+       | -help           |  Outputs a brief description that   |
+
+       |                 |   includes the type and default     |
+
+       |                 |   information for each              |
+
+       |                 |   deriveTimingBudget parameter. For |
+
+       |                 |   a detailed description of the     |
+
+       |                 |   command and all its parameters,   |
+
+       |                 |   use the man command:man           |
+
+       |                 |   deriveTimingBudget                |
+
+       |____________________________________|__________________|
+
+       | -allIlmHinsts   |  Derives timing budgets only for    |
+
+       |                 |   all the ILM-based partitions.     |
+
+       |                 |   When this parameter is used,      |
+
+       |                 |  the software automatically derives |
+
+       |                 |   the list of ILM instances and     |
+
+       |                 |   budgets for them.Note: The        |
+
+       |                 |   -allIlmHinsts parameter           |
+
+       |                 |   internally calls -inst based      |
+
+       |                 |   budgeting. So, saving budgets     |
+
+       |                 |  is only supported through the      |
+
+       |                 |   saveTimingBudget command.         |
+
+       |                 |   Therefore, it is necessary to run |
+
+       |                 |   saveTimingBudget after            |
+
+       |                 |   deriveTimingBudget                |
+
+       |                 |   -allIlmHinsts,  else              |
+
+       |                 |   savePartition will not save the   |
+
+       |                 |   budgeting information of ILM      |
+
+       |                 |   instances.                        |
+
+       |____________________________________|__________________|
+
+       | -cycleRatio     |  Honors the setCycleBudgetRatio     |
+
+       |                 |   constraints and enables usage     |
+
+       |                 |  of clock cycle time based          |
+
+       |                 |   budgeting. If no                  |
+
+       |                 |   setCycleBudgetRatio constraints   |
+
+       |                 |   are applied:The top and block     |
+
+       |                 |   default ratio is 20% and 80% of   |
+
+       |                 |   the clock respectively.The        |
+
+       |                 |   partition for start and end       |
+
+       |                 |   points splits the block ratio     |
+
+       |                 |  in 50% each.Equivalent default     |
+
+       |                 |   constraint is as                  |
+
+       |                 |   follows:setCycleBudgetRatio       |
+
+       |                 |   -fromPtn {* .4} -toPtn {*         |
+
+       |                 |   .4}setCycleBudgetRatio -fromPtn   |
+
+       |                 |   {* .8}                            |
+
+       |                 |  -toTopsetCycleBudgetRatio -fromTop |
+
+       |                 |   -toPtn {* .8}Note: Do not use the |
+
+       |                 |   setFixedBudget command with       |
+
+       |                 |  this parameter.                    |
+
+       |____________________________________|__________________|
+
+       | -inst instanceName...                                   |
+
+       |_______________________________________________________|
+
+       |                 |  Performs budgeting for the         |
+
+       |                 |   hierarchical instance(s). This    |
+
+       |                 |   instance could be a black box.    |
+
+       |                 |   You can derive timing budgets for |
+
+       |                 |   black boxes and other instances   |
+
+       |                 |   in the same run. Specify the      |
+
+       |                 |   setBudgetingMode -mergeClones     |
+
+       |                 |   parameter in addition to the      |
+
+       |                 |   -inst parameter to obtain         |
+
+       |                 |   worst-case budgets based on       |
+
+       |                 |   worst-case data per-pin for       |
+
+       |                 |   specified instances in a          |
+
+       |                 |   master/clone set. If you          |
+
+       |                 |  specify instances from more than   |
+
+       |                 |   one master/clone set, the tool    |
+
+       |                 |   derives separate worst-case       |
+
+       |                 |   timing budgets for the            |
+
+       |                 |  specified instances in each        |
+
+       |                 |   set.Default: If you do not        |
+
+       |                 |   specify this parameter, the       |
+
+       |                 |   software derives budgets for      |
+
+       |                 |  all the partitions.                |
+
+       |____________________________________|__________________|
+
+       | -parameterized  |  Generates constraints as a         |
+
+       |                 |   function of the clock period.When |
+
+       |                 |   you set this parameter, the       |
+
+       |                 |   software generates timing         |
+
+       |                 |   constraints, such as              |
+
+       |                 |   set_input_delay and               |
+
+       |                 |   set_output_delay constraints as a |
+
+       |                 |   function of the clock period in   |
+
+       |                 |   the top-level and block-level     |
+
+       |                 |   SDCs.                             |
+
+       |____________________________________|__________________|
+
+       | -ptn partitionName                                    |
+
+       |_______________________________________________________|
+
+       |                 |  Performs budgeting for the         |
+
+       |                 |   specified partition(s). Specify   |
+
+       |                 |   the setBudgetingMode -mergeClones |
+
+       |                 |   parameter in addition to the -ptn |
+
+       |                 |   parameter to obtain worst-case    |
+
+       |                 |   budgets based on worst-case       |
+
+       |                 |  data per-pin for all partitions in |
+
+       |                 |   the master/clone set containing   |
+
+       |                 |   the partition.You cannot          |
+
+       |                 |  specify -ptn if you use            |
+
+       |                 |   -inst.Default: Performs budgeting |
+
+       |                 |   on all partitions.                |
+
+       |____________________________________|__________________|
+
+       | -stageBased     |  Creates a quick stage-based        |
+
+       |                 |   timing graph to be used for       |
+
+       |                 |   timing budgeting. Timing          |
+
+       |                 |   budgeting with the stage-based    |
+
+       |                 |   timing graphs is used in very     |
+
+       |                 |   early stages of the design,       |
+
+       |                 |   before applying optimization      |
+
+       |                 |  for quick budgets. This method     |
+
+       |                 |  is more accurate than the          |
+
+       |                 |   cycle-based timing budgeting.When |
+
+       |                 |   this parameter is used, any       |
+
+       |                 |   existing timing graph in the      |
+
+       |                 |   design is overwritten by the      |
+
+       |                 |   generated special quick           |
+
+       |                 |   stage-based timing graph. The     |
+
+       |                 |   following example presents the    |
+
+       |                 |   scenarios in which this parameter |
+
+       |                 |   can be used:reg2reg path          |
+
+       |____________________________________|__________________|
+
+       | -verbose        |   Enables        |                  |
+
+       |                 |   various        |                  |
+
+       |                 |   verbose        |                  |
+
+       |                 |   controls.      |                  |
+
+       |_________________|__________________|__________________|
+
+       | -views string   |   Derives budget for multiple       |
+
+       |                 |   views in parallel for reducing    |
+
+       |                 |   the runtime.                      |
+
+       |____________________________________|__________________|
+
+Examples
+              * For  MMMC  examples, see the "Timing Budgeting" chapter of the
+                Innovus User Guide.
+
+              * The following command creates a budget for the black box BBox:
+
+                deriveTimingBudget -inst BBox
+
+                saveTimingBudget -inst BBox
+
+Related Information
+              * The following sections in the Timing Budgeting chapter of  the
+                User Guide document:
+
+                     * "Deriving Timing Budgets"
+
+                            * "Budgeting Using Text Commands"
+
+                            * "Top-Level Budgets Derived by Using Active Logic
+                              View"
+
+                            * "Deriving  Preliminary  Budgets  in Early Design
+                              Phase"
+
+                     * "Budgeting Output Files for MMMC Designs"
+
+                     * "Analyzing Timing Budgets"
+
+                            * "Resolving Conflicts with Path-Based Exceptions"
+
+                     * "Customizing Budget Generation"
+
+                     * "Verifying Timing Budgets"
+
+                     * "Reading the Justify Budget Report"
+
+                     * "Warning Report"
+
+                           Fri Apr 04 01:25:37 2025  deriveTimingBudget(25.10)

@@ -1,0 +1,185 @@
+Usage: report_timing [-help] [-analysis_summary_csv_extended_file <string>]
+                     [-analysis_summary_csv_file <string>]
+                     [-analysis_summary_file <string>] [-check_clocks]
+                     [-check_type {setup hold clock_gating_setup clock_gating_hold clock_gating_pulse_width data_setup data_hold recovery removal pulse_width clock_period clock_separation skew no_change_setup no_change_hold max_delay min_delay}]
+                     [-debug {unconstrained time_borrow cppr_point constraint_arc context wire_variation vt_skew}]
+                     [-delay_limit <float>] [-derate_summary]
+                     [-format <column_list>] [-gui] [-hpin] [-max_slack <float>]
+                     [-min_slack <float>] [-net]
+                     [-output_format {text csv gtd binary}]
+                     [-path_exceptions {applied ignored all}]
+                     [-path_group <groupname_list>]
+                     [-path_type {end summary full full_clock end_slack_only summary_slack_only}]
+                     [-retime {aocv path_slew_propagation aocv_path_slew_propagation}]
+                     [-retime_delaycal_pins <pin_name>]
+                     [-retime_format {manual retime_compare retime_replace}]
+                     [-retime_mode {path exhaustive}] [-skip_io_paths]
+                     [-through <object_list>] [-through_fall <object_list>]
+                     [-through_rise <object_list>] [-unique_pins]
+                     [-worst_rc_corner] [> <filename[.gz]>] [>> <filename[.gz]>] [-late | -early ] [-rise | -fall ] [-begin_end_pair | [[ -max_paths <integer>] [-nworst <integer>]]] [-unconstrained | -point_to_point ] [-collection | -machine_readable | -tcl_list ] [-not_through <object_list> | -not_rise_through <object_list> | -not_fall_through <object_list> ] [ [-from <object_list> | -from_rise <object_list> | -from_fall <object_list> ] [-clock_from <clk_signame_list> [-edge_from {lead trail}]] [-to <object_list> | -to_rise <object_list> | -to_fall <object_list> ] [-clock_to <clk_signame_list> [-edge_to {lead trail}]] ] [-view <viewName> ]
+
+-help                                    # Prints out the command usage
+-analysis_summary_csv_extended_file <string>
+                                         # Generate csv file to be used for
+                                         # merging (string, optional)
+-analysis_summary_csv_file <string>      # Generates analysis summary csv file.
+                                         # (string, optional)
+-analysis_summary_file <string>          # Generates analysis summary file.
+                                         # (string, optional)
+-begin_end_pair                          # Reports all violating paths between
+                                         # unique source and target begin and
+                                         # end pins (bool, optional)
+-check_clocks                            # Generates reports based on timing
+                                         # paths on the clock network instead
+                                         # of the standard timing to data
+                                         # endpoints (bool, optional)
+-check_type {setup hold clock_gating_setup clock_gating_hold clock_gating_pulse_width data_setup data_hold recovery removal pulse_width clock_period clock_separation skew no_change_setup no_change_hold max_delay min_delay}
+                                         # Reports only the paths that end at
+                                         # the specified timing check
+                                         # (enum, optional)
+-clock_from <clk_signame_list>           # Reports the paths going through
+                                         # specified launching clocks
+                                         # (string, optional)
+-clock_to <clk_signame_list>             # Reports the paths going through
+                                         # specified capturing clocks
+                                         # (string, optional)
+-collection                              # Returns a collection of timing paths
+                                         # (bool, optional)
+-debug {unconstrained time_borrow cppr_point constraint_arc context wire_variation vt_skew}
+                                         # Used for debugging various features
+                                         # of the path (string, optional)
+-delay_limit <float>                     # path delay limit for unconstrained
+                                         # paths (float, optional)
+-derate_summary                          # Generates an LOCV derating summary
+                                         # table for the launch and capture
+                                         # paths, in addition to the timing
+                                         # report (bool, optional)
+-early                                   # Generates the timing report for
+                                         # early paths (bool, optional)
+-edge_from {lead trail}                  # Reports the paths going through
+                                         # specified edge of launching clocks
+                                         # (enum, optional)
+-edge_to {lead trail}                    # Reports the paths going through
+                                         # specified edge of capturing clocks
+                                         # (enum, optional)
+-fall                                    # Reports the path with the falling
+                                         # edge on the endpoint (bool, optional)
+-format <column_list>                    # Formats the report according to the
+                                         # column_list (string, optional)
+-from <object_list>                      # Reports the paths going through
+                                         # specified from pins, ports or cells
+                                         # (string, optional)
+-from_fall <object_list>                 # Reports the paths going through
+                                         # falling transition of specified from
+                                         # pins, ports or cells (string, optional)
+-from_rise <object_list>                 # Reports the paths going through
+                                         # rising transition of specified from
+                                         # pins, ports or cells 
+                                         # (string, optional)
+-gui                                     # Presents report in GUI window
+                                         # (bool, optional)
+-hpin                                    # Prints all hierarchical crossings of
+                                         # an arc under hpin column in
+                                         # report_timing table (bool, optional)
+-late                                    # Generates the timing report for late
+                                         # paths (bool, optional)
+-machine_readable                        # Generates detailed timing report in
+                                         # machine-readable format
+                                         # (bool, optional)
+-max_paths <integer>                     # Reports the specified number of
+                                         # worst paths in the design,
+                                         # regardless of the endpoint
+                                         # (int, optional)
+-max_slack <float>                       # Reports only those paths with slack
+                                         # equal to or less than the value of
+                                         # float are reported (string, optional)
+-min_slack <float>                       # Reports only those paths whose slack
+                                         # is greater than the specified value
+                                         # (string, optional)
+-net                                     # Adds a row for the net arc
+                                         # (bool, optional)
+-not_fall_through <object_list>          # Reports paths that do not traverse
+                                         # through the falling transition of
+                                         # specified object list
+                                         # (string, optional)
+-not_rise_through <object_list>          # Reports paths that do not traverse
+                                         # through the rising transition of
+                                         # specified object list
+                                         # (string, optional)
+-not_through <object_list>               # Reports paths that do not traverse
+                                         # through the specified object list
+                                         # (string, optional)
+-nworst <integer>                        # Specifies the number of paths to be
+                                         # enumerated for each endpoint
+                                         # (int, optional)
+-output_format {text csv gtd binary}     # Generates detailed timing report in
+                                         # different format. (enum, optional)
+-path_exceptions {applied ignored all}   # Includes information of path
+                                         # exceptions applied and considered
+                                         # for the reported path (enum, optional)
+-path_group <groupname_list>             # Reports only paths contained in the
+                                         # groups specified in groupname_list
+                                         # (string, optional)
+-path_type {end summary full full_clock end_slack_only summary_slack_only}
+                                         # The path_type option lets you choose
+                                         # the format of the report by path
+                                         # type (enum, optional)
+-point_to_point                          # Traces the worst delay path between
+                                         # a pair of from-to pins (bool, optional)
+-retime {aocv path_slew_propagation aocv_path_slew_propagation}
+                                         # Reanalyzes the specified set of
+                                         # paths using the specified method
+                                         # (enum, optional)
+-retime_delaycal_pins <pin_name>         # Specifies the pin on which RDC for
+                                         # PBA is required (string, optional)
+-retime_format {manual retime_compare retime_replace}
+                                         # The retime format option lets you
+                                         # set the format of the report for
+                                         # retime related fields (enum, optional)
+-retime_mode {path exhaustive}           # Reanalyzes the specified set of
+                                         # paths using the specified method
+                                         # (enum, optional)
+-rise                                    # Reports the path with the rising
+                                         # edge on the endpoint (bool, optional)
+-skip_io_paths                           # Specifies whether I/O paths are to
+                                         # be ignored (bool, optional)
+-tcl_list                                # Produces the report in Tcl list
+                                         # format instead of a tabular format
+                                         # (bool, optional)
+-through <object_list>                   # Reports the paths going through
+                                         # specified pins, ports, cells or nets
+                                         # (string, optional)
+-through_fall <object_list>              # Reports the paths going through
+                                         # falling transition of specified
+                                         # pins, ports, cells or nets
+                                         # (string, optional)
+-through_rise <object_list>              # Reports the paths going through
+                                         # rising transition of specified pins,
+                                         # ports, cells or nets (string, optional)
+-to <object_list>                        # Reports the paths going through
+                                         # specified to pins, ports or cells
+                                         # (string, optional)
+-to_fall <object_list>                   # Reports the paths going through
+                                         # falling transition of specified to
+                                         # pins, ports or cells (string, optional)
+-to_rise <object_list>                   # Reports the paths going through
+                                         # rising transition of specified to
+                                         # pins, ports or cells 
+                                         # (string, optional)
+-unconstrained                           # Reports only the unconstrained paths
+                                         # (bool, optional)
+-unique_pins                             # Reports paths through unique set of
+                                         # pins (bool, optional)
+-view <viewName>                         # Generates a timing report for the
+                                         # specified analysis view only. By
+                                         # default all active views are
+                                         # analyzed (string, optional)
+-worst_rc_corner                         # Identifies worst interconnect
+                                         # parameter combination that leads to
+                                         # minimum slack (desired) and
+                                         # generates a report for the corner
+                                         # (bool, optional)
+> <filename[.gz]>                        # Redirects output to specified file
+                                         # (redirect_operator, optional)
+>> <filename[.gz]>                       # Redirects output to specified file
+                                         # (redirect_operator, optional)

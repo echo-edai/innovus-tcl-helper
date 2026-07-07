@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_oa_techfile(25.10)                              write_oa_techfile(25.10)
+
+Name
+       write_oa_techfile
+
+Syntax
+       write_oa_techfile
+
+       [-help]
+
+       [<fileName>]
+
+       [-include_rules]
+
+       [-process_node <coord>]
+
+       Writes  out a DFII style ASCII technology file that can be given to the
+       techLoadDump executable to create an equivalent  OpenAccess  technology
+       database.
+
+       This  command  is used to create and verify OpenAccess technology files
+       that match LEF technology files. By default,  write_oa_techfile  writes
+       out only DRC information and no LDRS or VIA information.
+
+       The expected flow for new processes is as follows:
+
+              * Read a LEF file into Innovus with init_design.
+
+              * Use write_oa_techfile to write out the tech (.tf) file.
+
+              * Run techLoadDump using the .tf file.
+
+              * Use lef2oa -pnrLibDataOnly to create the LDRS and vias.
+
+       For  more  information, refer to the chapter "Technology File Layer At-
+       tributes" of the Virtuoso Technology Data ASCII Files Reference.
+
+Parameter
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each write_oa_techfile parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man write_oa_techfile.
+
+       <fileName>
+              Specifies the output ASCII file name.
+
+       -include_rules
+              Includes  LDRS and VIA information in the output tech file. This
+              option should be used only if the LEF default and  NDRs  do  not
+              utilize fixed vias.
+
+       -process_node <coord>
+              Specifies   a   process   node  value  in  nm.  When  specified,
+              write_oa_techfile creates a processNode entry  in  the  techfile
+              for  processes  using  the  MASK  construct. For example, if you
+              specify  -process_node 20 to indicate a 20nm process,  the  fol-
+              lowing  entry  is included in the control() section of the tech-
+              file:
+
+              processNode(0.020)
+
+              If -process_node is not specified and the write_oa_techfile com-
+              mand detects MASK constructs on any layer, it returns an error.
+
+Examples
+              * The following set of commands updates an OpenAccess technology
+                file with any missing information from a LEF technology file:
+
+                #Initialize a design using LEF files
+
+                write_lef_library -tech_only lef.lef  #A LEF file in canonical
+
+                                                      #sorted order for easy
+
+                                                      #comparison with diff
+
+                write_oa_techfile lef.tf              #A DFII ASCII tech file
+
+                                                      #that can be given to
+
+                                                      #techLoadDump executable
+
+                #Edit existing OA tech file to add any missing information in
+
+                #the lef.tf file
+
+                #Initialize a design using the new OA tech. Then:
+
+                write_lef_library -tech_only oa.lef #A LEF file in canonical
+
+                                                    #order  derived  from   OA
+                tech
+
+                #Compare the two LEF files. Any differences need to be fixed
+
+                #or explained.
+
+                diff lef.lef oa.lef
+
+Related Information
+              * write_lef_library
+
+              * Mixed Signal (MS) Interoperability Guide
+
+                * Technology Data Preparation chapter
+
+                * Routing Constraint Interoperability chapter
+
+                           Fri Apr 04 01:25:37 2025   write_oa_techfile(25.10)

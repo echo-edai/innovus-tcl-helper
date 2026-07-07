@@ -1,0 +1,466 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportSpecialRoute(25.10)                            reportSpecialRoute(25.10)
+
+Name
+       reportSpecialRoute - Reports the length of all RDL routes (SPECIALNETS)
+       created with the fcroute command
+
+Syntax
+       reportSpecialRoute
+
+       [-help]
+
+       [<reportName>]
+
+       [-center_line]
+
+       [-net <netName>]
+
+       [-interposer_ndr_check
+
+          [-exclude_nets <netName>]]
+
+       [-interposer_route
+
+          [-exclude_nets <netName>]]
+
+       [-interposer_route
+
+          [[-interposer_layers <layerName>]
+
+           [-interposer_route_constraint_file <ircFileName>]]]
+
+       [-interposer_shielding_ratio
+
+          [-exclude_nets <netName>]]
+
+       [[ [-by_layer]
+
+          [-highlight45layer <layerName>]
+
+          [-lengththreshold <value>]
+
+          [-resfile <resFileName>]
+
+          [-selected]
+
+          [-summary]
+
+          [-wire_segment]
+
+          [-wirelength]   ]
+
+        | [-interposer_ndr_check ]
+
+        | [-interposer_route ]
+
+        | [-interposer_shielding_ratio ]]
+
+       Reports  the  length  of  all RDL routes (SPECIALNETS) created with the
+       fcroute command. This includes  support  for  Manhattan  and  45-degree
+       routes.  You  can  report the wire length of each SPECIALNET and report
+       the SPECIALNETS that are greater in length than the specified threshold
+       value.
+
+       Use the -by_layer and -wire_segment options to  report  the  width  and
+       length of the special nets per layer and wire segment.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reportSpecialRoute parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man reportSpecialRoute
+
+       -by_layer
+              Reports on layers of each special net. Here's a sample format of
+              the report when the -by_layer option is specified:
+
+       -center_line
+              Specifies that routing length is calculated by center line. That
+              is, the sum of wire  center  line  is  used  to  calculate  wire
+              length. Without this parameter, the routing length is calculated
+              as sum of wire segments.
+
+       -exclude_nets <netName>
+              Specifies the net names to be excluded.
+
+              This option can be used only if -interposer_route is specified.
+
+       -highlight45layer <layerName>
+              Highlights  (in  yellow)  all nets with 45-degree routing on the
+              specified layer in the design display area.
+
+       -interposer_layers <layerName>
+              Specifies the interposer layers. Use this option to  report  the
+              maximum  and  minimum routing length from tap via to tap via and
+              from bump to tap via by layer.
+
+              This option can be used only if -interposer_route is specified.
+
+       -interposer_ndr_check
+              Specifies that the tool should check for interposer routing  NDR
+              violations  and  incomplete  shielding.  If any violation is de-
+              tected, the report includes information on the net,  layer,  and
+              location  of the violation and a marker is displayed in the Vio-
+              lation Browser. By default, the -interposer_ndr_check  check  is
+              performed for each interposer route net; you can use the -net or
+              -exclude_nets options to limit the check to specific nets.
+
+              You  can  check  interposer  routing  NDR  rules  by using dbGet
+              $<net>.interposer*. If no interposer rules have been defined for
+              a net, the checker will skip the NDR check for that net.
+
+              For example, to check interposer routing signal route rule, use:
+
+              dbGet $net.interposerTrunkRules
+
+       -interposer_route
+              Reports the interposer route statistics, including maximum, min-
+              imum, and average wire length of the interposer routing. report-
+              SpecialRoute reads the constraints defined by  setIntegRouteCon-
+              straint  to  decide  which  nets are in one group. The  setInte-
+              gRouteConstraint constraints are either obtained from the DB  or
+              can   be   specified   through  a  file  by  using  the  -inter-
+              poser_route_constraint_file option.
+
+              The report format is as shown below:
+
+              ### Header ###
+
+              ### Total Nets of Interposer Route ###
+
+              Total nets: <total nets number>
+
+              Layer: Layer_name
+
+              Net with Max wire length: <net name + net length>
+
+              Net with Min wire length: <net name + net length>
+
+              Average wire length:
+
+              ### Net Group <group_name1> ###
+
+              Total nets: <nets number in group>
+
+              Layer: Layer_name
+
+              Net with Max wire length:
+
+                       <net name> :
+
+                       net length :
+
+                       Euclidean distance:
+
+                       Manhattan distance:
+
+              Net with Min wire length:
+
+                       <net name> :
+
+                       net length :
+
+                       Euclidean distance:
+
+                       Manhattan distance:
+
+              Average wire length:
+
+              Nets name:
+
+              ### Net Group <group_name2> ###
+
+              Total nets: <nets number in group>
+
+              Layer: Layer_name
+
+              Net with Max length: <net name + net length>
+
+              Net with Min length: <net name + net length>
+
+              Average wire length:
+
+              Nets name:
+
+              The <group_name> of the nets is obtained from  setIntegRouteCon-
+              straint  -name <group_name>. If -name is not specified, the tool
+              uses a number to mark the net group.
+
+              For example: ### Net Group <1> ###
+
+       -interposer_route_constraint_file <ircFileName>
+              Specifies the name of the interposer route constraint file. This
+              option can be used only if -interposer_route is specified.
+
+       -interposer_shielding_ratio
+              Checks and reports the same-layer and interlayer shielding ratio
+              of interposer routing nets.
+
+              * Checks the same-layer and interlayer shielding separately.
+
+              * Checks only the  nets  with  the  route_interposer_trunk_rules
+                property.
+
+              * For  shielding  ratio,  the  wire length is calculated by wire
+                center line, not by the sum of wire segment lengths.
+
+              Use the -net option to limit the check to specific nets.
+
+              For a sample report, see Examples.
+
+       -lengththreshold <value>
+              Reports on the SPECIALNETS that are greater in length  than  the
+              specified  value.  These  values  are  listed in the output file
+              specified by <reportName> and the routes are highlighted in  the
+              GUI.
+
+       -net <netName>
+              Reports  on  the  wire  length of each SPECIALNET fora specified
+              net.
+
+              Note: You must use this parameter in conjunction with the -wire-
+              length or -lengththreshold parameters.
+
+       <reportName>
+              Specifies the report file name. The default  file  name  is  sp-
+              wire.rpt.
+
+       -resfile <resFileName>
+              Specifies  the  resistance  file name (fcroute.res) generated by
+              fcroute if srouteFCReport <file name> is specified in the config
+              file and highlights the violated nets on GUI when the resistance
+              does not match the max  resistance  constraint  defined  in  the
+              fcroute constraint file.
+
+       -selected
+              Reports  the  length of the selected wire segments for each spe-
+              cial net.
+
+       -summary
+              Summarizes the wire length and VIAs for special nets.  Here's  a
+              sample format of the report when -summary is specified:
+
+       -wire_segment
+              Reports  on the wire segments of each special net. Here's a sam-
+              ple format of the report when -wire_segment is specified:
+
+       -wirelength
+              Reports on the wire length of each SPECIALNET.
+
+Examples
+              * The following command reports the wire length of each SPECIAL-
+                NET and lists it in the spwire.rpt report file:
+
+                reportSpecialRoute spwire.rpt -wirelength
+
+                Example report file:
+
+                ###############################################################
+
+                #  Generated by:      Cadence Innovus 15.10-b024_1
+
+                #  OS:                Linux x86_64(Host ID rlno-leenap)
+
+                #  Generated on:      Tue Apr  7 13:28:46 2015
+
+                #  Design:            DTMF_CHIP
+
+                #   Command:            reportSpecialRoute  spwire.rpt  -wire-
+                length
+
+                ###############################################################
+
+                NET: VDD TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: VSS TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: ibias TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: int TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: pllrst TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: port_pad_data_in[0] TOTAL SEGMENTS 4 WIRE LENGTH 303.4980
+                VIAS 1
+
+                       WIDTH   12.0000    LENGTH      303.4980
+
+                       IOWIRE SEGMENTS 4 WIRE LENGTH 303.4980 VIAS 1
+
+                NET:  port_pad_data_in[10] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[11] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_in[12] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[13] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_in[14] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[15] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[1] TOTAL SEGMENTS 4 WIRE LENGTH 251.9120
+                VIAS 1
+
+                       WIDTH   12.0000    LENGTH      225.3920
+
+                       WIDTH    9.0000    LENGTH       26.5200
+
+                       IOWIRE SEGMENTS 4 WIRE LENGTH 251.9120 VIAS 1
+
+                NET:  port_pad_data_in[2]  TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[3] TOTAL SEGMENTS 0 WIRE  LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_in[4]  TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[5] TOTAL SEGMENTS 0 WIRE  LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_in[6]  TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[7] TOTAL SEGMENTS 0 WIRE  LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_in[8]  TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_in[9] TOTAL SEGMENTS 0 WIRE  LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_out[0] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[10] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[11] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[12] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[13] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[14] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[15] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[1] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_out[2] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[3] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_out[4] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[5] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET:  port_pad_data_out[6] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000
+                VIAS 0
+
+                NET: port_pad_data_out[7] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET:   port_pad_data_out[8]   TOTAL  SEGMENTS  3  WIRE  LENGTH
+                435.8845 VIAS 1
+
+                       WIDTH   12.0000    LENGTH      269.2945
+
+                       WIDTH    9.0000    LENGTH      166.5900
+
+                       IOWIRE SEGMENTS 3 WIRE LENGTH 435.8845 VIAS 1
+
+                NET: port_pad_data_out[9] TOTAL SEGMENTS 0 WIRE LENGTH  0.0000
+                VIAS 0
+
+                NET: refclk TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: reset TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: scan_clk TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: scan_en TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: scan_in_1 TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: scan_in_2 TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: scan_out_1 TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: scan_out_2 TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: spi_data TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: spi_fs TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[0] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[1] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[2] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[3] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[4] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[5] TOTAL SEGMENTS 4 WIRE LENGTH 252.2325 VIAS 1
+
+                       WIDTH   12.0000    LENGTH      213.2325
+
+                       WIDTH    9.0000    LENGTH       39.0000
+
+                       IOWIRE SEGMENTS 4 WIRE LENGTH 252.2325 VIAS 1
+
+                NET: tdigit[6] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit[7] TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: tdigit_flag TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: test_mode TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: vcom TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                NET: vcop TOTAL SEGMENTS 0 WIRE LENGTH 0.0000 VIAS 0
+
+                Total Wire Length of All Special Nets: 1243.5270
+
+              * The following command checks the interposer shielding ratio of
+                nets  with  the  route_interposer_trunk_rules property and re-
+                ports it in the spwire.rpt report file:
+
+                reportSpecialRoute spwire.rpt -interposer_shielding_ratio
+
+                Sample report content:
+
+Related Information
+              * fcroute
+
+              * reportWire
+
+              * setNanoRouteMode
+
+                           Fri Apr 04 01:25:37 2025  reportSpecialRoute(25.10)

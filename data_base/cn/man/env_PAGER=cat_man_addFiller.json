@@ -1,0 +1,123 @@
+{
+  "command": "addFiller",
+  "is_cmd": true,
+  "summary": "在标准单元实例之间的间隙中插入填充单元实例",
+  "description": "该命令用于在标准单元实例之间的间隙中插入填充单元实例。填充单元为VDD/VSS电源轨和n-well提供连续性。在大多数情况下，此命令在布局后和详细布线前使用。如果设计已布线，该命令还会对设计中添加到导线上的填充单元进行DRC检查。它不检查相邻单元。此过程确保该命令足够快，可以在设计流程中多次使用。注意：在使用addFiller之前，请运行globalNetConnect命令，为所添加填充单元的电源引脚提供全局网络连接规则。没有这些规则，addFiller的内置设计规则检查将不准确。要解决因插入填充单元而产生的相邻单元DRC违规，请运行verify_drc命令来标记这些违规。然后，再次使用带有-fixDRC参数的addFiller命令来替换导致违规的填充单元。注意：此命令仅解决与填充单元相关的违规；它无法解决基于网络的违规。要修复基于网络的违规，请重新布线违规的网络。addFiller命令最多可识别八个注入层，并尝试在每个注入层内遵守注入层宽度和间距规则。如果找不到正确的填充单元添加到注入层，它会尝试添加“无注入”填充单元。如果无法添加“无注入”单元，它会插入一个足够大的填充单元，使其不违反相关注入层的最小宽度规则。使用deleteFiller命令可移除已添加的填充单元实例。注意：此命令支持多线程。一些addFiller参数也可以通过setFillerMode指定。但是，您通过addFiller指定的参数仅适用于当前的addFiller运行，并覆盖由setFillerMode设置的参数。有关更多信息，请参阅setFillerMode。",
+  "usage": "addFiller [-area <areaBoxList>] [-cell {<filler_cell_list>}] [-createRows {true | false}] [-diffCellViol {true|false}] [-check_signal_drc {true | false}] [-ecoMode {true | false}] [-fitGap] [-fixDRC] [-fix_horizontal_max_length_violation] [-fix_vertical_max_length_violation] [-honorPrerouteAsObs {true | false}] [-markFixed] [-merge {true | false}] [-minHole {true | false}] [-powerDomain <powerDomainName>] [-prefix <prefixName>] [-prevent_vertical_stack_max_length_violation] [-util <targetUtilization>] [-viaEnclosure {true | false}]",
+  "options": [
+    {
+      "name": "-area",
+      "description": "将填充单元添加到指定的区域列表。如果区域未正确定义，则不添加填充单元。通常，设计在添加填充单元之前已布局。但是，如果您使用此参数且设计未布局，您将收到警告，并且该命令将在指定区域中添加填充单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定要添加的填充单元列表。用空格分隔填充单元名称，并用引号或花括号将列表括起来。注意：此参数指定的单元会覆盖setFillerMode的-core参数提供的单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-createRows",
+      "description": "控制如果单元的站点没有行，addFiller是否在布局规划中创建行。指定false可防止addFiller创建行。默认值：true",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-diffCellViol",
+      "description": "检查不同单元类型之间的违规。默认值：false。注意：使用此功能将增加addFiller的运行时间。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_signal_drc",
+      "description": "控制针对现有网络布线的布线后DRC违规检查，不考虑相邻单元DRC违规。此参数不禁用常规布局检查。默认值：true",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ecoMode",
+      "description": "控制软件是否通过移除重叠的填充单元，并在由于部分重叠在eco流程中产生的任何现有或新创建的间隙中插入新的填充单元，来解决标准单元与填充单元的重叠问题。如果在布线后使用此参数，该命令还会解决所有填充单元的填充几何形状与常规导线之间的DRC违规。默认值：false",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fitGap",
+      "description": "通过添加单元组合来填充单元之间的间隙，而不是添加单个最大的适合单元，如果这样做可以避免留下未填充的单宽度间隙。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fixDRC",
+      "description": "纠正由verify_drc报告的填充单元与相邻标准单元之间的DRC违规。注意：addFiller命令仅解决与填充单元相关的违规——它无法解决基于网络的违规。要修复基于网络的违规，请重新布线违规的网络。在添加填充单元并使用verify_drc检查违规后，在后续的addFiller命令运行中使用此参数。该命令将导致DRC违规的填充单元替换为不会导致违规的填充单元。如果无法在不引起另一个违规的情况下替换违规的填充单元，则会留下间隙。注意：您只能在addFiller中指定此参数，而不能在setFillerMode中指定。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fix_horizontal_max_length_violation",
+      "description": "修复水平最大长度违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fix_vertical_max_length_violation",
+      "description": "修复垂直堆栈最大长度违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-honorPrerouteAsObs",
+      "description": "指示addFiller遵守setPlaceMode -place_detail_preroute_as_obs的设置。也就是说，当此参数为true时，addFiller将填充单元具有几何形状的金属层上的预布线视为障碍物，并忽略其他层上的预布线。在大多数情况下，这意味着addFiller将metal1上的预布线视为障碍物，并忽略其他金属层上的预布线。默认值：false。addFiller忽略setPlaceMode -place_detail_preroute_as_obs，并在所有合法站点中插入填充单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-markFixed",
+      "description": "将新添加的填充单元以FIXED状态放置在Innovus数据库中。注意：您只能在addFiller中指定此参数，而不能在setFillerMode中指定。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-merge",
+      "description": "在检查间距违规时，合并相同网络的几何形状以确定宽度相关的间距。如果LEF文件包含宽度相关的规则，此参数会导致addFiller具有以下行为：* 如果指定true，该命令合并重叠的相同网络对象以创建一个大矩形。* 如果指定false，该命令使用数据库中对象的形状。默认值：false",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-minHole",
+      "description": "在添加填充单元之前调用verify_drc检查最小孔违规，并在addFiller运行时修复违规。默认值：false",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-powerDomain",
+      "description": "指定要添加填充单元的电源域。默认值：如果未指定此参数，并且使用-cell参数指定了填充单元列表，则addFiller命令尝试向所有电源域添加填充单元。注意：您只能在addFiller中指定此参数，而不能在setFillerMode中指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefix",
+      "description": "指定已放置实例的前缀。默认值：FILLER",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prevent_vertical_stack_max_length_violation",
+      "description": "添加一个修复端盖单元以切断端盖单元的垂直堆栈，防止其垂直最大长度违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-util",
+      "description": "指定布局后剩余的自由空间中，用给定填充单元实例填充的百分比。使用-util添加门阵列核心填充单元，以便稍后在设计流程中与门阵列核心单元一起使用，用于仅金属掩模更改。注意：您只能在addFiller中指定此参数，而不能在setFillerMode中指定。范围：大于0.0（0%）且小于或等于1.0（100%）。默认值：1.0",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-viaEnclosure",
+      "description": "在添加填充单元之前调用verify_drc检查通孔覆盖违规，并在addFiller运行时修复违规。默认值：false",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

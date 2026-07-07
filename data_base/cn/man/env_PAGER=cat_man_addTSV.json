@@ -1,0 +1,183 @@
+{
+  "command": "addTSV",
+  "is_cmd": true,
+  "summary": "在指定条件下添加TSV（硅通孔）、正面凸点和背面凸点。",
+  "description": "在初始布局规划加载后，用于创建TSV和凸点。该命令允许用户根据多种参数（如位置、间距、阵列形状、相对参考凸点等）来定义和放置TSV、正面凸点及背面凸点。",
+  "usage": "addTSV [-help] [-noRouteBlkg] {[-frontBump <bumpCellName>] [-backBump <bumpCellName>] [-tsvViaName <viaName>]} [-frontBump <bumpCellName> [-loc_type {geometry_center|cell_center} -prefix <prefixName>] [-stackViaUnderBump <stackViaName>]] [-backBump <bumpCellName> [-loc_type {geometry_center|cell_center} -prefix <prefixName>]] [-tsvViaName <viaName> [-noPlaceBlkg | -spacing s] [[[-tsvFeedthru {x y} [-stackViaTopLayer <layer>]] | [-stripeNet <pgnetName> -stripeLayer <layerNum>]] | [-stackViaName <stackViaName> [-stackViaMarkerLayer <markerLayerName>][-stack_via_array {x y} -stack_via_pitch {x y}]]]] {-lowerLeftLoc {x y}} [-relative_bump_cell <bumpCell> | -relative_selected_bump ]} {[-pitchxy {x y}] [-relative_bump_cell <bumpCell> | -relative_selected_bump ]} {[-upperRightLoc {x y} | -numxy {x y}] [-relative_bump_cell <bumpCell> | -relative_selected_bump ]}} [{-relative_bump_cell <bumpCell> | -relative_selected_bump } [-relative_min_pitch <float>] [-relative_offset {x y}] [-relative_bump_type {signal power ground}]] [-perim <n>] [-stagger]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "显示命令帮助信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noRouteBlkg",
+      "description": "指定后，不会为每个交叉层添加布线阻挡。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-frontBump",
+      "description": "指定正面凸点单元的名称。如果未指定，则不创建正面凸点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-backBump",
+      "description": "指定背面凸点单元的名称。如果未指定，则不创建背面凸点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tsvViaName",
+      "description": "指定LEF文件中定义的TSV通孔的名称。如果未指定，则不创建TSV。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-loc_type",
+      "description": "指定凸点创建的位置类型（几何中心或单元中心）。需与-frontBump或-backBump选项一起使用。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-prefix",
+      "description": "在凸点创建和映射期间为凸点添加前缀名称。该前缀不会添加到TSV上。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stackViaUnderBump",
+      "description": "指定正面凸点下方的堆叠通孔名称。工具会自动将指定的通孔单元堆叠到正面凸点的底层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noPlaceBlkg",
+      "description": "如果未指定此选项，则默认会添加与TSV切割区域重叠的布局阻挡。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定布局阻挡的大小。阻挡大小 = TSV切割尺寸 + 2*s。如果未指定，则使用LEF文件中LAYER TSV部分定义的值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-tsvFeedthru",
+      "description": "创建馈通结构。x和y尺寸（微米）用于定义与TSV对齐的堆叠通孔尺寸。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-stackViaTopLayer",
+      "description": "定义TSV结构应连接到的顶层金属。必须与-tsvFeedthru一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripeNet",
+      "description": "声明TSV将添加在电源条带下方，将生成堆叠通孔以接触电源条带，并且新添加的TSV将被分配为该电源条带的电源或地网络。必须与-stripeLayer一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripeLayer",
+      "description": "指定在电源条带下添加TSV时，条带网络的层号或层名。必须与-stripeNet一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stackViaName",
+      "description": "指定堆叠通孔单元的名称。工具会自动将指定的通孔单元堆叠到长TSV的顶层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stackViaMarkerLayer",
+      "description": "指定标记层名称。将堆叠通孔的切割层标记为指定的标记层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stack_via_array",
+      "description": "指定堆叠通孔阵列的列数和行数。必须与-stackViaName和-stack_via_pitch一起指定。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-stack_via_pitch",
+      "description": "指定堆叠通孔的X和Y方向间距。必须与-stackViaName和-stack_via_array一起指定。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-lowerLeftLoc",
+      "description": "指定（微米）将创建TSV/凸点的区域框的左下角坐标。",
+      "required": true,
+      "type": "coord"
+    },
+    {
+      "name": "-relative_bump_cell",
+      "description": "默认在指定凸点单元的几何中心处创建TSV或凸点。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_selected_bump",
+      "description": "默认在所选凸点的几何中心处创建TSV或凸点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pitchxy",
+      "description": "指定（微米）TSV中心在X和Y方向上的距离。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-upperRightLoc",
+      "description": "指定（微米）将创建TSV/凸点的区域框的右上角坐标。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-numxy",
+      "description": "指定（微米）TSV/凸点在水平和垂直方向上的数量。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-relative_min_pitch",
+      "description": "指定创建的凸点/TSV之间的最小间距。所有创建的凸点/TSV之间的间距应大于指定的最小间距。仅在指定-relative_bump_cell或-relative_selected_bump时可选使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-relative_offset",
+      "description": "指定创建的凸点/TSV位置相对于参考凸点的偏移量。创建的凸点/TSV的几何中心是参考凸点的几何中心加上此偏移量。仅在指定-relative_bump_cell或-relative_selected_bump时可选使用。",
+      "required": false,
+      "type": "coord"
+    },
+    {
+      "name": "-relative_bump_type",
+      "description": "创建指定凸点类型（信号、电源、地）的相对凸点类型、TSV或凸点，默认位于该类型凸点的几何中心。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-perim",
+      "description": "沿外围环创建TSV、正面凸点和背面凸点。n定义环的数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-stagger",
+      "description": "交错（偏移）TSV/凸点阵列。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

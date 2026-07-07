@@ -1,0 +1,57 @@
+{
+  "command": "set_add_target_pg_mode",
+  "is_cmd": true,
+  "summary": "设置 add_target_pg 命令的全局变量",
+  "description": "此命令用于配置 add_target_pg 命令的全局运行参数。它允许用户控制目标电源地（PG）引脚连接的行为，例如是否允许弱连接、最大延伸距离、需要连接的特定引脚、引脚分组距离、重置设置、在DRC检查中需要尊重的布线类型以及是否共享资源等。通过设置这些模式，可以精细调整电源地网络的自动生成过程，以满足特定的设计规则和性能要求。",
+  "usage": "set_add_target_pg_mode [-help] [-allow_weak_connect {true | false}] [-max_extension_distance <value>] [-pins {<cell1>:<pin1> <cell1>:<pin2> <cell2>:<pin1> ...}] [-pins_group_distance <value>] [-reset] [-respect_routes {none | fixed | fixed_and_clock | all}] [-share_resource {true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_weak_connect",
+      "description": "当设置为 false 时，每个堆叠层上创建的导线数量必须满足定义的数量且DRC干净，否则PG引脚将保持开路。当设置为 true 时，在创建总数量时，即使数量少于定义值也可以接受，但可能导致DRC违规。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_extension_distance",
+      "description": "指定目标PG引脚可以延伸到目标层的最大距离。如果目标PG引脚与候选目标层之间的距离小于或等于指定距离，则该候选目标被视为真实目标。如果在此距离内找不到目标PG导线，实例将保持开路。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pins",
+      "description": "指定需要连接的单元引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins_group_distance",
+      "description": "指定在连接目标PG引脚时，被视为同一组的引脚之间的边到边距离。属于同一组的引脚共享相同的目标PG条带连接。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定参数重置为其默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-respect_routes",
+      "description": "指定在目标PG生成期间进行DRC检查时需要尊重的布线类型。此参数始终尊重所有覆盖层和PG，但不尊重追踪布线。可选值包括：none（不尊重任何布线类型）、fixed（尊重固定的常规导线）、fixed_and_clock（尊重固定的和已布线的时钟）、all（尊重固定的和已布线的时钟以及已布线的信号）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-share_resource",
+      "description": "当设置为 true 时，中间堆叠层新添加的PG可以连接到同一层的现有PG导线，并且优先移动到现有PG的轨道上以节省轨道资源。如果移动后添加的PG与现有PG之间存在DRC，则根据网络关系进行处理。当设置为 false 时，堆叠层不能连接到单元PG引脚和目标PG层之间的现有中间层。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

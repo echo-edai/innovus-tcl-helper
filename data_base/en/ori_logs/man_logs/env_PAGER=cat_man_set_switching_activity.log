@@ -1,0 +1,253 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_switching_activity(25.10)                    set_switching_activity(25.10)
+
+Name
+       set_switching_activity - Specifies activity for nets, pins, and ports
+
+Syntax
+       set_switching_activity
+
+       [-reset]
+
+       [-activity <factor> | -density transition_density ]
+
+       [-clock clock_name]
+
+       [-duty <value>]
+
+       [-inst <instance_name>]
+
+       [-net  <net_name>|  -port  <port_name>|  -pin  <pin_name>|  -input_port
+       <port_name>|-output_port <port_name>| -bidir_port <port_name>]
+
+       [-period <value>]
+
+       [-unclocked]
+
+       [-icg_ratio <num>]
+
+       [-comb_clockgate_ratio <num>]
+
+       [-hier <hierarchy_name>]
+
+       [-scale_factor <value>]
+
+       [-cell <cell_name>]
+
+       [-force]
+
+       [-quiet]
+
+       Specifies activity for nets, pins, and ports. This command is  used  to
+       specify  user-defined  activities at specific pins/nets/ports. You must
+       specify this command before report_power.
+
+       The set_switching_activity command can accept a net/pin/port list using
+       the get_pins/get_ports/get_nets commands. You can use the get* commands
+       to create a collection of nets/pins/ports whose name matches  the  sup-
+       plied  pattern  list.  Therefore, providing you with the flexibility in
+       providing lists through use of regular filter patterns. This feature is
+       supported in both static and dynamic analysis engines.
+
+Parameters
+       -activity <factor>
+              Specifies the activity for a net, pin, or  top-level  port.  The
+              <activity_factor> specifies the number of times the net, pin, or
+              port switches in a clock cycle. Enter any positive number. If if
+              the  activity is set to 0.5, the activity happens once for every
+              two clock cycles. If the activity is set to  2.0,  the  activity
+              happens two times per clock cycle. There is no default value.
+
+       -bidir_port <port_name>
+              Specifies the name of the bidirectional port. The port names are
+              in  the  following  format: bidirectional-<port>. This parameter
+              supports wildcards (*)
+
+       -cell <cell_name>
+              Specifies the activity on all output pins for all  instances  of
+              the specified cell.
+
+       -clock <clock_name>
+              Assigns  global  activity  factor  to  all  nets  in  domain  of
+              <clock_name> if and only if <clock_name> is the fastest clock in
+              the domain set.
+
+              To use this option, -clock and -activity must  be  used  without
+              any other options.
+
+       -comb_clockgate_ratio <num>
+              Specifies  to  set the propagation ratio for combinational clock
+              gate cell outputs. When specified, this parameter sets the  out-
+              put  activity  of  any instance that is identified as a combina-
+              tional clock gating cell to <num> times the  fastest  transition
+              density arriving on the instance's clock inputs.
+
+              You can specify this ratio for a net, pin, port, or clock.
+
+              This parameter cannot be specified with the -hier parameter.
+
+       -density <transition_density>
+              Specifies  the  transition  density  for a specific net, pin, or
+              top-level port. Transition density specifies the number of tran-
+              sitions per second. it can be any positive number. There  is  no
+              default value.
+
+              Note:  If you specify the -density parameter in conjunction with
+              the -period parameter, the software issues  a  warning  and  the
+              -period parameter is ignored.
+
+       -duty <value>
+              Specifies the duty cycle, which is the probability that the sig-
+              nal  is  a logical 1. The -period parameter must be specified to
+              add a duty. If not specified, the set_switcing_activity  command
+              picks this value from the external TWF or SDC through the Common
+              Timing Engine (CTE).
+
+              Default:  Uses  the  duty  specified  by the set_default_switch-
+              ing_activity command if the
+
+              -duty parameter is not specified.
+
+       -force Specifies to apply user-defined activities  for  specific  nets,
+              pins,  and ports, without having to load a verilog netlist using
+              the set_top_module command.
+
+              When  the  set_top_module  command   is   not   specified,   the
+              set_switching_activity  command does not support the -cell para-
+              meter,    and    the     net/pin/port     list     using     the
+              get_pins/get_ports/get_nets commands.
+
+       -hier <hierarchy_name>
+              A hierarchical name that an activity is being assigned to.
+
+       -icg_ratio <num>
+              Specifies to set the propagation ratio for integrated clock gate
+              (ICG) cell outputs. When specified, this parameter sets the out-
+              put  pin  of  all  identified  ICG  instances to <num> times the
+              fastest transition density arriving on clock inputs of  the  in-
+              stance.
+
+              You can specify this ratio for a net, pin, port, or clock.
+
+              This parameter cannot be specified with the -hier parameter.
+
+       -input_port <port_name>
+              Specifies  the name of the input port. The port names are in the
+              following format: <input>-<port>. This parameter supports  wild-
+              cards (*)
+
+       -inst <instance_name>
+              Specifies the activity on a specific instance.
+
+       -net <net_name>
+              Specifies the name of the net. This parameter supports wildcards
+              (*).
+
+       -output_port <port_name>
+              Specifies the name of the output port. The port names are in the
+              following format: <output>-<port>. This parameter supports wild-
+              cards (*)
+
+       -period <value>
+              Specifies  the period that the activity is referenced to. If not
+              specified, a default frequency is used. If a negative number  is
+              specified,  the  static power calculation engine reverts back to
+              the default frequency. Units in seconds (s), milliseconds  (ms),
+              microseconds (us), nanoseconds (ns), or picoseconds (ps).
+
+              Note:  If  you specify the -period parameter in conjunction with
+              the -density parameter, the software issues a  warning  and  the
+              -period parameter is ignored.
+
+              Default:  The  time  unit is defined in the first .lib file read
+              during design import. If the time unit is not defined,  the  pe-
+              riod  specified in the set_default_switching_activity command is
+              used.
+
+       -pin <pin_name>
+              Specifies the name of a pin. The pin names are in the  following
+              format:   <instance-name>  +  <default-hierarchy-><separator>  +
+              <pin>. This parameter supports wildcards (*)
+
+       -port <port_name>
+              Specifies the name of a top-level port. The port  names  are  in
+              the  following format: <top>-<level>-<port>. This parameter sup-
+              ports wildcards (*)
+
+       -quiet Suppresses all error and warning  messages  generated  when  the
+              set_switching_activity command is run.
+
+       -reset Resets  all  specified options back to default values. The reset
+              option should be the first option specified, otherwise  all  op-
+              tions set prior to this will be reset.
+
+              Note: You can selectively reset the pin/port/net specifications.
+              In  addition,  you  can  also selectively reset the pin/port/net
+              specifications   of   a   list   of    objects    through    the
+              get_pins/get_ports/get_nets commands.
+
+       -scale_factor <value>
+              Specifies  to  scale frequencies of the specified clock domains.
+              This parameter allows you to scale transition densities  of  all
+              instances  associated  with  the  clock  domain by the specified
+              scale factor to compute internal and switching power.
+
+              This parameter must be specified with the -clock parameter.  The
+              -scale_factor  parameter  is only applicable to static power and
+              dynamic vectorless power analysis.
+
+       -unclocked
+              Applies <activity> (with reference <period>) to  all  nets  that
+              have no clock domain (-unclocked).
+
+              To  use  this  option, -unclocked must be used with -activityand
+              -period with no other options.
+
+Activity Precedence
+       See "Activity Precedence".
+
+Examples
+              * The following command specifies that net n189 will switch once
+                every ten clock cycles, with a clock period of  7520ns  and  a
+                duty cycle of 50 percent:
+
+                set_switching_activity -net n189 -activity 0.10 -period 7520ns
+                -duty .5
+
+              * The  following  command  sets  the  transition density of port
+                out_cpu_top to 20000 transitions per second:
+
+                set_switching_activity -port out_cpu_top -density 20000
+
+              * The following command applies a transition density of 1e+06 to
+                all input ports that match the specified pattern:
+
+                set_switching_activity   -port[get_ports    "mode*"    -filter
+                {port_direction==in}] -density 1e+06
+
+              * The  following  command resets the previously defined activity
+                on all nets that match the specified pattern:
+
+                set_switching_activity -reset -net[get_nets n23*]
+
+              * The following command specifies the clock gate ratio  for  the
+                clock domain sys_clk:
+
+                set_switching_activity    -clock    sys_clk   -icg_ratio   0.8
+                -comb_clockgate_ratio 0.5
+
+              * The following command specifies to set the  default  switching
+                activity for all other clock domains of the design:
+
+                set_default_switching_activity   -icg_ratio  1.0  -comb_clock-
+                gate_ratio 1.0
+
+Related Information
+              * read_activity_file
+
+              * set_default_switching_activity
+
+              * "Dynamic Power and IRDrop Analysis" in the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 202s5et_switching_activity(25.10)

@@ -1,0 +1,234 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_ccopt_...sertion_delays(25.10)    report_ccopt_...sertion_delays(25.10)
+
+Name
+       report_ccopt_pin_insertion_delays  -  Reports  pin  insertion delays at
+       clock tree sinks
+
+Syntax
+       report_ccopt_pin_insertion_delays
+
+       [-help]
+
+       [-bin_size <string>]
+
+       [-check_type {setup | hold}]
+
+       [-clock_trees {string1 string2 ...}]
+
+       [-delay_corner <delay_corner_name>]
+
+       [-delay_type {early | late}]
+
+       [-file <file_name>]
+
+       [-skew_groups    {string1    string2    ...}     |     -include_report-
+       ing_only_skew_groups]
+
+       [-sources {string1 string2 ...}]
+
+       Reports  pin  insertion delays at clock tree sinks. By default, the re-
+       port visits all the clock tree sinks, and checks for pin  insertion_de-
+       lay  at  each  sink.  Statistics  about  the distribution of pin inser-
+       tion_delay values are generated and reported.  The  report  provides  a
+       quick  overview of the distribution and nature of the pin insertion de-
+       lays found, which can be used to identify the  problem  areas  such  as
+       excessively  large skews, surprisingly numerous skews, or large numbers
+       of small skews, and so on.
+
+       The -clock_trees and -skew_groups parameters are used to  restrict  the
+       scope  of  the  report as a subset of the clock tree sinks, which means
+       that when the -clock_trees parameter is  specified,  only  those  sinks
+       that  are  under  the  listed  clock  trees  are selected, and when the
+       -skew_groups parameter  is specified, only those sinks that  are  under
+       the  listed  skew  groups are selected. By default, the report analyzes
+       the pin insertion delays that are found under the  CCOpt  primary  half
+       corner. The -delay_corner, -check_type, and -delay_type parameters per-
+       mit the selection of another half corner to report against.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each report_ccopt_pin_insertion_delays  parameter.
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man report_ccopt_pin_insertion_delays
+
+       -bin_size <string>
+              Specifies  a bin (bucket) size for the report histograms. By de-
+              fault the software uses the histogram bin size  specified  using
+              the CCOpt property, pin_insertion_delay_histogram_bin_size.
+
+              Use this parameter to override this default bin size value.
+
+              For details, see CCOpt Properties in the Innovus User Guide.
+
+       -check_type {setup | hold}
+              Specifies  the check type for the specified skew group to be re-
+              ported. You can specify either setup or hold.
+
+              If a check type is specified, but the -delay_type  parameter  is
+              not specified, the software behaves in the following manner:
+
+              * -check_type -setup will mean -delay_type -late
+
+              * -check_type -hold will mean -delay_type -early
+
+              Note  :  If a check type is not specified, the software will al-
+              ways look at what the views permit, preferring the "setup"  view
+              if there is a choice.
+
+       -clock_trees {string1 string2 ...}
+              Restricts  the  report  to the specified clock trees. This means
+              that only those sinks that are under the specified  clock  trees
+              are selected for reporting.
+
+              Default: all defined clock trees
+
+       -delay_corner <delay_corner_name>
+              Reports in the specified delay corner.
+
+              By  default, the software will use the primary-half delay corner
+              that is set using the CCOpt property,  primary_delay_corner .
+
+       -delay_type {early | late}
+              Reports in the specified delay type, early or late.
+
+              When late is specified, only the late half of the delay  corners
+              are reported.
+
+              When  early  is specified, only the early half of the delay cor-
+              ners are reported.
+
+              Default: late
+
+       -file <file_name>
+              Specifies that a copy of  the contents of the report be saved to
+              the specified file name.
+
+       -include_reporting_only_skew_groups
+              When specified, the report additionally includes the  reporting-
+              only  skew  groups.  A reporting-only skew group is a skew group
+              whose constrains property is set to none. Such a skew group  im-
+              poses  no  clock balancing constraint and will not be considered
+              by CTS.
+
+              By default, the reporting-only skew groups are not  included  in
+              the  report. If a reporting-only skew group is explicitly speci-
+              fied using the -skew_groups parameter, then that skew  group  is
+              always included in the report output.
+
+              Note:  The  -include_reporting_only_skew_groups and -skew_groups
+              parameters are mutually exclusive. If both these parameters  are
+              specified together, the software errors out.
+
+       -skew_groups {string1 string2 ...}
+              Restricts  the  report  to the specified skew groups. This means
+              that only those sinks that are under the specified  skew  groups
+              are selected for reporting.
+
+              Note:  The  -include_reporting_only_skew_groups and -skew_groups
+              parameters are mutually exclusive. If both these parameters  are
+              specified together, the software errors out.
+
+              Default: all defined skew groups
+
+       -sources {string1 string2 ...}
+              Restricts the report to skew group sink pins that have a pin in-
+              sertion delay value from one of the listed sources.
+
+              This  -sources list of categories takes wildcard values that are
+              expanded to matching categories.
+
+              For example:
+
+              report_ccopt_pin_insertion_delays -sources u*
+
+              This is equivalent to:
+
+              report_ccopt_pin_insertion_delays -sources {useful_skew user}
+
+Example
+       The following command reports the pin insertion  delays  at  all  clock
+       tree sinks.
+
+       report_ccopt_pin_insertion_delays
+
+       Note:  The CCOpt pin insertion delays are +ve valued if they produce an
+       advance, and -ve valued if they produce a delay. This can be viewed  in
+       the report output shown below.
+
+       Positive (advancing) pin insertion delays
+
+       ================================================
+
+       Found 1 advances (2.041% of 49 clock tree sinks)
+
+       ------------------------------------------------
+
+       From (ns)    To (ns)    Count
+
+       ------------------------------------------------
+
+        0.000         0.010     1
+
+       ------------------------------------------------
+
+       Mean              : 0.006ns
+
+       Std.Dev           : 0.000ns
+
+       Smallest advance  : 0.006ns at d2211a/CK
+
+       Largest advance   : 0.006ns at d2211a/CK
+
+       Negative (delaying) pin insertion delays
+
+       ================================================
+
+       Found 23 delays (46.939% of 49 clock tree sinks)
+
+       ------------------------------------------------
+
+       From (ns)    To (ns)   Count
+
+       ------------------------------------------------
+
+       -0.120      -0.110     1
+
+       -0.110      -0.100     0
+
+       -0.100      -0.090     1
+
+       -0.090      -0.080     2
+
+       -0.080      -0.070     3
+
+       -0.070      -0.060     2
+
+       -0.060      -0.050     4
+
+       -0.050      -0.040     4
+
+       -0.040      -0.030     3
+
+       -0.030      -0.020     1
+
+       -0.020      -0.010     2
+
+       -----------------------------------------------
+
+       Mean             : -0.056ns
+
+       Std.Dev          : 0.025ns
+
+       Smallest delay   : -0.014ns at d3211a/CK
+
+       Largest delay    : -0.110ns at d1111d/CK
+
+Related Information
+              * The following topic in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                           Fri Apr 04 01:2r5e:p3o7rt2_0c2c5opt_...sertion_delays(25.10)

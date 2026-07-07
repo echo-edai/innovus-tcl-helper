@@ -1,0 +1,854 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setFPlanMode(25.10)                                        setFPlanMode(25.10)
+
+Name
+       setFPlanMode  -  Sets the global parameters of the check floorplan fea-
+       ture
+
+Syntax
+        setFPlanMode
+
+       [-help] [-reset]
+
+       [-autoSyncMasterClone     {busGuides|constraints|stdcells|macros|route-
+       Blockages|placeBlockages}]
+
+       [-cellsForExtraSites <cell_name>]
+
+       [-checkTypes   {basic|fence|oddEvenSiteRow|macroPin|color|alignmentFol-
+       lowingPin|alignmentPartitionClone|
+
+       busGuideConnectivity|feedThrough|partitionInPartition|multiLayer-
+       Pin|powerDomain|
+
+       partition|place|sameLengthSite|narrowChannel|blockOnly|unifiedVddOnBot-
+       tom|tsv|exclusiveGroup|all}]
+
+       [-cutOffPlaceBlockageOutsideDie {true|false}]
+
+       [-cutOffRouteBlockageOutsideDie {true|false}]
+
+       [-defaultBlockageNamePrefix <string>]
+
+       [-defaultPowerDomainSite {true|false}]
+
+       [-defaultRowPatternSite <string>]
+
+       [-defaultTechSite <string>]
+
+       [-enableRectilinearDesign {true|false}]
+
+       [-extraRowPattern <rowPatternName>]
+
+       [-extraSites  <site_name>]
+
+       [-firstRowSiteIndex <int>]
+
+       [-includeIoWhenInitArea {true|false}]
+
+       [-initAllCompatibleCoreSiteRows {true|false}]
+
+       [-keepRowsWhenMovingPowerDomain {true|false}]
+
+       [-lastRowSiteIndex <int>]
+
+       [-maxIoHeight {true|false}]
+
+       [-minimumSites <value>]
+
+       [-move_child_constraint_with_constraint {true|false}]
+
+       [-move_macros_with_constraint {guide|region|fence|none|all}]
+
+       [-move_preplaced_std_cell_only {true|false}]
+
+       [-move_std_cell_with_constraint {guide|region|fence|none|all}]
+
+       [-narrowChannelThreshold <value>]
+
+       [-no_cut_row {true|false}]
+
+       [-powerRailLayer <string>]
+
+       [-rowHeightIncrementCornerToCorner <value>]
+
+       [-rowHeightIncrementIncornerToCorner <value>]
+
+       [-rowHeightIncrementIncornerToIncorner <value>]
+
+       [-rowHeightMultiple <value>]
+
+       [-rowSiteHeight {any|odd|even|computed}]
+
+       [-rowSiteWidth {any|odd|even}]
+
+       [-skipViolations <string>]
+
+       [-snap_all_corners_to_grid {true|false}]
+
+       [-snapBlockGrid         {manufacturing|inst|placement|userDefine|Layer-
+       Track|finfetInst|finfetManufacturing|finfetPlacement}]
+
+       [-snapConstraintGrid    {manufacturing|inst|placement|userDefine|Layer-
+       Track|finfetInst|finfetManufacturing|finfetPlacement}]
+
+       [-snapCoreGrid {manufacturing|inst|placement|userDefine|LayerTrack|fin-
+       fetInst|finfetManufacturing|finfetPlacement}]
+
+       [-snapDieGrid  {manufacturing|inst|placement|userDefine|LayerTrack|fin-
+       fetInst|finfetManufacturing|finfetPlacement}]
+
+       [-snapIoGrid   {manufacturing|inst|placement|userDefine|LayerTrack|fin-
+       fetInst|finfetManufacturing|finfetPlacement}]
+
+       [-snapPlaceBlockageGrid   {manufacturing|inst|finfetInst|finfetManufac-
+       turing|userDefine}]
+
+       [-snapPlaceBlockageType {closest|upsize|sequential}]
+
+       [-user_define_grid {<x_offset y_offset x_pitch y_pitch>}]
+
+       Sets  the  global  parameters  of  the check floorplan feature. Use the
+       getFPlanMode command to return the current settings for  the  setFPlan-
+       Mode  command.  The  setFPlanMode  parameters  affects the behavior the
+       checkFPlan command. You can use this command after importing the design
+       and before using the checkFPlan command.
+
+Parameters
+       -autoSyncMasterClone {busGuides|constraints|stdcells|macros|routeBlock-
+       ages|placeBlockages}
+              Specifies the objects that automatically sync up between  master
+              and  clone  partitions during add, delete, edit, move, flip, ro-
+              tate, unplace, or stretch operations. The sync-up object can  be
+              bus guides, standard cells, macros, constraints (fence/guide/re-
+              gion of hinsts), placement blockages, or routing blockages.
+
+              * busGuides:  Any  change  (add, delete, edit, move, or stretch)
+                for busGuides in master will sync-up to other hinsts that have
+                the same module.
+
+                For example, setFPlanMode -autoSyncMasterClone {busGuides}
+
+              * constraints: Any change (move, reshape,  create,  unplace)  in
+                hinsts constraints of master will sync-up to other hinsts that
+                have the same module.
+
+                * When constraints is not specified, tool will not sync-up any
+                  change of fence/guide/region between master and clones.
+
+                * When  constraints  is  specified, tool will auto sync-up any
+                  change of fence/guide/region between master and clones  when
+                  doing moving/stretching.
+
+              * stdcells:  Any change (move) in standard cells will sync-up to
+                other hinsts that have the same module.
+
+                For example, setFPlanMode -autoSyncMasterClone {stdcells}
+
+              * macros: Any change (move, flip, rotate, or  unplace)  in  hard
+                macros  in  master  will sync-up to other hinsts that have the
+                same module.
+
+                For example, setFPlanMode -autoSyncMasterClone {macro}
+
+              * placeBlockages: Any change (add, delete, edit, move,  reshape)
+                in  placement blockages will sync-up to other hinsts that have
+                the same module.
+
+              * routeBlockages: Any change (add, delete, edit, move,  reshape)
+                in  routing  blockages  will sync-up to other hinsts that have
+                the same module.
+
+              Default: " "
+
+              Data_type:  enums={busGuides constraints stdcells macros  place-
+              Blockages routeBlockages}_list
+
+       -cellsForExtraSites <cell_name>
+              Specifies  the cell names for which the additional sites will be
+              created. These sites can be used up later in the flow.
+
+              Default: " "
+
+              Data_type: string
+
+       -checkTypes {basic|fence|oddEvenSiteRow|macroPin|color|alignmentFollow-
+       ingPin|alignmentPartitionClone|
+
+              busGuideConnectivity|feedThrough|partitionInPartition|multiLay-
+              erPin|powerDomain|partition|place|
+
+              sameLengthSite|narrowChannel|blockOnly|unifiedVddOnBot-
+              tom|tsv|exclusiveGroup|all}" Specifies the check types  for  the
+              checkFPlan command.
+
+              *
+
+                * basic:  Checks  the basic quality of the floorplan to detect
+                  potential problems before the design is passed on  to  other
+                  tools.
+
+                * fence: Checks the fences.
+
+                * oddEvenSiteRow:  Checks  odd  or even site row. It checks if
+                  the  current  row  fits  to  the  setting  of   setFPlanMode
+                  -rowSiteWidth and -rowSiteHeight.
+
+                * macroPin: Checks if the macro pins are off track.
+
+                  Note:  The  checkFPlan command verifies macro pins only when
+                  the block snap rule is set to the LayerTrack grid (setFPlan-
+                  Mode -snapBlockGrid LayerTrack).
+
+                * color: Checks the color issues  of  all  floorplan  objects,
+                  such as pins, preRoutes, prePlacedInst, etc.
+
+                * alignmentFollowingPin:  Checks if the centerline of the fol-
+                  lowpin is the same as the row's border and matches the power
+                  attribute.
+
+                * alignmentPartitionClone: Checks that  partition  clones  are
+                  aligned  with  their  master  on the power mesh. This checks
+                  that the master and clones  partitions  are  inside  a  core
+                  boundary,  and  ensures  that  the partition fence instances
+                  sizes match the master instance.
+
+                * busGuideConnectivity: Checks incorrect overlapping and  con-
+                  nectivity.
+
+                * feedThrough: Checks feedthrough buffer insertion.
+
+                * partitionInPartition:  Checks if child partitions reside in-
+                  side parent partitions.
+
+                * multiLayerPin: Checks multi layer pins.
+
+                * powerDomain: Checks the power domains.
+
+                * partition: Checks the partitions.
+
+                * place: Checks the placement.
+
+                * sameLengthSite: Checks the same length site rule where, in a
+                  group of continuous poly stripes with the same  length,  the
+                  number  of  sites must be >= N.(N is specified by the -mini-
+                  mumSites option.)
+
+                * narrowChannel: Checks for narrow channels.
+
+                * blockOnly: Checks for performance most  frequently  used  in
+                  block   implementation.   Includes:  basic,  oddEvenSiteRow,
+                  macroPin, and color.
+
+                * unifiedVddOnBottom: Checks whether all the cells in the  de-
+                  sign are with the same vdd on bottom.
+
+                * tsv: Checks the TSV placement.
+
+                * exclusiveGroup: Checks exclusive group region spacing.
+
+                * all:  Performs  all checks on the floorplan to detect poten-
+                  tial problems before the design is passed on to other tools.
+
+              Default: basic
+
+              Data_type:  enums={basic  fence  oddEvenSiteRow  macroPin  color
+              alignmentFollowingPin alignmentPartitionClone busGuideConnectiv-
+              ity  feedThrough  partitionInPartition multiLayerPin powerDomain
+              partition place sameLengthSite narrowChannel blockOnly  unified-
+              VddOnBottom tsv all}_list
+
+       -cutOffPlaceBlockageOutsideDie {true|false}
+              When  creating  placement blockages, it cuts the part outside of
+              die and snaps it by default.
+
+              Default: true
+
+              Data_type: bool
+
+       -cutOffRouteBlockageOutsideDie {true|false}
+              When creating routing blockages around inst/Hinst/Partition,  it
+              cuts  the  part  outside of die and snaps it by default. If this
+              option is set to false, then the outside part  is  not  cut  and
+              snapped.
+
+              Default: true
+
+              Data_type: bool
+
+       -defaultBlockageNamePrefix <string>
+              Specifies  the  name  prefix  for placement blockage and routing
+              blockage.
+
+              Default: " "
+
+              Data_type: string
+
+       -defaultPowerDomainSite {true | false }
+              Creates rows based on the default power domain site  instead  of
+              the the default site of the design.
+
+              Default: false
+
+              Data_type: bool
+
+       -defaultRowPatternSite <string>
+              Specifies the default ROWPATTERN site.
+
+              Note:  Defined  in the LEF, a ROWPATTERN site is a set of previ-
+              ously defined sites and their orientations. This site is defines
+              a placement site in the design.
+
+              Default: " "
+
+              Data_type: string
+
+       -defaultTechSite <string>
+              Specifies a site as default technical site.
+
+              Note: After setting a default technical site, the auto-calculat-
+              ing default-technical-site functionality is disabled.
+
+              Note: The saveFPlan, loadFPlan, initCoreRow and checkFPlan  com-
+              mands honor the default technical site specified using the setF-
+              PlanMode -defaultTechSite parameter.
+
+              Default: auto-calculated default-technical-site by tool.
+
+              Data_type: string
+
+       -enableRectilinearDesign {true | false}
+              Specifies  whether  the design boundary can be changed to recti-
+              linear shape.
+
+              Default: false
+
+              Data_type: bool
+
+       -extraRowPattern <rowPatternName>
+              Specifies the ROWPATTERN name to create. You can also specify  a
+              ROWPATTERN list.
+
+              Note:
+
+              * The initCoreRow command creates rows for the specified ROWPAT-
+                TERN sites.
+
+              * The  ROWPATTERN should be defined in LEF file. The initCoreRow
+                command creates rows from core bottom edge as the defined  or-
+                der and orientation of all sites.
+
+              * The  -extraRowPattern  parameter does not support the creation
+                of extra row pattern for non-default power domains.
+
+              Default: " "
+
+              Data_type: string
+
+       -extraSites  <site_name>
+              Specifies the name for the additional sites that will be created
+              for cells which are not used in the netlist  by  default.  These
+              sites can be used up later in the flow.
+
+              Note:  Sites  for  all  specified cells should be defined in the
+              LEF.
+
+              Default: " "
+
+              Data_type: string
+
+       -firstRowSiteIndex <int>
+              Specifies the index number in default row site  pattern  as  the
+              first row for creating hybrid rows.
+
+              For example,
+
+              Default: 0
+
+              Data_type: int
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each setFPlanMode parameter. For a detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:
+
+               man setFPlanMode.
+
+       -includeIoWhenInitArea {true|false}
+              Includes IO cells when calculating the area of modules.
+
+              Default: false
+
+              Data_type: bool
+
+       -initAllCompatibleCoreSiteRows {true|false}
+              When enabled, initCoreRow creates SITES which are  used  by  all
+              cells in the library.
+
+              Default: false
+
+              Data_type: bool
+
+       -keepRowsWhenMovingPowerDomain {true|false}
+              Specifies whether to keep all existing rows in power domain when
+              moving,  resizing  or reshaping a power domain on GUI or by com-
+              mand.
+
+              Default: false
+
+              Data_type: bool
+
+       -lastRowSiteIndex <int>
+              Specifies the index number in default row site  pattern  as  the
+              last row for creating hybrid rows.
+
+              Default: -1
+
+              Data_type: int
+
+       -maxIoHeight {true|false}
+              When specified, the maximum IO height is used to calculate a die
+              box  with  IO  placement.  By  default, the minimum IO height is
+              used.
+
+              Default: false
+
+              Data_type: bool
+
+       -minimumSites <value>
+              Specifies the number of minimal sites (N)  that  the  checkFPlan
+              command will check for the same length site rule. When the same-
+              LengthSite  option  of  the  -checkTypes parameter is specified,
+              this parameter is required.
+
+              Default: 0
+
+              Data_type: int
+
+       -move_child_constraint_with_constraint {true|false}
+              Specifies that the child constraints should move with the parent
+              constraint modules at the same time.
+
+              Default: false
+
+              Data_type: bool
+
+       -move_macros_with_constraint {guide|region|fence|none|all}
+              Specifies that the macros move with the  constraint  modules  at
+              the same time.
+
+              Default: fence
+
+              Data_type: enums={guide region fence none all}_list
+
+       -move_preplaced_std_cell_only {true|false}
+              Specifies  that only the pre-placed standard cells can move with
+              the constraint modules at the same time.
+
+              Default: false
+
+              Data_type: bool
+
+       -move_std_cell_with_constraint {guide|region|fence|none|all}
+              Specifies that standard cells move with the  constraint  modules
+              at the same time.
+
+              Default: none
+
+              Data_type: enums={guide region fence none all}_list
+
+       -narrowChannelThreshold <value>
+              Reports  the  narrow channels whose width (in micros) is smaller
+              than the specified value. When the narrowChannel option  of  the
+              -checkTypes parameter is specified, this parameter is required.
+
+              Default: 0
+
+              Data_type: float
+
+       -no_cut_row {true|false}
+              Specifies  that the rows are not required to be cut before other
+              operations. The following commands honor this mode setting:
+
+              * createRouteBlkAlongTrack
+
+              * check_ufc
+
+              * fix_floorplan
+
+              * finishFloorplan
+
+              * check_tcic
+
+              With the -no_cut_row parameter set to false  or  not  specified,
+              the tool will run above the mentioned commands based on the cur-
+              rent row shape. So the rows for objects like insts, place block-
+              ages are expected to be cut out before running these commands to
+              get expected results.
+
+              If  rows  are  not cut before run these commands are run and the
+              -no_cut_row parameter is set to true, the tool will identify the
+              rows that have not been cut before running  these  commands.  It
+              calls  the  cutRow  command  to get a cut row shape during these
+              commands action. The cutRow command cuts  the  rows  for  insts,
+              hinsts, place blockages, route blockages, power domains, groups,
+              or  bumps  by default. These commands will work based on the cut
+              row shape. But the actual row shape is not changed  after  these
+              operations.
+
+              Default: false
+
+              Data_type: bool
+
+       -powerRailLayer <string>
+              Specifies  the  layers  used for calculating the power/ground on
+              the bottom attribute of the cell or techsite.  By  default,  the
+              lowest metal layer is used.
+
+              Default: " "
+
+              Data_type: string
+
+       -reset Restores all parameters modified using setFPlanMode to their de-
+              fault settings. The -reset parameter must be the first parameter
+              specified.  If you specify -reset by itself, the software resets
+              all setFPlanMode parameters to  their  default  values.  If  you
+              specify  parameters after -reset, the software resets only those
+              parameters to their default values.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+       -rowHeightIncrementCornerToCorner <CornerToCornerValue>
+              Specifies  the  offset  value  for  user defined row height con-
+              straint with corner to corner edge.
+
+              Default: 0
+
+              Data_type: int
+
+       -rowHeightIncrementIncornerToCorner <I> <ncornerToCornerValue>
+              Specifies the offset value for  user  defined  row  height  con-
+              straint with incorner to corner edge.
+
+              Default: 0
+
+              Data_type: int
+
+       -rowHeightIncrementIncornerToIncorner <IncornerToIncornerValue>
+              Specifies  the  offset  value  for  user defined row height con-
+              straint with incorner to incorner edge.
+
+              Default: 0
+
+              Data_type: int
+
+       -rowHeightMultiple <multipleHeightValue>
+              Specifies the pitch value  for  user  defined  row  height  con-
+              straint.
+
+              Default: 0
+
+              Data_type: int
+
+       -rowSiteHeight {any|odd|even|computed}
+              Specifies the odd, even, or user defined row height constraints.
+
+              Note:  For  a hybrid row design, specify the computed option for
+              the -rowSiteHeight parameter to specify the row constraints.
+
+              Default: any
+
+              Data_type: enums={any odd even computed}
+
+       -rowSiteWidth {any|odd|even}
+              Specifies the odd even row width constraints.
+
+              Data_type: enums={any odd even}
+
+       -skipViolations <string>
+              Skips reporting and showing the violation(s) associated with the
+              specified message ID(s) in the violation browser.
+
+              Note: You can specify a list of message IDs with the -skipViola-
+              tions parameter. It also supports wildcards.
+
+              * If the -skipViolations parameter is not  specified,  the  tool
+                reports  all  the violations checked by the checkFPlan command
+                in the terminal/.log/.logv and shows  them  in  the  violation
+                browser if there is marker box.
+
+              * If  the  -skipViolations parameter is specified, the tool does
+                not report the violations in terminal/.log/.logv and also does
+                not show them in the violation browser even through  there  is
+                marker box.
+
+              For  example,  the  following command does not report the viola-
+              tions for IMPFP-7236.
+
+              setFPlanMode -checkTypes basic -skipViolations IMPFP-7236
+
+              checkFPlan
+
+              Default: " "
+
+              Data_type: string
+
+       -snap_all_corners_to_grid {true|false}
+              Snaps all corners of an object to the grid. It defines the snap-
+              ping behavior for the kinds of objects: constraint,  ptnCut  and
+              black box.
+
+              Note:  This option only works when the snapping grid is user de-
+              fined grid or FinFET grid.
+
+              * When the snapping  grid  is  ManufactureGrid,  the  object  is
+                snapped to the closest grid.
+
+              * When  the snapping grid is InstanceGrid and PlacementGrid, the
+                object is moved to first snap the LL corner to the closest lo-
+                cation and then to snap the UR corner to closest location.
+
+              * When the snapping grid is user defined  grid,  the  object  is
+                moved  to  snap the LL corner to the closest location. Then if
+                the -snap_all_corners_to_grid parameter set to true,  the  ob-
+                ject is moved to snap the UR corner to the closest location.
+
+              * When  the  snapping grid is FinFET grid and the -snap_all_cor-
+                ners_to_grid parameter set to true, all corners of the  object
+                are   snapped   to   the   closest   grid.   However,  if  the
+                -snap_all_corners_to_grid parameter set to false, only the  LL
+                corner of the object is snapped to the closest location.
+
+              Default: false
+
+              Data_type: bool
+
+       -snapBlockGrid {manufacturing | inst | placement | userDefine | Layer-
+       Track | finfetInst | finfetManufacturing | finfetPlacement }
+              Specifies the block snap rules. It can be set to snap to:
+
+              * manufacturing: Manufacture Grid
+
+              * inst: Instance Grid
+
+              * placement: Placement Grid
+
+              * userDefine: User-define Grid
+
+              * LayerTrack: LayerTrack Grid
+
+              * finfetManufacturing: FinFET Manufacture Grid
+
+              * finfetInst: FinFET Instance Grid
+
+              * finfetPlacement: FinFET Placement Grid
+
+              Default: manufacturing
+
+              Note: For FinFET designs, the default is finfetManufacturing.
+
+              Data_type: enums={manufacturing inst placement userDefine Layer-
+              Track finfetInst finfetManufacturing finfetPlacement}
+
+       -snapConstraintGrid {manufacturing | inst | placement | userDefine |
+       LayerTrack | finfetInst | finfetManufacturing | finfetPlacement }
+              Specify the constraint snap rules. It can be set to snap to:
+
+              * manufacturing: Manufacture Grid
+
+              * inst: Instance Grid
+
+              * placement: Placement Grid
+
+              * userDefine: User-define Grid
+
+              * LayerTrack: LayerTrack Grid
+
+              * finfetManufacturing: FinFET Manufacture Grid
+
+              * finfetInst: FinFET Instance Grid
+
+              * finfetPlacement: FinFET Placement Grid
+
+              Default: inst
+
+              Note: For FinFET designs, the default is finfetInst.
+
+              Data_type: enums={manufacturing inst placement userDefine Layer-
+              Track finfetInst finfetManufacturing finfetPlacement}
+
+       -snapCoreGrid {manufacturing | inst | placement | userDefine | Layer-
+       Track | finfetInst | finfetManufacturing | finfetPlacement }
+              Specifies the core snap rules. It can be set to snap to:
+
+              * manufacturing: Manufacture Grid
+
+              * inst: Instance Grid
+
+              * placement: Placement Grid
+
+              * userDefine: User-define Grid
+
+              * LayerTrack: LayerTrack Grid
+
+              * finfetManufacturing: FinFET Manufacture Grid
+
+              * finfetInst: FinFET Instance Grid
+
+              * finfetPlacement: FinFET Placement Grid
+
+              Default: placement
+
+              Note: For FinFET designs, the default is finfetPlacement.
+
+              Data_type: enums={manufacturing inst placement userDefine Layer-
+              Track finfetInst finfetManufacturing finfetPlacement}
+
+       -snapDieGrid {manufacturing | inst | placement | userDefine | Layer-
+       Track | finfetInst | finfetManufacturing | finfetPlacement }
+              Specifies the die snap rules. It can be set to snap to:
+
+              * manufacturing: Manufacture Grid
+
+              * inst: Instance Grid
+
+              * placement: Placement Grid
+
+              * userDefine: User-define Grid
+
+              * LayerTrack: LayerTrack Grid
+
+              * finfetManufacturing: FinFET Manufacture Grid
+
+              * finfetInst: FinFET Instance Grid
+
+              * finfetPlacement: FinFET Placement Grid
+
+              Default: placement
+
+              Note: For FinFET designs, the default is finfetPlacement.
+
+              Data_type: enums={manufacturing inst placement userDefine Layer-
+              Track finfetInst finfetManufacturing finfetPlacement}
+
+       -snapIoGrid {manufacturing | inst | placement | userDefine | LayerTrack
+       | finfetInst | finfetManufacturing | finfetPlacement }
+              Specifies the IO snap rules. It can be set to snap to:
+
+              * manufacturing: Manufacture Grid
+
+              * inst: Instance Grid
+
+              * placement: Placement Grid
+
+              * userDefine: User-define Grid
+
+              * LayerTrack: LayerTrack Grid
+
+              * finfetManufacturing: FinFET Manufacture Grid
+
+              * finfetInst: FinFET Instance Grid
+
+              * finfetPlacement: FinFET Placement Grid
+
+              Default: manufacturing
+
+              Note: For FinFET designs, the default is finfetManufacturing.
+
+              Data_type: enums={manufacturing inst placement userDefine Layer-
+              Track finfetInst finfetManufacturing finfetPlacement}
+
+       -snapPlaceBlockageGrid {manufacturing|inst|finfetInst|finfetManufactur-
+       ing|userDefine}
+              Specifies the placement blockage snap rules.
+
+              * manufacturing: Manufacture Grid
+
+              * inst: Instance Grid
+
+              * userDefine: User-define Grid
+
+              * finfetManufacturing: FinFET Manufacture Grid
+
+              * finfetInst: FinFET Instance Grid
+
+              Default: inst
+
+              Data_type:  enums={manufacturing  inst finfetInst finfetManufac-
+              turing userDefine}
+
+       -snapPlaceBlockageType {closest|upsize|sequential}
+              Specifies a snapping type for placement blockages. The  snapping
+              types can be:
+
+              * closest:  The tool snaps all corners of the placement blockage
+                to the closest specified grid, regardless of  which  direction
+                could increase or decrease the blockage size.
+
+              * upsize:  The  tool snaps all corners of the placement blockage
+                to the corresponding closest specified grid in  the  direction
+                which would increase the objects' size.
+
+              * sequential:  The tool moves the placement blockage to snap the
+                low-left corner to the closest specified grid, then snaps  the
+                upper-right corner to the closest grid.
+
+              This setting is honored by the following commands:
+
+              * setObjFPlanBox
+
+              * setObjFPlanBoxList
+
+              * setObjFPlanPolygon
+
+              * createPlaceBlockage {-box|-boxList|-polygon}
+
+              * snapFPlan -placeBlk
+
+              Default: closest
+
+              Data_type: enums={closest upsize sequential}
+
+       -user_define_grid {<x_offset y_offset x_pitch y_pitch>}
+              Specifies the user-defined grid.
+
+              The format is {<x_offset y_offset x_pitch y_pitch>}.
+
+              Where,
+
+              <x_offset y_offset> is the offset of the user-defined grid.
+
+              <x_pitch> separates the vertical grid lines.
+
+              <y_pitch> separates the horizontal grid lines.
+
+              Note: The values are in microns.
+
+              Default: {0 0 0 0}
+
+              Data_type: box
+
+Examples
+       In  the  following,  the  command checks the same length site rule in a
+       group of continuous poly stripes with the same length.  The  number  of
+       minimal sites it check is set to 6 using the -minimumSites parameter.
+
+       setFPlanMode -checkTypes sameLengthSite -minimumSites 6
+
+Related Information
+              * saveFPlan
+
+              * loadFPlan
+
+              * initCoreRow
+
+              * checkFPlan
+
+              * floorPlan
+
+              * getFPlanMode
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025        setFPlanMode(25.10)

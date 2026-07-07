@@ -1,0 +1,160 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_clock_tree_cells(25.10)            get_ccopt_clock_tree_cells(25.10)
+
+Name
+       get_ccopt_clock_tree_cells  - This command returns a list of clock tree
+       cells - cell instances that form a part of the  clock  tree  network  -
+       whose names match the specified pattern
+
+Syntax
+       get_ccopt_clock_tree_cells
+
+       [-help]
+
+       [<pattern>]
+
+       [-in_clock_trees <list_of_trees>]
+
+       [-net_types leaf | trunk | top]
+
+       [-node_types  buffer | inverter | clock_gate | logic | source | genera-
+       tor | all]
+
+       [-not_in_clock_trees <list_of_trees>]
+
+       [-regexp]
+
+       This command returns a list of clock tree cells - cell  instances  that
+       form a part of the clock tree network - whose names match the specified
+       pattern.  By  default,  the  command  returns all clock tree cells with
+       matching names, but you can use optional parameters to filter the  list
+       based on cell type and clock tree membership.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each get_ccopt_clock_tree_cells parameter.  For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command: man get_ccopt_clock_tree_cells.
+
+       -in_clock_trees <list_of_trees>
+              Specifies a Tcl list of clock trees whose cells are  to  be  in-
+              cluded  in  the list. If not specified, all the cells of all the
+              clock trees in the design that satisfy the other  conditions  of
+              the command will be returned.
+
+       -net_types leaf | trunk | top
+              Only  returns  nodes  driving nets of the specified type(s). All
+              clock tree nets fall into one of three categories:
+
+              * leaf nets - nets connected to sinks
+
+              * top nets - nets with a high transitive fanout,  exceeding  the
+                threshold   specified   using   the  set_ccopt_property  rout-
+                ing_top_min_fanout CCOpt property
+
+              * trunk nets - all other nets in the clock tree that are neither
+                leaf nor top nets
+
+              By default, all net types are returned: leaf, top, and trunk.
+
+       -node_types buffer | inverter | clock_gate | logic | source | generator
+       | all
+              Specifies the type of cells returned  by  the  command.  If  not
+              specified,  all types of cells that satisfy the other conditions
+              of the command will be returned. Valid values  for  <type>  are:
+              "buffer",  "clock_gate", "inverter", "logic", "source", "genera-
+              tor", and "all".
+
+       -not_in_clock_trees <list_of_trees>
+              Specifies a Tcl list of clock tree whose cells  are  to  be  ex-
+              cluded  from the list. If not specified, all the cells that sat-
+              isfy the other conditions of the command will be returned.
+
+       <pattern>
+              Returns clock tree cells that match this pattern. If not  speci-
+              fied, all the clock tree cells that satisfy the other conditions
+              of the command will be returned.
+
+              Note: The wildcard pattern, (*) matches zero or more characters.
+              You  can  also  use the question mark (?), which matches exactly
+              one character.
+
+       -regexp
+              When specified, treats all patterns as full Tcl regular  expres-
+              sions.  If  not specified, pattern is treated as a wildcard pat-
+              tern.
+
+Examples
+              * The following command returns the list of all clock tree cells
+                that start with "TEST", which is a wildcard match:
+
+                get_ccopt_clock_tree_cells TEST*
+
+                TEST_CONTROL_INST/g138    TEST_CONTROL_INST/g140     TEST_CON-
+                TROL_INST/g142  TEST_CONTROL_INST/g139  TEST_CONTROL_INST/g141
+                TEST_CONTROL_INST/g137
+
+              * The following command returns the list of all clock tree cells
+                that contain the word "TEST", which is a Tcl pattern match:
+
+                get_ccopt_clock_tree_cells TEST -regexp
+
+                TEST_CONTROL_INST/g138    TEST_CONTROL_INST/g140     TEST_CON-
+                TROL_INST/g142                          TEST_CONTROL_INST/g139
+                RAM_256x16_TEST_INST/CPF_LS_160_m_dsram_clk          TEST_CON-
+                TROL_INST/g141 TEST_CONTROL_INST/g137
+
+              * The following command returns the list of all clock tree cells
+                in either of the clock trees, M_CLK or M_DIGIT_CLK:
+
+                get_ccopt_clock_tree_cells     *     -in_clock_trees    {m_clk
+                m_digit_clk}
+
+                TEST_CONTROL_INST/g141       TEST_CONTROL_INST/g137        RE-
+                SULTS_CONV_INST/CPF_LS_159_m_clk     DMA_INST/CPF_LS_158_m_clk
+                SPI_INST/RC_CG_HIER_INST17/RC_CGIC_INST                    RE-
+                SULTS_CONV_INST/RC_CG_HIER_INST7/RC_CGIC_INST              RE-
+                SULTS_CONV_INST/RC_CG_HIER_INST6/RC_CGIC_INST              RE-
+                SULTS_CONV_INST/RC_CG_HIER_INST3/RC_CGIC_INST              RE-
+                SULTS_CONV_INST/RC_CG_HIER_INST2/RC_CGIC_INST              RE-
+                SULTS_CONV_INST/RC_CG_HIER_INST1/RC_CGIC_INST
+                DMA_INST/RC_CG_HIER_INST0/RC_CGIC_INST
+
+              * The  following command returns the list of all clock trees ex-
+                cept for  cells  in  either  of  the  clock  trees,  M_CLK  or
+                M_DIGIT_CLK:
+
+                get_ccopt_clock_tree_cells    *   -not_in_clock_trees   {m_clk
+                m_digit_clk}
+
+                TEST_CONTROL_INST/g138 SPI_INST/RC_CG_HIER_INST16/RC_CGIC_INST
+                TEST_CO...
+
+              * The following command gets all inverters in any clock tree:
+
+                get_ccopt_clock_tree_cells *  -node_types inverter
+
+                RESULTS_CONV_INST/g18694  RESULTS_CONV_INST/upper770/g54   RE-
+                SULTS_CONV_INST/upper1336/g54   RESULTS_CONV_INST/lower770/g54
+                RESU...
+
+              * The following command gets all inverters  in  M_RCC_CLK  clock
+                tree:
+
+                get_ccopt_clock_tree_cells     *      -node_types     inverter
+                -in_clock_trees m_rcc_clk
+
+                RESULTS_CONV_INST/g18694
+
+Related Information
+              * create_ccopt_clock_tree
+
+              * delete_ccopt_clock_trees
+
+              * set_ccopt_property
+
+              * The following topic in the Innovus User Guide
+
+                * Generating Reports in Clock Tree Synthesis
+
+                           Fri Apr 04 01:25:37ge2t0_2c5copt_clock_tree_cells(25.10)

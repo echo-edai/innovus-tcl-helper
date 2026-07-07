@@ -1,0 +1,363 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+alignPtnClone(25.10)                                      alignPtnClone(25.10)
+
+Name
+       alignPtnClone  - Aligns partition clones with the master partition on a
+       power mesh and with routing tracks
+
+Syntax
+       alignPtnClone
+
+       [-help]
+
+       [<ptnName>]
+
+       [-outFile <filename>]
+
+       [-checkOnly | -snapAllCorners ]
+
+       [[-stripeOffset ] | [[-pgHGrid ] [-pgVGrid ] [-pgLayer {<layeridList>}]
+
+       [-updateUserGrid ] [-snapAllCorners ] [-skipFinFETGrid ]  [-includeStd-
+       CellPinLayers {<layeridList>}]]  |
+
+       [[-symmetryPatternReference  <string>[-symmetryPatternTarget  <string>[
+       [-targetOrientation {R0 R90 R180 R270 MX MX90 MY MY90}]
+
+       [-targetOrigin {<x y>}] ]]]] |
+
+       [-symmetricOrientation ]]
+
+       [-pgLayer {<layeridList>}
+
+       [-pgNet <pgNetName> | -pgCenterLine <float>]]
+
+       [-pgPitch <float>[-pgCenterLine <float>]]
+
+       Aligns partition clones with the master partition on a power  mesh  and
+       with routing tracks. You can use this command after specifying a master
+       partition  and  clone  partition(s).  This will avoid off-track pins in
+       clones and avoid potential DRC violations due to misalignment of  power
+       meshes inside clone.
+
+       Note:  The alignPtnClone command can derive user-defined grids from the
+       top level cell without requiring any  partition  information.  It  also
+       generates  a  detailed report with pitch, offset, and derived grids for
+       allowed pin layers in the console window, in addition to the output re-
+       port file.
+
+       Note: The power mesh must be regular for  alignPtnClone  to  work  cor-
+       rectly.
+
+       Note: The alignPtnClone command detects and highlights any gap or over-
+       lap of fence created in an abutted floorplan.
+
+Parameters
+       -checkOnly
+              Specifies  that the design should not be modified. When enabled,
+              it only reports messages.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each alignPtnClone parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man alignPtnClone
+
+       -includeStdCellPinLayers {<layeridList>}
+              Specifies  the  layer(s)  of  standard  cell pins that should be
+              aligned in addition to the user-specified pin layers.
+
+              Data_type: string, optional
+
+       -outFile <filename>
+              Specifies the name of the output file in which to save the  mas-
+              ter and clone alignment report with details.
+
+              Note:  The  alignPtnClone  command supports tracks with multiple
+              definitions.  The  -outFile  parameter  reports  the  details of
+              multi-track definitions.
+
+              Data_type: string, optional
+
+       -pgCenterLine <float>
+              Specifies the center-line of  the  first  virtual  symmetric  pg
+              stripe (in microns). This option can be repeated.
+
+              Data_type: float, optional
+
+       -pgHGrid
+              Provide information about horizontal PG grid.
+
+              Data_type: bool, optional
+
+       -pgLayer {<layeridList>}
+              Specifies  layer(s)  for  the  pg stripe. This option can be re-
+              peated.
+
+              Data_type: string, optional
+
+       -pgNet <pgNetName  >
+              Specifies name of the pg stripe net name. This option can be re-
+              peated.
+
+              Data_type: string, optional
+
+       -pgPitch <float>
+              Specifies pitch of the pg stripe net (in microns).  This  option
+              can be repeated.
+
+              Data_type: float, optional
+
+       -pgVGrid
+              Provide information about vertical PG grid.
+
+              Data_type: bool, optional
+
+       <ptnName>
+              Specifies name of the partition.
+
+              Note: If the partition name is not specified, the command is run
+              on all partitions.
+
+              Data_type: string, optional
+
+       -skipFinFETGrid
+              Disables alignment with the FinFet grid.
+
+              Data_type: bool, optional
+
+       -snapAllCorners
+              Snaps  all corners of master and its clone partition to the user
+              grid.
+
+              Note: The -snapAllCorners  parameter fixes partition overlaps.
+
+              Data_type: bool, optional
+
+       -stripeOffset
+              When specified ensure backward compatibility and and enables the
+              use of obsolete  -snap,  -track,  -useUserGrid,  -skip_row,  and
+              -layer  parameters
+
+              Note:  The  alignPtnClone  command  supports advanced node fully
+              abutted designs. It moves the clone partition for aligning  with
+              the  master with all allowed routing tracks by default. It snaps
+              clones such that the pins are never off grid. Consequently,  the
+              -snap,  -track,  -useUserGrid,  -skip_row, and -layer parameters
+              are obsolete. Even though the use of snap, -track, -useUserGrid,
+              -skip_row, and -layer parameters is supported  in  this  release
+              using  the  -stripeOffset  parameter for backward compatibility,
+              the -stripeOffset parameter itself is obsolete and will  be  re-
+              moved  in a future release. To avoid warnings and to ensure com-
+              patibility with future releases, remove the obsolete  parameters
+              from your script.
+
+              Data_type: bool, optional
+
+       -symmetricOrientation
+              Checks the orientation between each pair of partitions and fixes
+              the  symmetry  by  finding  the optimum symmetric orientation of
+              clones.
+
+              Note: If Innovus suggests changing the orientation of  a  parti-
+              tion,  it indicates it as (diff) in the report for quick identi-
+              fication.
+
+              Note: The -symmetricOrientation parameter can find  orientations
+              based  upon nested hierarchy. If the alignPtnClone command finds
+              no clone connectivity, it can reports the expected  orientations
+              and supports nested designs.
+
+              Data_type: bool, optional
+
+       -symmetryPatternReference <string>
+              Specifies  the names of the partitions that are used as a refer-
+              ence set to maintain a symmetrical pattern for the other set  of
+              clone partitions in the group.
+
+              Note:  The first partition in the list is considered as the seed
+              partition from which all the relative locations and orientations
+              are calculated for the rest of the partitions in the list.
+
+              Data_type: string, optional
+
+       -symmetryPatternTarget <string>
+              Specifies the names of the partitions that are used as a  target
+              set  to maintain a symmetrical pattern relative to the reference
+              set of partitions in the group.
+
+              Note:
+
+              * The number of partitions and their order must be the  same  as
+                that specified with the -symmetryPatternReference parameter.
+
+              * The  current location and orientation of the seed partition is
+                used to relatively move the other partitions in the list.  The
+                first  partition  in the list is considered as the seed parti-
+                tion from which all the relative  locations  and  orientations
+                are calculated for the rest of the partitions in the list.
+
+              * You can specify master partitions in the target partitions set
+                list. However, master partitions can only have R0 orientation.
+
+              Data_type: string, optional
+
+       -targetOrientation {R0 R90 R180 R270 MX MX90 MY MY90}
+              Specifies  the new orientation of the seed partition of the tar-
+              get partition set (-symmetryPatternTarget). The specified orien-
+              tation overrides the current orientation of the  seed  partition
+              and enables you to maintain the relative orientation of the dif-
+              ferent pairs of clones.
+
+              Note:
+
+              * The  seed  partition is the first partition specified with the
+                -symmetryPatternTarget parameter from which all  the  relative
+                locations  and orientations are calculated for the rest of the
+                partitions in the list.
+
+              * The orientation of the master partitions cannot be changed.
+
+              Data_type: enum, optional
+
+       -targetOrigin {x y}
+              Specifies the new origin of the seed  partition  of  the  target
+              partition  set  (-symmetryPatternTarget). The specified location
+              overrides the current location of the target seed partition.
+
+              Note:
+
+              * It does not let the target seed partition go outside the  core
+                boundary.
+
+              * The  seed  partition is the first partition specified with the
+                -symmetryPatternTarget parameter from which all  the  relative
+                locations  and orientations are calculated for the rest of the
+                partitions in the list.
+
+              Data_type: point, optional
+
+       -updateUserGrid
+              Updates the user grid with the new values.
+
+              Data_type: bool, optional
+
+Example
+              *
+
+                The following command aligns the  partition  clones  with  the
+                master partition and displays a report:
+
+                alignPtnClone
+
+                ====================================================================================
+
+                                 alignPtnClone Summary
+
+                ====================================================================================
+
+                Partition                     |  Orientation  |    Status    |
+                Moved-by(X) | Moved-by(Y)
+
+                ====================================================================================
+
+                MASTER_CLONE(I_MC_1)         |              |      Aligned   |
+                |             |
+
+                +I_MC_0                       |      MY       |     Aligned  |
+                |             |
+
+                MC(I_A/A_MC)                 |              |      Aligned   |
+                |             |
+
+                +I_B/B_MC                     |      R0       |     Aligned  |
+                -0.2000 |      0.0000 |
+
+                K(k4)                        |              |      Aligned   |
+                |             |
+
+                +k3                           |      MY       |     Aligned  |
+                0.2000 |     -0.4450 |
+
+                +k2                          |      R0       |     Aligned   |
+                0.0000 |      0.0600 |
+
+                +k1                           |      R90      |  Infeasible  |
+                |             |
+
+                b(b1)                        |              |      Aligned   |
+                |             |
+
+                +b3                           |      R0       |     Aligned  |
+                0.0000 |      0.1800 |
+
+                +b2                          |      R0       |     Aligned   |
+                0.0000 |     -0.3250 |
+
+                c(c1)                         |               |     Overlap  |
+                |             |
+
+                S(s1)                        |              |      Overlap   |
+                |             |
+
+                ====================================================================================
+
+              *
+
+                The  following  command snaps clones of module eug to Master's
+                power grid:
+
+                alignPtnClone eug
+
+              *
+
+                The following command aligns with all allowed tracks and auto-
+                matic detection of pg layers, nets, and pitch of pg grid
+
+                alignPtnClone eug -pgHGrid -pgVGrid
+
+              *
+
+                The following command aligns with all tracks and automatic de-
+                tection of pg nets and pitch of pg grid
+
+                alignPtnClone eug  -pgHGrid  -pgLayer  {  2  4  6  }  -pgVGrid
+                -pgLayer { 3 5 7}
+
+              *
+
+                The following command aligns with all tracks and automatic de-
+                tection of pg pitch of pg grid
+
+                alignPtnClone  eug  -pgHGrid  -pgLayer  {  2  4 6 } -pgNet VSS
+                -pgLayer {4 6} -pgNet VDD -pgVGrid -pgLayer { 3 5 } -pgNet VSS
+                -pgLayer {5 7} -pgNet VDD
+
+              *
+
+                The following command aligns with all allowed tracks and spec-
+                ified pg grid
+
+                alignPtnClone eug -pgHGrid -pgLayer { 2 4 6 } -pgNet VSS  -pg-
+                Pitch  1.48 -pgNet VDD -pgPitch 1.28 -pgVGrid -pgLayer { 3 5 7
+                } -pgNet VSS -pgPitch 1.48 -pgNet VDD -pgPitch 1.28
+
+              * The following command updates the user grid and simulates sym-
+                metric PG stripe pattern:
+
+                alignPtnClone -updateUserGrid -pgVGrid  -pgLayer  M4  -pgPitch
+                5.76  -pgCenterLine  0.0  -pgHGrid  -pgLayer M5 -pgPitch 46.08
+                -pgCenterLine 1926.72 -checkOnly
+
+Related Information
+              * checkPinAssignment
+
+              * partition
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025       alignPtnClone(25.10)

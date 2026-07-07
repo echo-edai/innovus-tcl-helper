@@ -1,0 +1,147 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+eval_common_ui(25.10)                                    eval_common_ui(25.10)
+
+Name
+       eval_common_ui  -  Runs a Stylus Common UI command in the legacy inter-
+       preter
+
+Syntax
+       eval_common_ui
+
+       [-help]
+
+       <script>
+
+       Runs a Stylus Common UI command in the legacy interpreter. This command
+       is not required in the normal usage. However, it  may  be  needed  when
+       there  is  a transition period, that some scripts are already converted
+       into Common UI style, but you still need to run  the  flow  in  legacy.
+       This command is intended as a temporary workaround as you transition to
+       the Stylus Common UI and will be removed in a future release.
+
+       Most  Stylus  Common  UI  commands are available, but the commands that
+       have behavior difference from legacy will not work properly (for  exam-
+       ple,   write_db,   read_db,   read_netlist,  read_physical,  read_mmmc,
+       init_design, and report_timing).
+
+       These commands will not work and give error messages:
+
+       Initialization commands (legacy uses globals and  its  own  version  of
+       init_design)
+
+              * read_mmmc
+
+              * read_netlist
+
+              * read_physical
+
+              * init_design
+
+       Some timing commands that have different formatting and controls:
+
+              * report_timing
+
+              * report_critical_insts
+
+       Commands that only work with Stylus logging:
+
+              * set_log_post_cmd
+
+       The  CUI  only  supports MMMC2 and does not support MMMC1 usage. So the
+       following commands have limitations:
+
+       Command
+              Limitation
+
+       read_db
+              Can only read an MMMC2 DB, saved by either the legacy saveDesign
+              or
+
+              CUI write_db command. An MMMC1 DB will cause an error.
+
+       write_db
+              Can only save an MMMC2 DB (if the current DB is MMMC1  an  error
+              occurs)
+
+       write_mmmc
+              Not supported
+
+       See the legacy global init_mmmc_version for more info about how to load
+       an  MMMC2  file  into  legacy  during  initialization. You can also use
+       saveDesign -mmmc2 to convert a legacy MMMC1 DB in  memory  to  a  saved
+       MMMC2 DB.
+
+       The Stylus Common UI commands run in a separate Tcl interpreter. There-
+       fore,  Tcl variables in the current interpreter are not available. That
+       means the script should normally be inside " " rather than { } so  that
+       the  Tcl variable substitution occurs in the current interpreter before
+       passing the script to the Stylus Common UI Tcl interpreter.
+
+       If a TCL_ERROR is returned by any command inside a script,  the  script
+       stops executing, and eval_common_ui returns a TCL_ERROR.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each eval_common_ui parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man eval_common_ui.
+
+       <script>
+              Specifies  one  or  more Stylus Common UI Tcl commands to run in
+              the Stylus Common UI Tcl interpreter.
+
+              Data_type: string, required
+
+Examples
+              * The following command runs the finish_floorplan command in the
+                CUI Tcl interpreter.
+
+                eval_common_ui "finish_floorplan"
+
+              * If you want a Tcl var from the legacy Tcl  interpreter  avail-
+                able  inside the CUI interpreter script, you should protect it
+                with "" to force Tcl var substitution  in  the  legacy  inter-
+                preter like this:
+
+                set inst i1
+
+                eval_common_ui "get_db insts -if {.name == $inst}"
+
+                The  $inst  will be substituted to result in `get_db insts -if
+                {.name == i1}' before eval_common_ui sees it and passes it  to
+                the CUI interpreter.
+
+              * If  you  want  to use CUI Tcl vars inside the CUI interpreter,
+                you should protect them with { } like this to avoid  substitu-
+                tion in the legacy interpreter:
+
+                eval_common_ui  {set  i  [get_db insts -if {.base_cell.name ==
+                AND2X}] get_db $i .name}
+
+                The Tcl var $i is only used inside the  CUI  interpreter,  and
+                not added to the legacy interpreter.
+
+              * If you have a few global Tcl vars in the legacy interp to pass
+                into  a  common  CUI  script,  you  could add them in separate
+                eval_common_ui calls like this:
+
+                set glob1 test
+
+                set glob2 test2
+
+                eval_common_ui "set glob1 $glob1"     This  command  sets  CUI
+                glob1 to legacy $glob1
+
+                eval_common_ui  "set  glob2  $glob12"   This  command sets CUI
+                glob2 to legacy $glob2
+
+                eval_common_ui "source my.tcl"         CUI my.tcl can use both
+                globals
+
+Related Information
+              * init_mmmc_version
+
+              * saveDesign
+
+                           Fri Apr 04 01:25:37 2025      eval_common_ui(25.10)

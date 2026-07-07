@@ -1,0 +1,556 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_clocks(25.10)                                      report_clocks(25.10)
+
+Name
+       report_clocks  -  Reports  information  on clocks created with the cre-
+       ate_clock and create_generated_clock command
+
+Syntax
+       report_clocks
+
+       [-description]
+
+       [-arrival_points]
+
+       [-phase_shift_table]
+
+       [-total_shift_table]
+
+       [-uncertainty_table]
+
+       [-adjustment_table]
+
+       [-delay_adjustment_table]
+
+       [-source_insertion]
+
+       [-insertion]
+
+       [-hierarchy]
+
+       [-groups]
+
+       [-clocks <clk_signame> | <clk_signame_list>]
+
+       [-view <view_name>]
+
+       [{> | >>} <filename> | -tcl_list]
+
+       Reports information on clocks created with the  create_clock  and  cre-
+       ate_generated_clock  command. The report includes information about all
+       clock waveforms, clock arrival points, and clock uncertainties.
+
+       Use the  -description,  -arrival_points,  -uncertainty_table,  and  the
+       *_table  parameters to specify different parts of the report. If one of
+       these options is supplied, only the section that the option corresponds
+       to is reported. If other options are supplied, those sections are  also
+       reported.
+
+       Based on the current setup or hold analysis mode, the following parame-
+       ters report only one of the late or early tables:
+
+              * -phase_shift_table
+
+              * -total_shift_table
+
+              * -uncertainty_table
+
+              * -adjustment_table
+
+              * -delay_adjustment_table
+
+       However,  in simultaneous (setup and hold) mode both the tables are re-
+       ported.
+
+       The report_clocks command only  reports  constraints  with  respect  to
+       clock waveforms. Use the report_ports -type command for constraints ap-
+       plied to clock pins.
+
+Parameters
+       {> | >>} <filename>
+              When  specified  with >, writes the report to the specified file
+              name. If the file already exists, the software overwrites it.
+
+              When specified with >>, writes the report to the specified  file
+              name.  If the file already exists, the software concatenates the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the  list.
+              The  <filename> and -tcl_list parameters are mutually exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default: Report is displayed on standard  output  without  being
+              saved.
+
+       -adjustment_table
+              Reports  two tables that detail the hold and setup cycle adjust-
+              ments between clock waveforms as set by the  set_multicycle_path
+              command.
+
+              Note: If specific ideal (or generated) clocks are requested with
+              the  -clocks  <clock_name_list>  option, then only the relation-
+              ships between those clock signals are reported.
+
+       -arrival_points
+              Reports only the clock arrival points. A clock arrival point  is
+              the pin where the create_clock or create_generated_clock command
+              has been asserted.
+
+              Note: This parameter is obsolete and will be removed in a future
+              release.
+
+       -clocks <clk_signame> | <clk_signame_list>
+              Requests  information  on a specific ideal (or generated) clock.
+              If a list is given, only information about those clocks  is  re-
+              ported. You can use wildcards in the names.
+
+              Default:  All clocks, except generated clocks, are reported. Use
+              the -generated option to report generated clocks.This  parameter
+              is  obsolete  and  will  be removed in a future release. Cadence
+              recommends that you specify clock names without the -clockspara-
+              meter.
+
+       -delay_adjustment_table
+              Reports two tables that detail the early and late path delay ad-
+              justments between clock waveforms as set  by  the  set_max_delay
+              and set_min_delay commands.
+
+              Note: If specific ideal (or generated) clocks are requested with
+              the  -clocks  <clock_name_list>  option, then only the relation-
+              ships between those clock signals are reported.
+
+       -description
+              Reports only the description of the specified clock waveform(s).
+
+       -generated
+              Includes information on generated clocks in the report, such  as
+              source and master clock of the generated clock, and other infor-
+              mation  specified in the create_generated_clock constraints. The
+              report uses the internal clock names created by the  system,  if
+              you did not specify new clock names while creating these clocks.
+
+              This  parameter  is obsolete and will be removed in a future re-
+              lease. The software now reports generated clocks by default.
+
+       -groups
+              Reports the existing clock groups.
+
+       -hierarchy
+              Reports the inter-clock relationship in tree style format.
+
+       -insertion
+              Reports the network insertion delays specified  on  clock  wave-
+              forms. The values in the table are in min:typ:max format.
+
+       -phase_shift_table
+              Reports  the  table  that  details the phase shift between clock
+              waveforms. Based upon the current analysis mode, the table shows
+              the phase shifts either in late or early mode. In case of simul-
+              taneous setup hold mode, both the tables are reported for  phase
+              shift in late and early mode.
+
+              Note: If specific ideal (or generated) clocks are requested with
+              the  -clocks  <clock_name_list>  option, then only the relation-
+              ships between those clock signals are reported.
+
+       -source_insertion
+              Reports the source insertion delays  specified  on  clock  wave-
+              forms.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -total_shift_table
+              Based on the current analysis mode, reports one  of  the  tables
+              (late or early mode) that details the total relationship between
+              clock  waveforms.  In  case of simultaneous setup hold mode both
+              the tables are reported.
+
+              Note: If specific ideal (or generated) clocks are requested with
+              the -clocks <clock_name_list> option, then  only  the  relation-
+              ships between those clock signals are reported.
+
+       -uncertainty_table
+              Based  on  the  current analysis mode, reports one of the tables
+              (late mode or early mode) that detail  the  uncertainty  between
+              clock  waveforms  as  specified  using the set_clock_uncertainty
+              command. In case of simultaneous setup hold mode both the tables
+              are reported. The tables report only those clock  waveforms  for
+              which  uncertainty  has  been defined using the set_clock_uncer-
+              tainty command.
+
+              Note: If specific ideal (or generated) clocks are requested with
+              the -clocks <clock_name_list> option, then  only  the  relation-
+              ships between those clock signals are reported.
+
+       -view <view_name>
+              Generates  a  clock report for the specified analysis view only.
+              You can specify this parameter only  when  the  software  is  in
+              multi-mode multi-corner timing analysis mode.
+
+Examples
+       Here are some examples.
+
+              * report_clocks
+
+                ---------------------------------------------------------
+
+                Clock Descriptions
+
+                ---------------------------------------------------------
+
+                Attributes
+
+                -------------------------------------------------------------
+
+                Clock Name  Source  Period  Lead   Trail  Generated Propagated
+
+                --------------------------------------------------------------
+
+                CLK1        CLK1    20.000  0.000  10.000  n        y
+
+                CLK2        CLK1    10.000  0.000   5.000  n        y
+
+                -------------------------------------------------------------
+
+                Generated-Clock Descriptions
+
+                ----------------------------------------------------------------------------------------------
+
+                Name         Generated   Master      Master-clock Invert Freq.
+                Duty-Cycle Edges Edge-Shift
+
+                            Source(pin) Source(pin)                     Multi-
+                plier
+
+                ----------------------------------------------------------------------------------------------
+
+                GCLK        u8/Q        CK1          CLK1          n       1/2
+                -         -      -
+
+                ---------------------------------------------------------------------------------------------
+
+              * The  following  command displays only the uncertainty informa-
+                tion:
+
+                set_clock_uncertainty 5 CLK_W_1
+
+                set_clock_uncertainty 4 -from CLK_W_1 -to CLK_W_4_gen1
+
+                set_clock_uncertainty 6 -from CLK_W_2 -to CLK_W_4_gen2
+
+                report_clocks -uncertainty_table
+
+                --------------------------------------------------------
+
+                Clock To Clock Uncertainty (Late)
+
+                --------------------------------------------------------
+
+                From    To           L->L    L->T    T->L     T->T
+
+                --------------------------------------------------------
+
+                *       CLK_W_1      5.000  5.000   5.000     5.000
+
+                CLK_W_1 CLK_W_4_gen1 4.000  4.000   4.000     4.000
+
+                CLK_W_2 CLK_W_4_gen2 6.000  6.000   6.000     6.000
+
+                --------------------------------------------------------
+
+                Clock To Clock Uncertainty (Early)
+
+                ------------------------------------------------------------
+
+                From     To            L->L   L->T   T->L   T->T
+
+                ------------------------------------------------------------
+
+                *        CLK_W_1      -5.000 -5.000 -5.000 -5.000
+
+                CLK_W_1  CLK_W_4_gen1 -4.000 -4.000 -4.000 -4.000
+
+                CLK_W_2  CLK_W_4_gen2 -6.000 -6.000 -6.000 -6.000
+
+                ------------------------------------------------------------
+
+              * Consider the following clock definition:
+
+                create_clock -name "CLK_W_1" -add -period 60 -waveform {0 30}
+
+                report_clocks CLK_W_1 -phase_shift_table
+
+                ------------------------------------------------------
+
+                Clock To Clock Phase Shift (Late)
+
+                ------------------------------------------------------
+
+                From    To      L->L    L->T  T->L   T->T
+
+                ------------------------------------------------------
+
+                CLK_W_1 CLK_W_1 60.000  0.000 60.000 60.000
+
+                ------------------------------------------------------
+
+                -----------------------------------------------------
+
+                Clock To Clock Phase Shift (Early)
+
+                -----------------------------------------------------
+
+                From    To      L->L   L->T   T->L  T->T
+
+                -----------------------------------------------------
+
+                CLK_W_1 CLK_W_1 0.000 -60.000 0.000 0.000
+
+                -----------------------------------------------------
+
+              *
+
+                You can use the following command to add uncertainty:
+
+                set_clock_uncertainty 2 CLK_W_1
+
+                The phase shift and total shift table values will  be  differ-
+                ent.  The  following command displays the changed shift values
+                as given below:
+
+                report_clocks -total_shift_table CLK_W_1
+
+                -------------------------------------------------------
+
+                Total Clock To Clock Phase Shift Required (Late)
+
+                -------------------------------------------------------
+
+                From    To      L->L    L->T  T->L   T->T
+
+                -------------------------------------------------------
+
+                CLK_W_1 CLK_W_1 58.000 -2.000 58.000 58.000
+
+                -------------------------------------------------------
+
+                -----------------------------------------------------
+
+                Total Clock To Clock Phase Shift Required (Early)
+
+                -----------------------------------------------------
+
+                From    To      L->L   L->T   T->L  T->T
+
+                -----------------------------------------------------
+
+                CLK_W_1 CLK_W_1 2.000 -58.000 2.000 2.000
+
+                -----------------------------------------------------
+
+                You can see that the uncertainty is subtracted from the  phase
+                shift.
+
+                Consider the following example path:
+
+                Path 1: MET Setup Check with Pin u2/CK
+
+                Endpoint: u2/D (v) checked with leading edge of 'CLK_W_1'
+
+                Beginpoint: CLK2 (v) triggered by trailing edge of 'CLK_W_2'
+
+                Path Groups: {CLK_W_1}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.188
+
+                + Phase Shift 15.000
+
+                - Uncertainty 2.000
+
+                = Required Time 12.812
+
+                - Arrival Time 12.463
+
+                = Slack Time 0.349
+
+                Clock Fall Edge 12.500
+
+                = Beginpoint Arrival Time 12.500
+
+                -------------------------------------
+
+                Load  Slew    Delay   Arrival   Cell  Arc          Pin
+
+                                      Time
+
+                --------------------------------------------------------
+
+                0.034  0.003  12.500                  CLK2 v       CLK2
+
+                0.003  0.003  -0.037  12.463   BUF    A v -> Y v   u10999/Y
+
+                0.003  0.003  0.000   12.463   DFF    D v          u2/D
+
+                --------------------------------------------------------
+
+                Here  the  begin  point  CLK_W_2  to end point CLK_W_1 shows a
+                phase shift value of 15.00. This means that if a  path  starts
+                from the falling edge of CLK_W_2 , and ends at the rising edge
+                of CLK_W_1, the phase shift is 15.00. In other words, when the
+                timing  (setup time) is reported, the required time at the end
+                point begins with 15.00 (in addition to adjustments like setup
+                time, time borrowing, uncertainty, etc). However, the  arrival
+                time of this path starts at 12.500.
+
+              *
+
+                When  the software is in multi-mode multi-corner timing analy-
+                sis mode, the software reports the clock information for  each
+                active analysis view:
+
+                report_clocks -total_shift_table -description
+
+                -------------------------------------------------------------
+
+                Clock Descriptions
+
+                -------------------------------------------------------------
+
+                Attributes
+
+                -----------------------------------------------------------------------
+
+                Clock  Name  Source  View       Period  Lead   Trail Generated
+                Propagated
+
+                -----------------------------------------------------------------------
+
+                EJ_TCK      EJ_TCK   hold_view2  17.400    0.000    8.700    n
+                n
+
+                EJ_TCK       EJ_TCK    hold_view1   17.400   0.000   8.700   n
+                n
+
+                EJ_TCK      EJ_TCK    setup_view117.400    0.000    8.700    n
+                n
+
+                -----------------------------------------------------------------------
+
+                -------------------------------------------------------------
+
+                Total Clock To Clock Phase Shift Required (Late)
+
+                -------------------------------------------------------------
+
+                From      To        View        L->L   L->T   T->L    T->T
+
+                -------------------------------------------------------------
+
+                EJ_TCK    EJ_TCK    hold_view2  17.400  0.000 17.400  17.400
+
+                EJ_TCK    EJ_TCK    hold_view1  17.400  0.000 17.400  17.400
+
+                EJ_TCK    EJ_TCK    setup_view2 17.400  0.000 17.400  17.400
+
+                -----------------------------------------------------------------------
+
+              *
+
+                Specify  the -view parameter to generate clock information for
+                a specific analysis view only:
+
+                report_clocks    -total_shift_table     -description     -view
+                setup_view1 > clk_sv1
+
+                -----------------------------------------------------------
+
+                Clock Descriptions
+
+                -----------------------------------------------------------
+
+                Attributes
+
+                -----------------------------------------------------------
+
+                Clock Name      Source  View         Period  Lead  Trail  Gen-
+                erated Propagated
+
+                ------------------------------------------------------------------------------
+
+                EJ_TCK           EJ_TCK   setup_view1   17.400  0.000 8.700  n
+                n
+
+                virt_in_EJ_TCK  -       setup_view1  17.400   0.000  8.700   n
+                n
+
+                ------------------------------------------------------------------------------
+
+                ------------------------------------------------------------------
+
+                Total Clock To Clock Phase Shift Required (Late)
+
+                ------------------------------------------------------------------
+
+                From              To       View         L->L      L->T    T->L
+                T->T
+
+                ------------------------------------------------------------------
+
+                EJ_TCK           EJ_TCK  setup_view1  17.400    0.000   17.400
+                17.400
+
+                virt_in_EJ_TCK    EJ_TCK  setup_view1  17.400    0.000  17.400
+                17.400
+
+                -------------------------------------------------------------------
+
+              *
+
+                The report_clocks command output displays a column showing ac-
+                tive or inactive clocks in the design:
+
+                ------------------------------------------------------------
+
+                Clock Descriptions
+
+                ------------------------------------------------------------
+
+                Attributes
+
+                ------------------------------------------------------------
+
+                Clock Name    Source    Period     Lead     Trail    Generated
+                Propagated   Active
+
+                -------------------------------------------------------------------------------
+
+                CLK_W_1       CLK1     20.000    0.000   10.000   n          y
+                y
+
+                CLK_W_2      CLK2     25.000    0.000   12.500   n           y
+                y
+
+                CLK_W_4_gen2  u8/Q     20.000    0.000   10.000   y          y
+                y
+
+                -------------------------------------------------------------------------------
+
+Related Information
+              * create_clock
+
+              * create_generated_clock
+
+              * set_clock_uncertainty
+
+                           Fri Apr 04 01:25:37 2025       report_clocks(25.10)

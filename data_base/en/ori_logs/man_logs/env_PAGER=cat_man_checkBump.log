@@ -1,0 +1,865 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+checkBump(25.10)                                              checkBump(25.10)
+
+Name
+       checkBump  -  Checks  the legality of the bump assignment and creates a
+       report, which is either displayed in the console window or written to a
+       file
+
+Syntax
+        checkBump
+
+       [-help]
+
+       [-bumpToPinOverlap <inst>+]
+
+       [-outfile <fileName>]
+
+       [-resetViolationMarker]
+
+       [-select_violation_bumps]
+
+       [-selected | -area {<x1 y1 x2 y2>}]
+
+       [-relative_type   {embedded_bump   inst_pin_port}    [[-relative_object
+       {<inst_pin_port_list>}]  [-relative_assignment  ]  [-relative_offset <x
+       y>]]]
+
+       [  [[-relative_type  {embedded_bump  inst_pin_port}]   [-bumpToPinPitch
+       {<pitch_value> {[<bump_name>] [<inst_pin_name> [<pin_x pin_y>]]}}]]
+
+         | -nets <net+> ]
+
+       [-bumpToEdgePitch <pitch_value> [-edgeOffset {offset [cornerOffset]}]]
+
+       [ [[-bumpPitch {<pitch_value> [<bump_name>]}]
+
+          [-bumpToPinPitch   {<pitch_value>   {[<bump_name>]  [<inst_pin_name>
+       [<pin_x pin_y>]]}}]]
+
+         | -bumpMaxPitch <max_pitch_value> | -bumpToEdgePitch <pitch_value>]
+
+       [-onBumpGrid [-onBumpGridTolerance <bump_grid_name value>]]
+
+       Checks the legality of the bump assignment and creates a report,  which
+       is  either  displayed  in  the console window or written to a file. Use
+       this command for bump overlap and pitch checking. The checkBump command
+       can be used after bumps are assigned with the assignBump command or de-
+       fined in the I/O file with the signal name but without the -fixed  con-
+       straint.
+
+Bump-to-Bump Overlap Checking
+       checkBump  checks  bump  overlaps, including overlap of dummy bumps, by
+       default. If a bump overlaps with  others,  checkBump  places  violation
+       markers  on  the  center  of the overlapped bumps and reports the total
+       number of overlapped bumps.
+
+       The violation markers for bump overlap  can  be  browsed  in  Violation
+       Browser.
+
+       checkBump:
+
+              * Checks  overlaps  between  regular  bumps  by checking for pin
+                overlaps on bumps.
+
+              * Checks overlaps between dummy bumps by checking for OBS  over-
+                lap.
+
+              * Checks  overlaps  between  dummy  bumps  and  regular bumps by
+                checking for OBS and bump pin overlap.
+
+Bump-to-Pin Overlap Checking
+       If -bumpToPinOverlap is used, checkBump  checks  for  overlaps  between
+       bump shapes, including dummy bumps, and pins of the specified block. If
+       the  bump shape and the block pins are at the same location but on dif-
+       ferent layers, the tool does not consider them to be overlapping.  How-
+       ever,  if  the  bump shapes and the block pins are at the same location
+       and on the same layer, they are reported as overlapping, as  shown  be-
+       low:
+
+Bump Pitch Checking
+       checkBump  provides  a bump pitch checking feature to record bumps that
+       violate the bump pitch. The bump pitch checking  feature  has  multiple
+       options:
+
+              * -bumpPitch  for  checking  the  center-to-center pitch between
+                bumps. The bumps that have a smaller center-to-center distance
+                than the specified <pitch_value> are marked as spacing  viola-
+                tions.
+
+              * -bumpMaxPitch  for checking whether the center-to-center pitch
+                between neighboring bumps violates the  maximum  spacing  con-
+                straint.
+
+              * -bumpToEdgePitch  for  checking the pitch from the bump center
+                to the guard or die edge.
+
+              * -bumpToPinPitch for checking the pitch between bump  and  pins
+                of  hard  macros. The bumps and instance pin pairs that have a
+                smaller  bump_center-to-pin_center  or   bump_center-to-speci-
+                fied_pin_geometry_location distance than the <pitch_value> are
+                marked as spacing violations.
+
+       In  all these cases, bumps that violate the pitch request are marked as
+       spacing violations and can be checked using the Violation Browser.
+
+Bump-to-Bump Pitch Checking
+       For bump to bump pitch checking, the  center-to-center  bump  pitch  is
+       needed. The center of a bump is calculated using the bump cell geometry
+       at the topmost RDL layer.
+
+       Note:  Only  bump  cell  with  single geometry at one RDL layer is sup-
+       ported. For multiple-layer bump cell, the topmost  layer  in  the  bump
+       cell is the topmost RDL layer. If no geometry is defined at that layer,
+       the  geometry  on the second topmost layer is used and a warning is is-
+       sued:
+
+       No geometry at XX layer found; the geometry at XXX layer  is  used  for
+       bump center calculation.
+
+       If  the check is between a multiple-layer bump and a single-layer bump,
+       the center is calculated using the geometries on the topmost  layer  in
+       each  cell.  For  example,  in  the following diagram, center-to-center
+       pitch between Bump1 and Bump2 is calculated using the geometries on the
+       top metal in Bump1 and the second top metal layer in Bump2.
+
+       If there is no common layer in two bumps, there is no  center-to-center
+       pitch  to be checked. For example, there is no violation to be reported
+       for Bump2 and Bump3 in the above diagram.
+
+Bump-to-Pin Pitch Checking
+       In some designs with IP macros, bumps have already been embedded inside
+       the macro and are considered as macro pins.  In  this  case,  checkBump
+       checks pitch between the bump center and the pin center. Bump center is
+       defined  in the same way as in the bump-to-bump case. Pin center calcu-
+       lation for pitch checking can vary as follows:
+
+              * Pin has multiple geometries on common layer
+
+                checkBump selects all geometries of the pin if  its  layer  is
+                equal  to  bump's layer. For example, if bump only has topmost
+                geometry, checkBump selects all the geometries on the  topmost
+                layer  for  pin. If the bump has both topmost and second layer
+                geometry, checkBump selects the geometries for both layers. If
+                no valid geometry of pin is found,  checkBump  skips  the  pin
+                pitch checking for that pin.
+
+                In the example below, the tool checks one by one the pitch for
+                each  geometry  of  PIN2 on Bump1's layer to see if there is a
+                violation. That is, checkBump calculates the distance from the
+                center of 1st geometry of PIN2 to the center of  Bump1.  Then,
+                it calculates distance from the center of 2nd geometry of PIN2
+                to center of Bump1. For each check, checkBump reports a viola-
+                tion if the distance is less than 100.
+
+                checkBump -bumpToPinPitch {100 {Bump1 M1/PIN2}}
+
+              * Pin has multiple geometries and a particular geometry location
+                is specified
+
+                In  case of multiple geometries, checkBump allows you to spec-
+                ify a location [<pin_x><pin_y>].  If  this  location  overlaps
+                with a geometry, the pitch to this geometry is checked. check-
+                Bump  calculates the distance from the center of this geometry
+                to the bump center.
+
+       Note:  checkBump does not support  pin-to-pin  pitch  checking  because
+       such  violations  can  only  be  fixed at LEF level which is beyond the
+       flipchip tool capability. So in the following command:
+
+       checkBump -bumpToPinPitch {100 {Bump1 M1/PIN1 M1/PIN2}}
+
+       checkBump checks Bump1 and M1/PIN1; and  Bump1  and  M1/PIN2;  but  not
+       M1/PIN1 and M1/PIN2.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each checkBump parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man checkBump
+
+       -area {<x1 y1 x2 y2>}
+              Checks  constraints for the bumps in the specific area. The unit
+              is microns.  The bumps selected by -area should be the  same  as
+              the ones selected by the command windowSelect.
+
+              If  -area  is  used  with  -bumpPitch, checkBump checks the bump
+              pitch only for the bumps in the specific area. If -area is spec-
+              ified without -bumpPitch, checkBump performs the default  checks
+              for the bumps in the specific area.
+
+              Note:   This  parameter cannot be used with with -bumpToPinPitch
+              or -selected.
+
+       -bumpMaxPitch <max_pitch_value>
+              Checks whether the center-to-center  pitch  between  neighboring
+              bumps  exceeds  the <max_pitch_value>, which is specified in mi-
+              crons. For any bump, the search area is defined by a circle with
+              a radius of <max_pitch_value> and the bump center as its center.
+
+              If another bump is detected within a  bump's  search  area,  the
+              bump  is  DRC  free.  If  no  other bump is detected in a bump's
+              search area, the bump is marked with a maximum spacing violation
+              and a warning message is displayed.
+
+              In the example below, only Bump 5 violates the  maximum  spacing
+              constraint and is flagged with a maximum spacing violation:
+
+              checkBump -bumpMaxPitch 200
+
+              The -bumpMaxPitch parameter works on:
+
+              * all bumps in the design by default.
+
+              * selected bumps if -selected is specified.
+
+              * bumps in a specific area if -area is specified.
+
+              * same-net bumps if -nets is specified.
+
+              Note: The -bumpMaxPitch parameter cannot be specified along with
+              the -bumpPitch or the -bumpToEdgePitch parameter.
+
+       -bumpPitch {<pitch_value> [<bump_name>]}
+              Checks the center-to-center pitch between bumps. Here:
+
+              * <pitch_value>represents  the  center-to-center  pitch value in
+                microns.
+
+              * <bump_name>is the name of the bump. You can  check  pitch  be-
+                tween two or more bumps. Wildcards can be used to specify bump
+                names.
+
+                If  more  than  two bumps are specified, bump pitch is checked
+                for all possible pairings. In the following example, checkBump
+                checks center-to-center pitch between B1 and B2; B1 and B3; B2
+                and B3:
+
+                checkBump -bumpPitch {100 {B1 B2 B3}}
+
+                Any illegal pitch is logged as "Bump pitch between B1  and  B2
+                XX < 100."
+
+                Specifying  bump  names  is optional. If bump names are speci-
+                fied, -bumpPitch works on the specified bumps. If  bump  names
+                are not specified, -bumpPitch works on:
+
+                * selected bumps if -selected is specified.
+
+                * bumps in a specific area if -area is specified.
+
+                * all  bumps  in the design, if neither -selected nor -area is
+                  specified.
+
+              Note: You can specify pitch checking multiple times in this  op-
+              tion.
+
+       -bumpToEdgePitch <pitch_value>
+              Checks  whether  the  pitch from the bump center to the guard or
+              die edge is within the specified pitch value.  If  the  detected
+              pitch  is  less than the specified value, a warning is displayed
+              and the bump is flagged with a spacing violation.  <pitch_value>
+              is specified in microns.
+
+              By  default,  if  -bumpToEdgePitch is specified, the tool checks
+              the pitch from the bump center to the die edge.  You  can  addi-
+              tionally  specify  -edgeOffset  with  this parameter to define a
+              guard shape. If -edgeOffset is specified, the  tool  checks  the
+              distance  from the bump center to the guard edge defined by -ed-
+              geOffset.
+
+              If the bump center is outside the  guard  edge,  the  center-to-
+              guard pitch will be a negative number, which is not allowed. The
+              tool issues a warning in such cases.
+
+              Check the Examples section to see how the -bumpToEdgePitch para-
+              meter can be used.
+
+              The -bumpToEdgePitch parameter works on:
+
+              * all bumps in the design by default.
+
+              * selected bumps if -selected is specified.
+
+              * bumps in a specific area if -area is specified.
+
+              * bumps with specific nets if -nets is specified.
+
+              Note:  The  -bumpToEdgePitch parameter cannot be specified along
+              with the -bumpPitch or the -bumpMaxPitch parameter.
+
+       -bumpToPinOverlap <inst>+
+              Checks if the bump overlaps  with  the  pins  of  the  specified
+              block.  If the bump shape and the block pins are at the same lo-
+              cation but on different layers, the tool does not consider  them
+              to  be  overlapping.  However,  if the bump shapes and the block
+              pins are at the same location and on the same  layer,  they  are
+              reported as overlapping.
+
+              The -bumpToPinOverlap parameter works on:
+
+              * all bumps, by default.
+
+              * selected bumps, if -selected is specified.
+
+              * bumps in the specified area, if -area is specified.
+
+              * bumps with the specified nets, if -net is specified.
+
+              <inst>+  should  be of type block. Overwise, the tool reports an
+              error.
+
+       -bumpToPinPitch {<pitch_value> {[<bump_name>][<inst_pin_name> [<pin_x
+       pin_y>]]}}
+              Checks the center-to-center pitch between bumps and pins of hard
+              macros. Here:
+
+              * <pitch_value> represents the center-to-center pitch  value  in
+                microns.
+
+              * <bump_name> is the name of the bump.
+
+              * <inst_pin_name> is the name of the instance pin.
+
+              * pin_x andpin_y specify the pin geometry.
+
+              Note:  You can specify pitch checking multiple times in this op-
+              tion. Wildcards can be used in bump and pin names.
+
+       -edgeOffset {<offset> [<cornerOffset>]}
+              Defines the guard shape if it is different from the  die  bound-
+              ary.  The  -edgeOffset  parameter can be used only if the -bump-
+              ToEdgePitch parameter is specified.
+
+              You can specify either one or two values  with  the  -edgeOffset
+              parameter:
+
+              * If  only one value (offset) is specified, the guard edge shape
+                is a rectangle with the die boundary to  guard  edge  distance
+                being equal to the specified offset value.
+
+              * If  two  values (<offset> and cornerOffset) are specified, the
+                guard edge shape is an octagon with 45-degree exterior angles.
+                Here, the guard edge to the die boundary distance is the spec-
+                ified offset value and the distance from the die  boundary  to
+                the  lower-left  point of the guard edge is the specified cor-
+                nerOffset value.
+
+              In a rectilinear design, you can use the bounding box of the die
+              as a reference for specifying the offset for the guard edge.
+
+       -nets <net+>
+              Checks constraints for the bumps with the specified nets.
+
+              If -bumpMaxPitch is specified along with -nets, the tool  checks
+              for the maximum pitch constraint only between bumps belonging to
+              the  same  net. For instance, in the example given below, if you
+              specify the command checkBump -bumpMaxPitch 300 -nets {VDD VSS},
+              the tool checks:
+
+              * Checks the VDD Pitch1 between bump1 and bump3, VDD Pitch2  be-
+                tween bump3 and bump4, and VDD pitch3 between bump4 and bump6
+
+              * Checks the VSS Pitch between bump2 and bump5.
+
+              If  -bumpMaxPitch  is  not  specified, the tool performs default
+              checks for the bumps with the specified nets.
+
+              Note: The -nets parameter cannot be used along with  the  -bump-
+              ToPinPitch or -relative_type parameter.
+
+       -onBumpGrid
+              Checks  if  the  bumps  are on bump grids. This option cannot be
+              used with any of the other parameters, except  -onBumpGridToler-
+              ance and -outfile.
+
+              The command errors out in the following cases:
+
+              * If  there  is  no  bump grid in the DB - In this case, use the
+                create_bump_grid command to create a bump grid.
+
+              * If there are multiple bump grids on a single layer
+
+              The command reports an error but keeps checking in the following
+              case:
+
+              * If there are multiple bump grids in different layers  for  one
+                bump
+
+              Warnings are reported in the following cases:
+
+              * If there is no bump grid on the bump's layer
+
+              * If  a bump is off the bump grid - The bump is also marked with
+                a DRC marker.
+
+       -onBumpGridTolerance <bump_grid_name value>
+              Specifies the tolerance value to be used when checking if  bumps
+              are  on the specified bump grid. If this parameter is specified,
+              the tool checks the Euclidean distance between the  bump  center
+              and  the specified grid and reports a violation only if the dis-
+              tance is more than the specified tolerance value.
+
+              * The -onBumpGridTolerance option can  be  specified  only  when
+                -onBumpGrid is specified.
+
+              * The   value  specified  with  -onBumpGridTolerance  should  be
+                smaller than half of the Euclidean distance between two diago-
+                nal bump grid points. That is:
+
+                Otherwise, no violation can be reported.
+
+       -outfile <fileName>
+              Specifies the report filename. If no filename is specified,  the
+              report is printed to the console window.
+
+       -relative_assignment
+              Checks  whether the net assignment of the target bump is equiva-
+              lent to corresponding relative object. If not, it issues an  er-
+              ror message and places a violation marker at the geometry center
+              of the target bumps:
+
+              * For  -relative_type embedded bump, the following error message
+                is displayed:
+
+                The assignment of $bump $net is not connected to  the  pin  of
+                the relative object $blockName/$pinName $expectedNet.
+
+              * For  -relative_type inst_pin_port, the following error message
+                is displayed:
+
+              If -relative_type is specified as embedded_bump and there is  no
+              bump  in the region being checked, checkBump does not check fur-
+              ther for relative assignment and issues the following error mes-
+              sage:
+
+              There is no bump overlapping with the  relative  object  $block-
+              Name/$pinName  located at {x2 y2} with relative offset {x y}. So
+              stop checking the relative assignment for this relative object.
+
+              Note: This option can be used only if -relative_type  is  speci-
+              fied.
+
+       -relative_object {<inst_pin_port_list>}
+              Specifies  the  inst_pin_port  list and supports wild cards. The
+              format is {inst:pin:port ...} and port is of type integer.
+
+              If -relative_object is specified, checkBump checks  whether  the
+              geometry  center  of the target bumps is at the same location as
+              the geometry center of the specified port. If not, it issues  an
+              error message and places a violation marker on the geometry cen-
+              ter of the target bumps. In addition:
+
+              * If  no  bump  overlaps with the specified port, checkBump dis-
+                plays the message that there are no bumps in the design  over-
+                lapping with the specified port.
+
+              * If  the specified ports do not exist, an error message is dis-
+                played.
+
+              Note: When used with -selected or -area, the relative_object op-
+              tion works only on the specified bumps by selection or area.
+
+       -relative_offset <x y>
+              Specifies the offset of bump location compared with  the  corre-
+              sponding relative object. This option can be used only if -rela-
+              tive_type is specified.
+
+              Default: {0 0}
+
+       -relative_type {embedded_bump inst_pin_port}
+              Specifies the type of relative object:
+
+              * embedded_bump:  If  this option is specified, checkBump checks
+                whether the geometry center of the target bumps is at the same
+                location as the geometry center of  the  overlapping  embedded
+                bumps.  If not, it issues an error message and places a viola-
+                tion marker on the geometry center of the target bumps. In ad-
+                dition:
+
+                * If no bump overlaps with the embedded bumps, checkBump  dis-
+                  plays an error message as follows:
+
+                  There  is  no  bump  overlapping  with  the  relative object
+                  $blockName/$pinName located at {x2 y2} with relative  offset
+                  {x y}.
+
+                *
+
+                  If  more  than  one  bump  is  located  at  the region being
+                  checked, all bumps violating the embedded bump are reported.
+                  A summary of the number of the bumps violating the  embedded
+                  bump  is  displayed. Violation markers are placed on the em-
+                  bedded bump as well as  the  bumps  violating  the  embedded
+                  bump. The violations can be viewed in Violation Browser.
+
+                *
+
+                  If  there  are  no  embedded bumps, an error message is dis-
+                  played.
+              Note: As this check happens on the entire design, you cannot use
+              the -selected or -area options if -relative_typeembedded_bump is
+              specified.
+
+              * inst_pin_port: If the type is inst_pin_port, you must  specify
+                the -relative_object {inst_pin_port_list} option.
+
+       -resetViolationMarker
+              Resets violation markers.
+
+       -select_violation_bumps
+              Selects automatically all the bumps that are violating any check
+              rules.
+
+       -selected
+              Checks constraints for selected bumps.
+
+              If  -selected is used with -bumpPitch, checkBump checks the bump
+              pitch only for the selected bumps.  If  -selected  is  specified
+              without  -bumpPitch,  checkBump  performs the default checks for
+              the selected bumps.
+
+              Note: This parameter cannot be used with with -bumpToPinPitch or
+              -area.
+
+Example
+              * The following command checks the  center-to-center  pitch  for
+                all  bumps. If the center-to-center distance between two bumps
+                is smaller than 100, it reports a violation:
+
+                checkBump -bumpPitch 100
+
+              * The following command checks the  center-to-center  pitch  be-
+                tween bump_1 and bump_2:
+
+                checkBump -bumpPitch {100 {bump_1 bump_2}}
+
+              * The  following  command  checks the center-to-center pitch for
+                the selected bumps:
+
+                checkBump -bumpPitch 100 -selected
+
+              * The following command checks the  center-to-center  pitch  for
+                bumps in the specified area:
+
+                checkBump -bumpPitch 100 -area {100 400 600 900}
+
+              * The  following  command  checks whether the bump center to die
+                edge pitch is less than 100 microns:
+
+                checkBump -bumpToEdgePitch 100
+
+                In the design below, Bump3 is flagged with a spacing violation
+                and a warning message is displayed:
+
+              * The following command checks whether the bump center to  guard
+                edge  pitch is less than 100 microns. The guard edge is offset
+                from the die boundary by 50 microns:
+
+                checkBump -bumpToEdgePitch 100 -edgeOffset 50
+
+                In the design below, Bump3 and Bump4 are flagged with  spacing
+                violations and warnings are displayed:
+
+              * The  following command checks whether the bump center to guard
+                edge pitch is less than 100 microns. The guard edge is  offset
+                from  the die boundary by 50 microns and the guard corners are
+                offset by 90 microns:
+
+                checkBump -bumpToEdgePitch 100 -edgeOffset {50 90}
+
+                In the design below, Bump3 and Bump4 are flagged with  spacing
+                violations and warnings are displayed:
+
+              * The  following command checks whether the bump center to guard
+                edge pitch is less than 100 microns. The guard edge is  offset
+                from  the die boundary by 50 microns and the guard corners are
+                offset by 90 microns:
+
+                checkBump -bumpToEdgePitch 100 -edgeOffset {50 90}
+
+                In the rectilinear designs below, Bump3 and Bump4 are  flagged
+                with  spacing  violations and warnings are displayed. However,
+                Bumps2 and Bump6 are DRC free even though they are outside the
+                die boundary because they are still within the guard shape:
+
+              * The following command checks the bump assignment and sends the
+                report to test.rpt:
+
+                checkBump -outfile test.rpt
+
+                A sample report file is as follows:
+
+                ###############################################################
+
+                # Generated by: Cadence Innovus 21.10-d226_1
+
+                # OS: Linux x86_64(Host ID noivl-leenap)
+
+                # Generated on: Tue Dec 1 13:22:12 2020
+
+                # Design: DTMF_CHIP
+
+                # Command: checkBump -outfile test.rpt
+
+                ###############################################################
+
+                *** The statistics information for bumps ***
+
+                Bump_23_2_2  Assigned  port_pad_data_out[9]   IOPADS_INST/Ptd-
+                spop09
+
+                Bump_22_1_2  Assigned  port_pad_data_out[10]  IOPADS_INST/Ptd-
+                spop10
+
+                Bump_61_0_6  Assigned  port_pad_data_out[11]  IOPADS_INST/Ptd-
+                spop11
+
+                Bump_14_3_1  Assigned  port_pad_data_out[14]  IOPADS_INST/Ptd-
+                spop14
+
+                Bump_37_6_3 Assigned port_pad_data_in[4] IOPADS_INST/Ptdspip04
+
+                Bump_74_3_7 Assigned port_pad_data_in[9] IOPADS_INST/Ptdspip09
+
+                Bump_32_1_3  Assigned  port_pad_data_in[13]   IOPADS_INST/Ptd-
+                spip13
+
+                Bump_62_1_6 Assigned vcom IOPADS_INST/Pvcomop
+
+                Bump_83_2_8 Assigned scan_out_2 IOPADS_INST/Pscanout2op
+
+                Bump_12_1_1   Assigned  port_pad_data_out[5]  IOPADS_INST/Ptd-
+                spop05
+
+                Bump_66_5_6  Assigned  port_pad_data_out[6]   IOPADS_INST/Ptd-
+                spop06
+
+                Bump_4_3_0   Assigned  port_pad_data_out[12]  IOPADS_INST/Ptd-
+                spop12
+
+                Bump_51_0_5 Assigned port_pad_data_in[7] IOPADS_INST/Ptdspip07
+
+                Bump_13_2_1 Assigned port_pad_data_in[3] IOPADS_INST/Ptdspip03
+
+                Bump_71_0_7 Assigned port_pad_data_in[6] IOPADS_INST/Ptdspip06
+
+                Bump_44_3_4  Assigned  port_pad_data_in[12]   IOPADS_INST/Ptd-
+                spip12
+
+                Bump_89_8_8   Assigned  port_pad_data_in[14]  IOPADS_INST/Ptd-
+                spip14
+
+                Bump_52_1_5  Assigned  port_pad_data_in[15]   IOPADS_INST/Ptd-
+                spip15
+
+                Bump_26_5_2 Unassigned
+
+                Bump_35_4_3   Assigned  port_pad_data_out[4]  IOPADS_INST/Ptd-
+                spop04
+
+                Bump_41_0_4  Assigned  port_pad_data_out[7]   IOPADS_INST/Ptd-
+                spop07
+
+                Bump_1_0_0   Assigned  port_pad_data_out[13]  IOPADS_INST/Ptd-
+                spop13
+
+                Bump_73_2_7 Assigned port_pad_data_in[5] IOPADS_INST/Ptdspip05
+
+                Bump_63_2_6 Assigned port_pad_data_in[8] IOPADS_INST/Ptdspip08
+
+                Bump_55_4_5  Assigned  port_pad_data_in[11]   IOPADS_INST/Ptd-
+                spip11
+
+                Bump_88_7_8 Assigned pllrst IOPADS_INST/Ppllrstip
+
+                Bump_3_2_0 Assigned ibias IOPADS_INST/Pibiasip
+
+                Bump_34_3_3 Unassigned
+
+                Bump_42_1_4 Unassigned
+
+                Bump_72_1_7 Unassigned
+
+                Bump_5_4_0 Assigned port_pad_data_out[8] IOPADS_INST/Ptdspop08
+
+                Bump_19_8_1  Assigned  port_pad_data_out[15]  IOPADS_INST/Ptd-
+                spop15
+
+                Bump_85_4_8  Assigned  port_pad_data_in[10]   IOPADS_INST/Ptd-
+                spip10
+
+                Bump_46_5_4 Unassigned
+
+                Bump_47_6_4 Assigned refclk IOPADS_INST/Prefclkip
+
+                Bump_84_3_8 Assigned reset IOPADS_INST/Presetip
+
+                Bump_25_4_2 Unassigned
+
+                Bump_48_7_4 Unassigned
+
+                Bump_24_3_2 Unassigned
+
+                Bump_33_2_3 Unassigned
+
+                Bump_11_0_1 Unassigned
+
+                Bump_75_4_7 Unassigned
+
+                Bump_43_2_4 Assigned spi_data IOPADS_INST/Pspidip
+
+                Bump_82_1_8 Assigned spi_fs IOPADS_INST/Pspifsip
+
+                Bump_76_5_7 Assigned scan_in_2 IOPADS_INST/Pscanin2ip
+
+                Bump_27_6_2 Assigned vcop IOPADS_INST/Pvcopop
+
+                Bump_7_6_0 Assigned scan_out_1 IOPADS_INST/Pscanout1op
+
+                Bump_6_5_0 Assigned tdigit[0] IOPADS_INST/Ptdigop0
+
+                Bump_17_6_1 Unassigned
+
+                Bump_79_8_7 Unassigned
+
+                Bump_2_1_0 Assigned int IOPADS_INST/Pintip
+
+                Bump_64_3_6 Assigned test_mode IOPADS_INST/Ptestmdip
+
+                Bump_67_6_6 Assigned scan_clk IOPADS_INST/Pscanckip
+
+                Bump_31_0_3 Assigned scan_en IOPADS_INST/Pscanenip
+
+                Bump_78_7_7 Assigned tdigit[1] IOPADS_INST/Ptdigop1
+
+                Bump_16_5_1 Assigned tdigit[2] IOPADS_INST/Ptdigop2
+
+                Bump_10_9_0 Assigned tdigit[3] IOPADS_INST/Ptdigop3
+
+                Bump_30_9_2 Assigned tdigit[6] IOPADS_INST/Ptdigop6
+
+                Bump_29_8_2 Unassigned
+
+                Bump_57_6_5 Unassigned
+
+                Bump_81_0_8 Assigned scan_in_1 IOPADS_INST/Pscanin1ip
+
+                Bump_86_5_8 Assigned port_pad_data_in[0] IOPADS_INST/Ptdspip00
+
+                Bump_21_0_2 Assigned port_pad_data_in[1] IOPADS_INST/Ptdspip01
+
+                Bump_8_7_0 Assigned tdigit[4] IOPADS_INST/Ptdigop4
+
+                Bump_18_7_1 Assigned tdigit[5] IOPADS_INST/Ptdigop5
+
+                Bump_45_4_4 Assigned tdigit[7] IOPADS_INST/Ptdigop7
+
+                Bump_40_9_3 Unassigned
+
+                Bump_38_7_3 Unassigned
+
+                Bump_49_8_4 Unassigned
+
+                Bump_87_6_8 Unassigned
+
+                Bump_56_5_5 Unassigned
+
+                Bump_53_2_5 Assigned port_pad_data_in[2] IOPADS_INST/Ptdspip02
+
+                Bump_20_9_1 Assigned tdigit_flag IOPADS_INST/Ptdigfgop
+
+                Bump_28_7_2   Assigned  port_pad_data_out[0]  IOPADS_INST/Ptd-
+                spop00
+
+                Bump_15_4_1 Unassigned
+
+                Bump_9_8_0 Unassigned
+
+                Bump_60_9_5 Unassigned
+
+                Bump_58_7_5 Unassigned
+
+                Bump_69_8_6 Unassigned
+
+                Bump_54_3_5 Unassigned
+
+                Bump_65_4_6 Unassigned
+
+                Bump_59_8_5  Assigned  port_pad_data_out[2]   IOPADS_INST/Ptd-
+                spop02
+
+                Bump_39_8_3   Assigned  port_pad_data_out[3]  IOPADS_INST/Ptd-
+                spop03
+
+                Bump_70_9_6  Assigned  port_pad_data_out[1]   IOPADS_INST/Ptd-
+                spop01
+
+                Bump_77_6_7 Unassigned
+
+                Bump_50_9_4 Unassigned
+
+                Bump_68_7_6 Unassigned
+
+                Bump_36_5_3 Unassigned
+
+                Bump_80_9_7 Unassigned
+
+                Bump_90_9_8 Unassigned
+
+                Bumps with signal assigned: 57 (with bump_connect_target: 0);
+
+                Bumps with power assigned: 0 (with bump_connect_target: 0);
+
+                Bumps with ground assigned: 0 (with bump_connect_target: 0);
+
+                Bumps unassigned: 33;
+
+                Total bumps: 90;
+
+                Signal/PG ratio: NA;
+
+                Min center-to-center bump pitch: 100.000
+
+                *** End the statistics information for bumps ***
+
+                *** Starting Check Bump Overlap ...
+
+                *** End Check Bump Overlap ***
+
+                Bumps overlap: 0
+
+              * The following command checks whether bumps are on bump grids:
+
+                checkBump -onBumpGrid -outfile bump.rpt
+
+                When  -onBumpGrid  is specified, other checks are not started.
+                Therefore, the Bump On Bump Grid section is the  only  section
+                in the report file:
+
+                #...header...#
+
+                *** Starting Bump On Bump Grid ...
+
+                `Bump_298'  won't  be checked. No bump grid on the bump layer:
+                Layer8, Layer9.
+
+                *** End Check Bump On Bump Grid ***
+
+                Bumps off Bump Grid: 2
+
+                Bumps on Multiple Conflicted Bump Grids: 1
+
+                Bumps with No Bump Grid:1
+
+Related Information
+              * assignBump
+
+              * create_bump
+
+              * create_bump_grid
+
+                           Fri Apr 04 01:25:37 2025           checkBump(25.10)

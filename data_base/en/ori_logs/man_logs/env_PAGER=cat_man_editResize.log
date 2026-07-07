@@ -1,0 +1,330 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editResize(25.10)                                            editResize(25.10)
+
+Name
+       editResize - Resizes wires, bus guides, and pins
+
+Syntax
+       editResize
+
+       [-help]
+
+       [-keep_center_line {0 1 auto}] [-no_conn]
+
+       [-polygon_edge_start {<x y>} | -to <float_value>]
+
+       {[[[-direction  {x  y  diag45  diag135}  -side  {high  low}]  | [-poly-
+       gon_edge_start {x y} -polygon_edge_end {<x y>}]] [-offset <float_value>
+       | -to <float_value>]] | [-corner {low_left low_right up_left  up_right}
+       -dx <float_value> -dy <float_value>]}
+
+       Resizes wires, bus guides, and pins. The editResize command can be used
+       to:
+
+              * Change the length of wires and bus guides.
+
+              * Change the width of wires and bus guides.
+
+              * Enlarge  or shrink wires by changing both the length and width
+                of a wire simultaneously.
+
+              * Change the width of physical pins.
+
+       While changing the wire width to fix EM violations, apply the following
+       setting before invoking the editResize command:
+
+       setEditMode -unrestricted_regular_wire_width true
+
+       By default, when you are changing the width of a wire, it snaps to  the
+       closest  non-default  route  (NDR)  available.  If  you  set the -unre-
+       stricted_regular_wire_width parameter to true, a wire can be  stretched
+       to any width without any restrictions.
+
+       Typically, the editResize command can be used in two modes:
+
+       Mode  1  -  Change the size of a wire or pin in only one direction at a
+       time
+
+       If -direction is specified, the tool changes the size in the  specified
+       direction only. In this mode, the editResize command can be used to:
+
+              * Change  the  length  of  selected regular and special wires by
+                stretching or shrinking them and then  snapping  them  to  the
+                closest  manufacturing grid point. The editResize command also
+                supports the stretching/shrinking of 45 and 135-degree wires.
+
+                Note: Use the editSelect command to select the wires.
+
+              *
+
+                Change the width of selected wires and update  vias  connected
+                to the changed wires to maintain the via-to-wire dimension ra-
+                tio.  editResize can be used to change the width of regular as
+                well as special wires:
+
+                * For regular wires, if the width value you specified  is  not
+                  defined  in  the  tech  LEF, the tool snaps the width of the
+                  regular wire to the closest value defined in the default  or
+                  non-default rule and prints the following message in the log
+                  file:
+
+                  WARNING: The wire width is not defined in default or non de-
+                  fault  rule, snap wire width to the closest value defined in
+                  LEF file
+
+                  The tool also selects a suitable via  cell  defined  in  the
+                  tech  LEF file. If a suitable via cell is not available, the
+                  tool does not drop any via.
+
+                  When you change the width of a regular wire, the center line
+                  is still connected with  the  neighboring  wires  after  the
+                  change:
+
+                * For  a special wire, you can change the wire width freely by
+                  specifying an incremental value. The  tool  uses  viagen  to
+                  generate a via after the width change of a special wire.
+
+              Note: Use the editSelect command to select the wires.
+
+              If  you  change  the width of a wire, and then change it back to
+              the original width, you might see a discrepancy due to rounding.
+
+              Note: If you specify a width value that is not an even  multiple
+              of  the  manufacturing grid value, the software displays a warn-
+              ing.
+
+              * Resize patch wires. Patch wires can be stretched in  four  di-
+                rections:
+
+              *
+
+                Change  the width of physical pins. While using the editResize
+                command to change the pin width, keep the following points  in
+                mind:
+
+              *
+
+                * If  setEditMode -drc_on true has been specified before modi-
+                  fying the pin width, the tool follows the rules from the LEF
+                  file while changing pin width.
+
+                * The pin width, whether vertical or horizontal, should not be
+                  less than the minimum width defined in the LEF file.
+
+                * If you specify a value less than minimum width  for  a  pin,
+                  the tool uses the minimum width for that pin.
+
+       Mode  2  - Change the size of a wire in both the x and y directions si-
+       multaneously
+
+       If -direction is not specified, the tool changes  both  the  width  and
+       height  of  the  selected wire at the same time. You can use -corner to
+       specify the start corner from which to stretch or shrink the wire. This
+       mode works for only horizontal or vertical special wires in the no_con-
+       nection (-no_conn) mode. Use -dx and -dy to  specify  the  distance  to
+       stretch the wire in x and y directions, respectively.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each editResize parameter. For a detailed description
+              of the command, use the man command:
+
+              man editResize
+
+       -corner {low_left low_right up_left up_right}
+              Specifies  the  starting  corner  from  which the wire should be
+              stretched.
+
+       -direction {x y diag45 diag135}
+              Specifies the direction in which  the  wire  or  pin  is  to  be
+              stretched or shrunk:
+
+              * x - Resizes wires or pins horizontally. For a horizontal wire,
+                specify the direction as x if you want to modify the length of
+                the  wire  (i.e  stretch or shrink the horizontal wire). For a
+                vertical wire, specify the direction as x if you want to  mod-
+                ify the width of the wire.
+
+              * y  -  Resizes wires or pins vertically. For a horizontal wire,
+                specify the direction as y if you want to modify the width  of
+                the  wire.  For a vertical wire, specify the direction as y if
+                you want to modify the length of the  wire   (i.e  stretch  or
+                shrink the vertical wire).
+
+              * diag45 - Resizes the selected wires in the 45-degree direction
+                by the specified offset value.
+
+                Note: This parameter can be used only for wires.
+
+              * diag135  - Resizes the selected wires in the 135-degree direc-
+                tion by the specified offset value.
+
+                Note: This parameter can be used only for wires.
+
+       -dx <float_value>
+              Specifies the distance to which the wire should be stretched  in
+              the x direction.
+
+       -dy <float_value>
+              Specifies  the distance to which the wire should be stretched in
+              the y direction.
+
+       -keep_center_line {0 1 auto}
+              Controls whether the wire or physical pin is  resized  with  the
+              center line unchanged:
+
+              * 0 - Resizes the wire or pin from the specified side only. This
+                option   works   in  both  the  connection  and  no_connection
+                (-no_conn) modes.
+
+                This setting cannot be used for changing the width  of  signal
+                wires.
+
+              * 1  - Resizes the wire or pin from both the low and high sides,
+                even if you are stretching it from only one side. This is done
+                to keep the center line unchanged.
+
+                This option works in both  the  connection  and  no_connection
+                (-no_conn)  modes  for wires. However, a physical pin can keep
+                the center line unchanged during a resize in the no-connection
+                mode only.
+
+              * auto - When set to auto, the  software  automatically  detects
+                when to keep the center line unchanged.
+
+              Default: auto
+
+       -no_conn
+              Resizes  the  wire without auto via/wire creation and DRC check-
+              ing.
+
+              If -no_conn is not specified, the tool will  reprocess  the  via
+              and do basic DRC checking:
+
+              Note: Patch wires are resized without auto via/wire creation and
+              DRC checking even if -no_conn is not specified.
+
+       -offset <float_value>
+              Specifies,  in  microns, the distance to which the wires or pins
+              should be stretched or shrunk.
+
+       -polygon_edge_end {<x y>}
+              Specifies the end point for a polygon edge {x y}. This option is
+              used only to resize a polygon.
+
+       -polygon_edge_start {<x y>}
+              Specifies the start point for a polygon edge {x y}. This  option
+              is used only to resize a polygon.
+
+       -side {high low}
+              Specifies the side from which the wire or pin is to be stretched
+              or shrunk:
+
+              * high  - Stretches or shrinks wires or pins from the top or the
+                right.
+
+              * low - Stretches or shrinks the wires or pins from  the  bottom
+                or the left.
+
+       -to <float_value>
+              Specifies,  in  microns,  the new height for selected horizontal
+              wires or the new width for selected vertical wires.
+
+Examples
+              * The following command stretches  the  selected  vertical  wire
+                from the top by 8.5 <mu>m.
+
+                editResize -direction y -offset 8.5 -side high
+
+              * The  following  command  stretches  the selected vertical wire
+                from the bottom by 0.511 <mu>m.
+
+                editResize -direction y -offset -0.511 -side low
+
+              * The following command shrinks the selected vertical wire  from
+                the bottom by 0.619 <mu>m.
+
+                editResize -direction y -offset 0.619 -side low
+
+              * The  following  command stretches the selected horizontal wire
+                from the right by 1.27 <mu>m.
+
+                editResize -direction x -offset 1.27 -side high
+
+              * The following command shrinks a horizontal wire from the  left
+                by 0.443 <mu>m.
+
+                editResize -direction x -offset 0.443 -side low
+
+              * The  following  command  stretches  a horizontal wire from the
+                left by 0.86 <mu>m.
+
+                editResize -direction x -offset -0.86 -side low
+
+              * The following command increases the width of the selected hor-
+                izontal special wire by 0.01 <mu>m:
+
+                editResize -direction y -offset 0.01 -side high
+
+              * The following command changes the width of the selected  hori-
+                zontal regular wire to  0.48 <mu>m:
+
+                editResize -to 0.48 -direction y -side high
+
+                If 0.48 is not defined in the NDR, the tool snaps the width to
+                the closest value defined in the NDR.
+
+              * The  following command increases the vertical width of the se-
+                lected physical pin by 3 <mu>m each from both top and  bottom,
+                keeping the center line unchanged:
+
+                editResize   -direction   y  -offset  3  -side  high  -no_conn
+                -keep_center_line 1
+
+              * The following command reduces the horizontal width of the  se-
+                lected  physical pin by 3 <mu>m each from both left and right,
+                keeping the center line unchanged:
+
+                editResize  -direction  x  -offset  -3  -side   low   -no_conn
+                -keep_center_line 1
+
+Related Information
+              * editAddRoute
+
+              * editAdjust
+
+              * editCommitRoute
+
+              * editCutWire
+
+              * editDelete
+
+              * editDuplicate
+
+              * editMerge
+
+              * editMove
+
+              * editRotate
+
+              * editSelect
+
+              * editSplit
+
+              * editTrim
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025          editResize(25.10)

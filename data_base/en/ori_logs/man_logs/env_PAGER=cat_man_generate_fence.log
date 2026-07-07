@@ -1,0 +1,154 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+generate_fence(25.10)                                    generate_fence(25.10)
+
+Name
+       generate_fence -
+        Automatically  draws  partition fences that enclose all their children
+       FlexModel guides
+
+Syntax
+       generate_fence
+
+       [-help]
+
+       [-flow {2G}]
+
+       [-for_partition]
+
+       [-rectangle_shape]
+
+       [-target_util <float>]
+
+       [ [-hInst {<hInst(s)>}] | [-module {<module(s)>}] | [-inst_group  {<in-
+       stGroup(s)>}] ]
+
+        Automatically  draws  partition fences that enclose all their children
+       FlexModel guides.  It helps to improve the usability of the prototyping
+       flow. The recommended use model for automatically generating fences  is
+       as follows:
+
+              * Run proto_design to place FlexModel guides/fences.
+
+              * Manually adjust/move FlexModels to shorten timing paths.
+
+              * Run  the following commands to analyze the floorplan and check
+                timing. Repeat step 2 and 3 if needed
+
+                * place_opt_design
+
+                * earlyGlobalRoute
+
+                * timeDesign -proto
+
+                * load_timing_debug_report -proto
+
+              * Select FlexModels for partitions and define partitions.
+
+              * Run generate_fence to create fences  that  enclose  all  their
+                children FlexModel guides.
+
+       Note:  If  no option is specified then the command draws fences for all
+       existing defined partitions.
+
+Parameters
+       -flow {2G}
+              Enables the Auto-Fence Generation 2G  flow  to  draw  the  fence
+              shapes  automatically.  When  this  flow  is enabled, the mixed-
+              placement capability is leveraged to give optimal module  place-
+              ment  distribution.  A fence is generated for each target module
+              after considering target utilization, boundary gaps and I/Os.
+
+              The Auto-Fence Generation 2G flow  involves  the  following  key
+              steps:
+
+              * Running flat global mixed placement
+
+              * Creating the fence based on the module cells placement distri-
+                bution and control the utilization.
+
+              * Polishing the fence so not to block any channel or I/O access
+
+              Data_type: float, optional
+
+       -for_partition
+              When  specified, it enables the partition fence generation capa-
+              bility. When this option is  not  specified,  the  power  domain
+              fence generation capability is enabled by default.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each generate_fence parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man generate_fence
+
+       -hInst {<hInst(s)>}
+              Specifies the  list  of  hierarchical  instance  names  to  draw
+              fences.  This  option  can  be used if you only want to create a
+              fence for a specific master or clone. You can use wildcards.
+
+              Note: It can not be used for both master and clones.
+
+              Data_type: string, optional
+
+       -inst_group {<instGroup(s)>}
+              Specifies list of instance group names to draw fences.  You  can
+              use wildcards.
+
+              Data_type: string, optional
+
+       -module {<module(s)>}
+              Specifies  list of partition modules to draw fences. This option
+              should be used for master/clone partitions.
+
+              Data_type: string, optional
+
+       -rectangle_shape
+              When specified, only rectangle shaped fences are generated.
+
+              Data_type: bool, optional
+
+       -target_util <string>
+              Specifies the fence target utilization value.
+
+              Default: Core Utilization
+
+              Min: 1e-07
+
+              Max: 1
+
+              Data_type: float, optional
+
+Example
+              *
+
+                The following command enables  the  auto-fence  generation  2G
+                flow and creates fences for the $PowerDomainNameList group.
+
+                generate_fence -flow 2G -inst_group $PowerDomainNameList
+
+              *
+
+                The  following  command  enables  the auto-fence generation 2G
+                flow  and  creates  fences  for  specified  hierarchical   in-
+                stance(s).
+
+                generate_fence -flow 2G -hInst $hInstNameList -for_partition
+
+Related Information
+              * place_opt_design
+
+              * earlyGlobalRoute
+
+              * load_timing_debug_report
+
+              * timeDesign
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025      generate_fence(25.10)

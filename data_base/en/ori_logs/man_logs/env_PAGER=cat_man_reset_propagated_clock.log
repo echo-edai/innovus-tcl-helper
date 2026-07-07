@@ -1,0 +1,177 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_propagated_clock(25.10)                    reset_propagated_clock(25.10)
+
+Name
+       reset_propagated_clock - Removes the propagated clock assertion for the
+       specified clock waveforms or pins
+
+Syntax
+       reset_propagated_clock
+
+       <pin_clock_list >
+
+       Removes  the  propagated  clock assertion for the specified clock wave-
+       forms or pins.
+
+       The ideal or propagated status of clock endpoints in the fanout of  the
+       specified  pin/clock  list is determined by the remaining clock latency
+       propagated clock assertions in the clock network.
+
+       When new analysis views are used, the  new  corners  do  not  have  the
+       source latency updated as per the clock propagation (update_io_latency)
+       settings, so a reset and re-calculation is required.
+
+       Note:  You  must  specify  set_interactive_constraint_modes  constraint
+       prior to running the reset_propagated_clock command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <pin_clock_list>
+              Specifies a list of pins or clocks for which you want  to  reset
+              the clock propagation mode to ideal mode.
+
+              The  <pin_clock_list> parameter can be a collection, however, no
+              hierarchical pins are allowed in the list.
+
+Examples
+              * The following command sets the CLK1 clock waveform  to  propa-
+                gated mode:
+
+                set_propagated_clock CLK1
+
+              * The  following  command resets the CLK1 clock waveform back to
+                ideal mode:
+
+                reset_propagated_clock CLK1
+
+              *
+
+                The following commands set the CLK1 clock to  propagated  mode
+                and then reports them:
+
+                set_propagated_clock [get_clocks CLK1]
+
+                report_clocks
+
+                The following report is displayed:
+
+                --------------------------------------------------------------------------
+
+                                            Clock Descriptions
+
+                --------------------------------------------------------------------------
+
+                                                                         At-
+                tributes
+
+                --------------------------------------------------------------------------
+
+                Clock  Name      Source   Period    Lead    Trail    Generated
+                Propagated
+
+                --------------------------------------------------------------------------
+
+                CLK1            CLK1       20.000     0.000      10.000      n
+                y
+
+                CLK2             CLK2        25.000     0.000     12.500     n
+                y
+
+                CLK3            CLK3       10.000     0.000      6.000       n
+                y
+
+                GCLK3            u8/Q        20.000     0.000     10.000     y
+                y
+
+                --------------------------------------------------------------------------
+
+                Generated-Clock Descriptions
+
+                ---------------------------------------------------------------------------
+
+                Name  Generated      Master      Master-clock   Invert   Freq.
+                Duty-Cycle  Edges  Edge-Shift
+
+                      Source(pin)     Source(pin)                       Multi-
+                plier
+
+                ---------------------------------------------------------------------------
+
+                GCLK3   u8/Q          CLK3        CLK3           n         1/2
+                -           -     -
+
+                ---------------------------------------------------------------------------
+
+              * The  following commands reset the CLK1 clock to ideal mode and
+                then reports them:
+
+                reset_propagated_clock [get_clocks CLK1]
+
+                report_clocks
+
+                The following report is displayed:
+
+                --------------------------------------------------------------------------
+
+                                             Clock Descriptions
+
+                --------------------------------------------------------------------------
+
+                                                                       Attrib-
+                utes
+
+                --------------------------------------------------------------------------
+
+                Clock Name    Source    Period    Lead     Trail     Generated
+                Propagated
+
+                --------------------------------------------------------------------------
+
+                CLK1             CLK1        20.000     0.000     10.000     n
+                n
+
+                CLK2            CLK2       25.000     0.000      12.500      n
+                y
+
+                CLK3             CLK3        10.000     0.000     6.000      n
+                y
+
+                GCLK3           u8/Q       20.000     0.000      10.000      y
+                y
+
+                --------------------------------------------------------------------------
+
+                Generated-Clock Descriptions
+
+                ---------------------------------------------------------------------------
+
+                Name    Generated    Master       Master-clock   Invert  Freq.
+                Duty-Cycle   Edges   Edge-Shift
+
+                        Source(pin)   Source(pin)                         Mul-
+                tiplier
+
+                ---------------------------------------------------------------------------
+
+                GCLK3   u8/Q         CLK3         CLK3             n       1/2
+                -            -       -
+
+                ---------------------------------------------------------------------------
+
+Related Information
+              * create_clock
+
+              * get_propagated_clock
+
+              * report_clocks
+
+              * set_clock_latency
+
+              * set_propagated_clock
+
+              * update_io_latency
+
+              * set_interactive_constraint_modes
+
+                           Fri Apr 04 01:25:37 202r5eset_propagated_clock(25.10)

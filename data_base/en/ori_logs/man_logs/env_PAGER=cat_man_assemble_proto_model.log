@@ -1,0 +1,141 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+assemble_proto_model(25.10)                        assemble_proto_model(25.10)
+
+Name
+       assemble_proto_model  -  Generate full chip FlexModel netlist by assem-
+       bling FlexModel partition netlists back to the top-level design for hi-
+       erarchical FlexModel generation
+
+Syntax
+       assemble_proto_model
+
+       -topdir {topDesignDir [<protoModelDirName>]}
+
+        [-blockdir {<blockDesignDir> [<protoModeldirName>]}]
+
+        -mmmc_file <mmmcfileName>
+
+        [-cpf_file <cpfFileName>]
+
+       [-help]
+
+       Generate full chip FlexModel netlist by assembling FlexModel  partition
+       netlists back to the top-level design for hierarchical FlexModel gener-
+       ation.  It  automatically  creates  a  full  chip  FlexModel  directory
+       (proto_model) by merging back FlexModel information  of  all  specified
+       partition blocks and assembling back into the top-level design.
+
+       The  purpose for this command is to get a FlexModel netlist DB in chip-
+       level by assembling the block and top data. This command may be used to
+       help memory usage by not loading a full chip netlist  and  can  be  run
+       from where you will run top-down hierarchical flow. This flow should be
+       used if there are partition block netlists.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each assemble_proto_model parameter.
+
+              For detailed description of the command and all its  parameters,
+              use the man command: man assemble_proto_model .
+
+       -blockdir {<blockDesignDir> [<protoModeldirName>]}
+              Specifies  the path to block-level design. This directory should
+              contain full netlist and FlexModel netlist  of  the  block-level
+              design and the corresponding proto model directory. If you spec-
+              ify  more than one block-level design, then you must specify the
+              -blockdir option separately for each block-level design.
+
+              protoModelDirName: Optional. Specifies the directory name  where
+              FlexModel models can be found. The default directory name is re-
+              trieved from the setting of set_proto_mode -create_dir parameter
+              that  is specified before running assemble_proto_model. If -cre-
+              ate_dir information is not available then the default  directory
+              name  will  be  proto_model  at the current run directory. It is
+              recommended  to  specify  <protoModelDirName>   especially   for
+              -blockdir parameter.
+
+              Data_type: string, optional
+
+       -cpf_file
+              Specifies  chip  level CPF file. This option should be specified
+              for a design with power domain.
+
+              Data_type: string, optional
+
+       -mmmc_file
+              Specifies chip level MMMC file.
+
+              Data_type: string, optional
+
+       <protoModelDirName>
+              Optional. Specifies the directory name  where  FlexModel  models
+              can  be  found. The default directory name is retrieved from the
+              setting of set_proto_mode -create_dir parameter that  is  speci-
+              fied  before running assemble_proto_model. If -create_dir infor-
+              mation is not available then the default directory name will  be
+              proto_model at the current run directory.
+
+              It  is recommended to specify <protoModelDirName> especially for
+              -blockdir parameter.
+
+              Data_type: string, optional
+
+       -topdir {topDesignDir [<protoModelDirName>]}
+              Specifies the path to the top-level design directory.  This  di-
+              rectory  should  contain top-level design netlist. If the design
+              has Flexmodels then the top-level FlexModel netlist should  also
+              be  found  in  this directory with the corresponding proto model
+              directory.
+
+              protoModelDirName: Optional. Specifies the directory name  where
+              FlexModel models can be found. The default directory name is re-
+              trieved from the setting of set_proto_mode -create_dir parameter
+              that  is specified before running assemble_proto_model. If -cre-
+              ate_dir information is not available then the default  directory
+              name  will  be  proto_model  at the current run directory. It is
+              recommended  to  specify  <protoModelDirName>   especially   for
+              -blockdir parameter.
+
+              Data_type: string, optional
+
+Examples
+              *
+
+                The following command merges all models of partition block de-
+                signs arb and tdsp_core to the top-level design DTMF_CHIP that
+                does not have any FlexModels.
+
+                assemble_proto_model -topdir {PTN_dir/DTMF_CHIP} \
+
+                -blockdir          {          PTN_dir/arb/arb_modelgen.enc.dat
+                PTN_dir/arb/proto_model } \
+
+                -blockdir    {    PTN_dir/tdsp_core/tdsp_core_modelgen.enc.dat
+                PTN_dir/tdsp_core/proto_model} \
+
+                -mmmc_file viewDefinition.tcl
+
+              *
+
+                The   following   command  merges  model  of  partition  block
+                ptn_wrapper to the top-level design dtmf_recvr_core  that  has
+                FlexModel(s)
+
+                assemble_proto_model    -topdir    {PTN/dtmf_recvr_core/model-
+                gen.enc.dat proto_model} \
+
+                -blockdir  {  PTN/ptn_wrapper/modelgen.enc.dat   PTN/ptn_wrap-
+                per/proto_model } \
+
+                -mmmc_file DBS/dtmf_recvr_core.enc.dat/viewDefinition.tcl
+
+Related Information
+              *
+
+                create_proto_model
+
+              *
+
+                Prototyping Methodologies chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025assemble_proto_model(25.10)

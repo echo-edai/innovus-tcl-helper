@@ -1,0 +1,326 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addFiller(25.10)                                              addFiller(25.10)
+
+Name
+       addFiller  - Inserts filler cell instances in the gaps between standard
+       cell instances
+
+Syntax
+       addFiller
+
+       [-area <areaBoxList>]
+
+       [-cell {<filler_cell_list>}]
+
+       [-createRows {true | false}]
+
+       [-diffCellViol {true|false}]
+
+       [-check_signal_drc {true | false}]
+
+       [-ecoMode {true | false}]
+
+       [-fitGap]
+
+       [-fixDRC]
+
+       [-fix_horizontal_max_length_violation]
+
+       [-fix_vertical_max_length_violation]
+
+       [-honorPrerouteAsObs {true | false}]
+
+       [-markFixed]
+
+       [-merge {true | false}]
+
+       [-minHole {true | false}]
+
+       [-powerDomain <powerDomainName>]
+
+       [-prefix <prefixName>]
+
+       [-prevent_vertical_stack_max_length_violation]
+
+       [-util <targetUtilization>]
+
+       [-viaEnclosure {true | false}]
+
+       Inserts filler cell instances in the gaps  between  standard  cell  in-
+       stances. Filler cells provide continuity for the VDD/VSS power rail, as
+       well  as  for  n-wells. In most cases, use this command after placement
+       and before detailed routing. If the design is routed, this command also
+       does DRC checks of the filler cells added to the wires in  the  design.
+       It  does  not check adjacent cells. This process ensures that this com-
+       mand is fast enough to be used many times in the design flow.
+
+       Note: Before using addFiller, run the globalNetConnectcommand  to  pro-
+       vide  global-net-connection rules for supply pins of the added fillers.
+       Without these rules, the built-in design-rule checks of addFiller  will
+       not be accurate.
+
+       To  resolve  adjacent  cell  DRC violations created by the insertion of
+       filler cells, run the verify_drc  command  to  mark  these  violations.
+       Then, use the addFiller command again with the -fixDRC parameter to re-
+       place the filler cells that caused the violations.
+
+       Note:  This  command resolves only filler-related violations; it cannot
+       resolve net-based violations. To repair net-based  violations,  reroute
+       the violated nets.
+
+       The  addFiller  command  recognizes  up to eight implant layers and at-
+       tempts to honor implant layer width and spacing rules within  each  im-
+       plant  layer.  If it does not find the correct filler cell to add to an
+       implant layer, it tries to add "no-implant" filler cells. If it  cannot
+       add  the  "no-implant"  cells,  it  inserts a filler cell that is large
+       enough that it does not violate the minimum width rule of the  relevant
+       implant layer.
+
+       Use the deleteFillercommand to remove the added filler cell instances.
+
+       Note: This command supports multithreading.
+
+       Some  addFiller  parameters  can  also be specified with setFillerMode.
+       However, the parameters you specify with addFiller apply to the current
+       addFiller run only, and supersede the parameters set by  setFillerMode.
+       For more information, see setFillerMode.
+
+Parameters
+       -area <areaBoxList>
+              Adds  filler cells to the specified list of area. If the area is
+              not defined properly, does not add filler cells.
+
+              Normally, designs are placed before filler cells are added. How-
+              ever, If you use this parameter and the design  is  not  placed,
+              you get a warning, and the command adds fillers in the specified
+              area.
+
+              Area would include:
+
+              * x1 specifies the area's lower left point on the x axis.
+
+              * y1 specifies the area's lower left point on the y axis.
+
+              * x2 specifies the area's upper right point on the x axis.
+
+              * y2 specifies the area's upper right point on the y axis.
+
+              The example below shows list of area to add the filler cells:
+
+              addFiller  -area  {{x11  y11 x21 y21} {x12 y12 x22 y22} {x13 y13
+              x23 y23} ...}
+
+              Data_type: string, optional
+
+       -cell <filler_cell_list>
+              Specifies the list of filler cells to add. Separate filler  cell
+              names  with spaces and enclose the list with quotation marks (")
+              or curly braces ({}).
+
+              Note: Cells specified by this parameter  override  the  list  of
+              cells provided by the -core parameter of setFillerMode.
+
+       -createRows {true | false}
+              Controls  whether  addFiller  creates rows in the floorplan if a
+              cell's site does not have rows. Specify false for this parameter
+              to prevent  addFiller from creating the rows.
+
+              Default:  true
+
+       -diffCellViol {true|false}
+              Checks violations between different cell types.
+
+              Default: false
+
+              Note: Using this feature will increase the runtime of addFiller.
+
+       -check_signal_drc {true | false}
+              Controls postroute DRC violation checking against  existing  net
+              routing, without considering adjacent cell DRC violations.
+
+              This parameter does not disable regular placement checks.
+
+              Default: true
+
+              In  16.10, addFiller has been enhanced with DRC. This flow would
+              fill gaps as much as possible even with DRC, and will  give  the
+              violation   report   and   marker  for  easy  debug.  Also,  the
+              -add_fillers_with_drc option has been added to the setFillerMode
+              command to call second addFiller without DRC checking.
+
+              If filler cells are added after routing, the software checks for
+              DRC violations between regular nets and the filler  cells.  When
+              the  inserted  filler  violates  the existing routing, addFiller
+              tries to use other filler cells to replace the violating one. If
+              it fails to fill the gap without violation, it will insert a vi-
+              olated filler in the second pass and give the  violation  report
+              and  marker  for easy debug when -add_fillers_with_drc is turned
+              on.
+
+       -ecoMode {true | false}
+              Controls whether the  software  resolves  overlaps  of  standard
+              cells  with fillers by removing the overlapping fillers, and in-
+              serting new fillers in any existing or newly created gaps due to
+              partial overlaps in eco flow. If this parameter  is  used  after
+              routing,  the  command  also  resolves  DRC violations of filler
+              geometries of all fillers with regular wires.
+
+              Default: false
+
+       -fitGap
+              Fills a gap between cells by adding a combination of cells,  in-
+              stead  of  by adding the single largest cell that fits, if doing
+              so avoids leaving an unfilled single-width gap.
+
+       -fixDRC
+              Corrects DRC violations reported by  verify_drc  between  filler
+              cells and adjacent standard cells.
+
+              Note:  The addFiller command resolves only filler-related viola-
+              tions--it cannot resolve net-based violations.  To  repair  net-
+              based violations, reroute the violated nets.
+
+              Use  this parameter in subsequent runs of the addFiller command,
+              after adding filler cells and checking for violations with  ver-
+              ify_drc. The command replaces filler cells that cause DRC viola-
+              tions  with  fillers  that do not cause violations. If it cannot
+              replace a violating filler cell without causing  another  viola-
+              tion, it leaves a gap.
+
+              Note:  You  can  specify this parameter with addFiller only, and
+              not with setFillerMode.
+
+       -fix_horizontal_max_length_violation
+              Fixes the horizontal max-length violation.
+
+       -fix_vertical_max_length_violation
+              Fixes the vertical stack max-length violation.
+
+       -honorPrerouteAsObs {true | false}
+              Instructs  addFiller  to  honor  the  setting  of   setPlaceMode
+              -place_detail_preroute_as_obs.  That  is, when this parameter is
+              true, addFiller treats preroutes on metal  layers  where  filler
+              cells  have geometries as obstructions, and ignores preroutes on
+              other layers. In most cases, this means  that  addFiller  treats
+              preroutes  on  metal1  as  obstructions and ignores preroutes on
+              other metal layers.  For  example,  if  setPlaceMode  -place_de-
+              tail_preroute_as_obs  is  set  to metal1 and metal2, and all the
+              filler cell geometries are on metal1,  addFiller  treats  metal1
+              preroutes as obstructions but not metal2 preroutes.
+
+              Default: false
+
+              addFiller ignores setPlaceMode -place_detail_preroute_as_obs and
+              inserts fillers in all legal sites.
+
+       -markFixed
+              Places  newly  added filler cells in FIXED status in the Innovus
+              database.
+
+              Note: You can specify this parameter with  addFiller  only,  and
+              not with setFillerMode.
+
+       -merge {true | false}
+              When checking for spacing violations, merges same-net geometries
+              to  determine  width-dependent spacing. If the LEF file contains
+              width-dependent rules, this parameter causes addFiller  to  have
+              the following behavior:
+
+              * If  you  specify true, the command merges overlapping same-net
+                objects to create a large rectangle.
+
+              * If you specify false, the command uses the shape of the object
+                from the database.
+
+              Default: false
+
+       -minHole {true | false}
+              Calls verify_drc to check for  minimum  hole  violations  before
+              adding  filler  cells and repairs the violations when  addFiller
+              runs.
+
+              Default:  false
+
+       -powerDomain <powerDomainName>
+              Specifies the power domain in which to add filler cells.
+
+              Default: If this parameter is  not  specified,  and  a  list  of
+              filler   cells  is  specified  with  the  -cell  parameter,  the
+              addFiller command tries to add fillers to all power domains.
+
+              Note: You can specify this parameter with  addFiller  only,  and
+              not with setFillerMode.
+
+       -prefix <prefixName>
+              Specifies the prefix for the placed instances.
+
+              Default: FILLER
+
+       -prevent_vertical_stack_max_length_violation
+              Adds  a  repair  endcap cell to cut the vertical stack of endcap
+              cells to prevent its vertical  max-length violation.
+
+       -util <targetUtilization>
+              Specifies the percent of free space remaining after placement to
+              fill with given filler cell instances.
+
+              Use -util to add gate-array core filler cells to  use  later  in
+              the  design  flow,  along with gate-array core cells, for metal-
+              only mask changes.
+
+              Note: You can specify this parameter with  addFiller  only,  and
+              not with setFillerMode.
+
+              Range: More than 0.0 (0%) and equal to or less than 1.0 (100%)
+
+              Default: 1.0
+
+       [-viaEnclosure {true | false}]
+              Calls  verify_drc  to  check for via enclosure violations before
+              adding filler cells and repairs the  violations  when  addFiller
+              runs.
+
+              Default: false
+
+Examples
+              * The  following command inserts filler cell instances for cells
+                FILL64, FILL16, FILL4, FILL2, and FILL1:
+
+                addFiller -cell FILL64 FILL16 FILL4 FILL2 FILL1 -prefix FILLER
+
+              * The following commands show the use of the -util parameter  to
+                set the utilization of GACORE filler cells to 50 percent:
+
+                # Place the design
+
+                place_design
+
+                # Now fill with GACORE cells up to 50% of remaining space
+
+                # area utilization
+
+                addFiller  -cell  {gcore16 gcore8 gcore4} -prefix GACORE -util
+                0.5
+
+                # Now fill with the standard filler cells
+
+                addFiller -cell {fill8 fill4 fill2 fill} -prefix FILLER
+
+                # Continue with routing
+
+              * The following command enable postRoute DRC  checking  for  min
+                hole violations and via enclosure violations:
+
+                addFiller  -cell  FILL16  FILL8  FILL4 FILL2 -check_signal_drc
+                true -minHole true -viaEnclosure true
+
+Related Information
+              * deleteFiller
+
+              * globalNetConnect
+
+              * setFillerMode
+
+              * setPlaceMode
+
+                           Fri Apr 04 01:25:37 2025           addFiller(25.10)

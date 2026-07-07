@@ -1,0 +1,96 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addModulePort(25.10)                                      addModulePort(25.10)
+
+Name
+       addModulePort  - Adds a port or bussed port to a module, specified as a
+       module or a hierarchical instance
+
+Syntax
+       addModulePort
+
+       [-help]<moduleName>
+
+       <portName><portDir>
+
+       [-bus <n1>:<n2>]
+
+       [-moduleBased]
+
+       Adds a port or bussed port to a module, specified as a module or a  hi-
+       erarchical instance.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each addModulePort parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the  man  command:
+
+              man addModulePort
+
+       -bus <n1>:<n2>
+              Adds a bussed port to the module. Specify the bus range (the be-
+              ginning and end of the bus). Use integers to specify the range.
+
+              If the specified bus already exists, tool will do bus bit resiz-
+              ing. The specified bus bit range must be adjacent to  the  first
+              or the last bit of the existing bus. Also, it must have the same
+              ascending or descending order as the existing bus.
+
+       -moduleBased
+              Specifies if the port is module based.
+
+       <moduleName>
+              Specifies the name of a hierarchical instance, or a Verilog mod-
+              ule  if  -moduleBased  is  specified, to which you want to add a
+              port.  Specify "-" for the top hierarchical instance.
+
+       <portDir>
+              Specifies the port direction. You can specify the direction as:
+
+              * input
+
+              * output
+
+              * bidi
+
+       <portName>
+              Specifies the name of the port to be added.
+
+              The specified <portName> can be a new port name or  any  of  the
+              existing  internal  net  names to which the port will connect in
+              the module. Internal net means net  inside  the  module  without
+              connections  to any existing port of the module. If the new port
+              name is the same as the existing net name in the module, the net
+              will not connect the port. The new port name will be portName_1.
+              Port Name cannot be the same as any existing port  name  of  the
+              same module.
+
+              If  a bus port is added, the bit port name cannot be the same as
+              any net name in the module.
+
+Examples
+              * The following command creates an input  port  p1  on  instance
+                i1/i2/i3.  The  port  p1  must  be a new port name in instance
+                i1/i2/i3. Instance i1/i2/i3 contains no nets name p1:
+
+                addModulePort i1/i2/i3 p1 input
+
+              * The following set of commands adds a  hierarchical  block  and
+                then adds a bussed port to the block.
+
+                addHierInst -cell i_block -hinst i_block1
+
+                addModulePort i_block1 data output -bus 31:0
+
+              * The  following  command adds two input bits i1[8] and i1[9] to
+                existing top-level bus port i1[0:7].
+
+                addModulePort - i1 input -bus 8:9
+
+Related Information
+              * addHierInst
+
+              * deleteModulePort
+
+                           Fri Apr 04 01:25:37 2025       addModulePort(25.10)

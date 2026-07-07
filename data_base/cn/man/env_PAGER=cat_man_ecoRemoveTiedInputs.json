@@ -1,0 +1,69 @@
+{
+  "command": "ecoRemoveTiedInputs",
+  "is_cmd": true,
+  "summary": "移除或重构具有输入连接到同一网络的逻辑门，以消除输入引脚短接的情况。",
+  "description": "该命令用于重新映射或重构那些有多个输入引脚连接到同一网络的逻辑门，将其转换为功能等效但没有任何输入短接的新逻辑结构。通常，这种优化在面积、功耗和时序方面都是有益的。例如，一个4输入OR门，如果其中3个输入短接（实现函数a+b+b+b），可以安全地替换为一个2输入OR门（实现a+b）。对于复杂门，可能无法在改善时序的前提下进行重构，但可以将其分解为多个更小的离散门，且每个新门都没有输入短接。该命令会修复任何具有两个或更多输入连接到同一网络的逻辑门，无论其对时序/面积/功耗的改善如何。它尝试寻找改善方案，但也可能接受使性能恶化的改动。该命令还可以在短接输入的网络上插入缓冲器。默认情况下，MBFF（多比特触发器）单元会被忽略，因为它们通常设计为具有短接输入。该命令遵循setOptMode中关于时序更新和合法化的设置，并且在postRoute/ECO阶段运行时不会调用ecoRoute。",
+  "usage": "ecoRemoveTiedInputs [-help] [-base_cells <cell_list>] [-ignore_base_cells <cell_list>] [-ignore_insts <inst_list>] [-insts <inst_list>] [-relaxed_placement] [-state {prePlace preCTS postCTS postRoute}] [-term <term_list>] [-verbose] [-report]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-base_cells",
+      "description": "指定用于修复的缓冲器单元列表。",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-ignore_base_cells",
+      "description": "指定忽略这些单元类型的实例，不进行修复。",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-ignore_insts",
+      "description": "指定忽略这些实例，不进行修复。",
+      "required": false,
+      "type": "inst_list"
+    },
+    {
+      "name": "-insts",
+      "description": "指定仅修复这些实例。默认：修复设计中除被忽略实例/单元外的所有实例。",
+      "required": false,
+      "type": "inst_list"
+    },
+    {
+      "name": "-relaxed_placement",
+      "description": "即使实例无法被合法放置，也接受改动。当工具因拥塞等原因无法放置新实例时使用此选项，但最终布局可能不合法，新实例可能重叠，需要后续进行增量布局以合法化。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-state",
+      "description": "指定当前设计状态（预布局、时钟树综合前、时钟树综合后、布线后）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-term",
+      "description": "指定需要被缓冲的端口列表。",
+      "required": false,
+      "type": "term_list"
+    },
+    {
+      "name": "-verbose",
+      "description": "增加报告和修复过程的详细程度。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-report",
+      "description": "仅报告存在的输入短接情况，不提供任何修复细节。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

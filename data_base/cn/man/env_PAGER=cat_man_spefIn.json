@@ -1,0 +1,75 @@
+{
+  "command": "spefIn",
+  "is_cmd": true,
+  "summary": "将SPEF文件中的互连线电阻和电容加载到Innovus数据库中，用于计算延迟或构建时序图",
+  "description": "该命令用于读取由第三方提取工具生成的SPEF（标准寄生交换格式）文件，并将其中互连线的电阻和电容数据加载到Innovus数据库中，以便进行延迟计算或时序图构建。它支持读取压缩格式（如.gzip）的SPEF文件，并支持多线程读取。该命令可用于平坦芯片设计或层次化SPEF拼接。",
+  "usage": "spefIn [-help] <fileNameList> [-extended] [-idx] [-scaleNets <netFileName>] [-scaleRC] [-starN | -noStarN] [{-rc_corner <list_of_rc_corners> [-spef_field {1 2 3 ... N}]}] [-via_variation_file <viaVariationFileName>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个spefIn参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileNameList>",
+      "description": "指定一个SPEF文件或SPEF文件列表作为输入，分别用于平坦芯片或层次化SPEF拼接。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-extended",
+      "description": "启用读取扩展SPEF文件中的特定字段，以设置电阻节点的层号、宽度、硅宽度等信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-idx",
+      "description": "启用Inter-Die Extraction (IDX) SPEF读取，用于建模Die间的电容影响。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-scaleNets",
+      "description": "根据指定的缩放因子，对用户指定网表中的电阻和电容进行缩放。需要与-scaleRC参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scaleRC",
+      "description": "根据通过create_rc_corner和update_rc_corner命令定义的缩放因子，对指定RC角的SPEF读取数据进行缩放。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-starN",
+      "description": "读取SPEF文件中的*N语句，这些语句定义了RC节点的位置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noStarN",
+      "description": "忽略SPEF文件中的*N语句。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rc_corner",
+      "description": "将寄生参数标注到预定义的RC角，用于多角点分析。可以指定一个RC角列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spef_field",
+      "description": "指定SPEF中要加载的RC角索引列表。提供与RC角进行顺序无关和字段无关映射的灵活性。通常与-rc_corner参数一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_variation_file",
+      "description": "指定用于建模通孔变化的文件名。文件内容包含所有通孔层名称及其对应的均移和标准差，以便SPEF中的所有通孔电阻可以映射到其自身的变异乘数。此选项仅在设计具有单角点时使用。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "command": "write_sdf",
+  "is_cmd": true,
+  "summary": "将延迟信息写入标准延迟格式 (SDF) 文件",
+  "description": "write_sdf 命令用于将设计中的时序延迟和时序检查信息导出到标准延迟格式 (SDF) 文件中。该命令支持生成纯文本或 GNU 压缩 (.gz) 格式的 SDF 文件。默认情况下，它会使用系统中已缓存的延迟数据，并仅写入延迟三元组的值。该命令提供了丰富的选项来控制输出内容，例如指定 SDF 版本 (2.1 或 3.0)、控制延迟和时序检查的写入方式、设置精度、排除特定单元、处理内部引脚、针对不同目标应用 (如 STA 或 Verilog 仿真) 进行定制等。",
+  "usage": "write_sdf [-help] <file_name> [-abstracted_model] [-adjust_setuphold_for_zero_hold_slack] [-base_delay] [-celltiming {all | none | nochecks}] [-collapse_internal_pins] [-condelse] [-delimiter <char>] [-delta_delay] [-edges {edged | library | noedge | check_edge}] [-exclude_cells <cell_list>] [-exclude_cells_keep_io_nets] [-exclude_cells_keep_top_level_nets] [-exclude_disabled_arcs] [-exclude_disabled_modes] [-exclude_whatif_arcs] [-filter] [-ideal_clock_network] [-include_variation] [-interconn {all | none | noport | noinport | nooutport}] [-map_file {file1 file2 ...}] [-max_view <viewName>] [-merge_arcs] [-min_period_edges {posedge | negedge | both | none}] [-min_view <viewName>] [-no_condition] [-no_derate] [-no_escape] [-nonegchecks] [-precision <non_neg_integer>] [-process <string>] [-recompute_delay_calc] [-recompute_parallel_arcs] [-recrem {merge_always | split | merge_when_paired}] [-remashold] [-resort_values_min_to_max] [-scale <float>] [-setuphold {merge_always | split | merge_when_paired}] [-splitrecrem] [-splitsetuphold] [-target_application {sta | verilog}] [-temperature <string>] [-timingcheck {order}] [-transform_out_to_out_arcs] [-typ_view <viewName>] [-version {2.1 3.0}] [-view <viewName>] [-voltage <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<file_name>",
+      "description": "指定 SDF 输出文件的名称。如果省略，则默认输出到标准输出 (stdout)。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-abstracted_model",
+      "description": "保存门级仿真 (GLS) 的 SDF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-adjust_setuphold_for_zero_hold_slack",
+      "description": "调整保持时序检查以满足非负的时序裕量值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-base_delay",
+      "description": "在 SDF 文件中写出基础延迟信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-celltiming",
+      "description": "指定要写出哪些单元延迟和时序检查。可选值：all, none, nochecks。默认值：all。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-collapse_internal_pins",
+      "description": "将跨越内部引脚的时序弧折叠为单个从主输入到主输出的时序弧。适用于不支持相同内部引脚结构的仿真工具。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-condelse",
+      "description": "当写出 COND 构造时，使用默认值写出 CONDELSE 构造。注意：需与 -version 3.0 选项一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delimiter",
+      "description": "指定输出文件中使用的层次分隔符字符。如果省略，则使用默认的层次分隔符 (/)。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delta_delay",
+      "description": "将增量延迟值写入 SDF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-edges",
+      "description": "指定边沿 (edge) 值的处理方式。可选值：edged, library, noedge, check_edge。默认值：edged。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_cells",
+      "description": "指定一个叶单元或层次化实例的列表，其时序数据将从 SDF 文件中排除。",
+      "required": false,
+      "type": "cell_list"
+    },
+    {
+      "name": "-exclude_cells_keep_io_nets",
+      "description": "将过滤限制在完全被单元包围的标注上。进出该单元的标注将被保留。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_cells_keep_top_level_nets",
+      "description": "允许配置对使用 -exclude_cells 参数从 SDF 中排除的实例的顶层互连标注的处理。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_disabled_arcs",
+      "description": "在 SDF 文件中排除用户设置的禁用时序弧。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_disabled_modes",
+      "description": "从 SDF 文件中排除因 set_mode 命令设置的活跃库模式而禁用的时序弧。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-exclude_whatif_arcs",
+      "description": "在 SDF 文件中排除假设分析 (what-if) 时序弧。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-filter",
+      "description": "将所有负的互连延迟和 IOPATH 延迟转换为零。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ideal_clock_network",
+      "description": "将理想时钟网络上的延迟弧的延迟在 SDF 文件中标记为 0。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-include_variation",
+      "description": "当选择的时序分析类型为 SOCV 时，此参数可用于导出包含工艺偏差分量的 SDF 延迟和检查值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-interconn",
+      "description": "指定要写出哪些互连延迟。可选值：all, none, noport, noinport, nooutport。默认值：all。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-map_file",
+      "description": "指定一个映射文件列表。映射文件可用于确定写入 SDF 文件的内容，例如提供时序库中未定义的内部引脚的延迟信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_view",
+      "description": "在多模式多端角分析模式下，使用指定分析视图的 late 延迟来填充 SDF 的 max 槽位。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-merge_arcs",
+      "description": "合并与同一内部引脚相关的两个时序弧，形成一个时序弧。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-min_period_edges",
+      "description": "指定如何写出最小周期 (PERIOD) 检查。可选值：posedge, negedge, both, none。默认值：both。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-min_view",
+      "description": "在多模式多端角分析模式下，使用指定分析视图的 early 延迟来填充 SDF 的 min 槽位。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-no_condition",
+      "description": "抑制 SDF 文件中的 COND 语句。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_derate",
+      "description": "将未应用降额 (derate) 的延迟写入 SDF 文件。默认情况下，set_timing_derate 命令会将缩放后的延迟写入 SDF 文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_escape",
+      "description": "写出对象名称时不转义层次分隔符。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonegchecks",
+      "description": "将所有负的时序检查值转换为 0.0。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-precision",
+      "description": "控制输出 SDF 文件中小数点后出现的数字位数。默认精度为 report_precision 的值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-process",
+      "description": "指定将出现在生成的 SDF 文件头部的一个或多个工艺名称组合，例如 best:typical:worst。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-recompute_delay_calc",
+      "description": "指示软件在导出前重新计算生成完整 SDF 文件所需的任何数据。默认仅导出为 STA 计算的现有数据。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-recompute_parallel_arcs",
+      "description": "指示软件为并行时序弧单独重新计算延迟。注意：此参数已过时，建议使用 -recompute_delay_calc。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-recrem",
+      "description": "确定如何写出恢复 (RECOVERY) 和移除 (REMOVAL) 时序检查。可选值：merge_always, split, merge_when_paired。默认值：merge_always。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-remashold",
+      "description": "将 SDF v2.1 不支持的 REMOVAL 检查（以及 RECREM 构造的 REMOVAL 部分）转换为 HOLD 检查（与 -version 2.1 一起使用）。与 -version 3.0 一起使用时，将 RECREM 检查拆分为 RECOVERY 和 HOLD 检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-resort_values_min_to_max",
+      "description": "将 SDF 延迟三元组中的值按升序排序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-scale",
+      "description": "指定应用于 SDF 文件中延迟值的乘数。此选项不改变 SDF 文件的时间尺度设置。延迟值被缩放，但单位保持不变。默认值：1。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-setuphold",
+      "description": "确定如何写出建立 (SETUP) 和保持 (HOLD) 时序检查。可选值：merge_always, split, merge_when_paired。默认值：merge_always。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-splitrecrem",
+      "description": "将 RECREM 检查拆分为 RECOVERY 检查和 REMOVAL 检查。默认：写出合并的 RECREM 检查。注意：仅与 -version 3.0 选项一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-splitsetuphold",
+      "description": "将 SETUPHOLD 时序检查拆分为单独的 SETUP 和 HOLD 检查。默认：写出合并的 SETUPHOLD 检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-target_application",
+      "description": "允许为 STA 或 Verilog 应用定制 SDF 输出。可选值：sta, verilog。默认：sta。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-temperature",
+      "description": "定义将出现在生成的 SDF 文件头部的温度值，例如 -40.0:25.0:125。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-timingcheck",
+      "description": "在 OCV 分析中对检查延迟进行排序。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-transform_out_to_out_arcs",
+      "description": "将所有输出到输出的时序弧作为输入到输出的时序弧写出。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-typ_view",
+      "description": "在多模式多端角分析模式下，使用指定分析视图的 late 延迟来填充 SDF 的 typ 槽位。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-version",
+      "description": "指定生成 SDF V2.1 还是 V3.0。默认 SDF 版本是 3.0。可与 -remashold 选项结合使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "在多模式多端角分析模式下，使用指定分析视图的 early 和 late 延迟来填充 SDF 的 min 和 max 三元组槽位。SDF 的 typ 槽位保持为空 (<earlyVal>::<lateVal>)。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-voltage",
+      "description": "定义将出现在生成的 SDF 文件头部的电压值，例如 1.980:1.800:1.620。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

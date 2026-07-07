@@ -1,0 +1,45 @@
+{
+  "command": "setMaxCapPerFreq",
+  "is_cmd": true,
+  "summary": "为时序库中的最大电容约束添加频率依赖表",
+  "description": "此命令用于向时序库中现有的 max_capacitance 约束添加一个频率相关的最大电容表。时序分析将使用此表来检测违规，而 optDesign 会尝试修复违规。软件根据实例所连接的时钟域（如果有多个，则是最快的时钟域）推导其频率。对于时钟树实例，使用实际时钟频率；对于组合逻辑中的实例（如触发器或其输出逻辑），使用的频率是关联时钟域频率的一半，因为触发器输出只能在输入时钟速率的一半下切换。该命令支持 MMMC，并根据视图频率执行 DRV 计算。可以在加载时序库文件（导入或恢复设计后）的任何时间使用此命令。",
+  "usage": "setMaxCapPerFreq [-help] [-lib libName] [-force] -freq {<freq1 ><freq2 >...} -cap {<cap1 ><cap2 >...} -pins {cell pin}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lib",
+      "description": "仅修改指定库中匹配的单元引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "仅根据插值后的 -freq 和 -cap 值计算最大电容，忽略库中这些引脚先前定义的 max_capacitance 值。默认行为是使用库 max_capacitance 值与插值 -cap 值之间的最坏情况（最小值）来计算最大电容。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-freq",
+      "description": "指定至少两个频率值的列表，必须大于或等于 0。必须指定与 -cap 相同数量的值，且频率值必须按升序指定。类型：浮点数，单位为 Hz。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-cap",
+      "description": "指定电容值的列表，必须大于或等于 0。必须指定与 -freq 相同数量的值。软件使用表中的两个频率值，通过线性插值（或外推）来推导给定频率下的最大电容。类型：浮点数，单位为 pF。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-pins",
+      "description": "将新的电容约束添加到指定的单元和引脚集合。可以指定输出或输入/输出引脚。单元或引脚名称中可以使用星号 (*) 通配符。如果引脚已有关联的表，则会被新表替换。",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

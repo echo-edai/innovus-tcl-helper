@@ -1,0 +1,108 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_oa_default_rule_lib(25.10)                  get_oa_default_rule_lib(25.10)
+
+Name
+       get_oa_default_rule_lib  - Searches through a specified library (or li-
+       braries) to check whether a specified LDRS exists or not
+
+Syntax
+       get_oa_default_rule_lib
+
+       [-help]
+
+       [-rule <rule_name>]
+
+       [-libs <lib_list>]
+
+       [-verbose]
+
+       Searches through a specified library (or libraries) to check whether  a
+       specified  LDRS  exists or not. You can run this check before reading a
+       library.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each get_oa_default_rule_lib parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man get_oa_default_rule_lib
+
+       -libs <lib_list>
+              Specifies the list of library names to search  through.  If  not
+              specified, all libraries are searched.
+
+       -rule <rule_name>
+              Specifies the name of the rule to find.
+
+              If  not specified, the init_oa_default_rule variable is used. If
+              the variable has an empty  string  value,  the  standard  lookup
+              (LEFDefaultRouteSpec by type, then by name) is used.
+
+              If  the  specified  <rule_name> does not exist, the command dis-
+              plays an error such as:
+
+              Rule '<rule_name>' was not found in specified libraries.
+
+              If the specified <rule_name> is found, the command  returns  the
+              name  of  the library where the specified <rule_name> was found.
+              This could be from the -libs <lib_list> or any ITDB that one  of
+              those libraries refers to.
+
+              If  the  specified  <rule_name> is found but is not a legal LDRS
+              type as determined by the OAX reader code, the command  displays
+              an error such as:
+
+              Constraint    group   '<rule_name>'   was   found   in   library
+              '<lib_name>', but is not a legal LEFDefaultRouteSpec
+
+       -verbose
+              Echoes details of library name where the rule was found (includ-
+              ing descending  through  technology  references  from  libraries
+              specified in the <lib_list>.
+
+Examples
+              *
+
+                The following example shows how get_oa_default_rule_lib can be
+                used  to  search for a specific library and the graph of techs
+                that it references:
+
+                set init_oa_ref_lib "tech_lib macro_lib"
+
+                set init_oa_default_rule LDRS_65nm_6lm
+
+                set tech_lib [lindex $init_oa_ref_lib 0]
+
+                set lib_found [get_oa_default_rule_lib -libs $tech_lib] #  use
+                the init_oa_default_rule to look up the library
+
+                if {$lib_found != ""} {
+
+                 Puts "$init_oa_default_rule was found in $lib_found or in the
+                graph of libraries that $tech_lib references"
+
+                } else {
+
+                 Puts "$init_oa_default_rule was not found in $tech_lib nor in
+                the graph of libraries that $tech_lib references"
+
+                }
+
+              * The  following  command  shows  how the -verbose option can be
+                used:
+
+                get_oa_default_rule_lib -verbose
+
+                INFO: Default rule 'LEFDefaultRouteSpec' was found in  library
+                'FEOAreflib8'.
+
+                FEOAreflib8
+
+Related Information
+              * init_oa_default_rule
+
+              * init_oa_ref_lib
+
+                           Fri Apr 04 01:25:37 20g2e5t_oa_default_rule_lib(25.10)

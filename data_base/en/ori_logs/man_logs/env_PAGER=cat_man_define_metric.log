@@ -1,0 +1,417 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+define_metric(25.10)                                      define_metric(25.10)
+
+Name
+       define_metric - Defines new metrics that are required by the user
+
+Syntax
+        define_metric
+
+       [-help]
+
+       [-compare  {more_better  less_better more_better_below_target less_bet-
+       ter_above_target more_better_ignore_positive}]
+
+       [-description <metricDescription>]
+
+       [{-id <databaseID>}]
+
+       [-inheritance_tcl <TclName>]
+
+       -name <metric_name>
+
+       [-no_inheritance]
+
+       [-precision <number_of_decimal_places>]
+
+       [-target <metric_name>]
+
+       [{-tcl <TCL_command_list>}[-tools <listOfTools>] ]
+
+       [-threshold <reporting_unit>]
+
+       [-type <metricType>]
+
+       [-units <reporting_unit>]
+
+       [-warning <threshold>]
+
+       Defines new metrics that are required by the user.
+
+       You can use this command to create new metrics that you need to  track.
+       To  create  new  metrics,  you need to provide the TCL code required to
+       generate the metric. The TCL can be a sequence of commands that  return
+       a value or a procedure that returns a value.
+
+       The following command provides the TCL commands .base_cell.name == HDR*
+       to define the design.switch_cells metric.
+
+       define_metric -name design.switch_cells -tcl { return [get_db insts -if
+       {.base_cell.name == HDR*}] }
+
+       Similarly, a proc can be used to define a metric. The following command
+       provides   the   my_get_switch_cells{}   proc   to   define   the   de-
+       sign.switch_cells metric.
+
+       define_metric    -name    design.switch_cells     -tcl     {     return
+       [my_get_switch_cells{}] }
+
+       The  metric  is calculated and stored with the other metrics  when cre-
+       ate_snapshot is executed.  All define_metric commands are saved and re-
+       stored in the design database.
+
+Parameters
+       -compare {more_better less_better more_better_below_target less_bet-
+       ter_above_target more_better_ignore_positive}
+              Specifies  the  compare   function,   {more_better   less_better
+              more_better_below_target    less_better_above_target   more_bet-
+              ter_ignore_positive}.
+
+              The comparison options show the good or bad color when the value
+              is below or above the target value as appropriate.
+
+              Data_type: enum, optional
+
+       -description  <metricDescription>
+              Specifies the description of the metric.
+
+              Data_type: string, optional
+
+       -id <databaseID>
+              Specifies the database ID.
+
+              Data_type: string, optional
+
+       -inheritance_tcl <TclName>
+              Specifies Tcl for combining children values. The metric  is  not
+              executed  in  the  global namespace. The equivalent proc args is
+              {children}.
+
+              Data_type: string, optional
+
+       -name <metric_name >
+              Specifies the name of the metric.
+
+              Data_type: string, required
+
+       -no_inheritance
+              Disables the inheritance of the metric.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each define_metric parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man define_metric
+
+       -precision <number_of_decimal_places>
+              Specifies the number of decimal places.
+
+              Default: 0
+
+              Data_type: int, optional
+
+       -target <metric_name>
+              Specifies the target or the name of metric containing the target
+              value.
+
+              Data_type: string, optional
+
+       -tcl { <TCL_command_list> }
+              Specifies  the list of TCL commands or proc to generate (return)
+              the metric which is of the format {<value> <unit>}.
+
+              When the -tcl option is specified, the TCL associated  with  the
+              metric  will be executed whenever create_snapshot is called, and
+              the metric will be captured as part of the snapshot.
+
+              Data_type: string, optional
+
+       -threshold <reporting_unit>
+              Specifies the threshold for comparing numbers in HTML.   If  the
+              delta  between  the  two numbers being compared is less than the
+              threshold then the metric will be colored "yellow".   If  it  is
+              outside the threshold, then it is colored red or green depending
+              on  the  compare function i.e. whether more is better or less is
+              better.
+
+              Data_type: string, optional
+
+       -tools <listOfTools>
+              Specifies the list of tools which the tcl code will run.
+
+              Data_type: string, optional
+
+       -type <metricType>
+              Specifies the type of metric.
+
+              Data_type: string, optional
+
+              The various metrics types are:
+
+              * imageplot: A metric type that the renders to an image  in  the
+                HTML report.
+
+                * Format:
+
+              <name1> { \
+
+               fill_color "<color>" \
+
+                stroke_color "<color>"\
+
+                data <list of data sets>
+
+              } \
+
+              <name2> { \
+
+              <sub-name1> { \
+
+                  fill_color <color> \
+
+                  data <list of data sets> \
+
+                } \
+
+                <sub-name2> {...} \
+
+              }
+
+              Where a data set can be one or more of the following:
+
+              The  data on each layer is a string of coordinates (separated by
+              sequences of whitespace and comma) with types. These types are:
+
+              *
+
+                *
+
+                  * R - rectangle (x, y, width, height)
+
+                  * B - bounding box (x_min, y_min, x_max, y_max)
+
+                  * G - closed polygon (x, y, x, y, ...)
+
+                  * L - open polyline (x, y, x, y, ...)
+
+                  * C - circle (x, y, r)
+
+                  * P - point (x, y)
+
+              For rectangles, boxes, circles and points, multiple  shapes  can
+              be  defined  without  having  to  repeat  the  type letter. e.g.
+              R1,2,3,4,5,6,7,8 is two rectangles.
+
+              A value can be defined for shapes by adding a V  suffix  to  the
+              type;  this value can then be used to color the shapes according
+              to the value for heat maps. The value is always the first number
+              after the type. This means that two points with values 20 and 40
+              may look like: PV20,1,2 40,6,5 or: PV20,1,2PV40,6,5.
+
+              Example imageplot TCL dict data:
+
+              macros { \
+
+              fill_color "#FF0000" \
+
+                stroke_color "#0000FF88" \
+
+                data "R5,8,1,2 6,9,2,1 G1,2,3,4,5,6,7,8" \
+
+              } \
+
+              drcs { \
+
+              placement { \
+
+                  fill_color "#FF0000" \
+
+                  data "P3,4" \
+
+                } \
+
+                routing {...} \
+
+              }
+
+              Layers in the image are named (macros, congestion, normal, other
+              in the above example) and support hierarchy. Layers  should  not
+              be  nested  beyond  one level deep. The hierarchy is used in the
+              renderer (see below) to toggle the visibility of the layers.  It
+              is  an  error  for any layer to be called data (reserved to keep
+              hierarchy clear).
+
+              Colors can be defined either as hex or RGB values with  optional
+              opacity.  Hex  values  are prefixed with #. RGB values are sepa-
+              rated with whitespace.
+
+              *
+
+                *
+
+                  *
+
+                    * #FF0000: Red
+
+                    * #00FF0040: Green (25% opaque)
+
+                    * 0 0 255: Blue
+
+                    * 255 0 255 192: Magenta (75% opaque)
+
+              * histogram: The data will be structured as a set of series with
+                shared X-axis labels that are rendered as a stacked histogram.
+
+              Format (TCL dict):
+
+              labels <list of labels> \
+
+              axis_x <name> \
+
+              axis_y <name> \
+
+              series { \
+
+              <series1> { \
+
+                 values <list of buckets \
+
+                 color "#FF0000" \
+
+              } \
+
+              <series2> { \
+
+                 values {2 1 0 0} \
+
+                 color "#0000FF" \
+
+              } \
+
+              }
+
+              Example:
+
+              get_metric timing.setup.histogram
+
+              timing.setup.histogram {labels {-0.320 -0.240 -0.160 -0.080} \
+
+                                      series { \
+
+                                        reg2reg {color #FF0000 values {43 3  2
+              3 0}} \
+
+                                        reg2cgate  {color #0000FF values {22 4
+              5 0 0}} \
+
+                                      } \
+
+                                      axis_x WNS(ns) \
+
+                                      axis_y {Failing End Points} \
+
+                                      }
+
+              The labels (a list of strings, shown in the order provided)  de-
+              fine the X-axis labels for the histogram, the values in each se-
+              ries define the Y-axis values.
+
+              Colors  can be defined either as hex or RGB values with optional
+              opacity. Hex values are prefixed with #. RGB  values  are  sepa-
+              rated with whitespace.
+
+              #FF0000       - Red
+
+              0 0 255       - Blue
+
+              * html:  Supports the inclusion of raw HTML in a metric. You can
+                place simple html into tables allowing  simple  links  to  re-
+                ports. For example, the following command defines test_html as
+                an html type of metric:
+
+              define_metric -name test_html -type html
+
+              You  can  set  the  html metric, test_html, using the set_metric
+              command:
+
+              set_metric -name test_html -value {<a href="url">test</a>}
+
+              * radar: Helps to identify the characteristics of each run by  a
+                single  graph. It is useful in cases where histogram cannot be
+                used for comparing several runs.
+
+                If a series type is radar, then they must all be radar -  i.e.
+                there  is no mixing of other graph types with radar. Different
+                number of labels/values will result in different points in the
+                graph but the number of labels must match the number of values
+                and all series must have the same number of values.
+
+              { labels {RCI Fmax Area Power DFM} \
+
+               series { \
+
+                 scenarioA { \
+
+                   color #0000FF \
+
+                   values {32 32 28 12 15} \
+
+                   type radar\
+
+               } \
+
+                 senarioB { \
+
+                   color #FFA500 \
+
+                   values {12 12 12 21 28}
+
+                   type radar\
+
+               } \
+
+               } \
+
+              }
+
+       -units <reporting_unit>
+              Specifies the unit for reporting.
+
+              Data_type: string, optional
+
+       -warning <threshold>
+              Specifies the warning threshold or name of metric containing the
+              threshold value.
+
+              Data_type: string, optional
+
+Examples
+              *
+
+                The following command defines the the X20s metric:
+
+                define_metric -name X20s
+
+                set_metric -name X20s \
+
+                 -value [get_db insts -expr {[regexp X20 $obj(.base_cell)]}]
+
+                Alternatively, you can define the X20s metrics as follows:
+
+                define_metric -name X20s -tcl {\
+
+                return [get_db insts -expr {[regexp X20 $obj(.base_cell)]]} \
+
+                }
+
+                With the -tcl option, the TCL associated with the X20s  metric
+                will be executed whenever create_snapshot is called.
+
+Related Information
+              * set_metric
+
+                           Fri Apr 04 01:25:37 2025       define_metric(25.10)

@@ -1,0 +1,201 @@
+{
+  "command": "update_names",
+  "is_cmd": true,
+  "summary": "更新层次结构中每一级的实例、网络、物理实例、端口、模块和设计名称。",
+  "description": "此命令用于更新设计层次结构中每一级的实例（inst）、网络（net）、物理实例（phys_insts）、端口（port）、模块（module）和设计（design）的名称。实例和网络名称通常只在单个层次级别内有效，如在Verilog模块内部所见。如果网络或端口名称是总线定义的一部分，则仅更新总线基名，总线位索引不会被修改。对于转义的标量名称，所有字符都可以被修改。可以通过参数（如 -inst, -net, -port, -module, -design）将更改限制为特定名称类型，否则更改将应用于所有类型。默认情况下，新名称的长度没有限制（参见 -max_length）。每个名称都会根据指定的参数进行检查，字符或字符串会被移除、替换或添加。然后检查最终名称是否与任何现有名称冲突；如果发生冲突，将附加诸如 _1、_2 等后缀直到名称唯一。每个被修改名称的旧名和新名都会被报告。注意：用于SDC时序约束的名称只有在加载到内存中后才能被修改，因此必须在运行此命令前确保所有时序视图已通过 set_analysis_view 加载。此外，CPF power_intent 文件中使用的名称无法更新，因为CPF文件被视为黄金文件不应修改；如需更改，需手动更新CPF文件并在运行 update_names 后重新读取。而IEEE1801 power_intent 文件允许在设计流程中更改，因此使用 update_names 更改任何引脚、实例或网络名称将自动更新IEEE1801名称，并可写出更新后的IEEE1801文件。",
+  "usage": "update_names [-help] [-allowed <chars>] [-change_modules <hinsts_modules> [-local]] [-design] [-first_restricted <chars>] [-honor_dont_touch] [-hport] [-inst] [-last_restricted <chars>] [-log_file <string> [-append_log]] [-map {{<from to>}...}] [-max_length <integer>] [-module] [-net] [-nocase] [-phys_inst] [-port] [-prefix <string >[-name_collision]] [-quiet] [-random [-random_map_dir <out_dir>]] [-regexp] [-replace_string <string>] [-reserved_words <string>] [-restricted <string>] [-suffix <string> [-name_collision]] [-system_verilog] [-verilog] [-vhdl]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowed",
+      "description": "指定名称中允许使用的字符。任何不在允许列表中的字符将在最终名称中被移除。最小指定为10个字符。要允许所有大小写字母a到z，必须全部指定。使用 -regexp 允许将短横线“-”用作字符范围指示符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-change_modules",
+      "description": "将名称更改限制在指定的模块或hinsts模块列表内的对象。更改将递归应用于每个模块下的层次结构，除非指定了 -local 参数。如果未使用此参数，则默认使用当前设计。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-local",
+      "description": "关闭递归下降，使更改仅限于模块或设计本地。可以修改设计/模块中定义的对象（例如，设计/模块、端口/hport、实例或网络名称），但不能修改子模块名称和子模块的hport名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-design",
+      "description": "仅更改设计模块名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-first_restricted",
+      "description": "指定不能在名称开头使用的字符。这些字符将被移除，包括重复字符。例如，-first_restricted {_#%$} 会将 _$abc 更改为 abc。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-honor_dont_touch",
+      "description": "防止重设了 dont_touch 属性的对象被重命名。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hport",
+      "description": "更改所有hinsts的中间模块的端口名称（例如，Verilog的input、output或inout名称），包括总线端口名称。它还会修改连接到端口的相同隐式网络名称以匹配新端口名。不修改库单元或顶层设计的端口名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "仅更改每个层次级别的Verilog实例名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-last_restricted",
+      "description": "指定不能在名称结尾使用的字符。这些字符将被移除，包括重复字符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-log_file",
+      "description": "指定一个日志文件，用于输出显示任何名称更改的旧名和新名的报告。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-append_log",
+      "description": "将报告追加到 -log_file 选项指定的 <out_file> 中。如果省略此选项，<out_file> 将被覆盖。只有在指定了 -log_file 选项时才能指定此选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-map",
+      "description": "接受一个字符串对列表，并将每对中的第一个字符串映射到第二个字符串。需要将每对用大括号括起来。为了与Genus用法兼容，字符串周围可选地允许使用双引号。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_length",
+      "description": "将更改后的名称长度限制为指定的字符数。如果名称超过限制，额外的字符将从末尾截断。如果新名称不唯一，原始名称会进一步回退修剪，以允许使用诸如1、2等后缀使其唯一并在指定的长度限制内。注意：截断发生在所有其他更改之后。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-module",
+      "description": "更改除设计模块名称外的所有模块名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "更改每个层次级别的Verilog网络名称（例如，Verilog的wire名称）。这不会修改对应于Verilog端口定义（例如，Verilog的input、output或inout名称）的网络名称。如果要修改这些网络名称，请使用 -port 选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nocase",
+      "description": "更改在忽略大小写时发生冲突的名称。例如，如果同时存在 net1 和 Net1，其中一个将被更改，通过附加诸如 _1 或 _2 的后缀来解决冲突。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-phys_inst",
+      "description": "仅更改那些通常不出现在Verilog输出中的物理实例名称（如填充单元）。指定此参数时，模块作用域参数（如 -change_modules）将被忽略，因此会检查所有物理实例名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port",
+      "description": "更改设计的顶层模块的端口名称（例如，Verilog的input、output或inout名称），包括总线端口名称。它还会修改连接到端口的相同隐式网络名称以匹配新端口名。不修改库单元或中间模块的端口名称。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-prefix",
+      "description": "为被更改的名称添加前缀。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name_collision",
+      "description": "仅当名称更改与现有名称冲突时，才添加 -prefix 或 -suffix 的值。此参数只能在使用了 -prefix 或 -suffix 参数时使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-quiet",
+      "description": "抑制关于单个对象被重命名的消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-random",
+      "description": "使所有被修改的名称随机化。它混淆设计名称，以便测试用例可以在不暴露真实网表名称的情况下共享。此参数不能与任何其他影响名称的参数一起使用。它可以与 -inst、-net、-hport、-design 和 -port 一起使用，以限制要修改的名称类型。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-random_map_dir",
+      "description": "指定输出目录（out_dir），用于写入输出目录内每种被修改名称类型的旧随机名和新随机名的映射文件。此参数需要 -random 参数。在存在具有需要映射的名称且不受 update_names 支持的辅助文件的情况下非常有用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-regexp",
+      "description": "允许在 -allowed 选项中使用短横线“-”指定字符范围。这类似于正则表达式的单字符匹配用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-replace_string",
+      "description": "指定用于替换 -restricted 或 -reserved_words 字符串的替换字符串。此选项的默认值是 \"_\"。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reserved_words",
+      "description": "指定要避免的单词列表（保留字），如 'begin end'。如果一个完整名称完全匹配其中一个保留字（而不仅仅是名称的子字符串），则默认情况下，该名称将通过添加 _1、_2 等后缀来更改。如果还指定了 -replace_string <rep_str> 参数，则保留字将被 <rep_str> 替换，如果存在任何冲突，则附加 _1、_2 等。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-restricted",
+      "description": "指定不能在名称内部使用的字符串列表。每个字符串将被 -replace_string 字符串替换。例如，-restricted {ab bc} 将替换名称内所有的 ab 和 bc 字符串。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-suffix",
+      "description": "为被更改的名称添加后缀。注意：如果 -suffix 的长度超过 -max_length 值，后缀将被截断。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-system_verilog",
+      "description": "替换SystemVerilog保留字。如果一个完整名称完全匹配其中一个保留字（而不仅仅是名称的子字符串），则该名称将被更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-verilog",
+      "description": "替换Verilog保留字。如果一个完整名称完全匹配其中一个Verilog保留字（而不仅仅是名称的子字符串），则该名称将被更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-vhdl",
+      "description": "修复名称以满足VHDL标识符要求。它替换VHDL保留字。如果一个完整名称完全匹配其中一个VHDL保留字（而不仅仅是名称的子字符串），则该名称将被更改。它还隐式使用 -first_restricted \"_0123456789\" 来移除任何前导下划线或数字字符，并使用 -last_restricted \"_\" 来移除任何尾随下划线字符，因此不能将 -vhdl 与 -first_restricted 或 -last_restricted 一起使用。最后，此选项将移除任何名称中间重复的下划线字符，并用单个下划线字符替换，因为VHDL不允许重复的下划线字符。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_min_pulse_width(25.10)                          set_min_pulse_width(25.10)
+
+Name
+       set_min_pulse_width  - Selects the most restrictive value when multiple
+       minimum pulse width checks are set
+
+Syntax
+       set_min_pulse_width
+
+       [-help]
+
+       [-low]
+
+        [-high]
+
+       [-waveform_aware_type {absolute | source_width_ratio}]
+
+       <valueobject_list>
+
+       Selects the most restrictive value when multiple  minimum  pulse  width
+       checks are set.
+
+       Note:  The timing_disable_lib_pulsewidth_checks global has no effect on
+       pulse width checks created by the set_min_pulse_width command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -high  Applies the minimum pulse width  check  to  high  signal  levels
+              only.  If  neither  the  -low  or -high option is specified, the
+              value is applied to both low and high signal levels.
+
+       <list> Specifies a list of pins or clock waveforms to which the minimum
+              pulse width check is to be applied. If the list  is  not  speci-
+              fied,  the  minimum pulse width check applies to all the pins in
+              the clock tree of the current design. If  a  clock  waveform  is
+              specified, all the pins driven by the clock are affected.
+
+       -low   Applies the minimum pulse width check to low signal levels only.
+              If  neither  the -low or -high option is specified, the value is
+              applied to both low and high signal levels.
+
+       <object_list>
+              Specifies list of objects: pins, ports, or clocks.
+
+       <value>
+              Specifies a non-negative  floating  minimum  pulse  width  check
+              value.  No  default  value  is  assumed  for minimum pulse width
+              checks.
+
+       -waveform_aware_type {absolute | source_width_ratio}
+              Specifies the type of waveform-aware pulse width check to  apply
+              as absolute or  source_width_ratio.
+
+Examples
+              * The following command sets a minimum pulse width, both low and
+                high, check of 1.0 to the clock network of the current design:
+
+                set_min_pulse_width 1.0
+
+              * The  following command sets a minimum pulse width low check of
+                2.0 to all the pins clocked by the CLK1 clock:
+
+                set_min_pulse_width -low 2.0 [get_clocks CLK1]
+
+              * The following command sets a minimum pulse width  -high  check
+                of  1.0  to  the CP clock pin of register ff1, as shown in the
+                following example:
+
+                set_min_pulse_width 0.5 u55/CK -low
+
+                set_min_pulse_width 1.0 u55/CK -high
+
+                report_min_pulse_width -pin u55/CK
+
+                -------------------------------------------------------
+
+                SEQUENTIAL CLOCK PULSE WIDTH
+
+                -------------------------------------------------------
+
+                Pin                Required     Actual Pulse    Slack
+
+                                   Pulse Width  Width
+
+                -------------------------------------------------------
+
+                u55/CK (low)       0.500        4.200           3.700
+
+                u55/CK (high)      1.000        5.800           4.800
+
+                ------------------------------------------------------
+
+                report_timing -check_type pulse_width -to u55/CK
+
+                Path 1: MET User PulseWidth Check with Pin u55/CK
+
+                Ending Clock Edge: u55/CK (^) checked  with  leading  edge  of
+                'CLK4'
+
+                Beginning Clock Edge: u55/CK (v) triggered by trailing edge of
+                'CLK4'
+
+                Path Groups: {CLK4}
+
+                Other End Arrival Time 0.152
+
+                - PulseWidth 0.500
+
+                + Phase Shift 10.000
+
+                = Required Time 9.651
+
+                - Arrival Time 5.951
+
+                = Slack Time 3.700
+
+                Clock Fall Edge 6.000
+
+                + Clock Network Latency (Prop) -0.049
+
+                = Beginpoint Arrival Time 5.951
+
+                ----------------------------------------------------
+
+                Load   Slew    Delay  Arrival  Cell  Arc  Pin
+
+                                      Time
+
+                ----------------------------------------------------
+
+                0.015  0.019   5.951  DFF      CK    v    u55/CK ->
+
+                ----------------------------------------------------
+
+Related Information
+              * reset_min_pulse_width
+
+              * report_analysis_coverage
+
+              * report_min_pulse_width
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025 set_min_pulse_width(25.10)

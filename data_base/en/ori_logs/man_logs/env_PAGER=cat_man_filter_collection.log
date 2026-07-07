@@ -1,0 +1,170 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+filter_collection(25.10)                              filter_collection(25.10)
+
+Name
+       filter_collection  - Returns a new collection of objects that were fil-
+       tered from the specified collection of objects based on  user-specified
+       criteria (<filter_expression>)
+
+Syntax
+       efilter_collection
+
+       [-help]
+
+       <base_collection>
+
+       {<filter_expression>}
+
+       [-nocase]
+
+       [-quiet]
+
+       [-regexp]
+
+       Returns  a new collection of objects that were filtered from the speci-
+       fied collection of objects  based  on  user-specified  criteria  (<fil-
+       ter_expression>).  The original collection remains unmodified.
+
+       The following rules apply:
+
+              * The  <filter_expression>  can  be created by combining several
+                object properties using the following relational  and  logical
+                operators:  >, <, ==, !=, <=, >=, &&, ||, =~, !~, AND, OR. You
+                also can use parentheses to create expressions.
+
+              * You can use the defined and undefined existence  operators  to
+                determine whether an attribute is defined for an object.
+
+              * All  design  object properties supported through the get_prop-
+                erty command can be used for filtering the base collection.
+
+       Note: You can perform filtering operations by  specifying  the  -filter
+       parameter with the get_* commands.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <base_collection>
+              Specifies the collection of objects from which to filter objects
+              for the new collection.
+
+       <filter_expression>
+              Specifies  the  criteria with which to filter objects. The soft-
+              ware adds any objects in the base collection  that  match  <fil-
+              ter_expression> to the new collection.
+
+              See "Examples" on how to create filter expressions.
+
+       -nocase
+              Specifies that pattern matching is not case sensitive.
+
+              Note: You must specify -regexp in order to use this parameter.
+
+       -quiet Suppresses all the error and warning messages that are generated
+              when the filter_collection command is run.
+
+       -regexp
+              Treats the specified patterns as regular expression patterns.
+
+              Default: Treats the specified pattern as a wildcard.
+
+Examples
+              * The  following command returns a single-object collection con-
+                taining the pin with the hierarchical name lat_3/Q:
+
+                filter_collection [get_pins] {hierarchical_name == lat_3/Q}
+
+              * The following command returns a collection of pins that have a
+                maximum slew greater than 0.1:
+
+                filter_collection [get_pins] {slew_max_rise > 0.1}
+
+              * The following commands create a new collection containing  all
+                those  paths  from  the  path  collection  with  a slack value
+                greater than -0.806 and less than 0.0:
+
+                set paths [report_timing -collection -max_paths 10]
+
+                set newPaths [filter_collection $paths {(slack  >  -0.806)  &&
+                (slack < 0.0)}]
+
+              *
+
+                The  following example creates a pin type user property to an-
+                notate useful_skew values which may be used  in  custom  func-
+                tions for analysis and
+
+                implementation:
+
+                define_property useful_skew -type float -object_type pin
+
+                set_interactive_constraint_modes   [all_constraint_modes  -ac-
+                tive]
+
+                You can now apply some values to a few register clock pins:
+
+                set_property [get_pin hier1/reg1/clock] useful_skew 1.5
+
+                set_property [get_pin hier1/hier2/reg2/clock] useful_skew 2.5
+
+                In the script, you can look for pin objects that have (or does
+                not have) this attributed applied:
+
+                find clock pins without useful skew
+
+                set  pins_without_useful   [filter_collection   [all_registers
+                -clock_pins] \
+
+                "undefined(useful_skew)"]
+
+                count the number of registers with useful skew applied
+
+                set    pins_with_useful    [filter_collection   [all_registers
+                -clock_pins] \
+
+                "defined(useful_skew)"]
+
+              * The following command returns a  collection  of  object  names
+                that do not match with "*clk*":
+
+                filter_collection $abc {full_name !~ *clk*}
+
+                out in1 in2 in3 select TopBus[2] TopBus[1] TopBus[0] bidi
+
+                0x53
+
+              * The  following  command  returns  a collection of object names
+                that are not "*clk*" only:
+
+                filter_collection $abc {full_name != *clk*}
+
+                out clkl clk2 in1 in2 in3 select TopBus[2] TopBus[1] TopBus[0]
+                bidi
+
+                0x59
+
+              * The following command returns a  collection  of  object  names
+                that match with "*clk*":
+
+                filter_collection $abc {full_name =~ *clk*}
+
+                clkl clk2
+
+                0x5f
+
+              * The  following  command  creates  a  collection  of  pins with
+                user_constant_value:
+
+                set   constant_pins   [filter_collection    [get_pins]    {de-
+                fined(user_constant_value}]
+
+Related Information
+              * add_to_collection
+
+              * compare_collections
+
+              * copy_collection
+
+              * foreach_in_collection
+
+                           Fri Apr 04 01:25:37 2025   filter_collection(25.10)

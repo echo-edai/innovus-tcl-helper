@@ -1,0 +1,141 @@
+{
+  "command": "definePartition",
+  "is_cmd": true,
+  "summary": "定义与层次化实例对应的新分区",
+  "description": "此命令用于定义与设计中的层次化实例相对应的新分区。它支持嵌套分区，可用于在分区内部指定子分区。定义分区时，可以按任意顺序指定参数。该命令通常在导入设计后使用。注意：此命令不会检查克隆的围栏约束，也不会根据主分区对齐克隆。如果克隆没有围栏约束，definePartition会为克隆模块创建围栏。对于具有背面金属层的设计，该命令同时接受背面和正面金属层，但自动引脚分配流程不受背面金属层支持的影响，它仅在正面层上分配引脚。",
+  "usage": "definePartition [-help] [-coreSpacing {left right top bottom}] [-minPitchBottom <x>] [-minPitchLeft <x>] [-minPitchRight <x>] [-minPitchTop <x>] [-pinLayerBottom {<list_of_layers>}] [-pinLayerLeft {<list_of_layers>}] [-pinLayerRight {l<list_of_layers>}] [-pinLayerTop {l<list_of_layers>}] [-placementHalo {<left right top bottom> }] [-railwidth <railWidth>] [-reservedLayer {<list_of_layers>}] [-routingHalo <floatValue>] [-routingHaloBottomLayer <integerValue>] [-routingHaloTopLayer <integerValue>] [-stdCellHeight <x>] {-hinst <string> | -proto {master_hinst_name_list} | -cell <cellName>} [-checkCloneAlignment ] [-hinst <hInstName> [-copyFrom <refPtnName>]] [-cell <cellName> [-copyFrom <refPtnName>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个definePartition参数的类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-coreSpacing",
+      "description": "指定分区块设计边界与设计核心区域之间的间距（微米），仅当分区实例上未定义电源域时，在提交分区后生效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-minPitchBottom",
+      "description": "指定分区底边的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minPitchLeft",
+      "description": "指定分区左边的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minPitchRight",
+      "description": "指定分区右边的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-minPitchTop",
+      "description": "指定分区顶边的引脚间距尺寸。默认值为2，表示每两条金属轨道放置一个引脚。实际引脚间距取决于引脚的金属层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pinLayerBottom",
+      "description": "指定用于分区底边的金属层列表。垂直金属层（如Metal2, Metal4）用于顶部和底部，水平金属层（如Metal3, Metal5）用于左侧和右侧。仅接受首选布线方向的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinLayerLeft",
+      "description": "指定用于分区左边的金属层列表。垂直金属层（如Metal2, Metal4）用于顶部和底部，水平金属层（如Metal3, Metal5）用于左侧和右侧。仅接受首选布线方向的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinLayerRight",
+      "description": "指定用于分区右边的金属层列表。垂直金属层（如Metal2, Metal4）用于顶部和底部，水平金属层（如Metal3, Metal5）用于左侧和右侧。仅接受首选布线方向的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pinLayerTop",
+      "description": "指定用于分区顶边的金属层列表。垂直金属层（如Metal2, Metal4）用于顶部和底部，水平金属层（如Metal3, Metal5）用于左侧和右侧。仅接受首选布线方向的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-placementHalo",
+      "description": "指定在提交分区期间，围绕分区左、下、右、上各边创建布局光晕的值（微米）。仅当分区实例上未定义电源域时使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-railwidth",
+      "description": "指定标准单元电源轨宽度（微米）。如果分区引脚不允许在电源或地轨宽度之上，请指定电源轨宽度尺寸。如果输入0.0（默认值），则使用技术文件中的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-reservedLayer",
+      "description": "指定用于分区内布线和生成分区引脚的金属层。任何未指定的金属层（通常是最顶层的金属层）允许在分区上方布线。保存分区时，为此分区生成的LEF将在这些层上具有布线阻塞，以便顶层路由器知道分区中正在使用哪些金属层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-routingHalo",
+      "description": "指定围绕分区各边的布线间距（微米）。布线光晕仅由信号路由器遵守。信号路由器将布线光晕区域内特定布线层上的布线视为成本非常高的布线。然而，垂直布线或直接连接到引脚是可以接受的。特殊路由器不遵守布线光晕。要阻止特殊布线，请使用布线阻塞。可以指定正值或负值。正值表示光晕在分区外部。负值表示光晕在分区内部，适用于模块实现期间。所有边使用相同的值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-routingHaloTopLayer",
+      "description": "指定将为其创建布线光晕的分区顶层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-routingHaloBottomLayer",
+      "description": "指定将为其创建布线光晕的分区底层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-stdCellHeight",
+      "description": "指定分区的标准单元高度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-hinst",
+      "description": "指定层次化实例的名称。注意：其在网表树中的任何祖先或后代都不能是分区。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-proto",
+      "description": "指定原型流程的主层次化实例列表。它为指定的层次化实例定义具有引导约束的新分区。在proto_design之前使用，proto_design最终会将物理约束从引导转换为围栏。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定用于在具有R0方向的实例处定义新分区的单元名称。注意：对于黑盒，如果未找到具有R0方向的实例，则选择具有非R0方向的实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-checkCloneAlignment",
+      "description": "当指定时，definePartition命令仅检查克隆与主分区的对齐情况并报告不匹配。注意：该命令不会移动克隆。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-copyFrom",
+      "description": "指定要从中复制其属性的参考分区的名称。复制约束时，会考虑形状、方向和位置。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

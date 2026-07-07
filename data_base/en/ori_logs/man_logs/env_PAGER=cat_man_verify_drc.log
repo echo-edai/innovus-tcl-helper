@@ -1,0 +1,249 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+verify_drc(25.10)                                            verify_drc(25.10)
+
+Name
+       verify_drc - Checks for DRC violations and creates violation markers in
+       the  design  database  that can be seen on the GUI and browsed with the
+       Violation Browser
+
+Syntax
+       verify_drc
+
+       [-help]
+
+       [-area {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}]
+
+       [-check_illegal_trim_shapes]
+
+       [-check_ndr_spacing]
+
+       [-check_only {all | regular | special | selected_net | selected |  cell
+       | default}]
+
+       [-check_reverse]
+
+       [-check_routing_halo]
+
+       [-check_same_via_cell]
+
+       [-check_short_only]
+
+       [-check_trim_length]
+
+       [-check_uncolored]
+
+       [-enable_post_passive_fill_check]
+
+       [-exclude_pg_net]
+
+       [-ignore_fill_wire]
+
+       [-ignore_trial_route]
+
+       [-layer_range {layer1 [layer2]}]
+
+       [-limit <max_error>]
+
+       [-report <filename>]
+
+       [-view_window]
+
+       Checks  for  DRC violations and creates violation markers in the design
+       database that can be seen on the GUI and  browsed  with  the  Violation
+       Browser.  Use  the set_verify_drc_mode command to set global parameters
+       for verify_drc. The parameters you specify with the set_verify_drc_mode
+       command are then automatically used on running verify_drc. The settings
+       are saved in the design so you need not set them  each  time  you   run
+       verify_drc.
+
+       verify_drc  marks  only one violation from all those available on a via
+       cell, even when there are several via instances. For example, for the N
+       number of nets with the M number of S11 vias in the design, the command
+       will report DRC for just (any) one S11 via, and not for all the M  num-
+       ber of S11 vias.
+
+       Use get_verify_drc_mode to return the current settings for the set_ver-
+       ify_drc_mode command. The verify_drc command also checks the DRC viola-
+       tions within the specified via. This helps in minimizing the DRC viola-
+       tions  before  the  sign-off. In case the design has any DRC violation,
+       the software flags DRC on all the via masters, such as PG via,  regular
+       via,    via    pillar,   and   via   array.   Use   set_verify_drc_mode
+       -check_same_via_cell true to check via cell violation.
+
+       The verify_drc command checks  only  the  placed  instances.  It  skips
+       checking the DRC for unplaced instances. This command adds the LEF rule
+       in the description section of the Violation Browser to provide more in-
+       formation on the rule that is causing the DRC violation.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each verify_drc parameter.
+
+              For a detailed description of the command and  all  its  parame-
+              ters, use the man command:
+
+              man verify_drc
+
+       -area {{<lx1 ly1 ux1 uy1>} {<lx2 ly2 ux2 uy2>}...}
+              Specifies the coordinates of one or more area regions to verify.
+              It  verifies the objects inside and outside the die, if the area
+              regions are bigger  than  chip  boundary.  By  default,  objects
+              within the chip boundary are verified against the DRC rules. For
+              example, verify_drc -area {0 0 100 100} {100 100 200 200}.
+
+       -check_illegal_trim_shapes
+              Checks the missing trim shapes for a fulfilled design.
+
+       -check_ndr_spacing
+              Checks non-default rule spacing as a hard rule.
+
+              Note:       When       the      setNanoRouteMode      -route_en-
+              force_route_rule_on_special_net_wire parameter is set  to  true,
+              the non-default rule for special net is also checked.
+
+       -check_only {all | regular | special | selected_net | selected | cell |
+       default}
+              Specifies  which  types  of  shapes  are checked against the DRC
+              rules. Following are the various values of this parameter :
+
+              * all: Reports the violations between all routing shapes  (regu-
+                lar  and  special)  and  all  other  shapes, including routing
+                blockages and cell pin/obs shapes.
+
+              * regular: Reports only the violations between  regular  routing
+                shapes  (normally  created by NanoRoute) and all other shapes.
+                It does not report violations between special routes,  routing
+                blockages  and  cell shapes. This is useful to find violations
+                caused only by NanoRoute.
+
+              * special: Reports  only  the  violations  between  the  special
+                routes and all other shapes. It does not report violations be-
+                tween  the regular routes, routing blockages, and cell shapes.
+                This is useful while checking the power routing or  pre-routed
+                special  routes  with isolating these errors from other viola-
+                tions.
+
+              * selected_net: Reports only the violations between the  objects
+                on the selected nets. Before running verify_drc, the nets need
+                to be selected with the selectNet command.
+
+              * selected:  Reports violations related to the selected wire/via
+                objects.
+
+              * cell: Reports only the violations between the shapes of  cells
+                including  the  objects  inside  the  same  cell and different
+                cells.
+
+              * default: This value is equivalent to  specifying  the  regular
+                and special at the same time.
+
+              Default: default
+
+       -check_reverse
+              Reports the CONVEXCORNER REVERSE violation in the flow.
+
+              Default: false
+
+       -check_routing_halo
+              Checks  for routing violations in the routing halo area. It also
+              creates the DRC markers on any  routing  wire  parallel  to  the
+              block boundary or design boundary.
+
+              Routing halos are used to avoid cross-coupling between top-level
+              and  inside-the-block routes. As short jogs do not affect cross-
+              coupling much, they can be ignored even if they overlap with the
+              halo region. Normally, it is better to have some short jogs  in-
+              stead of more vias.
+
+              When  the -check_routing_halo option is specified, any jog shape
+              with length less than  the  value  set  for  set_verify_drc_mode
+              -max_wrong_way_halo  is  ignored  for  the wrong way check. ver-
+              ify_drc reports violations only for the  jog  shapes  that  have
+              lengths      greater      than      the      set_verify_drc_mode
+              -max_wrong_way_halo setting.
+
+              Default: If the set_verify_drc_mode  -max_wrong_way_halo  option
+              has not been set, verify_drc uses 4*<pitch> as the default value
+              for the routing halo, where <pitch>is the METAL2 routing pitch.
+
+       -check_same_via_cell
+              Checks the DRC issues in the same via cell.
+
+       -check_short_only
+              Excludes checking all other DRCs except the short ones.
+
+       -check_trim_length
+              Checks the maximum length on the trim shape layer.
+
+       -check_uncolored
+              Reports  violations with no color and invalid mask color for the
+              multi-pattern ( MPT) layers.
+
+       -enable_post_passive_fill_check
+              Checks if the track is  fully  filled  for  the  full_fill  trim
+              layer.
+
+       -exclude_pg_net
+              Excludes the checking of power and ground (P/G) nets. verify_drc
+              -exclude_pg_net  reports  violations  caused by routing (special
+              and regular) except for a P/G net.
+
+       -ignore_fill_wire
+              Ignores metal fill wires while checking DRCs.
+
+       -ignore_trial_route
+              Ignores early global route while checking DRCs.
+
+       -layer_range {layer1 [layer2]}
+              Checks between the specified range of  metal  layers,  including
+              the  cut  layers.  You can use the full layer name, or abbrevia-
+              tions like 1 for the first  routing  layer,  etc.  For  example,
+              -layer_range  {metal1  metal3} will check all the layers between
+              metal1 to metal3. If layer2 is not specified, it only checks DRC
+              on layer1.
+
+       -limit <max_error>
+              Specifies the maximum number  of  errors  to  be  reported.  The
+              <max_error> value can be any integer from 1 to 2147483646.
+
+              Set <max_error> to 0 to remove the limit and report all the DRCs
+              in  the  design. However, this may impact memory and runtime, if
+              the design has too many DRCs.
+
+              Default: 1000
+
+       -report <filename>
+              Specifies the report file name, which contains the violation in-
+              formation.
+
+       -view_window
+              Checks for DRC violations in the current window.
+
+Example
+              * Any one of the following commands checks  for  DRC  violations
+                between Metal2 and Metal3 layers:
+
+       verify_drc -layer_range {2 3}
+
+       verify_drc -layer_range {3 2}
+
+              * The following command checks for special wire related DRC vio-
+                lations,  such  as spacing violation between power/ground wire
+                to cell blockage:
+
+       verify_drc -check_only special
+
+Related Information
+              * The Identifying and Viewing Violations chapter of User Guide.
+
+              * checkPlace
+
+              * clearDrc
+
+              * get_verify_drc_mode
+
+              * saveDrc
+
+              * set_verify_drc_mode
+
+                           Fri Apr 04 01:25:37 2025          verify_drc(25.10)

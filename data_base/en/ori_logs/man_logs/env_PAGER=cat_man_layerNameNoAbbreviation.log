@@ -1,0 +1,59 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+layerNameNoAbbreviation(25.10)                  layerNameNoAbbreviation(25.10)
+
+Name
+       layerNameNoAbbreviation
+
+Syntax
+       layerNameNoAbbreviation {0 | 1}
+
+       Type: Boolean
+
+       Default:
+
+              * 1 for N7 designs
+
+              * 0 for rest all designs
+
+       By default dbGet layer.name and most command -layer <layer> options al-
+       low  abbreviations  such as M1 and M2, for routing layers such as 1 and
+       2. If this global variable is set to 1, dbGet  layer.name  returns  the
+       full  layer names rather than an abbreviation, and the M1 and M2 abbre-
+       viations are not allowed for -layer input.
+
+       This global is intended to be set when  a  technology  has  real  layer
+       names like M1, M2, that do not correspond to routing layers 1, 2.  Set-
+       ting  this  global  to 1 will disable the M<num> abbreviations that may
+       cause confusion, and only allow full layer names, or routing layer num-
+       bers.
+
+Example
+       dbGet head.layers.extName                 //.extName is full layer name
+
+       Metal1 Metal2 Metal3 Metal4 Metal5 Metal6 Via12 Via23 Via34 Via45 Via56
+       OVERLAP
+
+       dbGet head.layers.name                    //.name is abbreviated  layer
+       name
+
+       M1 M2 M3 M4 M5 M6 Via12 Via23 Via34 Via45 Via56 OVERLAP add_shape -rect
+       {0  0  5  5}  -layer Metal1  //full name worksadd_shape -rect {0 0 5 5}
+       -layer M1      //abbreviated name workadd_shape -rect {0 0 5 5}  -layer
+       1       //routing number works
+
+       set layerNameNoAbbreviation 1 //set layer name returned with full layer
+       name instead of abbreviation
+
+       1
+
+       dbGet  head.layers.name                     //.name  is  now full layer
+       name
+
+       Metal1 Metal2 Metal3 Metal4 Metal5 Metal6 Via12 Via23 Via34 Via45 Via56
+       OVERLAP add_shape -rect {0 0 5 5} -layer  Metal1    //full  name  work-
+       sadd_shape   -rect  {0  0  5  5}  -layer  M1        //abbreviated  name
+       fails**ERROR: (IMPSPR-162): Incorrect usage  for  command  'add_shape'.
+       Invalid layer name: M1add_shape -rect {0 0 5 5} -layer 1        //rout-
+       ing number works
+
+                           Fri Apr 04 01:25:37 20l2a5yerNameNoAbbreviation(25.10)

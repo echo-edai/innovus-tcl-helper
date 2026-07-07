@@ -1,0 +1,81 @@
+{
+  "command": "remove_assigns",
+  "is_cmd": true,
+  "summary": "移除 Verilog 中的 assign 语句，同时保持 DEF 网表不变",
+  "description": "该命令用于尽可能多地移除 Verilog 中的 assign 语句，同时保持 DEF 网表（即布局和布线）不变，以避免对时序造成干扰。它可以移除所有非顶层模块的 assign 网络而不添加缓冲器，或者用工具自动选择的适当缓冲器替换 assign 语句。适用于原始网表导入 Innovus 后存在不希望保留的 assign 网络的设计场景。",
+  "usage": "remove_assigns [-help] [-buffer <bufName>] [-buffering [-buffer_tie_assigns] [-includeIdealNets] [-includeClockPath]] [-honordonttouch] [-ignorePortConstraints] [-net <netName> [-netBuffer <netBufName>]] [-prefix <bufNamePreFix>] [-report]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-buffer",
+      "description": "为所有 assign 网络指定缓冲器名称，禁用自动缓冲器选择。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-buffer_tie_assigns",
+      "description": "允许对 tie（固定电平）assign 进行缓冲。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-buffering",
+      "description": "指定是否需要 assign 网络缓冲功能。若仅使用此选项，所有 assign（包括顶层和非顶层模块）将被缓冲器替换，工具会自动选择满足所有电源域要求且面积成本最小的缓冲器。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-honordonttouch",
+      "description": "尊重 dont_touch 属性。防止对设置了 preserve/dont_touch 的模块进行 assign 移除。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignorePortConstraints",
+      "description": "在 assign 移除过程中允许忽略所有端口约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includeClockPath",
+      "description": "移除时钟路径上的 assign。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includeIdealNets",
+      "description": "移除理想网络上的 assign。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定网络名称（支持列表）。用于移除或缓冲指定 assign 网络列表。必须提供 <netName> 参数，可以是单个网络名、多个用空格分隔的网络名、通配符、总线名等。若使用此选项，必须同时使用 -buffering 才能对指定网络进行缓冲，否则按默认无选项行为处理。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-netBuffer",
+      "description": "为 -net 选项中指定的特定网络指定缓冲器名称。此选项必须在 -net 选项之后使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefix",
+      "description": "指定用于缓冲器名称的用户自定义前缀。若未指定，默认前缀为 \"buf_dummy_\"。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report",
+      "description": "报告所有被缓冲器替换的缓冲器和 assign 网络列表。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

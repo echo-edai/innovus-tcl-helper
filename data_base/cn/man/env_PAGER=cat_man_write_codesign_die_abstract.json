@@ -1,0 +1,243 @@
+{
+  "command": "write_codesign_die_abstract",
+  "is_cmd": true,
+  "summary": "将当前芯片的抽象信息写入文件",
+  "description": "将当前芯片的抽象信息写入指定文件，同时也会将用于芯片边缘检查的OBS写入该抽象文件。该命令应在加载初始布局规划后指定。生成的文件将被相邻芯片导入，以确保当前设计被相邻芯片遵循。与writeDieAbstract命令类似，但write_codesign_die_abstract命令提供了过滤部分抽象内容的选项（某些流程可能不需要），并提供了为没有TSV的IC写入第三方芯片抽象的选项。该命令支持分层设计的嵌入式凸点流程。",
+  "usage": "write_codesign_die_abstract [-help] DIEABSTRACTFILE [-block_pin_layer_bottom <layer_name>] [-block_pin_layer_top <layer_name>] [-block_pin_minimum_size <x y>] [-block_pin_name_includes <pin_name>] [-bump_pin_layer_bottom <layer_name>] [-bump_pin_layer_top <layer_name>] [-constraints <file_name>] [-die_shrink_by <num>] [-die_thickness <num>] [-include_macro_obstructions] [-io_macros <macro_names>] [-io_pin_layer_bottom <layer_name>] [-io_pin_layer_top <layer_name>] [-io_pin_minimum_size <pin_size>] [-io_pin_name_includes <pin_name>] [-layer_details] [-macro_obstructions_layer_bottom <layer_name>] [-macro_obstructions_layer_top <layer_name>] [-no_block_macros] [-no_blockages] [-no_rdl_routing] [-power_routing] [-power_routing_layer_bottom <layer_name>] [-power_routing_layer_top <layer_name>] [-rdl_routing_layer_bottom <layer_name>] [-rdl_routing_layer_top <layer_name>] [-scribe_all <distance_in_microns>] [-scribe_east <distance_in_microns>] [-scribe_north <distance_in_microns>] [-scribe_south <distance_in_microns>] [-scribe_west <distance_in_microns>] [-sealring_all <distance_in_microns>] [-sealring_east <distance_in_microns>] [-sealring_north <distance_in_microns>] [-sealring_south <distance_in_microns>] [-sealring_west <distance_in_microns>] [-version {4.0}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "DIEABSTRACTFILE",
+      "description": "指定芯片抽象文件的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-block_pin_layer_bottom",
+      "description": "指定用于模块宏的合法布线层名称。如果指定，则低于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_pin_layer_top",
+      "description": "指定用于模块宏的合法布线层名称。如果指定，则高于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_pin_minimum_size",
+      "description": "定义将输出到芯片抽象的引脚的最小尺寸。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_pin_name_includes",
+      "description": "指定只有包含该字符串的引脚才会被输出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bump_pin_layer_bottom",
+      "description": "指定用于凸点宏的合法布线层名称。如果指定，则低于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bump_pin_layer_top",
+      "description": "指定用于凸点宏的合法布线层名称。如果指定，则高于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-constraints",
+      "description": "指定列出约束的文件名。该文件将被读取，约束将应用于设计。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-die_shrink_by",
+      "description": "指定芯片应缩小的百分比。典型的收缩值为10（表示10%的光学收缩）。默认值0表示不收缩。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-die_thickness",
+      "description": "指定芯片厚度。默认值为0。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-include_macro_obstructions",
+      "description": "指定在输出到芯片抽象时包含LEF宏OBS形状。默认情况下，不包含OBS障碍物。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-io_macros",
+      "description": "标识要写入芯片抽象的I/O宏。如果未指定宏，则协同设计将在凸点级别进行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-io_pin_layer_bottom",
+      "description": "指定用于I/O宏的合法布线层名称。如果指定，则低于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-io_pin_layer_top",
+      "description": "指定用于I/O宏的合法布线层名称。如果指定，则高于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-io_pin_minimum_size",
+      "description": "定义将输出到芯片抽象的引脚的最小尺寸。引脚的x和y尺寸必须至少为此值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-io_pin_name_includes",
+      "description": "此字符串表示只有包含该字符串值的引脚才会被输出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_details",
+      "description": "如果指定，则表示layer_details将被输出到芯片。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro_obstructions_layer_bottom",
+      "description": "如果指定，标识OBS形状导出到芯片抽象的底层。此选项的默认值是顶层金属层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-macro_obstructions_layer_top",
+      "description": "如果指定，标识OBS形状导出到芯片抽象的顶层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-no_block_macros",
+      "description": "指示模块宏不应输出到芯片抽象中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_blockages",
+      "description": "指示障碍物不应输出到芯片抽象中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-no_rdl_routing",
+      "description": "指示rdl布线不应输出到芯片抽象中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-power_routing",
+      "description": "指示电源布线不应输出到芯片抽象中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-power_routing_layer_bottom",
+      "description": "指定用于电源布线的合法布线层名称。如果指定，则低于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_routing_layer_top",
+      "description": "指定用于电源布线的合法布线层名称。如果指定，则高于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rdl_routing_layer_bottom",
+      "description": "指定用于rdl布线的合法布线层名称。如果指定，则低于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rdl_routing_layer_top",
+      "description": "指定用于rdl布线的合法布线层名称。如果指定，则高于该层的层不应输出到芯片抽象中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scribe_all",
+      "description": "指定从芯片边界到晶圆切割后硅边缘的距离（微米），适用于所有边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-scribe_east",
+      "description": "指定从芯片边界到晶圆切割后硅边缘的距离（微米），适用于东边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-scribe_north",
+      "description": "指定从芯片边界到晶圆切割后硅边缘的距离（微米），适用于北边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-scribe_south",
+      "description": "指定从芯片边界到晶圆切割后硅边缘的距离（微米），适用于南边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-scribe_west",
+      "description": "指定从芯片边界到晶圆切割后硅边缘的距离（微米），适用于西边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sealring_all",
+      "description": "指定密封环距芯片边界的距离（微米），适用于所有边。密封环是放置在预收缩阶段围绕芯片边界的边框。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sealring_east",
+      "description": "指定密封环距芯片边界的距离（微米），适用于东边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sealring_north",
+      "description": "指定密封环距芯片边界的距离（微米），适用于北边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sealring_south",
+      "description": "指定密封环距芯片边界的距离（微米），适用于南边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sealring_west",
+      "description": "指定密封环距芯片边界的距离（微米），适用于西边。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-version",
+      "description": "指定芯片抽象的版本号。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

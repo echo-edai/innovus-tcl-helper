@@ -1,0 +1,122 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_lib_pins(25.10)                                        get_lib_pins(25.10)
+
+Name
+       get_lib_pins
+
+Syntax
+       get_lib_pins
+
+       [-help]
+
+       [-filter expr]
+
+       [-regexp]
+
+       [-nocase]
+
+       [-quiet]
+
+       {<pattern_list> | -of_objects <object_list>}
+
+       Creates  a  collection  of  library cell pins from the loaded libraries
+       whose name matches the supplied pattern list. Assign these library cell
+       pins to a variable or pass them to another command. If no objects match
+       the criteria, an empty collection is returned.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -filter <expr>
+              Filters the collection with the specified  expression.  For  any
+              library cell pins that match the pattern, the software evaluates
+              the expression based on the attribute of the library cell pin.
+
+              You can filter library pins using any of the library pin proper-
+              ties supported through the get_property command.
+
+              For  details  on  how to create filter expressions, refer to the
+              filter_collection command.
+
+       -nocase
+              Specifies that pattern matching is not case sensitive.
+
+              Note: You must specify -regexp in order to use this parameter.
+
+       -of_objects <object_list>
+              Creates a collection of all library  pins  associated  with  the
+              specified library cells or pins. You can specify a list of cells
+              or  a  list of pins, but you cannot specify a list that contains
+              both cells and pins. You can specify patterns for  the  cell  or
+              pin  names,  a  collection of cells or pins, or a combination of
+              patterns and a collection.
+
+       <pattern_list>
+              Returns only  those  libraries  in  the  collection  whose  name
+              matches  one  or  more  of  the  patterns specified in the <pat-
+              tern_list> argument. The characters ? and * are wild cards;  The
+              ?  character  matches  any  one  character while the * character
+              matches zero or more characters. If a library cell matches  mul-
+              tiple patterns, it appears multiple times in the collection.
+
+              A  pattern  can have only two hierarchical separator characters,
+              dividing the pattern into one, two, or three parts. If the hier-
+              archical separator is /, the alternatives are:
+
+              * <pin_name_pattern>
+
+                Selects all pins whose  name  matches  the  <pin_name_pattern>
+                from all cells in the libraries.
+
+              * <cell_name_pattern>/<pin_name_pattern>
+
+                Selects  all  pins  whose  name matches the <pin_name_pattern>
+                from all cells whose name matches the  <cell_name_pattern>  in
+                all libraries.
+
+              * <lib_name_pattern>/<cell_name_pattern>/<pin_name_pattern>
+
+                Select all pins whose name matches the <pin_name_pattern> from
+                all  cells whose name matches the <cell_name_pattern> from all
+                libraries whose name matches the <lib_name_pattern>.
+
+       -quiet Suppresses all error and warning  messages  generated  when  the
+              get_lib_pins command is run.
+
+       -regexp
+              Treats the specified patterns as a regular expression patterns.
+
+              Default: Treats the specified pattern as a wild card
+
+Examples
+              * The  following  command  returns all pins in all cells for all
+                libraries:
+
+                get_lib_pins *
+
+              * The following command returns a collection with all  pins  for
+                cell AO1 in any library:
+
+                get_lib_pins AO1/*
+
+              * The following command returns a collection with all pins whose
+                name  starts  with  Z  or  Q  for the AO1 cell in any library:
+                get_lib_pins {AO1/Z* AO1/Q*}
+
+              * The following command returns a collection with all  pins  for
+                the AO1 cell in the lca500kv lib library:
+
+                get_lib_pins lca500kv/AO1/*
+
+              * The  following  command  returns  a  collection  with all pins
+                starting with Z in all cells whose names starts with AN in all
+                libraries starting with lca:
+
+                get_lib_pins lca*/AN*/Z*
+
+Related Information
+              * get_libs
+
+              * get_lib_cells
+
+                           Fri Apr 04 01:25:37 2025        get_lib_pins(25.10)

@@ -1,0 +1,171 @@
+{
+  "command": "report_clock_timing",
+  "is_cmd": true,
+  "summary": "生成当前设计的时钟分析报告。",
+  "description": "该命令用于生成当前设计的时钟分析报告。软件会为每个指定的时钟或时钟对生成独立的报告。用户可以使用 -clock 参数指定时钟，使用 -from_clock 和 -to_clock 参数指定时钟对。结合 -from_clock 和 -to_clock 参数，可以使用 -nworst 和 -greater_than 参数生成针对指定接收端（sink）引脚的偏斜（skew）报告。使用 -early 和 -late 参数可以指定要报告的偏斜类型。注意：若要从报告的偏斜中移除公共路径悲观度（common path pessimism），需在使用 report_clock_timing 命令前先执行 setAnalysisMode -cppr both 命令。报告会包含一个独立的列来显示公共路径调整值。该命令还可用于执行基于 MMMC 的 SSTA 分析。在 MMMC 模式下，该命令会报告所有独立视图的延迟和时钟偏斜。用户可以使用 report_clock_timing -view 参数来报告用户指定视图的时钟时序。",
+  "usage": "report_clock_timing [-absolute_compare] [-cppr_relative] [-latency_greater_than] -type [{skew interclock_skew jitter summary latency cppr_stage_count} [ [-launch | -capture] [-rise | -fall] | [-histogram [-histogram_range <interval size>]] [-logic_level [-source {clock_root | generated_clock}]] ] ] [-early | -late] [-clock <clock_list>] [-from_clock <from_clock_list>] [-to_clock <to_clock_list>] [-from <from_list>] [-to <to_list>] [-nworst <worst_entries>] [-greater_than <lower_limit>] [-view <view_name>] [-verbose] [-format <column_list>] [-tcl_list] [{> | >>} <filename>]",
+  "options": [
+    {
+      "name": "> <filename>",
+      "description": "使用 > 时，将报告写入指定的文件名。如果文件已存在，软件会覆盖它。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": ">> <filename>",
+      "description": "使用 >> 时，将报告写入指定的文件名。如果文件已存在，软件会将报告追加到文件末尾。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-absolute_compare",
+      "description": "以绝对形式比较并报告偏斜值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock",
+      "description": "指定要报告的时钟列表。",
+      "required": false,
+      "type": "clock_list"
+    },
+    {
+      "name": "-cppr_relative",
+      "description": "在偏斜报告中，从 CPPR 公共引脚开始报告延迟。指定后，报告将打印从分支点到寄存器 CK 引脚的延迟测量值。报告中不再需要 CPPR 值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-early",
+      "description": "使用保持（hold）偏斜生成报告。保持偏斜是起始点触发器的最小延迟与结束点触发器的最大延迟之差。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-format",
+      "description": "指定路径报告中要显示的列及其显示顺序。",
+      "required": false,
+      "type": "column_list"
+    },
+    {
+      "name": "-from",
+      "description": "指定在生成的报告中视为起始引脚（from-pins）的时序器件时钟引脚或端口列表。",
+      "required": false,
+      "type": "pin_list"
+    },
+    {
+      "name": "-from_clock",
+      "description": "指定在生成当前时钟间偏斜报告时要使用的起始时钟列表。此选项仅用于时钟间偏斜报告。",
+      "required": false,
+      "type": "clock_list"
+    },
+    {
+      "name": "-greater_than",
+      "description": "报告值大于下限值（lower_limit）的偏斜。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-histogram",
+      "description": "生成延迟报告的文本直方图。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-histogram_range",
+      "description": "以指定的间隔大小生成直方图报告。间隔大小必须是正整数或十进制值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-late",
+      "description": "使用建立（setup）偏斜生成报告。建立偏斜是起始点触发器的最大延迟与结束点触发器的最小延迟之差。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-latency_greater_than",
+      "description": "根据指定的 -type 选项过滤报告。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-launch",
+      "description": "与 -type latency 一起使用时，生成发射（launch）延迟值的报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-capture",
+      "description": "与 -type latency 一起使用时，生成捕获（capture）延迟值的报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-logic_level",
+      "description": "报告时钟根或生成时钟根与捕获寄存器之间的门级数（阶段计数）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nworst",
+      "description": "指定每个时钟域要报告的条目数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-rise",
+      "description": "指定时序器件时钟引脚的有效转换（上升沿）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-fall",
+      "description": "指定时序器件时钟引脚的有效转换（下降沿）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-source",
+      "description": "报告来自主时钟或由其派生的生成时钟的延迟。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "以 Tcl 列表格式而非表格格式生成报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-to",
+      "description": "指定用于报告的时序器件时钟引脚或端口的列表或集合。",
+      "required": false,
+      "type": "pin_list"
+    },
+    {
+      "name": "-to_clock",
+      "description": "指定在生成当前时钟间偏斜报告时要使用的目标时钟列表。此选项仅用于时钟间偏斜报告。",
+      "required": false,
+      "type": "clock_list"
+    },
+    {
+      "name": "-type",
+      "description": "指定要生成的报告类型。选项包括：skew（偏斜）、interclock_skew（时钟间偏斜）、jitter（抖动）、summary（摘要）、latency（延迟）、cppr_stage_count（CPPR 阶段计数）。",
+      "required": true,
+      "type": "enum"
+    },
+    {
+      "name": "-verbose",
+      "description": "生成包含从时钟源到接收引脚（触发器或锁存器的时钟引脚）完整时钟路径的报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "仅为指定的分析视图生成报告。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

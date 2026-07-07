@@ -1,0 +1,142 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+oaOut(25.10)                                                      oaOut(25.10)
+
+Name
+       oaOut  - Saves floorplan, placement, and routing data in the OpenAccess
+       format
+
+Syntax
+       oaOut
+
+       [-help]
+
+       <lib>
+
+       <cell>
+
+       <view>
+
+       [-autoRemaster]
+
+       [-copyTechFromReflib]
+
+       [-cutRows]
+
+       [-early_global_route]
+
+       [-leafViewNames {<lefView1 lefView2 ...>}]
+
+       [-noConnectivity [-noStdCells]]
+
+       [-noOverwriteAbstract]
+
+       [-refLibs {<refLib1 refLib2 ...>}]
+
+       Saves floorplan, placement, and routing data in the OpenAccess format.
+
+       You can use the oaOut command after importing the design.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each oaOut parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man oaOut.
+
+       <lib>  Specifies the target OpenAccess library name.
+
+       <cell> Specifies the target cell name.
+
+       <view> Specifies the target view name.
+
+       -autoRemaster
+              Overrides  the reference libraries and leaf view names specified
+              binding, and utilizes the cell layout viewing binding stored  on
+              the  library  cell  master for each leaf cell (stored in the li-
+              brary cell's layout library and layout view attributes).
+
+              The binding can be specified using the set_cell_binding command.
+
+       -copyTechFromReflib
+              Copies the technology file to the current design library.
+
+              Default: If you do not specify this parameter, Innovus  attaches
+              the technology to the current design library.
+
+              Note: This parameter applies only when you create libraries.
+
+       -cutRows
+              Specifies  that  rows are cut against placement obstructions and
+              block halos, similar to the behavior of the defOut command.
+
+              Default: Does not cut rows.
+
+       -early_global_route
+              Writes out a design containing Early Global Route data.
+
+       -leafViewNames <{lefView1 lefView2> ...}
+              Specifies a list of view names to be searched during  leaf  cell
+              instance binding.
+
+       -noConnectivity
+              This  option  should  be used if the OpenAccess layout cellviews
+              that are  being  used  in  remastering  (-autoRemaster  or  -re-
+              fLibs/-leafViewNames)  do not have any terminals (as is the case
+              when the layout cellview is created from GDSII/Stream data),  in
+              which  case it is not possible to maintain netlist connectivity.
+              Writes out a design that contains instances and physical shapes.
+              When specified, the software creates an OpenAccess module domain
+              using the instance hierarchy, but does not attempt to create any
+              nets, pins, or instance pins.  Designs  written  out  using  the
+              -noConnectivity  parameter  cannot  be reloaded into the Innovus
+              software.
+
+       -noOverwriteAbstract
+              Prevents the software from overwriting abstracts  of  partitions
+              and blackboxes.
+
+              Default:  Innovus  overwrites abstracts of partitions and black-
+              boxes. Innovus never overwrites abstracts of library data.
+
+       -noStdCells
+              Does not save instances of core cells to  the  OpenAccess  data-
+              base.  However, if an instance is either fixed or covered, it is
+              saved to the database.
+
+              Use this parameter if you just need the preliminary  design  for
+              DRC  checks  of  the  floorplan.  In such cases, leaving out the
+              standard cell information makes the file smaller and reduces the
+              DRC run time.
+
+              Note: The -noStdCells parameter must be used with the -noConnec-
+              tivity parameter.
+
+       -refLibs {<refLib1 refLib2 ...>}
+              Specifies the names of the external libraries that will  contain
+              the  leaf  cell masters, LEF abstract, and technology file. This
+              parameter only accepts library names, not paths. The mapping be-
+              tween the external library name and its path is defined  in  the
+              cds.lib  file.  Innovus  references  technology information only
+              from the first library in the list of libraries.
+
+Example
+              * The following command shows the usage of ITDB style libraries:
+
+                createLib myDesignLib -referenceTech {techLib}
+
+                oaOut -autoRemaster myDesignLib myTopCell layout
+
+Related Information
+              * createLib
+
+              * defOut
+
+              * oaIn
+
+              * set_cell_binding
+
+              * Mixed Signal (MS) Interoperability Guide
+
+                * Design Data Preparation chapter
+
+                           Fri Apr 04 01:25:37 2025               oaOut(25.10)

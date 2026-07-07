@@ -1,0 +1,51 @@
+{
+  "command": "add_thru_substrate_insts",
+  "is_cmd": true,
+  "summary": "为指定网络添加穿硅通孔实例以实现双面布线",
+  "description": "此命令用于为关键网络添加穿硅通孔实例，以指定双面布线（背面布线的RC值低于正面布线）。网络的所有引脚或端口必须位于正面，但允许有一个背面端口作为例外。穿硅通孔实例是一种穿过衬底连接正面布线与背面布线的器件。驱动穿硅通孔实例放置在驱动器上方，负载穿硅通孔实例放置在其负载上方。如果负载穿硅通孔实例驱动多个负载，则放置在该负载组的中心。这意味着，在向网络添加穿硅通孔实例之前，网络上所有带引脚的实例必须已放置好，如果网络有端口，它们也必须已放置。因此，此命令会创建不允许的布局，需要使用 refinePlace 命令来解决。当网络有一个背面端口且其他所有部分都在正面时，此命令会创建一个放置在背面端口上方的穿硅通孔实例，以便将网络的正面布线引至背面，通常用于连接背面凸点。对于此用法，-load_thru_substrate_cell 和 -driver_thru_substrate_cell 参数应指定相同的值。使用此命令可为具有多个正面叶引脚、多个正面端口和/或单个背面端口的网络创建一个FTV。FTV放置在背面端口上方。",
+  "usage": "add_thru_substrate_insts [-help] [-driver_thru_substrate_cell <cell1>] -load_thru_substrate_cell cell2 -net <net> [-redraw] [-selected] [-shared_load_thru_substrate_cell]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-driver_thru_substrate_cell",
+      "description": "指定用于实例化驱动穿硅通孔实例的穿硅通孔宏/单元，其正面引脚将布线至驱动器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-load_thru_substrate_cell",
+      "description": "指定用于实例化负载穿硅通孔实例的穿硅通孔宏/单元，其正面引脚将布线至负载。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-net",
+      "description": "指定要添加穿硅通孔实例的网络。指定的网络不能是PG网络或tie网络。它必须有一个驱动器和至少一个负载。不允许有输入输出引脚。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-redraw",
+      "description": "重绘图形窗口。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selected",
+      "description": "用于对负载进行分组，使每组拥有自己的负载穿硅通孔实例。使用此参数需遵循特定步骤：首先指定 -selected、-driver_thru_substrate_cell 和 -load_thru_substrate_cell 参数。一旦驱动穿硅通孔实例创建，选中的负载要么共享一个负载穿硅通孔实例，要么获得自己的负载穿硅通孔实例。未选中的负载直接连接到网络驱动器。所有穿硅通孔实例的背面引脚相互连接。如需对先前步骤中直接连接到网络驱动器的负载进行进一步分组，请选中它们并指定 -selected 和 -load_thru_substrate_cell 参数，但不要指定 -driver_thru_substrate_cell 参数。每个由网络驱动器驱动的选中负载将被重新连接到一个新的负载穿硅通孔实例，如果指定了 -shared_load_thru_substrate_cell 参数，则该实例将被共享。重复此过程直到负载按需分组。在使用 -selected 参数对负载分组时，在选中要分组的负载之前，请取消选择所有对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-shared_load_thru_substrate_cell",
+      "description": "负载共享一个穿硅通孔实例（如果未指定，则每个负载一个穿硅通孔实例）。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

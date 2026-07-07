@@ -1,0 +1,98 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_mutex_condition(25.10)                    report_mutex_condition(25.10)
+
+Name
+       report_mutex_condition - Reports mutex nets of a victim net
+
+Syntax
+       report_mutex_condition
+
+        [-help]
+
+        [-filename <<string>>]
+
+        [-net <<string>>]
+
+       Reports mutex nets of a victim net.
+
+       When  this command is used, all the coupled nets that are participating
+       in mutex for a victim will be reported. The coupled nets  will  be  re-
+       ported as a group of mutex nets (user-defined). By default, all the mu-
+       tex conditions are reported.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -filename <string>
+              Specifies the name of the file that saves the command output re-
+              sults.
+
+       -net <string>
+              Reports the coupled nets mutex to the specified net name.
+
+              You  can  specify  multiple  net  names with multiple report_mu-
+              tex_condition commands.
+
+Examples
+              * The following example shows mutex nets of a victim  net.  This
+                report does not indicate the attackers not listed due to mutex
+                command:
+
+                Vic: Net1
+
+                Attackers: Att1, Att2, Att3
+
+                set_mutex_condition {Att1, Att2 }
+
+                set_mutex_condition {Att2, Att3 }
+
+                set_mutex_condition {Att1, Att3 }
+
+                report_mutex_condition -net Net1 will report:
+
+                - Victim Net: Net1
+
+                Mutex groups:
+
+                {Att1, Att2 },
+
+                {Att2, Att3 },
+
+                {Att1, Att3 }
+
+              * The following example shows that if a coupled net is having LC
+                chain  then the entire chain will be reported along with other
+                mutex group nets:
+
+                Vic: Net1
+
+                Attackers: Att1, Att2, Att3
+
+                Att1 chain: Agg1 Agg11 Agg111
+
+                Att2 chain: Agg2 Agg22 Agg222
+
+                Att3 chain: Agg3 Agg33 Agg333
+
+                set_mutex_condition {Att1, Att2 }
+
+                set_mutex_condition {Att2, Att3 }
+
+                set_mutex_condition {Att1, Att3 }
+
+                report_mutex_condition -net Net1 will report:
+
+                - Victim Net: Net1
+
+                Mutex groups:
+
+                {{ Agg1 Agg11 Agg111 }, { Agg2 Agg22 Agg222}}
+
+                {{ Agg2 Agg22 Agg222}, { Agg3 Agg33 Agg333}}
+
+                {{ Agg1 Agg11 Agg111 }, { Agg3 Agg33 Agg333}}
+
+Related Information
+              * set_mutex_condition
+
+                           Fri Apr 04 01:25:37 202r5eport_mutex_condition(25.10)

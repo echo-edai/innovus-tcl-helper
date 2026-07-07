@@ -1,0 +1,285 @@
+{
+  "command": "saveNetlist",
+  "is_cmd": true,
+  "summary": "保存网表文件",
+  "description": "该命令用于将当前设计或指定模块的网表保存到文件中。它支持多种选项来控制输出格式，例如是否包含物理信息、电源地网络、是否展平模块、是否排除特定单元等。用户可以选择保存逻辑网表或物理网表，并可以应用掩模偏移（mask shift）命名规则。",
+  "usage": "saveNetlist [-help] <fileName> [-abstract] [-derivePGPortDir] [-excludeCellDef <string>] [-excludeCellInst <string>] [-excludeIlm] [-excludeTopCellPGPort <string>] [-exportTopPGNets] [-flattenBus] [-ilm] [-includeBumpCell] [-includePhysicalCell <string>] [-includePhysicalInst] [-includeThruSubstrateInsts] [-keepAllBackslash] [-lineLength <integer>] [-omitFloatingPort] [-removePowerGround] [-replaceTieConnection] [-replaceWorWandWithWire] [-replace_inout_with_output_for_pg_ports] [-shortenNames] [-topModuleFirst] [-useCdsThruForAssign] [-useEEQCellMap <string>] [-useEEQCellWithLibertyInfo] [-writeConstantForSignalConnection] [-writeSupply0Supply1] [-excludeLeafCell | -onlyLeafCell | -onlyStdCell | -onlyMacro | -module <string>] [-followLogicalModuleOrder | -flat ] [-applyMaskShift [-maskShiftSuffix <string>] [-cellNameMapFile <string>] [-ignoreFixedMask ] [-cellInstanceColor {true | false}] [-cellMasterColor {true | false}] ] [-topCell <cellName> ] [-includePowerGround [-includeVirtualPG ]] [-phys [-includeVirtualPG ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定写入网表的文件名（字符串，必需）",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-abstract",
+      "description": "为指定模块（默认为顶层模块）写入一个仅包含端口声明的空Verilog模块",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-applyMaskShift",
+      "description": "根据实例的颜色分配，为叶实例的单元名添加后缀。注意，网表必须唯一或必须指定 -flat 选项，此选项才能生效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cellInstanceColor",
+      "description": "使用基于实例的颜色",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-cellMasterColor",
+      "description": "使用来自Innovus颜色引擎的基于单元主（cell master）的颜色",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-cellNameMapFile",
+      "description": "使用映射文件中指定的名称替换叶实例的单元名。如果映射文件中未定义单元名，则根据工具的默认命名规则更改单元名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-derivePGPortDir",
+      "description": "指定在保存物理网表时，是推导（而非假设）隐式电源地端口的方向。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeCellDef",
+      "description": "排除指定单元的定义",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeCellInst",
+      "description": "从网表中排除指定单元的实例",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-excludeIlm",
+      "description": "排除ILM（接口逻辑模型）模块",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeLeafCell",
+      "description": "在网表中排除叶单元定义",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-excludeTopCellPGPort",
+      "description": "从顶层单元的模块端口列表中排除指定的电源和地端口",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exportTopPGNets",
+      "description": "在使用 -phys 或 -includePowerGround 选项创建的物理网表中，将顶层单元的电源地网络用作顶层模块的端口。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-flat",
+      "description": "写入展平的Verilog网表",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-flattenBus",
+      "description": "写入总线展平的Verilog网表",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-followLogicalModuleOrder",
+      "description": "遵循逻辑模块顺序",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignoreFixedMask",
+      "description": "忽略单元的固定掩模（fixedMask）属性",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ilm",
+      "description": "写出包含ILM内部细节的网表",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includeBumpCell",
+      "description": "将凸点（bump）单元信息写入网表",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includePhysicalCell",
+      "description": "包含指定单元的物理实例",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-includePhysicalInst",
+      "description": "包含物理实例，例如填充单元（fillers）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includePowerGround",
+      "description": "在模块端口列表中包含电源地端口",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includeThruSubstrateInsts",
+      "description": "写入穿衬底（thru-substrate）连接信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-includeVirtualPG",
+      "description": "包含虚拟电源地组件",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keepAllBackslash",
+      "description": "保留名称中的所有反斜杠",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lineLength",
+      "description": "指定模块端口列表和实例端口连接每行的最大字符数",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-maskShiftSuffix",
+      "description": "为叶实例的单元名添加用户定义的后缀。注意，此选项需要与 -applyMaskShift 一起使用才能生效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-module",
+      "description": "保存指定模块的网表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-omitFloatingPort",
+      "description": "从保存的网表中省略未连接的实例端口",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-onlyLeafCell",
+      "description": "仅在网表中写入叶单元定义",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-onlyMacro",
+      "description": "仅在网表中写入宏或模块单元定义",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-onlyStdCell",
+      "description": "仅在网表中写入标准单元实例",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-phys",
+      "description": "等同于 '-includePowerGround -includePhysicalInst'",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-removePowerGround",
+      "description": "移除电源地端口、电源地网络、电源地引脚连接，并将信号引脚上的电源地网络连接替换为 1'b1 或 1'b0",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-replaceTieConnection",
+      "description": "在输出网表中将 1'b1 和 1'b0 常量替换为无驱动网络",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-replaceWorWandWithWire",
+      "description": "将 wor/wand 语句替换为 wire 语句",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-replace_inout_with_output_for_pg_ports",
+      "description": "将电源地端口的输入输出方向改为输出，但由IEEE1801/UPF定义的端口方向保持不变。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-shortenNames",
+      "description": "将网络/实例名称映射为更短的名称以减少文件大小（需与 -flat 一起使用）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-topCell",
+      "description": "保存指定模块及其子模块",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-topModuleFirst",
+      "description": "首先写出顶层模块",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-useCdsThruForAssign",
+      "description": "将 assign 语句替换为 cds_thru，输出的网表将无法被 Innovus 读回。此选项仅用于第三方工具。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-useEEQCellMap",
+      "description": "定义主单元以及要映射到该主单元的等效单元（EEQ cells），格式为 {{masterCell cell1 cell2} ...}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useEEQCellWithLibertyInfo",
+      "description": "使用时序库信息中的等效单元（EEQ cell）作为叶实例的主单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-writeConstantForSignalConnection",
+      "description": "为连接至固定电平的引脚写入常数值",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-writeSupply0Supply1",
+      "description": "为电源地网络写入 supply0/supply1 声明",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

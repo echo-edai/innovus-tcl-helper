@@ -1,0 +1,178 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editMove(25.10)                                                editMove(25.10)
+
+Name
+       editMove - Moves selected wires, boundary pins, or vias
+
+Syntax
+       editMove
+
+       [-help]
+
+       {[[-direction  {x  y  diag45 diag135} -distance <float>] | [-dx <float>
+       -dy <float>] | -to {x y}] }
+
+       Moves selected wires, boundary pins, or vias.
+
+Moving Wires
+       editMove moves selected wires in the orthogonal  direction.  When  used
+       with  the -direction and -distance or -dx and -dy combination, editMove
+       maintains connectivity by stretching connected wires in the  orthogonal
+       direction. This command also supports 45 and 135-degree wire edits.
+
+       Use  the setEditMode -connect_with_specified_layer parameter to control
+       whether layer preference settings are honored when wires are moved. The
+       default value of this parameter is 0. If you set this parameter  to  1,
+       editMove  honors  the setEditMode -layer_horizontal and -layer_vertical
+       settings while jogging metal layers. For instance, if you cut a  verti-
+       cal  wire on M4 by using editCutWire such that the wire is divided into
+       three wire segments and then move the wire segment in the middle in the
+       horizontal direction, the tool  automatically  creates  new  connecting
+       wires  on  the layer defined by setEditMode -layer_horizontal and drops
+       vias correctly. This means you no longer need to perform the additional
+       step for layer change (editChangeLayer or Shift+L) while  moving  wires
+       to  create  a jog. This feature is applicable for both regular and spe-
+       cial wires.
+
+       To get the current value of the  -connect_with_specified_layer  parame-
+       ter, you can use the corresponding getEditMode parameter.
+
+       Note:    You    can    use    the    setEditMode   -snap_to_track   and
+       -snap_to_track_regular parameters to specify whether  or  not  to  snap
+       wires  to the track. To get the current values of these parameters, use
+       the corresponding getEditMode options.
+
+Moving Physical Pins
+       editMove moves selected physical pins along with connected wires.
+
+       Keep the following considerations in mind while trying to move a physi-
+       cal pin with editMove:
+
+              * editMove can be used to move only the physical pins on the de-
+                sign boundary. Pins inside the design  cannot  be  moved  with
+                this command.
+
+              * A pin can be moved only along a boundary.
+
+              * It cannot be moved between design boundaries.
+
+              * Pins  on the top or bottom boundary can be moved only horizon-
+                tally.
+
+              * Pins on the left or right boundary can be  moved  only  verti-
+                cally.
+
+       Note:  You can use the setEditMode-snap_to_track_pin parameter to spec-
+       ify whether or not to snap moved pins to the track. This  parameter  is
+       set to true (1) by default. To get the current value of this parameter,
+       use the corresponding getEditMode option.
+
+Parameters
+       -help  Prints  the  usage of the command. For a detailed description of
+              the command, use the man command:
+
+              man editMove
+
+       -direction {x y diag45 diag135}
+              Specifies the direction of movement. Use one  of  the  following
+              options:
+
+              * diag45  -  Moves selected wires the specified <-distance> in a
+                45-degree direction.This option  cannot  be  used  for  moving
+                physical pins.
+
+              * diag135  - Moves selected wires the specified <-distance> in a
+                135-degree direction. This option cannot be  used  for  moving
+                physical pins.
+
+              * x - Moves selected vertical wires or pins to the right (if you
+                specify  a  positive  value  for  <-distance>) or left (if you
+                specify a negative value for <-distance>).
+
+              * y - Moves selected horizontal wires or pins up (if you specify
+                a positive value for <-distance>) or down (if  you  specify  a
+                negative value for <-distance>).
+
+       -distance <float>
+              Specifies the distance to move the wire or pin in microns.
+
+       -dx <float>
+              Specifies  the  distance  in  microns by which the selected wire
+              should be moved in the x direction. You  must  specify  the  -dy
+              value  along  with it. For example, if you want to move the wire
+              in the x direction by 0.2 microns, specify  the  following  com-
+              mand:
+
+              editMove -dx 0.2 -dy 0
+
+       -dy <float>
+              Specifies  the  distance  in  microns by which the selected wire
+              should be moved in the y direction. You  must  specify  the  -dx
+              value  along  with it. For example, if you want to move the wire
+              in the y direction by 0.2 microns, specify  the  following  com-
+              mand:
+
+              editMove -dx 0 -dy 0.2
+
+       -to {x y}
+              Specifies  the  coordinates of the new location to which the se-
+              lected wire or via is to be moved. If you are moving a via,  the
+              x and y values specify the new coordinates of the via origin. In
+              the  case  of a wire, the x and y values specify the new coordi-
+              nates of the lower left corner of the wire. See Examples.
+
+              When you move the selected wire or via with editMove  -to,  con-
+              nected wires are not moved.
+
+Examples
+              * The  following  command  moves the selected wire such that its
+                lower-left corner lies on the coordinates  {20,30}  after  the
+                move:
+
+                editMove -to {20 30}
+
+              *
+
+                The  following  command  moves  the selected via such that its
+                origin lies on the coordinates {20, 30} after the move:
+
+                editMove -to {20 30}
+
+Related Information
+              * editAddRoute
+
+              * editAdjust
+
+              * editCommitRoute
+
+              * editCutWire
+
+              * editDelete
+
+              * editDuplicate
+
+              * editMerge
+
+              * editResize
+
+              * editRotate
+
+              * editSplit
+
+              * editTrim
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025            editMove(25.10)

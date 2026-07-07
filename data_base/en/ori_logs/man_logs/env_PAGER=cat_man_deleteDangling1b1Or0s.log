@@ -1,0 +1,131 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+deleteDangling1b1Or0s(25.10)                      deleteDangling1b1Or0s(25.10)
+
+Name
+       deleteDangling1b1Or0s  -  Deletes dangling 1'b1s or 1'b0s from the Ver-
+       ilog
+
+Syntax
+       deleteDangling1b1Or0s
+
+       -help
+
+       Deletes dangling 1'b1s or 1'b0s from the Verilog. They are either  dan-
+       gling  nets assigned 1'b1 or 1'b0 or 1'b1/1'b0 connections that are not
+       hierarchically connected to a leaf instance.
+
+Parameters
+       None
+
+Example
+       In the code below only BUFX2 is a leaf.
+
+       //
+
+       // Original Verilog
+
+       module hier4 (A,B);
+
+       input A;
+
+       input B;
+
+       BUFX2 u0 (.A(A));
+
+       BUFX2 u1 (.A(1'b1));
+
+       endmodule
+
+       module hier3 ();
+
+       hier4 u0 (.A(1'b1),.B(1'b0));
+
+       hier4 u1 (.A(1'b0),.B(1'b1));
+
+       endmodule
+
+       module hier2 ();
+
+       hier3 u0 ();
+
+       endmodule
+
+       module top ();
+
+       // Internal wires
+
+       wire a;
+
+       wire b;
+
+       wire c;
+
+       wire d;
+
+       assign a = 1'b1 ;
+
+       assign b = 1'b1 ;
+
+       assign c = 1'b0 ;
+
+       assign d = 1'b0 ;
+
+       hier2 u0 ();
+
+       BUFX2 u1 (.A(a));
+
+       BUFX2 u2 (.A(c));
+
+       endmodule
+
+       //
+
+       // Verilog after deleteDangling1b1Or0s is issued
+
+       module hier4 ( A, B);
+
+       input A;
+
+       input B;
+
+       BUFX2 u0 (.A(A));
+
+       BUFX2 u1 (.A(1'b1));
+
+       endmodule
+
+       module hier3 ();
+
+       hier4 u0 (.A(1'b1));
+
+       hier4 u1 (.A(1'b0));
+
+       endmodule
+
+       module hier2 ();
+
+       hier3 u0 ();
+
+       endmodule
+
+       module top ();
+
+       // Internal wires
+
+       wire a;
+
+       wire c;
+
+       assign a = 1'b1 ;
+
+       assign c = 1'b0 ;
+
+       hier2 u0 ();
+
+       BUFX2 u1 (.A(a));
+
+       BUFX2 u2 (.A(c));
+
+       endmodule
+
+                           Fri Apr 04 01:25:37 2025deleteDangling1b1Or0s(25.10)

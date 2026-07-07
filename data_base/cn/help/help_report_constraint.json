@@ -1,0 +1,135 @@
+{
+  "command": "report_constraint",
+  "is_cmd": true,
+  "summary": "报告设计约束违规情况，包括时序和设计规则检查(DRC)违规",
+  "description": "该命令用于生成设计约束违规的报告。它可以报告多种类型的违规，包括时序违规（如建立时间、保持时间、时钟周期、脉冲宽度等）和设计规则检查(DRV)违规（如最大/最小转换时间、最大/最小电容、最大/最小扇出等）。用户可以通过多种选项来过滤和定制报告内容，例如指定检查类型、网络类型（时钟或数据）、输出格式、详细程度以及将结果重定向到文件。",
+  "usage": "report_constraint [-help] [<pin_port_list>] [-all_violators] [-check_type {pulse_width clock_period recovery removal clock_gating_setup clock_gating_hold skew pulse_clock_max_width pulse_clock_min_width electromigration rail_swing clock_pulse_width_sensitivity}] [-clock] [-connection_class] [-data] [-drv_fields {pin pin_type sequential direction ref_cell partition max_frequency_clock max_clock_frequency transition_frequency max_transition min_transition max_capacitance min_capacitance max_fanout min_fanout transition_actual capacitance_actual fanout_actual transition_si transition_slack capacitance_slack fanout_slack max_slack min_slack user_constraint lib_constraint drv_source driver_pin driver_ref_cell driver_transition driver_transition_slack driver_max_transition driver_min_transition driver_max_capacitance driver_min_capacitance net_fanout driver_max_fanout receiver_pin receiver_ref_cell receiver_transition receiver_max_transition net hnet object_type net_type total_capacitance net_resistance view edge transition_nsigma}] [-drv_output_format {txt|csv}] [-drv_violation_type {max_capacitance max_transition max_fanout min_capacitance min_transition min_fanout pulse_clock_max_transition pulse_clock_min_transition}] [-early] [-em_type {peak rms avg all}] [-late] [-max_pins_per_drv <integer>] [-retime {aocv path_slew_propagation aocv_path_slew_propagation}] [-retime_mode {path exhaustive}] [-verbose] [-view <viewName>] [-worst_drv_per_net] [> <file_name[.gz]>] [>> <file_name[.gz]>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<pin_port_list>",
+      "description": "当指定时，所有DRV和时序检查仅限于指定的引脚或端口",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-all_violators",
+      "description": "报告每种DRV和时序违规中每个引脚/端口的最严重违规摘要",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-check_type",
+      "description": "报告指定的检查类型，如脉冲宽度、时钟周期、恢复时间、移除时间、时钟门控建立/保持时间、偏差、电迁移等",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-clock",
+      "description": "报告时钟网络中每个引脚的DRV违规",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connection_class",
+      "description": "如果网络的驱动引脚和接收引脚的连接类属性不同，则报告违规",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-data",
+      "description": "报告数据网络中每个引脚的DRV违规",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drv_fields",
+      "description": "以扩展格式生成DRV报告，包含指定的字段",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-drv_output_format",
+      "description": "导出DRV违规报告的输出格式，可以是ASCII空格分隔的文本格式或CSV格式。默认为空格分隔的文本格式。",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-drv_violation_type",
+      "description": "报告指定类型的DRV违规",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-early",
+      "description": "报告所有保持时间检查，包括常规、时钟门控保持和数据到数据保持检查。同时报告来自set_min_delay的路径延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-em_type",
+      "description": "根据指定的电迁移(EM)类型表查找报告DRV违规",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-late",
+      "description": "报告所有建立时间检查，包括常规、时钟门控建立和数据到数据建立检查。同时报告来自set_max_delay的路径延迟。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-max_pins_per_drv",
+      "description": "指定在使用-all_violators选项时，每个DRV检查要报告的最大违规总数",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-retime",
+      "description": "使用指定的方法重新分析指定的路径集",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-retime_mode",
+      "description": "使用指定的重定时模式重新分析指定的路径集",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-verbose",
+      "description": "生成一个报告，显示完整的数据路径以及时序检查所需的到达时间、要求时间和裕量计算",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "为指定的分析视图生成报告",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-worst_drv_per_net",
+      "description": "当连接到同一网络的引脚存在来自同一DRV检查的多个违规时，仅报告每个网络中最严重的DRV违规",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "> <file_name[.gz]>",
+      "description": "输出文件名（重定向操作符）",
+      "required": false,
+      "type": "redirect_operator"
+    },
+    {
+      "name": ">> <file_name[.gz]>",
+      "description": "输出文件名（重定向操作符，追加模式）",
+      "required": false,
+      "type": "redirect_operator"
+    }
+  ]
+}

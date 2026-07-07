@@ -1,0 +1,221 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_ccopt_property(25.10)                            set_ccopt_property(25.10)
+
+Name
+       set_ccopt_property  - This command is used to set the values of various
+       CCOpt object properties
+
+Syntax
+       set_ccopt_property
+
+       [-help]
+
+       name
+
+       value
+
+       [-cell <library_cell_name>]
+
+       [-clock_tree <clock_tree_name>]
+
+       [-clock_tree_source_group <source_group_name>]
+
+       [-delay_corner <delay_corner_name>]
+
+       [-flexible_htree <flexibleHtreeName>]
+
+       [-help <propertyname>]
+
+       [-inst <instance_name>]
+
+       [-lib_pin <pin_name>]
+
+       [-net <net_name>]
+
+       [-net_type leaf | trunk | top]
+
+       [-pin <pin_name>]
+
+       [-power_domain <domain_name>]
+
+       [-skew_group <skew_group_name>]
+
+       [-early | -late]
+
+       [-rise | -fall]
+
+       [-min | -max]
+
+       This command is used to set the values of various CCOpt object  proper-
+       ties.
+
+       There  are  some properties that cannot be set by you because these are
+       read-only properties. This means that you can obtain information  about
+       these  properties by using the get_ccopt_property command, but you can-
+       not change that information. However,  there  are  writable  properties
+       that  can be modified. These properties let you configure different as-
+       pects of CCOpt behavior. This command is used to set the writable CCOpt
+       properties.
+
+       To set a property, you need to specify the property name, value, object
+       type, and object pattern. The following syntax are acceptable:
+
+              * set_ccopt_property <<name>> <<value>> [-obj <<obj_pattern>>]
+
+              * set_ccopt_property <<name>> [-obj  <<obj_pattern>>] <<value>>
+
+              * set_ccopt_property [-obj <<obj_pattern>>] <<name>> <<value>>
+
+       Where,
+
+       <name> is the name of the property to be set
+
+       value is the new value to which you want to set the property
+
+       For example, all three commands below are equivalent:
+
+              * set_ccopt_property target_skew 0.1 -skew_group sg1
+
+              * set_ccopt_property target_skew -skew_group sg1  0.1
+
+              * set_ccopt_property -skew_group sg1 target_skew 0.1
+
+       For details about the key considerations for setting CCOpt  properties,
+       getting properties from Tcl, getting a list of properties and their de-
+       tailed descriptions, key/value pairs, and defaults for key/value pairs,
+       see  the "CCOpt Properties and Configuration" section in the Clock Tree
+       Synthesis chapter of the Innovus User Guide. For detailed  descriptions
+       about all the public CCOpt properties, see the CCOpt Properties chapter
+       of the Innovus User Guide.
+
+Parameters
+       -help  Outputs a brief description for the set_ccopt_property command.
+
+              For a detailed description of the command, use the man command:
+
+              man set_ccopt_property
+
+       -cell <library_cell_name>
+              Specifies the library cell to which the property applies.
+
+       -clock_tree <clock_tree_name>
+              Specifies the clock tree to which the property applies.
+
+               -clock_tree_source_group  <source_group>_<name>"  Specifies the
+              clock tree source group to which the property applies.
+
+       -delay_corner <delay_corner_name>
+              Specifies the delay corner to which the property applies.
+
+       -early Specifies that the property applies to the early signal.
+
+       -fall  Specifies that the property applies to the fall signal.
+
+       -flexible_htree <flexibleHtreeName>
+              Specifies the flexible H-tree to which the property applies.
+
+       -help <propertyname>
+              Provides help for the specified property. Other options are  ig-
+              nored.
+
+       -inst <instance_name>
+              Specifies the instance to which the property applies. This para-
+              meter enables properties to be added to instances.
+
+       -late  Specifies that the property applies to the late signal.
+
+       -lib_pin <pin_name>
+              Specifies the library pin to which the property applies.
+
+       -max   Specifies the maximum value for the property.
+
+       -min   Specifies the minimum value for the property.
+
+       <name> Specifies the name of the property to be set.
+
+       -net <net_name>
+              Specifies the net level to which the property applies.
+
+       -net_type <leaf | trunk | top>
+              Specifies  the  net type to which the property applies. It could
+              be leaf net, trunk net, or top net.
+
+       -pin <pin_name>
+              Specifies the pin to which the property applies.
+
+       -power_domain <domain_name>
+              Specifies the power domain to which the property applies.
+
+       -rise  Specifies that the property applies to the rise signal.
+
+       -skew_group <skew_group_name>
+              Specifies the skew group to which the property applies.
+
+       <value>
+              Specifies the new value to which to set the property.
+
+Examples
+              * The following commands will cause all `trunk' type clock  tree
+                nets  to  be routed using route_type `CTS_2w2s' and all `leaf'
+                type clock tree nets to be routed using route_type `CTS_1w2s':
+
+                set_ccopt_property route_type -net_type trunk CTS_2w2s
+
+                set_ccopt_property route_type -net_type leaf CTS_1w2s
+
+              *
+
+                The following command will cause all `trunk' clock  tree  nets
+                for  clock  trees  matching  pattern "MAIN*" to be routed with
+                route_type `NDR_xtra_wide':
+
+                set_ccopt_property  route_type  -net_type  trunk   -clock_tree
+                MAIN* NDR_xtra_wide
+
+              * The following command sets the net type to leaf:
+
+                set_ccopt_property -net_type leaf
+
+              * The  example  below specifies that clock tree synthesis should
+                use inverters when balancing clock tree ct1:
+
+                set_ccopt_property use_inverters -clock_tree ct1 true
+
+              * Some properties are global, and others are specific to a  par-
+                ticular object. Some examples are provided below.
+
+                * The  adjacent_rows_legal property is global. This means that
+                  you can set this property using the following command:
+
+                  set_ccopt_property adjacent_rows_legal true/false
+
+                * Some properties can be set on particular objects. For  exam-
+                  ple,  minimum  number  of  transitive fanout for a net to be
+                  routed as a top net can be set for a clock tree:
+
+                  set_ccopt_property      -clock_tree      clk500m       rout-
+                  ing_top_min_fanout 10000
+
+                * Some  other  properties  can  be  set  per  object  AND  per
+                  early/late path. For example, the  insertion_delay  property
+                  can be set in the following manner:
+
+                  set_ccopt_property insertion_delay 0.8 -pin pinA -early
+
+                  set_ccopt_property insertion_delay 0.7 -pin pinA -late
+
+Related Information
+              * get_ccopt_property
+
+              * unset_ccopt_property
+
+              * For  details  about  the  key considerations for setting CCOpt
+                properties, getting properties from Tcl,  getting  a  list  of
+                properties  and  their detailed descriptions, key/value pairs,
+                and defaults for key/value pairs, see The CCOpt Property  Sys-
+                tem topic in the Innovus User Guide.
+
+              * For  detailed descriptions of all the public CCOpt properties,
+                see the CCOpt Properties chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025  set_ccopt_property(25.10)

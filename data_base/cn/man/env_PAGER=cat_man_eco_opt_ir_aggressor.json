@@ -1,0 +1,63 @@
+{
+  "command": "eco_opt_ir_aggressor",
+  "is_cmd": true,
+  "summary": "基于用户指定的IR压降阈值，通过分析并调整有源器件尺寸来优化IR压降违规。",
+  "description": "eco_opt_ir_aggressor命令用于优化基于用户指定IR压降阈值的违规。该命令会分析来自有源器件（aggressors）的IR压降影响，然后通过调整这些有源器件的尺寸来进行优化。必须在运行analyze_rail命令之后指定此命令。",
+  "usage": "eco_opt_ir_aggressor [-help] [-create_margin] -domain_threshold <value> [-effort {high||medium||low}] [-margin <value>] [-noEcoRoute] [-save_margin] -state_directory <directoryname> [-watch_box <filename>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个eco_opt_ir_aggressor参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-create_margin",
+      "description": "指定为尺寸调整候选对象创建时序裕量。此参数需与-margin参数一起指定。如果未指定-margin而仅指定-create_margin，则将使用默认的0.02 ns裕量。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-domain_threshold",
+      "description": "指定被分析电源域的最小允许电压。该值为百分比。此参数行为与set_rail_analysis_domain -threshold参数相同。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-effort",
+      "description": "指定运行signoffOptDesign/opt_signoff的工作量级别。* low - 指定执行独立的signoffOptDesign。* medium 或 high - 根据有源器件的总实例电压降（TIV）影响将其分成不同组，并多次调用signoffOptDesign。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-margin",
+      "description": "指定用于修复IR违规的裕量值。此参数需与-create_margin参数一起指定。指定的裕量用于为无法缩小的有源器件创建时序裕量。如果未指定-margin而仅指定-create_margin，则将使用默认的0.02 ns裕量。该值单位为ns。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noEcoRoute",
+      "description": "指定在调整有源器件尺寸后跳过ECO布线。此参数允许您自定义ecoRoute选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-save_margin",
+      "description": "指定为下一次IR-ECO运行保存裕量。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-state_directory",
+      "description": "指定由动态IR压降分析生成的顶级状态目录。此状态目录包含与电源域关联的所有网络的分析。这是存储analyze_rail命令结果的输出目录（例如，core_25C_dynamic_1）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-watch_box",
+      "description": "指定一个包含区域列表的文件，其中只有位于这些区域内的实例会被报告以进行优化。您可以在文件中写入多个区域。文件格式为：{{x1,y1}{x2,y2}} {{x3,y3}{x4,y4}}",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

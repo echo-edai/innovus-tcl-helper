@@ -1,0 +1,276 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportPowerDomain(25.10)                              reportPowerDomain(25.10)
+
+Name
+       reportPowerDomain - Reports information about power domains
+
+Syntax
+       reportPowerDomain
+
+       [-help]
+
+       [-bindLib]
+
+       [-file <outFile>]
+
+       [-inst <inst_name>]
+
+       [-isoInst]
+
+       [-module {list_of_modules}]
+
+       [-net <net_name>]
+
+       [-partitionHports <pin> | <port> | <hpin>+]
+
+       [-pgNet]
+
+       [-pin]
+
+       [-powerDomain <powerDomainName >[-checkPgScope]]
+
+       [-powerDomainBoundaryPort <string>]
+
+       [-powerDomainCoverage <pd1 pd2>]
+
+       [-shifter]
+
+       [-supplyCrossing <supp1 supp2>]
+
+       [-verbose]
+
+       [-voltage]
+
+       Reports  information  about power domains. The report includes the fol-
+       lowing attributes:
+
+              * Power domain name
+
+              * Power domain bounding box
+
+              * Timing library
+
+              * Mingap
+
+              * RS extension
+
+              * Row type
+
+              * Row spacing
+
+       The command also reports whether the power domain is always on.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each reportPowerDomain parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man reportPowerDomain.
+
+       -bindLib
+              Reports the timing libraries available for instance binding  in-
+              cluding  voltage scaling. However, the actual libraries that are
+              used by the AAE delay calculation might be a subset of the  tim-
+              ing libraries reported by this command.
+
+       -checkPgScope
+              Checks  if  there  are any PG connections that cross UPF-defined
+              scope. All PG connections for UPF scope should be at the  bound-
+              ary  PG port. This parameter is used with the -powerDomain para-
+              meter.
+
+       -file <outFile>
+              Specifies the name of the output file.
+
+              Default: <designName>-powerdomain.rpt
+
+       -inst <inst_name>
+              Reports the power domain-related information for  the  specified
+              instance: the input, output, and power/ground connections.
+
+              When -inst is used along with the -verbose parameter, as report-
+              PowerDomain -inst -verbose, the instance PG and tie-high/low pin
+              connections along their its global connection rule are reported.
+
+       -isoInst
+              Reports all isolation cells in the power domain.
+
+       -module {list of modules}
+              Checks whether the specified instances or hierarchical instances
+              are in the power domain.
+
+              Default: The software does not perform this check.
+
+       -net <net_name>
+              Reports power domain-related information for the specified net:
+
+              * The driver instance of the net and its power domain.
+
+              * The receiver instances of the net and their power domains.
+
+       -partitionHports <pin> | <port> | <hpin>+
+              Reports  the  hierarchical partition (Hinst) boundary port's do-
+              main at the time of partitioning.
+
+       -pin <pin1, pin2 ...>
+              Specifies the lists the pins and the option is of  type  string.
+              This option is optional.
+
+       -powerDomain <powerDomainName>
+              Specifies the power domain whose attributes you want to report.
+
+              Default:  If  you  do not specify the power domain, this command
+              report data about all power domains.
+
+       -powerDomainBoundaryPort <string>
+              Reports if the specified port name of the power domain  boundary
+              has an IEEE1801 constraint.
+
+       -powerDomainCoverage <pd1 pd2>
+              Reports the coverage between two specified domains.
+
+       -pgNet Reports all the power/ground nets in the power domain.
+
+       -shifter
+              Reports all shifters in the power domain.
+
+       -supplyCrossing <supp1 supp2>
+              Reports  if  the  two  specified  supplies  have  the on/off and
+              low/high crossing.
+
+       -verbose
+              Prints out the detail information and is optional.
+
+       -voltage
+              Reports domain voltage.
+
+Examples
+              * The following command checks the I1/PD1 instances to  identify
+                if  there are any PG connections that do not use the UPF I1 PG
+                nets. If those are found, an error occurs specifying  the  in-
+                stance name and its out-of-scope PG connection.
+
+                reportPowerDomain -checkPgScope true -powerDomain I1/PD1
+
+              * The following command reports all shifter cells, all isolation
+                cells, and all power/ground nets in power domain PD1. The com-
+                mand  also checks whether HInst instA is contained in PD1, and
+                reports all results to myDesign-powerdomain.rpt.
+
+                reportPowerDomain  -powerDomain  PD1  -file  myDesign-powerdo-
+                main.rpt -module {instA} -shifter -isoInst -pgNet
+
+              * The  following  example shows how output file outfile contains
+                the binding between the  timing  libraries  and  instances  in
+                power domain VCORE:
+
+                reportPowerDomain -bindLib -powerDomain VCORE -file outfile
+
+                Timing library for instance(s):
+
+                ===========================
+
+                INST = uLSCVSocDownVCore/uACLKEND/uLVHL (lvl_slow_1v08_1v08)
+
+                INST = uLSCVSocDownVCore/uACLKENI/uLVLHL (lvl_slow_1v08_1v08)
+
+                INST = uLSCVSocDownvCore/uaCLKENP/uLVLHL (lvl_slow_1v08_1v08)
+
+                INST = uLSCVSocDownvCore/uaCLKENRW/uLVLHL (lvl_slow_1v08_1v08)
+
+                INST          =          uLSCVSocDownvCore/uaBIGENDINIT/uLVHlL
+                (lvl_slow_1v08_1v08)
+
+                INST = uLSCVSocDownvCore/uaCLKIN/uLVHL (lvl_slow_1v08_1v08)
+
+                INST          =          uLSCVSocDownvCore/uCP15SDISABLE/uLVHL
+                (lvl_slow_1v08_1v08)
+
+              * The  following command reports the power domain-related infor-
+                mation about instance PM_INST/state_inst/g45:
+
+                reportPowerDomain -inst PM_INST/state_inst/g45
+
+                Result:
+
+                Analyzing PM_INST/state_inst/g45 (Cell: AN2D1) power domain:AO
+
+                ------from side ------
+
+                Pin A2 => Net PM_INST/state_inst/n_28
+
+                PM_INST/state_inst/g71/ZN in power domain A0
+
+                Pin A1 => Net PM_INST/state_inst/n_25
+
+                PM_INST/state_inst/g47/Z in power domain A0
+
+                ------to side ------
+
+                Pin Z => Net PM_INST/state_inst/n_36
+
+                PM_INST/state_inst/fsm_reg[1]/qi_reg/D in power domain A0
+
+                ==========PG pins =============
+
+                VDD conneted to Net: VDD
+
+                VSS connected to Net:VSS
+
+              * The following command reports the instance PG and tie-high/low
+                pin connections along their its global connection rule:
+
+                reportPowerDomain -inst inst2/ls_rule1_0_in1 -verbose
+
+                Analyzing inst2/ls_rule1_0_in1 (Cell: PTLVLANY) power  domain:
+                PD2
+
+                Result:
+
+                ------- from side --------
+
+                  Pin I (related power pin VDDI) => Net inst1_out
+
+                    inst1/ff2/Q in power domain PD1
+
+                ------- to side --------
+
+                  Pin Z (related power pin VDDO) => Net inst2/n_1
+
+                    inst2/ff1/D in power domain PD2
+
+                =============PG pins =================
+
+                VSS connected to Net: VSS
+
+                VDDO connected to Net: VDD2
+
+                VDDI connected to Net: VDD1
+
+                VDD connected to Net: VDD2
+
+                VSS  is  connected to net 'VSS' by GNC rule: -net VSS -pin VSS
+                -module inst2
+
+                VDDO is connected to net 'VDD2' by GNC rule:  -net  VDD2  -pin
+                VDDO -singleInst inst2/ls_rule1_0_in1
+
+                VDDI  is  connected  to net 'VDD1' by GNC rule: -net VDD1 -pin
+                VDDI -singleInst inst2/ls_rule1_0_in1
+
+                VDD is connected to net 'VDD2' by GNC rule: -net VDD2 -pin VDD
+                -module inst2
+
+Related Information
+       For more information, see the following topics in the Low Power  Design
+       chapter of the User Guide.
+
+              * "Overview"
+
+              * "Power Domain Shutdown and Scaling"
+
+              * "Power Switch Optimization"
+
+                           Fri Apr 04 01:25:37 2025   reportPowerDomain(25.10)

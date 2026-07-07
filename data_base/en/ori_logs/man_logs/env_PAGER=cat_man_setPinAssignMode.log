@@ -1,0 +1,397 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setPinAssignMode(25.10)                                setPinAssignMode(25.10)
+
+Name
+       setPinAssignMode - Sets the global parameters of the partition or block
+       pin assignment feature
+
+Syntax
+        setPinAssignMode
+
+       [-help]
+
+       [-reset]
+
+       [-advanced_node_rule_support {true | false}]
+
+       [-allow_unconnected_in_abutted_edge {true | false}]
+
+       [-allowNonNdrNetPinsOnNdrTracks {true | false}]
+
+       [-block_boundary_macro_distance<distance>]
+
+       [-force_abutment_with_fixed {true | false}]
+
+       [-insidePinSearchDistance {<nrTracks>}]
+
+       [-max_distance_pairing <distance>]
+
+       [-maxChannelWidthAsAbutted <channelWidthInMicrons>]
+
+       [-maxLayer <layerName>]
+
+       [-minLayer <layerName>]
+
+       [-pinEditInBatch {true | false}]
+
+       [-pinOffStripe {below | all | none}]
+
+       [-pinToStripeDistance {<listOfLayerDistanceValuePair>}]
+
+       [-pinToViaDistanceNonPrefDirection {<listOfLayerDistanceValuePair>}]
+
+       [-pinToViaDistancePrefDirection {<listOfLayerDistanceValuePair>}]
+
+       [-promotedMacroMaxLayer <layerName>]
+
+       [-promotedMacroMinLayer <layerName>]
+
+       [-restrict_boundary_macro_distance <distance> ]
+
+       [-strict_abutment {true | false}]
+
+       [-useCommonColorEngineForIO {true|false}]
+
+       Sets  the  global  parameters  of the partition or block pin assignment
+       feature. Parameters specified with  the  setPinAssignMode  command  are
+       then  used whenever you run the pin related commands. Use the getPinAs-
+       signMode command to return the current settings for  the  setPinAssign-
+       Mode command. You can use this command before assigning pins.
+
+       Note:  You can use the -topRoutingLayer and -bottomRoutingLayer parame-
+       ters of the  setDesignMode to specify the maximum and  minimum  layers,
+       respectively, for routing, partition, or block pin assignment.
+
+       Note:  To control the pin assignment layers, you can use the setPinCon-
+       straint command. The setPinConstraint command sets the constraints  for
+       partition  pins  or  I/O  pins. The constraints can be applied on three
+       different levels:  global  pin  constraints,  cell  specific  pin  con-
+       straints,  and pin specific constraints. If no pin specific constraints
+       exist, then the cell level constraints are applied.  If  cell  specific
+       pin constraints are not defined, then global constraints are applied.
+
+Parameters
+       -advanced_node_rule_support {true | false}
+              A  true value specifies that 20nm (and below) as well as DPT LEF
+              rules will be respected (if present in LEF technology file)  for
+              determining and resolving any DRC violations, during all pin as-
+              signment related commands.
+
+              Default: true
+
+              Data_type: bool
+
+       -allow_unconnected_in_abutted_edge {true | false}
+              A  true  value  specifies that unconnected partition pins can be
+              placed in abutted edges.
+
+              Default: true
+
+              Data_type: bool
+
+       -allowNonNdrNetPinsOnNdrTracks {true | false}
+              A true value allows general pins to be placed on NDR tracks  (if
+              available).  Alternatively,  if  the  value is set to false, the
+              NDR-track rule is followed strictly and the net pins are  placed
+              on matching NDR tracks only.
+
+              Default: true
+
+              Data_type: bool
+
+       -block_boundary_macro_distance< distance>
+              Blocks  automatic  pin assignment from putting pins, on the part
+              of the partition boundary facing the block,  where  the  channel
+              width  between the partition boundary and the block is less than
+              the value specified.  For  channel  width  below  the  specified
+              value, it blocks pins on the boundary facing this channel.
+
+              Minimum: 0
+
+              Maximum: 100
+
+              Default: 3
+
+              Data_type: float
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each setPinAssignMode parameter. For a  detailed
+              description  of  the  command and all of its parameters, use the
+              man command: man setPinAssignMode
+
+       -force_abutment_with_fixed {true|false}
+              Specifies that for the connected pin of fixed abutted pins,  ig-
+              nore soft constraints check.
+
+              Some  partitions  in  abutted  design have preassigned pins with
+              1-track spacing and marked as fixed. As the design  is  abutted,
+              there  is no other legal location for such pins. Also, the auto-
+              matic pin assignment has default spacing of two tracks. As a re-
+              sult, all pins connecting to these reference pins with one spac-
+              ing are not assigned and lot of pins are left  unassigned.  When
+              the -force_abutment_with_fixed is enabled,  track spacing viola-
+              tions  are  ignored. As a result, assigns the corresponding pins
+              opposite to the prefixed  pins  while  maintaining  abutment  of
+              pins.
+
+              Default: true
+
+              Data_type: bool
+
+       -insidePinSearchDistance {<nrTracks>}
+              Controls the search distance for legalizing the internal pins.
+
+              Minimum: 1
+
+              Maximum: 100
+
+              Default: 10
+
+              Data_type: int
+
+       -max_distance_pairing <distance>
+              Ignores  moving corresponding connected pins of 2-pin-connection
+              nets where distance (in microns) between the pins  is  equal  or
+              greater than distance specified. You can avoid moving the corre-
+              sponding pin for any channel width (routing bends are acceptable
+              in  channels)  by  using  the  distance  value for the -max_dis-
+              tance_paring parameter as 0.
+
+              Minimum: 0
+
+              Maximum: 10000
+
+              Default: 50
+
+              Data_type: float
+
+       -maxChannelWidthAsAbutted <channelWidthInMicrons>
+              Specifies that all channels with width less than or equal to the
+              specified width will be considered as abutted and abutment rules
+              will be applied on them.
+
+              Notes:
+
+              * The assignPtnPin, assignIoPins, and the  legalizePin  commands
+                do not place non-neighbor pins in the thin channels considered
+                abutted.
+
+              * The  checkPinAssignment  command reports an abutment violation
+                in case a non-neighboring pin is placed in  the  thin  channel
+                (abutted). The -preCheck option of the checkPinAssignment com-
+                mand  that  checks for the feasibility of pin assignment, also
+                treats these thin channels as abutted.
+
+              Minimum: 0
+
+              Maximum: 400
+
+              Default: 3
+
+              Data_type: float
+
+       -maxLayer <layerName>
+              Specifies the maximum metal layer name for  partition  or  block
+              pin assignment.
+
+              Default: 31
+
+              Data_type: string
+
+       -minLayer <layerName>
+              Specifies  the  minimum  metal layer name for partition or block
+              pin assignment.
+
+              Default: 2
+
+              Data_type: string
+
+       -pinEditInBatch {true | false}
+              Enables pin-editing in batch mode.
+
+              Note: Once the interactive pin assignment is complete, it is im-
+              portant to set the mode to false. This can  be  done  using  the
+              setPinAssignMode -pinEditInBatch false command.
+
+              Default: false
+
+              Data_type: bool
+
+       -pinOffStripe {below | all | none}
+              Prevents  the generation of pins on metal layers with respect to
+              the power and ground stripe.
+
+              * below: Prevents the generation of pins on metal  layers  below
+                the power and ground stripes.
+
+              * all:  Prevents  the  generation  of  pins on all metal layers,
+                above and below the power and ground stripes.
+
+              * none: Allows the generation of overlapping pins on  all  metal
+                layers.
+
+              Default: none
+
+              Data_type: enums={below all none}
+
+       -pinToStripeDistance {<listOfLayerDistanceValuePair>}
+              Specifies  the  distance  (in microns) from pin to stripe. It is
+              layer specific.
+
+              Default: ""
+
+              Data_type: string
+
+       -pinToViaDistanceNonPrefDirection {<listOfLayerDistanceValuePair>}
+              Specifies the distance (in microns) from pin to via-stack. It is
+              layer specific.
+
+              Default: ""
+
+              Data_type: string
+
+       -pinToViaDistancePrefDirection {<listOfLayerDistanceValuePair>}
+              Specifies the distance (in microns) from pin to  via-stack  from
+              the partition fence boundary. It is layer specific.
+
+              Default: ""
+
+              Data_type: string
+
+       -promotedMacroMaxLayer <layerName>
+              Specifies the maximum metal layer name for promoting macro pins.
+
+              Default: 31
+
+              Data_type: string
+
+       -promotedMacroMinLayer <layerName>
+              Specifies the minimum metal layer name for promoting macro pins.
+
+              Default: 31
+
+              Data_type: string
+
+       -reset Restores all parameters modified using setPinAssignMode to their
+              default settings. The -reset parameter must be the first parame-
+              ter specified. If you specify -reset by itself, the software re-
+              sets all setPinAssignMode parameters to their default values. If
+              you  specify  parameters  after -reset, the software resets only
+              those parameters to their default values.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+       -restrict_boundary_macro_distance <distance>
+              Blocks  automatic  pin assignment, from putting pins on the part
+              of the partition boundary facing the block, in the places  where
+              the  channel  width between the partition boundary and the block
+              is less than the specified value. For the  channel  width  below
+              the specified value, allowed layers and the channel length/width
+              will  be  considered  to  allow a suitable number of pins on the
+              boundary facing this channel.
+
+              Minimum: 0
+
+              Maximum: 100
+
+              Default: 30
+
+              Data_type: float
+
+       -strict_abutment {true | false}
+              Controls abutted check for non-neighbour 2-pin and  multi-parti-
+              tion pins.
+
+              Default: true
+
+              Data_type: bool
+
+       -useCommonColorEngineForIO {true|false}
+              Specifies the coloring approach the assignIoPins command uses to
+              assign color to pins.
+
+              * true:  Coloring  is determined by the CCE engine (Common Color
+                Engine) for all IO pins. The  checkPinAssignment  command  re-
+                ports uncolored violations for all the IOs.
+
+              * false:  Coloring  follows  the thumb-rule approach. The IO pin
+                inherits the color of the track it is placed on. IOs that span
+                multiple tracks or are offset are not assigned any color.  The
+                checkPinAssignment  command  also  reports  colored violations
+                based on the thumb-rule. It does not report any uncolored vio-
+                lations.
+
+              Default: false
+
+              Data_type: bool
+
+Examples
+              * The following command prevents the generation  of  pins  below
+                power and ground strips:
+
+                setPinAssignMode -pinOffStripe below
+
+              * The  following  command resets all setPinAssignMode parameters
+                to their default values:
+
+                setPinAssignMode -reset
+
+              * The following command will leave .6u of space  between  Metal9
+                stripe  and Metal9 pins, and leave 1u of space between Metal11
+                stripe and Metal11 signal pin
+
+                setPinAssignMode -pinToStripeDistance {{9 .6} {11 1}}
+
+              * For preferred direction pins, the following commands will:
+
+                * Leave .1u of space between Metal2, Metal4, Metal6 stack  via
+                  to pins in same layer, and leave .3u of space between Metal9
+                  stacked  via  and  corresponding  signal  pin, on left/right
+                  edges
+
+                * Leave .1u of space between Metal3, Metal5, Metal7 stack  via
+                  to  pins  in  same  layer, and leave .3u of space between M9
+                  stacked via and  corresponding  signal  pin,  on  top/bottom
+                  edges
+              setPinAssignMode  -pinToViaDistancePrefDirection  {{2 .1} {3 .1}
+              {4 .1} {5 .1} {6 .1} {7 .1} {8 .3} {9 .3}}
+
+              * For any pins in non preferred direction,  the  following  com-
+                mands will:
+
+                * Leave  .2u of space between Metal2, Metal4, Metal6 stack via
+                  to pins in same layer, and leave .4u  of  space  between  M9
+                  stacked  via  and  corresponding  signal  pin, on top/bottom
+                  edges
+
+                * Leave .2u of space between Metal3, Metal5, Metal7 stack  via
+                  to  pins  in  same  layer, and leave .4u of space between M9
+                  stacked via and  corresponding  signal  pin,  on  left/right
+                  edges
+              -pinToViaDistanceNonPrefDirection  {{2  .2} {3 .2} {4 .2} {5 .2}
+              {6 .2} {7 .2} {8 .4} {9 .4}}
+
+              Note: In the following picture, N stands for non-preferred and P
+              stands for preferred.
+
+Related Information
+              * assignPtnPin
+
+              * assignIoPins
+
+              * checkPinAssignment
+
+              * createPinGuide
+
+              * getPinAssignMode
+
+              * legalizePin
+
+              * reportUnalignedNets
+
+              * setPromotedMacroPin
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025    setPinAssignMode(25.10)

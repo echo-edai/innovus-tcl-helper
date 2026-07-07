@@ -1,0 +1,361 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addWellTap(25.10)                                            addWellTap(25.10)
+
+Name
+       addWellTap - Adds physical-only well-tap cells
+
+Syntax
+       addWellTap
+
+       [-help]
+
+       [-area <x1> <y1> <x2> <y2>]
+
+       [-avoidAbutment]
+
+       [-cell <cellName>]
+
+       [-cellInterval <microns>]
+
+       [-channel_offset <offset_value>]
+
+       [-checkerBoard]
+
+       [-fixedGap]
+
+       [-inRowOffset <microns>]
+
+       [{-check_channel | -vertical_boundary_spacing <spacing_with_well_tap> |
+       -incremental <list_of_cells>}]
+
+       [-powerDomain <powerDomainName>]
+
+       [-prefix <prefixName>]
+
+       [-siteOffset <number_of_sites>]
+
+       [-skipRow <number>]
+
+       [-startRowNum <number>]
+
+       [{{-termination_cell  <termination_cell_list>  | {-top_termination_cell
+       <cell_list>   -bottom_termination_cell    <cell_list>}}    -column_cell
+       <tap_column_cell_list>} [-block_boundary_only {true | false}]]
+
+       [{-wellCutCell <list_of_well_cut_cells>}
+
+       [-fixCutCell {true | false]]
+
+       [-pitch <microns> [-pitchOffset <microns>]]
+
+       [{-insert_cells <list_of_cells> | -incremental <list_of_cells>}]
+
+       [-safety_tmr [-safety_tmr_insts <instance_list>]]
+
+       Adds  physical-only  well-tap  cells.  Well-tap cells are physical-only
+       filler cells that are required by some technology  libraries  to  limit
+       resistance  between  power  or ground connections and wells of the sub-
+       strate. Well-tap cells are placed in a preplaced status.
+
+              * To delete well-tap cells, use the deleteFiller command.
+
+              * To verify well-tap placement, generate markers for  violations
+                caused  by  well-tap cells, and create a violation report, use
+                the verifyWellTap command.
+
+       addWellTap  treats  the  endcap  cell  as  a  tap  function  cell  when
+       set_well_tap_mode -tap_function_cells is set.
+
+Parameters
+       -area <x1> <y1> <x2> <y2>
+              Specifies  the  coordinates  of the bounding box, in microns. By
+              default, the core box that encloses all core rows is used.
+
+              * x1: Specifies the area's lower left point on the x axis.
+
+              * y1: Specifies the area's lower left point on the y axis.
+
+              * x2: Specifies the area's upper right point on the x axis.
+
+              * y2: Specifies the area's upper right point on the y axis.
+
+       -avoidAbutment
+              Specifies whether the inserted taps should avoid horizontal  and
+              vertical abutment.
+
+       -block_boundary_only {true | false}
+              Specifies  whether to insert termination tap cells only for well
+              tap columns on the block boundary. Default is false, termination
+              cells are inserted on both core boundary row and block  boundary
+              row.
+
+       Note: This parameter works only when inserting termination cells.
+
+       -bottom_termination_cell <cell_list>
+              Specifies  the  list of termination cells to be used at the bot-
+              tom.
+
+       -cell <cellName>
+              Specifies the name of the cell in the technology library to  use
+              as a well-tap. The cell should be of class type CORE.
+
+       -cellInterval <microns>
+              Specifies  the  maximum distance from the center of one well-tap
+              cell to the center of the following well-tap cell  in  the  same
+              row.  If well-tap cells cannot be placed at this location due to
+              a placement blockage, the software searches for  a  legal  loca-
+              tion:  first,  towards the previous well-tap cell, and then far-
+              ther away.
+
+       -channel_offset <offset_value>
+              Specifies the offset value between taps and blockage in channel.
+
+              Minimum: 0
+
+              Maximum: 1.79769313486232e+308
+
+       -check_channel
+              Inserts well taps inside channel.
+
+       -checkerBoard
+              Places the well-tap cells in a checkered pattern, that is,  with
+              every other row offset by one-half gap. In rows where a one-half
+              offset  gap is not available in the row above or below, the tap-
+              cell is inserted at one-half gap in the  row  in  question.Thus,
+              for  a simple floorplan, the first and last rows will have well-
+              taps at one-half gap only, while all other rows  will  have  the
+              full gap.
+
+              When  a  floorplan  has  hard blocks or placement blockages, the
+              rows above and below the block  (or  blockage)  will  also  have
+              well-taps at one-half gap.
+
+              Note: When this parameter is specified, -skipRow is ignored.
+
+       <-column_cell> <tap_column_cell_list>
+              Specifies  the  list  of well tap columns that need to be termi-
+              nated.
+
+              This parameter must be specified for termination tap cell inser-
+              tion.
+
+       -fixCutCell
+              Fixes all the instances which belong to the wellCutCell list.
+
+       -fixedGap
+              Ensures that the specified gap is always  maintained.  That  is,
+              the  software  does not search for a legal location if it cannot
+              place well-tap cells at the specified -cellInterval. Instead, it
+              goes on to place well-tap cells at the next position.
+
+              You can modify the gap by using the -pitch and -pitchOffset  pa-
+              rameters.
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each addWellTap parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man addWellTap.
+
+       -incremental <list_of_cells>
+              Checks whether any instances  of  the  cells  specified  in  the
+              <list_of_cells> are within 0.45 times the -cellInterval from the
+              next well-tap cell in the same row. If so, does not add well-tap
+              cells at that location.
+
+              Note:  To  define  multiple TAP rules in a design, addWellTap is
+              enhanced to parse TAPDISTANCE defined in the cell LEF  and  Tech
+              LEF.  For existing tap cells, you need to use addWellTap -incre-
+              mental. If you specify a tap cell with tap distance bigger  than
+              the  incremental  cell,  the  tool will add the cell and print a
+              warning message. It works on the following conditions:
+
+              * If you do not define set_well_tap_mode -rule,  the  tool  will
+                use the LEF rule.
+
+              * If  both  set_well_tap_mode  -rule and LEF rule are not speci-
+                fied, the tool will error out.
+
+              * If there are multiple tap distance values defined in the  Tech
+                LEF, addWellTap will take the smallest value.
+
+              * For  existing tap cells, you need to use addWellTap -incremen-
+                tal. If you specify a tap cell with tap distance  bigger  than
+                the  incremental  cell, the tool will add the cell and print a
+                warning message.
+
+              Impact on Other Commands, Parameters, and Globals: As  mentioned
+              above
+
+       -inRowOffset <microns>
+              Specifies  the  offset,  in  microns, of the first well-tap cell
+              from the start of the site row.
+
+              Default: 0 (first cell on  beginning  of  row  is  the  starting
+              point).
+
+       -insert_cells <list_of_cells>
+              Inserts mixed well-taps, and supports the LUP layer and boundary
+              layer rules.
+
+       -pitch <microns>
+              Used  with  the  -fixedGap  parameter to give the software added
+              flexibility to place well-tap cells if it is unable to  place  a
+              cell  at  the specified location. If you specify this parameter,
+              the software first tries to fit the well-tap cells in the  loca-
+              tions  specified  by  -cellInterval, or forced by  -fixedGap; if
+              it cannot do so, it adds well tap cells at the closest  location
+              allowed by this parameter.
+
+       -pitchOffset <microns>
+              Used with the -fixedGap and  -pitch parameters to give the soft-
+              ware  greater  flexibility.  If  you specify this parameter, the
+              software first tries to fit the well-tap cells in the  locations
+              specified by  -cellInterval, or forced by  -fixedGap; if it can-
+              not  do  so,  it adds well tap cells at the closest location al-
+              lowed by this parameter.
+
+       -powerDomain <powerDomainName>
+              Specifies the power domain in which the well-tap cells  are  in-
+              serted. This is the area where the well-tap cells are placed and
+              connected to the correct power and ground nets.
+
+       -prefix <prefixName>
+              Specifies the prefix for the placed well-tap cells. The software
+              adds  an  underscore  and  a unique string to the prefix, in the
+              following format: prefix_<uniqueString>.
+
+              Prefix Default: WELLTAP
+
+              Do not include an underscore when you specify a prefix.
+
+       -safety_tmr
+              Places welltaps adjacent to the left and right  edges  of  every
+              tmr (triple modular redundancy) flop.
+
+       -safety_tmr_insts <instance_list>
+              Specifies the list of instances required to place welltaps adja-
+              cently.
+
+       -siteOffset <number_of_sites>
+              Specifies  an offset value, in number of sites, so that the ver-
+              tical taps are aware of.
+
+       -skipRow <number>
+              Specifies the number of rows to skip  between  two  rows  of  an
+              identical pattern.
+
+              Note: If you specify -checkerBoard, this parameter is ignored.
+
+              Default:  0 (No rows are skipped, so well-tap cells are added in
+              the same pattern to every row)
+
+       -startRowNum <number>
+              Specifies the row number starting from the from bottom  or  left
+              side of the design on which the well-tap cells must be placed.
+
+              Default: 1 (first row from the bottom is the starting point)
+
+       -termination_cell <termination_cell_list>
+              Specifies  the  list  of  cells  that can be used as termination
+              taps.
+
+              addWellTap selects the best fit termination cells from this list
+              and inserts them at the top and bottom of well tap  column  seg-
+              ment.  The  existing  non-termination  well  taps are deleted as
+              needed. If the well tap columns  have  already  been  terminated
+              with a valid termination cell, the existing termination cell are
+              kept in the incremental run and no changes are made.
+
+              Note:  It  is recommended that well tap columns are added before
+              termination cell insertion.
+
+              Note: This parameter must be specified for termination tap  cell
+              insertion.
+
+       -top_termination_cell <cell_list>
+              Specifies the list of termination cells to be used at the top.
+
+       -vertical_boundary_spacing <spacing_with_well_tap>
+              Specifies  vertical  boundary  spacing with well tap. addWellTap
+              will recognize all vertical boundaries and keep  center  of  tap
+              cells  to  these  boundaries equal to or less than the specified
+              distance when inserting.
+
+              Minimum: -1
+
+              Maximum: 1.79769313486232e+308
+
+       -wellCutCell list_of_well_cut_cells
+              Specifies the list of cells with the well cuts.
+
+              The addWellTap -incremental flow treats cells specified in  this
+              list  as placement blockage because they cut the row and fix the
+              latch up violations within them.
+
+Examples
+              * The following command places instances of well-tap cell xyz on
+                every row in the design. Instances in  the  same  row  are  at
+                least  22.50  <mu>m  but no more than 50 <mu>m apart. Each in-
+                stance name is prefixed with welltap_.
+
+                addWellTap -cell xyz -prefix welltap -cellInterval 50
+
+              * The following commands place instances of well-tap cell xyz in
+                a checkered pattern. The first instance in the odd row numbers
+                (1, 3, 5, and so on) is placed at 0 (zero) offset.  The  first
+                instance in even row numbers (2, 4, 6, and so on) is placed at
+                50  <mu>m  offset.  Instances  in the same row are at least 45
+                <mu>m but no more than 100 <mu>m apart. Instances on  the  odd
+                rows are named wtap_odd_1, wtap_odd_2, and so on. Instances on
+                the even rows are named wtap_even_1, wtap_even_2, and so on.
+
+                addWellTap   -cell  xyz  -prefix  wtap_odd  -cellInterval  100
+                -skipRow 1
+
+                addWellTap  -cell  xyz  -prefix  wtap_even  -cellInterval  100
+                -skipRow 1 \
+
+                    -startRowNum 2 -inRowOffset 50
+
+              * The  following  command places instances of well-tap cell WTAP
+                on every row in the design.Before placing the  instances,  the
+                software checks for cells named WTAP and PSO1, and if it finds
+                any  within  the  minimum  gap  (that is, 21.68 <mu>m from the
+                nearest well-tap cell in that row) it does not place  any  in-
+                stances in that area.
+
+                addWellTap -cell WTAP -incremental "WTAP PSO1"
+
+              * In  the  following  commands, cell TAP is specified as general
+                well tap and TAP_TERMINATION is specified as termination  well
+                tap. TAP cells and tap columns are inserted first, followed by
+                TAP_TERMINATION cells as termination cells at the top and bot-
+                tom of each TAP column.
+
+                addWellTap -cell TAP -cellInterval 28
+
+                addWellTap -termination_cell TAP_TERMINATION -column_cell TAP
+
+              *
+
+                The  following command places well tap cell xyz on both bound-
+                ary layer region and dense layer region with different rules.
+
+                addWellTap -insert_cells { { xyz rule 22.5  boundary_layer  B1
+                boundary_rule 5 } { xyz dense_layer D1 dense_rule 8 }}
+
+Related Information
+              * deleteFiller
+
+              * verifyWellTap
+
+              * Low Power Design chapter in the Innovus User Guide
+
+                     * Substrate Biasing
+
+              * Placing the Design chapter in the Innovus User Guide
+
+                * Adding Well-Tap Cells
+
+                           Fri Apr 04 01:25:37 2025          addWellTap(25.10)

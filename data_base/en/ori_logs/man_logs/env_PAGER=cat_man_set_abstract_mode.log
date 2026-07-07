@@ -1,0 +1,315 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_abstract_mode(25.10)                              set_abstract_mode(25.10)
+
+Name
+       set_abstract_mode - Sets options for the
+           run_abstract command
+
+Syntax
+       set_abstract_mode
+
+        [-help]
+
+        [-reset]
+
+       [-abstract_blockage_cut_around_pin <layer_list>]
+
+       [-antenna_connectivity {<layer1> <connect_layer> <layer2>}]
+
+       [-antenna_diffusion_geom {{<layer_name>} {<logical_expression>}}]
+
+       [-antenna_gate_geom {{<layer_name>} {<logical_expression>}}]
+
+        [-blockage_detailed_layers <layer_list>]
+
+        [-boundary_layers<layer_list>]
+
+       [-cell_symmetry {R0 | X | Y | R90 | X Y | X R90 | Y R90 | X Y R90}]
+
+        [-export_lef_version {5.3 | 5.4 | 5.5 | 5.6 | 5.7 | 5.8}]
+
+        [-extract_layers_power <layer_list>]
+
+        [-extract_layers_signal<layer_list>]
+
+        [-extract_pin_layers_power<layer_list>]
+
+        [-extract_pin_layers_signal <layer_list>]
+
+        [-input_cell_type {std | io | block}]
+
+        [-input_gds_layer_map_file <file.map>]
+
+        [-input_lef_tech_file <file.lef>]
+
+        [-keep_temp_files {true|false}]
+
+        [-pins_analog_names <pattern>]
+
+        [-pins_clock_names <pattern>]
+
+        [-pins_ground_names <pattern>]
+
+        [-pins_output_names <pattern>]
+
+        [-pins_power_names <pattern>]
+
+        [-pins_text_pin_map <pattern>]
+
+        [-pre_skill<file.il>]
+
+        [-selected_cells <pattern>]
+
+        [-site_name<site_names>]
+
+        [-verbose {true | false}]
+
+       Sets options for the
+           run_abstract command.
+
+       Use the get_abstract_modecommand to return the current settings for the
+       set_abstract_mode command.
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each set_abstract_mode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man set_abstract_mode
+
+       -reset Resets all or specified options to default value.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+       -abstract_blockage_cut_around_pin <layer_list>
+              Specifies that obstruction should be cut around pin for standard
+              cells.
+
+              By default, run_abstract creates obstructions on pin shapes.
+
+              * If  -input_cell_type  is  std,  the  default  value  for  -ab-
+                stract_blockage_cut_around_pin is the list of  all  metal  and
+                via  layer  names. This means that abstract will not cover ob-
+                struction on pins for standard cells on all metal and via lay-
+                ers if -abstract_blockage_cut_around_pin is specified.
+
+              * If -input_cell_type is block or io, the default value for -ab-
+                stract_blockage_cut_around_pin is the list of  all  via  layer
+                names.  This means that abstract will not cover obstruction on
+                pins for blocks  and  io  pads  on  all  via  layers  if  -ab-
+                stract_blockage_cut_around_pin is specified.
+
+              Default: ""
+
+       -antenna_connectivity {<layer1> <connect_layer> <layer2>}
+              Specifies  the layers for which connectivity is to be extracted.
+              The syntax is {<layer1 connect_layer layer2>}.
+
+              Example: set_abstract_mode -antenna_connectivity  {{poly V0  M1}
+              {Diff V0 M1}}.
+
+              Default: ""
+
+       -antenna_diffusion_geom {{<layer_name>} {<logical_expression>}}
+              Specifies the diffusion layer, followed by the expression to re-
+              move the gate channel area from the diffusion region.
+
+              Example:  set_abstract_mode  -antenna_diffusion_geom  {Diff_real
+              {Diff andnot Poly}
+
+              Default: ""
+
+       -antenna_gate_geom {{<layer_name>} {<logical_expression>}}
+              Specifies the poly layer that forms a gate along with the  layer
+              expression  to  derive  the gate area. This option also triggers
+              the creation of antenna models.
+
+              Example: set_abstract_mode -antenna_gate_geom  {{Gate} {Poly and
+              Diff}}
+
+              Default: ""
+
+       -blockage_detailed_layers <layer_list>
+              Specifies the layers for which a detailed blockage model  is  to
+              be created. The detailed blockage model generates blockages only
+              at  those places on the layer where there are real shapes in the
+              cell. This only applies to the IO and block  cells  and  not  to
+              standard cells.
+
+              Default: ""
+
+       -boundary_layers <layer_list>
+              Specifies  the drawn layers to extract the cell boundary. If not
+              specified, abstract uses the prBounbdary object as the  boundary
+              size.
+
+              By  default,  <layer_list>list  is  empty, and the prBoundary is
+              used. The prBoundary comes from an explicit GDS  layer  that  is
+              used  to compute the LEF SIZE (and OVERLAP OBS shapes for recti-
+              linear boundaries). If  there  is  no  explicit  GDS  prBoundary
+              layer,  the  boundary  can  be computed from the bounding box of
+              geometries on this list of layers.
+
+              Note: This option will not normally work for core standard cells
+              because they almost always have diffusion and metal  shapes  ex-
+              tending  outside  the  real prBoundary. These shapes are usually
+              shared with the row above or below for the power rails. This op-
+              tion can be useful for blocks that have no prBoundary and  where
+              a little lost area due to worst-case bounding box approximations
+              is acceptable.
+
+              Default: ""
+
+       -cell_symmetry {R0 | X | Y | R90 | X Y | X R90 | Y R90 | X Y R90}
+              Specifies  a  property value for cell symmetry. The valid values
+              for the property symmetry are R0, X, Y, R90, X Y, X R90, Y  R90,
+              and X Y R90.
+
+              Example: set_abstract_mode -cell_symmetry {X Y R90}
+
+              Default: {X Y}
+
+       -export_lef_version {5.3 | 5.4 | 5.5 | 5.6 | 5.7 | 5.8}
+              Specifies the version of LEF to be exported. The default version
+              is  the same as the version of the technology LEF file being im-
+              ported.
+
+              Default: 5.7
+
+       -extract_layers_power <layer_list>
+              Specifies the layers through which the extractor  extracts  each
+              power  net.  This is used to reduce the search space if abstract
+              is taking too much run time for each cell.
+
+              Usually not applicable to standard cells. For blocks, it is com-
+              mon to only extract the power nets on the top one or  two  metal
+              layers.
+
+              Default: ""
+
+       -extract_layers_signal <layer_list>
+              Specifies  the  layers through which the extractor extracts each
+              net. This is used to reduce the search space if abstract is tak-
+              ing too much run time for each cell. Usually not  applicable  to
+              standard cells.
+
+              Default: ""
+
+       -extract_pin_layers_power <layer_list>
+              Determines  the  shapes, which are found by the extractor, to be
+              turned into pins. This argument is valid only if the  associated
+              layer,  geometry  specification  and connectivity have been pro-
+              vided in the technology LEF. Usually not applicable to  standard
+              cells.
+
+              Default: ""
+
+       -extract_pin_layers_signal <layer_list>
+              Determines  the  shapes, which are found by the extractor, to be
+              turned into pins. This argument is valid only if the  associated
+              layer,  geometry  specification  and connectivity have been pro-
+              vided in the technology LEF. Usually not applicable to  standard
+              cells.
+
+              Default: ""
+
+       -input_cell_type {std | io | block}
+              Selects  the  cell type being translated with abstract. The tool
+              adjusts its settings on the basis of the selected cell type.
+
+              Default: std
+
+       -input_gds_layer_map_file <file.map>
+              Specifies the file that maps GDS layer number/data type  to  LEF
+              layer names in the Virtuoso format.
+
+              Default: ""
+
+       -input_lef_tech_file <file.lef>
+              Specifies  the  technology LEF file. This is used to get all the
+              layer names and their types, such as routing, cut and the  layer
+              order for extracting connectivity.
+
+              Default: ""
+
+       -keep_temp_files {true | false}
+              Specifies to keep the temporary files/libraries that are created
+              in the process after the run_abstract command finishes.
+
+              Default: false
+
+       -pins_analog_names <pattern>
+              Identifies  analog   pin names based on label strings in the ab-
+              stract to set the "USE ANALOG" property of LEF.
+
+       -pins_clock_names <pattern>
+              Identifies clock pin names based on label  strings  in  the  ab-
+              stract to set the "USE CLOCK" property of LEF.
+
+       -pins_ground_names <pattern>
+              Identifies ground pins based on label strings in the abstract to
+              set the "USE GROUND" property of LEF.
+
+       -pins_output_names <pattern>
+              Identifies  output pins based on label strings in the GDS to set
+              the direction to OUTPUT property of LEF.
+
+       -pins_power_names <pattern>
+              Identifies power pin names based on label  strings  in  the  ab-
+              stract to set the "USE POWER" property of LEF.
+
+       -pins_text_pin_map <pattern>
+              Maps  text  labels  to  pins  on nets. Specify the layer purpose
+              pairs based on which you want the abstract generator  to  search
+              for geometry of any given layer-purpose pair with a text label.
+
+       -pre_skill <file.il>
+              Specifies  a skill file that will be executed in abstract before
+              the auto-generated script is executed. Optional.
+
+       -selected_cells <pattern>
+              Selects cells to create abstract for using regex  style  expres-
+              sions.
+
+       -site_name <site_names>
+              Specifies  the site to be used for macros. This site is added to
+              all the cells.
+
+       -verbose {true|false}
+              Specifies the verbose mode with extra print.
+
+              Default: false
+
+Examples
+              * The following command sets the values for the property  symme-
+                try:
+
+                > set_abstract_mode -cell_symmetry {R0, X, Y, R90}
+
+                > get_abstract_mode -cell_symmetry
+
+                -cell_symmetry {R0, X, Y, R90} # string, default="", user set-
+                ting
+
+                {R0, X, Y, R90}
+
+              * The following command sets the version of LEF to be exported:
+
+                > set_abstract_mode -export_lef_version 5.3
+
+                > get_abstract_mode -export_lef_version
+
+                -export_lef_version 5.3 # enums={5.3 5.4 5.5 5.6 5.7 5.8}, de-
+                fault=5.7, user setting
+
+                5.3
+
+Related Information
+              * get_abstract_modecommand
+
+              * run_abstract command
+
+                           Fri Apr 04 01:25:37 2025   set_abstract_mode(25.10)

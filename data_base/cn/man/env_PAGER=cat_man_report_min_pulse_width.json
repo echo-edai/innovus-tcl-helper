@@ -1,0 +1,69 @@
+{
+  "command": "report_min_pulse_width",
+  "is_cmd": true,
+  "summary": "报告时钟网络上引脚和端口的最小脉冲宽度违规情况",
+  "description": "报告时钟网络上引脚和端口的一组最小脉冲宽度违规情况。该报告显示所需的脉冲宽度、实际脉冲宽度以及约束被违反或满足的程度。报告会分别针对时钟树上的时序元件和实例进行显示。您可以使用 report_timing_format 全局变量自定义脉冲宽度报告格式。报告头部显示时钟边沿信息，使时钟样式检查更加直观。",
+  "usage": "report_min_pulse_width [-verbose] [-clock <object_list>] [-path_type {summary | short | full_clock}] [-pins <object_list>] [-net] [-violation_only] [-view <view_name>] [-waveform_aware_type {regular | waveform_aware | both}] [ { > | >> } <filename> | -tcl_list]",
+  "options": [
+    {
+      "name": "-verbose",
+      "description": "提供关于最小脉冲宽度计算的详细信息。注意：此参数已过时。在当前版本中仍可使用，但为确保与未来版本的兼容性，请改用 -path_type 参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock",
+      "description": "指定要报告最小脉冲宽度的一组时钟。",
+      "required": false,
+      "type": "object_list"
+    },
+    {
+      "name": "-path_type",
+      "description": "指定要生成的报告类型。可选值：summary（摘要报告）、short（短路径报告）、full_clock（完整时钟路径报告）。默认值：summary。注意：-path_type full_clock 参数可能导致运行时间增加，此时可以使用 -path_type short 参数。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-pins",
+      "description": "指定时钟网络上的一组端口和引脚。如果未指定此列表，则报告将包含当前设计中的所有引脚和端口。",
+      "required": false,
+      "type": "object_list"
+    },
+    {
+      "name": "-net",
+      "description": "报告网络弧。此参数只能与 -path_type full_clock 选项一起指定。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-violation_only",
+      "description": "仅报告负松弛的最小脉冲宽度违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "仅为指定的分析视图生成报告。仅当软件处于多模式多端角时序分析模式时，才能指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-waveform_aware_type",
+      "description": "报告波形感知的脉冲宽度检查。可选值：waveform_aware（仅报告波形感知脉冲宽度检查）、both（报告波形感知以及常规脉冲宽度检查）、regular（报告常规脉冲宽度检查，此为默认设置）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "> <filename>",
+      "description": "使用 > 时，将报告写入指定的文件名。如果文件已存在，软件将覆盖它。使用 >> 时，将报告写入指定的文件名。如果文件已存在，软件将报告追加到文件末尾。<filename> 参数必须是列表中的最后一个参数。<filename> 和 -tcl_list 参数互斥；不能同时指定它们。注意：要写入压缩报告，请在文件名后添加 .gz 扩展名。默认值：报告显示在标准输出上，不保存。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tcl_list",
+      "description": "以 Tcl 列表格式生成报告，而不是表格格式。这对于将时序与自定义 Tcl 函数集成以及自定义报告生成很有用。-tcl_list 和 <filename> 参数互斥；不能同时指定它们。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

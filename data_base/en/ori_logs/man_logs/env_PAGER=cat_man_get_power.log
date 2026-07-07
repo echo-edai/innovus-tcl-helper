@@ -1,0 +1,212 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_power(25.10)                                              get_power(25.10)
+
+Name
+       get_power  - Queries various power related properties of design objects
+       like nets, pins, and instances
+
+Syntax
+       get_power
+
+       [-help]
+
+       [-outfile <filename>]
+
+       [-nets <nets_list>| -pins <pins_list>| -instances <instances_list>]
+
+       [-attribute <attributes_list>]
+
+       [-include_unit]
+
+       [-tcl_list ]
+
+       [-pg_net {<pg_net_name_list> | all}]
+
+       Queries various power related properties of design objects  like  nets,
+       pins, and instances. Using this command, you can retrieve power attrib-
+       utes,  such  as  internal  power, switching power, leakage power, total
+       power, and toggle rate. This command is very useful for writing  custom
+       scripts.
+
+       Note: This command outputs toggle rates as N.A. if the clock domain in-
+       formation for a given net/pin/instance is not found.
+
+       Use  this command after running the report_power or restore_power_data-
+       base command.
+
+       Note: The -nets, -pins, and -instances parameters are  mutually  exclu-
+       sive. You must specify only one of the parameters.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -attribute <attributes_list>
+              Specifies  a  list  of  power attributes. If an attribute is not
+              available for the specified design object, the software  returns
+              its  value  as NA. See List of Power Attributes for a mapping of
+              the list of available attributes with the design objects.
+
+              This is a required parameter.
+
+       -include_unit
+              Specifies to include the units for the power attributes.
+
+        -instances <instances_list>
+              Specifies a list of instance names. The -nets, -pins,  and  -in-
+              stances parameters are mutually exclusive. You must specify one,
+              and only one, of the parameters.
+
+              Note:  You  can use the get_cells command to determine the power
+              attributes for a collection of instances.
+
+       -nets <nets_list>
+              Specifies a list of net names. The -nets, -pins, and  -instances
+              parameters  are  mutually  exclusive.  You must specify one, and
+              only one, of the parameters.
+
+              Note: You can use the get_nets command to  determine  the  power
+              attributes for a collection of nets.
+
+       -outfile <filename>
+              Specifies  the  output file into which the power related proper-
+              ties are to be written.
+
+              The -tcl_list and -outfile parameters  are  mutually  exclusive;
+              you cannot specify them together.
+
+       -pg_net {<pg_net_name_list> | all}
+              Specifies  to query various power-related properties of a speci-
+              fied power net for an instance. This parameter supports the  ar-
+              gument  all  to  query properties of all power nets connected to
+              the instance.
+
+              You must use the -instances parameter in  conjunction  with  the
+              -pg_net parameter.
+
+              The -pg_net parameter supports the following attributes: switch-
+              ing_power,  internal_power,  leakage_power, total_power, and dy-
+              namic_power.
+
+       -pins <pins_list>
+              Specifies a list of pin names. The -nets, -pins, and  -instances
+              parameters  are  mutually  exclusive.  You must specify one, and
+              only one, of the parameters.
+
+              Note: You can use the get_pins command to  determine  the  power
+              attributes for a collection of pins.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat.
+
+              The  -tcl_list  and  -outfile parameters are mutually exclusive;
+              you cannot specify them together.
+
+       The following power attributes can be queried for the design objects:
+
+       List of Power Attributes with Attribute Description
+
+              * switching_power (net, inst): switching power of a net  or  in-
+                stance
+
+              * internal_power (inst): internal power of an instance
+
+              * dynamic_power  (inst):  switching and internal power of an in-
+                stance
+
+              * leakage_power (inst): leakage power of an instance
+
+              * total_power (inst): total power of an instance
+
+              * toggle_rate (net, pin, inst): Toggle rate - The  frequency  at
+                which  at which the state of net, pin, or instance changes be-
+                tween logic levels during the duration of the VCD/TCF
+
+              * duty_cycle (net, pin): Static probability  of  the  signal  to
+                stay high
+
+              * ref_clock  (net,  pin,  inst):  Reference  clock name (Fastest
+                clock for multi clock domains)
+
+              * ref_clock_period (net, pin, inst): Reference clock period
+
+              * transition_density (net, pin): toggle_rate/ref_clock_period or
+                toggle_rate*ref_clock_frequency
+
+              * loading_cap (net, pin, inst): Loading capacitance
+
+              * voltage (net, pin, inst): Operating voltage for a net or  pin.
+                For MSMV instance, this attribute can be used to get breakdown
+                of domain specific power.
+
+              * rise_slew (net, pin): Rise slew
+
+              * fall_slew (net, pin): Fall slew
+
+              * glitch_rate  (net,  pin): Glitch rate - Number of glitches per
+                duration. Applies only to the vector-driven flow.
+
+              * glitch_power (net, pin, inst): Glitch power. Applies  only  to
+                the vector-driven flow.
+
+              * activity_source (net, pin): Source of activity annotation. The
+                options are: propagated, user_annotated, and constant.
+
+              * pin_direction (pin): [input | output | inout ]
+
+              * cell_type (inst):Lists cell type as memory, standard cell, IO,
+                sequential, and so on
+
+              * all_attributes  (net,  pin, inst): Lists all related power at-
+                tributes for the specified design object.
+
+Examples
+              * The following command returns the specified  power  attributes
+                for the net clock1:
+
+                get_power  -nets  clock1  -attribute  {switching_power  inter-
+                nal_power toggle_rate}
+
+                The following is the sample output:
+
+                clock1 0.04 NA 2
+
+              * The following command returns the specified  power  attributes
+                for all nets that match the specified pattern master*:
+
+                get_power -nets [get_nets master*] -attribute {switching_power
+                toggle_rate activity_source duty_cycle} -include_unit
+
+                The following is the sample output:
+
+                masterin[1] 0.001mW 0.2 user_annotated 0.5
+
+                 masterin[2] 0.002mW 0.2 user_annotated 0.5
+
+                 masterin[3] 0.003mW 0.1 propagated 0.5
+
+                 masterin[4] 0.005mW 1 constant 1
+
+              * The  following command returns power-related properties of all
+                power nets connected to the instance clk_buf_1:
+
+                get_power -pg_net all -instances clk_buf_1 -attribute {switch-
+                ing_power internal_power leakage_power}
+
+                The following is the sample output:
+
+                clk_buf_1 VDD 0.002 0.001 0.000001
+
+                clk_buf_1 VDDL 0.0001 0.0001 0.0000001
+
+Related Information
+              * get_activity
+
+              * set_power_analysis_mode
+
+              * report_power
+
+              * "Static Power, IRdrop and EM Analysis" in the Voltus IC  Power
+                Integrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025           get_power(25.10)

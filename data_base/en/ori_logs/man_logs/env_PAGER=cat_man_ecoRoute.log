@@ -1,0 +1,276 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoRoute(25.10)                                                ecoRoute(25.10)
+
+Name
+       ecoRoute  - This command is part of an ECO flow process and is based on
+       the NanoRoute(R) router
+
+Syntax
+       ecoRoute
+
+       [-help]
+
+       [-ignore_route <string>]
+
+       [-handlePartition ]
+
+       [-fix_drc [-cut_color_flip {0 1}]
+
+       [-trim_layer_patch ] [-layer_range <bottomLayer>:<topLayer>] [<area>]]
+
+       [-fix_filler_drc_with_patch_only [-passive_fill ]  [-layer_range  <bot-
+       tomLayer>:<topLayer>] [<area>]]
+
+       [-fix_filler_drc_with_patch_only | -fix_drc ]
+
+       [-target | -fix_drc | -prototype ]
+
+       [-modifyOnlyLayers <bottomLayer>:<topLayer> | -fix_drc ]
+
+       This  command  is  part  of  an  ECO  flow  process and is based on the
+       NanoRoute(R) router. Based on  information  from  the  ecoDefIncommand,
+       this  command  preprocesses  the  design  for  the NanoRoute router and
+       launches ECO routing within the  router.  This  command  retrieves  the
+       router's  mode settings and returns them to their original state at the
+       end of the ECO routing operation.
+
+              * When you specify two layers to modify, the first number repre-
+                senting the bottom layer should be  smaller  than  the  second
+                number  representing top layer (for example, -modifyOnlyLayers
+                2:3), ecoRoute checks for pin accessibility for new  or  modi-
+                fied nets and drops VIA12, as necessary.
+
+                Note:  The  via12  and  via34  will be used, but tool will not
+                change the metal shapes on M1 and M4.
+
+              * When a net is modified, some parts of the wire must  be  reas-
+                signed  to  the  new nets. Initially, a whole wire between two
+                cells is assigned to netA. When a buffer is inserted on  netA,
+                ecoRoute  cuts  the  wire segment and assigns the left side of
+                the wire to netA and the remaining segment  on  the  right  to
+                netB.
+
+              * You  must  first run ecoDefIn and ecoPlace before you use this
+                command.
+
+              * You can run ECO routing in multiple-CPU processing mode.
+
+Parameters
+       <area> Fixes DRC violations is the specified route area. You can  spec-
+              ify the area using the x1 y1 x2 y2 coordinate values.
+
+              Note: The parameter must be used with the -fix_drc parameter.
+
+              Data_type: rect, optional
+
+       -cut_color_flip {0 1}
+              Fixes  cut color DRC violations by flipping. When enabled ( 1 ),
+              the ecoRoute command fixes the cut same-mask spacing  violations
+              by flipping the color of the cut.
+
+              Note: The parameter must be used with the -fix_drc parameter.
+
+       -fix_drc
+              Fixes violations on existing DRC markers in the design. When en-
+              abled, it allows NanoRoute to fix only the DRC's on existing DRC
+              markers  in the design. If violations increase then the ecoRoute
+              command reverts to the original snap shot of the design.
+
+              Note: If open nets are found in the design, NanoRoute will error
+              out.
+
+              Note: This parameter does not support the -modifyOnlyLayers  ar-
+              guments.
+
+              Data_type: bool, optional
+
+       -fix_filler_drc_with_patch_only
+              Fixes filler related drc with metal patch only.
+
+              * If only the filler-related metal patch drc exists after filler
+                insertion,      it      can      be     fixed     with     the
+                -fix_filler_drc_with_patch_only parameter.
+
+              * The recommendation flow for chip-finish is:
+
+                * ecoRoute. For changed cell eco
+
+                * addFiller. Inserts full fillers, even if  decap  and  filler
+                  insertion is performed in single or multiple steps.
+
+                * ecoRoute -fix_filler_drc_with_patch_only
+
+              Note:  Some  decap  cells  might  be replaced with normal filler
+              cells  due  to  handling  of  the  vertical  stack  rule  during
+              addFiller.  As  a  result DRC violations relating to patch metal
+              may still be left after  full  filler  insertion  if  router  is
+              called  after only decap cells are inserted. Hence, Cadence rec-
+              ommends you to follow the above mentioned chip-finish flow.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ecoRoute parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoRoute
+
+       -handlePartition
+              Turns  on  handling partition flag. For the nets in hierarchical
+              partition design, the ECO routing performed is  partition  aware
+              with this option.
+
+              * Pure top level nets should be routed only in top area.
+
+              * Inter-partition  nets  should be routed based on partition pin
+                locations, and there are no multiple entries  to  a  connected
+                partition,  the  specific  partition pin is the only entry for
+                the partition connection.
+
+              * Intra-partition nets should  be  routed  inside  corresponding
+                partition fence.
+
+              Data_type: bool, optional
+
+       -ignore_route <string>
+              When  specified,  the  selected  net will be routed with highest
+              priority by ignoring existing routes in post-route mode.
+
+              * all: Ignores all other nets in the design  that  are  not  se-
+                lected, including clock, secondary PG, and signal nets.
+
+              * signal:  Ignores only other signal nets that are not selected,
+                but honors clock and secondary PG nets.
+
+              For example, the following commands select and route a  list  of
+              nets by ignoring only other signal nets, and considers secondary
+              PG  and clock nets during routing. After that, a second ecoRoute
+              is run to fix DRC violations:
+
+              selectNet {net1 net2 net3}
+
+              setNanoRouteMode -route_selected_net_only true
+
+              ecoRoute -ignore_route signal
+
+              setNanoRouteMode -reset -route_selected_net_only
+
+              verify_drc -limit 0
+
+              ecoRoute
+
+              Default: " "
+
+              Type: string, optional
+
+       -layer_range <bottomLayer:topLayer>
+              Enables the NanoRoute router to fix violations on  existing  DRC
+              markers in the specified layer range (<bottomLayer>:<topLayer>).
+
+              Type: string, optional
+
+       -modifyOnlyLayers <bottomLayer:topLayer>
+              Enables  the  NanoRoute router to remove segments of net routing
+              in the specified layer range, from bottomLayer to topLayer,  in-
+              clusively.  You must include a colon (:) between the bottomLayer
+              and topLayer values. This option also restricts eco  routing  to
+              carry out only on eco nets.
+
+              Default: ECO routing can occur on any layer and any nets.
+
+              Note:  You  might  want  to use -modifyOnlyLayers to specify all
+              layers in order for ecoRoute to avoid touching non-eco nets.  In
+              some cases, approach could be faster and result in fewer DRCs.
+
+              This  command  is  similar  to -bottomRoutingLayer and -topRout-
+              ingLayer  parameters  of  the  setDesignMode  command  and   the
+              -route_with_eco  parameter  of  the setNanoRouteModecommand. For
+              more information on the ecoRoute  command,  see  the  ECO  Flows
+              chapter of the Innovus User Guide.
+
+              Note: The NanoRoute router does not support the -modifyOnlyLayer
+              option for 10nm and below nodes and displays an error when used.
+
+              Note:  The  -modifyOnlyLayers parameter cannot be specified with
+              the -fix_drc parameter.
+
+              Note:  The recommended methods to know the layers and vias  that
+              were  touched in the freeze metal routing with -modifyOnlyLayers
+              <bottomLayer:topLayer> are:
+
+              * Use the defComp -metalShapeDiff  command to  compare  the  def
+                file before and after using the ecoRoute command.
+
+              * Use Pegasus to compare the gds file.
+
+              Data_type: string, optional
+
+       -passive_fill
+              When  specified,  it does passive fill after filler fixing. This
+              helps to save extra import/export time.
+
+              Data_type: bool, optional
+
+       -prototype
+              Enables prototyping while doing ECO routing. When specified,  it
+              enables NanoRoute to work on the nets selected to route and stop
+              early before DRC cleanup to provide a quick snapshot for the de-
+              signer.  This  mode is intended to help the designer know if the
+              routing is possible and if the ECO can improve timing.
+
+              Note: In this mode the routes are not DRC clean
+
+       -target
+              Enables NanoRoute  to  work  on  only  eco  nets  identified  by
+              NanoRoute to route. In this mode, the router ignores the already
+              existing  DRC  violation markers that are not on the ECO nets or
+              are on nets selected to route.
+
+              Data_type: bool, optional
+
+       -trim_layer_patch
+              Enables the ecoRoute command to only add trim and  patch  metals
+              in  a given area. Using the -trim_layer_patch parameter, you can
+              fix drc violations flagged in sign-off/verify_drc and  only  add
+              trim and patch metals where minimum spacing criteria is not met.
+
+              Data_type: bool, optional
+
+Examples
+       The  following example allows the NanoRoute router to perform ECO rout-
+       ing only on or between layers 2 and 3, VIA12 will be dropped if  neces-
+       sary :
+
+       ecoRoute -modifyOnlyLayers 2:3
+
+       If DRCs exist after you run the ecoRoute command, this could be because
+       ecoRoute  cannot  touch  non-eco  nets. You can reroute the DRC area as
+       shown below:
+
+       setNanoRouteMode -quiet -route_with_eco true
+
+       ecoRoute -modifyOnlyLayers 1:3
+
+       setNanoRouteMode -quiet -route_selected_net_only false
+
+       routeDesign
+
+Related Topic
+              * ecoDefIn
+
+              * ecoPlace
+
+              * setNanoRouteMode
+
+              * ECO Flows chapter in the Innovus User Guide
+
+              * Accelerating the Design Process By Using Multiple-CPU Process-
+                ing chapter in the Innovus User Guide
+
+              * Tools Menu chapter in the Innovus Menu Reference
+
+                * Multiple CPU Processing
+
+                           Fri Apr 04 01:25:37 2025            ecoRoute(25.10)

@@ -1,0 +1,312 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_verify_drc_mode(25.10)                          set_verify_drc_mode(25.10)
+
+Name
+       set_verify_drc_mode  -  Sets  the  global parameters for the verify_drc
+       command
+
+Syntax
+       set_verify_drc_mode
+
+        [-help]
+
+       [-area {lx ly ux uy}]
+
+       [-check_illegal_trim_shapes {true | false}]
+
+       [-check_ndr_spacing {true | false | auto}]
+
+       [-check_only {all | regular | special | selected_net | selected |  cell
+       | default}]
+
+       [-check_reverse]
+
+       [-check_routing_halo {true | false}]
+
+           [-check_routing_halo_corner {true | false}]
+
+       [-check_same_via_cell {true | false}]
+
+       [-check_short_only {true | false}]
+
+       [-check_trim_length {true | false}]
+
+       [-check_uncolored {true | false}]
+
+       [-disable_rules {jog2jog_spacing|eol_spacing|cut_spacing|min_cut|enclo-
+       sure|color|min_step|protrusion|min_area|out_of_die|off_manufactur-
+       ing_grid|off_routing_track}]
+
+       [-enable_post_passive_fill_check {true | false}]
+
+       [-exclude_pg_net {true | false}]
+
+       [-ignore_cell_blockage {true | false}]
+
+       [-ignore_fill_wire {true | false}]
+
+       [-ignore_non_rectangle_shapes {true | false}]
+
+       [-ignore_trial_route {true | false}]
+
+       [-layer_range {<layer1> [<layer2>]}]
+
+       [-limit <value>]
+
+       [-max_wrong_way_halo <value>]
+
+       [-report<file_name>]
+
+       [-reset]
+
+       [-use_min_spacing_on_block_obs {true | false | auto}]
+
+       Sets the global parameters for the verify_drc command. Parameters spec-
+       ified with the set_verify_drc_mode command are used automatically when-
+       ever  verify_drc  is  being  run.  The settings are saved in the design
+       database and will be restored after reloading a database saved earlier.
+
+       Use the get_verify_drc_mode command to return the current values of the
+       set_verify_drc_mode parameters.
+
+       set_verify_drc_mode is pre-configured with a set of  default  parameter
+       values.  The -reset parameter can be used to reset all or certain para-
+       meters to the default values.
+
+Parameters
+       -help  Prints a brief description of each  set_verify_drc_mode  parame-
+              ter, including type and default value.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man set_verify_drc_mode
+
+       -area {x1 y1 x2 y2}
+              Specifies the coordinates of the area to  be  verified.  If  the
+              area specified is bigger than the chip boundary, all the objects
+              inside  and outside the die will be verified. If the -area para-
+              meter is not specified, the objects within the chip boundary are
+              verified against the design rules.
+
+              Default: {0 0 0 0}
+
+       -check_illegal_trim_shapes {true | false}
+              Checks the missing trim shapes for a fulfilled design.
+
+       -check_ndr_spacing {true | false | auto}
+              Checks non-default rule spacing as a hard  rule.  Following  are
+              the parameter values:
+
+              * true: Checks all non-default rules.
+
+              * false: Skips checking any non-default rule.
+
+              * auto: Checks only the non-default rules with hard_spacing.
+
+              Default: auto
+
+              Note:       When       the      setNanoRouteMode      -route_en-
+              force_route_rule_on_special_net_wire parameter is set  to  true,
+              the non-default rule for special net is also checked.
+
+       -check_only {all | regular | special | selected_net | selected | cell |
+       default}
+              Specifies  which  types of shapes are checked against the design
+              rules. Following are the various values of this parameter:
+
+              * all: Reports the violations between all routing shapes  (regu-
+                lar  and  special)  and  all  other  shapes, including routing
+                blockages and cell pin/obs shapes.
+
+              * regular: Reports only the violations between  regular  routing
+                shapes  (normally  created by NanoRoute) and all other shapes.
+                It does not report violations between special routes,  routing
+                blockages  and  cell shapes. This is useful to find violations
+                caused only by NanoRoute.
+
+              * special: Reports  only  the  violations  between  the  special
+                routes and all other shapes. It does not report violations be-
+                tween  the regular routes, routing blockages, and cell shapes.
+                This is useful while checking the power routing or  pre-routed
+                special  routes  with isolating these errors from other viola-
+                tions.
+
+              * selected_net: Reports only the violations between the  objects
+                on the selected nets. Before running verify_drc, the nets need
+                to be selected with the selectNet command.
+
+              * selected:  Reports  only  the  violations  on special wire ob-
+                jects/vias of the secondary PG nets with  the  specified  user
+                class.
+
+              * cell:  Reports only the violations between the shapes of cells
+                including the objects  inside  the  same  cell  and  different
+                cells.
+
+              * default:  This  value  is equivalent to specifying the regular
+                and special at the same time.
+
+              Default: default
+
+       -check_reverse
+              Reports the CONVEXCORNER REVERSE violation in the flow.
+
+              Default: false
+
+       -check_routing_halo {true | false}
+              Checks for routing violations in the routing halo area. It  also
+              creates  the  DRV  markers  on  any routing wire parallel to the
+              block boundary or design boundary.
+
+              Default: false
+
+       -check_routing_halo_corner {true | false}
+              Checks for routing violations in the halo corner. It  also  cre-
+              ates  the  DRV markers on all the routing wires in the halo cor-
+              ner.
+
+              Default: false
+
+       -check_same_via_cell {true | false}
+              Checks the DRC issues in the same via cell.
+
+              Default: false
+
+       -check_short_only {true | false}
+              Excludes checking all other DRCs except the short ones.
+
+       -check_trim_length {true|false}
+              Checks for the maximum length on the trim shape layer.
+
+       -check_uncolored {true | false}
+              Reports the color change violation when  the  DPT  layer  shapes
+              have no color.
+
+       -disable_rules {jog2jog_spacing | eol_spacing | cut_spacing | min_cut |
+       enclosure | color | min_step | protrusion | min_area | out_of_die |
+       off_manufacturing_grid | off_routing_track}
+              Disables  checking  of the specified design rules. The supported
+              values for the  rule  list  are:  jog2jog_spacing,  eol_spacing,
+              cut_spacing,  min_cut,  enclosure,  color, min_step, protrusion,
+              min_area,  out_of_die,  off_manufacturing_grid,  and   off_rout-
+              ing_track
+
+              Use  this parameter to make only specific checks with verify_drc
+              and to skip checking certain design rules.
+
+              Examples:
+
+              The following set of commands disables the eol_spacing check and
+              runs verify_drc. In other words, all other rules are checked  by
+              verify_drc, except eol_spacing.
+
+              set_verify_drc_mode -disable_rules {eol_spacing}
+
+              verify_drc
+
+              Default: "" This means no rules are disabled.
+
+       -enable_post_passive_fill_check {true | false}
+              Checks  if  the  track  is  fully  filled for the full_fill trim
+              layer.
+
+       -exclude_pg_net {true | false}
+              Disables the design rule checking on power and ground nets.
+
+              Default: false
+
+       -ignore_cell_blockage {true | false}
+              Ignores geometries of cell blockages inside cell.
+
+              Default: false
+
+       -ignore_fill_wire {true | false}
+              Ignores metal fill wires while checking DRCs.
+
+       -ignore_non_rectangle_shapes {true | false}
+              When set to true, this parameter ignores  checking  DRC  markers
+              for  the  objects  with  the non-rectangular shapes. When set to
+              false, it checks DRC markers for the objects of all shapes.
+
+              Default: true
+
+       -ignore_trial_route {true | false}
+              Ignores early global route objects while checking design rules.
+
+              Default: false
+
+       -layer_range {<layer1> [<layer2>]}
+              Checks all the metal and cut layers between the specified bottom
+              and  top layers. You can use the full layer name,  or  abbrevia-
+              tions  such as 1 for the routing layer number, etc. For example,
+              -layer_range {M1 M3} will check all the metal and cut layers be-
+              tween M1 and M3 (including M1 and M3). If <layer2> is not speci-
+              fied, it only checks design rules on <layer1>.
+
+       -limit <value>
+              Specifies the maximum number of errors to be reported.
+
+              Default: 1000
+
+       -report <filename>
+              Specifies the name of the output report file, which will contain
+              the detailed violation report. If the -report parameter  is  not
+              specified, no external report will be saved.
+
+              Note:  The  output file will be overwritten each time verify_drc
+              is run, if the filename is not changed in the meantime.
+
+              Default:  ""
+
+       -max_wrong_way_halo <haloLength>
+              Specifies the length up to which short jog shapes in  halo  area
+              can  be  ignored. Routing halos are used to avoid cross-coupling
+              between top-level and inside-the-block routes, and short jogs do
+              not affect cross-coupling much. Normally, it is better  to  have
+              some short jogs rather than more vias. When this option is spec-
+              ified, any segment with length less than <haloLength> is ignored
+              for  wrong  way check, even if it overlaps with the halo region.
+              verify_drc reports violations only for jog shapes  with  lengths
+              greater than <haloLength.>
+
+              Default:  If  you do not specify the -max_wrong_way_halo option,
+              verify_drc uses 4* <pitch>as the default value, where  <pitch>is
+              the METAL2 routing pitch.
+
+       -reset Resets  all,  or  a  list of specified parameters. If no parame-
+              ter(s) are specified, this parameter resets all the  parameters.
+              Any values, that do not already match the default value, are re-
+              set  and  reported. Values, that already match the default value
+              for a particular parameter, will not be reported.
+
+              Example:
+
+              set_verify_drc_mode -reset -report -limit
+
+       -use_min_spacing_on_block_obs {true | false | auto}
+              Performs as below with various parameter values:
+
+              * true: Checks the Macro OBS with minSpacing. If the OBS SPACING
+                was specified in the LEF file, it honors the SPACING from LEF.
+
+              * false: Considers the Macro OBS as  real  metal  to  check  the
+                spacing  rules.  If  the  OBS SPACING was specified in the LEF
+                file, it honors the SPACING from LEF.
+
+              * auto: Considers the Macro OBS as real metal, if the OBS  width
+                is  lesser than or equal to maxWidth. It also checks the Macro
+                OBS with minSpacing if the OBS width is greater than maxWidth.
+                If the OBS SPACING was specified in the LEF  file,  it  honors
+                the SPACING from LEF.
+
+              Default: auto
+
+Related Information
+              * The Identifying and Viewing Violations chapter of User Guide.
+
+              * verify_drc
+
+              * get_verify_drc_mode
+
+                           Fri Apr 04 01:25:37 2025 set_verify_drc_mode(25.10)

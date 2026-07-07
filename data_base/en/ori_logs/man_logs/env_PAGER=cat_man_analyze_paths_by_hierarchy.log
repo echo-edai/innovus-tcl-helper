@@ -1,0 +1,276 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+analyze_paths_by_hierarchy(25.10)            analyze_paths_by_hierarchy(25.10)
+
+Name
+       analyze_paths_by_hierarchy  - Creates categories according to the hier-
+       archical characteristics of the paths
+
+Syntax
+       analyze_paths_by_hierarchy
+
+       [-help]
+
+       [-master <string>]
+
+       {-fp_file <string> [-include_macros ]} | {-use_current_floorplan  [-all
+       ]   [-types  <string>]  [-port2port  ]  [-port2macro  ]  [-port2bbox  ]
+       [-port2hinst  ]  [-port2stdcell  ]  [-port2instgrp  ]  [-macro2port   ]
+       [-macro2macro  ]  [-macro2bbox  ]  [-macro2hinst  ]  [-macro2stdcell  ]
+       [-macro2instgrp  ]  [-bbox2port  ]   [-bbox2macro   ]   [-bbox2bbox   ]
+       [-bbox2hinst   ]  [-bbox2stdcell  ]  [-bbox2instgrp  ]  [-hinst2port  ]
+       [-hinst2macro  ]  [-hinst2bbox  ]  [-hinst2hinst  ]  [-hinst2stdcell  ]
+       [-hinst2instgrp  ]  [-stdcell2port ] [-stdcell2macro ] [-stdcell2bbox ]
+       [-stdcell2hinst  ]  [-stdcell2stdcell  ]  [-stdcell2instgrp  ]  [-inst-
+       grp2port ] [-instgrp2macro ] [-instgrp2bbox ] [-instgrp2hinst ] [-inst-
+       grp2stdcell  ]  [-instgrp2instgrp  ]} | {-partitions <string> | -macros
+       <string>}
+
+       Creates categories according to the hierarchical characteristics of the
+       paths. User can use either a user specified floorplan file  or  current
+       floorplan  file  of  the design in memory and can create categories ac-
+       cording to the hierarchy of the design. This way, the paths can be nar-
+       rowed down to small group.
+
+Use Floorplan Plan:
+       The software automatically extracts partition-boundary information from
+       guides, regions, and fences in the floorplan file. Optionally  you  can
+       specify option to sort paths based on the macros in the floorplan file.
+
+              * All paths fully contained in a single partition, Ptn1.
+
+              * Paths  starting  in one partition and ending in another parti-
+                tion, Ptn1->Ptn2.
+
+              * Paths spanning several partitions, Ptn1-> Ptn2->Ptn3.
+
+              * Top-level inputs to partitions, INPUT->Ptn1.
+
+              * Paths from partitions to top-level outputs, Ptn1->OUTPUT.
+
+Use Current Floorplan:
+       This method categorizes paths based on the current floorplan of the de-
+       sign in memory. It will rely on the grouped/ungrouped as  a  basis  for
+       what  level to view the hierarchy as well as what levels to create tim-
+       ing categories .
+
+       Grouped/ungrouped status of an Hinst means whether or not its  children
+       are shown on the floorplan view.
+
+       It  categorizes  paths starting and ending on/within these hierarchical
+       entities:
+
+              * Port
+
+              * Hard Macro (ungrouped)
+
+              * Black Box (ungrouped)
+
+              * Hinst (regular, partition, Black Blob, or Flex Model) (highest
+                grouped)
+
+              * Stdcell (ungrouped)
+
+       For more information on creating path categories,  see  "Creating  Path
+       Categories" in the Debugging Timing Results chapter of User Guide.
+
+Parameters
+       -all   Creates categories of paths within all types
+
+              Default: All types are categorized.
+
+       -bbox2instgrp
+              Creates categories of paths from black box to instance group.
+
+              Type: Bool, optional
+
+       -bbox2port
+              Creates categories of paths from black box to port.
+
+       -bbox2macro
+              Creates categories of paths from black box to macro.
+
+       -bbox2bbox
+              Creates categories of paths from black box to black box.
+
+       -bbox2hinst
+              Creates  categories  of paths from black box to hierarchical in-
+              stance.
+
+       -bbox2stdcell
+              Creates categories of paths from black box to standard cell.
+
+       -fp_file floorplan_file
+              Specifies the name of the floorplan file.
+
+              Default: Uses the current floorplan file.
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each analyze_paths_by_hierarchy parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man analyze_paths_by_hierarchy
+
+       -hinst2port
+              Creates categories of paths from hierarchical instance to port.
+
+       -hinst2macro
+              Creates categories of paths from hierarchical instance to macro.
+
+       -hinst2bbox
+              Creates categories of paths from hierarchical instance to  black
+              box.
+
+       -hinst2hinst
+              Creates  categories of paths from hierarchical instance to hier-
+              archical.
+
+       -hinst2instgrp
+              Creates categories of paths from hierarchical  instance  to  in-
+              stance group.
+
+              Type: Bool, optional
+
+       -hinst2stdcell
+              Creates  categories of paths from hierarchical instance to stan-
+              dard cell.
+
+       -include_macros
+              Includes macros in addition to guides and  fences  for  creating
+              categories.
+
+              Default: Macros are not considered.
+
+       -instgrp2bbox
+              Creates categories of paths from instance group to black box.
+
+              Type: Bool, optional
+
+       -instgrp2hinst
+              Creates  categories of paths from instance group to hierarchical
+              instance.
+
+              Type: Bool, optional
+
+       -instgrp2instgrp
+              Creates categories of paths  from  instance  group  to  instance
+              group.
+
+              Type: Bool, optional
+
+       -instgrp2macro
+              Creates categories of paths from instance group to macro.
+
+              Type: Bool, optional
+
+       -instgrp2port
+              Creates categories of paths from instance group to port.
+
+              Type: Bool, optional
+
+       -instgrp2stdcell
+              Creates  categories  of  paths  from  instance group to standard
+              cell.
+
+              Type: Bool, optional
+
+       -macros <macro_list>
+              Specifies the names of the macros to be used. Use this parameter
+              with the -partitions parameter.
+
+       -macro2instgrp
+              Creates categories of paths from macro to instance group.
+
+              Type: Bool, optional
+
+       -master <master_category_name>
+              Specifies that the timing paths should be categorized  only  for
+              the specified master category.
+
+       -partitions <partition_list>
+              Specifies the names of the partitions to consider for extracting
+              hierarchical information.
+
+       -port2instgrp
+              Creates categories of paths from port to instance group.
+
+              Type: Bool, optional
+
+       -port2port
+              Creates categories of paths from port to port.
+
+       -port2macro
+              Creates categories of paths from port to macro.
+
+       -port2bbox
+              Creates categories of paths from port to black box.
+
+       -port2hinst
+              Creates categories of paths from port to hierarchical instance.
+
+       -port2stdcell
+              Creates categories of paths from port to standard cell.
+
+       -macro2port
+              Creates categories of paths from macro to port.
+
+       -macro2macro
+              Creates categories of paths from macro to macro.
+
+       -macro2bbox
+              Creates categories of paths from macro to black box.
+
+       -macro2hinst
+              Creates categories of paths from macro to hierarchical instance.
+
+       -macro2stdcell
+              Creates categories of paths from macro to standard cell.
+
+       -stdcell2port
+              Creates categories of paths from standard cell to port.
+
+       -stdcell2macro
+              Creates categories of paths from standard cell to macro.
+
+       -stdcell2bbox
+              Creates categories of paths from standard cell to black box.
+
+       -stdcell2hinst
+              Creates  categories  of paths from standard cell to hierarchical
+              instance.
+
+       -stdcell2instgrp
+              Creates categories of  paths  from  standard  cell  to  instance
+              group.
+
+              Type: Bool, optional
+
+       -stdcell2stdcell
+              Creates categories of paths from standard cell to standard cell.
+
+       -types type_list
+              Creates categories of paths within the type_list.
+
+              Valid types are: port, macro, bbox, hinst, stdcell
+
+       -use_current_floorplan
+              Uses the current floorplan.
+
+Examples:
+              *
+                 By default, it categorizes all the paths inter/intra in the 5
+                hierarchical entities by following command :
+
+                analyze_paths_by_hierarchy -use_current_floorplan -all
+
+              *
+                 The following command categorizes all paths from "port" or to
+                "port":
+
+                analyze_paths_by_hierarchy -use_current_floorplan -type port
+
+Related Information
+       The Timing Budgeting chapter of the Innovus User Guide document.
+
+                           Fri Apr 04 01:25:37an2a0l2y5ze_paths_by_hierarchy(25.10)

@@ -1,0 +1,109 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+readTSVConfig(25.10)                                      readTSVConfig(25.10)
+
+Name
+       readTSVConfig  - Imports 3D IC configuration files of the whole design,
+       including the stack die configuration  file,  power  net  configuration
+       file and top-level netlist
+
+Syntax
+       readTSVConfig
+
+       {[-stackedDieFile <filename>] [-powerFile <filename>]}
+
+       [-chipName <chipName>]
+
+       [-topNetlist]
+
+       Imports  3D  IC  configuration files of the whole design, including the
+       stack die configuration file, power net  configuration  file  and  top-
+       level netlist.
+
+Parameters
+       <-stackedDieFile><filename>
+              Reads the stack die configuration file.
+
+       -powerFile <filename>
+              Imports the power net configuration file.
+
+       -chipName <chipName>
+              Specifies the hierarchical instance name (chip) name of the cur-
+              rent design in the top-level netlist.
+
+              For example, if the current design is ramextra and the top-level
+              netlist  is  below  it,  then  you  can  specify  the chip name,
+              i_ramextra, as follows:
+
+                              module top (...) ;
+
+                     asic_entity i_asic_entity (.pin1(), .pin2(), ...);
+
+                     ramextra i_ramextra (.pin1(), .pin2(), ...);
+
+                     end module
+
+       -topNetlist
+              Imports the top-level netlist to support  3D  IC  design  in  OA
+              mode.
+
+              Note: You can import the top-level netlist in the non-OA mode in
+              case  the  top-level netlist is not loaded during the design im-
+              port.
+
+Examples
+              * The following command reads the stacked die configuration file
+                and power configuration file and specifies  that  the  current
+                design is named i_ramextra:
+
+                readTSVConfig   -stackedDieFile   stacked_die.xml   -powerFile
+                power.side -chipName i_ramextra
+
+              * Below is the example of a stack die configuration file:
+
+                <StackChip>
+
+                  <TopDesign name="top" />
+
+                  <Tier number=1>
+
+                    <Chip name="i_asic_entity"  orientation="R0"  faceUp="Yes"
+                llx=0 lly=0 sizeX=6000.0 sizeY=6000.0 scaleFactor=1 />
+
+                  </Tier>
+
+                  <Tier number=2>
+
+                    <Chip   name="i_ramextra"   orientation="R0"  faceUp="Yes"
+                llx=1500.0 lly=1250.0 sizeX=3500.0 sizeY=3000.0  scaleFactor=1
+                />
+
+                  </Tier>
+
+                </StackChip>
+
+              * Below is the example of a power net configuration file:
+
+        VDD i_asic_entity   sharable
+
+        VDD i_ramextra      backside
+
+        VSS i_asic_entity   sharable
+
+        VSS i_ramextra      backside
+
+        Alias:
+
+        i_asic_entity/VDD i_ramextra/VDD
+
+        i_asic_entity/VSS i_ramextra/VSS
+
+Related Information
+              * Design  Methodology for 3D IC with Through Silicon Via chapter
+                in Innovus User Guide.
+
+                *
+                   Power Connectivity Input section
+
+                * Stack Configuration Input section
+
+                           Fri Apr 04 01:25:37 2025       readTSVConfig(25.10)

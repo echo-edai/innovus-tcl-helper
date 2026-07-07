@@ -1,0 +1,279 @@
+{
+  "command": "analyze_paths_by_hierarchy",
+  "is_cmd": true,
+  "summary": "按层次结构分析时序路径，并根据指定的起点和终点类型（如端口、宏、黑盒等）对路径进行分类。",
+  "description": "该命令用于分析设计中的时序路径，并根据其起点和终点在物理层次结构中的类型（例如，从端口到宏、从宏到标准单元等）对路径进行分类。它提供了多种方式来指定分类规则：可以通过读取一个布局规划文件（-fp_file），使用当前的布局规划（-use_current_floorplan），或者指定特定的分区（-partitions）或宏（-macros）。用户可以使用一系列详细的选项（如 -port2macro, -macro2stdcell 等）来精确控制需要创建哪些类型的路径类别，从而帮助设计者理解跨不同层次和模块的时序关系。",
+  "usage": "analyze_paths_by_hierarchy [-help] [-master <string>] {{-fp_file <string> [-include_macros ]} | {-use_current_floorplan  [-all ] [-types <string>] [-port2port ] [-port2macro ] [-port2bbox ] [-port2hinst ] [-port2stdcell ] [-port2instgrp ] [-macro2port ] [-macro2macro ] [-macro2bbox ] [-macro2hinst ] [-macro2stdcell ] [-macro2instgrp ] [-bbox2port ] [-bbox2macro ] [-bbox2bbox ] [-bbox2hinst ] [-bbox2stdcell ] [-bbox2instgrp ] [-hinst2port ] [-hinst2macro ] [-hinst2bbox ] [-hinst2hinst ] [-hinst2stdcell ] [-hinst2instgrp ] [-stdcell2port ] [-stdcell2macro ] [-stdcell2bbox ] [-stdcell2hinst ] [-stdcell2stdcell ] [-stdcell2instgrp ] [-instgrp2port ] [-instgrp2macro ] [-instgrp2bbox ] [-instgrp2hinst ] [-instgrp2stdcell ] [-instgrp2instgrp ]} | {-partitions <string> | -macros <string>}}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-master",
+      "description": "指定仅对特定的主类别进行时序路径分类。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-fp_file",
+      "description": "指定布局规划文件的名称。默认使用当前的布局规划文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-include_macros",
+      "description": "在创建类别时，除了引导线和围栏外，还包括宏。默认情况下不考虑宏。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_current_floorplan",
+      "description": "使用当前的布局规划。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-all",
+      "description": "创建所有类型内部的路径类别。默认：所有类型都被分类。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-types",
+      "description": "在指定的类型列表内创建路径类别。有效类型有：port, macro, bbox, hinst, stdcell。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-port2port",
+      "description": "创建从端口到端口的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port2macro",
+      "description": "创建从端口到宏的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port2bbox",
+      "description": "创建从端口到黑盒的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port2hinst",
+      "description": "创建从端口到层次化实例的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port2stdcell",
+      "description": "创建从端口到标准单元的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-port2instgrp",
+      "description": "创建从端口到实例组的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro2port",
+      "description": "创建从宏到端口的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro2macro",
+      "description": "创建从宏到宏的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro2bbox",
+      "description": "创建从宏到黑盒的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro2hinst",
+      "description": "创建从宏到层次化实例的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro2stdcell",
+      "description": "创建从宏到标准单元的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macro2instgrp",
+      "description": "创建从宏到实例组的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox2port",
+      "description": "创建从黑盒到端口的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox2macro",
+      "description": "创建从黑盒到宏的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox2bbox",
+      "description": "创建从黑盒到黑盒的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox2hinst",
+      "description": "创建从黑盒到层次化实例的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox2stdcell",
+      "description": "创建从黑盒到标准单元的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bbox2instgrp",
+      "description": "创建从黑盒到实例组的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst2port",
+      "description": "创建从层次化实例到端口的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst2macro",
+      "description": "创建从层次化实例到宏的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst2bbox",
+      "description": "创建从层次化实例到黑盒的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst2hinst",
+      "description": "创建从层次化实例到层次化实例的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst2stdcell",
+      "description": "创建从层次化实例到标准单元的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hinst2instgrp",
+      "description": "创建从层次化实例到实例组的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stdcell2port",
+      "description": "创建从标准单元到端口的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stdcell2macro",
+      "description": "创建从标准单元到宏的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stdcell2bbox",
+      "description": "创建从标准单元到黑盒的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stdcell2hinst",
+      "description": "创建从标准单元到层次化实例的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stdcell2stdcell",
+      "description": "创建从标准单元到标准单元的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stdcell2instgrp",
+      "description": "创建从标准单元到实例组的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instgrp2port",
+      "description": "创建从实例组到端口的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instgrp2macro",
+      "description": "创建从实例组到宏的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instgrp2bbox",
+      "description": "创建从实例组到黑盒的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instgrp2hinst",
+      "description": "创建从实例组到层次化实例的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instgrp2stdcell",
+      "description": "创建从实例组到标准单元的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-instgrp2instgrp",
+      "description": "创建从实例组到实例组的路径类别。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-partitions",
+      "description": "指定用于提取层次信息的分区名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-macros",
+      "description": "指定要使用的宏的名称。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

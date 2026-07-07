@@ -1,0 +1,239 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+gen_vp(25.10)                                                    gen_vp(25.10)
+
+Name
+       gen_vp - The gen_vp command automatically generates the LEF file, which
+       includes the via pillar rules and the via pillar cell association list
+
+Syntax
+       gen_vp
+
+       [-help]
+
+       [-allow_finger_outside_cell {0 1}]
+
+       [-dont_gen_list <string>]
+
+       [-em_config_file <string>]
+
+       [-finger_pitch <string>]
+
+       [-gen_list <string>]
+
+       [-match_pattern <string>]
+
+       [-max_cell_extension <string>]
+
+       [-max_finger_quantity <string>]
+
+       -output_association_file <string>
+
+       -output_rule_lef_file <string>
+
+       [-prefix <string>]
+
+       [-process_node {N7 N7Plus N6 N5 N4 N3 N2 S5 S3 P1278 P1280}]
+
+       [-specify_cut_class <string>]
+
+       [-top_num_limit <string>]
+
+       [-vp_bottom_layer <string>]
+
+       [-vp_top_layers <string>]
+
+       [-write_cut_class {0 1}]
+
+       The gen_vp command automatically generates the LEF file, which includes
+       the via pillar rules and the via pillar cell association list. It helps
+       in  the  creation  of   DRC-free via pillar rules for different process
+       nodes.
+
+       Note: This command requires the timing library and the LEF files to  be
+       pre-loaded in Innovus.
+
+       The  gen_vp  command evaluates cell pin lengths and cell widths/heights
+       when creating via pillars and filters out unimplementable  via  pillars
+       from  the  association  lists. The gen_vp command cannot handle complex
+       cells that have multiple pins and cell OBS shapes.
+
+Parameters
+       -allow_finger_outside_cell {0 1}
+              When set to 1, it allows 1 finger to be outside the cell if mul-
+              tiple fingers cannot be created within the cell boundary.
+
+              Default: 0
+
+              Data_type: enum, optional
+
+       -dont_gen_list <string>
+              Specifies the file that contains the list of cells that  do  not
+              generate via pillars.
+
+              Data_type: string, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each gen_vp parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+              man gen_vp.
+
+       -em_config_file <string>
+              Specifies the name of the EM config file.  The  EM  config  file
+              must follow EM syntax/format.
+
+              Data_type: string, optional
+
+       -finger_pitch <string>
+              Specifies the pitch of each layer's finger.
+
+              Data_type: string, optional
+
+       -gen_list <string>
+              Specifies the file that contains the list of cells that generate
+              via pillars.
+
+              Data_type: string, optional
+
+       -match_pattern <string>
+              Specifies the customized library cell match pattern to catch the
+              footprint and driving strength.
+
+              Data_type: string, optional
+
+       -max_cell_extension <string>
+              Specifies  the maximum extension pitch outside the cell boundary
+              for via pillar fingers creation.
+
+              Note: Specify the value by layer.
+
+              Default: 1 for all layers
+
+              Data_type: string, optional
+
+       -max_finger_quantity <string>
+              Specifies the maximum finger quantity by layer.
+
+              Note: The value must be larger than or equal to 2.
+
+              Data_type: string, optional
+
+       -output_association_file <string>
+              Specifies the name of the file used for generating standard mode
+              via pillar association list.
+
+              Data_type: string, required
+
+       -output_rule_lef_file <string>
+              Specifies the name of the file used for generating standard/rich
+              mode combined via pillar rule LEF.
+
+              Data_type: string, required
+
+       -prefix <string>
+              Specifies the prefix name to be applied to via pillars.
+
+              Data_type: string, optional
+
+       -process_node {N7 N7Plus N6 N5 N4 N3 N2 S5 S3 P1278 P1280}
+              Specifies the library process node.  The  default  finger  pitch
+              corresponds to the process node.
+
+              Note:  You  can  change the finger pitch using the -finger_pitch
+              parameter.
+
+              Data_type: enum, optional
+
+       -specify_cut_class <string>
+              Specifies the cut class of each cut layer.
+
+              For example, the following command sets the  cut  class  of  via
+              VIA1 as SINGLECUT:
+
+              gen_vp -specify_cut_class {VIA1 SINGLECUT_A}
+
+              Data_type: string, optional
+
+       -top_num_limit <string>
+              Specifies  the number of top largest rules to write out for each
+              cell.
+
+              Default: No limit
+
+              Data_type: string, optional
+
+       -vp_bottom_layer <string>
+              Specifies the bottom layer of the created via pillars where pins
+              are available on the specified layer.
+
+              Default: M1
+
+              Data_type: string, optional
+
+       -vp_top_layers <string>
+              Specifies the top layers of the created via pillars.
+
+              Data_type: string, optional
+
+       -write_cut_class {0 1}
+              When enabled, the cut class is written in the vp file.
+
+              Default: 0
+
+              Data_type: enum, optional
+
+Examples
+              * The following command generates via pillars for a TSMC process
+                node with a don't generate list:
+
+                gen_vp   -output_association_file   vp_association.tcl   -out-
+                put_rule_lef_file   vp_rule.lef -max_finger_quantity { M3 3 M4
+                3 } -process_node N3  -vp_top_layers  {M5  M6}  -dont_gen_list
+                dontGen.txt -finger_pitch {M5 2 M6 2}
+
+              * The  following  command  generates via pillars with customized
+                library and match pattern:
+
+                cell name: <uln8_xor2t02p57>
+
+                gen_vp   -output_association_file   vp_association.tcl   -out-
+                put_rule_lef_file vp_rule.lef -gen_list Gen.txt -vp_top_layers
+                M5     -finger_pitch    {M2    2    M3    2}    -match_pattern
+                {(.*)(t)([0-9]+)(\D*)}
+
+              * The following command generates via pillars up to high  layers
+                and  not  bounded within cell boundary for specific cells such
+                as clock buffers/inverters:
+
+                gen_vp  -output_association_file   vp_associations.tcl   -out-
+                put_rule_lef_file     vp_rule.lef     -gen_list    genList.txt
+                -vp_top_layers  M11  -finger_pitch  {M8  3   M9   3   M10   3}
+                -max_cell_extension  {M8  2  M9  3  M10  3} -allow_finger_out-
+                side_cell 1
+
+              * The following command  generates  via  pillars  for  an  Intel
+                process node:
+
+                gen_vp  -process_node  P1278  -output_association_file  vp.tcl
+                -output_rule_lef_file     vp.lef     -match_pattern     "(\[a-
+                z0-9\]{9})(\[a-z0-9\]{4})(\[0-9\]{2})(\[a-z0-9\]+)"
+                -vp_top_layers {m3 m4 m5}
+
+              * The  following  command  generates  via  pillars for a Samsung
+                process node:
+
+                gen_vp  -output_association_file   vp_associations.tcl   -out-
+                put_rule_lef_file   vp_rule.lef   -process_node   S5  -vp_bot-
+                tom_layer M1 -vp_top_layers  D1  -allow_finger_outside_cell  1
+                -match_pattern {(.*)(B)(.*)}
+
+Related Information
+              * routeDesign
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                * Via Pillar Flow
+
+                           Fri Apr 04 01:25:37 2025              gen_vp(25.10)

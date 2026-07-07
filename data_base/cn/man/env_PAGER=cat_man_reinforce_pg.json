@@ -1,0 +1,87 @@
+{
+  "command": "reinforce_pg",
+  "is_cmd": true,
+  "summary": "在现有原始电源地（PG）走线之间添加增强走线，以修复Voltus报告的IR压降违规",
+  "description": "该命令用于在Cadence Innovus工具中，通过在现有的原始电源地（PG）走线之间添加增强走线，来修复由Voltus工具报告的IR压降违规。它支持多种模式，包括基于预定义图案（pattern）的修复、基于指定区域或阻挡区域的修复，以及自动IR修复流程（分为布线前和布线后）。用户可以通过指定图案文件、IR压降值与图案的映射关系、分析区域、分块大小或数量等参数，精确控制增强走线的生成。",
+  "usage": "reinforce_pg [-help] [-area {<x1 y1 x2 y2>}] [-area_blockage {{<x1 y1 x2 y2>} {<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}] [-pattern_file <file_name>] [-snap_wire_center_to_grid {default | Grid}] {-pattern_map  {{<irdrop_value1>   <pattern_name1>}   {<irdrop_value2> <pattern_name2>}..} | -write_pattern_template <file_name> | -boxes_file <file_name >| -auto_ir_fix {preroute | postroute}} [[-tile_row_column  {<x  y>}   |  -tile_size  {<x y>} | -number_region <value>] | -write_pattern_template <file_name>] [-rail_analysis_directory   {<directory>}   |   -write_pattern_template <file_name>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定一个矩形区域坐标（x1 y1 x2 y2），在此区域内，reinforce_pg命令可以修复Voltus报告的IR压降违规框。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-area_blockage",
+      "description": "指定一个或多个区域阻挡坐标，以限制在这些区域内添加任何走线。支持矩形、直角多边形区域及其组合。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern_file",
+      "description": "定义增强走线的图案模板文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-snap_wire_center_to_grid",
+      "description": "指定布线网格的走线中心对齐方式。可选值为default（根据线宽对齐到网格或半网格）或Grid（仅对齐到网格）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pattern_map",
+      "description": "通过IR压降值和图案名称（由-pattern_file定义）指定用于IR修复的图案映射。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-write_pattern_template",
+      "description": "指定图案模板文件的输出文件名。此参数不能与其他参数同时使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-boxes_file",
+      "description": "指定包含框列表及对应图案名称的文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-auto_ir_fix",
+      "description": "使用自动化流程修复IR压降，无需图案。可选值为preroute（布线前，使用最少资源）或postroute（布线后，使用所有剩余可用资源）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tile_row_column",
+      "description": "指定在x和y方向上进行电源分析的分块数量，用于基于分块的热点区域分析。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tile_size",
+      "description": "指定在x和y方向上进行电源分析的分块大小，用于基于分块的热点区域分析。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-number_region",
+      "description": "指定软件要分析的区域数量，整数值范围为1到65536。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-rail_analysis_directory",
+      "description": "指定目录，允许reinforce_pg命令读取该目录中的轨线分析信息。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

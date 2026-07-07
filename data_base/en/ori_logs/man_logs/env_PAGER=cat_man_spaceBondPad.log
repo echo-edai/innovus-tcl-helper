@@ -1,0 +1,109 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+spaceBondPad(25.10)                                        spaceBondPad(25.10)
+
+Name
+       spaceBondPad  -  Spaces  bond  pads  and the corresponding area I/O in-
+       stances based on  the  constraints  returned  by  the  getCellDist()Tcl
+       script
+
+Syntax
+       spaceBondPad
+
+       [-help]
+
+       [-spread]
+
+       Spaces  bond pads and the corresponding area I/O instances based on the
+       constraints returned by the getCellDist()Tcl script.
+
+       The command distributes excess space until  all  the  bond  pads  reach
+       their  maximum  spacing  constraint  returned by the getCellDist () Tcl
+       script or until the time when no extra space is left  between  the  in-
+       stances.
+
+       The  initial distribution of space occurs for the clusters of instances
+       that have the first or the last bond pads in the row. The remaining it-
+       erations equally distribute the remaining space between each  I/O.  The
+       I/O  instances that are in the end are placed at minimum spacing to the
+       die edges, both on the left and right sides of the die.
+
+       The I/O pads will snap to I/O sites and  the  corresponding  bond  pads
+       (bumps) will shift accordingly.
+
+       You  can define the constraints in the getCellDist() Tcl script as fol-
+       lows:
+
+       proc getCellDist { <xp > <yp > <xn > <yn > <padPosition >  <padCount  >
+       <side > <ioRow > <staggerPos > <ioName> }
+
+       Here:
+
+              * <xp>  <yp>  -  Specifies the x and y coordinates of a previous
+                bond pad having the same stagger position. If first, the loca-
+                tion is 0, 0.
+
+              * <xn> <yn> - Specifies the x and y coordinates of the  previous
+                neighboring  bond  pad  having any stagger position. If first,
+                the location is 0, 0.
+
+              * <padPosition> - Specifies the position of the  bond  pad.  The
+                position can be i (inner), m (middle), or o (outer).
+
+              * padCount  - Specifies the current bond pad count for bond pads
+                at the same stagger position. For example, 1 for the first in-
+                ner bond pad, 2 for the second inner bond pad, and so on.
+
+              * <side> - Specifies the n (North), s (South), e  (East),  or  w
+                (West) side of the bond pad.
+
+              * <ioRow> - Specifies the I/O row.
+
+              * <staggerPos> - Specifies the stagger type.
+
+              * ioName - Specifies the name of the I/O.
+
+       Note:
+
+              * The  bond pad spacing for North and South is done from left to
+                right.
+
+              * The bond pad spacing for East and West is done from bottom  to
+                top.
+
+              * The  bond  pad spacing for each side and ring is done indepen-
+                dently.
+
+       After using the spaceBondPad command, you can use the checkBondPadSpac-
+       ing command to check the bond pad spacing.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each spaceBondPad parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man spaceBondPad
+
+       -spread
+              Removes any extra spacing that may exist between
+
+              I/O  cells,  which were placed based on the rules defined in the
+              getCellDist()Tcl script, and evenly distirbutes the extra  space
+              between all of the I/O cells in that row. You can use this para-
+              meter if there are large gaps (spaces) between I/O cells.
+
+Related Information
+              * checkBondPadSpacing
+
+              * fixBondPad
+
+              * getBondPad
+
+              * placeBondPad
+
+              * staggerBondPad
+
+              * unfixBondPad
+
+                           Fri Apr 04 01:25:37 2025        spaceBondPad(25.10)

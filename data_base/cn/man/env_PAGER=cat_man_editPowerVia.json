@@ -1,0 +1,207 @@
+{
+  "command": "editPowerVia",
+  "is_cmd": true,
+  "summary": "修改、删除现有电源通孔或向设计添加新的电源通孔",
+  "description": "该命令用于修改、删除设计中现有的电源通孔，或添加新的电源通孔。它提供了多种参数来控制通孔的操作范围、目标对象（如特定网络、区域、选中的线或通孔）、通孔属性（如层、尺寸、切割模式）以及生成规则（如是否跳过特定形状的线或特定状态的引脚）。用户可以通过指定区域、网络列表、选中的对象等来精确控制通孔操作。命令支持添加、修改和删除三种主要模式，并可以结合其他参数进行高级配置，例如分割长通孔、排除堆叠通孔、仅在正交交叉处生成通孔等。",
+  "usage": "editPowerVia [-help] {-add_vias {0 | 1} | -modify_vias {0 | 1} | -delete_vias {0 | 1}} [-area {{<x1 y1 x2 y2>} {<x3 y3 x4 y4>} ...}] [-between_selected_wires {0 | 1} | -selected_blocks {0 | 1} | -selected_wires {0 | 1} | -selected_vias {0 | 1} ] [-bottom_layer <layername>] [-cell_pins {<cell1>:<pin1> <cell2>:<pin2> ...}] [-create_via_on_merged_target_on_layer <layerName>] [-create_via_on_merged_target_within micron] [-create_via_on_signal_pins {0 | 1}] [-exclude_stack_vias {0 | 1}] [-followpin_via_stapling {<cutclass1 weight1 cutclass2 weight2>}] [-nets <net_list>] [-orthogonal_only {0 | 1}] [-split_long_via {<threshold step offset length>}] [-split_vias {0 | 1} [-same_sized_stack_vias {0 | 1} [-skip_via_on_wire_shape {[Blockring] [Stripe] [Followpin] [Corewire] [Blockwire] [Iowire] [Padring] [Ring] [Fillwire] [Noshape]} [-skip_via_on_pin {[Pad] [Block] [Cover] [Standardcell] [Physicalpin]}] [-skip_via_on_wire_status {[routed] [fixed] [cover] [shield]}] [-top_layer <layername>] [-uda] [{-via_scale_height integer -via_scale_width <integer> | -via_rows <integer> -via_columns <integer> | -via_height real_number -via_width <real_number>}] [-via_using_exact_crossover_size {0 | 1} ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add_vias",
+      "description": "设置为1时，向设计添加电源通孔。",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "-modify_vias",
+      "description": "修改设计中的通孔。",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "-delete_vias",
+      "description": "设置为1时，从设计中删除电源通孔。",
+      "required": true,
+      "type": "int"
+    },
+    {
+      "name": "-area",
+      "description": "在指定坐标包围的区域范围内添加、修改或删除电源通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-between_selected_wires",
+      "description": "设置为1时，仅在选中的线之间添加、修改或删除电源通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-selected_blocks",
+      "description": "指定是否仅查找选中块内的通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-selected_wires",
+      "description": "设置为1时，在选中的线与所有同网络对象之间放置通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-selected_vias",
+      "description": "设置为1时，仅修改或删除选中的通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-bottom_layer",
+      "description": "指定通孔可以连接的最低层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_pins",
+      "description": "指定需要在其上放置通孔的电源地（PG）端子或引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_via_on_merged_target_on_layer",
+      "description": "帮助viaGen在内部添加虚拟目标，忽略原始目标，并改为向虚拟目标放置通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_via_on_merged_target_within",
+      "description": "帮助viaGen在指定层上合并光晕距离内的目标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_via_on_signal_pins",
+      "description": "设置为1时，允许从特殊线到信号引脚生成通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-exclude_stack_vias",
+      "description": "避免在两个非相邻层之间生成堆叠通孔，以处理跨越多层的交叉情况。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-followpin_via_stapling",
+      "description": "定义在followpin通孔钉扎中优先尝试的两个切割类，以最大化有效切割数量。权重值用于通孔插入比率计算。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要添加、删除或编辑通孔的网络列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-orthogonal_only",
+      "description": "设置为1时，仅为正交线和引脚交叉创建通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-split_long_via",
+      "description": "将长度超过指定阈值（微米）的通孔分割成具有指定中心间距、左/底端偏移和垂直/水平长度值的小通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-split_vias",
+      "description": "设置为1时，如果障碍物阻止创建全尺寸通孔，可以在条带与任何目标（引脚或线）的交叉处创建两个或多个部分通孔。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-same_sized_stack_vias",
+      "description": "设置为1时，软件仅生成相同尺寸的堆叠通孔。如果为0，软件会根据需要修剪通孔以满足DRC规则。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-skip_via_on_wire_shape",
+      "description": "阻止为指定的线形状生成通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_via_on_pin",
+      "description": "阻止在指定类型的引脚上生成通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_via_on_wire_status",
+      "description": "阻止在具有 routed、cover、fixed 或 shield 状态的线与其他电源线之间生成通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_layer",
+      "description": "指定通孔可以连接的最高层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-uda",
+      "description": "指示用于布线线的用户定义属性子类。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_height",
+      "description": "指定添加或修改的电源通孔的绝对高度。仅在选择了 -add_vias 或 -modify_vias 参数时使用。",
+      "required": false,
+      "type": "real_number"
+    },
+    {
+      "name": "-via_width",
+      "description": "指定添加或修改的电源通孔的绝对宽度。仅在选择了 -add_vias 或 -modify_vias 参数时使用。",
+      "required": false,
+      "type": "real_number"
+    },
+    {
+      "name": "-via_rows",
+      "description": "指定电源通孔（堆叠和非堆叠）中的切割行数。仅在选择了 -add_vias 或 -modify_vias 参数时使用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_columns",
+      "description": "指定电源通孔（堆叠和非堆叠）中的切割列数。仅在选择了 -add_vias 或 -modify_vias 参数时使用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_scale_height",
+      "description": "指定电源通孔高度的缩放百分比。仅在选择了 -modify_vias 或 -add_vias 参数时使用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_scale_width",
+      "description": "指定电源通孔宽度的缩放百分比。仅在选择了 -modify_vias 或 -add_vias 参数时使用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_using_exact_crossover_size",
+      "description": "设置为1时，生成精确交叉尺寸的部分通孔。值为1允许生成部分通孔，值为0阻止部分通孔，软件始终生成全尺寸通孔。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+{
+  "command": "sroute",
+  "is_cmd": true,
+  "summary": "布线电源结构",
+  "description": "该命令用于布线电源结构，通常在创建电源环和电源条带之后使用。根据所使用的参数，它可以执行以下部分或全部操作：创建焊盘环、连接指定网表上的模块引脚、将焊盘连接到附近的环或条带、延伸未连接的条带以建立连接、以及布线标准单元引脚。注意：要撤销sroute命令，可以在执行sroute命令前使用defOut命令保存设计数据库，然后使用defIn命令将设计恢复到运行sroute之前的状态。",
+  "usage": "sroute [-help] [-allowJogging {0 | 1}] [-allowLayerChange {0 | 1}] [-area {x1 y1 x2 y2}] [-blockPin {<useLef all onBoundary leftBoundary rightBoundary topBoundary bottomBoundary abutPins>}] [-blockPinLayerRange {<minLayerName maxLayerName>}] [-blockPinTarget  {nearestTarget | boundaryWithPin | farthestPadRing} | {[blockring] [padring] [ring] [stripe] [ringpin] [blockpin]}] [-blockPinWidthRange {<min max>}] [-connect {[blockPin]  [corePin]  [padPin]  [padRing]  [floatingStripe] [secondaryPowerPin]}] [-connectAlignedBlockAndPadPin {blockPinAsTarget | padPinAsTarget}] [-connectInsideArea] [-corePinCheckStdcellGeoms] [-corePinLayer <layerNumList>] [-corePinTarget   {{[blockring]  [ring]  [stripe]  [padring]  [ringpin] [blockpin]}|{ firstAfterRowEnd | boundaryWithPin  |  farthestPadRing  | none }}] [-corePinWidth <real>] [-crossoverViaLayerRange {<bot top>}] [-deleteExistingRoutes] [-detailed_log] [-floatingStripeTarget {[blockring] [ring] [stripe] [padring] [ringpin] [blockpin] [followpin]}] [-inst {<names_of_blocks>}] [-layerChangeRange {<bottomLayerName topLayerName>}] [-nets {<names>}] [-noBlockPinOneAmongOverlappedPins] [-padPinLayerRange {<minLayerName maxLayerName>}] [-padPinWidth <real>] [-padPinPortConnect  {[onePort | allPort ][ oneGeom |allGeom] | preferLayer}] [-padRingWidth <real>] [-padRingLayer {<layerNumList>}] [-powerDomains [<powerDomainName1 powerDomainName2> ...]] [-secondaryPinNet {<list_of_nets>}] [-secondaryPinRailVerticalStripeGrid {<topLayerNum width pitch>}] [-stripeLayerRange {<minLayerName maxLayerName>}] [-targetObjListFile <filename>] [-targetViaLayerRange {<bot top>}] [-uda <subclass_string>] [-padCellSkipRoutingOnPadSide {<top bottom left right>}] [-padPinTarget {nearestTarget | {[blockring] [ring] [stripe]  [ringpin] [blockpin] [followpin]}}] [-secondaryPinRailLayer]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个sroute参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allowJogging",
+      "description": "指定在布线期间允许进行折线以避免DRC违规。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-allowLayerChange",
+      "description": "允许连接到不同层上的目标。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-area",
+      "description": "指定要进行电源布线的区域坐标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPin",
+      "description": "指定要连接的模块引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPinLayerRange",
+      "description": "指定工具可以在哪些层（从最底层到最顶层之间）建立连接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPinTarget",
+      "description": "将模块引脚延伸到指定类型的目标。允许多种目标类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockPinWidthRange",
+      "description": "指定允许的引脚宽度范围（最大值和最小值之间）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connect",
+      "description": "将指定的对象连接到环和条带。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connectAlignedBlockAndPadPin",
+      "description": "指定模块引脚或焊盘引脚是否可以作为对齐的焊盘或模块引脚的连接目标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-connectInsideArea",
+      "description": "指定指定区域内所有源的连接只能连接到也在该区域内的目标。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-corePinCheckStdcellGeoms",
+      "description": "检查设计中的标准单元几何形状，查找电源轨道到电源条带通孔与单元阻挡之间的任何间距违规，并修复DRC违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-corePinLayer",
+      "description": "仅连接指定层上的电源引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-corePinTarget",
+      "description": "指定followpins的延伸目标。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-corePinWidth",
+      "description": "如果在布局前运行，则以指定宽度创建标准单元轨道；如果在布局后运行，则仅布线具有指定宽度的引脚。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-crossoverViaLayerRange",
+      "description": "指定可用于在电源结构交叉点进行通孔堆叠的最高和最低层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-deleteExistingRoutes",
+      "description": "指定当多次使用sroute命令时，软件将移除现有连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-detailed_log",
+      "description": "打印详细的日志文件。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-floatingStripeTarget",
+      "description": "指定浮动条带的目标形状。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst",
+      "description": "指定要连接的模块。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layerChangeRange",
+      "description": "允许在指定的最底层和最顶层之间（包括这两层）进行布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定要连接的网表名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-noBlockPinOneAmongOverlappedPins",
+      "description": "指定应布线所有引脚（包括重叠的引脚）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-padCellSkipRoutingOnPadSide",
+      "description": "指定不应连接焊盘的哪些侧面的焊盘引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinLayerRange",
+      "description": "指定允许在最底层和最顶层焊盘引脚层之间（包括这两层）进行布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinPortConnect",
+      "description": "指定连接到焊盘引脚端口的方式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinTarget",
+      "description": "指定目标类型。将焊盘引脚延伸到指定类型的目标。允许多种目标类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinWidth",
+      "description": "仅布线具有指定宽度的焊盘引脚。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-padRingLayer",
+      "description": "指定使用哪个布线层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padRingWidth",
+      "description": "指定用于连接的引脚宽度。",
+      "required": false,
+      "type": "real"
+    },
+    {
+      "name": "-powerDomains",
+      "description": "将sroute活动限制在指定的电源域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-secondaryPinNet",
+      "description": "将指定网表上的电压电平转换器引脚连接到电源域周围环的最近段。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-secondaryPinRailLayer",
+      "description": "指定连接到辅助引脚轨道层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-secondaryPinRailVerticalStripeGrid",
+      "description": "指定连接到辅助电源引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripeLayerRange",
+      "description": "通过指定层范围来控制浮动条带（由sroute连接），有助于高级节点设计。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-targetObjListFile",
+      "description": "指定一个包含对象列表的.obj文件，sroute软件将这些对象视为目标或从可用目标列表中移除。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-targetViaLayerRange",
+      "description": "指定可用于在目标处进行通孔堆叠的最高和最低层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-uda",
+      "description": "显示附加到followpin、blockwire、core wires、iowires和padring的用户定义属性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padCellSkipRoutingOnPadSide",
+      "description": "指定不应连接焊盘的哪些侧面的焊盘引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-padPinTarget",
+      "description": "指定目标类型。将焊盘引脚延伸到指定类型的目标。允许多种目标类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-secondaryPinRailLayer",
+      "description": "指定连接到辅助引脚轨道层。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

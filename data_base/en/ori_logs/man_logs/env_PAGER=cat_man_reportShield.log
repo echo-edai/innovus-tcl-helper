@@ -1,0 +1,208 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportShield(25.10)                                        reportShield(25.10)
+
+Name
+       reportShield - Reports shield coverage for nets routed by the NanoRoute
+       router
+
+Syntax
+       reportShield
+
+       [-help]
+
+       [-crosstie]
+
+       [-include_layer]
+
+       [-out_file <fileName>]
+
+       [-selected]
+
+       [-tap_cells]
+
+       [-verbose]
+
+       Reports  shield  coverage  for  nets routed by the NanoRoute router. It
+       provides information on the shielding  effectiveness  across  different
+       layers.  The  report includes details of the expected and actual shield
+       coverage, percentage  coverage,  pre-route  shield  coverage,  and  the
+       power-to-ground ratio across different layers.
+
+       Note: This command works on the NanoRoute database. If the user enables
+       setNanoRouteMode  -route_selected_net_only,  the  reportShield  command
+       only reports shield ratio of selected nets.
+
+Parameters
+       -crosstie
+              Reports the shield coverage of all shielded nets  with  crosstie
+              attributes.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reportShield parameter. For  a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command: man reportShield.
+
+       -include_layer
+              Reports the shielding ratio per layer per net in addition to the
+              ratio for the whole net.
+
+              Data_type: bool, optional
+
+       -out_file <fileName>
+              Specifies the report file name.
+
+              Default: <designName>_shield.rpt
+
+              Data_type: string, optional
+
+       -selected
+              Reports statistics for selected nets only.
+
+              Data_type: bool, optional
+
+       -tap_cells
+              Generates a separate report file with tapping details  for  each
+              net,  including  the  tap cell name, instance name, and instance
+              coordinates. If a tapping distance violation occurs, it is  also
+              included in the report.
+
+              Note:      The      tapping      report     file     name     is
+              <cell_name>_<view_name>_shield_tapping_<time_stamp>.rpt.
+
+              Data_type: bool, optional
+
+       -verbose
+              Includes a list of nets that are  skipped,  which  includes  the
+              following nets:
+
+              * FIXED nets
+
+              * SPECIAL nets
+
+              * Nets with the skip_routing attribute
+
+              * Nets with opens
+
+              Data_type: bool, optional
+
+Examples
+       The  following  command  reports for selected nets only but breaks them
+       down by segment. The summary report will be printed  in  log,  and  de-
+       tailed report will be in myDesign_shield.rpt file.
+
+       reportShield -crosstie -selected -verbose -out_file myDesign_shield.rpt
+
+       In myDesign_shield.rpt file:
+
+       NET in:
+
+       +-----------------------------+------------+------------+----------+------------+-----------+--------+--------------+
+
+       |  Segment                      |  Layer name | Expected # | Actual # |
+       Percentage | Pre-route | Shield | Power:Ground |
+
+       +-----------------------------+------------+------------+----------+------------+-----------+--------+--------------+
+
+       | 0.1600 4.8960 2.9120 4.8960 | metal1     | 42         | 0        | 0%
+       | 0         | 0      | 0:0          |
+
+       | 0.1600 4.8960 2.9120 4.8960 | metal3     | 28          |  11        |
+       39%        | 0         | 11     | 0:11         |
+
+       +-----------------------------+------------+------------+----------+------------+-----------+--------+--------------+
+
+       |  Total                        |             | 70         | 11       |
+       15%        | 0         | 11     | 0:11         |
+
+       +-----------------------------+------------+------------+----------+------------+-----------+--------+--------------+
+
+       In the log file:
+
+       #Crosstie Table:
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       #| Layer name | Expected # | Actual # | Percentage | Pre-route | Shield
+       | Power:Ground |
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       #| metal1     | 42         | 0        |  0%          |  0          |  0
+       | 0:0          |
+
+       #|  metal3      |  28          | 11       | 39%        | 0         | 11
+       | 0:11         |
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       #| Total      | 70         | 11       | 15%         |  0          |  11
+       | 0:11         |
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       The following command prints a detailed report in myDesign_shield_2.rpt
+       file  without  breaking down by segment. This command is called without
+       the -verbose option.
+
+       reportShield -crosstie -selected -out_file myDesign_shield_2.rpt
+
+       In file myDesign_shield_2.rpt:
+
+       NET in:
+
+       +-------------+------------+------------+-------------+------------+------------+-----------------------+
+
+       | Layer name  | Expected # | Actual #   | Percentage   |  Pre-route   |
+       Shield     | Power:Ground          |
+
+       +-------------+------------+------------+-------------+------------+------------+-----------------------+
+
+       |  metal1      | 42         | 0          | 0%          | 0          | 0
+       | 0:0                   |
+
+       | metal3      | 28         | 11         | 39%         | 0          | 11
+       | 0:11                  |
+
+       +-------------+------------+------------+-------------+------------+------------+-----------------------+
+
+       | Total       | 70         | 11         | 15%         | 0          | 11
+       | 0:11                  |
+
+       +-------------+------------+------------+-------------+------------+------------+-----------------------+
+
+       In Log file:
+
+       #Crosstie Table:
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       #| Layer name | Expected # | Actual # | Percentage | Pre-route | Shield
+       | Power:Ground |
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       #| metal1     | 42         | 0        |  0%          |  0          |  0
+       | 0:0          |
+
+       #|  metal3      |  28          | 11       | 39%        | 0         | 11
+       | 0:11         |
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+       #| Total      | 70         | 11       | 15%         |  0          |  11
+       | 0:11         |
+
+       #+------------+------------+----------+------------+-----------+--------+--------------+
+
+Related Information
+              * createShield
+
+              * deleteShield
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                * Performing Shielded Routing
+
+                           Fri Apr 04 01:25:37 2025        reportShield(25.10)

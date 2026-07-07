@@ -1,0 +1,142 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createAbuttedFPlan(25.10)                            createAbuttedFPlan(25.10)
+
+Name
+       createAbuttedFPlan
+
+Syntax
+       createAbuttedFPlan
+
+       [-help]
+
+       [-cutToFixOverlap]
+
+       [-honorPlaceBlockage <blockageName>]
+
+       [-ptnToCoreGap <distance>]
+
+       [-ptnToPtnGap <distance>]
+
+       {-hinsts <hierarchicalInstanceList> | -selected | -all}
+
+       Creates  an abutted floorplan from an existing floorplan by fixing gaps
+       between:
+
+              * Partitions
+
+              * Partition and core boundary
+
+              * Partition and macro when there is no overlap between the  par-
+                tition and the macro
+
+       Note:
+
+              * The  createAbuttedFPlan command honors place blockage when the
+                blockage has no overlap with the partition. It does not  honor
+                doughnut and master/clone partitions.
+
+              * When  you use the createAbuttedFPlan command, partitions grow.
+                The  order  in  which  partitions  grow  is  top   edge,bottom
+                edge,left  edge,right  edge. Also, some partitions shrink when
+                the -ptnToPtnGap option is used. The order in which partitions
+                shrink is left edge, top edge, right edge, bottom edge.
+
+              * When there is an overlap between two partitions, if the  width
+                of the overlapped shape is less than the height, the partition
+                with the lower TU shrinks horizontally.  However, if the width
+                of  overlapped  shape is bigger than the height, the partition
+                with the lower TU shrinks vertically.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each createAbuttedFPlan parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createAbuttedFPlan
+
+       -all   Specifies to grow all partitions in the design.
+
+              Data_type: bool, optional
+
+       -cutToFixOverlap
+              Cuts  the  overlapped  partitions,  if specified. Otherwise, the
+              tool will shrink the partitions instead of cutting.
+
+              Data_type: bool, optional
+
+       -hinsts h<ierarchicalInstanceList>
+              Specifies a list of hierarchical instances that  will  be  modi-
+              fied.
+
+              Default: All partitions in the design.
+
+              Data_type: string, optional
+
+       -honorPlaceBlockage b<lockageName>
+              Specifies to fill gap upto the placement blockage boundary only.
+              If  a  blockage  name is specified, it honors only the specified
+              blockage name.
+
+              Default: Does not honor placement blockage.
+
+              Data_type: string, optional
+
+       -ptnToCoreGap d<istance>
+              Specifies the required distance (in micron) between a  partition
+              boundary and and a core boundary after growing the partition.
+
+              Default: 0 micron
+
+              Data_type: float, optional
+
+       -ptnToPtnGap d<istance>
+              Specifies  the  required distance (in micron) between the parti-
+              tions after growing the partitions.
+
+              Default: 0 micron
+
+              Data_type: float, optional
+
+       -selected
+              Specifies to grow selected partitions.
+
+              Data_type: bool, optional
+
+Examples
+              * The following command grows the selected partition
+
+                createAbuttedFPlan -selected
+
+              * If a partition overlaps another partition, the partition  with
+                higher  target utilization keeps the original shape. The other
+                partition shrinks to remove the overlap.
+
+                The following command keeps the originals shape  of  proc0/rf0
+                and shrinks the other partitions to remove the overlap.
+
+                createAbuttedFPlan -all
+
+              * The  following  command cuts the proc0/iu0 partition and keeps
+                the original shape  of  the  proc0/rf0  partition,  which  has
+                higher utilization, to remove the overlap.
+
+                createAbuttedFPlan -cutToFixOverlap -all
+
+              * The  following  command honors the place blockage which is not
+                overlapping the partition by default.
+
+                createAbuttedFPlan -all -honorPlaceBlockage all
+
+              * The following command keeps the gap  between  two  partitions,
+                and  between  partitions  and  the core boundary after growing
+                partition.
+
+                createAbuttedFPlan -ptnToCoreGap 5 -ptnToPtnGap 5  -all  -cut-
+                ToFixOverlap
+
+Related Information
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025  createAbuttedFPlan(25.10)

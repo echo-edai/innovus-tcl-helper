@@ -1,0 +1,521 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setDelayCalMode(25.10)                                  setDelayCalMode(25.10)
+
+Name
+       setDelayCalMode - Sets global parameters for delay calculation
+
+Syntax
+       setDelayCalMode
+
+       [-help]
+
+       [-accuracy_level <level>]
+
+       [-advanced_pincap_mode {0 | 1 | 2}]
+
+       [-advanced_node_pin_cap_settings {true | false}]
+
+       [-combine_mmmc {none | early_late | early_late_corner}]
+
+       [-enable_corner_based_beol {true | false}]
+
+       [-early_irdrop_data_type  {best_average  |  worst  |  best  | average |
+       worst_average}]
+
+       [-reset]
+
+       [-enable_high_fanout {true | false}]
+
+       [-enable_input_slew_sensitivity_on_constraint {true | false}]
+
+       [-enable_quiet_receivers_for_hold {true | false}]
+
+       [-equivalent_waveform_model {none | no_propagation | propagation}]
+
+       [-equivalent_waveform_model_for_timing_check {true|false}]
+
+       [-ewm_type {moments | simulation}]
+
+       [-honorSlewPropConstraint {true | false}]
+
+       [-irdrop_data_type {best_average | worst | best | average | worst_aver-
+       age}]
+
+       [-irDrop_window_based {none | late | early | both}]
+
+       [-late_irdrop_data_type {best_average  |  worst  |  best  |  average  |
+       worst_average}]
+
+       [-library_interpolation_mode {linear | non_linear}]
+
+       [-ignoreNetLoad {true | false}]
+
+       [-reportOutBound {true | false}]
+
+       [-SIAware {true | false}]
+
+       [-signoff_alignment_settings {true | false}]
+
+       [-skip_slew_merge_from_disabled_path {false | true}]
+
+       [-slewOutBoundLimitHigh <value>]
+
+       [-slewOutBoundLimitLow value]
+
+       [-socv_accuracy_mode {low | medium | high | ultra}]
+
+       [-socv_lvf_mode {moments | early_late}]
+
+       [-socv_machine_learning_level {0 | 1 | 3}]
+
+       [-socv_use_lvf_tables {all | delay | slew | constraint}]
+
+       [-wire_variation_correlation_mode {statistical | binomial}]
+
+       [-wire_variation_rc_correlation <<value>>]
+
+       Sets global parameters for delay calculation. Use this command to spec-
+       ify  any  required  delay  calculation mode settings before running any
+       commands that perform delay calculation, such as  timing  analysis  and
+       optimization. The parameters specified with the setDelayCalMode command
+       are then used automatically whenever delay calculation takes place.
+
+       Use  thegetDelayCalMode  command to return the current settings for the
+       setDelayCalMode command.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each setDelayCalMode parameter. For a detailed de-
+              scription  of the command and all of its parameters, use the man
+              command:  man setDelayCalMode.
+
+       -accuracy_level <level>
+              Sets the accuracy level for delay calculations.
+
+              You can use the -accuracy_level parameter to enable new enhance-
+              ments for different process nodes (without using the  setDesign-
+              Mode -process parameter).
+
+              Note:  However, you can set the setDesignMode -process parameter
+              to enable the delay accuracy  level  equivalent  to  the  values
+              given below:
+
+              setDesignMode -process 16 == setDelayCalMode -accuracy_level 0
+
+              setDesignMode -process 10 == setDelayCalMode -accuracy_level 1
+
+              setDesignMode -process 7 == setDelayCalMode -accuracy_level 2
+
+              setDesignMode -process 5 == setDelayCalMode -accuracy_level 3
+
+              setDesignMode -process 3 == setDelayCalMode -accuracy_level 4
+
+              Default: 0, Min: 0, Max: 4
+
+       -advanced_pincap_mode {0 | 1 | 2}
+              Simulates  the  current stage and receiver stages together, such
+              that the back miller effect  is  modeled  dynamically.  You  can
+              specify the following options:
+
+              * 0: Receiver current sources are computed using ECSM/CCS capac-
+                itance tables with the estimated input slew.
+
+              * 1:  Receivers  are no longer modeled as simple non-linear cur-
+                rent source models. This results in increasing the delay  cal-
+                culation  accuracy  significantly  as the modeling back miller
+                effect improves.
+
+              * 2:  Uses advanced simulation-based approach to model  the  re-
+                ceiver back miller effect.
+
+              Default: 0
+
+       -advanced_node_pin_cap_settings {true | false}
+              Enables advanced node pin cap settings.
+
+              Default: false
+
+       -combine_mmmc {none | early_late | early_late_corner}
+              Specifies  whether delay calculation runs are to be combined for
+              delay calculation simulations. This parameter provides user con-
+              trol for improving the run time of AAE for all analysis types by
+              combining runs for early and late simulations into a single sim-
+              ulation. The views with common delay corners may  also  be  com-
+              bined  into  a single delay calculation simulation for added run
+              time improvement.
+
+              You can specify one of the following options:
+
+              * none: Combines any delay calculation  runs.  Individual  delay
+                calculation simulations are performed for early and late simu-
+                lations. This may result in significant CPU performance degra-
+                dation  due  to  the  increased number of simulation runs per-
+                formed.
+
+              * early_late: Combines early and late simulations  of  a  single
+                corner  into  one  delay calculation simulation. This will im-
+                prove CPU performance by avoiding unnecessary  delay  calcula-
+                tion simulations.
+
+              * early_late_corner:  Combines  early  and late simulations of a
+                single corner, and also combines views with common delay  cor-
+                ners  into a single delay calculation simulation. For example,
+                the software will combine views with different set_case_analy-
+                sis statements in one single simulation. This can result in  a
+                significant improvement in the CPU performance by avoiding un-
+                necessary delay calculation simulations.
+
+              Default: early_late_corner
+
+       -enable_corner_based_beol {true | false}
+              Enables anchor corner-based BEOL (back end-of-line) analysis.
+
+              Default: false
+
+       -early_irdrop_data_type {best_average | worst | best | average |
+       worst_average}
+              Allows you to set the early IR drop EIV values for different EIV
+              voltages.
+
+              Default: worst
+
+       -enable_high_fanout {true | false}
+              When  this  parameter is set to true, the default net delay will
+              be annotated on high fanout nets. A net will  be  treated  as  a
+              high fanout net when the fanout is more than the limit specified
+              using  the delaycal_use_default_delay_limit global variable. The
+              default value of this variable is 1000 fanouts. The default  net
+              delay is also specified using this variable. The default net de-
+              lay  is 1ns. The cell delay will use the lumped capacitance that
+              is specified using the delaycal_default_net_load global variable
+              for table lookup. The default net load is 0.5pF. The driver slew
+              will use the default value of 0ps, which can be changed by using
+              the delaycal_input_transition_delay global  variable  and  there
+              will be no slew degradation along the interconnect.
+
+              The default value of this parameter is false.
+
+       -enable_input_slew_sensitivity_on_constraint {true | false}
+              Enables the input slew sensitivity on constraints.
+
+              When  set  to  true, the input slew sensitivities at constrained
+              and related pins will be considered by timing check sigma calcu-
+              lation.
+
+              When set to false, the timing check arc is derived based on  the
+              nominal or mean slews only.
+
+              Default: false
+
+       -enable_quiet_receivers_for_hold {true | false}
+              When  set  to true, the software forces some receivers as static
+              ("quiet"). To compute the worst-case delays for early  analysis,
+              the  software assumes that the receivers are not switching. This
+              yields more conservative early delays.
+
+              When set to false, the software assumes receivers may switch.
+
+              Default: false
+
+              -equivalent_waveform_model {none  |  no_propagation  |  propaga-
+              tion}"  Controls  the  equivalent waveform model to be used. You
+              can specify one of the following options:
+
+              *
+
+                * none: When this option is specified, the waveform shape  be-
+                  yond  slew  measurement  points does not impact delays. This
+                  mode is equivalent to setting the following options  in  the
+                  previous releases:
+
+                  setDelayCalMode -equivalent_waveform_model_type none
+
+                  setDelayCalMode -equivalent_waveform_model_propagation false
+
+                *
+
+                  no_propagation:  In  this mode, the impact of receiver wave-
+                  form shape on the next stage delay is estimated and adjusted
+                  the net delay of the current stage. This mode is  equivalent
+                  to setting the following options in the previous releases:
+
+                  setDelayCalMode -equivalent_waveform_model_type ecsm
+
+                  setDelayCalMode -equivalent_waveform_model_propagation false
+
+                * propagation:  When  specified,  the impact of input waveform
+                  shape is considered during delay calculation and  the  wave-
+                  forms  are  propagated  across  each  stage  of  the  entire
+                  path.This mode is equivalent to setting  the  following  op-
+                  tions in the previous releases:
+
+                  setDelayCalMode -equivalent_waveform_model_type ecsm
+
+                  setDelayCalMode -equivalent_waveform_model_propagation true
+
+              Default: none
+
+       -equivalent_waveform_model_for_timing_check {true | false}
+              Models  the  waveform  distortion  effect for timing check value
+              look ups at both the data and clock pins.
+
+              The model uses simulations to convert  the  distorted  waveforms
+              into  equivalent  waveforms  (pre-driver  waveforms  in  the li-
+              braries) by matching the pin CCB output waveforms. This  feature
+              requires the CCSN library.
+
+              Default: false
+
+       -ewm_type {moments | simulation}
+              Specifies  the  equivalent  waveform model (EWM) to be used. The
+              options are described below:
+
+              * moments: Enables moment-based equivalent waveform model.
+
+              * simulation:  Enables  simulation-based   equivalent   waveform
+                model. The simulation-based EWM is required for predicting de-
+                lay in noisy waveforms.
+
+                The  simulation  option requires noise models (ECSMN/CCSN). If
+                noise models are not available, then the software defaults  to
+                moments-based EWM.
+
+              It  is recommended to use simulation-based EWM as it is more ac-
+              curate than moment-based EWM.
+
+              Default: moments
+
+       -honorSlewPropConstraint {true | false}
+              Determines whether to propagate the slew from the disabled  tim-
+              ing arcs to the output pin. When this parameter is set to false,
+              the  slew  from the disabled timing arc affects the delay of the
+              next stage. Setting this parameter to false results in more  ac-
+              curate  slew  computation  for  the disabled timing arcs but can
+              take longer run time.
+
+              When set to true, the timing constraints defined using  commands
+              such as set_disable_timing and set_case_analysis impact the slew
+              propagation,  and  the slew from the disabled timing arcs is not
+              propagated.
+
+              Default : true
+
+       -irdrop_data_type {best_average | worst | best | average | worst_aver-
+       age}
+              Allows you to set the early/late IR drop EIV values for  differ-
+              ent EIV voltages.
+
+              Default: worst
+
+       -irDrop_window_based {none | late | early | both}
+              Searches window-based EIV values from the EIV database.
+
+              Default: both
+
+       -late_irdrop_data_type {best_average | worst | best | average |
+       worst_average}
+              Allows  you to set the late IR drop EIV values for different EIV
+              voltages.
+
+              Default: worst
+
+       -library_interpolation_mode {linear | non_linear}
+              Controls library scaling mode - linear or non_linear -  for  the
+              interpolation flow.
+
+              Default: linear
+
+       -ignoreNetLoad {true | false}
+              When  set to true, this parameter removes the default system re-
+              quirement for having RC parasitics available for delay  calcula-
+              tion.
+
+              This parameter is used to get initial design timing when the de-
+              sign  is not in a proper state to generate extracted results and
+              an external SPEF source of parasitics is not available. The  re-
+              sults  obtained  by  enabling  this  parameter are equivalent to
+              those obtained using a zero-cap, zero-resistance wire-load model
+              for estimating delays.
+
+               Default : false
+
+       -reportOutBound {true | false}
+              Generates a report that contains a list of index  values  (input
+              transition) in the delay tables that are beyond the index range.
+              The index values detected by this parameter can cause inaccurate
+              delay  values to be calculated. The report generated by this pa-
+              rameter can be used for debugging.
+
+              When this parameter is set to true, the  extrapolation  informa-
+              tion will be dumped into the following two files:
+
+              * <design-name>.dc.outbound.slew.early.<view-name>.txt
+
+              * <design-name>.dc.outbound.slew.late.<view-name>.txt
+
+              The  software  writes  a warning message in the log files noting
+              that there are input transition values that are out of the index
+              range of the timing table. The warning message also provides the
+              file name for viewing the detail report.
+
+              When set to true, the -reportOutBound  parameter  will  generate
+              reports  that can be controlled using the setOutboundReport com-
+              mand.
+
+              Default: false
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software resets all  setDelayCalMode  parameters  to
+              their  default  values.  If you specify parameters after -reset,
+              the software resets only those parameters to their default  val-
+              ues.
+
+              Note: Any values that do not already match the default value and
+              are reset will be reported.
+
+       -SIAware {true | false}
+              Enables  SIAware delay calculation that also includes cross-talk
+              induced delays.
+
+              Default: false
+
+              Note: SIAware delay calculation requires the  design  to  be  in
+              Multi-Mode, Multi-Corner (MMMC) Mode and the analysis type to be
+              set to on-chip variations.
+
+              Note:  The timeDesign and optDesign -postRoute commands will set
+              the -siAware option to true to perform SI analysis.  To  disable
+              SI  analysis  at  the  post-route  stage you must explicitly set
+              -siAware to false, so that base analysis is performed.
+
+       -skip_slew_merge_from_disabled_path {false | true}
+              Avoids merging slews from  unconstrained,  segmented  paths  and
+              black-box output pin.
+
+              When  set  to  true, the software does not allow merging transi-
+              tions from disabled paths.
+
+              Default: false
+
+       -signoff_alignment_settings {true | false}
+              Enables signoff alignment settings.
+
+              Default: false
+
+       -slewOutBoundLimitHigh <value>
+              Limits the maximum slew used in the analysis  to  the  specified
+              value.
+
+              Min: 1
+
+              Max: 3.40282346638529e
+
+              Data type: float
+
+              Default: 3.40282346638529e+38
+
+       -slewOutBoundLimitLow <value>
+              Limits  the  minimum  slew used in the analysis to the specified
+              value.
+
+              Min: 0.001
+
+              Max: 1
+
+              Data type: float
+
+              Default: 0.5
+
+       -socv_accuracy_mode {low | medium | high | ultra}
+              Allows the ability to control levels of accuracy.
+
+              This parameter specifies level-based accuracy effort for  delays
+              and slews. You can use one of the following options:
+
+              * low: Ignores correlation between slews and delays. This is the
+                default setting.
+
+              * medium: Models correlation between immediate slew and delay.
+
+              * high: Considers skewness of non-gaussian distribution into ac-
+                count  for  computing quantiles.  The skewness is local to one
+                stage only.
+
+              * ultra: Considers skewness of  non-gaussian  distribution,  and
+                also propagates skewness to the next stage in PBA analysis.
+
+       -socv_lvf_mode {moments | early_late}
+              Controls interpretation of LVF data.
+
+              Default: moments
+
+       -socv_machine_learning_level {0 | 1 | 3}
+              Enables the SOCV machine learning mode.
+
+              For  accurate SOCV analysis, the Tempus software creates several
+              statistical models, which are not available  with  standard  LVF
+              library,  such  as  correlation  between  cells delay and output
+              slew, the conversion of moments from  late/early  sigma  tables,
+              and effects of waveform distortion on sigma and mean shift.
+
+              You can specify one of the following options:
+
+              * 1:  Enables  several  machine  learning algorithms to generate
+                such models internally.
+
+              * 3: Enabling this mode uses  improved  modeling  of  slew-delay
+                correlation  using  advanced machine learning techniques. This
+                option enables  accurate  quantile  modeling,  which  involves
+                quantile computation from mean, stddev and skewness values.
+
+              Default: 0
+
+       -socv_use_lvf_tables {all | delay | slew | constraint}
+              Controls  which  type of variations are considered during analy-
+              sis.
+
+              Default: all
+
+       -wire_variation_correlation_mode {statistical | binomial}
+              Specifies wire variation inter-layer correlation.  When  set  to
+              statistical, all the layers are independent of each other
+
+              Default: statistical
+
+       -wire_variation_rc_correlation <value>
+              Specifies  same  layer  R  and C correlation for wire variation.
+              When set to 1, the R and C sensitivities are considered as fully
+              correlated.
+
+              Default: 1
+
+Examples
+              * The following command enables waveform propagation  along  the
+                path for equivalent waveform model:
+
+                setDelayCalMode -equivalent_waveform_model propagation
+
+              * If  you  have set the value of the -SIAware parameter to true,
+                use the following command to reset the value of the  parameter
+                to  the  default  value,  which is false, and whch disables SI
+                analysis during delay calculation:
+
+                setDelayCalMode -reset -SIAware
+
+                Now when you retrieve the value of  the  parameter  using  the
+                getDelayCalMode command, the software returns the following:
+
+                getDelayCalMode -SIAware
+
+                -SIAware false # enums={true false}, default=false
+
+                false
+
+Related Information
+              * "Base  Delay  Analysis"  chapter  in  the  Innovus System User
+                Guide.
+
+              * getDelayCalMode
+
+                           Fri Apr 04 01:25:37 2025     setDelayCalMode(25.10)

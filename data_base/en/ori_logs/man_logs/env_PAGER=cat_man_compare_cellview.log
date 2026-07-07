@@ -1,0 +1,134 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+compare_cellview(25.10)                                compare_cellview(25.10)
+
+Name
+       compare_cellview - Compares the boundary and terminal (name, direction,
+       layer, location, size, and port) of the specified cell views
+
+Syntax
+       compare_cellview
+
+       [-help]
+
+       [-ignore {pin_purpose}]
+
+       [-log <report_file_name>]
+
+       {  {{-source {<from_lib from_cell from_view>} -compare {<to_lib to_cell
+       to_view>}} | {-lib  <lib>  -cell  <cell>  -view  {<sourceView  compare-
+       View>}}} }
+
+       Compares  the  boundary and terminal (name, direction, layer, location,
+       size, and port) of the specified cell views. In addition, if both  cell
+       views  are identified as abstract, the command also compares cell type,
+       symmetry, and obstructions.
+
+       Use this command to compare two OpenAccess databases. For instance, you
+       can use this command  to  compare  the  lib/cell/view  specified  using
+       -source  to the lib/cell/view specified with -compare. Typical uses are
+       comparing two versions of a layout cell view or comparing  an  abstract
+       cell view to a layout cell view.
+
+       This command can be used without design import.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each compare_cellview parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man compare_cellview.
+
+       -cell <cell>
+              Specifies the cell for comparing two views.
+
+       -compare {<to_lib to_cell to_view>}
+              Specifies the library/cell/view that is to be compared.
+
+       -ignore {pin_purpose}
+              Specifies  the  list  of attributes to be excluded from the cell
+              comparison. As of now, the only attribute that can be ignored is
+              the purpose, which is specified using the value pin_purpose with
+              -ignore.
+
+       -lib <lib>
+              Specifies the library for comparing two views.
+
+       -log <report_file_name>
+              Specifies the report file in which all the comparison detail  is
+              to be written.
+
+       -source {<from_lib from_cell from_view>}
+              Specifies the source library, cell, and view.
+
+       -view {<sourceView compareView>}
+              Specifies different views of the same library/cell.
+
+Examples
+              * The following command compares two views of the same cell that
+                are  present  in the same library zambezi45 and writes the re-
+                port to the test1a file:
+
+                compare_cellview -source {zambezi45 pll_vcodiv  layout}  -com-
+                pare {zambezi45 pll_vcodiv abstract} -log test1a
+
+                A sample output is displayed below:
+
+                ###################################################
+
+                # #
+
+                # Compare_cellview comparison #
+
+                # #
+
+                ###################################################
+
+                Source Design : 'zambezi45/pll_vcodiv/layout' is identified as
+                layout design
+
+                Compare Design : 'zambezi45/pll_vcodiv/abstract' is identified
+                as abstract design
+
+                Source  Design  seems  to have been modified after the Compare
+                Design has been created
+
+                Compare Celltype
+
+                Source Design has celltype 'none' & Compare Design  has  Cell-
+                type 'block'
+
+                Compare Cell Boundary
+
+                Source Design has different PRBoundary than Compare Design
+
+                Compare Terminals
+
+                Source Design has Pin 'en' which has Port with shape (36.215 0
+                36.355  0.14)  on  layer  'Metal5'  and  purpose  'pin' is not
+                present in Compare Design
+
+                 Compare Design has Pin 'en'  which  has  a  Port  with  shape
+                (36.215  0  36.36 0.14) on layer 'Metal5' and purpose 'net' is
+                not present in Source Design
+
+                Antenna Information
+
+                Antenna Information is defined for Pin 'en' in Compare but not
+                defined in Source Design
+
+                 Antenna Information is defined for Pin 'vcocalen' in  Compare
+                but not defined in Source Design
+
+                 ...
+
+                Source Design is not equivalent to Compare Design
+
+              *
+
+                The  following command compares the views fplan1 and fplan2 of
+                the library DesignLib and the cell myAlu:
+
+                compare_cellview -lib  DesignLib  -cell  myAlu  -view  {fplan1
+                fplan2}
+
+                           Fri Apr 04 01:25:37 2025    compare_cellview(25.10)

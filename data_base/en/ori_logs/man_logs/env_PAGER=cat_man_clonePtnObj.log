@@ -1,0 +1,187 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+clonePtnObj(25.10)                                          clonePtnObj(25.10)
+
+Name
+       clonePtnObj - Syncs up the changes made to the specified objects in the
+       master  or  clone  partitions in the design with other hierarchical in-
+       stances (master and clones) of the same module
+
+Syntax
+       clonePtnObj
+
+       [-help]
+
+       [-checkOnly]
+
+       [-objs {all busGuides specialWires}]
+
+       [-redo]
+
+       [-refHinsts <list_of_hinst_names>]
+
+       [-skipCreateNewPartitionPorts]
+
+       [-sync]
+
+       [-targetHinsts <list_of_hinst_names>]
+
+       [-undo]
+
+       Syncs up the changes made to the specified objects  in  the  master  or
+       clone  partitions in the design with other hierarchical instances (mas-
+       ter and clones) of the same module.
+
+Parameters
+       -checkOnly
+              When specified, the tool checks if the master and  clone  parti-
+              tions are out of sync or not.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each clonePtnObj parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man clonePtnObj
+
+       -objs {all busGuides specialWires}
+              When specified, the tool does the sync-up of the  specified  ob-
+              jects between master or clone partitions.
+
+              * all: Synchronizes all objects.
+
+              * busGuide: Synchronizes bus guide objects.
+
+              * specialWires: Synchronizes special wires
+
+              Data_type: enum, optional
+
+       -redo  When  specified, the changes made to the object are done again .
+              The master and clone partitions are brought to the next  commit-
+              ted sync state.
+
+              Note:  Currently  this parameter only supports the busGuides ob-
+              ject type (-objs).
+
+              Note: This parameter is exclusive with the -refHinsts and  -tar-
+              getHinsts parameter options.
+
+              Data_type: bool, optional
+
+       -refHinsts <list_of_hinst_names>
+              Specifies  the name of the master or clone hierarchical instance
+              from which the obj data is to be copied.
+
+              Default: All master partitions in the design.
+
+              Data_type: string, optional
+
+       -skipCreateNewPartitionPorts
+              Specifies that the creation of new partition ports for top-level
+              nets that pass through partitions  is  skipped  during  sync-up.
+              This helps to control port creation for special wires.
+
+              Note: This parameter can only be used when the specialWires  ob-
+              ject type is specified for the -objs parameter.
+
+              Note:  When  the  -skipCreateNewPartitionPorts  parameter is not
+              specified, new partition ports are created by default  for  top-
+              level nets that pass through partitions.
+
+              Data_type: bool, optional
+
+       -sync  When  specified,  the objects in all master and clone partitions
+              are synced up by looking at the changes in shape in any  hierar-
+              chical instance of the master and clone partitions.
+
+              Note:  Currently  this parameter only supports the busGuides ob-
+              ject type (-objs).
+
+              Note: This parameter is exclusive with the -refHinsts and  -tar-
+              getHinsts parameter options.
+
+              Data_type: bool, optional
+
+       -targetHinsts <list_of_hinst_names>
+              Specifies  the name of the master or clone hierarchical instance
+              to which the obj data is to be copied.
+
+              * When a master partition is specified with  the   -targetHinsts
+                parameter,  specifying  the  -refHinsts becomes mandatory as a
+                user provided hinst is considered to sync up objects.
+
+              * When clones partitions are specified with  the   -targetHinsts
+                parameter,  specifying  the   -refHinsts is optional as master
+                hierarchical instances are automatically considered  (default)
+                to sync-up objects
+
+              Default: All clone partitions in the design.
+
+              Data_type: string, optional
+
+       -undo  When specified, the changes made to the object are reverted. The
+              master  and  clone  partitions are brought to the last committed
+              sync state.
+
+              Note: Currently this parameter only supports the  busGuides  ob-
+              ject type (-objs).
+
+              Note:  This parameter is exclusive with the -refHinsts and -tar-
+              getHinsts parameter options.
+
+              Data_type: bool, optional
+
+Example
+       Hinst: A1 (master), A2 (clone), A3(clone), A4 (clone)
+
+       Hinst: B1 (master), B2 (clone), B3(clone), B4 (clone)
+
+              * The following commands syncs all clones  to  their  respective
+                master.
+
+                clonePtnObj
+
+              * The  following  command syncs the hinsts A2 and A3 (clones) to
+                the master of module A (A1).
+
+                clonePtnObj -targetHinsts {A2 A3}
+
+              * The following command syncs the  hinsts  A1  (master)  and  A3
+                (clone) to the hinst A2 (clone)
+
+                clonePtnObj -targetHinsts {A1 A3} -refHinsts {A2}
+
+              * The following command syncs the hinsts A1 (master), A3, B2, B3
+                (clones) to hinsts A2 (clone) and the master of module B (B1)
+
+                clonePtnObj -targetHinsts {A1 A3 B2 B3} -refHinsts {A2}
+
+              * The following command checks and reports if the hinsts A1(mas-
+                ter)  and  A3,  B2, B3 (clones) are synced to hinst A2 (clone)
+                and the master of module B (B1)
+
+                clonePtnObj  -targetHinsts  {A1  A3  B2  B3}  -refHinsts  {A2}
+                -checkOnly
+
+              * The  following  command  checks  and  reports if the hinsts A1
+                (master) and A3, B2,  B3  (clones)  are  synced  to  hinst  A2
+                (clone) and the master of module B (B1) for bus guides only.
+
+                clonePtnObj  -targetHinsts  {A1  A3  B2  B3}  -refHinsts  {A2}
+                -checkOnly -objs {busGuides}
+
+              * The following command syncs the hinsts A1 (master) and A3, B2,
+                B3 (clones) to hinst A2 (clone) and the  master  of  module  B
+                (B1) for bus guides only.
+
+                clonePtnObj  -targetHinsts {A1 A3 B2 B3} -refHinsts {A2} -objs
+                {busGuides}
+
+Related Information
+              * place_partition_clone
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025         clonePtnObj(25.10)

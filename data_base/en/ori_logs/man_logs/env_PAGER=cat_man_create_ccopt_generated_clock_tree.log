@@ -1,0 +1,143 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_ccopt_...ted_clock_tree(25.10)    create_ccopt_...ted_clock_tree(25.10)
+
+Name
+       create_ccopt_generated_clock_tree  -  Defines  a  generated  clock tree
+       within the design
+
+Syntax
+       create_ccopt_generated_clock_tree
+
+       [-help]
+
+       [-generated_by pins]
+
+       [-name <clockname>]
+
+       [-parents <parents>]
+
+       [-search_method <method>]
+
+       -source <pin>
+
+       [-stop_at_sdc_clock_roots]
+
+       Defines a generated clock tree within the design. Use this  command  if
+       you  want  to  balance the sinks in the generated tree against those in
+       the parent trees. CCOpt accomplishes this  action  by  pulling  up  any
+       sinks  in  the  parent  trees that contribute directly to the generated
+       clock tree. The insertion delay under such sinks in  the  parent  trees
+       will be set to the insertion delay of the generated clock tree plus the
+       delay between the sink pin and the source of the generated clock tree.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each create_ccopt_generated_clock_tree  parameter.
+              For a detailed description of the command and all of its parame-
+              ters,    use    the   man   command:   man   create_ccopt_gener-
+              ated_clock_tree.
+
+       -generated_by <pins>
+              Specifies the sink pins in the parent clock trees for which  the
+              delay  between  the  parent  and generated clock trees should be
+              considered.
+
+               If this parameter is not specified, all possible  timing  paths
+              between sinks in the parent tree and the source of the generated
+              clock tree will be considered.
+
+              This parameter is mutually exclusive with the -search_method pa-
+              rameter.
+
+       -name <clockname>
+              Specifies  the  user-defined  identifier for the generated clock
+              tree. This name should be unique. If this parameter is not spec-
+              ified, the software uses the name of the source pin by default.
+
+       -parents <parents>
+              Specifies the parent clock trees for the generated clock  trees.
+              This parameter should be specified if the parents are ambiguous.
+
+       -search_method {same_instance multi_stage}
+              Specifies the search methdology to be used when tracing the path
+              to the generator inputs.
+
+              multi_stage
+
+              This is the default method, and will select the current behavior
+              of  the  software.  When  this method is specified, the software
+              searches backwards through all the delay paths leading into  the
+              clock root pin, looking for pre-existing clock sinks. Every such
+              clock  sink  found is a candidate generator input for the gener-
+              ated clock tree. This includes clock sinks that lie on different
+              instances to the root pin - where multiple  stages  lie  between
+              the  clock  sink  and  the root pin. Additional filtering on the
+              candidate generator inputs is applied by the -parents  parameter
+              to  avoid producing cycles in the clock tree structure. Once the
+              set of generator inputs is finalized,  the  delay  path  between
+              each  finalized  generator  input  and the clock root pin is im-
+              ported into the CCOpt clock tree data stuctures. If the  genera-
+              tor  input  lies  on a different instance of the clock root pin,
+              ClockGeneratorPathNode objects are created.
+
+              same_instance
+
+              This method is similar to the multi_stage  method,  except  that
+              the  software  restricts its search to consider only clock sinks
+              that lie on the same instance as the generated clock tree's root
+              pin. This means that the software does  not  traverse  net  arcs
+              looking for generator input clock sinks. Consequently, ClockGen-
+              eratorPathNode objects will not be needed to model any generator
+              path.
+
+              Note:
+
+              * This functionally is identical to specifying the -generated_by
+                parameter  that lists all the clock sinks on the same instance
+                as the clock root pin. However, it avoids the need to  explic-
+                itly identify those clock sinks.
+
+              * Irrespective  of  the search method, if no candidate generator
+                clock sink is found, or if there are no valid generator inputs
+                discovered in the set of clock sinks, creation of  the  gener-
+                ated clock tree fails with an error.
+
+              The software uses  multi_stage method by default.
+
+              This  parameter is mutually exclusive with the -generated_by pa-
+              rameter.
+
+       -source <pin>
+              Specifies the name of the source  pin  of  the  generated  clock
+              tree. This is a required parameter.
+
+       -stop_at_sdc_clock_roots
+              Specifies  that  clock tree definition should stop searching for
+              parts of the clock tree through the root of the SDC clocks.
+
+Example
+              *
+
+                The  following  command  defines  a   generated   clock   tree
+                clk_div_2,  which  is generated from the gen_clk/CK clock pin,
+                using the gen_clk.QN pin as the source pin:
+
+                create_ccopt_generated_clock_tree  -name   clk_div_2   -source
+                gen_clk/QN -generated_by gen_clk/CK
+
+Related Information
+              * ccopt_design
+
+              * clock_opt_design
+
+              * create_ccopt_clock_tree
+
+              * create_ccopt_clock_tree_spec
+
+              * The following topics in the Innovus User Guide
+
+                * Automatic Clock Tree Specification Creation
+
+                * Manual Setup and Adjustment of the Clock Tree Specification
+
+                           Fri Apr 04 01:2c5r:e3a7te2_0c2c5opt_...ted_clock_tree(25.10)

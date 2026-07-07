@@ -1,0 +1,69 @@
+{
+  "command": "report_cppr",
+  "is_cmd": true,
+  "summary": "报告指定数据路径时钟网络中，早路径和晚路径公共分支点处的时钟重汇聚悲观度值。",
+  "description": "report_cppr 命令用于报告指定数据路径的时钟网络中，早路径和晚路径公共分支点处的时钟重汇聚悲观度值。对于以锁存器为目的地的路径，该命令会分别报告开启边沿和关闭边沿的值。如果源触发器和目的触发器均由多个时钟触发，则会为每个独立的时钟生成一份报告。当软件处于多模式多端角分析模式时，report_cppr 会报告每个活动分析视图的结果。使用此命令前，必须先设置以下全局变量：timing_cppr_transition_sense 和 timing_cppr_threshold_ps。",
+  "usage": "report_cppr [-help] [-check_type {setup | hold | clock_gating_setup | clock_gating_hold | clock_gating_pulse_width | data_setup | data_hold | recovery | removal | pulse_width | clock_period | clock_separation | skew | no_change_setup | no_change_hold | time_borrow}] -from <pin_or_port> -to <pin_or_port> [-from_clock <clkname>] [-to_clock <clkname>] [-early | -late] [-view <view_name>] [> <filename>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-check_type",
+      "description": "报告在指定时序检查点结束的路径的CPPR值。可选的检查类型包括：setup, hold, clock_gating_setup, clock_gating_hold, clock_gating_pulse_width, data_setup, data_hold, recovery, removal, pulse_width, clock_period, clock_separation, skew, no_change_setup, no_change_hold, time_borrow。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-from",
+      "description": "报告从源触发器的指定时钟引脚或指定端口开始的路径的时钟重汇聚悲观度值。",
+      "required": true,
+      "type": "pin_or_port"
+    },
+    {
+      "name": "-to",
+      "description": "报告在目的触发器的指定时钟引脚或指定端口结束的路径的时钟重汇聚悲观度值。",
+      "required": true,
+      "type": "pin_or_port"
+    },
+    {
+      "name": "-from_clock",
+      "description": "报告具有指定触发时钟的路径的时钟重汇聚悲观度值。当源触发器由多个时钟触发时使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to_clock",
+      "description": "报告具有指定捕获时钟的路径的时钟重汇聚悲观度值。当目的触发器由多个时钟捕获时使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-early",
+      "description": "报告保持分析的时钟重汇聚悲观度值。当软件处于保持分析模式或同时进行建立和保持分析模式时，可以指定此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-late",
+      "description": "报告建立分析的时钟重汇聚悲观度值。当软件处于建立分析模式或同时进行建立和保持分析模式时，可以指定此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-view",
+      "description": "仅报告指定分析视图中路径的时钟重汇聚悲观度值。仅当软件处于多模式多端角时序分析模式时，才能指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "> <filename>",
+      "description": "将报告写入指定的文件名。如果文件已存在，软件将覆盖它。此参数必须是列表中的最后一个参数。注意：要写入压缩报告，请在文件名后添加 .gz 扩展名。默认：报告显示在标准输出上，不保存。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

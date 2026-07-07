@@ -1,0 +1,45 @@
+{
+  "command": "write_spd",
+  "is_cmd": true,
+  "summary": "基于用户选择的信号及其对应的屏蔽和电源地形状，直接导出SPD文件",
+  "description": "write_spd命令用于基于用户选择的信号，直接生成包含对应屏蔽和电源地（PG）形状的SPD文件。该命令提升了Integrity 3D-IC与Sigrity之间信号完整性（SI）流程集成的效率，因为它避免了需要先进行流出的GDS2SPD流程，节省了大量运行时间。它允许用户根据所选网络定义SPD生成的区域，并可指定一个边距来扩展该区域，以确保包含所有相关信号及其屏蔽。该命令能确保所选信号的屏蔽被保留，并在指定边距内保持PG网络，这对于SI提取和返回路径考虑非常重要。",
+  "usage": "write_spd [-help] -file <spdFileName> [{-nets <netName(s)> | -selected } [-cut_margin <cutMargin>] [-with_shield ]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印write_spd命令及其参数的简要描述和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-file",
+      "description": "指定输出的SPD文件名。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-nets",
+      "description": "指定一个或多个网络名称。如果只指定一个网络名，则不需要大括号。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-selected",
+      "description": "指定当前选中的网络。可以使用select_obj命令来选择网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cut_margin",
+      "description": "指定从指定网络的边界框向外扩展的切割边距。此选项必须与-nets或-selected选项一起使用。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-with_shield",
+      "description": "默认情况下，为所选网络生成SPD文件时不考虑屏蔽的完整性。指定此选项可确保在SI分析期间考虑对应所选信号的屏蔽以防止串扰，并生成指定网络的屏蔽布线（如果有）。此选项必须与-nets或-selected选项一起使用。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

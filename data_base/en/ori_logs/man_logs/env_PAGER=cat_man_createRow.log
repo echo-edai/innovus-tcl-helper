@@ -1,0 +1,238 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createRow(25.10)                                              createRow(25.10)
+
+Name
+       createRow - Creates rows for the specified site
+
+Syntax
+       createRow
+
+       [-help]
+
+       -site <siteName>
+
+       [-area  {<x1  y1  x2  y2>}  |  -boxList {{<x1 y1>} {<x2 y2>} <...>}< >|
+       -polygon {{<x1 y1>} {<x2 y2>}...}]
+
+       [-spacing <distance>]
+
+       [-limitInCore]
+
+       [-noAbut | -noAbut1st]
+
+       [-flip1st]
+
+       [-noCheck]
+
+       [-noFlip]
+
+       Creates rows for the specified site. The row boundary can be defined by
+       core area or the area that you specify. This command supports the  cre-
+       ation  of  overlapping  rows.  This  command can create only horizontal
+       rows. By default, alternate rows are flipped and all rows  are  abutted
+       (no spaces between rows).
+
+       The following points apply to the usage of this command:
+
+              * Rows can be created both inside and outside the core area, but
+                within the die.
+
+              * All new rows created in an area must be an integer multiple of
+                any existing rows in the same area.
+
+              * Non-integer  multiple  height  rows  cannot be created outside
+                power domains.
+
+       Use this command after importing a design.
+
+Parameters
+       -area {<x1 y1 x2 y2>}
+              Create rows in the specified rectangle. (Default is  within  the
+              core  box.)  The  values are floats, units are microns. Rows are
+              truncated at the die box boundary. Either a tcl list or 4  sepa-
+              rate parameters works.
+
+              * <x1>: Specifies the lower left x coordinate of the area.
+
+              * y1: Specifies the lower left y coordinate of the area.
+
+              * x2: Specifies the upper right x coordinate of the area.
+
+              * y2: Specifies the upper right y coordinate of the area.
+
+              Data_type: box, optional
+
+       -boxList {{<x1 y1>} {<x2 y2>} ...}
+              The  X and Y values are floats, units are microns. There must be
+              an even number of points specified. Pairs of points are used  to
+              determine a set of rectangles, where the first point of the pair
+              is  LLX,  LLY, the second point is URX, URY. Rectangles need not
+              be overlapping. Rows are created in the union of the  rectangles
+              defined.  Note that for overlapping rectangles, rows are created
+              continuously starting at the first (bottom) row (of  the  lowest
+              rectangle). For non-overlapping rectangles, rows are created in-
+              dependently starting at the bottom of each rectangle.
+
+              Data_type: point_list, optional
+
+       -flip1st
+              Controls  the orientation of the first (bottom) row, which is R0
+              by default. When -flip1st, the first row's  orientation  is  MX.
+              See -noFlip.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each createRow parameter.  For  a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command: man createRow
+
+       -limitInCore
+              By default (none of -area, -polygon,  -boxList  specified)  rows
+              are  created  in  the  core  box.  When  one of -area, -polygon,
+              -boxList is specified, by default rows are  created  within  the
+              intersection of the die box and the specified rectilinear shape.
+              When one of -area, -polygon, -boxList and -limitInCore is speci-
+              fied,  rows  are created within the intersection of the core box
+              and the specified rectilinear shape.
+
+              Data_type: bool, optional
+
+       -noAbut
+              Controls where spaces are inserted  between  rows.  By  default,
+              spaces  are  inserted between pairs of rows. When -noAbut is en-
+              abled spaces are inserted between every row.  See  -spacing  and
+              -noAbut1st.
+
+              Default: The rows are abutted by default.
+
+              Data_type: bool, optional
+
+       -noAbut1st
+              Controls where the first space between rows is inserted. Default
+              is  that  the  first  space is inserted after the first (lowest)
+              pair of rows, and subsequently after every pair of  rows  (space
+              inserted  between  2nd  and  3rd rows, between 4th and 5th rows,
+              etc). When -noAbut1st, the first space  is  inserted  after  the
+              first  (lowest)  row,  and subsequently after every pair of rows
+              (space inserted between 1st and 2nd rows, then 3rd and 4th rows,
+              etc). See -spacing and -noAbut.
+
+              Data_type: bool, optional
+
+       -noCheck
+              Specifies that  the row should not be aligned  to  the  existing
+              row and should support redo undo.
+
+              Data_type: bool, optional
+
+       -noFlip
+              By  default  rows  have  alternating  orientation  (...MX  R0 MX
+              R0...), or when -no_flip_rows is specified rows  have  identical
+              orientation  (one  of:  ...R0  R0 R0...; or ...MX MX MX...). See
+              -flip1st.
+
+              Data_type: bool, optional
+
+       -polygon {{<x1 y1>} {<x2 y2>}...}
+              The X and Y values are floats, units are microns. There must  be
+              an even number of points specified. The points specify a polygon
+              in  which  rows  are  created. Each pair of points specifies one
+              edge of the polygon, so { X1 Y1 } and {  X2  Y2  }  specify  one
+              edge,  {  X2 Y2 } { X3 Y3 } specify the next edge, etc. The last
+              edge is specified by { Xlast Ylast } { X1 Y1 }. In the  degener-
+              ate  case  (multiple rectilinear areas touching at corners) rows
+              will be created continuously starting at the lowest point.
+
+              Data_type: point_list, optional
+
+       -site <siteName>
+              Specifies the name of the site to be used for creating the rows.
+              (Objects not allowed.)
+
+              Data_type: bool, optional
+
+       -spacing
+              Specifies the width of the space inserted between certain  rows.
+              The  first (lowest) row is always inserted along the bottom edge
+              of the area having rows added. If  -noAbut  is  specified,  then
+              space  is  inserted between every subsequent row. The default is
+              space is inserted between every  other  row.  If  -noAbut1st  is
+              specified,  then space is inserted after the first row (and then
+              the third etc). The default is that space is inserted after  the
+              second  row  (and  then  the  4th  etc).  Note  that -noAbut and
+              -noAbut1st are mutually exclusive.
+
+              Default: 0.0 um
+
+              Data_type: float, optional
+
+Example
+              * The following command creates rows for the site lt3site within
+                the area defined by the  coordinates  376.7,  577.57,  688.94,
+                725.68,  maintaining  a  spacing of 1 micron between the rows,
+                without the first row being abutted:
+
+                createRow -site  lt3site  -area  376.7  577.57  688.94  725.68
+                -spacing 1.0 -noAbut1st
+
+              *
+
+                The  following  commands  and images show the functionality of
+                the option flip1st
+
+                createRow -area {500 500 550 550} -site tsm3site
+
+                createRow -area {500 500 550 550} -site tsm3site -flip1st
+
+              *
+
+                The following commands and images show  the  functionality  of
+                the option limitInCore
+
+                createRow -area {260 260 340 340} -site tsm3site:
+
+                createRow -area {260 260 340 340} -site tsm3site -limitInCore:
+
+              *
+
+                The following commands and images show the capabilities of the
+                options spacing,noAbut and noAbut1st:
+
+                createRow -area {620 500 670 550} -site tsm3site -spacing 10:
+
+                createRow  -area  {620 500 670 550} -site tsm3site -spacing 10
+                -noAbut:
+
+                createRow -area {620 500 670 550} -site tsm3site  -spacing  10
+                -noAbut1st:
+
+              *
+
+                The following commands and images show the capabilities of the
+                options noCheck (The placement grid is opened):
+
+                createRow -area {680 500 730 550} -site tsm3site
+
+                createRow -area {680 500 730 550} -site tsm3site -noCheck
+
+              * The following commands and images show the capabilities of the
+                option noFlip:
+
+                createRow -area {680 500 730 550} -site tsm3site :
+
+                createRow -area {680 500 730 550} -site tsm3site -noFlip:
+
+Related Information
+              * deleteRow
+
+              * cutRow
+
+              * select_row
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                *
+                   Using Vertical Rows
+
+                           Fri Apr 04 01:25:37 2025           createRow(25.10)

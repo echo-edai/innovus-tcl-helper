@@ -1,0 +1,158 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_clock_groups(25.10)                                set_clock_groups(25.10)
+
+Name
+       set_clock_groups  -  Defines  clock groups with specified clock defini-
+       tions
+
+Syntax
+        set_clock_groups
+
+       [-name <name>]
+
+       [-comment <string>]
+
+       [-logically_exclusive] | [-physically_exclusive] | [[-asynchronous]
+
+          [-allow_paths]]
+
+       [-group <clock_list>]
+
+       Defines clock groups with specified clock definitions. The software as-
+       signs all clocks that are defined after you  use  the  set_clock_groups
+       command  to  a  default  clock group. The software does not apply clock
+       groupings on a master clock to the generated child clocks.
+
+       If there is an overlap in the clock group specification,  the  software
+       uses the following precedence to resolve the behavior:
+
+              * Physically exclusive
+
+              * Asynchronous
+
+              * Logically exclusive
+
+       The  software  drops  any explicit false path assertions between clocks
+       that you have set as either physically or logically exclusive or  asyn-
+       chronous using the set_clock_groups command.
+
+       An  alternative to setting the clocks as physically or logically exclu-
+       sive using the set_clock_groups command is to use the multi-mode mecha-
+       nism. Generally in an implementation flow, sequential setting of active
+       clocks cannot be used. For concurrent analysis of different modes,  you
+       can  use an multi-mode based approach to drive IPO instead of using the
+       set_clock_groups command.
+
+       For more information on multi-mode multi-corner analysis, see Importing
+       and Exporting Designs chapter in the Innovus User Guide.
+
+Parameters
+       -allow_paths
+              Allows paths between asynchronous clock groups to be  traced  in
+              timing  analysis.  These  paths are blocked by default. When you
+              use this option, the software still considers the  paths  to  be
+              asynchronous  for  signal  integrity  considerations. Signal in-
+              tegrity analysis does not support  the  -allow_paths  parameter.
+              Use the -allow_paths parameter with the -asynchronous parameter.
+
+       -asynchronous
+              Defines  clock  group  with  asynchronous  clocks.  Asynchronous
+              clocks have no specified phase relationship. The  software  con-
+              siders  asynchronous nets to have infinite timing window overlap
+              for signal integrity considerations and considers these as false
+              paths for timing analysis. Use  the  -allow_paths  parameter  to
+              trace these paths in timing analysis.
+
+       -comment <string>
+              Allows you to insert comments. The comments are read but are ig-
+              nored  with a one-time warning message. They are not used during
+              timing analysis reporting nor are they written out during saving
+              of constraints.
+
+       -group <clock_list>
+              Defines a set of clocks that are exclusive  or  asynchronous  to
+              the  clocks  defined in all other groups. If you define only one
+              group, then all clocks not in the group implicitly belong  to  a
+              default  clock  group.  The  software automatically adds any new
+              clocks that you define after  the  set_clock_groups  command  to
+              this default clock group.
+
+       -logically_exclusive
+              Defines  clock group with clocks that do not have any functional
+              paths between them, but coexist in the design at the same  time.
+              The  software  considers  aggressor  interactions  between these
+              clocks for signal integrity considerations, but considers  these
+              as false paths for timing analysis.
+
+              Note:  The  -logically_exclusive parameter does not have any im-
+              pact on SI analysis.
+
+              For example, clocks selected via a clock mux select.
+
+       -name <name>
+              Specifies the names of the clock groups to be added.
+
+       -physically_exclusive
+              Defines clock group with clocks that cannot exist in the  design
+              at  the  same time. The software does not consider aggressor in-
+              teractions between clock groups that  are  physically  exclusive
+              for signal integrity considerations.
+
+              From  the  perspective  of  SI  analysis, all attackers that are
+              physically exclusive with the victim net are  ignored  for  both
+              glitch and noise-on-delay analysis. Attacker nets that belong to
+              physically  exclusive  groups  cannot  attack  together. In this
+              case, all sets of attackers belonging to all the physically  ex-
+              clusive  groups  are  evaluated and the set of nets that has the
+              highest impact on SI analysis is chosen.
+
+              For timing analysis, the software considers these  clock  groups
+              as false paths.
+
+              Example: multiple clocks defined on the same source pin
+
+Examples
+              * The following commands assert two different clocks on the same
+                clock root port, and uses set_clock_group to isolate them from
+                each other:
+
+                create_clock -name SYSCLK -period 10 [get_ports sclk]
+
+                create_clock -name SCANCLK -period 100 -add [get_ports sclk]
+
+                set_clock_groups -name PHY_EX_SCLK -physically_exclusive
+
+                -group {SYSCLK} -group {SCANCLK}
+
+              * The  following command declares a single bus clock to be asyn-
+                chronous to all of the other on board  clocks  in  the  design
+                (which remain in the default clock group):
+
+                set_clock_groups  -name  ASYNCH_BUS -asynchronous -group {BUS-
+                CLK}
+
+              * The following example shows that the clock group  {clkA  clkB}
+                is asynchronous only to clock group {clkC clkD}:
+
+       set_clock_groups -asynchronous -group {clkA clkB} -group {clkC clkD}
+
+       If  an  extra  clock  clkE is defined in the design, then  timing check
+       will be allowed in between the first group to clkE and second
+
+       group to clkE.
+
+              * In the following example since only one clock group is  speci-
+                fied  with  the command set_clock_groupscommand, so the speci-
+                fied clock group is considered to be asynchronous to  all  the
+                other clocks in the design:
+
+       set_clock_groups -asynchronous -group {clkA clkB}
+
+       set_clock_groups -asynchronous -group {clkC clkD}
+
+Related Information
+              * create_clock
+
+              * reset_clock_groups
+
+                           Fri Apr 04 01:25:37 2025    set_clock_groups(25.10)

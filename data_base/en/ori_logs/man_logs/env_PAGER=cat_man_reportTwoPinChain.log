@@ -1,0 +1,194 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportTwoPinChain(25.10)                              reportTwoPinChain(25.10)
+
+Name
+       reportTwoPinChain
+
+Syntax
+       reportTwoPinChain
+
+       [-help]
+
+       [-reset  |
+
+       [[-output <fileName>] [-through <string>]
+
+       [-noOverwrite ]
+
+       [-showAll ]
+
+       [-strict ]
+
+       [-tolerance <value>]]]
+
+       Reports  two  pin chains for nets, instterms, and hinstterms. This com-
+       mand can traverse through buffers, inverters, and assign-statements and
+       report the complete two pin chain. You can specify any element  of  the
+       chain  to  get  the same results. The reportTwoPinChain command is used
+       after pin assignment to analyse results and debug issues especially  in
+       cases  where  the expectation to align all partition pins across a two-
+       pin chain is not met.
+
+Parameter
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each reportTwoPinChain parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man reportTwoPinChain
+
+       -noOverwrite
+              When  specified  the  report  continues  to display the previous
+              2-pin-chains also.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -output <fileName>
+              Specifies the file in  which  the  2-pin  nets  are  traced  and
+              dumped.
+
+              Default: stdout
+
+              Data_type: string, optional
+
+       -reset Removes GUI markers and GUI objects, created during previous in-
+              vocations. No two pin chain reporting.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -showAll
+              Displays the intermediate instances of the chain also.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -strict
+              Strictly  displays  only pure two pin chains even at module port
+              connections.
+
+              Default: false
+
+              Data_type: bool, optional
+
+       -through <string>
+              Specifies the list of names of net,  instterms,  hinstterms  for
+              which 2-pin chains are traced and dumped.
+
+              Data_type: string, optional
+
+       -tolerance <value>
+              Specifies  the tolerance range. This specified difference in or-
+              dinates treated as still aligned.
+
+              Default: 1.0 microns
+
+              Data_type: float, optional
+
+Example
+              * In the following diagram P1, P2, W3/P3 are partitions  and  W3
+                is a non-partition verilog module.
+
+                It  shows  a  pure two pin connection where red and green pins
+                aligned together in one chain.
+
+                The following command  reports  this  two  pin  chain  passing
+                through p2/I1/Y:
+
+                reportTwoPinChain -through p2/I1/Y
+
+              * The  following  command  reports  the  two  pin chains passing
+                through DTMF_INST/TDSP_CORE_INST/port_pad_data_out[13]:
+
+                reportTwoPinChain                                     -through
+                DTMF_INST/TDSP_CORE_INST/port_pad_data_out[13]
+
+                Report:
+
+                2-pin-chain                                           through:
+                DTMF_INST/TDSP_CORE_INST/port_pad_data_out[13] ...
+
+                 chain terminator: other pin of buffer is multi-fanout
+
+                 net: DTMF_INST/TDSP_CORE_INST/port_data_in[13]
+
+                 buffer-term                      :output    :placed         :
+                DTMF_INST/TDSP_CORE_INST/TDSP_CORE_GLUE_INST/i_9686/Y
+
+                 module-port                      :output    :unplaced       :
+                DTMF_INST/TDSP_CORE_INST/TDSP_CORE_GLUE_INST/port_data_in[13]
+
+                 module-port                      :input     :unplaced       :
+                DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/data_in[13]
+
+                 buffer-term                      :input     :placed         :
+                DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/FE_RC_7_0/A
+
+                 net: DTMF_INST/FE_FEEDX_NET_D__tdsp_core__0_tdsp_portO_13_
+
+                 buffer-term                      :output    :placed         :
+                DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/FE_RC_7_0/Y
+
+                 module-port                      :output    :unplaced       :
+                DTMF_INST/TDSP_CORE_INST/PORT_BUS_MACH_INST/pad_data_out[13]
+
+                 partition-pin                    :output    :placed         :
+                DTMF_INST/TDSP_CORE_INST/port_pad_data_out[13]
+
+                 partition-pin                    :input     :placed         :
+                DTMF_INST/RE-
+                SULTS_CONV_INST/FE_FEEDX_NET_D__tdsp_core__0_tdsp_portO_13_
+
+                 buffer-term                      :input     :placed         :
+                DTMF_INST/RE-
+                SULTS_CONV_INST/FE_OFC28_FE_FEEDX_NET_D__tdsp_core__0_tdsp_portO_13_/A
+
+                 net: tdsp_portO[13]
+
+                 buffer-term                      :output    :placed         :
+                DTMF_INST/RE-
+                SULTS_CONV_INST/FE_OFC28_FE_FEEDX_NET_D__tdsp_core__0_tdsp_portO_13_/Y
+
+                 partition-pin                    :output    :placed         :
+                DTMF_INST/RESULTS_CONV_INST/FE_FEEDX_P_tdsp_portO_13_
+
+                 module-port                      :output    :unplaced       :
+                DTMF_INST/port_pad_data_out[13]
+
+                 module-port                      :input     :unplaced       :
+                IOPADS_INST/tdsp_portO[13]
+
+                 buffer-term                      :input     :placed         :
+                IOPADS_INST/Ptdspop13/I
+
+                 net: port_pad_data_out[13]
+
+                 buffer-term                      :output    :placed         :
+                IOPADS_INST/Ptdspop13/PAD
+
+                 module-port                      :output    :unplaced       :
+                IOPADS_INST/tdsp_port_out[13]
+
+                 chip-io                          :output    :fixed          :
+                port_pad_data_out[13]
+
+                 chain terminator: chip-io
+
+              * The  following  command  reports  the  two  pin chains passing
+                through F2/D2/A/out and writes it to report.txt file:
+
+                reportTwoPinChain -through F2/D2/A/out -output report.txt
+
+Related Information
+              *
+
+                * assignPtnPin
+
+                * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025   reportTwoPinChain(25.10)

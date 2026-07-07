@@ -1,0 +1,911 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setBudgetingMode(25.10)                                setBudgetingMode(25.10)
+
+Name
+       setBudgetingMode - Sets the timing budgeting mode
+
+Syntax
+       setBudgetingMode
+
+       [-help]
+
+       [-abutted {true|false}]
+
+       [-accumulated {true|false}]
+
+       [-boundaryConditionTemplatePath <directory_path>]
+
+       [-bufferDelayLibCell <libname>/<cellname>]
+
+       [-bufferDelaySelectionEffort {low|high|none}]
+
+       [-ccd {true|false}]
+
+       [-constantModel {true|false}]
+
+       [-distributeMMMC {true|false}]
+
+       [-dontWriteWireLoad {true|false}]
+
+       [-driveConstraint {drive | drive_cell | input_transition}]
+
+       [-fixTopLevelPaths {none|all|negativeOnly|positiveOnly}]
+
+       [-handleComplexSDC {true|false}]
+
+       [-honorPortBoundaryCondition {true|false}]
+
+       [-honorPortDelays {true|false}]
+
+       [-honorReportTimingFormat {true|false}]
+
+       [-ignoreDontTouch {true|false}]
+
+       [-includeLatency {true|false}]
+
+       [-includeWireLoadsInLib {true|false}]
+
+       [-inputLoad {true|false}]
+
+       [-justify {delay|exception|lib_arc|boundary_condition|all}]
+
+       [-justifyBudgetDir <directory_name>]
+
+       [-keepPinListsForBlockPorts {true|false}]
+
+       [-latencyOnClocks {true|false}]
+
+       [-localLatency {true|false}]
+
+       [-localUncertainty {true|false}]
+
+       [-makeNegativeInputDelayZero {true | false}]
+
+       [-makeReducedTimingGraph {true | false}]
+
+       [-masterClone {masterOnly|merged|uniqueViewPerHInst}]
+
+       [-noFalsePathsForUnCstrPorts {true|false}]
+
+       [-noSetupView {true|false}]
+
+       [-noHoldView {true|false}]
+
+       [-reportOrModifyBudget {true|false}]
+
+       [-reset]
+
+       [-rptNegSlackOnPorts <value>]
+
+       [-sdcContents {full | pushDownOnly | boundaryConstraintsOnly | noBound-
+       aryCondition | noBoundaryConstraints}]
+
+       [-stageBasedFanoutDrivingFactor <value>]
+
+       [-stageBasedPartitionMultiplier {{HInst1 m1} {HInst2 m2}..}]
+
+       [-stageBasedWeight {S  | C  | B}]
+
+       [-useBoundaryCondition {optimized | template | actual | empty}]
+
+       [-virtualClock {true|false}]
+
+       [-virtualOptEngine {none|earlyTimingEngine|proto}]
+
+       [-writeConstraintsForClkOutputPorts {true|false}]
+
+       [-writeFPForHold {true|false}]
+
+       [-writeLatencyPerClock {true|false}]
+
+       Sets  the  timing  budgeting mode. This command governs the way budgets
+       are derived and saved. All parameters relevant to  saving  or  deriving
+       can be specified with this command.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each setBudgetingMode parameter. For a  detailed
+              description  of  the command and all its parameters, use the man
+              command:
+
+              man setBudgetingMode
+
+       -abutted {true | false}
+              Specifies that the software abuts the partitions when allocating
+              budgets from positive slack  paths.  With  this  parameter,  the
+              software  assumes  that all partitions are abutted and therefore
+              the software does not allocate extra delay at the top-level.
+
+              Default: false
+
+              Note: The software automatically handles the abutted  partitions
+              (both  partial and full) even when you do not specify this para-
+              meter.
+
+       -accumulated {true | false}
+              Generates SDC for lower-level hierarchy child partition  in  the
+              .lib and flat forms (L3 as shown in the example below). The fol-
+              lowing example also presents the matrix to understand the behav-
+              ior of the -accumulated parameter at different levels of hierar-
+              chy:
+
+              With the help of the -accumulated parameter, SDC supports gener-
+              ation  of constraints in the specified child partition through a
+              Tcl variable-enabled conditional loop, as shown below:
+
+              if {$budget_use_accumulated != 1}{
+
+                #Constraints considering child partition in the .lib form
+
+              } else {
+
+                #Constraints considering child partition in the flat form
+
+              }
+
+              Note:
+
+              * A single viewDefinition.tcl or SDC file can support  both  the
+                .lib  or  flat  flows.  This  is because there are conditional
+                loops in the viewDefinition.tcl and SDC files.
+
+              * Conditional loops are controlled by a Tcl variable named  bud-
+                get_use_accumulated. The default value of this Tcl variable is
+                0,  which specified that constraints will be processed consid-
+                ering the child partition in the .lib form. You  need  to  run
+                set  budget_use_accumulated  1  before  loading the design for
+                processing the constraints considering the child partition  in
+                the flat form.
+
+              * This  parameter  does not impact the output of the viewDefini-
+                tion.tcl and SDC files for the bottom-most partitions.
+
+              Default: false
+
+       -boundaryConditionTemplatePath <directory_path>
+              Specifies the directory path containing the model  files  to  be
+              used  for  generating  template-based boundary condition through
+              the -useBoundaryCondition template parameter. Hence, the -bound-
+              aryConditionTemplatePath parameter allows you  to  specify  your
+              own template file for generating boundary conditions.
+
+              The  directory  path  specified  with this parameter should have
+              boundary model files for each view with the file name format  as
+              view_name.model. If the model files are missing for any view, an
+              error  is  prompted.  If a view is both setup and hold, the same
+              model will be used.
+
+              Default: ""
+
+       -bufferDelayLibCell <libname/cellname>
+              Specifies the buffer that should be used for virtual buffer  ad-
+              justment.
+
+              Default: ""
+
+       -bufferDelaySelectionEffort {low|high|none}
+              Controls the virtual buffer selection effort for calculating the
+              buffer delay adjustment. The three effort levels are:
+
+              * low: Uses buffer selection algorithm based on drive strength.
+
+              * high:  Uses  buffer  selection  algorithm  based on actual one
+                buffer delay.
+
+              * none: Disables buffer delay adjustment.
+
+              Use the low/high value of this parameter to enable buffer  delay
+              adjustment.  Additionally,  you  can use the -bufferDelayLibCell
+              parameter with the libname/cellname value  for  enabling  buffer
+              delay  adjustment. When both the -bufferDelaySelectionEffort and
+              -bufferDelayLibCell parameters are set, -bufferDelayLibCell  has
+              more precedence.
+
+              Default: none
+
+       -ccd {true|false}
+              Generates  scripts  for  verification  of time budgeting top and
+              block constraints against pre-budget chip constraints using  the
+              Conformal Constraint Designer software.
+
+              Default: false
+
+       -constantModel {true|false}
+              Specifies  the  type of timing model created. The -constantModel
+              parameter specifies that constant timing models are created.
+
+              Default: true
+
+       -distributeMMMC{true|false}
+              When set to true, it enables distributed timing  budgeting.  Use
+              setDistributeHost  -custom -custom_script {LSF command} to setup
+              LSF machine to distribute jobs. The -custom_script  accepts  the
+              bsub  command as input with all its parameters. Use the -K para-
+              meter of the bsub command to run it.
+
+              The -resource parameter of the setDistributeHost command for the
+              LSF string is not supported by the -distributeMMMC parameter, as
+              it cannot generate complete command. Only the -custom_script pa-
+              rameter is supported.
+
+              If the setDistributeHost command is not specified, the jobs  run
+              on the local machine.
+
+              Default: false
+
+       -dontWriteWireLoad {true|false}
+              Writes  out the set_load command with the -wire_load information
+              for the output pins in the generated SDC file, if the design  is
+              routed.
+
+              Default: false
+
+       -driveConstraint {drive | drive_cell | input_transition}
+              Determines  the  boundary condition for the input ports. If this
+              parameter is not specified, set_driving_cell is written, by  de-
+              fault. Specify one of the following values with this parameter:
+
+              * drive:  Generates the boundary drive information for the input
+                ports in the budgeted  SDC  file,  using  the  set_drive  con-
+                straint.
+
+              * drive_cell:   Generates the boundary drive information for the
+                input ports in the  budgeted  SDC  file,  using  the  set_dri-
+                ving_cell constraint.
+
+              * input_transition: Generates the boundary drive information for
+                input  ports  in  the  budgeted  SDC  file,  using the set_in-
+                put_transition constraint.
+
+              Default: drive_cell
+
+       -fixTopLevelPaths {none | all | negativeOnly | positiveOnly}
+              Fixes the top-level timing budget and proportions the  remaining
+              timing  budget  only  for  the partitions based on the specified
+              value. Use one of the following parameter values:
+
+              * none: Performs the default proportionate budgeting.
+
+              * all: Fixes the top-level timing budget and proportions the re-
+                maining budget only for the partitions.
+
+              * negativeOnly: Fixes the top-level timing  budget  and  propor-
+                tions  the  remaining budget only for the partitions for nega-
+                tive slack paths.
+
+              * positiveOnly: Fixes the top-level timing  budget  and  propor-
+                tions  the  remaining budget only for the partitions for posi-
+                tive slack paths.
+
+              Default: none
+
+       -handleComplexSDC {true|false}
+              Specifies to use Common Timing Engine's  write_sdc  command  for
+              ensuring  proper  push  down in case of using nested/complex SDC
+              constraints. The software saves SDC for each view from the  cur-
+              rent session, which is used for budgeting. Use it in the follow-
+              ing cases:
+
+              * Constraints are specified interactively by the user.
+
+              * There are regular expressions in the SDC constraints.
+
+              * A TCL command (like foreach) is used in the SDC constraints.
+
+              A  limitation  while  using  this  parameter  is that in case of
+              netlist reduction, some SDC file  constraints  that  get  pushed
+              down normally, will not be pushed down.
+
+              Writing  SDCs  while using this parameter may increase the turn-
+              around time.
+
+              Default: false
+
+       -honorPortBoundaryCondition {true|false}
+              When set to true, deriveTimingBudget pushes  down  the  boundary
+              conditions  from  the  chip IO ports to the block IO ports. This
+              parameter works only in the cases where the block IO  ports  are
+              directly  connected to the chip IO ports (when there is no logic
+              in between the chip and block, and there is no dependency on the
+              abutted condition).
+
+              When this parameter is set to its default value, true, following
+              is the behavior for those partition ports,  which  are  directly
+              connected to the top level ports:
+
+              * For  the  actual and optimized boundary condition mode, if the
+                boundary conditions are specified in the chip  SDC,  they  are
+                written as is. Else, nothing is written.
+
+              * For the template boundary condition mode, if the boundary con-
+                ditions are specified in the chip SDC, they are written as is.
+                Else, the existing template-based method is used for them.
+
+              If  you  turn off this parameter, there will be no change in the
+              behavior of any partition port, whether or not  it  is  directly
+              connected.
+
+              Default: true
+
+       -honorPortDelays {true|false}
+              When  this  parameter  is set to true, deriveTimingBudget repli-
+              cates the chip IO SID/SOD values to block IO, if these  two  are
+              directly connected and abut each other.
+
+              Default: true
+
+       -honorReportTimingFormat {true|false}
+              Honors  the  global  variable  set through set_globalreport_tim-
+              ing_format by the user in the justification reports,  which  are
+              generated  through  deriveTimingBudget,  when  the setBudgetMode
+              -justify parameter is specified. This parameter keeps justifica-
+              tion reports and columns of report_timing in the same format  as
+              set by the user.
+
+              This  parameter may impact the turnaround time of the deriveTim-
+              ingBudget command, when the setBudgetMode -justify parameter  is
+              specified.
+
+              Default: true
+
+       -ignoreDontTouch {true|false}
+              Specifies  the handling of don't touch (fixed) objects . The pa-
+              rameter allows you to modify these objects also.
+
+              Default: false
+
+       -includeLatency {true|false}
+              Specifies whether the clock latency is included in  the  set_in-
+              put_delay and set_output_delay constraints.
+
+              Note:  The  clock  latency  is always included if the design has
+              propagated clock(s) irrespective of this parameter.
+
+              set_input_delay and set_output_delay change and are based on ac-
+              tual arrival times.
+
+              Default: true
+
+       -inputLoad {true|false}
+              Specifies whether the set_load constraints have  to  be  written
+              for input pins in the generated SDC file. With this option, load
+              constraint on ports is specified.
+
+              Default: false
+
+       -includeWireLoadsInLib {true|false}
+              Specifies to include the wire loads in library model pin capaci-
+              tance  to handle high interface net loads. It provides extra in-
+              formation in .lib file for more accurate modelling.
+
+              Default: false
+
+       -justify {delay|exception|lib_arc|boundary_condition|all}
+              Controls the type of justification and also decides  whether  or
+              not  to  generate  the justification reports. You may use one or
+              more of the following values with this parameter:
+
+              * delay: Budget justification files for  all  the  partition  IO
+                ports are generated.
+
+              * exception: Budget justification files for all the partition IO
+                ports are generated with exception data.
+
+              * lib_arc: Justification files for libs are generated.
+
+              * boundary_condition:  Justification files for the boundary con-
+                ditions used in the constraint files are generated.
+
+              * all: All the justification files are generated.
+
+              Note: When this parameter is used without any value, no justifi-
+              cation files are generated. Only the summary is generated.
+
+              Default: ""
+
+       -justifyBudgetDir <directory_name>
+              Directs output of budget justification to the  specified  direc-
+              tory and dumps the summary files.
+
+              Default: budget justify
+
+       -keepPinListsForBlockPorts{true|false}
+              Specifies to preserve all fan-in and fan-out pin lists for block
+              ports.
+
+              The default value is true. When set to true, the runtime will be
+              the  fastest  but involves high memory usage. The value of false
+              means that the peak memory consumed will decrease  but  with  an
+              increase in runtime.
+
+              You  can  use  this  parameter to control memory consumption and
+              runtime for budgeting processes. It does not affect other  func-
+              tions when specified.
+
+              Default:true
+
+       -latencyOnClocks {true|false}
+              Writes the set_clock_latency constraint on the clocks instead of
+              ports  in  the  generated SDC files. Use this parameter when you
+              have multiple clocks on the same port.
+
+              Default: Writes the set_clock_latency constraint on the ports.
+
+              Default: true
+
+       -localLatency {true|false}
+              Adjusts the set_clock_latency constraint  information  that  you
+              specify  using  the setPtnUserCnsFile command to the constraints
+              file generated after budgeting.
+
+              When you specify this parameter, the software checks whether the
+              set_clock_latency constraint specifies a clock or a port.
+
+              If the constraint specifies a clock and the clock exists in  the
+              partition,  then the constraint is added to the constraints file
+              generated after budgeting. If the clock does not  exist  in  the
+              partition, the software does not write out the constraint.
+
+              If  the  constraint specifies a port, the constraint is added to
+              the constraints file generated after budgeting.
+
+              The source latency is calculated as follows:
+
+              source latency = top-level source latency  +  top-level  network
+              latency - local network latency
+
+              Default: false
+
+       -localUncertainty {true | false}
+              Adds  the  set_clock_uncertainty constraint information that you
+              specify using the setPtnUserCnsFile command to  the  constraints
+              file generated after budgeting.
+
+              When you use this parameter, the constraint file generated after
+              budgeting  has  input and output delays using virtual clocks in-
+              stead of real clocks in the SDC file. The software uses the vir-
+              tual clocks to differentiate the clock uncertainty for  external
+              paths (paths that are coming from or going to the top-level) and
+              internal paths of the partition.
+
+       -makeNegativeInputDelayZero {true | false}
+              Specifies to adjust negative set input delay to 0.
+
+              Default: true
+
+       -makeReducedTimingGraph {true | false}
+              When  set to true, this parameter enables ART during timing bud-
+              geting. When set to false (default value), it skips running  ART
+              during  timing  budgeting to avoid constraints from dropping un-
+              necessarily.
+
+              Default: false
+
+       -masterClone {masterOnly|merged|uniqueViewPerHInst}
+              Specifies how the constraints are generated for master and clone
+              designs. Following is the description of the parameter values:
+
+              * masterOnly:  Derives  budgets  only  for  the  master   parti-
+                tion/inst.
+
+              * merged:  Derives  budgets based on the worst case data per pin
+                for the master and all its clones.
+
+              * uniqueViewPerHInst: For partitioned block,  creates  a  corre-
+                sponding  view  for  each  instance  of the master and all its
+                clones, where timing  constraints  are  generated  considering
+                this  instance timing separately. So total number of new views
+                in block viewDefination.tcl is equal number of instances  mul-
+                tiflied  with  the  number of views. For partitioned TOPs .lib
+                model, the "merged" approach is followed. So that there  would
+                be  only  one .lib per view for every partition. No additional
+                views are created for partitioned TOP.
+
+              Default: masterOnly
+
+       -noFalsePathsForUnCstrPorts {true|false}
+              Specifies not to create false paths for unconstrained ports.
+
+              Default: false
+
+               -noHoldView {true|false}   " Specifies to derive  budgets  only
+              for  setup  views.  Dummy files are created for the hold view as
+              budgeting is not done for them.
+
+              Default: false
+
+       -noSetupView {true|false}
+              Specifies to derive budgets only for hold views. Dummy files are
+              created for the setup view as budgeting is not done for them.
+
+              Default: false
+
+       -reportOrModifyBudget {true | false}
+              Specifies to enable the collection of data required to use  the-
+              modifyBudget  command.  You  must  specify this parameter before
+              budgeting to run modifyBudget later in the flow.
+
+              If this parameter is not  specified,  the  modifyBudget  command
+              does not produce any results.
+
+              Default: false
+
+       -reset Resets  parameters to their default values. The -reset parameter
+              must be the first parameter specified. If you specify -reset  by
+              itself,  the  software resets all setBudgetingMode parameters to
+              their default values. If you specify  parameters  after  -reset,
+              the  software resets only those parameters to their default val-
+              ues.  Any values that do not already match the default value and
+              are reset. will be reported.
+
+       -rptNegSlackOnPorts <value>
+              Reports if partition ports have a slack less than the  specified
+              value and saves this information in the .warn file. The slack is
+              calculated  based  on  data  arrival time and clock time at data
+              sampling points. The report is saved to the .warn file.
+
+              Default: -1e+06
+
+       -sdcContents {full | pushDownOnly | boundaryConstraintsOnly | noBound-
+       aryCondition | noBoundaryConstraints}
+              Determines the contents of timing budgeted  SDCs.  You  can  set
+              only  one of the following permissible enum values of this para-
+              meter at a time:
+
+              * full: Generates the default SDC.
+
+              *
+
+                pushDownOnly: Generates SDC with only pushdown constraints for
+                the block partitions. Pushdown constraints are applied to only
+                those paths, which are completely inside a partition. By  con-
+                sidering  only  the pushdown constraints, this parameter value
+                ignores the constraints applied on partition  interface  paths
+                from full chip SDC.
+
+                When  this  parameter  value  is specified in the early design
+                phase, the reg-to-IO and IO-to-reg paths are ignored. In  such
+                cases,  timing  constraints  are generated for only reg-to-reg
+                paths.
+
+              * boundaryConstraintsOnly: Generates SDC with only set_input_de-
+                lay, set_output_delay, and other boundary conditions for ports
+                (such as set_load and set_drive). The  SDC  generated  through
+                this  parameter  value will also include commands to reset old
+                constraints while initiating the re-budgeting.
+
+              * noBoundaryCondition: Generates SDC without any boundary condi-
+                tions for ports (such as set_load and set_drive). Except this,
+                all other constraints are included, when this parameter  value
+                is specified.
+
+              * noBoundaryConstraints:  Generates SDC without set_input_delay,
+                set_output_delay, and  other  boundary  conditions  for  ports
+                (such  as set_load and set_drive). Except this, all other con-
+                straints are included, when this parameter value is specified.
+
+              Default: full
+
+       -stageBasedFanoutDrivingFactor <value>
+              Specifies the fanout count of the pin, according  to  which  the
+              buffer stages are added in the timing graph. This parameter pro-
+              vides  the  basis  for  the  software to calculate the number of
+              fanouts and buffer stages to be virtually added for  each  stage
+              according to the following table:
+
+              Fanout Range                  Number of Buffer Stafe Added (n):1
+              to d1 to d                                        0
+
+              (d+1) to d2                                         1
+
+              (d2+1) to d3                                       2
+
+              (d3+1) to d4                                       3
+
+              If the weight of the original cell is w, weight of the buffer is
+              b, and the number of buffer stages is n, then:
+
+              Final weight of cell = w + (b*n)
+
+              See  the  example below for understanding the functioning of the
+              -stageBasedFanoutDrivingFactor parameter.
+
+              setBudgetingMode -stageBasedWeight {3 2 1}
+
+              Default: -1
+
+       -stageBasedPartitionMultiplier {{HInst1 m1} {HInst2 m2}..}
+              Specifies the weight multiplication  factor  for  the  partition
+              hinsts.  Those  hInsts, which are not explicitly mentioned, will
+              have the default weights. If the weights  of  hinsts  have  been
+              specified  using  the setBudgetingMode -stageBasedWeight parame-
+              ter, those are used with their default weights.  Else,  the  de-
+              fault  weights (1 for sequential cell, 1 for combinational cell,
+              and 0 for buffer/inverter) are used. In case  of  nested  parti-
+              tions,  if  the  child partition multiplier is not specified ex-
+              plicitly, then it will have its parent's multiplier.  If  parent
+              and  child  partitions have separate multipliers, then they will
+              be honored.
+
+              See the example below for understanding the usage of this  para-
+              meter:
+
+              setBudgetingMode -stageBasedWeight {2 1 1}
+
+              setBudgetingMode  -stageBasedPartitionMultiplier {{PTN1 2} {PTN2
+              3}}
+
+              Cycle time = T
+
+              Budget for PTN1= 8/19 T
+
+              Budget for PTN2= 9/19 T
+
+              Budget for top = 2/19 T
+
+              Default: ""
+
+       -stageBasedWeight {S  | C  | B}
+              Specifies default weights of the sequential, combinational,  and
+              buffer/inverter cells for the stage-based timing budgeting. Fol-
+              lowing are the default weights of these cells:
+
+              * Sequential: 1
+
+              * Combinational: 1
+
+              * Buffer/inverter: 1
+
+              Default: {1 1 1}
+
+       -useBoundaryCondition {optimized|template|actual|empty}
+              Specifies the criteria for choosing boundary conditions. Follow-
+              ing are the usages of the parameter values:
+
+              * optimized:  The values of boundary conditions are fetched from
+                the engine used to build timing graph. If the engine does  not
+                provide  any  values,  than the template is used automatically
+                and a warning is displayed indicating that no optimized bound-
+                ary conditions are available, and the template is  used  auto-
+                matically.  For example, -useBoundaryCondition {optimized} for
+                -virtulaOptEngine {proto | none} will display such a warning.
+
+              * template: The values of boundary conditions are derived  auto-
+                matically and used through the default template.
+
+                Note:    The    default    templates   are   saved   as   bud-
+                get_model/<view_name>.model.
+
+              * actual: Uses the actual netlist to build the timing graph.
+
+              * empty: No boundary condition is dumped.
+
+              Default: template
+
+       -virtualClock {true|false}
+              When set to false, this parameter prevents creation of new  vir-
+              tual  clocks  during  timing  budgeting.  The software takes the
+              worst path into account and provides the minimum  required  time
+              amongst  all  the  paths  passing through a port. Since there is
+              only a single critical path, no virtual clock is created.
+
+              While using this parameter:
+
+              * For an endpoint with both  single-cycle  and  multicycle  con-
+                straints, multicycle constraints are not defined.
+
+              * At  the  partition  level,  a path which is constrained before
+                budgeting, is not unconstrained after budgeting.
+
+              * If a path has both single and multi-cycle constraints,  single
+                cycle constraint is retained, and hence, the path is optimized
+                accordingly and timing closure is not affected.
+
+              Following is an example of -virtualClock true:
+
+              Following is an example of -virtualClock false:
+
+              Default: true
+
+       -virtualOptEngine {none|earlyTimingEngine|proto}
+              Specifies the virtual optimization engine to be used. The values
+              of this parameter include:
+
+              none
+
+              Specifies that the timing graph is generated through report_tim-
+              ing.
+
+              earlyTimingEngine
+
+              Specifies that the timing graph is generated by optVirtual -ear-
+              lyTimingEngine.
+
+              proto
+
+              Specifies  that  the timing graph is generated by prototype tim-
+              ing.
+
+              Default: none
+
+              Note: User can use ART (createActiveLogicView -type  timing_bud-
+              get) before generating the timing graph to reduce TAT and memory
+              during budgeting flow.
+
+       -writeConstraintsForClkOutputPorts {true|false}
+              Specifies to write extra constraints on the output port of block
+              SDC.
+
+       When  this  parameter is specified, the following extra constraints are
+       written out:
+
+              * set_clock_sense - this constraint is dumped if  the  clock  is
+                used as data going forward after partition
+
+              * create_generated_clock  -  this  constraint  is  dumped if the
+                clock is used as clock going forward after partition
+
+              If the clock is used as both data and clock going  forward,  the
+              parameter does not write out these extra constraints.
+
+              Default: false
+
+       -writeFPForHold {true|false}
+              Writes  false_path  -hold constraints for all I/Os when deriving
+              timing budgets in setup mode.
+
+              For inputs, the saveTimingBudget command  writes  the  following
+              constraint:
+
+              set_false_path -from port -hold
+
+              For  outputs,  the saveTimingBudget command writes the following
+              constraint:
+
+              set_false_path -to port -hold
+
+              Default: false
+
+       -writeLatencyPerClock {true|false}
+              Specifies to write latency per clock instead of per  port.  When
+              you set this variable to true,  set_clock_latency is written per
+              clock  if  multiple  clocks enter the partition through the same
+              port.
+
+              Default: false
+
+Examples
+              * The following set of commands load database for timing budget-
+                ing:
+
+                setBudgetingMode -stageBasedWeight {3 2 1}
+
+                setBudgetingMode  -stageBasedPartitionMultiplier   {{PTN1   2}
+                {PTN2 3}}
+
+                setBudgetingMode -stageBasedFanoutDrivingFactor 8
+
+                deriveTimingBudget -stageBased
+
+              * The  following  command  sets  the input and output budgets to
+                3000:
+
+                setBudgetingMode -snapInputBudget 3000 -snapOutputBudget 3000
+
+                The resulting message appear in the .warn file when you gener-
+                ate budgets.
+
+                /* Start Section: Pin  constraint  values  less  than  defined
+                threshold time
+
+                (setup)*/
+
+                Input Threshold Value: 3.000
+
+                Output Threshold Value: 3.000
+
+                Constraint:  set_output_delay  11.524 -clock {CLK2} -max -rise
+                [get_ports {sub1_out1}]
+
+                allocates block delay less than input threshold time.
+
+                Block delay: 0.476
+
+                Constraint: set_output_delay 11.524 -clock {CLK2}  -max  -fall
+                [get_ports {sub1_out1}]
+
+                allocates block delay less than input threshold time.
+
+                Block delay: 0.476
+
+                /*  End  Section:  Pin  constraint  values  less  than defined
+                threshold time (setup)*/
+
+                justifyBudget header example:
+
+                Budgeted constraint type: set_output_delay(setup rise)
+
+                Initial budget available time = 12.000
+
+                One Buffer Delay for Adjustment(cell ssiv): 1.000
+
+                Fixed Delay for Feedthrough Paths(fixFdThru)= (2  x  1.000)  =
+                2.000
+
+                External Segment Fixed Delay From Budget Snap(snapExtFixedDel)
+                = 5.000
+
+                Total External Segment Fixed Delay(extFixDel) = 5.000
+
+                This  Block's  Segment  Fixed  Delay from budget snap(snapInt-
+                FixedDel) = 1.000
+
+                Total This Block's Segment Fixed Delay(intFixDel) = 1.000
+
+                External Segment Extra Delay From Budget  Snap  (snapExtDelEx-
+                tra) = 2.000
+
+                This  Block's Extra Delay From Budget Snap (snapIntDelExtra) =
+                1.000
+
+                Path Extra Delay From Budget Snap (snapExtraDel)  =  (2.000  +
+                1.000) = 3.000
+
+                Fixed Delay on the Path(pathFixDel) = (5.000 + 1.000 + 1.000 +
+                2.000) = 9.000
+
+                Fixed Delay Adjustment(fixDel)= 9.000
+
+                Clock Skew(clkSkew): 0.000
+
+                Adjustment for budget available time= -(pathFixDel + fixFdThru
+                - clkSkew + snapExtraDel)
+
+                = -(6.000 + 2.000 - 0.000 + 3.000)
+
+                = -11.000
+
+                Available   budget  after  adjustments(AvailTime)=  (12.000  -
+                11.000) = 1.000
+
+                External Segment Delay(extSegDel): 8.000
+
+                This Block's Segment Delay(segDel): 0.000
+
+                Total delay(totDel): 8.000 + 0.000 = 8.000
+
+                Virtual Clock Adjustment(virClk): 0.000
+
+                Budgeted constraint = AvailTime * extSegDel / totDel +  fixDel
+                + virClk + startClkLat
+
+                Budgeted  constraint = 1.000 * 8.000 / 8.000 + 9.000 + 0.000 +
+                0.000 = 10.000
+
+Related Information
+              * The following sections in the Timing Budgeting chapter of  the
+                User Guide document:
+
+                     * "Deriving Timing Budgets"
+
+              *
+
+                *
+
+                  * "Top-Level Budgets Derived by Using Active Logic View"
+
+              *
+
+                *
+
+                  * "Deriving Preliminary Budgets in Early Design Phase"
+
+                     * "Budgeting Output Files for MMMC Designs"
+
+                     * "Generated Report for Design Example"
+
+                     * "Verifying Timing Budgets"
+
+                     * "Reading the Justify Budget Report"
+
+                           Fri Apr 04 01:25:37 2025    setBudgetingMode(25.10)

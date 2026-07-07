@@ -1,0 +1,171 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+cutRectilinearInst(25.10)                            cutRectilinearInst(25.10)
+
+Name
+       cutRectilinearInst  -  Cuts partition or black box boundaries to recti-
+       linear instances that fit blocks in a given die, without modifying  the
+       existing block area
+
+Syntax
+        cutRectilinearInst
+
+       [-help]
+
+       -inst <instName>
+
+       {{-refInst <instName> [-spacingX <xvalue>] [-spacingY <yvalue>]} |
+
+       {-cutBox  {<x1  y1  x2  y2>}}  |  {-corner <cornerValue> [-x <value> -y
+       <value>]}}
+
+       [-pushOut <sideEdgeName>]
+
+       Cuts partition or black box boundaries to  rectilinear  instances  that
+       fit  blocks  in a given die, without modifying the existing block area.
+       The command performs the rectilinear cut based on the following  crite-
+       ria that you specify:
+
+              * The name of a hierarchical instance.
+
+              * The name of a referenced instance.
+
+              * The name of corner where the cut is to be defined.
+
+              * The  x and y offset values, in microns, from a specific corner
+                or an overlapping area.
+
+              * The name of a side or edge that is to be pushed out, to  main-
+                tain the existing block area.
+
+       You can use the command at any point in the design flow
+
+Parameters
+       -corner <cornerValue>
+              Specifies  the  name of a corner from where the cut is to be de-
+              fined. This can be lx, ly, ux, uy coordinates, or edge number in
+              case of a rectilinear corner. Edge numbers  are  counted  clock-
+              wise from the lower left corner starting with 0.
+
+              Data_type: string, optional
+
+       -cutBox
+              Specifies the rectilinear box that is to be cut.
+
+              * <x1>: Specifies the lower left x coordinate of the cut area.
+
+              * <y1>: Specifies the lower left y coordinate of the cut area.
+
+              * x2: Specifies the upper right x coordinate of the cut area.
+
+              * y2: Specifies the upper right y coordinate of the cut area.
+
+              Data_type: box, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each cutRectilinearInst  parameter.  For  a  de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man cutRectilinearInst
+
+       -inst <instName>
+              Specifies  the name of a hierarchical instance. The instance can
+              be a module, an uncommitted partition or a black box.
+
+              Data_type: (inst|hinst|group)+, required
+
+       -pushOut <sideEdgeName>
+              Specifies the x offset value, in microns, from a specified  cor-
+              ner.  Corner  numbers are counted clock-wise from the lower left
+              corner starting with 0. This can be:
+
+              * top
+
+              * bottom
+
+              * left
+
+              * right
+
+              * rectilinear edge number
+
+              Note: If you do not specify a side  or  edge,  the  cutRectilin-
+              earInst  command will not maintain the existing area and all the
+              sides or edges are modified by default.
+
+              Data_type: string, optional
+
+       -refInst <instName>
+              Specifies the name of a reference instance. The instance can  be
+              a module, an uncommitted partition, a black box or a hard macro.
+
+              Data_type: (inst|hinst|group)+, required
+
+       -spacingX <xValue>
+              Specifies  the  x  offset  value, in microns, of the overlapping
+              area between the specified block and the reference object.
+
+              Default: 0
+
+              Data_type: float, optional
+
+       -spacingY <yValue>
+              Specifies the y offset value, in  microns,  of  the  overlapping
+              area between the specified block and the reference object.
+
+              Default: 0
+
+              Data_type: float, optional
+
+       -x <xValue>
+              Specifies  the x offset value, in microns, from a specified cor-
+              ner. Corner numbers are counted clock-wise from the  lower  left
+              corner starting with 0.
+
+              Data_type: float, optional
+
+       -y <yValue>
+              Specifies  the y offset value, in microns, from a specified cor-
+              ner.
+
+              Data_type: float, optional
+
+Example
+              *
+
+                The following command cuts away the area of proc0/rf0/u0 which
+                overlaps proc0/cmem0/itags0/u0/id0, plus an additional 30um in
+                the X-direction and 15um in the Y-direction resulting  in  the
+                shape below:
+
+                cutRectilinearInst       -inst      proc0/rf0/u0      -refInst
+                proc0/cmem0/itags0/u0/id0 -spacingX 30 -spacingY 15
+
+              *
+
+                The following command cuts away the intersection of the module
+                and cut box resulting in the shape below:
+
+                cutRectilinearInst -inst proc0/rf0/u0 -cutBox 430 320 670 560
+
+              *
+
+                The following command ccuts the module at corner number 2. The
+                cut is 100um in the X-direction and 200um in the Y-direction:
+
+                cutRectilinearInst -inst proc0/rf0/u0 -corner 2 -x 100 -y 200
+
+              *
+
+                The command following cuts the module at corner number 2.  The
+                cut  is 100um in the X-direction and 200um in the Y-direction.
+                The area is maintained by pushing out the  left  edge  (notice
+                utilization of 50% is maintained):
+
+                cutRectilinearInst  -inst proc0/rf0/u0 -corner 2 -x 100 -y 200
+                -pushOut left
+
+Related Information
+              * Floorplanning the Design chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025  cutRectilinearInst(25.10)

@@ -1,0 +1,108 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+group_path(25.10)                                            group_path(25.10)
+
+Name
+       group_path  - Groups paths in a design, and identifies them with a path
+       group name
+
+Syntax
+       group_path
+
+       [-help]
+
+       [-comment <string>]
+
+       -name <path_group_name>
+
+       [[-from <from_list>]
+
+        [-to <to_list>]
+
+        [-through <through_list>]]
+
+       Groups paths in a design, and identifies them with a path  group  name.
+       You can use the path group names for reporting.
+
+       You  cannot use group_path statements in the SDC file when the software
+       is in MMMC mode. In this case a warning is issued. However,  the  soft-
+       ware  supports the group_path command in MMMC mode as a command outside
+       of the SDC file. The path groups are considered to be global in  nature
+       and apply to all the views, and are not supported on MMMC mode-specific
+       basis.  The path groups are persistent through a saveDesign to restore-
+       Design sequence. They are  saved  in  the  <saveDir>/mmmc/pathgroup.sdc
+       file of a MMMC save directory.
+
+       Note  that  if  a path can be included in multiple path groups, it will
+       only be included in the path group with the  most  specific  definition
+       (-from ... -through ... -to ... is more specific than -from ... -to ...
+       is more specific than -from ...).
+
+Parameters
+       -help  Prints out the command usage.
+
+       -comment <string>
+              Allows you to insert comments. The comments are read but are ig-
+              nored  with a one-time warning message. They are not used during
+              timing analysis reporting nor are they written out during saving
+              of constraints.
+
+       -from <from_list>
+              Specifies a list of pins, instances,  or  clocks  that  are  the
+              start  of  the paths. When you specify a clock object, all paths
+              that are triggered by the clock are included in the path group.
+
+       -name <path_group_name>
+              Specifies the name of the path group. If the path_group_name al-
+              ready exists, the specified paths are added to the existing path
+              group.
+
+       -through <through_list>
+              Specifies the pins or instances where the paths go through. When
+              you specify multiple through list, the paths that go through the
+              objects in the specified order are added to the path group.
+
+       -to <to_list>
+              Specifies a list of pins, instances, or clocks  where  the  path
+              ends.  You must specify valid endpoints in the <to_list> or else
+              the software ignores the constraint. When you  specify  a  clock
+              object,  all paths that are checked by the clock are included in
+              the  path  group.  If  you  specify  an  instance  name  in  the
+              <to_list>,  all the data input pins of the instance are added to
+              the path group.
+
+Examples
+              *
+
+                * The following example groups paths that start from  specific
+                  pins  and end at the D pin of any instances whose name start
+                  with the string ff. The example also reports  the  specified
+                  path groups:
+
+                  group_path -name path1 -from {ff1/CLK ff2/CLK} -to {ff*/D}
+
+                  report_timing -path_group path1
+
+                *
+
+                  The  following command groups paths that go through specific
+                  points.
+
+                  group_path  -name  path2  -through  an1/Z   -through   an2/Z
+                  -through an3/Z
+
+Related Information
+              * report_timing
+
+              *
+
+                get_path_groups
+
+              *
+
+                reset_path_group
+
+              *
+
+                report_path_groups
+
+                           Fri Apr 04 01:25:37 2025          group_path(25.10)

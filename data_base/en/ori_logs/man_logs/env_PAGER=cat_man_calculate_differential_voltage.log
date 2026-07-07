@@ -1,0 +1,81 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+calculate_differential_voltage(25.10)    calculate_differential_voltage(25.10)
+
+Name
+       calculate_differential_voltage  -  Determines  the differential voltage
+       between a receiver/driver pair during ramp-up analysis
+
+Syntax
+       calculate_differential_voltage
+
+       [-help]
+
+       -diffv_limit <value>
+
+       -power_directory <directory_name>
+
+       -state_directory <directory_name>
+
+       Determines the differential voltage between a receiver/driver pair dur-
+       ing ramp-up analysis. This command can be used to mitigate the risk  of
+       high  short-circuit  current for a driver-receiver instance pair due to
+       slow/fast (differential) ramp-up voltage at the output  of  the  power-
+       switch cell connected to the driver/receiver cell.
+
+       The calculate_differential_voltage command reports the differential po-
+       tential  for  those receiver/driver pairs that are greater than the the
+       specified differential voltage threshold,  and  the  time  interval  at
+       which  the differential voltage remains greater than the threshold. You
+       must specify the set_power_analysis_mode -create_driver_db true parame-
+       ter before specifying this command.
+
+       The following is the format of the output report:
+
+       #   <<driverName>>     <<receiverName>>     <<peak_diffv>>     <<minT>>
+       <<maxT>>
+
+Parameters
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       -diffv_limit <value>
+              Specifies to report differential voltage for the receiver/driver
+              pairs that exceed the specified threshold limit.
+
+       -power_directory <directory_name>
+              Specifies  the path to the power directory to access the driver-
+              receiver pairs.
+
+       -state_directory <directory_name>
+              Specifies the path to the  state  directory  generated  by  rail
+              analysis to access the EIV or timing database.
+
+Examples
+              * The following command lists all the driver-receiver pairs that
+                exceed the differential voltage limit of 0.001:
+
+                calculate_differential_voltage  -diffv_limit  0.001 -state_di-
+                rectory dynamic_rail/core_105C_dynamic_1 -power_directory  dy-
+                namic_power
+
+                The following is a snippet of the generated report:
+
+                #   <driverName>           <receiverName>         <peak_diffv>
+                <minT>     <maxT>
+
+                column/MSV_I2             column/MULT8_reg_1_4          0.7382
+                5e-11    2.75e-09
+
+                column/HIER_INST           column/MULT8_reg_1_4         0.7382
+                5e-11    2.75e-09
+
+Related Information
+              * set_rail_analysis_mode
+
+              * calculate_noise_margin
+
+              * "Static Power, IRdrop and EM Analysis" and "Dynamic Power  and
+                IRDrop  Analysis"  in  the  Voltus IC Power Integrity Solution
+                User Guide
+
+                           Fri Apr 04 01:2c5a:l3c7ul2a0t2e5_differential_voltage(25.10)

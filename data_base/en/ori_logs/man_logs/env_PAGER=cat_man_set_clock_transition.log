@@ -1,0 +1,79 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_clock_transition(25.10)                        set_clock_transition(25.10)
+
+Name
+       set_clock_transition - Specifies the transition time of sequential end-
+       points of the ideal clock network
+
+Syntax
+       set_clock_transition
+
+       [-rise]
+
+       [-fall]
+
+       [-min]
+
+       [-max]
+
+       [-min |-max]
+
+       <slew_time>
+
+       <clock_list>
+
+       Specifies  the  transition  time  of  sequential endpoints of the ideal
+       clock network.
+
+       This command only affects ideal clock networks, so typically it is used
+       before the clock network is implemented. If no clock transition is  ex-
+       plicitly  specified for an ideal clock, the system's default transition
+       time (often close to 0.0) is used. For propagated  clocks,  the  calcu-
+       lated  transition times are used, so you can set propagated clocks only
+       after the final clock tree is constructed.
+
+       This command only affects sequential  clock  endpoints,  typically  the
+       clock  pin  of  registers in the combinational fanout of the clock. Any
+       data endpoints that are also in the combinational fanout of  the  clock
+       will not be affected. The software will always use the propagated tran-
+       sition  times. You can consider turning off clock-source data paths un-
+       til the clock tree is built or, you can use the set_ideal_network  com-
+       mand for additional control.
+
+Parameters
+       <clock_list>
+              Specifies  a  list of clocks only with ideal mode in the design,
+              which affects the slew times on all register clock pins  in  the
+              transitive   fanout   of   the   specified   clocks.   Specified
+              set_clock_transition values on register clock pins in the fanout
+              of a clock with propagated latency are ignored.
+
+       -rise | -fall
+              Specifies the rising or falling edge of the register clock  pins
+              on which the slew time is asserted.
+
+       -min | -max
+              Specifies  the  clock  slew  time for minimum or maximum process
+              corner slew time.
+
+       <slew_time>
+              Specifies the slew time (transition time) of the clock pins.
+
+Example
+              * The following commands specify a 2.0 rise slew time and a  1.0
+                fall  slew  time  for  register  clock  pins  clocked by CLKA:
+                set_clock_transition    -rise    2.0     [get_clocks     CLKA]
+                set_clock_transition -fall 1.0 [get_clocks CLKA]
+
+Related Information
+              * report_clocks
+
+              * set_clock_latency
+
+              * set_clock_uncertainty
+
+              * set_input_delay
+
+              * set_propagated_clock
+
+                           Fri Apr 04 01:25:37 2025set_clock_transition(25.10)

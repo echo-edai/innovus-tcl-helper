@@ -1,0 +1,187 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoSplitFlop(25.10)                                        ecoSplitFlop(25.10)
+
+Name
+       ecoSplitFlop  -  Splits  a  multi-bit  flip-flop (MBFF) into single-bit
+       flip-flops for the specified instance
+
+Syntax
+       ecoSplitFlop
+
+       [-help]
+
+       [-batch]
+
+       [-force]
+
+       [-fullSplit]
+
+       {-inst <flopInstName> |  {{Mbff1  flopCell1}  {Mbff2  flopCell2}...}  |
+       -listFile <<fileName>> | -all}
+
+       [-legal]
+
+       [-power]
+
+       {-preCTS | -postCTS | -postRoute}
+
+       [-skipRoute]
+
+       Splits  a multi-bit flip-flop (MBFF) into single-bit flip-flops for the
+       specified instance. By default, a specific flip-flop is split  only  if
+       equivalent single-bit flip-flops can be found in libraries and there is
+       timing  gain after the split. You can also specify that the split flip-
+       flops should be placed in legal locations. By default, the positions of
+       the split flip-flops are not guaranteed to be legal.
+
+       Note:
+
+              * This command is not controlled by the  -multiBitFlopOpt  para-
+                meter  setting of setOptMode.
+
+              * The command calls refinePlace at the end. To disable this, use
+                setEcoMode -refinePlace false.
+
+              * MBFFs must be identified by the command, reportMultibit.
+
+              * A placeable location for the split FFs is required.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each ecoSplitFlop parameter. For  a  detailed  de-
+              scription  of the command and all of its parameters, use the man
+              command:  man ecoSplitFlop
+
+       -all   When specified, splits all MBFFs into smaller-bit flip-flops in-
+              cluding single-bit flip-flops (SBFFs). Only timing critical bits
+              are split into single-bit flops, and the remaining, non-critical
+              bits, are split into smaller bit width MBFFs, to preserve  power
+              as much as possible.
+
+              For example, a 4-bit MBFF may be split into two single-bit flops
+              and one 2-bit flop.
+
+              Note:  The -all, -inst and -listFile parameters are mutually ex-
+              clusive. If the -all parameter is not specified,  one  of  these
+              two parameters, -inst or -listFile, must be specified.
+
+              Default: false
+
+       -batch When specified, splits the MBFFs in batches.
+
+              For example,
+
+              ecoSplitFlop -listFile <list> -postCTS -batch -force
+
+              Default: false
+
+       -force Forces the flip-flop splits irrespective of timing gains.
+
+              Note:
+
+              * If  there  is  no timing gain and this parameter is not speci-
+                fied, the flip-flops for the specified instance  will  not  be
+                split.
+
+              * If  this option is set along with the -legal option, the soft-
+                ware will first look for legal locations. However,  the  flip-
+                flops will be split even if no legal location is found.
+
+              Default: false
+
+       -fullSplit
+              Forces  the  MBFFs  to  be  completely split into all single-bit
+              flip-flops.
+
+       -inst <flopInstName> | {{Mbff1 flopCell1} {Mbff2 flopCell2}...}
+              Specifies pairs of MBFFs to be split and the corresponding  sin-
+              gle-bit  flops to be used. You can also specify the names of the
+              flop instances to be split. You can specify a single instance or
+              a tcl list of instances to be split.
+
+              Note: The -all, -inst and -listFile parameters are mutually  ex-
+              clusive.  If  the  -all parameter is not specified, one of these
+              two parameters, -inst or -listFile, must be specified.
+
+       -listFile <fileName>
+              Specifies the file containing pairs of MBFFs to be split and the
+              corresponding single-bit flops to be used.  You  can  also  just
+              specify the names of MBFF instances to be split. You can specify
+              up to 50,000 instances to split. Specify each instance on a line
+              and  comment  with #. Instance name should not contain spaces or
+              backslashes.
+
+              Note: The -all, -inst and -listFile parameters are mutually  ex-
+              clusive.  If  the  -all parameter is not specified, one of these
+              two parameters, -inst or -listFile, must be specified.
+
+       -legal Places the split flip-flops at legal locations.
+
+              Note: If both the -legal and -force  parameters  are  specified,
+              the  software  will first look for legal locations. However, the
+              flip-flops will be split even if no legal location is found.  In
+              this  case,  the  split instances will be placed in the original
+              location of the MBFFs.
+
+              Default: false
+
+       -power Splits the flip-flop for power purpose.
+
+              Default: false
+
+       -preCTS
+              Specify this parameter, if the design stage is preCTS.
+
+              Default: -postRoute
+
+       -postCTS
+              Specify this parameter, if the design stage is postCTS.
+
+              Default: -postRoute
+
+       -postRoute
+              Specify this parameter, if the design stage is  postRoute.  This
+              is the default setting.
+
+              Note: One of the three options, -preCTS, -postCTS, or -postRoute
+              must be specified.
+
+       -skipRoute
+              Specify if the stage is postRoute and routing is not required to
+              be  performed  after  the split. Since postRoute is also the de-
+              fault stage, routing is also skipped when the stage  is  default
+              and -skipRoute is specified. However, for the default case, when
+              the  stage is postRoute but this parameter is not specified, af-
+              ter splitting the instances, routing will be called.
+
+              Default: false
+
+Example
+              * The following command will force the flip-flop split  for  the
+                instance, ff_0 during the preCTS stage:
+
+                ecoSplitFlop -preCTS -inst ff_0 -force
+
+              * The  following  command  will  will try to split for power all
+                MBFFs during the postCTS stage:
+
+                ecoSplitFlop -power -all -postCTS
+
+Related Information
+              * ecoCloneFlop
+
+              * ecoSplitComplexFlop
+
+              * dumpMultiBitFlopMappingFile
+
+              * reportMultibit
+
+              * setOptMode
+
+              * setDesignMode
+
+              * The following topic in the Innovus User Guide
+
+                * Using the Multi-Bit Flip-Flop Flow
+
+                           Fri Apr 04 01:25:37 2025        ecoSplitFlop(25.10)

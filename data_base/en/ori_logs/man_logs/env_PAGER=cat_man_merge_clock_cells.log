@@ -1,0 +1,183 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+merge_clock_cells(25.10)                              merge_clock_cells(25.10)
+
+Name
+       merge_clock_cells  - When specified without any parameters, the command
+       merges both clock gates and clock logic
+
+Syntax
+       merge_clock_cells
+
+       [-help]
+
+       [-only_above_flops]
+
+       [-only_clock_gates]
+
+       [-only_clock_logics]
+
+       When specified without any parameters, the command  merges  both  clock
+       gates    and   clock   logic.   You   can   specify   the   parameters,
+       -only_clock_gates or -only_clock_logics to merge only  clock  gates  or
+       clock  logics,  respectively.  The  command ignores the settings of the
+       cts_merge_clock_logic and cts_merge_clock_gates properties.
+
+       The log will show the names of instances that will be merged by saying,
+       "Merging clock gates...", or "Merging clock logics", or "Merging  clock
+       gates and clock logics".
+
+       The  summary  tables  in the log will list the number of instances that
+       are merged. Running this  command  also  sets  the  cannot_merge_reason
+       property  on  the instances that could not be merged so the summary ta-
+       bles in the log will also provide reasons for why some instances  could
+       not be merged.  This is shown in the "Examples" section below.
+
+       For  details of all the above-mentioned properties, see the CCOpt Prop-
+       erties chapter of the Innovus User Guide.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each merge_clock_cells parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+               man merge_clock_cells
+
+       -only_above_flops
+              Specifies  that  CCOpt  should merge clock gates that only drive
+              flops and not the ones that drive RAMs, latches, black boxes, or
+              any other clock tree sink that is not a flop.
+
+       -only_clock_gates
+              Specifies that only clock gates should be merged and  not  clock
+              logics.
+
+       -only_clock_logics
+              Specifies  that only clock logics should be merged and not clock
+              gates.
+
+Examples
+              * When you run the following command, the summary table that  is
+                generated is shown below:
+
+                merge_clock_cells -only_clock_gates
+
+                Summary of the merge of duplicate siblings
+
+                ----------------------------------------------------------
+
+                Description                          Number of occurrences
+
+                ----------------------------------------------------------
+
+                Total clock gates                           2
+
+                Globally unique enables                     1
+
+                Potentially mergeable clock gates           1
+
+                Actually merged clock gates                 0
+
+                ----------------------------------------------------------
+
+                ------------------------------------------------------
+
+                Description                      Number of occurrences
+
+                ------------------------------------------------------
+
+                Total clock logics                      2
+
+                Actually merged clock logics            0
+
+                ------------------------------------------------------
+
+                ---------------------------------------------------------
+
+                Cannot merge reason                 Number of occurrences
+
+                ---------------------------------------------------------
+
+                UniqueUnderParent                           1
+
+                ClockLogicMergingDisabledOnTree             2
+
+                ---------------------------------------------------------In
+                the  above example, the first table is for clock gates - there
+                are two in this design. No clock gates were merged.
+
+                The second table is for clock logics - there are two  in  this
+                design. No clock gates were merged.
+
+                The  third  table provides the reasons as to why the instances
+                could not be merged. Logic merging has been  disabled  because
+                of  the  -only_clock_gates  parameter. If the logics cannot be
+                merged, then the clock gates are not siblings  and  cannot  be
+                merged.
+
+              * When  you run the following command, the summary table that is
+                generated is shown below.
+
+                merge_clock_cells
+
+                Summary of the merge of duplicate siblings
+
+                ------------------------------------------------------
+
+                Description                     Number of occurrences
+
+                ------------------------------------------------------
+
+                Total clock gates                      2
+
+                Globally unique enables                1
+
+                Potentially mergeable clock gates      1
+
+                Actually merged clock gates            1
+
+                ------------------------------------------------------
+
+                ----------------------------------------------------
+
+                Description                    Number of occurrences
+
+                ----------------------------------------------------
+
+                Total clock logics                    2
+
+                Actually merged clock logics          1
+
+                ----------------------------------------------------
+
+                ---------------------------------------------
+
+                Cannot merge reason     Number of occurrences
+
+                ---------------------------------------------
+
+                UniqueUnderParent                 1
+
+                ---------------------------------------------
+
+                In the above example, the clock logics got merged - one  logic
+                got  merged  with its sibling logic. This means that the clock
+                gates became siblings and were merged.
+
+Related Information
+              * get_ccopt_property
+
+              * set_ccopt_property
+
+              * The following properties:
+
+                * clock_gating_only_optimize_above_flops
+
+                * cannot_merge_reason
+
+       For retrieving information about the above properties in the  software,
+       use the following command:
+
+       get_ccopt_property -help <property_name>
+
+                           Fri Apr 04 01:25:37 2025   merge_clock_cells(25.10)

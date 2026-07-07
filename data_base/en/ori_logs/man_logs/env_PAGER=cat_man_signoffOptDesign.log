@@ -1,0 +1,194 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+signoffOptDesign(25.10)                                signoffOptDesign(25.10)
+
+Name
+       signoffOptDesign - Runs timing, area, DRV, dynamic or leakage optimiza-
+       tion on signoff timing
+
+Syntax
+       signoffOptDesign
+
+       [-help]
+
+       [-all]
+
+       [-area]
+
+        [-drv]
+
+       [-dynamic]
+
+       [-hold]
+
+        [-leakage]
+
+       [-noEcoRoute]
+
+       [-outDir <dir_name>]
+
+       [-reportFullClockPath]
+
+       [-power]
+
+       [-prefix <prefix_name>]
+
+       [-setup]
+
+       Runs timing, area, DRV, dynamic or leakage optimization on signoff tim-
+       ing.
+
+       This  command  must be run on a design that has gone through the imple-
+       mentation flow. It allows you to fix timing violations  or  to  improve
+       area  and power visible in signoff STA mode while staying in the imple-
+       mentation tool.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each  signoffOptDesign parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+               man signoffOptDesign
+
+       -all   Performs  DRV,  Setup, Hold, and Power optimization in the path-
+              based analysis (PBA) mode. It also includes  embedded  calls  to
+              ecoRoute, parasitic extraction and signoff timing analysis.
+
+              Note:The  all-in-one  mode does not replace all customized fine-
+              tuned flows. It provides the Innovus users easy access to Tempus
+              ECO technology. The existing Tempus ECO  flow  using  individual
+              optimization  steps  within  Innovus  is still supported and can
+              sometimes be more efficient than the all-in-one mode.
+
+       -area  Reclaims area on the netlist without causing any  DRV/Setup/Hold
+              degradation.
+
+       -drv   Optimizes  DRV (maximum capacitance and maximum transition) vio-
+              lations. DRV optimization supports buffer addition and resizing.
+
+       -dynamic
+              Prints initial and final power numbers. It optimizes the dynamic
+              power to reduce the total power consumption. Dynamic power opti-
+              mization supports buffer deletion ,resizing, and swapping.
+
+       -hold  Triggers hold fixing in signoff timing mode.
+
+       -leakage
+              Optimizes leakage power. Leakage optimization supports VT  swap-
+              ping.
+
+       -noEcoRoute
+              Allows  signoffOptDesign  command  to skip ECO routing and final
+              signoff STA.
+
+       -outDir <dir_name>
+              Specifies the directory in which the reports will be saved.
+
+              Note: In case signoffOptDesign is reusing ECO timing  DB  gener-
+              ated  earlier by signoffTimeDesign or when the -noEcoRoute para-
+              meter is applied, no timing reports are saved.
+
+       -power Optimizes total power in the design. During  total  power  opti-
+              mization,  the software performs swapping and sizing on both the
+              combinational  and  the  sequential  cells,  and  also   removes
+              buffers.  This reduces leakage, internal, and switching power in
+              the design.
+
+       -prefix <prefix_name>
+              Specifies the prefix for the timing report file names.
+
+       -reportFullClockPath
+              When this parameter is specified,  the  detailed  timing  report
+              that is generated contains the full clock path.
+
+       -setup Optimizes  setup  timing violations. Setup optimization supports
+              buffer addition, VT swapping and resizing.
+
+Examples
+              * Use the following commands to perform setup optimization  fol-
+                lowed  by a leakage power optimization. The setup optimization
+                is with no -ecoRoute, while  the  leakage  power  optimization
+                calls the -ecoRoute along with final signoff STA results.
+
+                signoffOptDesign -setup -noEcoRoute
+
+                signoffOptDesign -leakage
+
+              * Use  the  following  commands to perform an area reclaim opti-
+                mization that is based on external spef files:
+
+                spefIn -rc_corner rc_max rc_max.spef.gz
+
+                spefIn -rc_corner rc_min rc_min.spef.gz
+
+                signoffTimeDesign -reportOnly
+
+                signoffOptDesign -area
+
+              * Use the following command to dump out the final STA results in
+                a folder named "RPT". The timing report files inside the "RPT"
+                folder will be named "SIGNOFF_ECO_*".
+
+                signoffOptDesign -hold -outDir RPT -prefix SIGNOFF_ECO
+
+              * Use the following set of commands to reclaim  total  power  in
+                the design:
+
+                report_power
+
+                setSignoffOptMode  -deleteInst  true  -optimizeSequentialCells
+                true
+
+                signoffOptDesign -power
+
+              * Use the following set of commands to perform DRV, Setup, Hold,
+                and Power optimization in the PBA mode:
+
+                setMultiCpuUsage -localCpu 16 -remoteHost 4  -cpuPerRemoteHost
+                4
+
+                setSignoffOptMode -allowSkewing true -clockCellList {.....}
+
+                signoffOptDesign -all
+
+                Innovus  will  run  Tempus  ECO  for PBA-based DRV, timing and
+                power closure. The Setup fixing will be done using useful skew
+                technology. Signoff timing analysis will use  4  remote  hosts
+                each using 4 CPUs while ECO fixing, ECO routing, and parasitic
+                extraction will use 16 CPUs.
+
+Related Information
+              * ecoRoute
+
+              * getSignoffOptMode
+
+              * report_power
+
+              * setSignoffOptMode
+
+              * signoffTimeDesign
+
+              * spefIn
+
+              * The following topics in the Innovus User Guide
+
+                * Running MMMC SignOff ECO within Innovus
+
+                * Using Signoff Timing Analysis to Optimize Timing and Power
+
+                * Signoff Timing Analysis in Innovus using Timing Debug
+
+                * Optimization in Path-Based Analysis (PBA) Mode
+
+                * Total Power Optimization
+
+                * Setup  Timing  Recovery After a Large Leakage or Total Power
+                  Optimization
+
+                * Achieving the Best Results for Total Power Optimization
+
+                * Path Group Support in Timing Optimization
+
+                * Top Down Block ECO flow using Tempus Signoff Timing
+
+                           Fri Apr 04 01:25:37 2025    signoffOptDesign(25.10)

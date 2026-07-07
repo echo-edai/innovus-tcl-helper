@@ -1,0 +1,69 @@
+{
+  "command": "save_abstract",
+  "is_cmd": true,
+  "summary": "为当前块级设计生成层次化设计抽象信息",
+  "description": "为当前块级设计生成层次化设计抽象信息。默认情况下，save_abstract 会在设计中创建电源和地引脚，并为每个布线层创建一个单一的阻挡形状。如果运行天线效应验证，输出的抽象文件将包含天线信息。在自底向上的流程中（其中块不是使用 definePartition 或 partition 命令创建的），通常会创建一个简单的 OpenAccess 抽象，包含：每个布线层一个阻挡形状、位于块边界上的信号引脚以及顶层金属的电源引脚。该命令可在加载块级设计后使用。",
+  "usage": "save_abstract [-help] [-PGpinLayers <layerNameList>] [-cutObs] [-cutObsMinSpacing] [-extractBlockObs] [-extractBlockPGPinLayers <layerNameList>] [-lib <lib>] [-specifyTopLayer <topLayerName>] [-stripePin {top all none}] [-view <view>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印简要描述，包括每个 save_abstract 参数的类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-PGpinLayers",
+      "description": "指定层列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cutObs",
+      "description": "在信号引脚、电源和地引脚、通孔以及电源和地走线的阻挡层中创建切口（阻挡）。默认：为每个布线层创建一个单一的阻挡形状。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cutObsMinSpacing",
+      "description": "使用最小宽度计算间距，在引脚周围的阻挡层中创建切口（阻挡）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extractBlockObs",
+      "description": "从实例化的 CLASS BLOCK 或 RING 宏中提取所有阻挡信息，并将阻挡写入输出的 OpenAccess 文件。对于未被正常布线层范围完全覆盖的层，以及被完全覆盖的布线层之间的切割层，会提取 OBS 信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extractBlockPGPinLayers",
+      "description": "从任何在指定层列表中的层上有引脚的 CLASS BLOCK 和 CLASS RING 宏中提取电源和地引脚信息，并将引脚信息写入 OpenAccess 文件。可以使用金属层编号（例如，指定 4 表示 metal4）。通过在每个数字之间留一个空格来指定层编号列表。例如，要创建包含 metal3、metal4 和 metal5 的列表，请指定 -extractBlockPGPinLayers 3 4 5。默认：不从任何宏中提取引脚信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lib",
+      "description": "指定目标库名称。默认：抽象被写入加载当前数据的库中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-specifyTopLayer",
+      "description": "仅写出到指定层为止的层的阻挡信息。可以使用金属层编号（例如，指定 4 表示 metal4）。默认：顶层布线层（因此，写出所有层的阻挡信息）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripePin",
+      "description": "将顶层金属上的电源和地走线作为电源和地引脚写出。在自底向上的方法中，当为将在层次化设计的下一更高级别使用的块创建抽象时，可以使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "指定目标视图名称。默认：abstract。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,496 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setDesignMode(25.10)                                      setDesignMode(25.10)
+
+Name
+       setDesignMode - Specifies the design technology node
+
+Syntax
+       setDesignMode
+
+       [-help]
+
+       [-reset]
+
+       [-addPhysicalCell {hier | flat}]
+
+       [-backsideBottomRoutingLayer <layer>]
+
+       [-backsideTopRoutingLayer <layer>]
+
+       [-bottomRoutingLayer <layer>]
+
+       [-compressedPGDB {true | false}]
+
+       [-congEffort {low|medium|high|auto}]
+
+       [-dual_rail_via_pitch       <min_via_pitch>      <min_filler_via_pitch>
+       <cell_boundary_spacing>]
+
+       [-earlyClockFlow {true | false}]
+
+       [-earlyPBAMode {none | high}]
+
+       [-expressRoute {true | false}]
+
+       [-flowEffort {express | standard | extreme}]
+
+       [-idealHoldFixing {true|false}]
+
+       [-ignore_followpin_vias {true | false}]
+
+       [-merge_trim_shapes   {{layers   <layer_name_list>   gap    <gap_value>
+       max_merge_num <number_of_max_merge> masks {<mask_num> ...}} ...}]
+
+       [-node {N22 N12 N10 N7 N7Plus N6 N5 N5PlusPlus N4 N3 N3E N2 A16 A14 A12
+       S11 S10 SF8 SF7 SF5 SF4 SF3 SF2 SF1.4 G7 G5 ICF I7 I5 P1222 P1276 P1277
+       P1278 P1278x P1280 20A 18A C12 C7 unspecified}]
+
+       [-optimizationDensityScreenMargin <margin>]
+
+       [-pessimisticMode {true | false}]
+
+       [-powerEffort {none | low | high}]
+
+       [-slackWeighting {unityWeighting|viewBasedWeighting}]
+
+       [-topRoutingLayer <layer>]
+
+       [-trim_grid_group <group_name>]
+
+       Specifies  the  design  technology  node.  You  can use this command to
+       change the design technology dependent default  settings  globally  for
+       each application instead of setting several mode options.
+
+       With advanced technologies and new design, manufacturing techniques ac-
+       curate  delay calculation becomes more challenging. The main challenges
+       are:
+
+              * Delay and slew interpretation of distorted waveforms.
+
+              * Waveforms are affected by:
+
+                * Distributed RC
+
+                * Back-miller current
+
+                * Crosstalk and input noise
+
+                * Different non-linear characteristics of gates
+
+              * Ultra low voltage applications
+
+       Tempus STA for advanced nodes has several capabilities for signoff tim-
+       ing accuracy at the respective nodes. The setDesignMode  command  auto-
+       matically  enables  the  node  specific signoff STA setting required to
+       meet the signoff STA accuracy challenges at the specific nodes.
+
+       Use the getDesignMode command to return the current  settings  for  the
+       setDesignMode command.
+
+       When  you  specify  a  process technology value using the setDesignMode
+       command, the Innovus software assigns  coupling  capacitance  threshold
+       values  to the RC extraction filters automatically. These values deter-
+       mine whether the coupling capacitances of the nets in a design will  be
+       lumped to the ground.
+
+       Note:  In  TQuantus  extraction, the grounding of coupling capacitances
+       also depends on the capacitance filtering mode set by  the  -capFilter-
+       Mode parameter of the setExtractRCMode command.
+
+       The  following  table  lists  the coupling capacitance threshold values
+       that are applied based on the specified process node. Note that the ta-
+       ble might not be readable when viewed with the Unix man command.  Check
+       the  setDesignMode command description in the Innovus Text Command Ref-
+       erence to view the table.
+
+       ________________________________________________________
+
+       | Process    |  Extraction Filters                     |
+
+       |  Node      |                                         |
+
+       |            |_____________|_____________|_____________|
+
+       |            |  coupling_c |  relative_c |  total_c_th |
+
+       |            |  _th        |  _th        |             |
+
+       |            |             |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       | Above      |  3.0000     |  0.03       |  5.0000     |
+
+       |  130nm     |             |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       | 130nm and  |  0.4000     |  1          |  0.0000     |
+
+       | below      |             |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       | 90nm and   |  0.2000     |  1          |  0.0000     |
+
+       |  below     |             |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       | 65nm and   |  0.1000     |  1          |  0.0000     |
+
+       |  below     |             |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       | 45nm and   |  0.1000     |  1          |  0.0000     |
+
+       |  below     |             |             |             |
+
+       |____________|_____________|_____________|_____________|
+
+       Note: The filtering values set by the Innovus software, which are based
+       on the process node setting, attempt to capture  the  most  significant
+       effect of coupling capacitances on SI analysis, and are strongly recom-
+       mended.  However, you can choose to specify different filtering thresh-
+       olds using the -coupling_c_th, -relative_c_th, and -total_c_th  parame-
+       ters of the setExtractRCMode command.
+
+       In addition to the extraction filters, the software selects the extrac-
+       tion  engine  based  on  the  process  node. For 65nm and below process
+       nodes, the software uses the TQuantus extraction engine, which provides
+       scaling factors closer to 1 with better correlation to sign-off extrac-
+       tion. It also provides coupling capacitances to the wires on the layers
+       above and below the victim wire.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each setDesignMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setDesignMode
+
+       -addPhysicalCell {hier | flat}
+              Adds  support  for  physical  cells such as Add Filler, Add Well
+              Tap, Add End Cap in a hierarchy that exists at the  location  of
+              each of the newly added cells.
+
+              Default: hier
+
+       -backsideBottomRoutingLayer <layer>
+              Specifies the highest backside LEF layer name for global and de-
+              tail routing.
+
+              Default: ""
+
+       -backsideTopRoutingLayer <layer>
+              Specifies  the lowest backside LEF layer name for global and de-
+              tail routing.
+
+              Default: ""
+
+       -bottomRoutingLayer <layer>
+              Specifies the lowest lef layer name for global and detail  rout-
+              ing.
+
+              For a special partial routing on the first routing layer in cer-
+              tain  nodes,  the  routing  enablement  of  that layer must be a
+              global decision in the entire flow of the design.  For  example,
+              if  M0  or  M1 routing is enabled, you need to set setDesignMode
+              -bottomRoutingLayer M0/1 from the init step. This bottom routing
+              layer setting must not be changed in later stages of the flow.
+
+              Default: ""
+
+       -compressedPGDB {true | false}
+              Specifies whether the compressed PG feature is enabled. When  it
+              is set to true, restoreDesign will automatically compress the PG
+              data  while  loading the design. You can use "dbGet top.isPGCom-
+              pressed" to check if PG in the design is compressed.
+
+              Default: false
+
+       -congEffort {low | medium | high | auto}
+              Specifies the congestion effort level. It controls placement  as
+              well the place_opt_design behavior.
+
+              It  is also possible to have other tuning for other steps in the
+              flow.
+
+              Default: auto
+
+              Specify one of the following values:
+
+              * auto: Automatically determines whether the design is congested
+                and performs extra congestion driven effort  for  highly  con-
+                gested designs.
+
+              * high:  Runs  more  iterations  of  placement  in  an effort to
+                achieve better congestion results.  This  parameter  increases
+                the run time. This also does congestion-aware buffering.
+
+                When -congEffort is set to high, optDesign takes actions to be
+                more  congestion  friendly  and  may  call  more iterations of
+                placement to achieve better congestion results. It  will  also
+                implicitly  set setPlaceMode -congEffort high you have not set
+                setPlaceMode -conEffort. However, if you have set setPlaceMode
+                -congEffort, it will not override your setting. That  is,  the
+                setting of "setPlaceMode -congEffort" will be honored.
+
+                If  you  set  both  setDesignMode -congEffort and setPlaceMode
+                -congEffort, the placeDesign and  incremental  placement  will
+                take  your  setting  of setPlaceMode -congEffort. However, for
+                the flow, optDesign will take whatever tuning  you  have  done
+                for the -congEffort level.
+
+              * low: Runs fewer iterations of placement to arrive quickly at a
+                legal placement. This parameter might decrease placement qual-
+                ity.
+
+              * medium: Runs placement on designs at a normal effort level.
+
+       -dual_rail_via_pitch <min_via_pitch> <min_filler_via_pitch>
+       <cell_boundary_spacing>
+              This option is used when two horizontal power-rails on the first
+              and  third  routing  layer  are used for standard-cells, and the
+              min-spacing of stacked-vias between the dual-rails is controlled
+              during placement and routing.
+
+              * min_via_pitch: It is the minimum center-to-center pitch of the
+                stacked-vias touching any active standard-cell (not  a  filler
+                cell).
+
+              * min_filler_via_pitch: It is the minimum center-to-center pitch
+                of the stacked-vias touching only filler cells.
+
+              * cell_boundary_spacing:  Specifies how close a PIN or OBS shape
+                must be to the cell boundary to block  a  stacked-via  in  the
+                power rail at that point.
+
+              The  placer  makes  sure that there is room for a stacked-via as
+              required, the global routers estimate the congestion cost before
+              the stacked-vias are created, and  the  power-router  adds  them
+              during the followpin routing as required.
+
+       -earlyClockFlow {true | false}
+              Enables the early clock flow inside place_opt_design.
+
+              For  the early clock flow inside place_opt_design, CCOpt creates
+              a clock tree based on the initial clustering and annotates clock
+              latencies for timing optimization. The flow also  enables  CCOpt
+              ideal  mode  useful  skew  during the WNS/TNS fixing step inside
+              place_opt_design. CCOpt skewing can be turned off by  using  se-
+              tOptMode -opt_skew_pre_cts false.
+
+              Default: false
+
+       -earlyPBAMode {none | high}
+              Specifies  that  early PBA mode should be used in Innovus during
+              the route_opt_design run for delay calculation. This mode
+
+              adjusts delay calculation settings to align to  Tempus  or  sig-
+              noffTimeDesign  Path-Based  Analysis (PBA) timing results. Early
+              PBA mode is only supported in route_opt_design  based  optimiza-
+              tion.
+
+              You can enable early PBA mode before launching the route_opt_de-
+              sign command. This mode should only be used in Innovus, you must
+              disable early PBA mode in Tempus, signoffTimeDesign, and signof-
+              fOptDesign.
+
+              Default: none
+
+       -expressRoute {true | false}
+              Specifies  to force routing-stage with the express flow, that is
+              -flowEffort express.
+
+       -flowEffort {express | standard | extreme}
+              Guides the effort of every super-command.
+
+              * express: Configures the flow to give the best turnaround  time
+                with  good  WNS/area  correlation  as compared to the standard
+                flow. The flow is appropriate for prototyping.
+
+              * standard: Configures the flow to give the best overall  combi-
+                nation  of  quality  of results and full-flow turnaround time.
+                This flow is appropriate for the majority of designs.
+
+              * extreme: Configures the flow to give the best quality  of  re-
+                sults  at some cost in turnaround time. This flow is appropri-
+                ate for designs where timing closure is challenging.
+
+              Default: standard
+
+              Note: The individual parameters of set*Mode commands have higher
+              priority over the setDesignMode -flowEffort parameter.
+
+       -idealHoldFixing {true | false}
+              When set to true, enables the  ideal  hold  fixing  flow  during
+              place_opt_design  (POD)/preCTS  stage. Hold fixing becomes chal-
+              lenging in the postCTS/postRoute flow  because  of  insufficient
+              white  space. To address this issue, ideal hold fixing is intro-
+              duced. It creates white  space  starting  from  place_opt_design
+              stage  with the most likely hold buffer locations. When this pa-
+              rameter is set to true, buffers are added during hold fixing and
+              they are deleted after incremental placement.
+
+              This parameter works only when the early clock flow (ECF) is en-
+              abled, and fast libraries are defined or enabled for hold view.
+
+              Example:
+
+              setDesignMode -idealHoldFixing true
+
+              place_opt_design
+
+              Default: false
+
+       -ignore_followpin_vias {true | false}
+              This option directs the detailed placer, optimization, and  sig-
+              nal routing to ignore any sViaInst (special-route vias) with the
+              followpin shape. You can use this option if the two bottom rout-
+              ing layers both have a horizontal routing direction, and you use
+              dual  power-rails  on  those two layers on top of each other for
+              the standard-cell power rails.
+
+              In this usage, other commands and options will add as many  sVi-
+              aInsts  as possible between the power-rails, and remove any sVi-
+              aInsts that cause spacing violations between  the  sViaInst  cut
+              shapes and any cell or signal routing cut shapes. This gives the
+              placer  and  router  more  freedom  to  get  higher density, run
+              faster, but still put as many sViaInsts as possible between  the
+              dual power-rails.
+
+              When  set  to  true,  followpin vias are ignored during detailed
+              placement, optimization, and routing.
+
+              Default: false
+
+       -merge_trim_shapes {{layers <layer_name_list> gap <gap_value>
+       max_merge_num <number_of_max_merge> masks {<mask_num> ...}} ...}
+              Specifies the setting for trim shapes merge.
+
+              * layers: You use this t specify the trim layer list which needs
+                to merge trim shapes.
+
+              * Gap: You use this setting when the end to end gap is less  the
+                value.
+
+              * max_merge_num:   You  use  this to specify the max trim shapes
+                number that are merged.
+
+              * masks: You use this to specify  the  trim  shapes  color  that
+                needs to be merged.
+
+              Default: ""
+
+       -node {N22 N12 N10 N7 N7Plus N6 N5 N5PlusPlus N4 N3 N3E N2 A16 A14 A12
+       S11 S10 SF8 SF7 SF5 SF4 SF3 SF2 SF1.4 G7 G5 ICF I7 I5 P1222 P1276 P1277
+       P1278 P1278x P1280 20A 18A C12 C7 unspecified}
+              Sets the design technology node.
+
+              Default: unspecified
+
+       -optimizationDensityScreenMargin <margin>
+              Increases margin on the top of original density screen for opti-
+              mization.
+
+              Default: 0
+
+              Min: 0
+
+              Max: 1
+
+       -pessimisticMode {true | false}
+              Specifies that delay calculation pessimistic mode should be used
+              in Innovus during implementation. This mode adjusts delay calcu-
+              lation  settings to maintain a degree of pessimism during imple-
+              mentation to help limit optimistic outliers during external tim-
+              ing signoff.
+
+              Note: The pessimistic mode must not be used in Innovus if Tempus
+              is the final signoff timing engine.
+
+              Default: false
+
+       -powerEffort {none | low | high}
+              Specifies the effort to reduce the dynamic  and  leakage  power.
+              The  tradeoff between dynamic and leakage power can also be con-
+              trolled.
+
+              * none: No power optimization is performed and power is not con-
+                sidered during timing optimization.
+
+              * low: Power is considered during timing optimization and  power
+                optimization is performed in all flow stages.
+
+              * high:  Additional  algorithms  are used to minimize power con-
+                sumption. Turnaround time with this option will be longer than
+                using low or none.
+
+              Default: none
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software  resets  all  setDesignMode  parameters  to
+              their default values.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+       -slackWeighting {unityWeighting|viewBasedWeighting}
+              Specifies slack weighting to be used in the implementation flow.
+
+              Default: unityWeighting
+
+       -topRoutingLayer <layer>
+              Specifies the highest lef layer name for global and detail rout-
+              ing.
+
+              Default: ""
+
+       -trim_grid_group <group_name>
+              Specifies the GROUP name of the set from which  the  trim  metal
+              grid will be used for placement and routing.
+
+              Default: ""
+
+              If the specified group name does not exist in LEF, the tool will
+              return an ERROR.
+
+              See the LEF documentation on the TRIMMETALTRACK keyword for more
+              details.
+
+Examples
+              * The  following  command forces the super commands to use their
+                extreme-effort settings:
+
+                setDesignMode -flowEffort extreme
+
+                place_design or optDesign or routeDesign
+
+Related Information
+              * getDesignMode
+
+              * optDesign
+
+              * place_opt_design
+
+              * restoreDesign
+
+              * routeDesign
+
+              * setExtractRCMode
+
+              * setOptMode
+
+              * setPlaceMode
+
+              * Design Implementation Flow chapter of Innovus User Guide
+
+              * Top-level Timing Closure Methodologies for iHDB  Flow  chapter
+                of Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025       setDesignMode(25.10)

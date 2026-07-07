@@ -1,0 +1,496 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+convert_gds_to_def(25.10)                            convert_gds_to_def(25.10)
+
+Name
+       convert_gds_to_def - A GDS2DEF utility that converts a given GDSII file
+       to a DEF file for power/rail signoff analysis
+
+Syntax
+       convert_gds_to_def
+
+       [-help]
+
+       [-black_box_cell_file <filename>]
+
+       -gds_file <filename>
+
+       -gds_layermap <filename>
+
+       [-inst_name_file <filename>]
+
+       -net_location_file <filename>
+
+       [-output_components {ALL | NONE | CONN}]
+
+       -output_def_file <filename>
+
+       [-output_lef_macros <filename>]
+
+       -power_grid_library <libraryname>
+
+       -top_cell <cellname>
+
+       [-use_gds_label     {ALL     |     TOP    |    <<tech_layer_name>>    |
+       <<cell_name>>:<<tech_layer_name>> | <<cell_name>>:ALL}]
+
+       [-verilog_file <filename>]
+
+       [-spef_file<filename>]
+
+       [-esd_marker_layer_file <filename>]
+
+       [-esd_cell_bbox_file <filename>]
+
+       [-inst_name_prefix <prefix>]
+
+       [-ignore_gds_inst_name]
+
+       [-print_complete_short_path]
+
+       [-extract_signal_net_logic_info_only]
+
+       [-zero_pin_size]
+
+       A GDS2DEF utility that converts a given GDSII file to a  DEF  file  for
+       power/rail  signoff  analysis.  The utility can convert both cell-level
+       GDS and full-chip level GDS to DEF. The generated DEF contains all  the
+       geometries for the P/G routing, the specified P/G pin information, com-
+       ponent and logical connectivity information.
+
+Parameters
+       -help  Outputs the command usage.
+
+       -black_box_cell_file <filename>
+              Specifies  the  name  of  a  file containing a list of black box
+              cells that the utility is to ignore. You can specify both  exact
+              string matches and wildcard searches in the specified file.
+
+              For  exact string matches, each cell name must reside on a sepa-
+              rate line in the file, as shown below:
+
+              CellA
+
+              CellB
+
+              The wildcard search feature allows you to search cell names that
+              contain wildcard characters, such as square brackets and  under-
+              score.  When  you want to perform wildcard search, type the key-
+              word wildcard first, followed by the cell name. For example,  if
+              you  want  to ignore cell names which contains CLK, add one line
+              wildcard .*CLK.*.
+
+       -esd_marker_layer_file <filename>
+              Specifies a file that includes a list of ESD cell/instance names
+              and their corresponding GDS marker  layers  that  represent  the
+              bounding box of the ESD cells. The format of the file is:
+
+              <cell_name> <marker_layer> [top_layer] [bottom_layer]
+
+              Here,
+
+              * cell_name is the ESD cell/instance name
+
+              * marker_layer  could  contain multiple GDS layers, separated by
+                ";"
+
+              * The optional top_layer and bottom_layer specifies the top  and
+                bottom  technology  layers  of the ESD cell pin shape. You can
+                use these optional arguments to specify  the  top  and  bottom
+                technology layers of the ESD cell pin shape. This provides you
+                with  the  flexibility to specify the lowest layers to be used
+                for creating pins in the LEF. In the following  example,  only
+                the shapes between M3 and M1 layers are ESD cell pin shapes:
+
+              Marker file example:
+
+              ESD_diode 168;255:3 M3 M1
+
+              ESD_clamp 122 M3 M1
+
+       -esd_cell_bbox_file <filename>
+              Specifies  a  file  that  includes the bounding box for each ESD
+              cell. The format of the file is:
+
+              <cell_name> <x1 y1 x2 y2> [top_layer] [bottom_layer]
+
+              Here,
+
+              * cell_name is the ESD cell/instance name
+
+              * x1 y1 x2 y2 are the bounding box coordinates
+
+              * The optional top_layer and bottom_layer specifies the top  and
+                bottom  technology  layers  of the ESD cell pin shape. You can
+                use these optional arguments to specify  the  top  and  bottom
+                technology layers of the ESD cell pin shape. This provides you
+                with  the  flexibility to specify the lowest layers to be used
+                for creating pins in the LEF. In the following  example,  only
+                the shapes between AP and M11 layers are ESD cell pin shapes:
+
+              Bbox file example:
+
+              ESD_diode_0 1281296 860923 1296972 895445 AP M11
+
+              ESD_diode_1 1281296 898651 1296972 933173 AP M11
+
+       -extract_signal_net_logic_info_only
+              Specifies  to print only the logical connectivity for the signal
+              nets in the NETS section of the output DEF file. If this parame-
+              ter is not specified, the software prints both the logical  con-
+              nectivity  and  routing  shapes for the signal nets in the  SPE-
+              CIALNETS section of the DEF file.
+
+       -gds_file <filename>
+              Mandatory parameter. Specifies the name of the input  GDS  file.
+              The  top  cell  name in the GDSII file is the design name in the
+              generated DEF.
+
+       -gds_layermap <filename>
+              Mandatory parameter. The layer mapping file between GDS and tech
+              layers. All the layers defined in a given mapping  file  is  ex-
+              tracted. The layers not defined in the mapping file are ignored.
+
+              The format of the layer mapping file is:
+
+              <layer_type> <<tech layer name>> <gds> <<gds layer#>> [gds layer
+              data type] [PORT] [TEXT_ONLY] <<mask keyword>>[dummy]
+
+              The format of the layer mapping file to identify the die area in
+              the output DEF is:
+
+              <layer> <prBoundary> <gds> <<gds layer#>> [gds layer data type]
+
+              Format Description:
+
+              <layer_type>  specifies  the  type of library layer. The various
+              layer types are: via, metal, and layer.
+
+              <<tech layer name>> specifies the name of the library  layer  to
+              map to the GDSII layer number. The library layers are technology
+              layers which can be dumped using the Techgen -techinfo command.
+
+              <gds> specifies the keyword for the GDS layer mapping.
+
+              <<gds layer#>> specifies the layer number of the GDSII layer.
+
+              [gds  layer data type] specifies the optional number of the sub-
+              class for the GDSII layer. If you do not specify a datatype, the
+              software uses  all  datatypes  for  that  GDSII  layer.  If  GDS
+              datatype  is not defined, the software considers it as a regular
+              layout routing layer where all the shapes will be extracted.
+
+              The GDS layer may have additional information/attribute assigned
+              using the following keywords:
+
+              * PORT: Converts text labels in this layer to ports.
+
+              * TEXT_ONLY: Includes only the text in the named layer  and  ig-
+                nores all geometries.
+
+              <<mask  keyword>> keyword used to define the back-end metal lay-
+              ers with color masks (MASK A and Mask B).
+
+              [dummy] indicates that the layer is a metal fill layer. The con-
+              vert_gds_to_def utility identifies these metal fill  shapes  and
+              writes them to the FILLS section in the output DEF.
+
+              <prBoundary> specifies that the shapes on the prBoundary (Place-
+              and-Route  Boundaries)  layer are used to determine the die area
+              in the output DEF. This keyword can be used if you want to  have
+              the  required die area in the output DEF file. If the prBoundary
+              keyword is not specified, the die  area  is  determined  by  the
+              routing shapes specified in the GDS file, cell size, and the pin
+              shapes of all the layers.
+
+              Example1:
+
+              metal METAL1 gds 15
+
+              via VIA1 gds 16
+
+              Example2:
+
+              The  following  is a sample layermap file with the mask keywords
+              (mask_a and mask_b):
+
+              metal METAL1 gds 31 250
+
+              metal METAL1 gds 31 255 mask_a
+
+              metal METAL1 gds 31 256 mask_b
+
+              Here, the mask and main layers are defined using  the  same  GDS
+              layer  number  31, but uses a different GDS data type (250, 255,
+              and 256).
+
+              Example3:
+
+              The following is a sample layermap file with the dummy keyword:
+
+              metal                                                     METAL5
+                                                                gds   35   367
+              dummy
+
+              Here, the layer with the GDS layer ID 35 and data type 367  con-
+              tains the metal fill shapes only.
+
+              Example4:The  following  is  a  sample  layermap  file  with the
+              prBoundary keyword:
+
+              layer   prBoundary      gds     62 21
+
+       -ignore_gds_inst_name
+              Specifies to ignore the instance names from  the  specified  GDS
+              file,  and  the software will then automatically assign instance
+              names to all the instances in the output DEF and Verilog  files.
+              This  parameter  can  be  used if instance names in the GDS file
+              cannot be used, primarily in cases, such as  duplicate  instance
+              names.
+
+       -inst_name_file <filename>
+              Specifies the file name containing instance names for the gener-
+              ated DEF in the following format:
+
+              <x coord> <y coord> <instance name>
+
+              The  x  y coordinates are in the unit of micron. The priority of
+              getting an instance name is:
+
+              * instance name file
+
+              * GDS label
+
+              * internally assigned name
+
+              The -inst_name_file parameter allows to  provide  user-specified
+              instance names. The convert_gds_to_def utility reads the GDS la-
+              bel  to  decide  the  instance name. If there are no labels, the
+              software internally assigns instance names.
+
+       -inst_name_prefix <prefix>
+              Specifies a prefix for all the instance names in the output  DEF
+              and Verilog files.
+
+       -net_location_file <filename>
+              Mandatory parameter. Specifies the name of the net location file
+              containing  a  list  of pin locations for nets that needed to be
+              considered. All the geometries of the P/G nets as  well  as  the
+              instance  pins  connected to the specified P/G nets are included
+              in the SPECIALNETS section of DEF. The  instances  connected  to
+              the P/G nets are included in the COMPONENTS section of DEF.
+
+              The format of the net location file is:
+
+              <<net  name>>  <<x  loc  of  pin>>  <<y  loc  of pin>> <<layer>>
+              <POWER|GROUND|SIGNAL> [<pin name>]
+
+              Example:
+
+              VDD 60 73 METAL3 POWER
+
+              VSS 75 40 METAL2 GROUND
+
+              Here,
+
+              * The x/y location in the file has the unit of micron.
+
+              * The layer name is the tech layer name.
+
+              * The type of a given net can only be POWER, GROUND, or  SIGNAL.
+                If  the  net  type is marked as SIGNAL, the net will be traced
+                from the GDS file and included in the SPECIALNETS section with
+                "USE SIGNAL" in the output DEF file. In addition,  the  signal
+                pin connectivity is specified for the net.
+
+              * The pin name field is optional. If there is no pin name field,
+                the pin name will be same as the net name.
+
+              If  you  do  not provide pin locations, the utility uses the GDS
+              text labels in either the top-level cell or cells throughout the
+              hierarchy to get the location. In such a case, the format of net
+              location file is:
+
+              <<net name>> <POWER|GROUND|SIGNAL>
+
+              Example:
+
+              VDD POWER
+
+              VSS GROUND
+
+       -output_components {ALL | NONE | CONN}
+              Specifies the components to be printed in the  DEF  file  COMPO-
+              NENTS section during GDS to DEF conversion. The default is  ALL.
+
+              *
+
+                ALL:  Specifies  to output all the instances in the DEF Compo-
+                nents section.
+
+              *
+
+                NONE: Specifies not to print instances.
+
+              *
+
+                CONN: Specifies to output instances with logical  connectivity
+                only.
+
+       -output_def_file <filename>
+              Mandatory  parameter. Specifies the name of the output DEF file.
+              If the given DEF name is specified with ".gz", the software will
+              gzip the DEF file to reduce the file size.
+
+       -output_lef_macros<filename>
+              Specifies the name of the file containing a list of  macros  for
+              which  LEF  files are to be generated. One LEF file is generated
+              for each macro. The generated LEF pin shapes are all shapes that
+              connect to top-level nets on all  metal/via  layer  shapes.  The
+              cell boundary of the LEF macro is derived by the bounding box of
+              all shapes within the GDS cell.
+
+       -power_grid_library <libraryname>
+              Mandatory parameter. Specifies the name of the merged power-grid
+              library (.cl). You can specify only a single .cl library.
+
+       -print_complete_short_path
+              Specifies  to  print  the complete shorting path when there is a
+              short between two nets. When this parameter  is  specified,  the
+              entire  shorting path is assigned to one of the shorted nets and
+              the path is printed in the generated DEF file. The shapes of the
+              shorting path will be assigned to  the  net  that  is  specified
+              first  in the net location file. For example, if a tracing point
+              of VDD is shorted with a tracing point of VSS, the software hon-
+              ors the net that is defined first in the net location file.
+
+              If this parameter is not specified,  the  software  assigns  the
+              shapes of the path to either of the shorted nets by default.
+
+       -spef_file<filename>
+              Specifies  the name of the SPEF file that can be used to include
+              the signal nets in the generated DEF file. The input  SPEF  file
+              is  required  to  have layer annotation in the RES statements to
+              indicate the pin node layers.
+
+              For the signal nets, both the *P and *I nodes are  used  as  the
+              starting tracing points, and the SPEF file pins (*P) are honored
+              as  the  top-level  pins and are reported in the PINS section in
+              the output DEF file. For the PG nets, the *P nodes and the user-
+              defined locations in the net  location  file  are  used  as  the
+              starting  tracing  points.  The SPEF file connections (*I state-
+              ments) are honored when generating the  DEF  logic  connectivity
+              for both the signal and PG nets. That is, the convert_gds_to_def
+              utility  relies  on the SPEF file for logic connection if a SPEF
+              file is specified. The instance and pin names are from the  SPEF
+              *I  statements.  The output DEF file includes all the signal net
+              pins from *P  in the PINS section, the signal routing shapes  in
+              the  NETS section, and the PG net routing shapes in the SPECIAL-
+              NETS section.
+
+              In addition to the SPEF file, you need to specify the  following
+              parameters for including the signal nets in the DEF file:
+
+              * -gds_file
+
+              * -net_location_file
+
+              * -power_grid_library
+
+              * -gds_layermap
+
+              * -output_def_file
+
+              * -top_cell
+
+              Notes:
+
+              * The -net_location_file parameter is used to identify the power
+                and  ground nets, and therefore the remaining nets are consid-
+                ered as signal nets.
+
+              * The -power_grid_library specifies the name of  the  power-grid
+                library  that  includes  the  list of standard cells or macros
+                that should be consistent with the SPEF  file.  That  is,  the
+                cell  of  the  instances in the SPEF file should be defined in
+                the PGV.
+
+       -top_cell <cellname>
+              Mandatory parameter. Specifies the top cell name  in  the  GDSII
+              file.
+
+       -use_gds_label {ALL | TOP | <<tech_layer_name>> |
+       <<cell_name>>:<<tech_layer_name>> | <<cell_name>>:ALL>}
+              Specifies the criteria for selecting text labels.
+
+              * ALL: specifies to honor all the text labels from GDS.
+
+              * TOP: specifies to honor just the top-level text labels.
+
+              * <<tech_layer_name>>: specifies to honor all the text labels on
+                the specified layer.
+
+              * <<cellname>>:<<tech_layer_name>>:  specifies  to honor all the
+                text labels of the specified GDS cell on the specified layer.
+
+              * <<cellname>>:ALL: specifies to honor all the  text  labels  of
+                the specified GDS cell.
+
+              The  following  example  specifies to use the text labels of the
+              cell "hierblock" on layer METAL10:
+
+              convert_gds_to_def -use_gds_label hierblock:METAL10
+
+       -verilog_file <filename>
+              Specifies the name of the output verilog  file.  This  parameter
+              allows  you  to use the GUI to display the rail analysis results
+              of the GDS-only flow.
+
+       -zero_pin_size
+              Specifies to set the pin shape to size zero "(0 0)(0 0)" in  the
+              output  DEF file. You can use this parameter when the port shape
+              is outside the drawn shape (metal geometry) at places where  the
+              port label is defined near the edge of the geometry.
+
+Examples
+              * The  following command converts the specified GDS file new.gds
+                to a DEF file top.def.
+
+                convert_gds_to_def   -net_location_file   net.loc    -gds_file
+                new.gds   -power_grid_library  ../pv_library.cl  -gds_layermap
+                lmap -top_cell cella -output_def_file top.def
+
+              * The following command converts the specified GDS file chip.gds
+                to a DEF file my.def:
+
+                convert_gds_to_def -gds_file  chip.gds.gz  -power_grid_library
+                {pgv/techonly/techonly.cl   pgv/full.cl} \
+
+                 -net_location_file  netlocfile  -gds_layermap  layermap -out-
+                put_def_file my.def -top_cell chip -spef_file chip.spef.gz
+
+                Here, the SPEF file chip.spef is specified to include the sig-
+                nal nets in the output DEF file.
+
+              * The following command specifies a marker layer  file  esdcells
+                to enable ESD analysis using convert_gds_to_def:
+
+                convert_gds_to_def
+                 -gds_file    gw16_500_usr_test.gds    -power_grid_library   {
+                /../TECH/techonly.cl }   -net_location_file  my.nlf  -gds_lay-
+                ermap gds_layer.map \
+
+                    -output_def_file     my.def      -top_cell    gw16_500_usr
+                -use_gds_label ALL -esd_marker_layer_file esdcells
+
+                convert_gds_to_def utility generates a LEF file for  each  ESD
+                cell  specified in the esdcells file to enable PGV generation.
+                The output DEF includes the user-defined nets and the ESD  in-
+                stances based on the specified marker layer file.
+
+Related Information
+              * set_rail_analysis_mode
+
+              * "GDS2DEF  Utility"  in  the Voltus IC Power Integrity Solution
+                User Guide
+
+                           Fri Apr 04 01:25:37 2025  convert_gds_to_def(25.10)

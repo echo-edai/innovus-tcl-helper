@@ -1,0 +1,342 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_ccopt_skew_groups(25.10)                report_ccopt_skew_groups(25.10)
+
+Name
+       report_ccopt_skew_groups - This command displays information about skew
+       and insertion delay in skew groups
+
+Syntax
+       report_ccopt_skew_groups
+
+       [-help]
+
+       [-delay_corners {<list_of_delay_corners>} | -views {<list_of_views>}]
+
+       [-exclude_pin_insertion_delay]
+
+       [-exclude_source_latency]
+
+       [-file <file_name>]
+
+       [-from <sources>]
+
+       [-histograms]
+
+       [-include_voltage {on | off | auto} | -summary]
+
+       [-no_invalidate]
+
+       [-paths <number_of_paths>]
+
+       [-skew_groups       <list_of_skew_groups       |      >-include_report-
+       ing_only_skew_groups]
+
+       [-skip_timing_update]
+
+       [-summarize_stage_depth <cell_type_list>]
+
+       [-tcl_list]
+
+       [-through <list_of_pins>]
+
+       [-to <list_of_sinks>]
+
+       [-early | -late ]
+
+       This command displays information about skew  and  insertion  delay  in
+       skew  groups. By default, the report_ccopt_skew_groups command displays
+       two summary tables at the beginning of  the  report.  The  first  table
+       lists  the  insertion  delays  and skews (along with target values) for
+       each skew group in each timing corner. The second table lists the start
+       and end points of the min and max paths in the skew group. The  remain-
+       der  of  the  report contains detailed min and max path information for
+       each skew group, in each timing corner.
+
+       You can customize the columns included in the skew group report by con-
+       figuring set_ccopt_property skew_group_report_columns.
+
+       You can customize the size  of  the  histogram  ranges  by  configuring
+       set_ccopt_property skew_group_report_histogram_bin_size.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each report_ccopt_skew_groups parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+               man report_ccopt_skew_groups
+
+       -delay_corners <list_of_delay_corners>
+              Specifies that the report will be restricted  to  the  specified
+              delay corners.
+
+              Note:  The -delay_corners and -views parameters are mutually ex-
+              clusive.
+
+       -early Specifies that only the early half of the delay corners will  be
+              reported.
+
+       -exclude_pin_insertion_delay
+              Specifies  that  pin insertion delay should be excluded from the
+              report.
+
+       -exclude_source_latency
+              Specifies that source latency of the clocks should  be  excluded
+              from the report.
+
+       -file <file_name>
+              Specifies  that  a  copy  of  the contents of the report will be
+              saved to the specified file name.
+
+       -from <sources>
+              Specifies the list of sources of the skew group to consider  for
+              the  report.  If  specified,  only paths beginning at one of the
+              sources specified will be reported.
+
+       -histograms
+              Specifies that histograms of key information will be displayed.
+
+       -include_voltage {on | off | auto}
+              Prints the voltage column. The following options are available:
+
+              * on: always prints the extra voltage column
+
+              * off: the extra voltage column is not printed
+
+              * auto: only prints the extra voltage column when  voltages  are
+                different
+
+              Note: This parameter is mutually exclusive with the -summary pa-
+              rameter.  This  is  because path delays are not displayed in the
+              summary tables.
+
+              Default: auto
+
+       -include_reporting_only_skew_groups
+              When specified, the report additionally includes the  reporting-
+              only  skew  groups.  A reporting-only skew group is a skew group
+              whose constrains property is set to none. Such a skew group  im-
+              poses  no  clock  balancing  constraint and is not considered by
+              CTS.
+
+              By default, the reporting-only skew groups are not  included  in
+              the  report. If a reporting-only skew group is explicitly speci-
+              fied using the -skew_groups parameter, then that skew  group  is
+              always included in the report output.
+
+              Note:  The  -include_reporting_only_skew_groups and -skew_groups
+              parameters are mutually exclusive. If both these parameters  are
+              specified together, the software errors out.
+
+       -late  Specifies  that  only the late half of the delay corners will be
+              reported.
+
+       -no_invalidate
+              Specifies that the timing engine should not be invalidated.  The
+              timing  engine is used to calculate the timing data that is dis-
+              played in the report. By default, this is invalidated  when  you
+              generate  the  report,  so  all the timing data is recalculated.
+              This increases the time taken to generate the  report.  Use  the
+              -no_invalidate  option to reuse the existing timing data for the
+              report.
+
+       -paths <number_of_paths>
+              Specifies the number of paths to report on for each timing  cor-
+              ner.
+
+              Default: 1
+
+       -skew_groups <list_of_skew_groups>
+              Restricts  the  report to the specified skew groups. By default,
+              all defined skew groups are displayed.
+
+       -skip_timing_update
+              Specifies that the timing engine should not be updated. The tim-
+              ing engine is used to calculate the timing  data  that  is  dis-
+              played  in the report. By default, when you generate the report,
+              the timing data is recalculated. This increases the  time  taken
+              to  generate the report. Specify this parameter to skip calcula-
+              tion of timing data.
+
+       -summarize_stage_depth <cell_type_list>
+              Specifies that the command will consider the number of cells  of
+              the  specified type(s) in the tree, instead of considering delay
+              while reporting. Possible values are  buffer,  inverter,  logic,
+              clock_gate, and generator. You can also specify * to include all
+              cell types.
+
+              The  following  command  shows  a report of the skew groups with
+              counts of the buffers and inverters, instead of the delay.
+
+              report_ccopt_skew_groups  -summarize_stage_depth   {buffer   in-
+              verter}
+
+              Note:  The  *  setting is not used in combination with any other
+              cell type. For example, the below is not a valid setting.
+
+              -summarize_stage_depth {* buffer}
+
+       -summary
+              Specifies that just the summary table should be displayed in the
+              report.
+
+       -tcl_list
+              Specifies that the report will be created as Tcl data instead of
+              a text report.
+
+       -through <list_of_pins>
+              Provides a list of pin objects representing points  that  all  #
+              paths  reported  must  pass through. The paths must pass through
+              one of the pins specified.
+
+       -to <list_of_sinks>
+              Provides a list of pin objects representing  all  the  sinks  of
+              skew groups to consider for the report. If specified, only paths
+              terminating at one of the sinks specified will be reported.
+
+       -views {<list_of_views>}
+              Restricts  the  report  to the delay corners associated with the
+              specified views.
+
+              Note: The -delay_corners and -views parameters are mutually  ex-
+              clusive.
+
+Examples
+       Example1:  Use the following command to display the skew group informa-
+       tion as a summary table in the report:
+
+       report_ccopt_skew_groups -summary
+
+       Note:
+
+              * The "Timing Corner" column specifies the delay corner,  timing
+                check type (setup or hold) and derate type (early or late) re-
+                porting  conditions for the skew group. All *early corners are
+                reported using early clock derates and all *late  corners  are
+                reported  using  late  clock derates. A skew group row with no
+                timing column specification is using the timing corner  speci-
+                fied above it.
+
+              * The  "Skew  Target  Type"  column shows "explicit", "auto com-
+                puted", "ignored", or "auto scaled".  The "auto scaled"  value
+                is displayed only for skew targets marked as scaled.
+
+                Only the timing corner(s) with "explicit" or "auto scaled" are
+                actually  considered  during clock tree construction, and only
+                these corners will have a numeric skew target in  the  "Target
+                Skew" column. Generally, only timing corners with late derates
+                for a delay corner are activated for clock tree construction.
+
+              * The  "Skew window occupancy" column is defined as the percent-
+                age of sinks in the skew group that fall within  the  user-de-
+                fined skew target. It is computed by finding a min and max la-
+                tency  window  in  which the largest proportion of sinks fall.
+                The intent of this column is to indicate, when the skew target
+                is not met, some measure of how badly it has not been  met  by
+                showing  the  largest  proportion of sinks that occupy the de-
+                sired skew target.
+
+       Example2: Use the following command to  shows  a  report  of  the  skew
+       groups with counts of the buffers and inverters, instead of the delay:
+
+       report_ccopt_skew_groups   -summarize_stage_depth   {buffer   inverter}
+       -skew_groups m_dsram_clk/PM_HL_FUNC
+
+       Timing   for   timing   corner   AV_HL_FUNC_MIN_RC1_dc:hold.late,   max
+       clock_path:
+
+       =========================================================================
+
+        PathID : 8
+
+        Path type : skew group m_dsram_clk/PM_HL_FUNC (path 1 of 1)
+
+        Start : TEST_INST/g139/ZN
+
+        End : RAM_TEST_INST/RAM_INST/CLK
+
+        Counted cell types : buffer inverter
+
+        Count : 0
+
+        -----------------------------------------------------------------------------------------------------------------
+
+        Name                        Lib cell  Event Incr Count Slew Cap    Lo-
+       cation Distance Fanout Status Clockpath trace
+
+                                                              (ns)        (pF)
+       (um)
+
+        -----------------------------------------------------------------------------------------------------------------
+
+        TEST_INST/g139/ZN          -  IOA21D1BWP  rise   -    0    0.131 0.015
+       (139.930,130.200)   -       1
+
+        RAM_TEST_INST/LS_m_clk/I   -  LVLHLD2BWP  rise   0     0     0.131   -
+       (250.130,127.960)  112.440  -
+
+        -----------------------------------------------------------------------------------------------------------------
+
+       Example3:  Use the following command to print the voltage column in the
+       report:
+
+       report_skew_groups      -to      icache_immu_im0_itlb_tlb_mem_tlb00_up-
+       per_mem/rd_c1clk   -skew_group   skew_group:L2/func   -late  -min  -in-
+       clude_voltage on
+
+       A part of the output table is shown below.
+
+       -------------------------------------------------------------------------------------------------------------------
+
+       Name Lib  cell                   Event  Incr      Arrival   Slew    Cap
+       Voltage Location       Distance Fanout Status
+
+                                            (ns)        (ns)      (ns)    (pF)
+       (V)     (um)
+
+       --                           Clockpath                            trace
+       ------------------------------------------------------------------------------------------------
+
+       e300_sysclk_in
+
+       -     -                         rise     -        0.000    0.025  0.003
+       0.9    (0.000,48.420)   -        1
+
+       CTS_cdb_inv_05321/I
+
+       -  CKN_NOM_D8_H210_L6_P51_UL    rise     0.002    0.002      0.025    -
+       0.9    (3.034,49.455)   4.069    -
+
+       CTS_cdb_inv_05321/ZN
+
+       -  CKN_NOM_D8_H210_L6_P51_UL    fall     0.006    0.008    0.006  0.001
+       0.9    (3.170,49.385)   0.206    1
+
+       CTS_cdb_inv_05322/I
+
+       -  CKN_NOM_D3_H210_L6_P51_UL    fall     0.000    0.008      0.006    -
+       0.9    (3.119,49.035)   0.401    -
+
+Related Information
+              * create_ccopt_skew_group
+
+              * get_ccopt_property
+
+              * get_ccopt_skew_groups
+
+              * get_ccopt_skew_group_delay
+
+              * get_ccopt_skew_group_path
+
+              * delete_ccopt_skew_groups
+
+              * modify_ccopt_skew_group
+
+              * set_ccopt_property
+
+              *
+                 The following topic in the Innovus User Guide
+
+                * Skew Group Reporting
+
+                           Fri Apr 04 01:25:37 2r0e2p5ort_ccopt_skew_groups(25.10)

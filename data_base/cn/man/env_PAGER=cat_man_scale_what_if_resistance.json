@@ -1,0 +1,81 @@
+{
+  "command": "scale_what_if_resistance",
+  "is_cmd": true,
+  "summary": "全局或区域性地缩放电阻，以确定在特定区域内可以修改多少电阻来降低整体IR压降。",
+  "description": "该命令用于缩放全局或指定区域内的电阻，以分析在特定区域修改电阻对降低整体IR压降的影响。在包含电源开关的设计中，电阻缩放将同时应用于指定区域内的常开网络及其开关网络。目前，无法为常开网络和开关网络应用不同的缩放因子。",
+  "usage": "scale_what_if_resistance [-help] -reset | {-net <netname> {-global | -region <x1 y1 x2 y2> | -instance <instancename> | -cell <cellname> | -file <filename>} [-scale value | -scale_ron {<R_ON_scale_factor> | R_OFF}] [-auto_scale_adjacent_via_layers {true | false}] [-layer {<layername>| all}] }",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个scale_what_if_resistance参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "重置所有先前scale_what_if_resistance命令的设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "缩放正在分析的域中指定网络的电阻。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-global",
+      "description": "与-scale参数一起使用时，全局缩放指定图层的电阻。与-scale_ron参数一起使用时，全局缩放所有电源开关单元在指定图层的电阻值。这是默认选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-region",
+      "description": "与-scale参数一起使用时，缩放指定区域内网格的电阻。与-scale_ron参数一起使用时，缩放指定区域内所有电源开关单元的电阻。x1 y1 x2 y2的默认单位是数据库单位。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-instance",
+      "description": "指定缩放PGV中指定实例的内部电阻。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定缩放PGV中指定单元的内部电阻。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-file",
+      "description": "指定一个包含使用相同缩放因子的实例和单元列表的文件。文件格式为：CELL <cellname> INSTANCE <instancename>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-scale",
+      "description": "指定一个大于0的值。例如，值0.5将使电阻减半。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-scale_ron",
+      "description": "指定用于缩放电源门实例/单元的RON的值。默认值为1。也可以指定\"R_OFF\"（不区分大小写）关键字，以为指定的实例/单元应用关断状态电源门电阻。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-auto_scale_adjacent_via_layers",
+      "description": "指定在假设电阻分析中是否使用自动通孔缩放。当缩放特定金属层的电阻时，相邻通孔层的通孔电阻会自动以相同的缩放因子进行缩放。默认值为true。使用-auto_scale_adjacent_via_layers false可保持通孔电阻不被缩放。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定在其上执行缩放的图层名称（LEF图层或技术图层）。可以发出多个命令来缩放多个图层的电阻。可以指定all参数来缩放所有图层。当使用all参数时，-auto_scale_adjacent_via_layer参数将被禁用。",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

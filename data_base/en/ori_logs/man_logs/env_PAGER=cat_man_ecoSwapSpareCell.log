@@ -1,0 +1,109 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoSwapSpareCell(25.10)                                ecoSwapSpareCell(25.10)
+
+Name
+       ecoSwapSpareCell  - Swaps an unplaced or placed cell with a cell in the
+       spare cell list
+
+Syntax
+        ecoSwapSpareCell
+
+       [-help]
+
+       instName
+
+       spareCellInstName
+
+       [-keepScan]
+
+       [-noScanTrace]
+
+       [-preservePin {<list_of_spare_cell_pins>}]
+
+       [-suffix string]
+
+       Swaps an unplaced or placed cell with a cell in the spare cell list.
+
+       You can specify this command only after you have run specifySpareGate.
+
+       This command can swap cells of the same cell type (same  footprint  and
+       identical  pin name). Cells of different sizes can also be swapped. The
+       spare cell is connected according to the specified global  net  connec-
+       tions.
+
+       If  the cell to be swapped is unplaced, it is mapped to the spare cell.
+       <instName> is deleted, and its connection is transferred to  the  spare
+       cell. If the cell to be swapped is placed, it is swapped with the spare
+       cell  and is renamed to <instNameSuffix> if the -suffix option is used.
+       If a suffix is not specified, the <instName> cell is renamed to <spare-
+       CellInstName>. The <instName> cell's  connections  are  transferred  to
+       <spareCellInstName>.  The  input  of  <instName> is tielo, based on the
+       global connection definition.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ecoSwapSpareCell parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoSwapSpareCell
+
+       -keepScan
+              Keeps the scan connection for both the spare cell and the speci-
+              fied  instances.  Before  you  can  use this parameter, you must
+              first identify the scan connections by running a scan trace.
+
+       <instName>
+              Specifies the name of the cell to swap.
+
+       -noScanTrace
+              Disables scan tracing while swapping.
+
+       -preservePin {<list_of_spare_cell_pins>}
+              Specifies a list of pins whose connection you want  to  preserve
+              while  swapping spare cells. The same pin on both the spare cell
+              and specified instances is preserved. If both the  instance  and
+              the  spare cell are placed instances, the -preservePin parameter
+              is effective for both cells. If the instance is unplaced,  -pre-
+              servePin  only  affects  the  spare cell because the instance is
+              deleted.
+
+       <spareCellInstName>
+              Specifies the spare cell in the spare cell list to swap with the
+              placed cell.
+
+       -suffix <string>
+              Specifies a string that is  appended  to  the  <instName>  after
+              swapping.
+
+Examples
+       The  following  example  swaps  a placed cell, TDSP_CORE_INST/spare_41,
+       with spare cell TEST1:
+
+       addInst -cell INV_X16 -inst TEST1
+
+       specifySpareGate -inst TEST1
+
+       ecoPlace -useSpareCells false
+
+       checkPlace
+
+       ecoSwapSpareCell TDSP_CORE_INST/spare_41 TEST1
+
+       The image below shows cells before swapping:
+
+       The image below shows cells after swapping:
+
+Related Information
+              * checkPlace
+
+              * ecoPlace
+
+              * specifySpareGate
+
+              * Interactive ECO chapter in the Innovus User Guide.
+
+              * ECO Flows chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025    ecoSwapSpareCell(25.10)

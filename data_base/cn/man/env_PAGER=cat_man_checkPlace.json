@@ -1,0 +1,87 @@
+{
+  "command": "checkPlace",
+  "is_cmd": true,
+  "summary": "检查FIXED和PLACED单元的违规情况，添加违规标记并生成违规报告。",
+  "description": "该命令用于检查设计中FIXED（固定）和PLACED（已放置）单元的违规情况。它会在设计显示区域添加违规标记，并生成详细的违规报告。用户可以使用Violation Browser查看这些标记。该命令将预放置的实例和宏视为FIXED。它检查多种违规类型，包括但不限于：区域和围栏违规、核心区外违规、放置网格违规、行方向违规、技术站点违规、实例重叠、引脚访问违规、方向违规、布线/放置阻挡违规、站点方向违规、围栏内归属违规、实例填充违规、标准单元电源引脚连接、VT注入层间距规则以及通孔间距违规等。此外，命令还会报告设计中的已放置实例数量、未放置宏数量、放置密度（已使用站点/可用站点）以及默认电源域密度。",
+  "usage": "checkPlace [<violationReportFileName>] [-clearMarker] [-honorPrerouteForFiller] [-ignoreFillerInUtil] [-ignoreOutOfCore] [-inst <list_of_instances>] [-ioPinBlockage] [-macroBlockage] [-noCheckPinAccess] [-noHardFence] [-noHalo] [-noPreplaced] [-selectedOnly]",
+  "options": [
+    {
+      "name": "<violationReportFileName>",
+      "description": "指定违规报告的输出文件名。如果不指定此参数，命令将显示摘要报告。报告文件比摘要报告更详细，会列出每个违规实例及其详细信息，并包含一个基于违规类型选择实例的Tcl过程。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clearMarker",
+      "description": "清除之前运行checkPlace命令时生成的违规标记，而无需重新运行checkPlace。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-honorPrerouteForFiller",
+      "description": "检查放置在预布线下方或由setPlaceMode -place_detail_preroute_as_obs指定的物理实例上的放置阻挡违规。默认情况下，checkPlace不会将放置在预布线下的填充单元视为违规，即使它们是放置/布线阻挡；但会将放置在预布线下的标准单元视为违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignoreFillerInUtil",
+      "description": "在计算利用率时忽略填充单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignoreOutOfCore",
+      "description": "跳过核心设计区域外的实例检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-inst",
+      "description": "指定要检查的实例列表。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-ioPinBlockage",
+      "description": "指示合法化例程在块级别放置标准单元实例时，将顶层I/O引脚视为固定的金属障碍物。使用此参数会有轻微的运行时间开销，因此默认不开启。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-macroBlockage",
+      "description": "检查硬宏与宏专用阻挡之间的重叠，并报告宏阻挡违规。默认情况下，宏专用阻挡对硬宏和标准单元都被忽略。使用此设置后，宏专用阻挡将被视为宏的放置障碍。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noCheckPinAccess",
+      "description": "指定是否检查引脚访问违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noHardFence",
+      "description": "忽略围栏和区域放置约束。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noHalo",
+      "description": "跳过块光环（halo）检查。使用布局布线边界进行放置重叠检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noPreplaced",
+      "description": "不检查固定实例。指定此参数时，checkPlace将固定实例视为放置阻挡。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-selectedOnly",
+      "description": "指定仅检查所选实例的合法性。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

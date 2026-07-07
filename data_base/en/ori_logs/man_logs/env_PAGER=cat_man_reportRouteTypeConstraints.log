@@ -1,0 +1,213 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportRouteTypeConstraints(25.10)            reportRouteTypeConstraints(25.10)
+
+Name
+       reportRouteTypeConstraints  -  Reports  the route type constraints that
+       are being added on nets during the Innovus flow
+
+Syntax
+       reportRouteTypeConstraints
+
+       [-help]
+
+       [-file <fileName>]
+
+       [-svr]
+
+       [-svrOnly]
+
+       [-threshold value]
+
+       [-summary  | -detailed ] [-detailed  [-timing ]]
+
+       Reports the route type constraints that are being added on nets  during
+       the  Innovus  flow. It allows you to monitor the number of constraints,
+       the preferred bottom layer used, the adherence of  the  different  con-
+       straint  type by the router, and the type of non-default rule (NDR) be-
+       ing used.
+
+       The command extracts information about the following  groups  of  route
+       type constraints:
+
+              * INNOVUS:  includes all route types being added by the software
+                and that are using a bottom preferred layer  and  the  default
+                rule.
+
+              * INNOVUS_NDR: includes all route types being added by the soft-
+                ware and that are using an NDR.
+
+                setOptMode  -opt_pre_route_ndr_aware  makes  this type of con-
+                straint.
+
+              *
+
+                INNOVUS_CLK: includes all route types of clock nets  that  are
+                being added by the software and that are using default rule.
+
+                create_route_type without -non_default_rule and ccopt_property
+                route_type make this type of constraint.
+
+              *
+
+                INNOVUS_CLK_NDR:  include  all  route types of clock nets that
+                are being added by the software and that are using an NDR.
+
+                create_route_type with  -non_default_rule  and  ccopt_property
+                route_type make this type of constraint.
+
+              * USER:  includes  all route types being added by the user. This
+                can be done using the setAttribute command.
+
+              * USER_NDR: includes all route types being added by the user and
+                that are using an NDR. This can be done using the setAttribute
+                command.
+
+       When via pillar report is enabled, using the -svr/-svrOnly  parameters,
+       the  command  checks  via pillar assigned on data/clock nets and on the
+       secondary PG nets. For sample reports, see Use Model Scenarios.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each reportRouteTypeConstraints parameter. For a
+              detailed description of the command and all of  its  parameters,
+              use the  man command:
+
+               man reportRouteTypeConstraints
+
+       -detailed
+              Prints  detailed  information on each net with a route type con-
+              straint such as the wire length,  the  routing  adherence,  some
+              timing information, and so on.
+
+              Note: The parameters, -detailed and -summary are mutually exclu-
+              sive.
+
+       -file file<Name>
+              Specifies the file name in which the results will be written. If
+              this  parameter is not specified, the information is written out
+              in the console and the log file.
+
+       -svr   When specified, reports pins with stack via rule constraints.
+
+       -svrOnly
+              When specified, reports only those pins that have stack via rule
+              constraints.
+
+       -summary
+              Prints a summary of the layer constraint usage  per  layer,  per
+              NDR, and per constraint type.
+
+              Note: The parameters, -detailed and -summary are mutually exclu-
+              sive.
+
+       -threshold <value>
+              Specifies the maximum routing adherence for a net to be included
+              in  detailed  report. This parameter is specified along with the
+              -detailed paramater.
+
+              The default value is 80, which means only nets with adherence  <
+              80 % will be included in detailed report.
+
+              Note:  It is recommended that you do not  use the -threshold pa-
+              rameter along with the -svrOnly parameter because stack via rule
+              has no "routing adherence ratio" metric.
+
+       -timing
+              When this parameter is specified, the report will display timing
+              information on the nets such as slack,  delay,  and  incremental
+              delay while generating the detailed information.
+
+Use Model Scenarios
+       The  use  model  scenarios for reports including via pillar constraints
+       applied on secondary PG pins are provided below.
+
+       Reporting stack via rule (including stack via rule used on secondary PG
+       pins) and bottom layer constraint:
+
+       reportRouteTypeConstraints -svr
+
+       The following information is included in the summary report:
+
+       Reporting only stack via rule
+
+       reportRouteTypeConstraints -svrOnly
+
+       The above command prints information about only stack via rule  includ-
+       ing the summary of via pillar rule applied on secondary PG pins.
+
+       When  no via pillar are found on 2nd PG pin, the table will be replaced
+       by following line:
+
+       When the -detailed parameter is specified while  reporting  via  pillar
+       usage,  a  new  table  is generated in the report with the list of sec-
+       ondary PG pins with a via pillar constraint. This is shown below.
+
+Examples
+              * The following command prints the summary for  the  route  type
+                constraints:
+
+                reportRouteTypeConstraints -summary
+
+                The  report  below  summarizes  the  number of route type con-
+                straints per layer  for each category.
+
+              * The report below summarizes the  number  of  route  type  con-
+                straints  per  NDR  and  for each category. The syntax used is
+                categories_NDR name.
+
+              * The following command prints  the  detailed  route  type  con-
+                straints information:
+
+                reportRouteTypeConstraints -detailed
+
+                The   report   below   summarizes the percentage of respect of
+                the route type constraint (bottom preferred layer) by the cur-
+                rent router. For example, in the report below, for the INNOVUS
+                constraints between 90% and 100% respect  of  the  constraint,
+                there  are  100.0%  of the nets. While INNOVUS_CLK constraints
+                between 90 - 100% respect of the constraint, there are  98.33%
+                of the nets.
+
+                The  report  below summarizes the percentage of respect of the
+                NDR constraint by the current router. For example, in the  re-
+                port  below,  for  the INNOVUS_NDR constraints between 90% and
+                100% respect of the constraint, there are 100% of the nets.
+
+                The report below provides information similar to above reports
+                but on a net to net basis.
+
+              * The following command prints  the  detailed  route  type  con-
+                straints  information  with specified threshold routing adher-
+                ence of 101, which means only nets with adherence < 101 % will
+                be included in detailed report.
+
+                reportRouteTypeConstraints -detailed  -threshold 101
+
+                A part of the sample report is shown below.
+
+              * The following command prints information about the  layer  as-
+                signment, NDR, and stack via rule.
+
+                reportRouteTypeConstraints -svr
+
+                A part of the sample report is shown below.
+
+              * The  following command prints information about only stack via
+                rule.
+
+                reportRouteTypeConstraints -svrOnly
+
+                A part of the sample report is shown below.
+
+Related Information
+              * ccopt_design
+
+              * optDesign
+
+              * setAttribute
+
+              * The following chapter in the Innovus User Guide
+
+                * Optimizing Timing
+
+                           Fri Apr 04 01:25:37re2p0o2r5tRouteTypeConstraints(25.10)

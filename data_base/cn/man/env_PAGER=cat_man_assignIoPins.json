@@ -1,0 +1,75 @@
+{
+  "command": "assignIoPins",
+  "is_cmd": true,
+  "summary": "为块级设计分配顶层I/O引脚位置",
+  "description": "assignIoPins命令用于为块级设计分配顶层I/O引脚的位置。用户可以通过setPinAssignMode命令的-maxLayer或-minLayer参数设置引脚的最大或最小层。默认情况下，该命令会将所有分区引脚的深度设置为MINAREA/引脚宽度，以确保满足最小面积规则。如果引脚上指定了任何与引脚尺寸相关的约束，则用户指定的引脚尺寸具有更高的优先级。该命令在分配引脚时，不会检查已放置的引脚与分区围栏（设计边界）内侧对象（如宏、标准单元等）形状之间的违规，如果围栏到内核的距离为零，可能会导致DRV违规。它会在引脚分配期间将首选布线层属性视为软约束，并报告具有这些属性的网络。同时，它也会遵守引脚组和网络组的禁止间隔约束。在自底向上的流程中，该命令会提升由setPromotedMacroPin命令提升的引脚列表中的信号引脚和电源/地引脚。此外，它还支持处理包含来自多个缓冲器链的所有网络的网络/引脚组，以改善引脚对齐和结果质量。建议在运行布局和早期全局布线后使用此命令来合法化I/O引脚，以获得更好的结果质量，但布局并非引脚分配的必要步骤。",
+  "usage": "assignIoPins [-help] [-align] [-debugPinAll] [-debugPinFile <fileName>] [-improveSI] [ {-pin { <pinNameList> } | -pin_file <fileName> | -exclude_pin_file <fileName>} [-moveFixedPin ] [-ignore_group_pins ]] [-autoBusGroup]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出assignIoPins命令各参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-align",
+      "description": "指定此选项时，每个顶层I/O引脚将与其连接的一个实例引脚对齐。对齐的实例引脚是距离其最近边缘最短的那个。默认情况下，顶层引脚的位置基于所有连接的实例引脚到各自最近边缘距离的平均值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-debugPinAll",
+      "description": "指定调试所有引脚。此参数与-debugPinFile参数可用于在日志文件中写入引脚分配模式信息、每个分区引脚的连接信息、各层每条边上的可用引脚槽信息、引脚引导框和虚拟引脚引导框信息、失败原因等详细信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-debugPinFile",
+      "description": "指定包含用于调试的分区引脚列表或网络的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-improveSI",
+      "description": "通过放置引脚时阻塞走线来避免信号完整性问题，防止导线重叠。指定此参数后，assignIoPins命令不允许引脚放置在特定区域的走线上。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pin",
+      "description": "指定仅分配列出的引脚。要与-moveFixedPin参数配合使用以移动固定状态的引脚。默认情况下，分配所有引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin_file",
+      "description": "指定包含分区引脚列表的文件名。文件格式需以'Partition:'关键字开头，后跟分区或块名称及引脚列表。不支持总线或引脚名通配符。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-exclude_pin_file",
+      "description": "指定包含要从分区中排除的引脚列表的文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-moveFixedPin",
+      "description": "与-pin参数一起使用，允许移动指定列表中具有<Fixed>状态的引脚。未指定的固定引脚不会被移动。默认情况下，固定引脚不会被移动。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_group_pins",
+      "description": "避免放置整个引脚组。启用此参数后，在选定的引脚分配期间将忽略pinGroup和netGroup中的引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-autoBusGroup",
+      "description": "指定总线将被自动分组。内部会应用createPinGroup命令，并在命令执行后自动移除。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

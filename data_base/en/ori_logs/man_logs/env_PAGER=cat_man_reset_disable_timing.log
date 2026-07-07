@@ -1,0 +1,216 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_disable_timing(25.10)                        reset_disable_timing(25.10)
+
+Name
+       reset_disable_timing  -  Restores  timing arcs that were disabled using
+       the set_disable_timing command
+
+Syntax
+       reset_disable_timing
+
+       [-help]
+
+       [-from <pin_name> -to <pin_name>]
+
+       <object_list>
+
+       Restores timing arcs that were disabled  using  the  set_disable_timing
+       command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -from <pin_name> -to <pin_name>
+              Specifies  the arc(s) that are to be restored. Specify the -from
+              and -to options together.
+
+              You can specify the -from  and  -to  parameters  when  the  <ob-
+              ject_list>  contains  instance  or  library cell objects. Do not
+              specify the -from and -to parameters when the <object_list>  in-
+              cludes instance pin or library cell pin objects.
+
+              The  -from  and  -to options are optional. If not specified, all
+              cell arcs found in the instance or library cell objects are  re-
+              stored.
+
+       <object_list>
+              Specifies the instance, instance pin, library arc, library cell,
+              or library cell pin objects.
+
+              If  the  <object_list> includes instance pin or library cell pin
+              objects, all cell arcs attached to the specified pin objects are
+              restored.
+
+              If the <object_list> contains instance or library cell  objects,
+              and  the  -from  and  -to parameters are not specified, all arcs
+              found in the specified instance or library cell objects are  re-
+              stored.
+
+Examples
+              * The  following commands set and reset the timing arcs and dis-
+                play the resulting reports:
+
+                set_disable_timing -from A -to Y [get_cells b1]
+
+                report_inactive_arcs
+
+                ---------------------------------------------------------------
+
+                Flags :              const                 propagated constant
+
+                                     snipped               loop snipped arcs
+
+                                     disable               set_disable_timing
+
+                                     disable_clock_gating             set_dis-
+                able_clock_gating
+
+                                     library_disable                  set_dis-
+                able_cell_timing
+
+                                     Missing_Phase         No Arc Phase Data
+
+                From       To       DisableType  ArcType         Reason
+
+                -------------------------------------------------------------
+
+                b1/A ^     b1/Y ^   disable      combinational   User Disable
+
+                b1/A v     b1/Y v   disable      combinational   User Disable
+
+                -------------------------------------------------------------
+
+              * The following commands disable the timing report header:
+
+                set_global timing_disable_report_header_info true
+
+                report_inactive_arcs
+
+                ---------------------------------------------------------------------------
+
+                Flags :                   const                     propagated
+                constant
+
+                                          snipped                         loop
+                snipped arcs
+
+                                          disable                     set_dis-
+                able_timing
+
+                                          disable_clock_gating        set_dis-
+                able_clock_gating
+
+                                          library_disable             set_dis-
+                able_cell_timing
+
+                                          Missing_Phase               No   Arc
+                Phase Data
+
+                From              To              DisableType          ArcType
+                Reason
+
+                ----------------------------------------------------------------------
+
+                u8/CK  ^     u8/D  ^     const            hold_rising_clk_rise
+                u8/D = 1
+
+                u8/CK  ^     u8/D  v     const           hold_falling_clk_rise
+                u8/D = 1
+
+                u8/CK  ^     u8/D  ^     const           setup_rising_clk_rise
+                u8/D = 1
+
+                u8/CK  ^     u8/D  v     const          setup_falling_clk_rise
+                u8/D = 1
+
+                ---------------------------------------------------------------------
+
+              * The following commands disable the timing arcs from  CK  to  Q
+                for  instance U8, then reset the assertions using the instance
+                reference:
+
+                set_disable_timing -from CK -to Q [get_cells u8]
+
+                report_inactive_arcs
+
+                -----------------------------------------------------------------
+
+                Flags :                const                  propagated  con-
+                stant
+
+                                       snipped               loop snipped arcs
+
+                                       disable                set_disable_tim-
+                ing
+
+                                       disable_clock_gating           set_dis-
+                able_clock_gating
+
+                                       library_disable                set_dis-
+                able_cell_timing
+
+                                       Missing_Phase         No Arc Phase Data
+
+                From       To       DisableType     ArcType       Reason
+
+                -----------------------------------------------------------------
+
+                u8/CK ^    u8/Q ^   disable         rising_edge   User Disable
+
+                u8/CK ^    u8/Q v   disable         rising_edge   User Disable
+
+                ----------------------------------------------------------------
+
+              * The following commands disable the timing arcs from  CK  to  Q
+                for  instance U8, then reset the assertions using the instance
+                reference:
+
+                reset_disable_timing u8
+
+                report_inactive_arcs
+
+                -------------------------------------------------------------------------
+
+                Flags  :                    const                   propagated
+                constant
+
+                                          snipped                loop  snipped
+                arcs
+
+                                          disable                     set_dis-
+                able_timing
+
+                                          disable_clock_gating        set_dis-
+                able_clock_gating
+
+                                          library_disable             set_dis-
+                able_cell_timing
+
+                                          Missing_Phase          No  Arc Phase
+                Data
+
+                From            To              DisableType            ArcType
+                Reason
+
+                --------------------------------------------------------------------------
+
+                u8/CK   ^     u8/D  ^    const            hold_rising_clk_rise
+                u8/D = 1
+
+                u8/CK  ^    u8/D  v    const             hold_falling_clk_rise
+                u8/D = 1
+
+                u8/CK   ^    u8/D  ^    const            setup_rising_clk_rise
+                u8/D = 1
+
+                u8/CK  ^    u8/D  v    const            setup_falling_clk_rise
+                u8/D = 1
+
+                --------------------------------------------------------------------------
+
+Related Information
+              * set_disable_timing
+
+              * report_inactive_arcs
+
+                           Fri Apr 04 01:25:37 2025reset_disable_timing(25.10)

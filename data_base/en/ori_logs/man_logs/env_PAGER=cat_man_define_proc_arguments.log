@@ -1,0 +1,178 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+define_proc_arguments(25.10)                      define_proc_arguments(25.10)
+
+Name
+       define_proc_arguments  -  Defines the arguments and attributes of a Tcl
+       procedure
+
+Syntax
+       define_proc_arguments
+
+       [-help]
+
+       <command_name>
+
+       [-info <string>]
+
+       [-define_args <string>]
+
+       [-hide]
+
+       Defines the arguments and attributes of a Tcl procedure. The  arguments
+       and attributes are displayed when you view the help associated with the
+       procedure.
+
+       The  define_proc_arguments command, when used with the parse_proc_argu-
+       ments command, enables you to validate command usage. For invalid  com-
+       mands, appropriate error messages are displayed.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <proc_name>
+              Specifies the name of an existing Tcl procedure.
+
+              Data_type: string, optional
+
+       -info <string>
+              Provides help information for the procedure.
+
+              Data_type: string, optional
+
+       -define_args <string>
+              Defines all possible arguments of the Tcl procedure. It can also
+              be  used  to define the help text and constraints for individual
+              arguments of the procedure and generates the  help  for  command
+              options.
+
+              The  variable <arg_defs> is a list of lists where each list ele-
+              ment defines one argument. Each element in the list has the fol-
+              lowing format:
+
+              "arg_name" "option_help" "value_help" "data_type" "attributes"
+
+              Data_type: string, optional arg_name: Specifies the name of  the
+              argument.   option_help: Provides a short description of the ar-
+              gument.  value_help: Specifies the help information for the  as-
+              sociated option values.  <data_type:>(Optional) Used for valida-
+              tion of options.
+
+              Supported  data  types  are string, list, boolean, int, integer,
+              float, or one_of_string.
+
+              Default: string <attributes:>
+
+              (Optional) Used for validation of options.
+
+              The attributes can be:
+
+              * required: This argument must be specified . This  is  mutually
+                exclusive with optional and internal.
+
+              * optional:  Specifying this argument is optional. This is mutu-
+                ally exclusive with required.
+
+              * internal: Disables the display of help information for the op-
+                tion in the procedure help. This argument is  mutually  exclu-
+                sive with required.
+
+              * value_help:  Indicates that the valid values for one_of_string
+                argument should be listed whenever argument help is shown.
+
+              * values {<allowable_values>}: This argument must be  used  with
+                the one_of_string data type.
+
+              * merge_duplicates  :  Ensures that when the option appears more
+                than once in a command, its values  are  concatenated  into  a
+                list  of  values.  The default behavior is that the right-most
+                value specified for the option is used.
+
+              * bind_option <other_arg_name>: Binds the  current  option  with
+                the option specified as the <other_arg_name> variable.
+
+              * mutual_exclusive_group  <group_name>: Defines a group name and
+                includes the current option in the <group_name> group. All op-
+                tions in the same group are treated as mutually exclusive.
+
+              * Default: optional
+
+       -hide  Hides the procedure and its body.
+
+              Data_type: bool, optional
+
+Examples
+       The following Tcl procedure uses the define_proc_arguments command  for
+       defining  arguments  and attributes, and for validating the command us-
+       age.
+
+       proc cmdProc {args} {
+
+       parse_proc_arguments -args $args results
+
+       foreach argname [array names results] {
+
+       puts "$argname = $results($argname)"
+
+       }
+
+       }
+
+       define_proc_arguments cmdProc -info "Command Description" \
+
+       -define_args \
+
+       {{-string "String help" "string_val" string optional}
+
+       {-integer "Int help" "int_value" int optional}
+
+       {-Bool "Bool_help" "bool_value" boolean optional}
+
+       {-list "List help" "list_value" list {optional bind_option -Bool}}
+
+       {-boolean_a "BoolA help" "" boolean {optional mutual_exclusive_group
+
+       g0}}
+
+       {-boolean_b "BoolB help" "" boolean {optional mutual_exclusive_group
+
+       g0}}
+
+       {-float_num "Float help" "float_value" float}
+
+       {-oosa "One of StringA help" "one_of_str_value" one_of_string
+
+       {optional value_help {values {v1 v2}}}}
+
+       {-oosb "One of StringB help" "one_of_str_value" one_of_string
+
+       {optional {values {v4 v5}}}}
+
+       }
+
+       Now, if the cmdProc procedure is invoked with the -help option  at  the
+       command prompt, the following help information is displayed.
+
+       cmdProc -help
+
+       Usage: cmdProc # Command Description
+
+       [-string string_val] (String help)
+
+       [-integer int_value] (Int help)
+
+       [-list list_value] (List help, Bind_Option=-Bool)
+
+       [-boolean_a ] (BoolA help, Mutual_Exclusive_Group=g0)
+
+       [-boolean_b ] (BoolB help, Mutual_Exclusive_Group=g0)
+
+       [-float_num float_value] (Float help)
+
+       [-oosa one_of_str_value] (One of StringA help, Values={v1 v2 })
+
+       [-oosb one_of_str_value] (One of StringB help)
+
+Related Information
+              * parse_proc_arguments
+
+                           Fri Apr 04 01:25:37 2025define_proc_arguments(25.10)

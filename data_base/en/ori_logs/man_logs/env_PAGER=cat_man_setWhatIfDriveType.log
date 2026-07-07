@@ -1,0 +1,122 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setWhatIfDriveType(25.10)                            setWhatIfDriveType(25.10)
+
+Name
+       setWhatIfDriveType  - Sets the output and bidirectional ports that have
+       the specified type of cell within the blackbox or blackblob as  drivers
+       on the interface nets
+
+Syntax
+        setWhatIfDriveType
+
+       <blackBoxCellName>
+
+       [-port <outputPortName>]
+
+       [-lib <libName>]
+
+       -cell <cellName>
+
+       [-slew <value> [-outputCap <value>]]
+
+       [-inputPin <libraryInputPin>]
+
+       [-outputPin <libraryOutputPin>]
+
+       Sets the output and bidirectional ports that have the specified type of
+       cell within the blackbox or blackblob as drivers on the interface nets.
+       You can not specify two different drivers for two timing arcs ending at
+       the same output port. The software stores the drive type specification,
+       and uses it to create a timing arc after you specify the delay.
+
+       You can use this command after the module definition of the blackbox or
+       the blackblob is available with the I/O's in the Verilog netlist.
+
+       Note:  The timing sense of the driver is taken into account in the com-
+       binatorial what-if timing arc  description--while  applying  the  drive
+       type, the timing sense of the combinatorial arc is replaced by the tim-
+       ing  sense  of the driver's timing arc. For sequential arcs, the timing
+       sense is always set to non_unate.
+
+Parameters
+       <blackBoxCellName>
+              Specifies the name of the blackbox or blackblob cell.
+
+       -cell <cellName>
+              Specifies the name of the cell. If there are two cells with  the
+              same name, the software uses the first one found.
+
+              You can specify a complex cell (with multiple inputs and/or out-
+              puts) with this parameter.
+
+       -lib <libName>
+              Specifies the name of the timing library.
+
+       -outputCap <value>
+              The value for this parameter is set as follows:
+
+              * If  the  value of the -context parameter of the  setWhatIfTim-
+                ingModeis set to in, the output capacitance value is equal  to
+                the real capacitance. The
+
+                -outputCap  parameter of the setWhatIfDriveType command is not
+                applicable in this case.
+
+              * If the value of the -context parameter of the setWhatIfTiming-
+                Mode is set to out:
+
+                     * If the -outputCap parameter is specified with the  set-
+                       WhatIfDriveType  command, the output capacitance is set
+                       to this value.
+
+                     * If the -outputCap parameter is not specified  with  the
+                       setWhatIfDriveType  command,  the  outputCap  value  as
+                       specified with the -outputCap  parameter  of  the  set-
+                       WhatIfTimingMode  is used as the output capacitance for
+                       the setWhatIfDriveType command.
+
+              You cannot use this parameter  in  the  intrinsic  timing  model
+              mode.
+
+       -port <outputPortName>
+              Specifies  the  name of the output port. If you do not specify a
+              port name, the software sets all output and bidirectional  ports
+              as  drivers on the interface nets. Each time you modify the dri-
+              ver on an output port of the blackbox or blackblob, the software
+              recalculates all timing arcs attached to the  output  port  with
+              the new driver specification.
+
+       -slew <value>
+              Specifies the slew at the input of the driver cell. If you spec-
+              ify  the slew value, the software creates a one-dimensional tim-
+              ing table depending on the output capacitance.
+
+              If you do not specify the slew value,  the  software  creates  a
+              two-dimensional  timing table with input slew and output capaci-
+              tance values. In this case, the software assumes that  there  is
+              no  slew  variation  between  the  input port of the blackbox or
+              blackblob, and the driver input pin.
+
+              You must use this parameter in the normalized timing model mode.
+              This parameter is not available in the  intrinsic  timing  model
+              mode
+
+       -inputPin <LibraryInputPin>
+              Specifies  the  input or inout pin of the cell (specified by the
+              -cell parameter) whose source arcs will be used for setting  the
+              drive type on the port.
+
+              Default:  If  this  parameter is not specified, the software se-
+              lects an input or inout pin automatically.
+
+       -outputPin <LibraryOutputPin>
+              Specifies the output or inout pin of the  library  whose  source
+              arcs will be used for setting the drive type on the port.
+
+              Default:  If  this  parameter is not specified, the software se-
+              lects an output or inout pin automatically.
+
+Related Information
+              * setWhatIfTimingMode
+
+                           Fri Apr 04 01:25:37 2025  setWhatIfDriveType(25.10)

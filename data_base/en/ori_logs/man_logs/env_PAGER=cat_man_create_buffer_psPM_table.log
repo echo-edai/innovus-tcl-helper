@@ -1,0 +1,138 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_buffer_psPM_table(25.10)                create_buffer_psPM_table(25.10)
+
+Name
+       create_buffer_psPM_table
+
+Syntax
+       create_buffer_psPM_table
+
+       [-help]
+
+       [-buffers <string>]
+
+       [-file <string>]
+
+       [-inverters <string>]
+
+       [-layer <string>]
+
+       -max_target_slew <float>-min_target_slew <float>[-rpt_file <string>]
+
+       [-slew_interval <float>]
+
+       Automatically  calculates how much distance a specified list of buffers
+       or inverters can drive across a set of routing layers and  generates  a
+       rule file for the repeaters
+
+       For each repeater and routing layer a two pin net is created with given
+       repeater  as  source  and  sink.  Based on timing, the distance between
+       source and sink is automatically adjusted until slew  at  the  sink  is
+       close  to the same as the input slew at the source. The command outputs
+       a repeater rule file with one entry for each  specified  repeater  with
+       the distance value that gives the least total delay among all slews and
+       layers.  This  repeater  rule  file  can be used as an input to the re-
+       peater-by-rule commands:  addRepeaterByRule
+
+       Here is a sample rule file:
+         SetBufferDrivingStrength <bufferName maxDistanceInMicrons maxCapLoad>
+         SetBufferDrivingStrength ...
+         SetDefaultDrivingStrength <maxDistanceInMicrons maxCapLoad>
+         SetDistLastRepToSink <maxDistanceInMicrons>
+
+       There is more information on repeater rule  syntax  here:  addRepeater-
+       ByRule
+
+Parameters
+       -help  Prints  a  brief  description that includes the type and default
+              information for each create_buffer_psPM_table parameter.  For  a
+              detailed  description  of the command and all of its parameters,
+              use the man command: man create_buffer_psPM_table
+
+       -buffers <string>
+              List of input buffers. Specified buffer should have only one in-
+              put and one output.
+
+              Data_type: string, optional
+
+       -file <string>
+              Specifies the addRepeaterByRule rule file name.
+
+              Default: <designName>_repeater.rule.
+
+              Data_type: string, optional
+
+       -inverters <string>
+              List of input inverters. Specified inverter should have only one
+              input and one output.
+
+              Data_type: string, optional
+
+       -layer <string>
+              Specifies the layer name.
+
+              Default: All available routing layers.
+
+              Data_type: string, optional
+
+       -max_target_slew <float>
+              Maximum target slew in picoseconds.
+
+              Data_type: float, required
+
+       -min_target_slew <float>
+              Minimum target slew in picoseconds.
+
+              Data_type: float, required
+
+       -rpt_file <string>
+              Report file name.
+
+              Default: <designName>_buffer_psPM.rpt.
+
+              Data_type: string, optional
+
+       -slew_interval <float>
+              Calculates the step and slew  range  interval.  Specified  value
+              should be within [0.01 1.0].
+
+              The step is calculated using the following:
+
+              step = ($max_target_slew - $min_target_slew) * $slew_interval
+
+              Default: 0.1
+
+              Data_type: float, optional
+
+Examples
+              * The  following command reports distances and pico-second delay
+                values per micron for specified buffers buf2 and  oabuf1  with
+                given  minimum and maximum slews:
+
+                create_buffer_psPM_table   -buffers  {buf2  oabuf1}  -max_tar-
+                get_slew 100 -min_target_slew 70
+
+              * The following command reports distance and  pico-second  delay
+                values  per  micron  for specified buffers TBUFX1, TBUFX3, and
+                TBUFX20 with given minimum, maximum slews, and slew interval:
+
+                create_buffer_psPM_table  -buffers  {TBUFX1  TBUFX3   TBUFX20}
+                -min_target_slew 90 -max_target_slew 120 -slew_interval 0.8
+
+              * The  following command reports distances and pico-second delay
+                values per micron for specified inverter CLKINVX8  with  given
+                minimum, maximum slews, and slew interval:
+
+                create_buffer_psPM_table  -inverters CLKINVX8 -min_target_slew
+                70.0 -max_target_slew 80.0 -slew_interval 1.0
+
+Related Information
+              *
+
+                addRepeaterByRule
+
+              *
+
+                Prototyping Methodologies chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2c0r2e5ate_buffer_psPM_table(25.10)

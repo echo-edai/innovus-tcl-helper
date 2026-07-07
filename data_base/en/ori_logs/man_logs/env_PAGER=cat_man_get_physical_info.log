@@ -1,0 +1,115 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_physical_info(25.10)                              get_physical_info(25.10)
+
+Name
+       get_physical_info  -  Gets  the physical connection or routing path be-
+       tween IO pads and bumps
+
+Syntax
+       get_physical_info
+
+       [-help]
+
+       {-object <string> | -selected }
+
+       [-highlight]
+
+       [-shapes {RING  STRIPE  FOLLOWPIN  IOWIRE  COREWIRE  BLOCKWIRE  PADRING
+       BLOCKRING FILLWIRE FILLWIREOPC DRCFILL None}]
+
+       [-subclass {<subclass_name_list>}]
+
+       [-type {connection | routing_path}]
+
+       Gets the physical connection or routing path between IO pads and bumps.
+       For example, you can select a bump or specify bump name to get informa-
+       tion  about  connected IO pad. Alternatively, you can select or specify
+       an IO pad and get information about connected bumps. You can specify IO
+       pads by pad name, instance:pin combination, or instance:pin:port combi-
+       nation.
+
+       Use this command to check connections after RDL routing, either  manual
+       or through fcroute.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each get_physical_info parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man get_physical_info
+
+       -highlight
+              Highlights the routing path.
+
+       -object <string>
+              Specifies the object from which to get the physical information.
+              For bump, specify the complete bump name.For IO pad, specify one
+              of the following:
+
+              * instance_name
+
+              * instance_name:pin_name
+
+              * instance_name:pin_name:port_number
+
+       -selected
+              Gets the physical information for the selected object.
+
+       -subclass {<subclass_name_list>}
+              Specifies the subclass name of the wires and vias to be checked.
+              You  can specify multiple subclass names enclosed in braces. You
+              can also use wildcards while specifying subclass names.
+
+       -shapes {RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE PADRING BLOCK-
+       RING FILLWIRE FILLWIREOPC DRCFILL None}]
+              Specifies the shapes of the wires and vias to  be  checked.  The
+              default value is IOWIRE.
+
+       -type {connection | routing_path}
+              Specifies  the  type  of the physical information to return. The
+              default type is connection.
+
+              * connection: Returns the objects that are physically  connected
+                to  the object you have specified or selected. For example, if
+                you have selected an IO pad, it returns the names of the  bump
+                that  are  connected  with the IO pad. If you have selected or
+                specified a bump, it returns the  IO  pads  connected  to  the
+                bump, using the format ioInst:pin:port.
+
+              * routing_path:  Returns  the pointer list of the wires and vias
+                that are physically connected to the object you have  selected
+                or specified.
+
+Examples
+       Consider the following design.
+
+       For this design, get_physical_info reports information as follows:
+
+              *
+
+                get_physical_info -object {IOpad_1:vdd:1}
+
+                Returns {Bump_1}
+
+              * get_physical_info  -type connection -object {Bump_1}
+
+                Returns {IOpad_1:vdd:1 IOpad_2:vdd:2  Bump_2}
+
+              * get_physical_info -object {Bump_1} -subclass B
+
+                Returns {IOpad_1:vdd:1 IOpad_2:vdd:2}
+
+              *
+
+                get_physical_info -type routing_path -object {Bump_2}
+
+                Returns {0x2aaaba6c0ab0 0x2aaaba6c0b40 0x2aaaba6c0b70}
+
+Related Information
+              * fcroute
+
+              * Flip Chip Methodologies chapter in the User Guide
+
+                           Fri Apr 04 01:25:37 2025   get_physical_info(25.10)

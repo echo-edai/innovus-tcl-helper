@@ -1,0 +1,111 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+pull_block_constraint(25.10)                      pull_block_constraint(25.10)
+
+Name
+       pull_block_constraint - Pulls the routing constraints stored on the in-
+       terface  nets  of  blocks in a design, to their corresponding top-level
+       nets
+
+Syntax
+       pull_block_constraint
+
+       [-help]
+
+       [-file <report_file_name>]
+
+       [-override]
+
+       {-all_blocks | -block <list_of_blocks> |  -inst  <list_of_instances>  |
+       -cellview {<list_of_libName_cellName_viewName>}}
+
+       Pulls the routing constraints stored on the interface nets of blocks in
+       a  design,  to  their corresponding top-level nets. The pull_block_con-
+       straint command uses a two-pass approach  to  handle  conflicting  con-
+       straints  on the same net. In this approach, the  pull_block_constraint
+       command detects block-level and top-level conflicts and reports a warn-
+       ing.
+
+       If the -override parameter is not specified (non-override mode)  and  a
+       block-level conflict is detected, no constraints are pulled.
+
+       If    the   -override   parameter   is   specified   (override   mode),
+       pull_block_constraint reports the conflicts but pulls  the  constraints
+       such that the lower-level net constraints override any constraints that
+       might exist on the top-level nets..
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each pull_block_constraint parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+              man pull_block_constraint
+
+       -cellview {<list_of_libName_cellName_viewName>}
+              Specifies the list of library, cell, and view names  from  which
+              the constraints need to be pulled.
+
+       -file <report_file_name>
+              Specifies  the report file name. Given that the standard out re-
+              port is in the abbreviated format, more details are written  out
+              in this mode indicating:
+
+              * The  lower, and upper level net names, the type of constraints
+                pulled.
+
+              * All the associated parameters.
+
+              * Any conflicts that need to be resolved.
+
+              * Which constraint were written to a particular net.
+
+              Default: dumpPullInfo.log
+
+       -override
+              When specified, the lower-level net  constraints  will  override
+              any constraints that might exist on the top-level nets.
+
+              Default: off
+
+       -all_blocks
+              Specifies  that  constraints  with  hierarchical  scope  will be
+              pulled from all blocks in the design.
+
+       -block <list_of_blocks>
+              Defines the list of block names of the instances in  the  design
+              for  which  the  constraints  with  hierarchical  scope  will be
+              pulled.
+
+       -inst <list_of_instances>
+              Defines the instances in the design for  which  the  constraints
+              with hierarchical scope will be pulled.
+
+Examples
+              * Using  the  following  command, the constraints on the pins in
+                the cellview binded to the block macro of all  the  instantia-
+                tions  of  the  block  list  pll_clock and pwr_monitor will be
+                pulled up to the top-level  nets  connected  to  the  instance
+                pins.
+
+                pull_block_constraint -block {pll_clock pwr_monitor}
+
+              * Using  the  following  command, the constraints on the pins in
+                the cellview binded to the macro instance I1/I2 will be pulled
+                up to the nets connected to the pins of the instance.
+
+                pull_block_constraint -inst {I1/I2}
+
+Related Information
+              * deleteIntegRouteConstraint
+
+              * writeIntegRouteConstraint
+
+              * Routing Constraint Interoperability chapter in the Mixed  Sig-
+                nal Interoperability Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Mixed Signal -> Pull Block Constraint
+
+                           Fri Apr 04 01:25:37 2025pull_block_constraint(25.10)

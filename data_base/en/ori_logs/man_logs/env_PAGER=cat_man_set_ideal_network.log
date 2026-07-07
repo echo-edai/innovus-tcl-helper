@@ -1,0 +1,112 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_ideal_network(25.10)                              set_ideal_network(25.10)
+
+Name
+       set_ideal_network  -  Identifies  driver pins or ports as sources of an
+       ideal network
+
+Syntax
+       set_ideal_network
+
+       <object_list>
+
+       [-no_propagate]
+
+       Identifies driver pins or ports as sources of an ideal network. By  de-
+       fault, all pins and nets in the transitive fanout of the specified port
+       or driver pin are marked as ideal. Ideal network marking normally prop-
+       agates through combinational cells and stops at sequential cells.
+
+       Note:  This  command is not view/mode-based - it applies to all the ac-
+       tive views.
+
+       The set_ideal_network command sets 0 slew for bi-directional pins. This
+       ensures that unnecessary DRV violations do not occur.
+
+Parameters
+       -no_propagate
+              Prevents propagation through transitive fanout.
+
+       <object_list>
+              Specifies a list of objects - instance pins, ports, or nets.
+
+Examples
+              * The following command marks  the  fanout  of  the  input  port
+                scan_se as an ideal network:
+
+                > set_ideal_network scan_se
+
+                This  can  be  observed  in  the output of below mentioned re-
+                port_timing command where the whole  fanout  of  'scan_se'  is
+                considered as ideal :
+
+                > report_timing -from scan_se
+
+                Path     1:     MET     Setup     Check     with    Pin    RE-
+                SULTS_CONV_INST/r697_reg[12]/CK
+
+                Endpoint: RESULTS_CONV_INST/r697_reg[12]/SE (v)  checked  with
+                trailing edge of 'm_rcc_clk'
+
+                Beginpoint:   scan_se   (v)   triggered  by  leading  edge  of
+                'm_ram_clk'
+
+                Path Groups: {m_rcc_clk}
+
+                Analysis View: scan_fast_RCMIN
+
+                Other End Arrival Time 20.700
+
+                - Setup 1.122
+
+                + Phase Shift 0.000
+
+                + Cycle Adjustment 40.000
+
+                - Uncertainty 0.400
+
+                = Required Time 59.178
+
+                - Arrival Time 4.000
+
+                = Slack Time 55.178
+
+                Clock Rise Edge 0.000
+
+                + Input Delay 4.000
+
+                = Beginpoint Arrival Time 4.000
+
+                -----------------------------------------------------------------
+
+                Pin                  Cell      Load   Slew   Delay     Arc
+
+                                                                       Annota-
+                tion
+
+                -----------------------------------------------------------------
+
+                scan_se ->                     0.000  0.000            Ideal
+
+                FE_OFC413_scan_se/Z  BUF_X32   0.000  0.000  0.000     Ideal
+
+                FE_OFC247_scan_se/Z  BUF_X16   0.000  0.000  0.000     Ideal
+
+                FE_OFC248_scan_se/Z  BUF_X16   0.000  0.000  0.000     Ideal
+
+                FE_OFC249_scan_se/Z  BUF_X8    0.000  0.000  0.000     Ideal
+
+                FE_OFC250_scan_se/Z  BUF_X16   0.000  0.000  0.000     Ideal
+
+                FE_OFC251_scan_se/Z  BUF_X4    0.000  0.000  0.000     Ideal
+
+                RESULTS_CONV_INST/r697_reg[12]/SE
+
+                                     SDFF_X2   0.000  0.000 0.000 Ideal
+
+                ------------------------------------------------------------
+
+Related Information
+              * reset_ideal_network
+
+                           Fri Apr 04 01:25:37 2025   set_ideal_network(25.10)

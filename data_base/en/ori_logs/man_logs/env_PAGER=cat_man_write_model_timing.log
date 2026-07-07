@@ -1,0 +1,372 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+write_model_timing(25.10)                            write_model_timing(25.10)
+
+Name
+       write_model_timing - Writes the interface timing characteristics of the
+       design in the specified timing model report file
+
+Syntax
+       write_model_timing
+
+       [-help]
+
+       [<model_timing_report_file>]
+
+       [-inputs <string>]
+
+       [-nworst <integer>]
+
+       [-outputs <string>]
+
+       [-slew_propagation {worst | path_based}]
+
+       [-type {arc | slack}]
+
+       [-verbose]
+
+       [-view <string>]
+
+       -setup <string> | -hold <string>
+
+       Writes the interface timing characteristics of the design in the speci-
+       fied timing model report file.
+
+       The report file contains the following sections:
+
+              * Worst-Case  Arc/Slack:  Contains  details  about the extracted
+                arcs and the slack or delay across them depending on the argu-
+                ment specified with the -type option.
+
+              * Transition Time: Contains information about transition time at
+                ports.
+
+              * Capacitance: Contains the capacitance values for the ports.
+
+              * Design Rules: Contains the design rules applied to the ports.
+
+       The command reports unconstrained arcs delays by default.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each write_model_timing parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command: man write_model_timing.
+
+       -hold <string>
+              Writes the paths corresponding to early analysis.
+
+       -inputs {<port_list>}
+              Restricts the write_model_timing report to the input ports spec-
+              ified  with  this parameter. As a result, the software considers
+              the timing paths related to  the  specified  input  ports  only,
+              while generating the report.
+
+              If  this  parameter is not specified, all the input ports in the
+              design are considered while generating the report.
+
+       <model_timing_report_file>
+              Specifies the name of the interface  timing  model  report  file
+              that will be generated with the interface timing characteristics
+              of the loaded design.
+
+       -nworst <value>
+              Specifies  the  number  of  paths  to be enumerated for each end
+              point.
+
+              Note:  The  extracted  model  will  contain  greater  number  of
+              setup/hold  paths  per end point because it will have lesser end
+              points compared to the original netlist. Therefore, it is recom-
+              mended that you use a greater -nworst value  such  as  40  while
+              writing a timing report for the extracted model to derive better
+              correlation.
+
+       -outputs {<port_list>}
+              Restricts  the  write_model_timing  report  to  the output ports
+              specified with this parameter. As a result, the software consid-
+              ers the timing paths related to the specified output ports only,
+              while generating the report.
+
+              If this parameter is not specified, all the output ports in  the
+              design are considered while generating the report.
+
+       -slew_propagation { worst | path_based }
+              Sets  the  slew  propagation  mode to use for dumping the timing
+              characteristics of the design.
+
+       -setup <string>
+              Writes the paths corresponding to late analysis.
+
+       -type { arc | slack }
+              Determines whether to report  arc  delay  values  (arc)  or  the
+              worst-slack values (slack).
+
+       -view <view_name>
+              Specifies  a  view  name. The report can be generated for a spe-
+              cific view name.
+
+       -verbose
+              Prints the command progress details.
+
+Example
+              * The following command extracts the interface timing character-
+                istics of the currently loaded design and writes out  the  re-
+                port file named sample.rpt with the arc delay information:
+
+                write_model_timing -type arc sample.rpt
+
+       Output:
+
+       #############################################################
+
+       # write_model_timing report
+
+       # Design : netlist = .//case1.v topcell = set_propagated_clock_tc2
+
+       # Version : 07.10-dev.indfe_cm
+
+       # Analysis Mode : setup
+
+       # Date : Wed Mar 14 15:29:57 IST 2007
+
+       # Command : write_model_timing -type arc sample.rpt
+
+       ##############################################################
+
+       ##############################################################
+
+       # Section 1 : Worst Case Arc
+
+       # Analysis Mode : setup
+
+       # Description : worst case arcs
+
+       #
+
+       # From To Arc Type Transition Arc-Delays
+
+       #####################################################
+
+       in CLK3 setup fall/rise 0.134
+
+       in CLK3 setup rise/rise -0.005
+
+       ####################################################
+
+       # Section 2 : Transition time
+
+       # Analysis Mode : setup
+
+       # Description : Actual transition times on the ports
+
+       #
+
+       # Port RiseTran FallTran
+
+       ####################################################
+
+       in 0.000 0.000
+
+       clk 0.000 0.000
+
+       out 0.056 0.051
+
+       ####################################################
+
+       # Section 3 : Capacitance
+
+       # Analysis Mode : setup
+
+       # Description : Total Cap on the ports
+
+       #
+
+       # Port CTotal(Rise) CTotal(Fall)
+
+       #######################################
+
+       in 0.002 0.002
+
+       clk 0.002 0.002
+
+       out 0.000 0.000
+
+       #########################################
+
+       # Section 4 : Design Rules
+
+       # Analysis Mode : setup
+
+       # Description : Design Rules on the ports
+
+       #
+
+       # Port MaxCap MinCap MaxTrans MaxFanout Fanout Limit
+
+       #################################################
+
+       in NA NA NA NA NA
+
+       clk NA NA NA NA NA
+
+       out NA NA NA NA NA
+
+              * In MMMC mode, the write_model_timing command displays the fol-
+                lowing report output:
+
+                ##############################################
+
+                # write_model_timing report
+
+                #   Design  :  netlist  =  ./../../../tc/tempus/testcases/tem-
+                pus_ilm/DATA/mmmc/dtmf_chip/dtmf_chip.Route.opt.ILM.enc.dat/dtmf_chip.v
+                topcell = dtmf_chip
+
+                # Analysis Mode : setup
+
+                # Date : Mon Sep 21 22:07:40 PDT 2009
+
+                # Command : write_model_timing -type arc sample.rpt
+
+                #############################################################################
+
+                #############################################################################
+
+                # Section 1 : Worst Case Arcs
+
+                # Analysis Mode : setup
+
+                # Description : worst case arcs
+
+                #
+
+                # From   To           Arc  Type       Transition    Arc-Delays
+                View
+
+                #############################################################################
+
+                vclk2     tdigit[0]    max_sequential rise/fall   2.676   mis-
+                sion+worst-rcMax
+
+                vclk2    tdigit[0]    max_sequential rise/rise   2.831    mis-
+                sion+worst-rcMax
+
+                vclk2     tdigit[1]    max_sequential rise/fall   2.413   mis-
+                sion+worst-rcMax
+
+                vclk2    tdigit_flag  max_sequential rise/rise   2.58     mis-
+                sion+worst-rcMax
+
+                vclk2      tdigit[0]      max_sequential   rise/fall     2.676
+                test+worst-rcMax
+
+                vclk2      tdigit[0]      max_sequential   rise/rise     2.831
+                test+worst-rcMax
+
+                vclk2      tdigit[1]      max_sequential   rise/fall     2.413
+                test+worst-rcMax
+
+                ####################################################
+
+                # Section 2 : Transition time
+
+                # Analysis Mode : setup
+
+                # Description : Actual transition times on the ports
+
+                # View : default
+
+                #
+
+                # Port                  RiseTran   FallTran
+
+                ####################################################
+
+                reset                    0.120     0.120
+
+                int                      0.120     0.120
+
+                port_pad_data_in[15]     0.120     0.120
+
+                port_pad_data_in[0]      0.120     0.120
+
+                scan_en                  0.120     0.120
+
+                scan_clk                 0.120     0.120
+
+                scan_in_1                0.120     0.120
+
+                scan_in_2                0.120     0.120
+
+                test_mode                0.120     0.120
+
+                spi_data                 0.120     0.120
+
+                spi_fs                   0.120     0.120
+
+                refclk                   0.120     0.120
+
+                vcom                     1.025     1.138
+
+                ####################################################
+
+                # Section 3 : Capacitance
+
+                # Analysis Mode : setup
+
+                # Description : Total Cap on the ports
+
+                # View : default
+
+                #
+
+                # Port              CTotal(Rise) CTotal(Fall)
+
+                ####################################################
+
+                reset                  3.078     3.078
+
+                port_pad_data_in[0]    3.078     3.078
+
+                scan_en                3.078     3.078
+
+                scan_clk               3.078     3.078
+
+                scan_in_1              3.078     3.078
+
+                vcop                   0.007     0.007
+
+                #######################################################################
+
+                # Section 4 : Design Rules
+
+                # Analysis Mode : setup
+
+                # Description : Design Rules on the ports
+
+                # View : default
+
+                #
+
+                #  Port                MaxCap   MinCap   MaxTrans    MaxFanout
+                Fanout  Limit
+
+                #######################################################################
+
+                reset                  NA    NA      2.700     15.000     NA
+
+                int                    NA    NA      2.700     15.000     NA
+
+                port_pad_data_in[15]   NA    NA      2.700     15.000     NA
+
+                port_pad_data_in[14]   NA    NA      2.700     15.000     NA
+
+                port_pad_data_in[13]   NA    NA      2.700     15.000     NA
+
+                port_pad_data_in[12]   NA    NA      2.700     15.000     NA
+
+Related Information
+              * merge_model_timing
+
+              * compare_model_timing
+
+                           Fri Apr 04 01:25:37 2025  write_model_timing(25.10)

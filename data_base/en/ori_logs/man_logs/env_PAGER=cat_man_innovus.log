@@ -1,0 +1,594 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+innovus(25.10)                                                  innovus(25.10)
+
+Name
+       innovus - Launches an Innovustm Implementation System session
+
+Syntax
+       innovus
+
+       [-abort_on_error]
+
+       [-batch]
+
+       [-cds_lib_file <in_file>]
+
+       [-cpus <value>]
+
+       [-db <dir> | -ihdb <dir>]
+
+       [-disable_user_startup]
+
+       [-execute <list_of_Tcl_commands>]
+
+       [-files <in_file_list>]
+
+       [-help]
+
+       [-legacy_ui]
+
+       [-lic_multi_cpu <lic_list>]
+
+       [-lic_options <lic_list>]
+
+       [-lic_startup <lic_list>]
+
+       [-lic_startup_options <lic_list>]
+
+       [-lic_stack {1 | 2}]
+
+       [-log <prefix>]
+
+       [-no_cmd]
+
+       [-no_gui]
+
+       [-no_logv]
+
+       [-overwrite]
+
+       [-stylus]
+
+       [-version]
+
+       [-wait <minutes>]
+
+       Launches  an  Innovustm Implementation System session. The innovus com-
+       mand starts one of the following products:
+
+              * Innovus Implementation System
+
+              * Innovus Implementation System Basic
+
+              * Virtuoso(R) Digital Implementation
+
+              * Virtuoso(R) Digital Implementation XL
+
+              * First Encounter(R) L
+
+              * First Encounter(R) XL
+
+       For an overview of the products and product licensing, see Product  and
+       Licensing Information chapter in the Innovus User Guide.
+
+       To  start  an Innovus session, type the innovus command with the appro-
+       priate parameters on the UNIX/Linux command line. If you type the  com-
+       mand  without parameters, the software starts in GUI mode and creates a
+       log file and a command file. The system attempts to check out  the  li-
+       cense  with the most functionality, then the license with the next most
+       functionality, and so on.
+
+Parameters
+       -help  Writes out the usage and options with brief descriptions.
+
+       -abort_on_error
+              Exits if an error is detected at any point.
+
+              If any Tcl command returns TCL_ERROR to the top  level,  or  any
+              Error (XXX): ... message occurs, the process will exit.
+
+       -batch Runs  without interactive prompt. After all the options, includ-
+              ing -execute and -files, are processed, the job exits.
+
+       -cds_lib_file <in_file>
+              Loads the specified file instead of the default cds.lib file  in
+              the  current directory to obtain the names and locations of Ope-
+              nAccess libraries. The cds.lib file is used to list the  OpenAc-
+              cess library names, and their physical locations.
+
+       -cpus <value>
+              Specifies  the  number of CPUs to be used for multi-threading on
+              current host. This calls the appropriate Tcl command to set  the
+              local cpu count. This happens before any -execute or -files com-
+              mands  are  processed. This may require extra multi-CPU licenses
+              to be checked out (see -lic_multi_cpu).
+
+       -db <dir>
+              Specifies the DB directory to be read.  This  option  calls  re-
+              storeDesign internally. Example:
+
+              innovus -db path/dbName.enc.dat
+
+              The  specified DB directory is read before -execute or -files is
+              invoked.
+
+              Note: The database being restored with -db should not be an  In-
+              tegrated Hierarchical Database (iHDB). If you want to restore an
+              iHDB  database,  use  -ihdb <dir> instead. The -db and -ihdb op-
+              tions cannot be used together.
+
+       -disable_user_startup
+              Reads only the init file in the installation hierarchy. Does not
+              read init files in the home or current directory.
+
+              This option suppresses the default loading  from  the  home  and
+              current  directory,  which can be used to guarantee there are no
+              local over-rides to various project settings. See the  "Initial-
+              ization Files" section for the init files that are loaded by de-
+              fault.
+
+       -execute <list_of_Tcl_commands>
+              Specifies  the  Tcl  commands  to  be  executed at startup, as a
+              quoted string.
+
+       -files <in_file_list>
+              Specifies one or more Tcl files to be sourced at startup,  after
+              -execute commands are processed.
+
+       -ihdb <dir>
+              Specifies  that  the Integrated Hierarchical Database (iHDB) di-
+              rectory is to be read, such as xxx/my_design/placed. This option
+              calls restore_module_model internally. Example:
+
+              innovus -ihdb <iHDB_path>/<cell>/<tag>
+
+              The specified iHDB directory is read before -execute  or  -files
+              is invoked.
+
+              The  specified  iHDB  should already have been created with cre-
+              ate_module_model. To learn more about the iHDB  flow,  refer  to
+              the "Integrated Hierarchical Database" section in the Hierarchi-
+              cal and Prototyping Flow chapter of the Innovus User Guide.
+
+              Note:  If  you  want to restore a non-iHDB database, use the -db
+              <dir> option instead. The -db and -ihdb options cannot  be  used
+              together.
+
+       -legacy_ui
+              Launches  the Legacy UI interface. This changes the Tcl commands
+              to the Legacy UI interface described in the Innovus Text  Refer-
+              ence Manual and the Innovus Database Object Information manuals.
+
+              Note:  This  option  is mutually exclusive withe the -stylus op-
+              tion.
+
+       -lic_multi_cpu <lic_list>
+              Controls which licenses are to be used for higher multi-CPU  us-
+              age in priority order from left to right.
+
+              The allowed license names are:
+
+              invs_cpu: Innovus CPU Accelerator Option
+
+              invs - Innovus Implementation System
+
+              invsb - Innovus Implementation System Basic
+
+              fel: First Encounter(R) L
+
+              fexl: First Encounter(R) XL
+
+              For  example,  -lic_multi_cpu  "fel  fexl" will try to check out
+              felfirst, and then fexl. The licenses will not  be  checked  out
+              until  a  Tcl  command tries to use extra cpus that require more
+              licenses.
+
+       -lic_options <lic_list>
+              Specifies the order for dynamic checkout  of  extra  option  li-
+              censes  when  needed  by a specific command. In some cases, more
+              than one option license can be used to enable a  given  feature.
+              You can control which options are allowed to be checked out, and
+              in  what  priority (from left to right) when required during the
+              run. For example, -lic_options "encan encng  enccco"  will  only
+              allow  those three options to be checked-out dynamically, and in
+              that priority order.
+
+              The allowed license option names are:
+
+              encan - Encounter Advanced Node GXL Option
+
+              enccco - Encounter Clock Concurrent Opt GXL Option
+
+              enclp - Encounter Low Power GXL Option
+
+              encng - Encounter Next Generation (This license is used  to  en-
+              able beta features.)
+
+              invs_2nmGAA - Innovus 2nm GAA Option
+
+              invs_3d_ic - Innovus 3D-IC Option
+
+              invs_3nm - Innovus 3nm Option
+
+              invs_3nmGAA - Innovus 3nm GAA Option
+
+              invs_5nm - Innovus 5nm Option
+
+              invs_7nm - Innovus 7nm Option
+
+              invs_10nm - Innovus 10nm Option
+
+              invs_20nm - Innovus 20nm Option
+
+              invs_automotive - Innovus Automotive Option
+
+              invs_dfm - Innovus DFM Option
+
+              invs_ehfs  -  Innovus Early Hierarchical Floorplan Synthesis Op-
+              tion
+
+              invs_gigaplace - Innovus GigaPlace XL Option
+
+              invs_gigaplace_gxl - Innovus GigaPlace GXL Option
+
+              invs_hfr - Innovus HFR Option
+
+              invs_hier - Innovus Hierarchical Design Option
+
+              invs_ml - Innovus Machine Learning Implementation Option
+
+              invs_ms - Innovus Mixed Signal Option
+
+              invs_sc - Innovus Superconducting Option
+
+              invs_vi - Innovus Voltus InsightAI Option
+
+              qrcaa - Quantus Advanced Analysis GXL Option
+
+              tpsl - Tempus Timing Signoff Solution L
+
+              tpsxl - Tempus Timing Signoff Solution XL
+
+              vdixl_capacity - VDI-XL Block Capacity Option
+
+              vtsaa - Voltus IC Power Integrity Solution Advanced Analysis GXL
+              Option
+
+              vtsesd - Voltus IC Power Integrity Solution - ESD
+
+              vtsl - Voltus IC Power Integrity Solution L
+
+              vtsxl - Voltus IC Power Integrity Solution XL
+
+              vtsxm - Voltus IC Power Integrity Solution - XM
+
+              Option licenses can be checked out dynamically when  a  specific
+              Tcl  command requires it. This may cause the Tcl script to stall
+              and wait for a license, or to exit if the wait period expires.
+
+       -lic_startup <lic_list>
+              Requests one of these licenses at startup in priority order from
+              left to right. The supported licenses are:
+
+              invs - Innovus Implementation System (INVS100)
+
+              invsb - Innovus Implementation System Basic (INVS95)
+
+              fexl - First Encounter(R) XL (FE100GPS)
+
+              vdixl - Virtuoso(R) Digital Implementation XL (3003)
+
+              vdi - Virtuoso(R) Digital Implementation (3002)
+
+              fel: First Encounter(R) L (FE80)
+
+              synthesis: Innovus+ Synthesis (INVS500)
+
+              For example, -lic_startup "fexl fel" will try to check out  fexl
+              first,  and then fel. The checkouts will be attempted repeatedly
+              until one succeeds or the -wait period expires.
+
+       -lic_startup_options <lic_list>
+              Specifies additional option licenses needed at startup.  If  not
+              provided,  they  will be checked out when needed during the run.
+              The allowed license names are:
+
+              encan - Encounter Advanced Node GXL Option
+
+              enccco - Encounter Clock Concurrent Opt GXL Option
+
+              enclp - Encounter Low Power GXL Option
+
+              encng - Encounter Next Generation (This license is used  to  en-
+              able beta features.)
+
+              invs_2nmGAA - Innovus 2nm GAA Option
+
+              invs_3d_ic - Innovus 3D-IC Option
+
+              invs_3nm - Innovus 3nm Option
+
+              invs_3nmGAA - Innovus 3nm GAA Option
+
+              invs_5nm - Innovus 5nm Option
+
+              invs_7nm - Innovus 7nm Option
+
+              invs_10nm - Innovus 10nm Option
+
+              invs_20nm - Innovus 20nm Option
+
+              invs_automotive - Innovus Automotive Option
+
+              invs_dfm - Innovus DFM Option
+
+              invs_ehfs  -  Innovus Early Hierarchical Floorplan Synthesis Op-
+              tion
+
+              invs_gigaplace - Innovus GigaPlace XL Option
+
+              invs_gigaplace_gxl - Innovus GigaPlace GXL Option
+
+              invs_hfr - Innovus HFR Option
+
+              invs_hier - Innovus Hierarchical Design Option
+
+              invs_ml - Innovus Machine Learning Implementation Option
+
+              invs_ms - Innovus Mixed Signal Option
+
+              invs_phy_syn_opt - Innovus+ Physical Synthesis Option
+
+              invs_sc - Innovus Superconducting Option
+
+              invs_vi - Innovus Voltus InsightAI Option
+
+              qrcaa - Quantus Advanced Analysis GXL Option
+
+              tpsl - Tempus Timing Signoff Solution L
+
+              tpsxl - Tempus Timing Signoff Solution XL
+
+              vdixl_capacity - VDI-XL Block Capacity Option
+
+              vtsaa - Voltus IC Power Integrity Solution Advanced Analysis GXL
+              Option
+
+              vtsesd - Voltus IC Power Integrity Solution - ESD
+
+              vtsl - Voltus IC Power Integrity Solution L
+
+              vtsxl - Voltus IC Power Integrity Solution XL
+
+              vtsxm - Voltus IC Power Integrity Solution - XM
+
+              For example, -lic_startup_options "enccco  encan"  will  try  to
+              check  out  both  enccco  and  encan when Innovus starts up. The
+              checkouts will be attempted repeatedly until it succeeds or  the
+              -wait period expires.
+
+       -lic_stack {1 | 2}
+              Specifies  the  number  of  licenses  to stack for stackable li-
+              censes.
+
+              Some startup licenses that have limited instance counts  can  be
+              stacked so that multiple licenses can be checked-out to increase
+              the instance limit.
+
+              Innovus allows stacking of two vdi or vdixl licenses to increase
+              the instance limit from 50,000 to 100,000.
+
+              For  example,  -lic_stack 2 combined with -lic_startup vdi would
+              check out two vdi licenses to allow 100,000 instances.
+
+              Default: 1
+
+       -log <prefix>
+              Specifies the prefix for the .log, .cmd,  and  .logv  files.  If
+              three  arguments are given, such as -log "a b c", then the three
+              names are used exactly without any  extension  added.  So,  -log
+              "mylog mycmd mylogv" will result in mylog mycmd mylogv files.
+
+              The  default  for  <prefix> is innovus. So if -log is not speci-
+              fied, innovus.log, innovus.cmd, and innovus.logv files  will  be
+              created.  If  you  specify -log test, the tool creates test.log,
+              test.cmd and test.logv files.
+
+              The .log file contains the normal logging output, the .cmd  file
+              contains the Tcl commands that were executed, and the .logv file
+              contains a super-set of the .log output plus "verbose" debugging
+              output that is needed only for detailed debugging.
+
+              If  the .log file already exists, an integer is added to the end
+              of all the files to make them unique. This means if -log test is
+              specified, the tool will create test.log test.cmd test.logv  for
+              the  first run, test.log1 test.cmd1 test.logv1 for the next run,
+              and so on. Only the existence of .log is checked, the  existence
+              of the .cmd or .logv files is not checked. The -overwrite option
+              can  be  used to disable this behavior and overwrite an existing
+              .log file.
+
+              If the <prefix> value has a period in it, the last extension  is
+              stripped  off  for  the  .cmd and .logv usage. For example, -log
+              out.log will result in out.log out.cmd out.logv files, and  -log
+              out.a.log  will  result in out.a.log out.a.cmd out.a.logv files.
+              However, if the last extension in the <prefix> value is .gz,  it
+              will  be retained. For example, if you specify -log test.gz, the
+              tool will  create  test.log.gz,  test.cmd.gz,  and  test.logv.gz
+              files.  If you specify -log "test.log.gz test.cmd test.logv.gz",
+              the tool will not gzip all files but will create  files  exactly
+              as   specified:  test.log.gz,  test.cmd,  and  test.logv.gz.  If
+              test.log or test.log.gz already exists, an integer is  added  to
+              make   the   new  files  unique:  test.log1.gz,  test.cmd1,  and
+              test.logv1.gz. If there is an additional extension before .gz  ,
+              it is stripped off.
+
+              You  can disable any given file by using /dev/null. For example,
+              -log "my.log /dev/null /dev/null" will only create my.log.
+
+              Default: innovus.log
+
+              Note: If you provide the log file name under  a  directory  path
+              and  the  directory path does not exist, Innovus will create the
+              directory path and save the log file under the directory.
+
+       -no_cmd
+              Specifies that the .cmd file should not be created.
+
+       -no_gui
+              Disables GUI and Tk support. GUI will not be available later  in
+              the session.
+
+       -no_logv
+              Specifies that the verbose log file should not be created.
+
+       -overwrite
+              Overwrites  an existing .log file (and associated .cmd and .logv
+              files) instead of adding an integer to make the files unique.
+
+       -stylus
+              Launches the Innovus Stylus Common UI  interface.  This  changes
+              the  Tcl commands to the Stylus Common UI interface described in
+              the Innovus Stylus Common UI Text Reference Manual and the  Sty-
+              lus  Common  UI Database Object Information manuals. See the In-
+              novus Stylus Common UI Migration Guide  for  a  summary  of  the
+              changes.
+
+              Note: This option is mutually exclusive withe the -legacy_ui op-
+              tion.
+
+       -version
+              Returns the program version information.
+
+       -wait <minutes>
+              Specifies  the  number of minutes the system waits for a license
+              to become available before exiting.
+
+              Default: 0 (no wait time)
+
+              Value range: 0 to 10,000
+
+Initialization Files
+       By default, various initialization files are loaded at startup, if they
+       exist. They can be used to configure the GUI, load utility  Tcl  files,
+       or configure Innovus settings. The initialization files are read in the
+       following sequence:
+
+       1.  ~/.cadence/innovus/{gui.pref.tcl, gui.color.tcl, workspaces} in the
+       home directory if the GUI is enabled. These files are  intended  to  be
+       created  by  View  -> Set Preference and View -> All Colors -> Save op-
+       tions for a specific user.
+
+       2. .cadence/innovus/{gui.pref.tcl, gui.color.tcl, workspaces/}  in  the
+       current directory if the GUI is enabled. These files are intended to be
+       created  by  View  -> Set Preference and View -> All Colors -> Save op-
+       tions for any user working in this directory.
+
+       3.<<install_dir>>/etc/innovus/enc.tcl in  the  installation  directory.
+       This  is  intended  for CAD teams that want to set Tcl parameters, cus-
+       tomize the GUI, or add user-defined Tcl commands that affect all  users
+       of this release.
+
+       4.  ~/enc.tcl in the home directory. This is intended for user-specific
+       setting that should affect only one user.
+
+       5. ./enc.tcl in the current directory. This is intended for design-spe-
+       cific setting that should affect only designs in this directory.
+
+       Note: The GUI files are not loaded in the non-GUI mode.
+
+       If the -stylus parameter is specified,  the  initialization  files  are
+       loaded in the following order instead:
+
+       1.  ~/.cadence/innovus/{gui.pref.tcl, gui.color.tcl, workspaces} in the
+       home directory if the GUI is enabled.
+
+       2. .cadence/innovus/{gui.pref.tcl, gui.color.tcl, workspaces/}  in  the
+       current directory if the GUI is enabled.
+
+       3.  <<install_dir>>/etc/innovus/innovus.tcl  in the installation direc-
+       tory.
+
+       4. ~/.cadence/innovus/innovus.tcl in the home directory.
+
+       5. ./.cadence/innovus/innovus.tcl in the current directory.
+
+       6. ./innovus_startup.tcl in the current directory.
+
+       Note: The -stylus usage sets the source_verbose root attribute to  true
+       at  startup.  The GUI preference init files (1 and 2 above) ignore this
+       setting, but the non-GUI preference initialization files above  (3,  4,
+       5,  and  6)  will  use  verbose  logging by default. If the shell envar
+       CDS_STYLUS_SOURCE_VERBOSE exists and has  a  boolean  value,  then  the
+       source_verbose  attribute will be set to the envar value at startup. So
+       you can turn off verbose logging at startup by using the following com-
+       mand:
+
+       setenv CDS_STYLUS_SOURCE_VERBOSE 0
+
+Setting Up the Run-Time Environment
+       If <install_dir> is the location  of  your  Innovus  installation,  you
+       should set up your run-time environment like this:
+
+              * Add  the <install_dir>/bin directory to your path. The bin di-
+                rectory has links to all the public executables in the install
+                hierarchy.
+
+              * If you want the legacy Innovus man pages to be available  from
+                the  Unix  man  command,  you  can add <install_dir>/share/in-
+                novus/man to your MANPATH envar.
+
+              * If you want the Tcl man pages to be available  from  the  Unix
+                man  command,  you can add <install_dir>/share/tcltools/man to
+                your MANPATH envar.
+
+       For example, you might add this to your startup shell script:
+
+       set install_dir = /tools/innovus16.2/lnx86
+
+       set path = ($install_dir/bin $path)
+
+       setenv           MANPATH            $install_dir/share/innovus/man:$in-
+       stall_dir/share/tcltools/man:$MANPATH
+
+       Note: When Innovus launches, it automatically adds either the legacy or
+       the  Innovus  Stylus  Common UI man pages (depending on the -stylus op-
+       tion) and the Tcl man pages to the beginning of the current MANPATH in-
+       side Innovus. Therefore, from within Innovus, the man command will  see
+       both sets of man pages before any other man pages.
+
+Temporary File Locations
+       Each  Innovus session creates its own temporary directory to store tem-
+       porary files at the beginning of the run.
+
+       If you have the write permission, the tool creates  tmp_dir  under  the
+       current directory (.). If not, tmp_dir is created in  /tmp. If the Unix
+       envar  TMPDIR is set, then the tmp_dir directory is created inside $TM-
+       PDIR.
+
+       The name of the tmp_dir directory will look like:
+
+       innovus_temp_[pid]_[uuid]_[hostname]_[user]_xxxxxx
+
+       Where _xxxxxx is a string added to make the directory unique. For exam-
+       ple:
+
+       innovus_temp_10233_farm254_bob_nfp9ez
+
+       The temporary directory is automatically removed on exit or if the  run
+       terminated with a catchable signal (e.g. SIGSEGV).
+
+Related Information
+              * Getting Started chapter of the Innovus User Guide
+
+              * Product  and Licensing Information chapter of the Innovus User
+                Guide
+
+              * Hierarchical and Prototyping Flow chapter in the Innovus  User
+                Guide
+
+                *
+
+                  Stylus Hierarchical Database Flow
+
+                           Fri Apr 04 01:25:37 2025             innovus(25.10)

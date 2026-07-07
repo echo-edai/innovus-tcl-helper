@@ -1,0 +1,51 @@
+{
+  "command": "check_design",
+  "is_cmd": true,
+  "summary": "检查设计，确保运行层次化或模块实现流程的全部或部分所需的所有先决条件均已满足。",
+  "description": "check_design命令用于在运行主要流程步骤之前检查其先决条件。如果check_design识别出错误，当前脚本将停止检查。请注意，输出到控制台和日志文件受消息显示限制控制。完整的错误列表将转储到-out_file指定的文件中。该命令检查的问题包括但不限于：设计中使用的单元无法合法放置、轨道与某些或所有单元引脚未对齐、高级工艺中电源网络在单元放置后无法按预期模式着色、单元行因引脚层被阻挡而无法放置、因方向和电源轨未对齐而无法使用的单元行、网表中实例化的单元没有定义时序模型、轨道被电源网格间距约束阻挡、实例在任何视图中都不被真实时序路径覆盖、ILM模型未定义时钟树、未指定保持时间修复单元且延迟单元不可用、未指定时钟反相器、缓冲器、时钟门或逻辑单元且库单元不可用于时钟树、CTS无法在不增加插入延迟的情况下平衡所有偏斜组、时钟树中保留的网络和单元因无法调整大小或缓冲而违反其他约束。",
+  "usage": "check_design [-help] [-id <violation_id>] [-out_file <fileName>] {[-type {library netlist synthesis power_intent timing hierarchical pin_assign budget assign_statements extract_rc place opt cts route signoff all} |-type_3d {db tech_lib netlist power_intent timing place floorplan route report_only all}} [-format {table detail}] [-no_check ]}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印简要描述，包括参数列表、用法及其默认值。不允许与其他参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-id",
+      "description": "指定违规ID。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-out_file",
+      "description": "指定输出报告文件。转储到此文件的内容为Tcl格式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定要检查的流程类别。目的是在运行列表中的每个操作之前运行check_design。每个类别运行与该操作相关的多项检查。选项包括：library（检查库的完整性以及所有设计实例与库单元或RTL模块的正确绑定）、netlist（检查流程中任何点的网表完整性）、synthesis（检查综合相关违规）、power_intent（检查与MSV设置相关的项目，包括电源域/围栏检查）、timing（执行与时序设置完整性相关的检查）、hierarchical（检查层次化流程相关项目）、pin_assign（检查分区流程的引脚分配相关项目）、budget（检查分区流程的时间预算相关项目）、assign_statements（对网表执行assign语句检查）、extract_rc（检查lef层映射是否正确定义）、place（检查与布局相关的项目，如PG电源轨对齐、引脚访问问题等）、opt（检查与优化相关的项目，如可用单元检查）、cts（检查与时钟树定义相关的项目，如约束目标和布线类型）、route（检查与布线相关的项目，如拥塞、布局和引脚访问问题）、signoff（检查与签核活动相关的项目，包括提取和ECO）、all（检查所有类别）。注意：-type或-no_check是必需的（使用-help参数时除外）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type_3d",
+      "description": "指定要检查的3DIC设计类别。可以指定单个或多个类别。选项包括：db（检查堆叠文件中是否定义了芯片，检查3D数据库设置是否正确）、tech_lib（检查库完整性和正确绑定）、netlist（检查库完整性和正确绑定）、power_intent（检查与MSV设置相关的项目，包括电源域/围栏检查，检查电源域是否绑定到正确的设计）、timing（执行与时序设置完整性相关的检查）、place（检查与布局相关的项目，如引脚对齐）、floorplan（检查与布局规划相关的项目）、route（检查与布线相关的项目）、all（检查所有类别）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "指定报告违规的格式。选项包括：table（以表格格式打印结果）、detail（打印违规的详细信息）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-no_check",
+      "description": "不运行任何检查，回显与指定-type将运行的检查相关的错误消息。运行check_design -no_check以查看检查列表。注意：-type或-no_check是必需的（使用-help参数时除外）。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

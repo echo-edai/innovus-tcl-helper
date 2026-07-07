@@ -1,0 +1,96 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createSpareModule(25.10)                              createSpareModule(25.10)
+
+Name
+       createSpareModule  -  Creates  a  spare module made up of the specified
+       cells
+
+Syntax
+       createSpareModule
+
+       [-help]
+
+       -moduleName <moduleName>
+
+       -cell {<cellName>[<number>] [<cellName> [<number>] ] ...}
+
+       [-clock <netName>]
+
+       [-reset <netName>:<pinName> [<pinName>] ...]
+
+       [-tie {<tieCellName> [<tieCellname>] } ]
+
+       [-tieLo {<pinList> | *} ]
+
+       [-useCellAsPrefix]
+
+       Creates a spare module made up of the specified cells.
+
+Parameters
+       -cell <cellName> {[<number>] [<cellName> [<number>] ]}
+              Specifies the names of the cells, and the number of each, to add
+              to the spare module. If you do not specify the number  of  cells
+              to  add,  the  setTieHiLoMode  -maxFanOut parameter controls the
+              number of cells.
+
+       -clock <netName>
+              Specifies a clock net to connect to the clock pins  of  the  in-
+              stances in the spare module.
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each createSpareModule parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man createSpareModule.
+
+       -moduleName <moduleName>
+              Specifies a name for the spare module.
+
+       -reset <netName>:<pinName> [<pinName>]
+              Specifies a net and the pins to connect to the reset pins of se-
+              quential spare cells in the spare module. If you do not  specify
+              this parameter, these reset pins are not connected.
+
+       -tie <tieCellName>[<tieCellName>]
+              Specifies tie-high and tie-low cells to add to the spare module.
+              The software recognizes whether the pins are high or low.
+
+       -tieLo {<pinList> | *}
+              Specifies  the  pins  to  connect to the specified tie-low cell.
+              Pins not specified here will be connected to 1'b1  or  the  tie-
+              high cell. If no tie-low cells are specified with the -tie para-
+              meter, it connects the pins to 1'b0.
+
+              Use the following format for the pin list:
+
+              * <pinList>: {<cellName>:<pin>} ...
+
+              * * : Specify the pin name and it could be *.
+
+       -useCellAsPrefix
+              Adds  the master cell name as a prefix to the name of gates that
+              are  instantiated  inside  the   module.   The   software   adds
+              spr_gate_<n>  as  a prefix by default; when you specify -useCel-
+              lAsPrefix, it prepends the master cell name to the default  pre-
+              fix.
+
+Examples
+              * The  following  command  creates  spare module mod1 with cells
+                cellA, cellB, and tiehi4:
+
+                createSpareModule -cell {cellA cellB} -tie tiehi4  -moduleName
+                mod1
+
+              * The  following command creates spare module mod1 with the fol-
+                lowing gates: and_spr_gate_1, and_spr_gate_2, nand_spr_gate_1,
+                nor_spr_gate_1:
+
+                createSpareModule -cell {and  2  nand  nor}  -moduleName  mod1
+                -useCellAsPrefix
+
+Related Information
+              * deleteSpareModule
+
+              * placeSpareModule
+
+                           Fri Apr 04 01:25:37 2025   createSpareModule(25.10)

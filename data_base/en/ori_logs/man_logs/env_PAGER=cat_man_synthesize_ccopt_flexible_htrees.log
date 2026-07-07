@@ -1,0 +1,183 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+synthesize_cco...lexible_htrees(25.10)  synthesize_cco...lexible_htrees(25.10)
+
+Name
+       synthesize_ccopt_flexible_htrees  -  This command is used to synthesize
+       all flexible H-trees that have been created but not previously  synthe-
+       sized, in one go
+
+Syntax
+       synthesize_ccopt_flexible_htrees
+
+       [-help]
+
+       [-block_master_clone]
+
+       [-dry_run]
+
+       [-report_out_file <filename>]
+
+       [-spec_file <filename>]
+
+       [-use_estimated_routes  |  -trial_mode {true | false | placement_only |
+       routing_only}]
+
+       This command is used to synthesize all flexible H-trees that have  been
+       created but not previously synthesized, in one go. The flexible H-trees
+       are  created using the create_ccopt_flexible_htree command. The synthe-
+       size_ccopt_flexible_htrees command helps reduce the runtime by  synthe-
+       sizing all flexible H-trees in one go as compared to if the flexible H-
+       trees were synthesized one at a time. This is because when you use this
+       command, NanoRoute is called only once to route all flexible H-trees at
+       the same time.
+
+       Note: You must run the synthesize_ccopt_flexible_htrees command to syn-
+       thesize   any  flexible  H-trees  previously  created  using  the  cre-
+       ate_ccopt_flexible_htree command.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each synthesize_ccopt_flexible_htrees parameter.
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man synthesize_ccopt_flexible_htrees
+
+       -block_master_clone
+              When specified, blocks master/clone partitions  for  H-tree  in-
+              stances and nets.
+
+              If  this parameter is not specified, and the master/clone parti-
+              tions do not contain H-tree sink pins, then  the  software  will
+              error out with the following error:
+
+              **ERROR:  (IMPCCOPT-1506):  Flexible  H-tree 'htree' uses a sink
+              grid, which is not supported on master/clone designs unless mas-
+              ter/clone partitions are blocked during flexible H-tree  synthe-
+              sis. If applicable, master/clone partitions can be blocked using
+              synthesize_ccopt_flexible_htrees -block_master_clone.
+
+       -dry_run
+              Runs  the  synthesis algorithm but do not insert the H-tree into
+              the database.
+
+       -report_out_file <filename>
+              When specified, writes the final flexible H-tree metrics to  the
+              specified file.
+
+       -spec_file <filename>
+              Specifies  the name of the clock tree specification script file.
+              When the file name is specified, the  clock  tree  specification
+              file  is not amended to reflect the new state of the clock tree.
+              Instead, the amendments, which are in the form of Tcl  commands,
+              are written to the file specified using this parameter.
+
+       -trial_mode {true | false | placement_only | routing_only}
+              When  set, enables trial routing and placement mode for flexible
+              H-tree synthesis. The following settings are available:
+
+              true: Run routing and detailed placement in trial mode.
+
+              false: Run neither routing nor detailed placement in trial mode.
+              This is the default setting.
+
+              placement_only: Only run detailed placement in trial mode.
+
+              routing_only : Only run routing in trial mode.
+
+              Note: The -trial_mode and -use_estimated_routes  parameters  are
+              mutually exclusive.
+
+              Default: false
+
+       -use_estimated_routes
+              Specifies  that  NanoRoute should not be called. So, the routing
+              estimates are left in the netlist.
+
+              Note: The -trial_mode and -use_estimated_routes  parameters  are
+              mutually exclusive.
+
+Example
+              * The  following set of commands are used to synthesize a flexi-
+                ble H-tree under the pins "rootC/Y". The sinks will be of  the
+                type  INVX9  and  will  be  placed in the specified sink grid.
+                Other buffers added to the H-tree will be of type INVX13.  The
+                flexible   H-tree   is  then  synthesized  using  the  synthe-
+                size_ccopt_flexible_htrees command.
+
+       create_ccopt_flexible_htree -name htreeC -sink_grid {6  6}  -final_cell
+       INVX9 -trunk_cell INVX13 -pin rootC/Y
+
+       synthesize_ccopt_flexible_htrees
+
+Related Information
+              * The following properties:
+
+                Note:  You can also set the following properties on the flexi-
+                ble H-tree design objects by using the set_ccopt_property com-
+                mand:
+
+                * adjust_sink_grid_for_aspect_ratio
+
+                * final_cell
+
+                * flexible_htree
+
+                * flexible_htree_placement_legalization_effort
+
+                * htree_sinks
+
+                * hv_balance
+
+                * image_directory
+
+                * inverting
+
+                * layer_density
+
+                * mode
+
+                * omit_symmetry
+
+                * partition_boundary_inverting
+
+                * pin
+
+                * power_weight
+
+                * sink_grid
+
+                * sink_grid_sink_area
+
+                * sink_grid_box
+
+                * sink_grid_exclusion_zones
+
+                * sink_instance_prefix
+
+                * stop_at_sdc_clock_roots
+
+                * trunk_cell
+
+       For detailed information about all public  CCOpt  properties,  see  the
+       CCOpt Properties chapter in the Innovus User Guide.
+
+              * create_ccopt_flexible_htree
+
+              * delete_ccopt_flexible_htrees
+
+              * get_ccopt_flexible_htrees
+
+              * get_ccopt_property
+
+              * set_ccopt_property
+
+              * The following topic in the Innovus User Guide
+
+                * Flexible H-Tree and Multi-Tap Clock Flow
+
+              * For  details of the use model for this feature, see the Flexi-
+                ble H-tree and Multi-Tap Clock  Flow  in  Innovus  Application
+                Note on the Cadence Online Support website.
+
+                           Fri Apr 04 01:s2y5n:t3h7es2i0z2e5_cco...lexible_htrees(25.10)

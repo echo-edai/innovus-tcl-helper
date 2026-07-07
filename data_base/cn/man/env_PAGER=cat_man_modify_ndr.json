@@ -1,0 +1,81 @@
+{
+  "command": "modify_ndr",
+  "is_cmd": true,
+  "summary": "修改由 add_ndr 命令创建或从 DEF/OpenAccess 数据导入的非默认布线规则。",
+  "description": "此命令用于修改一个已存在的非默认布线规则（NDR）。该规则可以是由 add_ndr 命令创建的，也可以是从 DEF 文件或 OpenAccess 设计数据中导入的。此命令也支持修改用于背面层对象的 NDR。\n注意：在 LEF 或 OA 技术文件中定义的 NONDEFAULTRULE 无法通过此命令修改。如需更改，必须直接修改 LEF 或 OA 技术文件。\n通常应在设计中存在任何布线之前使用此命令。如果已有布线使用了此 NDR，修改可能会导致新的 DRC 违规。在某些情况下，ecoRoute 可能能够修复布线（例如仅更改通孔通常可以修复，仅添加新的通孔选择通常无需修复），但在许多情况下（例如更改宽度或间距时），需要重新布线整个设计以获得良好结果。\n如果 setGenerateViaMode -auto 为 true，则会根据 setGenerateViaMode 的设置自动为修改后的 NDR 生成通孔。",
+  "usage": "modify_ndr [-help] [-add_via {<via_name1 via_name2 ...>}] [-generate_via] [-hard_spacing {0|1}] [-min_cut {<layer1>[:<layer2>] <min_cut ...>}] -name <ruleName> [-spacing {<layer1>[:<layer2>]  <spacing>  ...}  |  -spacing_multiplier {<layer1>[:<layer2>] <spacing> ...}] [-use_via_cut_class <string>] [-via {<via_name1 via_name2> ...}] [-width   {<layer1>[:<layer2>]   <width>   ...}   |   -width_multiplier {<layer1>[:<layer2>] <width> ...}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印每个 modify_ndr 参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-add_via",
+      "description": "指定一个通孔列表，添加到现有的 NDR 通孔列表中。可用于添加 DFM 通孔或其他自定义通孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-generate_via",
+      "description": "使用 generateVias 命令自动生成通孔。主要用于调试，通常不用于常规流程，因为它仅在当前会话中添加通孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-hard_spacing",
+      "description": "将非默认规则设置为 HARDSPACING。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-min_cut",
+      "description": "指定通孔层的最小切割限制。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定要修改的非默认规则的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定布线层的间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spacing_multiplier",
+      "description": "指定布线层的间距乘数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-use_via_cut_class",
+      "description": "指定层和 cut_class 列表以支持 LEF/DEF 属性。值必须为 {layer cut_class} 或 {layer cut_class nr_row nr_col} 格式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via",
+      "description": "将通孔列表重置为空，然后将指定的通孔列表添加到 NDR 通孔列表中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-width",
+      "description": "指定布线层的宽度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-width_multiplier",
+      "description": "指定布线层的宽度乘数。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

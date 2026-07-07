@@ -1,0 +1,134 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_clock_uncertainty(25.10)                  reset_clock_uncertainty(25.10)
+
+Name
+       reset_clock_uncertainty - Removes the assertions that were made by pre-
+       vious set_clock_uncertainty commands
+
+Syntax
+       reset_clock_uncertainty
+
+       [-setup]
+
+       [-hold]
+
+       [-half_cycle_jitter | -full_cycle_jitter]
+
+       {  {-from | -rise_from | -fall_from} <clksig_from_list>
+
+          {-to | -rise_to | -fall_to} <clksig_to_list>
+
+        | <pin_or_clock_list>
+
+       }
+
+       Removes the assertions that were made by previous set_clock_uncertainty
+       commands.
+
+Parameters
+       {-from | -rise_from | -fall_from} <clksig_from_list>
+              Removes  the  assertions for uncertainty value for the specified
+              list of launching clocks.
+
+              Note: You must specify one of these parameters with one  of  the
+              -to,  -rise_to, or -fall_to parameters. You cannot use these pa-
+              rameters when pins are specified.  -fall_from: Removes  the  un-
+              certainty  value  only  from  the  falling edge of the launching
+              clocks.  -from: Removes the uncertainty value from both the ris-
+              ing and falling edges of the launching clocks.  -rise_from:  Re-
+              moves  the  uncertainty  value  only from the rising edge of the
+              launching clocks.
+
+       -half_cycle_jitter | -full_cycle_jitter
+              Removes or resets the clock source jitter  assertion(s)  of  the
+              specified type.
+
+       <pin_or_clock_list>
+              Removes  the  target  uncertainty  assertions from the specified
+              list of clocks or pins. The uncertainty value  is  removed  from
+              the  registers  clocked by the target waveform, or register pins
+              in the fanout of the specified pin.
+
+              You can specify a list of clock names, or clock root pin or port
+              names relative to the current module. You  also  can  specify  a
+              collection of clocks, or clock root pins or ports.
+
+              Note:  You  cannot  use this parameter when any of the -from and
+              -to parameter pairs are specified.
+
+       -setup/-hold
+              Specifies whether the clock uncertainty is removed for setup  or
+              hold checks.
+
+              Default:  Removes  clock  uncertainty  for  both  setup and hold
+              check.
+
+       {-to | -rise_to | -fall_to} <clksig_to_list>
+              Removes the uncertainty value from the specified list of capture
+              clocks.
+
+              Note: You must specify one of these parameters with one  of  the
+              -from,  -rise_from,  or  -fall_from  parameters.  You cannot use
+              these parameters when pins are specified.  -fall_to: Removes the
+              uncertainty value only from the  falling  edge  of  the  capture
+              clocks.   -rise_to:  Removes the uncertainty value only from the
+              rising edge of the capture clocks.  -to: Removes the uncertainty
+              value from both the rising and  falling  edges  of  the  capture
+              clocks.
+
+Examples
+       The following commands sets and resets the clock uncertainty assertions
+       and displays the results using the report_timing command:
+
+              * set_clock_uncertainty   0.345   -from  [get_clocks  VCLK]  -to
+                [get_clocks WAVE]report_timing -net -from tin
+
+                # Generates the following report:
+
+                Path 1: MET Setup Check with Pin TR1/BR1/CK
+
+                Endpoint: TR1/BR1/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: tin (v) triggered by trailing edge of 'VCLK'
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.192
+
+                + Phase Shift 10.000
+
+                - Uncertainty 0.345 <---
+
+                = Required Time 9.463
+
+                - Arrival Time 5.877
+
+                = Slack Time 3.586
+
+              * reset_clock_uncertainty   -from    [get_clocks    VCLK]    -to
+                [get_clocks WAVE]report_timing -net -from tin
+
+                # Generates the following report:
+
+                Path 1: MET Setup Check with Pin TR1/BR1/CK
+
+                Endpoint: TR1/BR1/D (v) checked with leading edge of 'WAVE'
+
+                Beginpoint: tin (v) triggered by trailing edge of 'VCLK'
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.192
+
+                + Phase Shift 10.000
+
+                = Required Time 9.808
+
+                - Arrival Time 5.877
+
+                = Slack Time 3.931
+
+Related Information
+              * set_clock_uncertainty
+
+                           Fri Apr 04 01:25:37 20r2e5set_clock_uncertainty(25.10)

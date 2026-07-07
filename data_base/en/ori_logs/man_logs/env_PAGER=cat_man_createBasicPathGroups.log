@@ -1,0 +1,122 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createBasicPathGroups(25.10)                      createBasicPathGroups(25.10)
+
+Name
+       createBasicPathGroups  -  Explicitly creates standard path groups irre-
+       spective of the design stage
+
+Syntax
+       createBasicPathGroups
+
+       [-help]
+
+       [-expanded]
+
+       [-reset]
+
+       Explicitly creates standard path  groups  irrespective  of  the  design
+       stage. The following path groups are created:
+
+              * reg2reg (register-to-register)
+
+              * reg2cgate (register-to-clock-gate)
+
+              * default
+
+       Note:
+
+              * If  a  design  does  not  have any reg2reg paths, or reg2cgate
+                paths,  this  command  will  create  the  corresponding   path
+                group(s).
+
+              * If  the specified path group, say reg2reg, already exists, the
+                software will give the following warning:
+
+                **WARN: (IMPOPT-3666):  Path  group  reg2reg  already  exists.
+                Skipping the creation of this path group.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each createBasicPathGroups parameter.  For  a  de-
+              tailed description of the command and all of its parameters, use
+              the man command:  man createBasicPathGroups.
+
+       -expanded
+              When  this parameter is specified, the following path groups are
+              created:
+
+              * reg2reg
+
+              * reg2cgate
+
+              * in2reg
+
+              * reg2out
+
+              * in2out
+
+              When this parameter is not  specified,  only  the  default  path
+              groups, reg2reg and reg2cgate, are created.
+
+              Note: Timing optimization will consider these path groups in the
+              same way as paths grouped using the group_path command. In addi-
+              tion,  if a design does not have any reg2reg or reg2cgate paths,
+              this command will not create the corresponding path groups.
+
+       -reset Deletes all existing path groups. This is equivalent to  running
+              the reset_path_group command.
+
+              Note:  After deleting the existing path groups, new path groups,
+              reg2reg and reg2cgate are created.
+
+Examples
+              * The following command is used  to  create  the  standard  path
+                groups and assigns an effort level to each group:
+
+                createBasicPathGroups
+
+                The software returns the following information:
+
+                Created reg2reg path group
+
+                Effort level <high> specified for reg2reg path_group
+
+                Created reg2cgate path group
+
+                Effort level <high> specified for reg2cgate path_group
+
+              * The  following  commands are used to set the  effort level for
+                the reg2reg path group to high, and report the  parameters  of
+                the path groups that are created:
+
+                setPathGroupOptions reg2reg -effortLevel low
+
+                reportPathGroupOptions
+
+                The software prints the following report:
+
+                ---------------------------------------------------------------------------------------------------
+
+                |Path               Group|Effort|Adjustment(early/late)|Target
+                Slack|weight|SkewingSlackCons|view               |
+
+                ---------------------------------------------------------------------------------------------------
+
+                |reg2reg   | high | 0.1    /-0.2         | 0          |  2   |
+                0.3         |AV_HL_FUNC_MIN_RC1 |
+
+                |reg2cgate | high | 0.2    /0            | 0          |  1   |
+                0.5         |AV_HL_FUNC_MAX_RC1 |
+
+Related Information
+              * reportPathGroupOptions
+
+              * resetPathGroupOptions
+
+              * setPathGroupOptions
+
+              * The following topic in the Innovus User Guide
+
+                * Path Group Support in Timing Optimization
+
+                           Fri Apr 04 01:25:37 2025createBasicPathGroups(25.10)

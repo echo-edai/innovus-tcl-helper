@@ -1,0 +1,145 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setWhatIfTimingMode(25.10)                          setWhatIfTimingMode(25.10)
+
+Name
+       setWhatIfTimingMode  - Sets the timing model mode for all blackboxes or
+       blackblobs of the design
+
+Syntax
+       setWhatIfTimingMode
+
+       [-help]
+
+       [-reset]
+
+       [-context {in | out}]
+
+       [-defaultOutputCap <value>]
+
+       [-model {intrinsic | normalized}]
+
+       [-portPriority {cellType | portParam}]
+
+       Sets the timing model mode for all blackboxes or blackblobs of the  de-
+       sign.  You  can  select only one mode for all blackboxes or blackblobs.
+       For more information on the timing models, see "What-If  Timing  Analy-
+       sis," in the Innovus User Guide.
+
+       If  you  modify at least one timing arc, you cannot directly change the
+       mode for the blackboxes or blackblobs. You must first delete the timing
+       arc specifications of the blackboxes or blackblobs  using  the  delete-
+       WhatIfTimingAssertions command.
+
+        You  can  use this command after the module definition of the blackbox
+       or the blackblob is available with the I/O's in the Verilog netlist.
+
+Parameters
+       -context [{in | out}]
+              Specifies whether the timing mode description is  in-context  or
+              out-context. The context refers to the chip-level context.
+
+              * In-context:  The  timing  mode description is created once the
+                chip environment is ready, that is, after placement and  rout-
+                ing.  In  this case, the software takes into consideration the
+                capacitance of the design.
+
+              * Out-context: The timing model is described  outside  the  chip
+                environment  and  can  be  described before floorplanning. You
+                provide the value of the timing arc for a given capacitance.
+
+              The value of the -outputCap parameter of the  setWhatIfDriveType
+              command is set based on whether the context is in or out.
+
+              The -context parameter can be used only in the normalized mode.
+
+              The  value of the -context parameter is frozen once a timing arc
+              is defined. This is done to avoid having an incorrect timing as-
+              sertion file later in the flow.
+
+              Default: The default value is out.
+
+       -defaultOutputCap [ <value> ]
+              Specifies the value of the default  output  capacitance  on  the
+              port.
+
+              The  -defaultOutputCap parameter can be used only in the normal-
+              ized mode.
+
+              The value of the -defaultOutputcap parameter is  frozen  once  a
+              timing arc is defined. This is done to avoid having an incorrect
+              timing assertion file later in the flow.
+
+              The unit is pico farads.
+
+              Default: The default value is 0.
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setWhatIfTimingMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man  setWhatIfTimingMode.
+
+       -model {intrinsic | normalized}
+              Specifies whether the timing model mode is intrinsic or  normal-
+              ized.
+
+              Default: The default mode is normalized.
+
+       -portPriority {cellType | portParam}
+              On  output  ports, parameters such as capacitance value, maximum
+              capacitance values, maximum transition  value,  or  the  maximum
+              fanout  value  can come from the driver (setWhatIfDriveType com-
+              mand) or they can be  set  through  the  setWhatIfPortParameters
+              command.  You  can  use  the  -portPriority parameter to specify
+              which of these values take precedence in case of a conflict.
+
+              * The value cellType specifies that  the  parameter  values  set
+                through the setWhatIfDriveType command take precedence.
+
+              * The  value  portParam  specifies that the parameter values set
+                through the setWhatIfPortParameters command take precedence.
+
+              The value of the portPriority parameter is frozen  once a  what-
+              if timing arc has been defined. This  avoids inconsistencies be-
+              tween  he timing  analysis files and the files that you can gen-
+              erate  (such as whatif assertions, timing model, or  SDC) if you
+              change the port priority  subsequently.
+
+              Default: The default value is portParam.
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software resets all  setWhatIfTimingMode  parameters
+              to their default values. If you specify parameters after -reset,
+              the  software resets only those parameters to their default val-
+              ues.
+
+              Note: Any values that do not already match the default value and
+              are reset will be reported.
+
+Examples
+              * The following command sets the timing model mode to  intrinsic
+                and specifies that in case of a conflict, the parameter values
+                set  through  the  setWhatIfDriveType command takes precedence
+                over the parameter values set through the setWhatIfPortParame-
+                ters command. Because the -defaultOutputCap parameter and  the
+                -context  parameter were not specified, the output capacitance
+                is set to 0, and the context is set to out.
+
+                setWhatIfTimingMode -model intrinsic -portPriority cellType
+
+              * The following command resets the value of the -model  and  the
+                -portPriority  parameters.  Note  that the -reset parameter is
+                the first parameter in the command.
+
+                setWhatIfTimingMode -reset -model -portPriority
+
+              * The following  command  resets  the  value  of  all  the  set-
+                WhatIfTimingMode parameters
+
+                setWhatIfTimingMode -reset
+
+Related Information
+              * getWhatIfTimingMode
+
+                           Fri Apr 04 01:25:37 2025 setWhatIfTimingMode(25.10)

@@ -1,0 +1,39 @@
+{
+  "command": "refinePlace",
+  "is_cmd": true,
+  "summary": "修正有缺陷的单元位置并报告修正或实例重叠问题",
+  "description": "该命令用于修正有缺陷的单元位置，并报告修正情况或实例重叠问题。运行refinePlace不需要一个完全布局好的设计。只有当布局不合法时（例如实例重叠、方向错误、约束违规、布局/布线阻塞违规），该命令才会进行修改。可以使用checkPlace命令在设计中标出布局违规。refinePlace命令会在每个主要的超级命令（如place_opt_design、optDesign、ccopt_design）结束时自动调用，以确保最终布局没有违规。如果手动移动了任何实例，可以运行refinePlace来合法化可能因此手动移动导致的违规单元布局。refinePlace仅对具有'placed'布局状态的单元进行操作。注意：也可以通过setPlaceMode为此命令指定参数。如果使用setPlaceMode，这些参数将在当前会话中每次运行refinePlace时生效，除非被refinePlace的设置覆盖。注意：如果setPlaceMode -place_detail_honor_inst_pad设置为true，refinePlace和其他使用refinePlace API的命令会将实例填充约束视为硬规则。",
+  "usage": "refinePlace [-help] [-area {lx ly ux uy}] [-eco {true|false}] [-inst <list_of_instances>] [-wire_length_reclaim {true|false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个refinePlace参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定refinePlace的操作区域。参数为四个坐标值：{llx lly urx ury}，分别代表区域的左下角x坐标、左下角y坐标、右上角x坐标、右上角y坐标。注意：-area选项的坐标应在花括号内提供，否则工具会报错。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-eco",
+      "description": "为布线后设计激活ECO模式。默认值：false。注意：此选项由setPlaceMode -place_detail_eco_max_distance控制。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inst",
+      "description": "对用户提供的实例列表进行合法化处理。所有其他实例被视为固定。注意：此选项由setPlaceMode -place_detail_eco_max_distance控制。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-wire_length_reclaim",
+      "description": "激活线长回收模式。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

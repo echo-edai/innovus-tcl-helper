@@ -1,0 +1,1354 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_pg_library_mode(25.10)                          set_pg_library_mode(25.10)
+
+Name
+       set_pg_library_mode - Specifies what kind of power-grid library will be
+       created
+
+Syntax
+        set_pg_library_mode
+
+       [-help]
+
+       [-add_ploc_cells <cell1> <cell2> ...]
+
+       [-bulk_ground_pins {  <ground_pin_list> }]
+
+               [-bulk_power_pins {  <pin1 voltage1 ... pinN voltageN> }]
+
+       [-calculate_metal_layer_density {true | false}]
+
+       [-cell_decap_file <filename>
+
+                   ]
+
+               [-cell_list_file   <filename>
+
+                       ]
+
+       [-cell_ploc_details <filename>]
+
+       -celltype {
+
+                      techonly
+                    | stdcells | macros  }
+
+            [-current_distribution  {propagation  |  dynamic_simulation <trig-
+       ger_file> | current_region region_file}]
+
+               [-custom_label <label>]
+
+       [-decap_cells
+
+                <cell_name_list>
+             ]
+
+       [-default_area_cap <value>
+             ]
+
+                [-default_power_voltage <value>
+                 ]
+
+       [-design_qrc_layermap <file> ]
+
+       [-enable_device_size_current_distribution {true | false}]
+
+       [-enable_distributed_processing  {true|false} ]
+
+       [-enable_multi_voltage_cap_generation {true | false}]
+
+       [-exclude_cell_list_file <filename>]
+
+       [-extraction_tech_file <file>]
+
+       [-filler_cells   <cell_name_list> ]
+
+       [-fine_grain_memory_cell {true | false}]
+
+        [-gds_files <file_list> ]
+
+        [-gds_layermap <file> ]
+
+        [-generate_port_using_gds <mbb_layer_name>]
+
+       [-ground_pins {   <ground_pin_list> }]
+
+       [-ignore_gds_cells {<gds_cell_name_list>}]
+
+       [-internal_ground_pins <ground_pin_list>]
+
+       [-internal_power_pins <power_pin_list>]
+
+       [-layer_tap_node_distance { {<LayerName1> <tap_node_distance>} {<Layer-
+       Name2> <tap_node_distance>} ... }]
+
+       [-layers_to_be_ignored_during_tap_creation {<layername>+}]
+
+       [-layers_to_have_ports_created {<layername>+}]
+
+       [-lef_layermap <file> ]
+
+       [-liberty_files <file_list>]
+
+       [-macros_config_file   <filename>]
+
+       [-max_metal_density_tile_dimension {<maxlength> <maxwidth>}]
+
+       [-non_zero_ground_pins {<pin1> <voltage1> ... <pinN> <voltageN>}]
+
+       [-oasis_files <file_list>]
+
+       [-oasis_layermap <file>]
+
+       [-pin_shape_current_distribution <filename>]
+
+       [-power_pins {  <pin1> <voltage1> ... <pinN> <voltageN> } ]
+
+        [-powergate_finegrain_simulation {true|false} ]
+
+        [-powergate_parameters   {{ <cell> <supply> <switched>  <Ron>  <Idsat>
+       <Ileak> Control_Pin_Logic} + } ]
+
+       [-powergate_parameters_file  <filename>]
+
+       [-spice_corners <corner_list>]
+
+       [-spice_models <file_list>]
+
+       [-spice_netlist_list_file <filename>]
+
+        [-spice_subckts <file_list>]
+
+       [-spice_subckts_xyscaling <value>]
+
+       [-stop@via <layername> ]
+
+       [-stop_via_file <filename>]
+
+       [-tap_node_distance_file <filename>]
+
+       [-tech_gds_layermap <filename>]
+
+       [-tech_oasis_layermap <filename>]
+
+       [-temperature <temp_value_in_degree_celcius> ]
+
+       [-use_lefonly_for_detailedview_generation {true | false} ]
+
+       [-use_powergate_data_from_lib {true|false}]
+
+       Specifies what kind of power-grid library will be created. This command
+       is  used  to  define the type of input and configuration for generating
+       power-grid libraries. You must specify this command before running  the
+       generate_pg_library command.
+
+Parameters
+       -help  Outputs the command usage.
+
+       -add_ploc_cells <cell1> <cell2> ...
+              Specifies  the  name  of  the low-dropout (LDO) cell for which a
+              voltage source is to be added. You can specify a  list of cells.
+              This parameter is applicable to the LDO cells only, and must  be
+              used  when  creating  voltage sources for these cells. When this
+              parameter is specified, all the output pins will be made voltage
+              sources using the highest voltage value of the cell.
+
+              The -add_ploc_cells parameter is used  with  the  -cell_ploc_de-
+              tails parameter.
+
+       -bulk_ground_pins { <ground_pin>_<list>}
+              Specifies  the names of nets that connect transistor bulk termi-
+              nals to the ground net. This information is used to prevent  any
+              current from being assigned to these nets. If a net is connected
+              to any transistor terminals other than a bulk terminal, you must
+              specify that net with the -ground_pins parameter.
+
+       -bulk_power_pins { <pin1> <voltage1> ... <pinN> <voltageN>}
+              Specifies  the names of nets that connect transistor bulk termi-
+              nals to the power net. This information is used to  prevent  any
+              current from being assigned to these nets. If a net is connected
+              to any transistor terminals other than a bulk terminal, you must
+              specify that net with the -power_pins parameter.
+
+       -calculate_metal_layer_density {true | false}
+              Enables  metal layer density calculation for macros. The default
+              value is false.
+
+              When this parameter is set to true,  Library  Generation  calcu-
+              lates  and  stores  the  area density information for each metal
+              layer in macros for accurate thermal analysis. Metal density for
+              macros is calculated by dividing the macro cell into tiles,  and
+              computing  the  area  of  polygons  in each tile. The calculated
+              metal density values are used in the Power Analysis flow to gen-
+              erate the metal power density map. This power map file is  later
+              used  as  input  by Celsius Thermal Solver, the thermal analysis
+              tool for packages and boards.
+
+              This parameter is  applicable  only  for  macro  PGV  generation
+              (-celltype macros).
+
+       -cell_decap_file <filename>
+              Specifies  the name of a file containing a list of cells and the
+              decoupling capacitance value for each. You can also specify  the
+              series  resistance  value  along with the decoupling capacitance
+              value to accurately model the cell decoupling  capacitance.  The
+              cell  decap  file  format  allows you to specify capacitance for
+              multiple voltage values  to  support  multi-voltage  capacitance
+              simulation for standard cell and macro PGV generation.
+
+              File Format:
+
+              UNIT <X>
+
+              CELL <cell_name>
+
+              PIN <pin_name> <capacitance> <resistance>
+
+              or
+
+              UNIT <X>
+
+              CELL <cell_name>
+
+              VOLTAGE value1
+
+              PIN <pin_name> <capacitance> <resistance>
+
+              VOLTAGE value2
+
+              PIN <pin_name> <capacitance> <resistance>
+
+              Unit is optional, default is 1e-15. The value for each cell will
+              be  multiplied  by  the  unit, except if engineering notation is
+              provided.
+
+              Examples:
+
+              UNIT 1
+
+              CELL cell1
+
+              VOLTAGE 1.0
+
+              PIN VDD  1e-18
+
+              PIN VSS  1e-18
+
+              VOLTAGE 0.9
+
+              PIN VDD  1e-18
+
+              PIN VSS  1e-18
+
+       -cell_list_file <filename>
+              Specifies a file  containing  a  list  of  cells  that  will  be
+              processed.
+
+              The   -cell_list_file  parameter  is  required  when  set_pg_li-
+              brary_mode -celltype macros is selected. The program spawns  the
+              library generation job in serial mode for each macro in the cell
+              list  file. A separate library for each macro is generated. This
+              facilitates debugging  when  library  generation  of  any  macro
+              fails.  It  also helps in improving the overall performance. The
+              following is a sample cell list file:
+
+              CELL1
+
+              CELL2
+
+              CELL3
+
+       -celltype {techonly | stdcells | macros}
+              Specifies the type of library creation.
+
+              *
+                 techonly
+
+                Creates a technology Library that contains the tech file, area
+                capacitance specification, decap/filler/powergate  cells,  and
+                Tech  view  for  all  the cells. A technology library is a re-
+                quirement for running rail analysis.
+
+              * stdcells
+
+                Generates a power-grid library for all the standard cells  us-
+                ing  the  Spice  netlist. The stdcells power-grid library does
+                not contain the tech file. Power-grid is connected at the  LEF
+                pin,  and all the capacitance are derived from simulation. The
+                power-grid library contains three  kind  of  power-grid  views
+                (PGVs),  Early/IR/EM,  and the views are selected based on the
+                accuracy mode of rail analysis.
+
+              *
+                 macros
+
+                Generates a power-grid library for memory, I/Os and macros us-
+                ing the Spice and GDS netlist. GDS is mandatory for  the  cell
+                type  macros.  The  macros power-grid library does not contain
+                the tech file. Power-grid is connected down to  contact/speci-
+                fied via, and all the capacitance are derived from simulation.
+                The   power-grid   library   contains   three  kind  of  PGVs,
+                Early/IR/EM, and the views are selected based on the  accuracy
+                mode of rail analysis.
+
+       -cell_ploc_details <filename>
+              Specifies  a  file that contains all the information required to
+              add a voltage source at the desired location for the  power  pad
+              and  LDO  cells. This file includes the pad cell name, pin name,
+              layer name, and domain name.
+
+              The format of the file is:
+
+              <cell_name>             <pin_name>         <layer_name>     <do-
+              main_name>PADCELL           VDD       Metal3       VDD
+
+              *
+
+                pin_name  is  the  power/ground name for pad cells, and is the
+                output pin name for LDO cells. The pin name  could  be  repre-
+                sented  by  using  the wildcard character "*" to indicate that
+                voltage sources are to be added to all pins of a power pad/LDO
+                cell.
+
+              *
+
+                <domain_name> is the pin name for pad cells. For LDO cells, it
+                is the power or ground name whose voltage needs to be used.
+
+              Example:
+
+              set_pg_library_mode \
+
+                  -ground_pins                {VSS 0 ExtVSS 0} \
+
+                  -power_pins                 {VDD 1.2 ExtVDD 1.2} \
+
+                  -celltype                   techonly \
+
+                  ...
+
+                  -add_ploc_cells             {CELL1 CELL2 CELL3} \
+
+                  -cell_ploc_details          /VoltageSource/config.txt \
+
+              The following is a snippet of the config.txt file:
+
+              CELL1 VDD Metal3 VDD
+
+              CELL1 VSS Metal2 VSS
+
+              CELL1 Z Metal2 VDD
+
+              CELL2 Z Metal3 VSS
+
+              CELL3 * VDD
+
+       -current_distribution {propagation | dynamic_simulation <trigger_file>
+       | current_region <region_file>}
+              Specifies the method of current distribution inside the cell.
+
+              * Propagation uses Voltus library  simulator  to  determine  the
+                propagation activity to distribute the current.
+
+              * Dynamic  simulation uses a trigger file to run detailed analy-
+                sis to determine current distribution.
+
+              * Current region specifies the amount of current  to  distribute
+                within  a cell region. For more information on the format, see
+                Current Region File.
+
+       -custom_label <label>
+              Saves the specified label in the PGV  for  easy  identification.
+              This  label  can  be  used for revision control, label for Spice
+              netlist/model, and internal keywords. It will be stored as "Cus-
+              tom Label" in VERSION.TXT in the .cl
+
+       -decap_cells <cell_name_list>
+              Specifies the names of cells that have explicit  decoupling  ca-
+              pacitance  for use in decap optimization. These cells are nearly
+              equivalent to feedthrough cells, except that there is  typically
+              an  active  device  between the power and ground nets to provide
+              extra decoupling capacitance. Power-grid view library generation
+              uses this list of cells to ensure that a  capacitance  value  is
+              associated  with each cell. If no capacitance is associated with
+              a cell, a warning message will be issued.
+
+              This parameter supports wildcards (*).
+
+       -default_area_cap <value>
+              Specifies the default amount of area  based  decoupling  capaci-
+              tance in a cell. The default area-cap is 0.0 (unit is fF per mi-
+              cron-square).   You  must  provide a value for area-based decou-
+              pling capacitance.
+
+                          -default_power_voltage  <value>"  Specifies  voltage
+              for  the  power  pins which are present in LEF but not specified
+              using the -power_pins parameter.  As a result, the   -power_pins
+              parameter of the command is optional. The default  voltage value
+              specified  using   -default_power_voltageis  added  to all power
+              pins of the cell.
+
+              If both the parameters  -power_pins  and  -default_power_voltage
+              are not specified, the default voltage of 1.2 will be used.
+
+       -design_qrc_layermap <file>
+              Default: None
+
+              Specifies a file that provides the mapping of the layer names in
+              the LEF design file to the layer names in the Quantus technology
+              file.
+
+              File Format:
+
+              lefdef_layername    technology_layername
+
+              M1                   METAL_1
+
+              VIA1                 VIA_1
+
+              M2                   METAL_2
+
+              VIA2                 VIA_2
+
+       -enable_device_size_current_distribution {true | false}
+              Specifies  to  compute  the tap current distribution for a macro
+              based on device sizes (Width, Length),  without  performing  any
+              simulation. This parameter is used for macro PGV generation in a
+              scenario  when the Spice netlist is available but the Spice mod-
+              els are not available.
+
+              Default: false
+
+       -enable_distributed_processing {true|false}
+              Specifies to enable parallel processing for the Library  Genera-
+              tion flow.
+
+       -enable_multi_voltage_cap_generation {true | false}
+              Specifies  to  compute  capacitance values over a range of input
+              voltages, including the nominal voltage. It generates 10  values
+              from  0.1 to 1.3 times the vdd/vss voltage. The default value is
+              false.
+
+              When set to true, it generates a PGV that contains the  voltage-
+              dependent capacitance table for the specified cell. This parame-
+              ter allows you to use the accurate cell capacitance at different
+              supply  voltages  in  power-up analysis and in different voltage
+              domains in dynamic analysis.
+
+       -exclude_cell_list_file <filename>
+              Specifies a file containing a  list  of  cells  (one  per  line)
+              which should be excluded from power-grid library generation.
+
+       -extraction_tech_file <file>
+              Specifies  the name of the technology file that will be used for
+              extraction.
+
+       -filler_cells <cell_name_list>
+              List the names of the filler or feedthrough cells that  have  no
+              GDS data. These cells can be swapped out for decaps during decap
+              optimization.
+
+              This parameter supports wildcards (*).
+
+       -fine_grain_memory_cell {true | false}
+              Specifies  to tag the cell as the fine-grain cell in the PGV li-
+              brary when characterizing the cell, and ensures that  the  soft-
+              ware  automatically  uses this information to identify the fine-
+              grain memory cells in the rail analysis flow. The default  value
+              is false.
+
+              This parameter is used with the -internal_power_pins and -inter-
+              nal_ground_pins   parameters  to  specify  the  list  of  switch
+              power/ground pins. It is recommended  to  use  these  parameters
+              when characterizing fine-grain cells to avoid any potential cell
+              type identification conflict in the rail analysis flow.
+
+       -gds_files <file_list>
+              Specifies  the  names  of the GDSII files used during power-grid
+              library generation.
+
+       -gds_layermap <file>
+              Specifies a file that provides the mapping between  the  library
+              layers (qrcTechFile layers) and the GDS layers.
+
+              Sample File Format:
+
+              layer_type    layer_name    gds    gds_layer_no
+
+              via             VIA9        gds       59
+
+              Usage Guidelines:
+
+              This  parameter  is  a  mandatory input for macro PGV generation
+              (-celltype macros).
+
+       -generate_port_using_gds <mbb_layer_name>
+              Identifies the layer name that library generation uses  to  com-
+              pute  the placement bounding box for GDSII cells that are placed
+              by the DEF file.
+
+       -ground_pins { <ground_pin>_<list>}
+              Specifies the names of the nets considered ground nets  for  all
+              cells for which the ground nets are not specified.
+
+       -ignore_gds_cells {<gds_cell_name_list>}
+              Specifies to ignore the specified cells during macro PGV genera-
+              tion.  When  this parameter is specified, the Library Generation
+              engine does not extract data for  these  cells.  This  parameter
+              supports wildcards.
+
+              Example:
+
+              The following command does not extract data for the cell3 cell:
+
+              set_pg_library_mode -ignore_gds_cells {cell3}
+
+       -internal_power_pins <power_pin_list>
+              Specifies the list of switch power pins.
+
+       -internal_ground_pins <ground_pin_list>
+              Specifies the list of switch ground pins.
+
+       -layer_tap_node_distance { {<LayerName1> <tap_node_distance>} {<Layer-
+       Name2> <tap_node_distance>} ... }
+              Default: None
+
+              Specifies  tap node distances for certain layers. Using this pa-
+              rameter, you can customize the tap node distance for each  layer
+              during power-grid library generation.
+
+              The  tap node distance is in micron. If the tap node distance is
+              specified for a single layer, double brackets {{}} are still re-
+              quired.
+
+       -layers_to_be_ignored_during_tap_creation {<layername>+}
+              Specifies the names of the layers that library generation is  to
+              ignore  when  it creates the current taps. This parameter can be
+              used to suppress the generation of any nodes or taps  on  layers
+              that  should  not be extracted. Some technologies include layers
+              that are only used to influence the extraction of other layers.
+
+       -layers_to_have_ports_created {<layername>+}
+              Specifies the names of the layers for which ports are to be cre-
+              ated. This parameter can be used to create ports  for  the  poly
+              and  diffusion  layers  in the technology file. By default ports
+              are only created on metal layers.
+
+       -lef_layermap <file>
+              Specifies a file that provides the mapping of layers between the
+              LEF and technology file. This  parameter  is  optional.  Library
+              Generation  automatically  generates the layermap file using the
+              technology LEF (containing all layer and  via  definitions)  and
+              Quantus  Tech  (extraction library) files, therefore, a LEF lay-
+              ermap file is not a mandatory input. The automatically generated
+              layermap file is located in the PGV temp directory.
+
+              The following is the format and sample content of the  auto-gen-
+              erated file (lefdefLayerMap_AutoGenerated.txt):
+
+              Layer Type   tech_layername   lefdef    lefdef_layername
+
+              via              VIA_9        lefdef      VIA9
+
+                          metal            METAL_1      lefdef      METAL1
+
+              You  can  specify this parameter if you want to provide your own
+              layermap file.
+
+       -liberty_files <file_list>
+              Specifies to directly read decoupling capacitance and resistance
+              from the specified Liberty file for standard cell and macro  PGV
+              generation.
+
+              The  following  is  an example of the Liberty construct required
+              for capacitance/resistance:
+
+                  intrinsic_parasitic () {
+
+                    when : "I";
+
+                    intrinsic_capacitance (VDD) {
+
+                      value : 0.000248992;
+
+                    }
+
+                    intrinsic_resistance (VSS) {
+
+                      related_output : ZN;
+
+                      value : 1.89195;
+
+                    }
+
+                    intrinsic_capacitance (VSS) {
+
+                      value : 0.000639008;
+
+                    }
+
+                  }
+
+              If there are multiple when conditions, the average intrinsic re-
+              sistance/capacitance value is taken.
+
+       -macros_config_file <filename>
+              Specifies to provide configuration details for each  macro  cell
+              per  Library  Generation  run.  This  is an additional input for
+              macros cell type wherein you can provide  macro  specific  Spice
+              and GDS. The format of the file is:
+
+              CELL <<cell1>>
+
+              GDS_FILE <<gds_file1>>
+
+              SUBCKT_FILE <<subckt_file1>>
+
+              DECAP_FILE <<decap_file1>>
+
+              TRIGGER_FILE <<trigger_file1>>
+
+              POWER_GATE_PARAMS  supply  <<supplyName>>  switched  <<switched-
+              Name>>
+
+              CELL <<cell2>>
+
+              GDS_FILE <<gds_file1>>
+
+              SUBCKT_FILE <<subckt_file1>>
+
+              CELL is the keyword to specify a new cell that is to be  charac-
+              terized.  This  is a mandatory keyword. This keyword is followed
+              by optional keywords, like GDS_FILE and  SUBCKT_FILE,  that  are
+              specific to the cell.
+
+       -max_metal_density_tile_dimension {<maxlength> <maxwidth>}
+              Specifies the tile dimensions, wherein <maxlength> denotes maxi-
+              mum  length  and  <maxwidth> denotes maximum width in <mu>m. The
+              default value for length or width  is  50<mu>m.  The  number  of
+              tiles  in  the  X and Y direction is determined using the length
+              and width dimension.
+
+              This  parameter  should  only   be   used   when   the   -calcu-
+              late_metal_layer_density parameter is set to true.
+
+       -non_zero_ground_pins {<pin1>  <voltage1> ...<pinN > <voltageN>}
+              Default: None
+
+              Specifies  the  name  and  voltage of the nets considered ground
+              nets for all cells for which the elevated ground nets need to be
+              specified. This parameter allows you to provide a list  of  non-
+              zero  ground  be it positive or negative for the ground nets. If
+              the same  name  has  been  specified  for  both  the  parameters
+              -non_zero_ground_pins        and        -ground_pins,       then
+              -non_zero_ground_pins will be given priority.
+
+              This parameter is applicable only for standard  cell  and  macro
+              PGV generation (-celltype stdcells |  macros).
+
+              Example:
+
+              set_pg_library_mode  -non_zero_ground_pins  {VSS -1.05 VSSA 0.08
+              VSSA1 1.09}
+
+       -oasis_files <file_list>
+              Specifies the names of the OASIS files  used  during  power-grid
+              library generation.
+
+              Usage Guidelines:
+
+              This  parameter  is  a  mandatory input for macro PGV generation
+              (-celltype macros).
+
+       -oasis_layermap <file>
+              Specifies a file that provides the mapping between  the  library
+              layers (qrcTechFile layers) and the OASIS layers.
+
+              File Format:
+
+              layer_type    layer_name    oasis    oasis_layer_no
+
+              via             VIA9        oasis        59
+
+              Usage Guidelines:
+
+              This  parameter  is  a  mandatory input for macro PGV generation
+              (-celltype macros).
+
+       -pin_shape_current_distribution <filename>
+              Default: None
+
+              Specifies a current distribution file that allows you  to  state
+              how  current should be distributed across multiple pin shapes of
+              power and ground pins. Multiple pin shapes exist for VDD and VSS
+              pins, and current drawn through each pin  shape  is  non-uniform
+              depending  upon the output bit that is switching. This parameter
+              allows you  to  define  current  distribution  for  multi-height
+              multi-bit  flip-flop (MBFF) characterization.  The parameter al-
+              lows you to accurately model the current through each pin shape.
+
+              File Format
+
+              CELL <cell name>
+
+              PGPIN                      VDD:(<<LEF_layer_name>>,<<LEF_coordi-
+              nates>>):(<<LEF_layer_name>>,<<LEF_coordinates>>)
+
+              PGPIN                      VSS:(<<LEF_layer_name>>,<<LEF_coordi-
+              nates>>):(<<LEF_layer_name>>,<<LEF_coordinates>>)
+
+              PIN <<signal_pin_name>> <<current_ratio_for_VDD>>  <<current_ra-
+              tio_for_VSS>>
+
+              Here,
+
+              * <<LEF_layer_name>>,<<LEF_coordinates>> specifies to assign the
+                current ratio to the pin shape occupying the coordinates.
+
+              * <LEF_layer_name>  the layer name to which the current taps are
+                to be created
+
+              Example
+
+              CELL NAND3X8
+
+              PGPIN VDD:(Metal1,1,1):(Metal1,4,1)
+
+              PGPIN VSS:(Metal1,2,2):(Metal2,5,2):(Metal2,8,2)
+
+              PIN Q1 0.00:1.00 0.00:0.00:1.00
+
+              PIN Q2 0.90:0.10 0.95:0.05:0.00
+
+       -spice_netlist_list_file <filename>
+              Specifies a file containing all the spice netlists  to  be  used
+              for  library  generation,  the  format  is one netlist per line.
+              These spice netlist files must contain  the  subcircuit  defini-
+              tions for the cells being processed by power-grid library gener-
+              ation.
+
+              The     following    example    specifies    a    file    called
+              spice_netlist_list_file that contains the list of spice  netlist
+              files:
+
+              set_pg_library_mode                     -spice_netlist_list_file
+              <spice_netlist_list_file>
+
+       -power_pins { <pin1> <voltage1> ... <pinN> <voltageN>}
+              Specifies the name and voltage of the nets considered power nets
+              for all cells for which the power nets  are  not  specified.  If
+              both  the  parameters -power_pins and -default_power_voltage are
+              not specified, the default voltage of 1.2 will be used.
+
+                        -powergate_finegrain_simulation [true|false}   " Spec-
+              ifies to enable finegrain powergate simulation.
+
+                        -powergate_parameters {{   <cell> <supply>  <switched>
+              <Ron>  <Idsat>  <Ileak>  Control_Pin_Logic} + }  " Specifies the
+              information that technology library generation needs to  charac-
+              terize  a  powergate cell. It includes the cell name, unswitched
+              power pin, switched power pin, on resistance in ohms, saturation
+              current in milliamps, leakage current in milliamps, and  control
+              pin logic.
+
+              If  ron, idsat, or ileak values are specified, they will be used
+              to override the data extracted by Voltus library simulator.
+
+                                                       Control_Pin_Logic
+              can have the following values
+
+              * enableHigh - control pin(s) of the control logic will be  con-
+                nected to the power net to turn on the power gate instances.
+
+              * enableLow  -  control pin(s) of the control logic will be con-
+                nected to the ground net to turn on the power gate instances.
+
+              The control pin logic allows you to specify whether  the  enable
+              pin  of  the  specified power gate is active high or active low,
+              thus ensuring that the appropriate voltages are applied  to  the
+              enable pins.
+
+              This  parameter  also  allows you to specify multiple functional
+              modes to enable different combinations of control pins  in  each
+              mode. For multiple functional modes, the tool calculates RON for
+              each  mode  separately and generates a single PGV for the speci-
+              fied modes.
+
+              Format for Multiple Functional Modes:
+
+              set_pg_library_mode
+               -powergate_parameters { {cell_name  mode_name1  {supply  switch
+              Ron Idsat Ileak Control_Pin_Logic} mode_name2 {supply switch Ron
+              Idsat  Ileak Control_Pin_Logic}... mode_nameN {supply switch Ron
+              Idsat Ileak Control_Pin_Logic} }
+
+              Examples:
+
+              * For control pin logic:
+
+                -powergate_parameters {  {HEADER_SWITCH TVDD VDD enableHigh} }
+
+              * For Single Powergate:
+
+                -powergate_parameters {{HDRSID0 TVDD VDD}}
+
+              * For 2 Header Powergate:
+
+                -powergate_parameters     {{HEAD16_A12TH_C35     VDDG     VDD}
+                {HEAD8_A12TH_C35 VDDG VDD}}
+
+              * For Multiple Footer Powergate
+
+                              -powergate_parameters  {{FOOTBUFVHSV16 VSSG VSS}
+                {FOOTBUFVHSV32  VSSG  VSS}  {FOOTBUFVHSV64  VSSG  VSS}  {FOOT-
+                BUFVHSV8 VSSG VSS}}
+
+              * For Multiple Functional Modes:
+
+                -powergate_parameters  {  {HEADER_SWITCH  S1  {TVDD VDD 750 .5
+                4.0e-8V} S3 {TVDD1 VDD 350 .3 5.0e-8V} S2  {TVDD  VDD  450  .5
+                4.0e-8V} } {RING_SWITCH TVDD VDD 750 .5 4.0e-8} }
+
+              Usage Guidelines:
+
+              This parameter is applicable only for the technology PGV genera-
+              tion (-celltype techonly).
+
+       -powergate_parameters_file <filename>
+              Specifies  a  file  that contains details of power switches that
+              have multiple control pins, input pins, and power nets. The con-
+              trol pins, input pins, and power  nets  can  have  either  sweep
+              voltages or user-defined voltages.
+
+              This  parameter  also  allows you to specify multiple functional
+              modes to enable different combinations of control pins  in  each
+              mode. For multiple functional modes, the tool calculates RON for
+              each  mode  separately and generates a single PGV for the speci-
+              fied modes.
+
+              File Format:
+
+              CELL <<cell_name>>
+
+              PGATE_PAIR  <<AON_PIN>> <<SW_PIN>> <<CTRL_PIN>> <Polarity|<Volt-
+              ageValues>>
+
+              PGATE_PAIR  <<AON_PIN>> <<SW_PIN>> <<CTRL_PIN>> <Polarity|<Volt-
+              ageValues>>
+
+              ...
+
+              PWR_PIN <<net_name>> {<voltage_values>}
+
+              PWR_PIN <<net_name>> {<voltage_values>}
+
+              ...
+
+              INPUT_PIN <<pin_name>> <Polarity|<VoltageValues>>
+
+              INPUT_PIN <<pin_name>> <Polarity|<VoltageValues>>
+
+              ...
+
+              PGATE_OFF_PIN <CTRL_PIN> <Polarity|VoltageValues>
+
+              PGATE_OFF_PIN <CTRL_PIN> <Polarity|VoltageValues>
+
+              PGATE_OFF_PIN <CTRL_PIN> <Polarity|VoltageValues>
+
+              ...
+
+              CHARACTERIZATION_VOLTAGES { <val1> <val2> <val3> .... }
+
+              END
+
+              File Format for Multiple Functional Modes:
+
+              CELL <<cell_name>>
+
+              MODE_NAME mode_name1
+
+              PGATE_PAIR <<AON_PIN>> <<SW_PIN>> <<CTRL_PIN>>  <Polarity|<Volt-
+              ageValues>>
+
+              PWR_PIN <<net_name>> {<voltage_values>}
+
+              INPUT_PIN <pin_name> <Polarity|<VoltageValues>>
+
+              PGATE_OFF_PIN <CTRL_PIN> <Polarity|VoltageValues>
+
+              CHARACTERIZATION_VOLTAGES <<VolageValues>>
+
+              END_MODE
+
+              MODE_NAME mode_name2
+
+              PGATE_PAIR   <AON_PIN> <SW_PIN> <CTRL_PIN> <Polarity|VoltageVal-
+              ues>
+
+              PWR_PIN <net_name> {voltage_values}
+
+              INPUT_PIN <pin_name> <Polarity|<VoltageValues>>
+
+              PGATE_OFF_PIN <CTRL_PIN> <Polarity|VoltageValues>
+
+              CHARACTERIZATION_VOLTAGES <<VolageValues>>
+
+              END_MODE
+
+              END
+
+              * PGATE_PAIR and CHARACTERIZATION_VOLTAGES  are  mandatory  key-
+                words.
+
+              * PGATE_PAIR  is the keyword to specify the always-on power pin,
+                switched power pin, and control pin  names,  and  the  voltage
+                values at which these pins are simulated. If you specify volt-
+                age  values,  then the software uses these user-defined values
+                during power  gate  characterization.  Alternatively,  if  you
+                specify  polarity (high/low), then the software uses the sweep
+                voltage values (CHARACTERIZATION_VOLTAGES) during  power  gate
+                characterization. If you do not specify both polarity or volt-
+                age  values, then the software by default uses the sweep volt-
+                age values (CHARACTERIZATION_VOLTAGES) during power gate char-
+                acterization.
+
+              * CHARACTERIZATION_VOLTAGES is  the  keyword  to  specify  sweep
+                voltage  values.  The  number of voltage values specified with
+                the PGATE_PAIR keyword must match with the number  of  voltage
+                values specified with the CHARACTERIZATION_VOLTAGES keyword.
+
+              * PWR_PIN is the keyword to specify additional power pins of the
+                cell other than the always-on and switched power pins.
+
+              * INPUT_PIN  is the keyword to specify additional signal pins of
+                the cell other than the control pins. If you  specify  voltage
+                values,  then the software uses these user-defined values dur-
+                ing power gate characterization. Alternatively, if you specify
+                polarity (high/low), then the software uses the sweep  voltage
+                values  (CHARACTERIZATION_VOLTAGES)  during power gate charac-
+                terization. If you do not specify  both  polarity  or  voltage
+                values,  then  the  software by default uses the sweep voltage
+                values (CHARACTERIZATION_VOLTAGES) during power  gate  charac-
+                terization.
+
+              * PGATE_OFF_PIN  is the keyword to specify the control pin names
+                and the voltage values at which  the  off-resistance  is  com-
+                puted.  If  you specify voltage values, then the software uses
+                these user-defined values during power gate  characterization.
+                Alternatively,  if  you  specify polarity (high/low), then the
+                software uses the sweep voltage values (CHARACTERIZATION_VOLT-
+                AGES) during power gate characterization. If you do not  spec-
+                ify  both polarity or voltage values, then the software by de-
+                fault uses the sweep  voltage  values  (CHARACTERIZATION_VOLT-
+                AGES) during power gate characterization.
+
+              Examples:
+
+              Example 1: User-specified voltage values for control pins, input
+              pins, and power nets
+
+              CELL cellA
+
+              PGATE_PAIR AONVDD SWVDD SLEEPN {0.600 0.660 0.700 0.750 0.800 }
+
+              PWR_PIN VDD_PS {0.7 0.8 0.9 1.0 1.1 }
+
+              INPUT_PIN PS_DISABLE {0.600 0.660 0.700 0.750 0.800 }
+
+              CHARACTERIZATION_VOLTAGES {0.600 0.660 0.700 0.750 0.800 }
+
+              END
+
+              Example 2: User-specified polarity
+
+              CELL cellb
+
+              PGATE_PAIR TVDD VDD SLEEPN
+
+              PWR_PIN VDD_SIDE
+
+              INPUT_PIN S1 HIGH
+
+              CHARACTERIZATION_VOLTAGES {0.600 0.660 0.700 0.750 0.800 }
+
+              END
+
+              Example 3: powergate_param_file.txt
+
+              CELL HEADER_SWITCH
+
+              MODE_NAME S1
+
+              PGATE_PAIR TVDD VDD NSLEEPIN LOW
+
+              CHARACTERIZATION_VOLTAGES {0.9 1.0 1.1}
+
+              END_MODE
+
+              MODE_NAME S2
+
+              PGATE_PAIR TVDD VDD NSLEEPIN HIGH
+
+              CHARACTERIZATION_VOLTAGES {0.9}
+
+              END_MODE
+
+              MODE_NAME S3
+
+              PGATE_PAIR TVDD1 VDD NSLEEPIN LOW
+
+              CHARACTERIZATION_VOLTAGES {0.9 1.1}
+
+              END_MODE
+
+              END
+
+              Usage Guidelines:
+
+              This  parameter  is  applicable only for standard cell and macro
+              PGV generation (-celltype stdcells |  macros).
+
+       -spice_corners <corner_list>
+              Specifies a list of SPICE corners. This is an  optional  parame-
+              ter.  If you specify SPICE corner(s), the number of corner items
+              should be equal to the number of SPICE model files specified  in
+              -spice_models <file_list>. One Spice model can map to many Spice
+              corners but not vice versa.
+
+              Examples:
+
+              *
+                 if  there are three model files but only two corners, a blank
+                corner definition is required to match the model-corner  pair,
+                as shown below:
+
+                -spice_models { model1.scs model2.scs model3.scs}
+
+                -spice_corners {{corner1} {} {corner2}}
+
+              * if  a  SPICE  model1 has three corners and model2 has two cor-
+                ners, you should specify:
+
+                -spice_models { spice_1.model spice_2.model }
+
+                -spice_corners { {s11 s12 s13} {s21 s22} }
+
+                Based on the above parameter description, the following infor-
+                mation gets updated in the library generation file:
+
+                spice_model_file spice_1.model {s11 s12 s13}
+
+                spice_mode_file spice_2.model {s21 s22}
+
+       -spice_models <file_list>
+              Specifies the names of the SPICE model files used by  the  SPICE
+              netlist file (-spice_subckts).
+
+              Some  Spice  process models use wnom/Wn and lnom/Ln instead of w
+              and l (device model parameters names for length and  width)  for
+              MOS models. Voltus recognizes and supports these alternate para-
+              meter names.
+
+       -spice_subckts <file_list>
+              Specifies  the  names  of the SPICE netlist files containing the
+              subcircuits corresponding to the cells  being  processed  during
+              power-grid library generation. These subcircuit netlists will be
+              used  to calculate pin capacitances using Voltus library simula-
+              tor.
+
+       -spice_subckts_xyscaling <value>
+              Specifies the current region scale factor for the  Netlist-based
+              flow  .  The  current region scale factor is the factor by which
+              the netlist coordinates are scaled before  finding  the  closest
+              node to attach the tap currents.
+
+              The  netlist-based  flow  fails  when there is a mismatch in the
+              units of the PGDB coordinates (in nm) and the coordinates in the
+              SPICE netlist causing improper current tap  creation.  To  match
+              these  coordinates, you need to specify the current region scale
+              factor. The default scale factor is 1000  considering  that  the
+              SPICE netlist coordinate unit is um.
+
+       -stop@via <layername>
+              Stops  the extraction of the power-grid network inside a cell at
+              the specified via layer.
+
+       -stop@via_file <filename>
+              Specifies the name of a file containing a list of cells and  the
+              corresponding  via  layers at which extraction of the power-grid
+              network should be stopped. However, this  functionality  is  ap-
+              plicable  only for the cells that are mentioned in the cell list
+              file as well.
+
+              File Format:
+
+              <cell_name> <stop@_layer_name>
+
+              Sample File Format:
+
+              Cell1 Via5
+
+              Cell2 Via9
+
+              Usage Guidelines:
+
+              This parameter is  applicable  only  for  macro  PGV  generation
+              (-celltype macros).
+
+       -tap_node_distance_file <filename>
+              Specifies  a  file containing the distance between tap nodes for
+              the given list of cells. The specified file  includes  the  cell
+              name  and tap node distance in micron.  The default unit for tap
+              node distance is micron, and the default tap  node  distance  is
+              50  microns.  This  parameter  is  applicable for technology and
+              standard cell PGV generation.
+
+              This parameter allows you to customize the tap node distance for
+              each cell during power-grid library generation.
+
+              The format of the file is:<cell_name> <tap_node_distance>
+
+              Example:
+
+              OA_cellA 1
+
+              OA_cellC 1
+
+       -tech_gds_layermap <filename>
+              Specifies a file that provides the mapping of the layer names in
+              the Quantus technology file to the layer names in the GDS file.
+
+              File Format:
+
+              technology_layername   use     gds_number  data_type
+
+              METAL_1                text      131          0
+
+              VIA_1                   x         51          0
+
+              METAL_2                text      132          0
+
+              VIA_2                   x         52          0
+
+              If -design_qrc_layermap is specified along  with  -tech_gds_lay-
+              ermap, then the format of -tech_gds_layermap is treated as:
+
+              lefdef_layername   use     gds_number  data_type
+
+                    M1           text       131         0
+
+       -tech_oasis_layermap <filename>
+              Specifies a file that provides the mapping of the layer names in
+              the  Quantus  technology  file  to  the layer names in the OASIS
+              file.
+
+              File Format:
+
+              technology_layername   use     oasis_number  data_type
+
+              METAL_1                text      131          0
+
+              VIA_1                   x         51          0
+
+              METAL_2                text      132          0
+
+              VIA_2                   x         52          0
+
+              If -design_qrc_layermap is specified along with -tech_oasis_lay-
+              ermap, then the format of -tech_oasis_layermap is treated as:
+
+              lefdef_layername   use     oasis_number  data_type
+
+                    M1           text       131         0
+
+       -temperature <temp_value_in_degree_celcius>
+              Specifies the temperature in  degree  celcius  used  in  library
+              characterization for thermal aware EM/IR analysis.
+
+              Default: 25
+
+       -use_lefonly_for_detailedview_generation {true | false}
+              Specifies  to  generate a detailed PGV with the bump LEF without
+              loading a GDS file. You can specify this  parameter  to  perform
+              the  RC  extraction  of a hybrid bump or via cell while skipping
+              the extraction of its top and bottom routing metal layers.  When
+              set  to  true,  the top and bottom metal layers are preserved as
+              geometries in the library and promoted to the top level, whereas
+              the via layer shapes are dropped and their  resistance  is  used
+              directly from the PGV.
+
+              Default: false
+
+       -use_powergate_data_from_lib {true|false}
+              Specifies  to read powergate parameters ron, saturation current,
+              and leakage current from the Liberty files specified  using  the
+              existing  -liberty_files parameter. This parameter allows you to
+              obtain the powergate parameters from a Liberty file when a Spice
+              netlist is not available, or when the Liberty file contains  the
+              powergate parameters.
+
+Examples
+              * The following command sets the power library mode:
+
+                set_pg_library_mode
+
+                -extraction_tech_file RCgen.tch
+
+                -lef_layermap lefdef.map
+
+                -celltype techonly
+
+                -power_pins { VDD 1.08 VDDO 1.08 VDDG 1.08 }
+
+                -ground_pins { VSS GND VSSG }
+
+                -cell_list_file built_cells_list
+
+                -temperature -40
+
+                -spice_models models/v1d1_usage.l
+
+                -spice_corners { ss_lib }
+
+                -spice_subckts { typical_max_m40.spice }
+
+                -powergate_parameters  { { cell1 VDDG VDD } { cell2 VDDG VDD }
+                }
+
+                -current_distribution propagation
+
+              * The following command generates a PGV that contains the  volt-
+                age dependent capacitance table for the specified cells:
+
+                set_pg_library_mode  -celltype  stdcells -cell_list_file cell-
+                file  -extraction_tech_file   ./../qrcTechFile   -lef_layermap
+                ./../lefdef.layermap  -temperature  125 -power_pins { vcc 1.26
+                vccpg 1.26 vccr 1.26 } -ground_pins { vss } -powergate_parame-
+                ters {{powercell_pg1 vcc vccpg} {powercell_pg1 vcc vccr} {pow-
+                ercell_pg2 vcc vccpg} {powercell_pg2 vcc vccr}} -spice_corners
+                { tt }  -spice_models  spice_model/libspice  -spice_subckts  {
+                powercell_pg.net   powercell_pg2.net   }   -enable_multi_volt-
+                age_cap_generation true
+
+                The PGV report includes the following information:
+
+                INFO: PGV contains voltage dependent cap table for this cell
+
+Current Region File Format
+       The following shows the current_region_file format:
+
+        UNIT CURRENT default_unit_in_amps
+
+       UNIT CAPACITANCE default_unit_in_farads
+
+       CELL cell_name
+
+       <PROP [FLAT | HIER]>
+
+       NET net_name
+
+       LAYER layer_name
+
+       [ REGION x1 y1 x2 y2 current_value <cap_value> |  REGION  current_value
+       <cap_value> ]
+
+       UNIT   Defines the default scale to be used with the current and capac-
+              itance  values  read  from the current region file. These scales
+              apply to any value that is not  followed  by  an  explicit  unit
+              specification.  Valid  current  values  are:  A (Amps), mA (mil-
+              iAmps), uA (microAmps), and  nA  (nanoAmps).  Valid  capacitance
+              values  are:  F(Farads),  mF  (miliFarads), uF (microfarads), nF
+              (nanofarads), pF (picoFarads), and fF (femtoFarads).
+
+       CELL cell_name
+              This command specifies the name of the cell. All  the  following
+              NET,  LAYER,  and  REGION commands will apply to this CELL until
+              another CELL specification is encountered. Wildcards can be used
+              in the cell_name.
+
+       <PROP [FLAT | HIER]>
+              If the keyword FLAT is applied, LibGen will not perform  hierar-
+              chical tracing for the given net in this cell.
+
+              If the keyword HIER is presented, LibGen will perform hierarchi-
+              cal  tracing  for  the given net in this cell. This provides the
+              ability for LibGen to automatically specify a current  value  to
+              all  instances of a cell in the design hierarchy. The assumption
+              is that all of these instances of the cell will consume the same
+              power.
+
+              The default is HIER.
+
+       NET net_name
+              This command specifies that all the LAYER  and  REGION  commands
+              following it applies to the net_name. This stays in effect until
+              another NET or CELL specification is encountered.
+
+              Wildcards can be used in the net_name.
+
+       LAYER layer_name
+              This command specifies that all the REGION commands following it
+              apply  to  the  layer_name.  This  stays in effect until another
+              LAYER, NET, or CELL command is encountered.
+
+              The layer_name must be a library layer name. If the layer is not
+              found, LibGen will issue an error message  and  exit.  You  must
+              provide a valid layer name for LibGen to run.
+
+              If you specified a valid layer, but LibGen does not find any via
+              in the assigned current region, LibGen will issue a warning mes-
+              sage, but the process will still continue and exit successfully.
+              In  this  case,  you may get a 0 current value for the specified
+              cell.
+
+       REGION x1 y1 x2 y2 current_value cap_value
+              This command specifies that the current value and optionally the
+              capacitance value to be associated with the  rectangular  region
+              specified by the bounding box (x1 y1 x2 y2).
+
+              Current  taps  will  be  created at the locations of the vias or
+              contacts specified by the most recent LAYER command. These  cur-
+              rent taps will be attached to the layer that is below the speci-
+              fied  via  or contact layer. Coordinate values are assumed to be
+              in GDSII coordinate units and will be interpreted  according  to
+              the scale and precision settings contained in the
+
+              GDSII  file (or spice netlist with device XY location) that con-
+              tains the cell. The value of the current drawn by  each  current
+              tap  will  be 1/n of the value specified for the current region,
+              where n is the number of taps within the current region.
+
+              The second variation of the REGION command without the  bounding
+              box  is  valid only if there is only one current region. In this
+              case LibGen can automatically uses the bounding box of the  cell
+              for the region.
+
+Example of Current Region File
+       UNIT CURRENT uA
+
+       UNIT CAPACITANCE fF
+
+       CELL an4_80
+
+       NET vcc
+
+       LAYER CONT
+
+       REGION 0 14000 28900 17000 3.0 5.0
+
+       NET gnd
+
+       LAYER CONT
+
+       REGION 1.5e-2mA
+
+Related Information
+              * set_advanced_pg_library_mode
+
+              * generate_pg_library
+
+              * "Power-Grid  Library  Generation"  in  the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025 set_pg_library_mode(25.10)

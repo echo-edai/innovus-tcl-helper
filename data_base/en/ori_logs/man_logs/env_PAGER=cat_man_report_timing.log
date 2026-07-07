@@ -1,0 +1,3145 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_timing(25.10)                                      report_timing(25.10)
+
+Name
+       report_timing
+
+Syntax
+       report_timing
+
+       [-help]
+
+       [-analysis_summary_csv_extended_file <<string>>]
+
+        [-analysis_summary_csv_file <<string>>]
+
+       [-analysis_summary_file <<string>>]
+
+       [-check_clocks]
+
+       [-check_type    {setup    hold   clock_gating_setup   clock_gating_hold
+       clock_gating_pulse_width   data_setup   data_hold   recovery    removal
+       pulse_width    clock_period   clock_separation   skew   no_change_setup
+       no_change_hold max_delay min_delay}]
+
+       [-debug {unconstrained | time_borrow | cppr_point  |  constraint_arc  |
+       context | wire_variation | vt_skew}]
+
+       [-delay_limit <float>]
+
+        [-derate_summary]
+
+       [-gui]
+
+       [-format <column_list>]
+
+        [-hpin]
+
+        [-max_slack <float>]
+
+        [-min_slack <float>]
+
+       [-net]
+
+       [-output_format {text | csv | gtd | binary}]
+
+        [-path_exceptions {applied ignored all}]
+
+        [-path_group <groupname_list>]
+
+       [-path_type   {end   summary   full   full_clock   end_slack_only  sum-
+       mary_slack_only}]
+
+       [-retime {aocv path_slew_propagation aocv_path_slew_propagation}]
+
+       [-retime_delaycal_pins <<pin_list>>]
+
+       [-retime_format {manual | retime_compare | retime_replace}]
+
+       [-retime_mode {path exhaustive}]
+
+       [-skip_io_paths]
+
+        [-unique_pins]
+
+        [-view <viewName>]
+
+       [-worst_rc_corner]
+
+        [> <filename[.gz]>]
+
+        [>> <filename[.gz]>]
+
+        [-late | -early]
+
+        [-rise | -fall]
+
+        [-begin_end_pair | [[ -max_paths <integer>]
+
+        [-nworst <integer>]]]
+
+        [-unconstrained | -point_to_point]
+
+        [-collection | -machine_readable | -tcl_list]
+
+        [-not_through  <object_list>  |  -not_rise_through   <object_list>   |
+       -not_fall_through <object_list>]
+
+        [[-from <pin_list> | -from_rise <pin_list> | -from_fall <pin_list>]
+
+        [-clock_from <clk_signame_list> [-edge_from {lead trail}]]
+
+        [-through   <pin_list>  |  -through_rise  <pin_list>  |  -through_fall
+       <pin_list>]
+
+        [-to <pin_list> | -to_rise <pin_list> | -to_fall <pin_list>]
+
+        [-clock_to <clk_signame_list> [-edge_to {lead trail}]]]
+
+       Generates a timing report that provides information about  the  various
+       paths in the design.
+
+       The  reports  typically  contain  data  on the delay through the entire
+       path. The start node and the end node of each path is identified.
+
+       The timing report contains the following information:
+
+              * The slack times of the arriving signal at the end node
+
+              * The start node
+
+              * The associated transitions
+
+              * The signal required times and the actual signal arrival times
+
+              * Summary of propagated vs ideal status of launching and captur-
+                ing clocks
+
+              * Any phase shifts applied when evaluating timing checks
+
+              * Any CPPR values applied to timing check evaluation
+
+       The report_timing command output  accomadates  both  the  instance  pin
+       names  and  net names in the same column. Since both instance pin names
+       and net names can be long, to save screen  space  alternating  instance
+       pin  and net names (depending on whether the row displays gate delay or
+       net delay) are reported in a single column.
+
+       When the timing_report_timing_header_detail_info timing global variable
+       is set to extended, the software generates timing  reports  with  addi-
+       tional header information, that includes the following details:
+
+              * The analysis mode - best case worst case or on chip variation
+
+              * The active views (displayed only in MMMC mode)
+
+              * The clock reconvergence pessimism (CPPR)
+
+              * The latch slack mode
+
+              * The specified clock propagation value
+
+              * The delay calculation
+
+              * The specified delay calculation engine
+
+       When  timing_report_group_based_mode  global  variable  is set to true,
+       paths are grouped by clock domain. In this mode, the report_timing com-
+       mand will have the following four types of groups:
+
+              * Clock gating group: This is an internal group. This group  re-
+                ports the clock gating check type paths.
+
+              * Asynchronous group: This is also an internal group and reports
+                the asynchronous check type paths.
+
+              * Groups for all the clocks in the design: These are also inter-
+                nal  groups,  classified on the basis of each reference clock.
+                Paths belonging to each reference  clock  are  reported  sepa-
+                rately  under  each  clock  name's  group. These groups do not
+                honor the clock gating/asynchronous check types. Suppose there
+                are three clocks C1, C2, and C3  in  the  design,  then  three
+                groups will be reported for each of these clocks. The endpoint
+                sharing  the  same  reference  clock  will be part of the same
+                group. In case the endpoint belongs to multiple groups then it
+                will be reported separately in each group.
+
+              * Default group: This is an internal group -  for  combinational
+                max delay or min delay paths.
+
+              * User-Defined Groups: These are user-defined path groups. These
+                are  created  by  users  with  single or multiple constraints.
+                These groups honor all the check types. These groups  are  now
+                reported by default.
+
+       By  default,  the timing_report_group_based_mode global variable is set
+       to false.
+
+       Note: The global does not honor user-defined path groups so  the  paths
+       will still be grouped by different clocks.
+
+       In  this  mode,  the following commands will have the same behavior and
+       can be used interchangeably:
+
+       report_timing -path_group <Clock_Name>
+
+       report_timing -clock_to <Clock_Name>
+
+       The report_timing command supports multi-threaded  reporting.  You  can
+       make the following settings to enable multi-threaded reporting:
+
+       setMultiCpuUsage -localCpu <number_of_CPU>
+
+       set_table_style -no_frame_fix_width
+
+       Note:  When timing_allow_input_delay_on_clock_source global variable is
+       enabled and the set_input_delay command is applied to  a  clock  input,
+       the  specified  delay  value will be considered as the source clock la-
+       tency for clock paths and as regular data path arrival time  for  clock
+       source paths.
+
+       When  the  timing_enable_wire_variation global variable is set to true,
+       the timing reports show wire variation details in the columns below:
+
+              * retime_slew_wire_stddev
+
+              * retime_delay_wire_stddev
+
+              * arrival_wire_stddev
+
+       This page contains the following details:
+
+Parameters
+       {> | >>} <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  filename  parameter  must be the last argument in the list.
+              The filename and -tcl_list parameters  are  mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+              Note: The last argument specified in the  report_timing  command
+              is not considered a filename.
+
+       -analysis_summary_csv_extended_file <<string>>
+              Generates the CSV file to be used for merging.
+
+       -analysis_summary_csv_file <<string>>
+              Generates the analysis summary CSV file.
+
+       -analysis_summary_file <<string>>
+              Generates the analysis summary file.
+
+       -begin_end_pair
+              Reports  all  violating  paths  between unique source and target
+              register pairs. To report other paths,  specify  this  parameter
+              with the -max_slack parameter.
+
+              Paths  are  not  sorted  by  slack; instead, paths with the same
+              source pins are reported adjacent to each other.
+
+              When specified with the -from, -through, or -to parameters,  the
+              software  only reports the unique register pair paths that match
+              the path description.
+
+              Note: You cannot specify this  parameter  with  the  -max_paths,
+              -nworst, -unique_pins, or -min_slack parameters.
+
+              The  report_timing  -begin_end_pair parameter will always report
+              the paths grouped  by  path_groups  irrespective  of  timing_re-
+              port_group_based_mode global variable setting.
+
+              You   can  use  the  timing_report_begin_end_pair_max_path_limit
+              global variable to specify the maximum  paths  limit.  When  the
+              number  of  maximum  paths to be reported by the -begin_end_pair
+              parameter exceeds the specified limit  (default  is  200000),  a
+              warning  message  will be displayed. Also, some of the paths may
+              not be reported.
+
+       -check_clocks
+              Generates reports based on timing paths on the clock network in-
+              stead of the standard timing to data endpoints. This report  in-
+              cludes clock paths that end at the reference end of a check or a
+              clock gating end point.
+
+              Default:  Data paths and all the other clock paths (for example,
+              a clock path ending at a D pin of a register) are reported.
+
+       -check_type  <check_type>
+              Reports only the paths that end at the specified timing check.
+
+              The following check types can be reported when the  software  is
+              in  setup analysis mode: setup, skew, pulse_width, clock_period,
+              clock_gating_setup, clock_gating_pulse_width, data_setup, recov-
+              ery, clock_separation, and no_change_setup.
+
+              The following check types can be reported when the  software  is
+              in  hold  analysis mode: hold, clock_gating_hold, data_hold, re-
+              moval, and no_change_hold.
+
+              When the max_delay and min_delay options are specified, the tim-
+              ing report will display details of timing paths  for  which  the
+              set_max_delay or set_min_delay constraints are defined.
+
+              If the software is in simultaneous setup and hold analysis mode,
+              all of the check types listed above can be reported.
+
+              By default, the following checks are reported:
+
+              * setup
+
+              * hold
+
+              * clock_gating_setup
+
+              * clock_gating_hold
+
+              * data_setup
+
+              * data_hold
+
+              * recovery
+
+              * removal
+
+              * no_change_setup
+
+              * no_change_hold
+
+              You  can  use the -check_type parameter to specify the following
+              clock style checks:
+
+              * pulse_width
+
+              * clock_gating_pulse_width
+
+              * clock_period
+
+              * Skew
+
+              * clock_separation
+
+              Do not use this parameter with the  -unconstrained,  -early,  or
+              -late parameters.
+
+              Note:  The report_timing command does not perform skew checks by
+              default.
+
+       -clock_from  <clk_signame_list>
+              Generates reports based on  source  clock  waveform(s).  Reports
+              only  those  paths  whose source clocks are the clock signals in
+              clk_signame_list.
+
+       -clock_to  <clk_signame_list>
+              Generates reports based on  target  clock  waveform(s).  Reports
+              only  those  paths  whose target clocks are the clock signals in
+              clk_signame_list.
+
+       -collection
+              Returns a collection of timing paths. This is  useful  for  per-
+              forming Tcl queries on selected timing reports.
+
+              To  generate a collection of paths analyzed by Path Based Analy-
+              sis (PBA), you can use the -retime parameter.
+
+              Note : This parameter is not supported in DMMMC mode.
+
+       -debug {unconstrained | time_borrow | cppr_point | constraint_arc |
+       context | wire_variation | vt_skew}
+              You can specify the following options for debugging:
+
+              * unconstrained: Determines the reasons for a path to be  uncon-
+                strained.  The  report  output  will  list  all the applicable
+                arcs/constraints that could not  constrain  the  paths,  along
+                with the reasons.
+
+              * time_borrow: Reports time borrowing calculations. Time borrow-
+                ing is the amount of time borrowed by a previous logic.
+
+              * cppr_point:  Reports  the  CPPR  point information for the re-
+                ported paths.
+
+              * constraint_arc: Reports check arc details, such as, constraint
+                arc delay, constraint pins (along with the related pin slews),
+                skewness, user derate, annotation, and when_cond.
+
+              * context: Reports the launch and capture path interface  timing
+                for each instance and indicates which block port shows latency
+                in the MIM flow.
+
+              * wire_variation:  Reports the corresponding slack shift details
+                at the end of each timing path report.
+
+              * vt_skew: Reports voltage threshold (VT) skew analysis details.
+
+       -delay_limit <float>
+              Specifies the path delay limit for unconstrained paths  (-uncon-
+              strained option).
+
+              For  early  paths (-early option), reports only those paths with
+              path delay less than the delay limit. For late paths (-late  op-
+              tion) reports only those paths with path delay more than the de-
+              lay limit.
+
+              Note:  The  -delay_limit  option only can be used in conjunction
+              with the -unconstrained option.
+
+       -derate_summary
+              Generates an AOCV derating summary table for the launch and cap-
+              ture paths, in addition to the timing report.
+
+       -early | -late
+              Generates the timing report for early  paths  (hold  checks)  or
+              late paths (setup checks).
+
+              If you specify a check - setup or hold, with the setAnalysisMode
+              command, the report_timing command will report that check by de-
+              fault.
+
+              Note:  The -late and -early parameters can be specified together
+              only when the timing system is in simultaneous  setup  and  hold
+              mode. You can use the timing_enable_simultaneous_setup_hold_mode
+              true  setting  to enable this mode for timing analysis. The non-
+              timing commands will be disabled when the system is in  simulta-
+              neous  setup/hold  mode. In this case, the -early parameter will
+              be ignored and -late will be used.
+
+              Default: -late
+
+       -edge_from {lead | trail}
+              Generates reports based on source clock edge, either leading  or
+              trailing.
+
+              Note:  The  -edge_from parameter only can be used in conjunction
+              with the -clock_from parameter.
+
+              Default: Generates reports based on both source clock edges
+
+       -edge_to {lead | trail}
+              Generates reports based on the target clock edge, either leading
+              or trailing.
+
+              Note: The -edge_to parameter only can  be  used  in  conjunction
+              with the -clock_to parameter.
+
+              Default: Generates reports based on both target clock edges
+
+       -format <column_list>
+              Formats the report according to the column_list. The column_list
+              specifies  which columns to display in the timing report and the
+              order in which they appear.
+
+              You can use the -format parameter to customize  the  reports  to
+              your  needs  by requesting the exact fields in which you have an
+              interest. The valid format columns are:
+
+              adjustment,     abs_delay_err,     abs_slew_err,     annotation,
+              aocv_adj_stages,  aocv_derate,  aocv_weight,  arc,  arrival, ar-
+              rival_mean, arrival_sigma, cell, delay, delay_mean, delay_sigma,
+              direction, edge, fanin, fanout,  flags,  hpin,  incr_delay,  in-
+              stance,  instance_location,  latch_window,  load,  module,  net,
+              pct_delay_err, pct_slew_err, phase,  phys_info,  pin,  pin_load,
+              pin_location,  power_domain,  required, retime_delay, retime_de-
+              lay_mean, retime_delay_sigma, retime_mis_delta, retime_slew, re-
+              time_slew_mean, retime_slew_sigma, stage_count, slew, slew_mean,
+              slew_sigma, socv_derate, spice_arrival, spice_delay, spice_slew,
+              stolen,  timing_point,   total_derate,   user_derate,   voltage,
+              vt_skew_derate, when_cond, wire_load, wlmodel
+
+              For  more details on the 'flags' column, refer to the section on
+              Use of Informational Flags.
+
+              For example:
+
+              -format {hpin cell delay required arrival required edge}
+
+              See Table for a list of valid options.
+
+              The default net format (with -net option) for the full path is:
+
+              {hpin edge net cell delay arrival required}.
+
+              If the -unconstrained option is specified, the  required  column
+              is not displayed.
+
+              The  adjustment  column is automatically added to the timing re-
+              port. To disable this feature you can set the  report_timing_de-
+              fault_adjustment_column global variable to false.
+
+              You  can also use a combination of the -format and -tcl_list pa-
+              rameters to integrate the timing reports into your Tcl  scripts.
+              You can use the -from parameter to limit the number of paths re-
+              ported, and to find specific paths in the design.
+
+              The  -format  option  cannot  be used with the -path_type end or
+              -path_type summary options.
+
+              You can change the re-timing columns  by  using  the  timing_re-
+              port_retime_formatting_modeglobal variable.
+
+       -gui   Displays the timing report in a GUI window.
+
+       {-from | -from_rise | -from_fall} <pin_list>
+              Reports  paths  starting  from  the  object(s)  specified in the
+              <pin_list>. The supported objects are pins and ports.
+
+              Using -from_rise (or -from_fall) specifies that the  rising  (or
+              falling)   edge   of  the  signals  on  the  pins/ports  in  the
+              <pin_list>are the start of the paths.
+
+              You can use this option with the -through and -to parameters for
+              specifying particular paths in the design.
+
+              Note : These parameters do not allow clock objects. You can  use
+              the   -clock_from  and  -clock_to  parameters to reference clock
+              waveforms.
+
+       -hpin  Prints all hierarchical crossings of an arc under hpin column in
+              report_timing table.
+
+       -machine_readable
+              Generates detailed timing  report  in  machine-readable  format.
+              This  report is used for debugging timing results using the tim-
+              ing debug feature.
+
+       -max_paths <integer>
+              Reports the specified number of worst paths in the design,  with
+              maximum  of  nworst  (-nworst) paths to any single endpoint (de-
+              fault 1).
+
+              In case of group based mode (when timing_report_group_based_mode
+              is set to true), the -max_paths parameter specifies  the  number
+              of worst paths reported per clock group.
+
+              Default: 1
+
+       -max_slack <float>
+              Reports  only  those paths with slack less than the value of the
+              float.
+
+              The -max_slack option limits the report to paths that fall  into
+              the  specified range. A positive slack value indicates that tim-
+              ing was met. A negative value for slack indicates a timing  vio-
+              lation.
+
+              The -max_slack option cannot be used with the -unconstrained op-
+              tion.
+
+              When  the  -retime_mode  exhaustive  option  is  specified,  the
+              -max_slack is set to 0 by default.
+
+       -min_slack <float>
+              Reports only those paths whose slack is greater than  the  value
+              of float.
+
+              The -min_slack option cannot be used with the -unconstrained op-
+              tion.
+
+              You  can  generate  a  timing  report  showing  paths with slack
+              greater than the specified slack by using the -max_paths option.
+              For example, to report all paths with slack  greater  than  2ns,
+              you can issue the following command:
+
+              min_slack 2.0 -max_paths 1000
+
+              In this case the maximum number of paths reported will be 1000.
+
+              When the -min_slack parameter is specified, the total numbers of
+              paths  processed  will  be as determined by the max_paths/nworst
+              settings and only those paths satisfying the -min_slack criteria
+              will be reported. The software will not process paths beyond the
+              max_paths/nworst  limit  to  find  other  paths  satisfying  the
+              -min_slack limit.
+
+              In  the  below  diagram,  if  -min_slack  is  0 and -max_paths 4
+              -nworst 2 is specified, then only 3 paths will be reported; path
+              with slack value of -1 will be ignored. Here, even if  there  is
+              another path with slack that is greater than or equal to 2, then
+              it  will  not  be  reported  because  worst  max_paths have been
+              processed.
+
+       -net   Adds a row for the net arc. This parameter  also  separates  the
+              cell delay from the wire delay.
+
+              Default: The net arc is not shown, and the net delay is added to
+              the following delay.
+
+              Note:  The  report_timing  -net  command displays the net delays
+              separate from the cell delays. However, the net delay  is  some-
+              times  shown  as  0.0.To get the net delays to show up, increase
+              the report precision using the following global:
+
+              set_global report_precision 5
+
+       {-not_through | -not_rise_through | -not_fall_through} <object_list>
+              -not_through: Reports paths that do  not  traverse  through  the
+              specified nets, ports, or pins of a cell.
+
+              By  default the parameter will be ignored when an object has al-
+              ready been specified. In this case the parameter shows the  fol-
+              lowing behavior:
+
+              * If a collection of all the input ports has been specified (us-
+                ing  the  all_inputs command), then the report will show paths
+                to the inout part, and paths starting from the  internal  part
+                of inout will be excluded.
+
+              * If  a collection of all output ports has been specified (using
+                the all_outputs command), then  the  report  will  show  paths
+                starting  from the internal part of inout, and paths ending at
+                inout part will be excluded.
+
+              * If any other collection (not specified  using  the  all_inputs
+                and all_outputs commands) is specified, then paths to both the
+                parts will not be reported.
+
+       -not_rise_through:     Excludes    paths    with    rise    transition.
+       -not_fall_through: Excludes paths with fall transition.
+
+       -nworst <integer>
+              Specifies the maximum number of paths which can be reported  for
+              a  particular  endpoint  (the  total number of paths reported is
+              specified by the -max_paths parameter).
+
+              In case of group based mode (when timing_report_group_based_mod-
+              eglobal variableis set to true), the -nworst parameter specifies
+              the maximum number of paths for a particular endpoint per  clock
+              group.
+
+              You  can  use  the -nworst option to report all the checks at an
+              endpoint or use the -check_type  option  to  report  a  specific
+              check.
+
+              Default: 1
+
+       -output_format {text | csv | gtd | binary}
+              Generates  a  detailed  timing  report in the specified format -
+              text, CSV, GTD, or binary.
+
+       -path_exceptions {applied | ignored | all}
+              Includes information of path exceptions applied  and  considered
+              for the reported path.
+
+              If  multiple  from, through, or to pins are specfied, the excep-
+              tion report for that path will show only  those  pins  that  are
+              part of the current path.
+
+              Note:  You  cannot  use  this  parameter  with the following re-
+              port_timing parameters:
+
+              * -point_to_point
+
+              * -collection
+
+              * -path_type end | end_slack_only | summary | summary_slack_only
+
+              * -tcl_list
+
+              In addition, you cannot  use  this  parameter  with  block-based
+              SSTA.
+
+              Note:  If a path is already unconstrained, then all further path
+              exceptions applied on that particular path will be  reported  as
+              ignored exceptions.
+
+              The  -path_exception  parameter also reports -start/-end options
+              with multi-cycle paths. Without start or end  specification,  by
+              default,  the  setup  check is relative to the end clock and the
+              hold check is relative to the  start  clock.  The  report_timing
+              -path_exception  all  command  will  report  all the non-default
+              -start/-end specifications.  applied: Reports the honored excep-
+              tion on the reported path.  ignored: Reports the ignored  excep-
+              tions  on  the reported path.  all: Reports both applied and ig-
+              nored set of exceptions on the reported.
+
+              Note: Analyzing all the exceptions for a  path  will  cause  in-
+              crease in runtime.
+
+       -path_group  <groupname_list>
+              Reports  only  paths contained in the groups specified in group-
+              name_list.
+
+              Report paths belonging  to  the  default  path  group  by  using
+              -path_group  default.  The paths that do not belong to any user-
+              specified path group belong to the default path group named  de-
+              fault.
+
+              In  group-based  mode, the internal groups - clock gating, clock
+              names, asynchronous - and user defined path groups  can  be  se-
+              lected using the -path_group parameter.
+
+       -path_type {end | summary | full | full_clock | end_slack_only | sum-
+       mary_slack_only}
+              The path_type option lets you choose the format of the report by
+              path  type.  The default format, if the -path_type option is not
+              specified is full.
+
+              You can choose one of the following options:
+
+              * end: Generates an end point report for each path consisting of
+                an endpoint, cause, slack, arrival time,  required  time,  and
+                phase.  This  option generates a very fast report. The -format
+                option does not have any impact on this report format.
+
+              * summary: Generates a summary report for each  path  consisting
+                of  a  start  point, endpoint, cause, slack, arrival time, re-
+                quired time, and phase. The -format option does not  have  any
+                impact on this report format.
+
+              * full:  Generates a report that displays the full path with ac-
+                companying required time and slack calculation.  This  is  the
+                default path type. Control the report format using the -format
+                option.
+
+              * full_clock:  If the path reported ends at a timing check, this
+                option also reports the full clock path (Other  End  Path)  in
+                addition to the full data path (Timing Path).
+
+              * end_slack_only:  Generates  an  end  point  report, similar to
+                -path_type end report, for each path  consisting  of  an  end-
+                point,  slack  and cause (as Violated/Met). This option gener-
+                ates a very fast report. The -format option does not have  any
+                impact on this report format.
+
+                Note:  When  the  -path_typeend_slack_only option is used, the
+                path collections will not be reported.
+
+              * summary_slack_only: Generates a  summary  report,  similar  to
+                -path_typesummary,  for each path consisting of a start point,
+                endpoint, slack and cause (as Violated/Met). The -format para-
+                meter does not have any impact on this report format.
+
+              In MMMC mode, when you specify the report_timing -path_type  pa-
+              rameter    (with   end,   end_slack_only,   summary,   or   sum-
+              mary_slack_only options), the output report displays a view col-
+              umn for all the reported paths.
+
+              Note: The paths contained in a collection are not reported  with
+              upgraded path type.
+
+       -point_to_point
+              Traces  the  worst  delay  path  between a pair of from-to pins.
+              Paths reported with this parameter only include  the  cumulative
+              delay of the path.
+
+              You  must  specify  either the -from or -to parameter, to define
+              the begin and end points of the path.
+
+              If you do not specify a -from pin, the  standard  definition  of
+              the  begin  point of a path applies. If you specify a -from pin,
+              it is treated as the begin point of the path. If you  specify  a
+              -from  pin  that is not a valid begin point, the arrival time of
+              the first pin starts from 0.
+
+              If you do not specify a -to pin, the standard definition of  the
+              end  point  applies.  If you specify a -to pin, it is treated as
+              the end point, and only those paths ending in -to pins  are  re-
+              ported.  If you specify more than one -to pin, the worst path to
+              each pin-to-pin is reported.
+
+              When from-to pins are specified, the software will trace  across
+              the trigger arcs and report a path, if there is a clock reaching
+              the  CK  pin of the trigger arc. However, if there is a begin or
+              end point present between the -from and -to pins,  the  software
+              will not trace beyond it.
+
+              If there is no clock reaching the CK pin of the trigger arc, the
+              software cannot trace across the trigger arc, and no path is re-
+              ported. Additionally, clock path delay is included only when the
+              clock is in propagated mode.
+
+              The  -point_to_point  parameter  can be used with the -max_paths
+              and -nworst parameters.
+
+              Note: The -point_to_point and -through parameters  are  mutually
+              exclusive; you cannot specify them together.
+
+              Note: The -point_to_point parameter supports a single -from and-
+              to pin; a list of pins is not supported.
+
+              See Sample Reports.
+
+       -retime_delaycal_pins <pin_list>
+              Reports  the  PBA delay calculation details for timing arcs that
+              fanin to the user-specified to-pin list.
+
+              You can specify multiple pins in the pin list. The delay  calcu-
+              lation report will be printed at the end of each timing path for
+              the arcs, which are retimed in that path. The PBA delay calcula-
+              tion  report  format  is similar to the report_delay_calculation
+              output in GBA mode, however, the results  may  be  vary  because
+              this output is based on path-based analysis.
+
+              When a cell output pin list is provided, the generated report is
+              for the cell arcs; the cell input pin list generates the net arc
+              report.
+
+              This parameter is supported for PBA reporting only.
+
+       -retime_format {manual | retime_compare | retime_replace}
+              Allows  you  to  set the format of timing reports for retime re-
+              lated fields. You can specify one of the following options:
+
+              * manual: Does not change the report_timing format.
+
+              * retime_compare: If GBA columns are present in the report  for-
+                mat,  then  the corresponding retime options are added. If PBA
+                columns are already present, then there is no  change  in  the
+                format.
+
+              * retime_replace:  If GBA columns are present in the report for-
+                mat, then the GBA columns are replaced  by  the  corresponding
+                PBA  columns.  If  PBA columns are already in the report, then
+                there is no change in the format.
+
+              Note: The timing report format is also controlled using the tim-
+              ing_report_retime_formatting_mode  global  variable.   The   re-
+              port_timing  command  setting  has  precedence  over this global
+              variable.
+
+       -retime_mode {path | exhaustive}
+              Reanalyzes the  specified  set  of  paths  using  the  specified
+              method. You can use one of the following options:
+
+              * path:  Reanalyzes  the specified set of paths. By default, the
+                software  uses  -retime_modepath  setting,   when   the   -re-
+                timepath_slew_propagation option is specified.
+
+              * exhaustive:  Enables  exhaustive  path-based analysis mode. In
+                this mode, the software will exhaustively examine nworst paths
+                of the selected endpoints and then select the true worst  path
+                to  be  reported - based on retimed slacks of all the examined
+                paths.
+
+                When you use this option, reporting can be run time  intensive
+                as  the  software  needs  to  do an exhaustive search for true
+                worst paths. Therefore, it is recommended to use  this  option
+                in  the later phases of the sign-off stage when there are very
+                few violations left for analysis.
+
+              Default: path
+
+       -retime {aocv | |path_slew_propagation | aocv_path_slew_propagation}
+              Reanalyzes the specified set of paths using path based  analysis
+              (1 path per endpoint).
+
+              Note:  This feature is not meant to be run on all the paths of a
+              design.  aocv: Computes AOCV stage count based on specific paths
+              and applies the AOCV derate values to GBA (  graph-based  analy-
+              sis)  delays.
+
+              The  -retime  aocv option can be used with the following parame-
+              ters only:
+
+              * -clock_from
+
+              * -edge_from
+
+              * -clock_to
+
+              * -edge_to
+
+              * -rise/-fall
+
+              * -early/-late
+
+              * -check_type
+
+              * -max_paths
+
+              * -begin_end_pair
+
+              * -from/-from_rise/-from_fall
+
+              * -through/-through_rise/-through_fall
+
+              * -to/-to_rise/-to_fall
+
+       * -path_group
+
+         * -path_exceptions
+
+         * -net
+
+         * -path_type
+
+         * -max_slack
+
+         * -min_slack
+
+         * -view
+
+         * -format <column_list>
+
+         * -derate_summary
+
+         * -machine_readable
+
+         * -nworst
+
+       path_slew_propagation: Re-evaluates the given set of graph-based analy-
+       sis (GBA) paths by recalculating the delay  values  based  upon  actual
+       propagated  slew across the path. In this case the AOCV derates are the
+       ones that are reported during graph-based analysis.
+
+         The default timing analysis uses worst-case slew propagation to  cal-
+         culate the delays at each stage. As a result, timing analysis results
+         can be pessimistic.
+
+         Note:  This  feature should be run only on paths that are not meeting
+         the slack margin criteria, to help identify actual failing paths from
+         those that are simply failing due to the conservative delay  calcula-
+         tion.
+
+         Signal  integrity incremental delays can be recomputed for the entire
+         path. You can use the following command to perform path based  signal
+         integrity analysis:
+
+         report_timing -retime path_slew_propagation
+
+         In the report_timing command output, the Retime Incr Delay column re-
+         ports  recomputed signal integrity delays. To view this column, spec-
+         ify  the  report_timing  -format  retime_incr_delay  option  or   use
+         set_global report_timing_format timing global variable.
+
+         The -retime option also supports retiming a collection of paths. This
+         option  does  not  retiming  an already retimed path collection. This
+         feature works in graph-based analysis (GBA)  mode  for  path  collec-
+         tions. You can use the following use model to retime collections:
+
+         report_timing $collection -retime path_slew_propagation
+
+         A  path  collection  stores  context dependent data, that is, a delay
+         property in GBA will reflect delay data of  the  timing  path  report
+         generated  in GBA mode. The same property in PBA will reflect the re-
+         time delay data of the timing path report in PBA mode.
+
+         The delay column in timing reports is also context dependent -  under
+         the  timing_report_retime_formatting_mode retime_replace global vari-
+         able.
+
+         Note: For memory optimization purposes, both the delays will  not  be
+         stored in the same path collection. You can use this setting for com-
+         parison purposes.  aocv_path_slew_propagation: Re-evaluates the given
+         set of graph-based analysis (GBA) paths by using path-based AOCV der-
+         ates and delays using actual path- based propagated slew. This option
+         is a combination of -aocv and -path_slew_propagation.
+
+         For  retime  report header details, see Retime Analysis Report Header
+         Flags.
+
+       -skip_io_paths
+         Specifies whether the input/output paths are to be ignored.
+
+       -rise | -fall
+         Reports the path with the specified edge on the endpoint.
+
+         If an endpoint is specified using -to_rise (or -to_fall) option,  the
+         -rise  (or  -fall) option is ignored and paths with edge specified by
+         -to_rise (or -to_fall) are reported. The  -rise option applies to end
+         point only.
+
+       -tcl_list
+         Produces the report in Tcl list format instead of a  tabular  format.
+         This  is useful for integrating timing with custom Tcl functions, and
+         also for customizing report generation.
+
+         The -tcl_list and filename parameters  are  mutually  exclusive;  you
+         cannot specify them together.
+
+       {-through | -through_rise | -through_fall} <pin_list>
+         Reports  paths  that  pass  through pin(s) or net(s) specified by the
+         pin_list. Any number of -through pins or nets can be specified. Using
+         -through_rise (or -through_fall) specifies that the paths go  through
+         the  rising  (or  falling)  edge  of  the signals on the pins/nets in
+         pin_list.
+
+         The pin_list is a logical OR function. The resulting  path  may  pass
+         through  any  of  the pins or nets in the -through pin_list. To force
+         the report to pass through multiple pins or nets,  separate  -through
+         statements are needed.
+
+         You can use these parameters with the  -net  option.
+
+       -to | -to_rise | -to_fall <pin_list>
+         Reports  paths  leading to the pin(s) specified by the pin_list. Pins
+         in the pin_list can be either pins on the design boundary (ports)  or
+         pins  on  an instance. Only one list of -to pins can be specified per
+         report. Using -to_rise (or -to_fall) specifies that  the  rising  (or
+         falling)  edge  of the signals on the pins in pin_list are at the end
+         of the paths.
+
+         The -to_rise option applies to end  point  as  well  as  intermediate
+         pins.
+
+       -unconstrained
+         Reports only the unconstrained paths (paths with no slack). Each sig-
+         nal  arriving at the path end node which does not have a matching re-
+         quired time, results in an unconstrained path.
+
+         The report_timing command without the  -unconstrained  parameter  re-
+         ports  only constrained paths. If no constrained path is found, there
+         may be unconstrained paths or the path may not exist.
+
+         Note: The -min_slack and -max_slack cannot be specified with the -un-
+         constrained parameter.
+
+         See Sample Reports for the conditions under which a path is  reported
+         as constrained or unconstrained.
+
+       -unique_pins
+         Reports paths through unique set of pins.
+
+         When this parameter is specified, in group-based mode for a given be-
+         gin-end  point  pair, the software will consider all different launch
+         clock paths for reporting unique paths. If for a given begin-end pair
+         and a given capture clock, there is a possibility of different launch
+         clock paths, then each such path will be reported.
+
+         Note: Using this option may significantly affect runtime  and  memory
+         usage if the number of paths to be reported is high.
+
+       -view {<viewName>}
+         Generates report for the specified analysis view.
+
+         You  must be in multi-mode multi-corner analysis mode in order to use
+         this parameter. To create a view, you  use  the  create_analysis_view
+         command.  To  set an active view for analysis, you use the set_analy-
+         sis_view command.
+
+         Default: Reports the worst path to each endpoint across all  analysis
+         views.
+
+         The  report_timing  command  to performs block based analysis in MMMC
+         mode. By default, the command reports the worst  end-point(s)  across
+         all  views.  You can use the -view parameter to report for individual
+         views.
+
+       -worst_rc_corner
+         Identifies worst interconnect parameter  combination  that  leads  to
+         minimum slack (desired) and generates a report for the corner.
+
+Use of Informational Flags
+       Informational tags are used providing additional details. The following
+       informational tags are supported:
+
+       (i)    Net is ideal
+
+       (P)    Instance is preserved / don't_touch
+
+       (p)    Instance is preserved / don't_touch but may be resized
+
+       The  output  format  uses the flag keys on the timing report and adds a
+       description at the end of the report for reference. A sample output  is
+       as shown below:
+
+       #----------------------------------------------------------------------------
+
+       #  Timing Point  Delay (ns) Latch  Window   Arrival   Arc   Flags   Ad-
+       justment
+
+       # (ns)
+
+       #----------------------------------------------------------------------------
+
+       f0/CP           -           -    1.000000             CP       -      -
+
+       f0/Q            0.254100    -    1.254100             CP->Q    -      -
+
+       b32/Z           0.598446    -    1.852546             I->Z     -      -
+
+       b4/Z            0.086940    -    2.502181             I->Z     -      -
+
+       f1/D            0.000000    -    2.502181             D        <<<    -
+
+       #----------------------------------------------------------------------------
+
+       (P) : Instance is preserved
+
+       (p) : Instance is preserved but may be resized
+
+       (i) : Net is ideal.
+
+       (b) : Timing paths are broken.
+
+Retime Analysis Report Header Flags
+       AOCV(default)
+              Indicates that the selected retime analysis includes  recalcula-
+              tion of path depths and AOCV derates.
+
+              The   AOCV   retime   is   enabled  with  the  -retime  aocv  or
+              aocv_path_slew_propagation parameter.
+
+              The AOCV stage counting mode (set using  the  timing_aocv_analy-
+              sis_mode  global  variable) is indicated in the parenthesis. The
+              stage counting modes are given below:
+
+              * launch_capture(default)     (Default)
+
+              * combine_launch_capture      (Combine)
+
+              * separate_clock_data         (Separate)
+
+              * clock_only                  (Clock)
+
+       Corr   Indicates that the current SOCV accuracy mode considers correla-
+              tion of variation between stages.
+
+              Starting with SOCV accuracy mode medium (specified using  setDe-
+              layCalMode  -socv_accuracy_mode  parameter),  it is assumed that
+              some portion of the variation  is  not  completely  uncorrelated
+              random variation, so the software tracks a correlated and uncor-
+              related component for each of the applicable moments.
+
+       Data Clock
+              Indicates  the portion of the path that has been retimed. By de-
+              fault, only the data path is retimed.
+
+              When    the    timing_disable_retime_clock_path_slew_propagation
+              global  variable  is set to false, then the clock path will also
+              be retimed, and "Clock" will be added to the retime status.
+
+       GP     Indicates that graph-based PBA mode settings are enabled.
+
+       GS     Indicates that GBA skewness mode settings are enabled.
+
+       Path-Slew
+              Indicates the selected retime analysis is set to use  path  cor-
+              rect slew rates to reduce the pessimism from slew merging.
+
+              This can be controlled with the report_timing -retime parameter.
+              The  path  slews  are  recalculated in path_slew_propagation and
+              aocv_path_slew_propagation modes.
+
+       RC     Indicates  that  RC  variation  is   enabled   with   the   tim-
+              ing_socv_rc_variation_mode setting, and an SOCV format RC varia-
+              tion side file library is available.
+
+       SI     Indicates  that SI analysis was enabled during the retime analy-
+              sis.
+
+              The path-based analysis will recompute SI  effects  using  path-
+              correct victim timing windows.
+
+       SOCV(Ultra)
+              Indicates  that  SOCV  analysis is enabled and has been incorpo-
+              rated into the retiming.
+
+              The SOCV analysis  mode  (specified  using  the  setDelayCalMode
+              -socv_accuracy_mode  parameter) is shown in parenthesis. The ac-
+              curacy modes are mapped as follows:
+
+              * low        <not shown>
+
+              * medium     Medium
+
+              * high       High
+
+              * ultra      Ultra
+
+       Spatial (CS)
+              Indicates that spatial derating side files have been loaded  and
+              an explicit spatial derate factor will be calculated.
+
+              This  is  not shown for AOCV 2D derate tables, where the spatial
+              and depth derates are combined.  The  GBA  spatial  derate  mode
+              (specified with the timing_spatial_derate_distance_mode setting)
+              is shown in parenthesis with the possible values below:
+
+              * chip_size        (CS)
+
+              * bounding_box     (BB)
+
+              The  GBA  spatial  derate  mode  does  not affect the path-based
+              analysis bounding box calculation.
+
+       WP     Indicates that waveform propagation is enabled  (setDelayCalMode
+              -equivalent_waveform_model propagation setting).
+
+              The path-based retime will also use this delay calculation accu-
+              racy  setting  when  recomputing  delays and transitions for the
+              path.
+
+       The following informational tags are supported for VT skew reports:
+
+       ________________________________________________________
+
+       | Flags           |  Description     |  Command         |
+
+       |                 |                  |   Settings       |
+
+       |_________________|__________________|__________________|
+
+       | VT-Skew         |  Shows VT skew   |  set             |
+
+       |                 |   details.       |   timing_enable_ |
+
+       |                 |                  |  vtskew_derate_m |
+
+       |                 |                  |  ode true        |
+
+       |_________________|__________________|__________________|
+
+       |  PBA            |  Shows that the  |  set_vt_skew_con |
+
+       |                 |  current path    |  fig             |
+
+       |                 |   has            |   -unique_vt_mod |
+
+       |                 |  undergone VT    |  e {none |       |
+
+       |                 |   skew           |  slow | fast |   |
+
+       |                 |   analysis.Howev |   nominal}       |
+
+       |                 |  er, all the     |                  |
+
+       |                 |   paths might    |                  |
+
+       |                 |   not be         |                  |
+
+       |                 |   considered     |                  |
+
+       |                 |  VT skew         |                  |
+
+       |                 |   candidates -   |                  |
+
+       |                 |   even if VT     |                  |
+
+       |                 |   skew           |                  |
+
+       |                 |  analysis mode   |                  |
+
+       |                 |   is enabled.    |                  |
+
+       |_________________|__________________|__________________|
+
+       | PU              |  Indicates       |  set_vt_skew_con |
+
+       |                 |   unique VT skew |  fig             |
+
+       |                 |   for            |   -unique_vt_mod |
+
+       |                 |                  |  e {slow |       |
+
+       |                 |  PBA.Displayed   |  fast | nominal} |
+
+       |                 |   when unique VT |                  |
+
+       |                 |   mode is        |                  |
+
+       |                 |   enabled.       |                  |
+
+       |_________________|__________________|                  |
+
+       | GU              |  Indicates       |
+
+       |                 |   unique VT skew |
+
+       |                 |   for            |
+
+       |                 |                  |
+
+       |                 |  GBA.Displayed   |
+
+       |                 |   when unique VT |
+
+       |                 |   mode is        |
+
+       |                 |   enabled.       |
+
+       |_________________|__________________|__________________|
+
+       A sample report is shown below:
+
+       Path   1:    MET    Hold    Check    with    Pin    TDSP_CORE_INST/EXE-
+       CUTE_INST/top_reg[11]/CP
+
+       Endpoint:     TDSP_CORE_INST/EXECUTE_INST/top_reg[11]/D             (v)
+       checked
+
+       with  leading edge of 'm_clk'
+
+       Beginpoint:  TDSP_CORE_INST/DATA_BUS_MACH_INST/data_out_reg[11]/Q   (v)
+       triggered
+
+       by  leading edge of 'm_clk'
+
+       Path Groups: {m_clk}
+
+       Analysis View: view2
+
+       Retime Analysis {Data Path-Slew SOCV(High)-Corr SI Vt-Skew (PBA GU PU)}
+
+       Retime     Vt-Skew     Analysis     {VT_group_1@fast    VT_group_2@fast
+       VT_group_3@fast }
+
+       Retime Vt-Skew Stats { Dominant_VT_group: NA  Launch_Clock_VTGroups:  2
+       Capture_
+
+       Clock_VTGroups: 1 Total_Clock_VTGroups: 2}
+
+       Other   End  Arrival  Time          0.569769  (+3.00S)  |   0.531640  |
+       0.012710
+
+       +  Hold                         -0.035400  (+3.00S)   |   -0.035400   |
+       0.000000
+
+       + Phase Shift                  0.000000
+
+       -   CPPR   Adjustment               0.051262  (+3.00S)  |   0.000100  |
+       0.017054
+
+       =  Required  Time                 0.462027  (+3.00S)  |    0.496140   |
+       0.011371(-)
+
+         Arrival   Time                   0.769317   (-3.00S)  |   0.803430  |
+       0.011371
+
+         Slack  Time                    0.307290  (-3.00S)   |    0.307290   |
+       0.000000
+
+       =   Slack   Time(original)          0.356572  (-3.00S)  |   0.356572  |
+       0.000000
+
+            Clock Rise Edge                     0.000000
+
+            = Beginpoint Arrival Time           0.000000 (-3.00S) |   0.000000
+       |  0.000000
+
+       Report Timing- Column List Options
+
+       Option Description
+
+       adjustment
+              Reports  generated  clock  adjustment values. When reporting the
+              detailed path for a generated  clock,  there  are  circumstances
+              where the arrival time needs to be adjusted when a create_gener-
+              ated_clock  assertion is encountered along the path. The adjust-
+              ment argument can be used to provide a clearer indication of why
+              a "jump" in the arrival time is seen in the path report.
+
+              When the create_generated_clock -edge_shift parameter is  speci-
+              fied, the adjustment column will show the amount of shift speci-
+              fied.
+
+              abs_delay_err"  Reports  the absolute delay difference of Tempus
+              from Spice.
+
+              abs_slew_err" Reports the absolute  slew  difference  of  Tempus
+              from Spice.
+
+       annotation
+              Reports RC parasitic annotations for net arcs, and delay annota-
+              tions for either gate or net arcs. The following annotations are
+              reported:
+
+              * SDF:  SDF  back-annotation. The annotation status reflects the
+                gate arc, not the interconnect arc.
+
+              * SPEF: This entry appears if parasitic extraction has been done
+                or annotated using SPEF.
+
+              * LumpedRC: Lumped RC annotation
+
+              * DlyAssert: Assertion set with set_annotated_delay command
+
+              * WLM: Wire load model back-annotation
+
+              * <none>: All others
+
+              aocv_adj_stages" Shows up "Aocv Adjust Stages" column. This col-
+              umn reports the AOCV adjustment stages that indicate  the  total
+              effective stage count.
+
+       aocv_derate
+              Reports the graph-based AOCV derating factor used for cells/nets
+              in  AOCV  mode.  In  retime mode, this column will report graph-
+              based derating for cells/nets before the AOCV branch  point  and
+              path-based derating.
+
+              aocv_weight" Reports AOCV weight values for the path elements.
+
+       arc    Reports  the arc as described by the from pin, from pin edge, to
+              pin, and to pin edge. For example, the arc from the rising  edge
+              of pin A to the falling edge of pin Z is reported as A -> Z.
+
+       arrival
+              Reports the arrival time on the pin.
+
+              arrival_mean" Reports mean of the arrival time on a pin.
+
+              arrival_sigma" Reports standard deviation of the arrival time on
+              a pin.
+
+       cell   Reports the cell name of the given pin's instance.
+
+       delay  Reports the arc delay. If the stolen slack at the arc output pin
+              (output  of  transparent latches) is not zero, the stolen column
+              is also displayed along with this column.
+
+              delay_mean" Reports the mean of each arc's delay.
+
+              delay_sigma " Reports the standard deviation of each  arc's  de-
+              lay.
+
+              Note:  In  the absence of correlated and uncorrelated components
+              of variation, the individual delay  sigma  values  will  not  be
+              summed up.
+
+       direction
+              Reports the pin direction (IN, OUT).
+
+       edge   Reports the edge of a pin (^=R, v=F).
+
+       fanin  Reports  the number of source nodes of a net connected to a tim-
+              ing pin.
+
+       fanout Reports the number of sinks of a net connected to a timing pin.
+
+              flags" Indicates the size_only, dont_use, dont_touch, and  ideal
+              attributes.
+
+              When  the 'flags' option is specified, a capacitance group entry
+              (if it exists) will be displayed under the "Flags" column.  This
+              value indicates the input capacitance group being used for delay
+              calculations - C1C2 (2-piece model) or C1CN (n-piece model).
+
+       hpin   Reports the hierarchical name for a given pin.
+
+              Note: The hpin, pin, and timing_point will print the same values
+              in the report output.
+
+       incr_delay
+              Reports  the incremental delay of a pertaining arc. The software
+              reads the incremental delay from an incremental SDF  file  using
+              the read_sdf command.
+
+       instance
+              Reports the hierarchical name of a given pin's instance.
+
+       instance_location
+              Reports  the  location  (x,y) of an instance. If a design is not
+              placed, this column will be blank. This option displays the  in-
+              stance column automatically.
+
+              latch_window"  Reports  the available window for latch to sample
+              the data.
+
+       load   Reports the total capacitance load on a given pin.
+
+              module" Reports the module name of the corresponding block hier-
+              archy. This hierarchical module name will be reported only  when
+              the -hpin parameter of the report_timing command is specified.
+
+       net    Reports the hierarchical name of a net connected to a given pin.
+
+              pct_delay_err"  Reports  the  percent delay difference of Tempus
+              from Spice.
+
+              pct_slew_err" Reports the percent slew difference of Tempus from
+              Spice.
+
+       phase  Reports the phase name of a pin.
+
+              phys_info " Shows minimum/maximum assigned  layer,  and  non-de-
+              fault rule name information.
+
+       pin    Reports the reference name for the given pin.
+
+       pin_load
+              Reports the pin load data. The pin load refers to the sum of pin
+              capacitance of all the pins connected to the current net.
+
+       pin_location
+              Reports  the location (x,y) of a pin. If a design is not placed,
+              this column will be blank.
+
+       power_domain
+              Reports power domain details of the specified path instance.
+
+       required
+              Reports the required time on a pin.
+
+       retime_delay
+              Reports the recalculated arc delay based on the path being rean-
+              alyzed with the specified retime method.
+
+              retime_delay_mean" Reports the mean of the recalculated arc  de-
+              lay  on  the  path  being  reanalyzed  with the specified retime
+              method.
+
+       retime_mis_delta
+              Reports MIS delta delay in PBA mode for MIS-aware timing arcs in
+              the path.
+
+       retime_delay_sigma
+              Reports the standard deviation of each parameter of an arc's re-
+              timed delay.
+
+       retime_slew
+              Reports the recalculated slew based on the path being reanalyzed
+              with the specified retime method.
+
+              retime_slew_mean" Reports the mean of each parameter of  an  arc
+              sink pin's retimed slew.
+
+       retime_slew_sigma
+              Reports  the standard deviation of each parameter of an arc sink
+              pin's retimed slew.
+
+       stage_count
+              Displays the aggregate stage count of  a  specific  instance  in
+              graph-based  analysis  (GBA) mode, and the actual stage count in
+              path-based analysis (PBA) mode.
+
+              slew" Reports the propagated slew at the given pin.
+
+              slew_mean" Reports mean of each parameter of an arc  sink  pin's
+              slew.
+
+              slew_sigma"  Reports the standard deviation of each parameter of
+              an arc sink pin's slew.
+
+              socv_derate" Reports the SOCV or the spatial derating factor ap-
+              plied on the cells or nets in SOCV analysis mode.
+
+              spice_arrival" Reports the Spice  arrival  time  at  the  timing
+              point.
+
+              spice_delay" Reports the Spice delay of a timing arc.
+
+              spice_slew" Reports the Spice slew of a timing point.
+
+       stolen Reports  the  slack  stolen  (or  the time given to the previous
+              stage) at the given pin. If the slack is not zero and the  delay
+              column  is  specified,  then this column is displayed by default
+              (but only visible on the output of transparent latches).
+
+       timing_point
+              Reports the hierarchical names for the given points.
+
+              total_derate" Reports the total derating factor applied  on  the
+              corresponding  cell  or nets that reflect the combined impact of
+              all the derates (OCV/AOCV/spatial) applied on each stage of  the
+              timing path.
+
+              Note:  By default, the software will take into account the nega-
+              tive delays and keep the SOCV derate column  in  sync  with  the
+              user-derate  column.  The software multiplies the negative delay
+              by (2.0 - derating factor) to make it more pessimistic. However,
+              reporting will always show derates based on the positive  delay.
+              The  timing  report output will show similar values for the SOCV
+              Derate and Total Derate columns, but there will be no changes in
+              the slack values.
+
+       user_derate
+              Reports the derating scale factors set with the  set_timing_der-
+              ate command.
+
+              Note: The timing system cannot provide an accurate derating fac-
+              tor  for the lumped gate and wire delay when the set_timing_der-
+              ate factors for -cell_delay and -net_delay are  not  equivalent.
+              In this case, an asterisk (*) is reported in the SSI Derate col-
+              umn.
+
+              voltage"  Returns the voltage that is used during delay calcula-
+              tions.
+
+              vt_skew_derate" Returns voltage threshold (VT) skew analysis de-
+              tails.
+
+       when_cond
+              Reports the "when" condition of the arc  specified  in  the  li-
+              brary.
+
+       wire_load
+              Reports the wire load.
+
+              wlmodel"  Reports  the  kind  of parasitic used by a pin or net,
+              such as SPEF. If the wire load model is derived from  a  Liberty
+              file, the information is reported in the following format:
+
+              Wireload model (.lib <model_name> <library_name>)
+
+Reporting Timing Checks Between Various Types of Clocks
+       The  following table summarizes the timing checks and the min/max delay
+       checks that are performed based on the types of launching and capturing
+       clocks:
+
+              * NZ (Non Zero Period Clock - Regular Clock)
+
+              * Z (Zero Period Clock - Regular clock whose period is equal  to
+                zero)
+
+              * @ (Asynchronous Clock - Clock which triggers the default input
+                delay and the input delay without a clock)
+
+              * CPD (Combinational Path Delay)
+
+       ________________________________________________________
+
+       | Launching  |  Capturing  |  Timing     |  Path       |
+
+       | Clock      |  Clock      |   Checks    |   Delay     |
+
+       |            |             |             |   Checks    |
+
+       |____________|_____________|_____________|_____________|
+
+       |  @         |   @         |   NO        |   CPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  Z         |   @         |   NO        |   CPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  NZ        |   @         |   NO        |   CPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  @         |   Z         |   YES       |   SPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  @         |   NZ        |   YES       |   SPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  NZ        |   Z         |   NO        |   SPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  Z         |   NZ        |   YES       |   SPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  Z         |   Z         |   YES       |   SPD       |
+
+       |____________|_____________|_____________|_____________|
+
+       |  NZ        |   NZ        |   YES       |   SPD       |
+
+       |____________|_____________|_____________|_____________|
+
+SPD (Sequential Path Delay) Examples
+              * The  following  command  reports  paths  leading to the pin(s)
+                specified by the <pin_list>:
+
+                report_timing -to u55/D
+
+                Path 1: MET Setup Check with Pin u55/CK
+
+                Endpoint: u55/D (^) checked with leading edge of 'CLK_W_4'
+
+                Beginpoint: u55/QN (^) triggered by leading edge of 'CLK_W_4'
+
+                Path Groups: {CLK_W_4}
+
+                Other End Arrival Time 0.152
+
+                - Setup 0.306
+
+                + Phase Shift 10.000
+
+                = Required Time 9.845
+
+                - Arrival Time 1.902
+
+                = Slack Time 7.943
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.152
+
+                = Beginpoint Arrival Time 0.152
+
+                ---------------------------------------------------------------------------
+
+                Pin      Arc             Cell       Delay      Arrival     Re-
+                quired    Instance
+
+                                                             Time      Time
+
+                --------------------------------------------------------------------------
+                -
+
+                u55/CK       CK   ^             -         -   0.151      8.094
+                u55
+
+                u55/QN    CK ^ -> QN ^   DFF      1.750     1.901        9.844
+                u55
+
+                u55/D  ->  D ^            DFF      0.001     1.902       9.845
+                u55
+
+                --------------------------------------------------------------------------
+
+              * The following command shows a report similar to the first with
+                the addition of net arc information.
+
+                report_timing -to u55/D -net
+
+                Path 1: MET Setup Check with Pin u55/CK
+
+                Endpoint: u55/D (^) checked with leading edge of 'CLK_W_4'
+
+                Beginpoint: u55/QN (^) triggered by leading edge of 'CLK_W_4'
+
+                Path Groups: {CLK_W_4}
+
+                Other End Arrival Time 0.152
+
+                - Setup 0.306
+
+                + Phase Shift 10.000
+
+                = Required Time 9.845
+
+                - Arrival Time 1.902
+
+                = Slack Time 7.943
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.152
+
+                = Beginpoint Arrival Time 0.152
+
+                --------------------------------------------------------------------------
+
+                Pin        Arc           Cell    Delay    Arrival     Required
+                Instance
+
+                Time Time
+
+                -------------------------------------------------------------------------
+
+                u55/CK      CK  ^            -       -         0.151     8.094
+                u55
+
+                u55/QN     CK ^ -> QN  ^    DFF      1.750    1.901      9.844
+                u55
+
+                u55/D  ->    -               DFF      0.001    1.902     9.845
+                u55
+
+                -------------------------------------------------------------------------
+
+              * The report_timing command also accepts -collection as an argu-
+                ment. For example,
+
+                report_timing [report_timing -collection]
+
+                set rpt [report_timing -collection]
+
+                report_timing $rpt
+
+              * The following command displays the worst late path in the  de-
+                sign.  The  format of the report is similar to the first exam-
+                ple:
+
+                report_timing
+
+              * The following command displays the worst late path to each vi-
+                olating endpoint that has a slack less than -1.0:
+
+                report_timing -max_slack -1.0
+
+              * The following command displays all the late paths that end  at
+                port  out[2]  and  that have negative slack up to a maximum of
+                1000 worst paths. If there are more than 1000 paths, only  the
+                1000 worst paths are reported:
+
+                report_timing -to out[2] -max_paths 1000 -max_slack 0.0
+
+              * The  following command reports the worst late path that starts
+                at in[0] and ends at out[1]:
+
+                report_timing  -from in[0] -to out[1]
+
+              * The following command displays  the  three  worst  paths  that
+                start  at  in[1]  and end at out[3]. With reconvergent fanout,
+                more than one path may exist:
+
+                report_timing -from in[1]  -to out[3]  -max_paths 3
+
+              * The following command displays the ten worst paths.  Only  the
+                paths between the specified pins are enumerated.With reconver-
+                gent fanout, more than one path may exist: report_timing -from
+                i102/Z -to i123/A -max_paths 10
+
+              * The  following  command enumerates the worst ten paths through
+                the given two pins, starting at the beginning  points  in  the
+                design and ending at the endpoints, similar to using the -from
+                option:   report_timing   -through   i102/Z   -through  i123/A
+                -max_paths 10
+
+              * The following command reports  the  ten  worst  paths  through
+                blocks  A  and C, or blocks B and C. The path only has to sat-
+                isfy one element in a through list, but all through lists must
+                be satisfied. The example can be thought of as ((A or  B)  and
+                C):
+
+                report_timing -through {A/*B/*} -through {C/*} -max_paths 10
+
+              * The  following  command forces a path through pin A and pin B.
+                Use the syntax shown in the example. Do not  use  -through  {A
+                B}:
+
+                report_timing -through A -through B
+
+              * The  following  command  displays  the  clock path through the
+                clock   root   to   Launch   flop:   report_timing    -through
+                aBC_bs/bs_mex1/r2_00_q1_reg_10_/CK    -to    ....   -path_type
+                full_clock
+
+              * You will not see the path for the launch clock if you  specify
+                the following command because the report_timing command starts
+                reporting from the CK pin:
+
+                report_timing -from aBC_bs/bs_mex1/r2_00_q1_reg_10_/CK
+
+              * The first command displays the path leading to the CK pin.
+
+              * The following command shows the -unconstrained option:
+
+                report_timing -unconstrained
+
+                Path 1:Endpoint: OUT4 (^) (unconstrained output)
+
+                Beginpoint: u55/Q (^) triggered by leading edge of 'CLK_W_4'
+
+                Arrival Time 0.365
+
+                + Clock Network Latency (Prop) 0.150
+
+                = Beginpoint Arrival Time 0.150
+
+                --------------------------------------
+
+                Load Slew Delay Arrival Cell Arc Pin
+
+                Time
+
+                --------------------------------------
+
+                0.013 0.116 - 0.150 - CK ^ u55/CK
+
+                0.011 0.072 0.215 0.365 DFF CK ^ -> Q ^ u55/Q
+
+                0.011 0.131 0.000 0.365 - OUT4 ^ OUT4 ->
+
+                -------------------------------------
+
+              *
+
+                The  following command shows the -unconstrained -path_type end
+                report:
+
+                report_timing -nworst 5 -unconstrained -path_type end  -format
+                {pin arrival phase}
+
+                ------------------------------------------------------------------
+
+                Path No. Pin           Cause               Arrival  Phase
+
+                ------------------------------------------------------------------
+
+                1           seg3/u9/CK    ^     Unconstrained    Path    0.682
+                CLK_W_3(D)(P) *
+
+                2          seg3/u9/CK    ^     Unconstrained    Path     0.682
+                CLK_W_3(D)(P) *
+
+                3           seg3/u3/CK    ^     Unconstrained    Path    0.682
+                CLK_W_3(D)(P) *
+
+                4          seg3/u3/CK    ^     Unconstrained    Path     0.682
+                CLK_W_3(D)(P) *
+
+                5           seg2/u9/CK    ^     Unconstrained    Path    0.682
+                CLK_W_2(D)(P) *
+
+                ------------------------------------------------------------------
+
+              * The following command sets a false path from u99/Q to u55/D:
+
+                set_false_path -from u99/Q -to u55/D
+
+                set_false_path -through u4/Y
+
+                report_timing -from u99/Q -to u55/D  -unconstrained  -path_ex-
+                ceptions all
+
+                Path 1:Endpoint: u55/D (^) (unconstrained output)
+
+                Beginpoint: u99/Q (v) triggered by leading edge of 'CLK_W_4'
+
+                Arrival Time 0.827
+
+                + Clock Network Latency (Prop) 0.150
+
+                = Beginpoint Arrival Time 0.150
+
+                -----------------------------------------------------------
+
+                Load    Slew    Delay   Arrival   Cell   Arc   Pin
+
+                                        Time
+
+                -----------------------------------------------------------
+
+                0.013   0.116   -        0.150    -     CK ^        u99/CK
+
+                0.027   0.086   0.195    0.345    DFF   CK ^ -> Q v u99/Q ->
+
+                1.006   1.140   0.482    0.827    INV   A v -> Y ^  u4/Y
+
+                1.006   1.140   0.000    0.827    DFF   D ^         u55/D ->
+
+                ------------------------------------------------------------
+
+                Applied exceptions:
+
+                ---------------------------------
+
+                Through Late
+
+                ---------------------------------
+
+                u4/Y false
+
+                ---------------------------------
+
+                Ignored exceptions:
+
+                ---------------------------------
+
+                From To Late
+
+                ---------------------------------
+
+                u99/Q u55/D false
+
+                ---------------------------------
+
+              * For  hold paths, if the path has a setup multi-cycle path then
+                those exceptions will also be reported because hold slacks get
+                impacted by inferred path exceptions. For example:
+
+                set_multicycle_path 2 -setup -from IN1
+
+                Path 1: VIOLATED Hold Check with Pin seg1/u3/CK
+
+                Endpoint: seg1/u3/D (v) checked with leading edge of 'CLK_W_1'
+
+                Beginpoint: IN1 (v) triggered by leading edge of '@'
+
+                Path Groups: {CLK_W_1}
+
+                Other End Arrival Time 0.682
+
+                + Hold -0.034
+
+                + Phase Shift 0.000
+
+                - Cycle Adjustment -20.000
+
+                = Required Time 20.648
+
+                Arrival Time 0.117
+
+                Slack Time -20.531
+
+                Clock Rise Edge 0.000
+
+                + Input Delay 0.000
+
+                + Drive Adjustment -0.014
+
+                = Beginpoint Arrival Time -0.014
+
+                -------------------------------------------------------------
+
+                Load    Slew    Delay   Arrival   Cell   Arc           Pin
+
+                                        Time
+
+                --------------------------------------------------------------
+
+                0.013   0.029   -      -0.014    -       IN1 v        IN1
+
+                0.013    0.057    0.054   0.040      CLKBUF   A  v  ->   Y   v
+                seg1/u1/Y
+
+                0.003     0.050     0.077   0.117      CLKBUF   A  v  ->  Y  v
+                seg1/u2/Y
+
+                0.003      0.050      0.000     0.117        DFF        D    v
+                seg1/u3/D
+
+                ---------------------------------------------------------------
+
+                Applied exceptions:
+
+                ---------------------------------
+
+                From Early Late
+
+                ---------------------------------
+
+                IN1 - cycles 2
+
+                ---------------------------------
+
+              * The  following command displays the timing report for analysis
+                view setup_view1:
+
+                report_timing -view setup_view1
+
+                Path 1: MET Late External Delay Assertion
+
+                Endpoint:  EJ_TDOzstate  (^)  checked  with  leading  edge  of
+                'virt_out_EJ_TCK'
+
+                Beginpoint:  core_ejt_ejt_tap_ejt_tck__EJ_TDOzstate_q_reg_0_/Q
+                (^) triggered by trailing edge of 'EJ_TCK'
+
+                Path Groups: {virt_out_EJ_TCK}
+
+                Analysis View: setup_view1
+
+                Other End Arrival Time 0.000
+
+                + Source Insertion Delay 0.300
+
+                - External Delay 1.250
+
+                + Phase Shift 17.400
+
+                + CPPR Adjustment 0.000
+
+                = Required Time 16.450
+
+                - Arrival Time 9.318
+
+                = Slack Time 7.132
+
+                Clock Fall Edge 8.700
+
+                + Clock Network Latency (Ideal) 0.000
+
+                = Beginpoint Arrival Time 8.700
+
+                --------------------------------------------------------------------
+
+                Load   Slew   Delay   Arrival   Cell       Arc             Pin
+
+                                      Time
+
+                --------------------------------------------------------------------
+
+                0.010     0.000              8.700                    CP     ^
+                core_ejt_ejt
+
+                0.118   0.145   0.127    8.828       DFSVTD4    CP  ^  ->  Q ^
+                core_reg_0_/Q
+
+                0.525   0.438   0.411    9.238       BUFVTD6    I  ^  ->  Z  ^
+                FE_OFC260_/Z
+
+                0.525   0.474   0.080    9.318                 EJ_TDOzstate  ^
+                EJ_TDOzstate
+
+                ---------------------------------------------------------------------
+
+Sample Reports
+              *
+
+                report_timing -to  u55/D  -from  u99/Q  -point_to_point  #when
+                -from is intermediate begin point:
+
+                Path 1:Endpoint: u55/D (^) (unconstrained output)
+
+                Beginpoint: u99/Q (v) triggered by leading edge of 'CLK_W_4'
+
+                Arrival Time 0.482
+
+                -------------------------------------------------------------
+
+                Load   Slew    Delay   Arrival   Cell   Arc        Pin
+
+                                       Time
+
+                -------------------------------------------------------------
+
+                0.027  0.086          0.000             Q v        u99/Q ->
+
+                1.006  1.140  0.482   0.482      INV    A v -> Y ^ u4/Y
+
+                1.006  1.140  0.000   0.482      DFF    D ^        u55/D ->
+
+                ------------------------------------------------------------
+
+              * The  following  command  recalculates  the  specified critical
+                paths using the AOCV factor and generates the following timing
+                report:
+
+                report_timing -from in3 -to Top_I9/D -retime  aocv  -path_type
+                full_clock
+
+                Path 1: MET Setup Check with Pin Top_I9/CK
+
+                Endpoint: Top_I9/D (v) checked with leading edge of 'clk2'
+
+                Beginpoint: in3 (^) triggered by leading edge of '@'
+
+                Path Groups: {clk2}
+
+                Retime Analysis { AOCV(Default) }
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.248
+
+                + Phase Shift 1.000
+
+                = Required Time 0.752
+
+                - Arrival Time 0.061
+
+                = Slack Time 0.691
+
+                Clock Rise Edge 0.000
+
+                + Input Delay 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Timing Path:
+
+                ----------------------------------------------------------
+
+                Load   Slew    Delay   Aocv    Cell   Arc    Pin
+
+                                      Derate
+
+                ----------------------------------------------------------
+
+                0.011  0.004                         in3 ^       in3 ->
+
+                0.011  0.004  0.001   1.173   INVX1              Top_I8/A
+
+                0.007  0.076  0.060   1.175   INVX1  A ^ -> Y v  Top_I8/Y
+
+                0.007  0.076  0.000   1.173   DFFX1              Top_I9/D ->
+
+                ----------------------------------------------------------
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Other End Path:
+
+                -----------------------------------------------------
+
+                Load    Slew    Delay  Aocv  Cell   Arc     Pin
+
+                                       Derate
+
+                -----------------------------------------------------
+
+                0.012   0.000                      clk2 ^   clk2
+
+                0.012   0.000  0.000   0.825 DFFX1          Top_I9/CK
+
+                ----------------------------------------------------
+
+              *
+
+                The  following  command  recalculates  the  specified critical
+                paths using the AOCV factor and  generates  an  AOCV  derating
+                summary table for the launch and capture paths, in addition to
+                the timing report:
+
+                report_timing  -from  in3 -to Top_I9/D -retime aocv -path_type
+                full_clock -derate_summary
+
+                Path 1: MET Setup Check with Pin Top_I9/CK
+
+                Endpoint: Top_I9/D (v) checked with leading edge of 'clk2'
+
+                Beginpoint: in3 (^) triggered by leading edge of '@'
+
+                Path Groups: {clk2}
+
+                Retime Analysis { AOCV(Default) }
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.248
+
+                + Phase Shift 1.000
+
+                = Required Time 0.752
+
+                - Arrival Time 0.061
+
+                = Slack Time 0.691
+
+                Clock Rise Edge 0.000
+
+                + Input Delay 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Timing Path:
+
+                -------------------------------------------------------
+
+                Load    Slew   Delay  Aocv   Cell   Arc         Pin
+
+                Derate
+
+                -------------------------------------------------------
+
+                0.011   0.004                       in3 ^      in3 ->
+
+                0.011   0.004  0.001  1.173  INVX1             Top_I8/A
+
+                0.007   0.076  0.060  1.175  INVX1  A ^ -> Y v Top_I8/Y
+
+                0.007   0.076  0.000  1.173  DFFX1             Top_I9/D ->
+
+                -----------------------------------------------------------
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Other End Path:
+
+                ---------------------------------------------------
+
+                Load   Slew    Delay  Aocv   Cell   Arc      Pin
+
+                                      Derate
+
+                ---------------------------------------------------
+
+                0.012  0.000                        clk2 ^  clk2
+
+                0.012  0.000  0.000   0.825  DFFX1          Top_I9/CK
+
+                -----------------------------------------------------
+
+                DUAL LOCV Derate Summary
+
+                Clock Branch Point None
+
+                Distance 89.944
+
+              *
+
+                The following command reports pin names and net names  in  the
+                same column alternatively:
+
+                report_timing  -format { load slew delay arrival cell pin_load
+                fanout timing_point} -net
+
+                Path 1: MET Setup Check with Pin u55/CK
+
+                Endpoint: u55/D (^) checked with leading edge of 'CLK_W_4'
+
+                Beginpoint: u99/Q (v) triggered by leading edge of 'CLK_W_4'
+
+                Path Groups: {CLK_W_4}
+
+                Other End Arrival Time 0.150
+
+                - Setup 0.176
+
+                + Phase Shift 10.000
+
+                = Required Time 9.974
+
+                - Arrival Time 0.827
+
+                = Slack Time 9.148
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.150
+
+                = Beginpoint Arrival Time 0.150
+
+                -------------------------------------------------------------------
+
+                Load    Slew    Delay  Arrival  Cell    Pin Load Fanout Timing
+                Point
+
+                                       Time
+
+                -------------------------------------------------------------------
+
+                        0.116          0.150                            u99/CK
+
+                        0.086  0.195   0.345    DFF                     u99/Q
+
+                0.027                           (net)   0.027    1      n3
+
+                        0.086  0.000   0.345    INV                     u4/A
+
+                        1.140  0.482   0.827    INV                     u4/Y
+
+                1.006                           (net)   1.006    2      n4
+
+                        1.140  0.000   0.827    DFF                      u55/D
+                ->
+
+                -------------------------------------------------------------------
+
+              *
+
+                The following command reports power domain details of path in-
+                stances:
+
+                report_timing  -format { load slew delay arrival cell arc hpin
+                power_domain}
+
+                Path 1: MET Setup Check with Pin u55/CK
+
+                Endpoint: u55/D (^) checked with leading edge of 'CLK_W_4'
+
+                Beginpoint: u99/Q (v) triggered by leading edge of 'CLK_W_4'
+
+                Path Groups: {CLK_W_4}
+
+                Other End Arrival Time 0.150
+
+                - Setup 0.176
+
+                + Phase Shift 10.000
+
+                = Required Time 9.974
+
+                - Arrival Time 0.827
+
+                = Slack Time 9.148
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.150
+
+                = Beginpoint Arrival Time 0.150
+
+                ----------------------------------------------------------------
+
+                Load    Slew    Delay    Arrival     Cell     Arc          Pin
+                Power
+
+                                     Time                                  Do-
+                main
+
+                ----------------------------------------------------------------
+
+                0.013  0.116         0.150            CK ^        u99/CK
+
+                0.027  0.086  0.195  0.345      DFF   CK ^ -> Q v u99/Q    PD1
+
+                1.006  1.140  0.482  0.827      INV   A v -> Y ^  u4/Y     PD2
+
+                1.006  1.140  0.000  0.827      DFF   D ^         u55/D -> PD1
+
+                ----------------------------------------------------------------
+
+              * The following examples refer to the figure shown below:
+
+       Conditions for Unconstrained and Constrained Paths
+
+              *
+                 Shows  the  path  from I to O is reported as an unconstrained
+                path under the following conditions (constraints on I and O):
+
+              * No constraints on either I or O
+
+              * set_input_delay -clock ck1 1.0 I
+
+                No set_output_delay constraint on O
+
+              * set_input_delay 1.0 I
+
+                set_output_delay 1.1 O
+
+              * Shows the path from I to O is reported as a  constrained  path
+                under the following conditions (constraints on I and O):
+
+              * set_input_delay -clock ck1 1.0 I
+
+                set_output_delay -clock ck1 1.0 O
+
+              * set_input_delay -clock ck1 1.0 I
+
+                set_output_delay -clock ck2 1.0 O
+
+              * set_output_delay -clock ck1 1.0 O
+
+                No  set_input_delay  constraint on I. It uses default delay of
+                zero.
+
+                Default: -late
+
+              * The following command reports AOCV weight details of path ele-
+                ments:
+
+                report_timing -from in3 -to Top_I9/D  -format  {instance  cell
+                arc delay
+
+                     aocv_derate  stage_count  arrival aocv_weight} -path_type
+                full_clock
+
+                Path 1: MET Setup Check with Pin Top_I9/CK
+
+                Endpoint: Top_I9/D (v) checked with leading edge of 'clk2'
+
+                Beginpoint: in3 (^) triggered by leading edge of '@'
+
+                Path Groups: {clk2}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.248
+
+                + Phase Shift 1.000
+
+                = Required Time 0.752
+
+                - Arrival Time 0.061
+
+                = Slack Time 0.691
+
+                Clock Rise Edge 0.000
+
+                + Input Delay 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Timing Path:
+
+                -----------------------------------------------------------------------
+
+                Instance     Cell      Arc     Delay     Aocv     Aocv     Ar-
+                rival    Aocv
+
+                                                        Derate   Stage    Time
+                Weight
+
+                                                                Count
+
+                -----------------------------------------------------------------------
+
+                                      in3 ^                              0.000
+
+                Top_I8       INVX1    A ^ -> Y v  0.061  1.175  1.000    0.061
+                1
+
+                Top_I9       DFFX1    D v         0.000  1.173  2.000    0.061
+                1
+
+                -----------------------------------------------------------------------
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Other End Path:
+
+                -----------------------------------------------------------------------
+
+                Instance   Cell      Arc       Delay      Aocv     Aocv    Ar-
+                rival    Aocv
+
+                                                         Derate   Stage   Time
+                Weight
+
+                                                                 Count
+
+                -----------------------------------------------------------------------
+
+                                    clk2 ^                              0.000
+
+                Top_I9    DFFX1     CK ^       0.000     0.825   1.000   0.000
+                1
+
+                ----------------------------------------------------------------------
+
+              * The  following  command  reports  paths  through unique set of
+                pins:
+
+                report_timing -nworst 2 -unique_pins
+
+                Path 1: MET Setup Check with Pin seg3/u14/CK
+
+                Endpoint:  seg3/u14/D  (^)  checked  with  leading   edge   of
+                'CLK_W_3'
+
+                Beginpoint:   seg3/u9/Q  (^)  triggered  by  leading  edge  of
+                'CLK_W_3'
+
+                Path Groups: {CLK_W_3}
+
+                Other End Arrival Time 0.621
+
+                - Setup 0.186
+
+                + Phase Shift 2.000
+
+                = Required Time 2.434
+
+                - Arrival Time 2.062
+
+                = Slack Time 0.372
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.682
+
+                = Beginpoint Arrival Time 0.682
+
+                -----------------------------------------------------------
+
+                Load   Slew    Delay  Arrival   Cell   Arc          Pin
+
+                                      Time
+
+                -----------------------------------------------------------
+
+                0.008  0.049  0.682                    CK ^         seg3/u9/CK
+
+                0.011  0.075  0.185   0.867     DFF    CK ^ -> Q ^  seg3/u9/Q
+
+                0.027  0.077  0.073   0.940     BUF    A ^ -> Y ^   seg3/u10/Y
+
+                1.027  0.644  0.317   1.257     INV    A ^ -> Y v   seg3/u11/Y
+
+                1.011  1.087  0.402   1.659     INV    A v -> Y ^   seg3/u12/Y
+
+                0.003  1.077  0.403   2.062     BUF    A ^ -> Y ^   seg3/u13/Y
+
+                0.003  1.077  0.000   2.062     DFF    D ^          seg3/u14/D
+
+                -------------------------------------------------------------
+
+                Path 2: MET Setup Check with Pin u2/CK
+
+                Endpoint: u2/D (v) checked with leading edge of 'CLK_W_1'
+
+                Beginpoint: CLK2 (v) triggered by trailing edge of 'CLK_W_2'
+
+                Path Groups: {CLK_W_1}
+
+                Other End Arrival Time 0.000
+
+                - Setup 0.188
+
+                + Phase Shift 15.000
+
+                = Required Time 14.812
+
+                - Arrival Time 12.463
+
+                = Slack Time 2.349
+
+                Clock Fall Edge 12.500
+
+                = Beginpoint Arrival Time 12.500
+
+                ----------------------------------------------------------
+
+                Load    Slew   Delay    Arrival    Cell    Arc    Pin
+
+                                        Time
+
+                ----------------------------------------------------------
+
+                0.034  0.003   12.500                     CLK2 v      CLK2
+
+                0.003  0.003   -0.037   12.463     BUF    A v -> Y v  u10999/Y
+
+                0.003  0.003   0.000    12.463     DFF    D v         u2/D
+
+                ----------------------------------------------------------
+
+              * The following command reports all the violating paths (or hav-
+                ing slack greater than the value specified with  `-max_slack')
+                between unique source and target register pairs:
+
+                report_timing -to u55/D -begin_end_pair -max_slack 10
+
+                Path 1: MET Setup Check with Pin u55/CK
+
+                Endpoint: u55/D (^) checked with leading edge of 'CLK_W_4'
+
+                Beginpoint: u99/Q (v) triggered by leading edge of 'CLK_W_4'
+
+                Path Groups: {CLK_W_4}
+
+                Other End Arrival Time 0.150
+
+                - Setup 0.176
+
+                + Phase Shift 10.000
+
+                = Required Time 9.974
+
+                - Arrival Time 0.827
+
+                = Slack Time 9.148
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.150
+
+                = Beginpoint Arrival Time 0.150
+
+                ----------------------------------------------------------
+
+                Load    Slew    Delay    Arrival    Cell    Arc    Pin
+
+                                         Time
+
+                ----------------------------------------------------------
+
+                0.013   0.116   0.150                      CK ^         u99/CK
+
+                0.027   0.086   0.195    0.345      DFF    CK ^ -> Q v  u99/Q
+
+                1.006   1.140   0.482    0.827      INV    A v -> Y ^   u4/Y
+
+                1.006    1.140   0.000    0.827      DFF    D ^          u55/D
+                ->
+
+                ----------------------------------------------------------
+
+              * The following command generates a group based report  in  non-
+                group mode:
+
+                report_timing   -begin_end_pair   -max_slack   10   -path_type
+                end_slack_only
+
+                Path Groups: max_delay/setup {CLK_W_1}
+
+                -----------------------------------------------
+
+                End Point Slack Cause
+
+                -----------------------------------------------
+
+                u2/D f 2.349 MET
+
+                -----------------------------------------------
+
+                Path Groups: max_delay/setup {CLK_W_3}
+
+                -----------------------------------------------
+
+                End Point Slack Cause
+
+                -----------------------------------------------
+
+                seg3/u14/D r 0.372 MET
+
+                seg3/u3/D f 2.397 MET
+
+                ----------------------------------------------
+
+                report_timing - -path_type full_clock -net -debug time_borrow
+
+                Path 1: MET Latch Borrowed Time Check with Pin latch2/GN
+
+                Endpoint: latch2/D (^) checked with trailing edge of 'CK1'
+
+                Beginpoint: ff1/Q (v) triggered by leading edge of 'CK1'
+
+                Path Groups: {CK1}
+
+                Other End Arrival Time 2.558
+
+                + Borrow Edge Adjust 0.043
+
+                + Phase Shift 0.000
+
+                + CPPR Adjustment 0.000
+
+                = Required Time 2.601
+
+                - Arrival Time 0.544
+
+                = Slack Time 2.057
+
+                Clock Rise Edge 0.000
+
+                + Clock Network Latency (Prop) 0.313
+
+                = Beginpoint Arrival Time 0.313
+
+                ------------------------------------------------------------------------------------
+
+                Load    Slew     Delay    Incr    Arc   Fanout  Cell       Arc
+                User    Arrival Instance
+
+                Delay          Annotation                 Derate   Time
+
+                ------------------------------------------------------------------------------------
+
+                0.005    0.055                   WLM   2                 CK  ^
+                0.313   ff1
+
+                0.004  0.042   0.123   0.000  WLM  1      DFFHQX1   CK ^ ->  Q
+                v  1.000  0.436   ff1
+
+                0.004  0.044   0.035   0.000  WLM  1      INVX1     A v -> Y ^
+                1.000  0.471   invd4
+
+                0.004  0.026   0.019   0.000  WLM  1      INVX1     A ^ -> Y v
+                1.000  0.491   invd5
+
+                0.010  0.082   0.053   0.000  WLM  1      INVX1     A v -> Y ^
+                1.000  0.544   invd6
+
+                0.010   0.082    0.000    0.000   WLM           TLATNRX4  D  ^
+                1.000  0.544   latch2
+
+                -------------------------------------------------------------------------------------
+
+                Time Borrow Calculations
+
+                --------------------------
+
+                Latch Early Close Edge 4.482
+
+                - Library Setup 0.057
+
+                - Latch Early Open Edge 2.558
+
+                = Max Allowed Borrow Time 1.866
+
+                - Time Borrowed 0.043
+
+                = Available Time Borrow 1.824
+
+              *
+
+                The following command generates the PBA delay calculation  re-
+                port for the net arc terminating at ff2/D pin.
+
+                report_timing  -to  ff2/D  -retime  path_slew_propagation -re-
+                time_delaycal_pins ff2/D
+
+                -------------------------------------
+
+                report_delay_calculation PBA Report
+
+                -------------------------------------
+
+                From pin : inv_inst/ZN
+
+                Voltage : 0.765 V
+
+                Cell : INV
+
+                Library : ccs_timing_si
+
+                To pin : ff2/D
+
+                Voltage : 0.765 V
+
+                Cell : DFF
+
+                Library : ccs_timing_si
+
+                Base or SI: SI delay
+
+                Delay type: net
+
+                Rise Rise Fall Fall Slew
+
+                Thresholds: Delay Slew Delay Slew Derate
+
+                From pin : 50 30->70 50 70->30 0.5
+
+                To pin : 50 30->70 50 70->30 0.5
+
+                -------------------------------------------------------------
+
+                From pin waveforms
+
+                -------------------------------------------------------------
+
+                Rise Waveform :  {  0  0  6.88001e-12  -0.000345826  1.376e-11
+                -0.000759363   2.064e-11   -0.00122762  2.752e-11  -0.00172836
+                3.44001e-11 -0.00223374  4.81601e-11  -0.00319517  6.19201e-11
+                -0.00401515   7.56801e-11  -0.00442153  1.032e-10  -0.00183165
+                1.1696e-10   0.0012542   1.2384e-10   0.00306022    1.3072e-10
+                0.00495619    1.4448e-10   0.00885701   1.5824e-10   0.0128341
+                1.8576e-10 0.0208058 2.408e-10 0.0366083 3.50881e-10  0.067488
+                5.71041e-10 0.126359 6.26081e-10 0.140509 6.53601e-10 0.147502
+                7.08641e-10 0.161279 7.36161e-10 0.164503 7.49921e-10 0.164456
+                7.63681e-10 0.164333 7.77441e-10 0.164129 8.04961e-10 0.161906
+                8.32481e-10 0.158058 8.60001e-10 0.154065 8.87521e-10 0.149911
+                9.42561e-10 0.141834 9.97601e-10 0.134669 1.05264e-09 0.129404
+                1.10768e-09 0.126477 1.12144e-09 0.123602 1.12832e-09 0.119572
+                1.1352e-09  0.114331  1.14208e-09 0.108821 1.14896e-09 0.10317
+                1.16272e-09   0.0926769   1.17648e-09   0.0833663    1.204e-09
+                0.0657246    1.21776e-09   0.0578875   1.23152e-09   0.0515706
+                1.24528e-09  0.0458775   1.25904e-09   0.0406301   1.28656e-09
+                0.0323652    1.31408e-09   0.0270132   1.36912e-09   0.0280973
+                1.39664e-09  0.0336656   1.42416e-09   0.0379847   1.43792e-09
+                0.0378836    1.45168e-09    0.0365497   1.4792e-09   0.0332861
+                1.49296e-09   0.0314441   1.52048e-09   0.0278608    1.548e-09
+                0.0244482    1.60304e-09   0.0191201   1.65808e-09   0.0162272
+                1.71312e-09   0.0171329   1.76816e-09   0.0205911   1.8232e-09
+                0.0256714    1.87824e-09   0.0351823   1.90576e-09   0.0413911
+                1.91952e-09   0.0445492   1.9264e-09   0.0461416   1.94016e-09
+                0.048697 1.9436e-09 0.046998 1.94704e-09 0.0443201 1.95392e-09
+                0.038436    1.95736e-09    0.0352619   1.96424e-09   0.0289844
+                1.97112e-09   0.022866   1.98488e-09   0.0125791   1.99864e-09
+                0.00580478   2.0124e-09  0.000710309  2.02616e-09  -0.00178897
+                2.03992e-09 -0.00114673  2.05368e-09  0.000872076  2.06744e-09
+                0.00382227   2.0812e-09   0.00744581   2.10872e-09   0.0151135
+                2.13624e-09   0.0227224   2.16376e-09   0.0302613   2.2188e-09
+                0.0451577    2.32888e-09    0.0742571   2.54904e-09   0.129727
+                2.60408e-09 0.143045 2.6316e-09 0.143044 2.64536e-09  0.140082
+                2.65912e-09  0.137093  2.67288e-09 0.134064 2.7004e-09 0.12951
+                2.72792e-09 0.126729 2.78296e-09 0.1221  2.81048e-09  0.120269
+                2.86553e-09  0.118138 2.92057e-09 0.118162 3.03065e-09 0.12258
+                3.14073e-09 0.13482 3.25081e-09 0.155185 3.30585e-09  0.166687
+                3.36089e-09 0.178314 3.41593e-09 0.190705 3.47097e-09 0.203779
+                3.58105e-09 0.229323 3.63609e-09 0.241791 3.74617e-09 0.266165
+                3.96633e-09  0.312679 4.18649e-09 0.35642 4.29657e-09 0.377296
+                4.40665e-09 0.397506 4.51673e-09 0.417121 4.62681e-09 0.436119
+                4.84697e-09 0.472392 5.06713e-09 0.506472 5.28729e-09 0.538488
+                5.50745e-09 0.568534 5.72761e-09 0.596685 5.94777e-09  0.62296
+                6.16793e-09 0.647336 6.38809e-09 0.669575 6.60825e-09 0.689497
+                6.82841e-09 0.706756 7.04857e-09 0.721042 7.26873e-09 0.732528
+                7.48889e-09 0.741269 7.70905e-09 0.747704 7.92921e-09 0.752418
+                }
+
+                -------------------------------------------------------------
+
+                To pin waveforms
+
+                -------------------------------------------------------------
+
+                Rise  Waveform  :  {  0  0  6.88001e-12  -0.00031215 1.376e-11
+                -0.000717461  2.064e-11  -0.00118119   2.752e-11   -0.00168008
+                3.44001e-11  -0.00218582  4.81601e-11  -0.00315118 6.19201e-11
+                -0.0039801  7.56801e-11  -0.00441444   1.032e-10   -0.00195223
+                1.1696e-10   0.00108838   1.2384e-10   0.00288516   1.3072e-10
+                0.00477386   1.4448e-10   0.00866932   1.5824e-10    0.0126446
+                1.8576e-10 0.0206168 2.408e-10 0.0364222 3.50881e-10 0.0673075
+                5.71041e-10  0.12619 6.26081e-10 0.140342 6.53601e-10 0.147336
+                7.08641e-10 0.161117 7.36161e-10 0.164325 7.49921e-10  0.16428
+                7.63681e-10 0.164156 7.77441e-10 0.163952 8.04961e-10 0.161721
+                8.32481e-10 0.157871 8.60001e-10 0.153877 8.87521e-10 0.149721
+                9.42561e-10 0.141646 9.97601e-10 0.134476 1.05264e-09 0.129217
+                1.10768e-09  0.126291 1.12144e-09 0.123396 1.12832e-09 0.11934
+                1.1352e-09 0.114094 1.14208e-09 0.108576 1.14896e-09  0.102955
+                1.16272e-09    0.0924557   1.17648e-09   0.0831177   1.204e-09
+                0.0655087   1.21776e-09    0.05769    1.23152e-09    0.0513455
+                1.24528e-09   0.0456527   1.25904e-09   0.0404119  1.28656e-09
+                0.0321485   1.31408e-09   0.0268007   1.36912e-09    0.0278778
+                1.39664e-09   0.0334662   1.42416e-09   0.0377678  1.43792e-09
+                0.0376836   1.45168e-09   0.0363449    1.4792e-09    0.0330793
+                1.49296e-09 0.0312404 1.52048e-09 0.027657 1.548e-09 0.0242445
+                1.60304e-09   0.0189107   1.65808e-09   0.0160238  1.71312e-09
+                0.0169355   1.76816e-09    0.020394    1.8232e-09    0.0254886
+                1.87824e-09   0.034983   1.90576e-09   0.0412062   1.91952e-09
+                0.0443699   1.9264e-09   0.0459651    1.94016e-09    0.0485097
+                1.9436e-09   0.0467553   1.94704e-09   0.0440755   1.95392e-09
+                0.0381743   1.95736e-09   0.0350146   1.96424e-09    0.0287352
+                1.97112e-09   0.0226158   1.98488e-09   0.0123552  1.99864e-09
+                0.00553888  2.0124e-09  0.000528693  2.02616e-09   -0.00200176
+                2.03992e-09  -0.00134081  2.05368e-09  0.000687182 2.06744e-09
+                0.00364017   2.0812e-09   0.00726146   2.10872e-09   0.0149298
+                2.13624e-09   0.0225402   2.16376e-09   0.0300808   2.2188e-09
+                0.0449804   2.32888e-09   0.0740856    2.54904e-09    0.129567
+                2.60408e-09  0.142888 2.6316e-09 0.142859 2.64536e-09 0.139899
+                2.65912e-09 0.136908 2.67288e-09 0.133879 2.7004e-09  0.129349
+                2.72792e-09 0.126549 2.78296e-09 0.121913 2.81048e-09 0.120103
+                2.86553e-09 0.117961 2.92057e-09 0.117997 3.03065e-09 0.122409
+                3.14073e-09 0.134658 3.25081e-09 0.155035 3.30585e-09 0.166534
+                3.36089e-09 0.178163 3.41593e-09 0.190548 3.47097e-09 0.203625
+                3.58105e-09 0.229173 3.63609e-09 0.241644 3.74617e-09 0.266022
+                3.96633e-09 0.312545 4.18649e-09 0.356294 4.29657e-09 0.377174
+                4.40665e-09 0.397388 4.51673e-09 0.417006 4.62681e-09 0.436007
+                4.84697e-09 0.472288 5.06713e-09 0.506374 5.28729e-09 0.538396
+                5.50745e-09 0.568448 5.72761e-09 0.596605 5.94777e-09 0.622885
+                6.16793e-09 0.647267 6.38809e-09 0.669513 6.60825e-09 0.689441
+                6.82841e-09  0.70671 7.04857e-09 0.721003 7.26873e-09 0.732498
+                7.48889e-09 0.741247 7.70905e-09 0.747687 7.92921e-09 0.752406
+                }
+
+                -------------------------------------------------------------
+
+                -------------------------------------------------------------
+
+                RC Summary for net vic_net
+
+                -------------------------------------------------------------
+
+                Number of capacitance : 3
+
+                Net capacitance : 0.0568429 pF
+
+                Total rise capacitance: 0.0572236 pF
+
+                Total fall capacitance: 0.0572328 pF
+
+                Number of resistance : 5
+
+                Total resistance : 15.6659 Ohm
+
+                -------------------------------------------------------------
+
+                SI information for rise
+
+                ---------------------------------------------------------------------------------
+
+                Victim clock : myclk
+
+                ---------------------------------------------------------------------------------
+
+                Attacker Status Direction Slew  Coupling  cap  Fanout  Voltage
+                Bump Timing window Clock
+
+                ---------------------------------------------------------------------------------
+
+                att1  SY  Fall  0.404581  ns  0.012500 pF 1 0.765 v 0.135482 v
+                1.123200 ns 1.123300 ns myclk
+
+                att2 SY Fall 0.205181 ns 0.010500 pF  1  0.765  v  0.125344  v
+                1.390900 ns 1.419600 ns myclk
+
+                ---------------------------------------------------------------------------------
+
+                Model types
+
+                ---------------------------------------------------------------------------------
+
+                Net Term Cell Model
+
+                ---------------------------------------------------------------------------------
+
+                vic_net inv_inst/ZN INV CCS
+
+                vic_net ff2/D DFF CCS
+
+                att1 ZN INV CCS
+
+                att2 Q DFF CCS
+
+                ---------------------------------------------------------------------------------
+
+                Underated Delays Rise
+
+                -------------------------------------------------------------
+
+                Incr Net delay : 2.586069 ns
+
+                Net delay : 2.586721 ns
+
+                -------------------------------------------------------------
+
+                Transitions Rise
+
+                -------------------------------------------------------------
+
+                Input transition : 3.370655 ns
+
+                Output transition : 3.370683 ns
+
+                -------------------------------------------------------------
+
+                Abbreviative attacker status and filtered reason:
+
+                -------------------------------------------------------------
+
+                SY : Synchronous
+
+                INF: Attacker with infinite timing window
+
+                PE : Filtered due to physical exclusion
+
+                UF : Filtered by user
+
+                CN : Filtered because it is a constant net
+
+                SB : Filtered due to small bump
+
+                TA : Filtered because of timing window does not overlap
+
+                LC : Filtered due to logical correlation
+
+                ACT: Attacker is Active.
+
+                -------------------------------------------------------------
+
+              * The  following  command  generates  a report that shows timing
+                paths for which set_max_delay constraints are defined:
+
+                report_timing -check_type max_delay -max_paths 10 > 11
+
+                Path 1: MET (0.721 ns) Path Delay Check with Pin ff2/D
+
+                          Group: CK1
+
+                     Startpoint: (R) ff1/Q
+
+                          Clock: (R) CK1
+
+                       Endpoint: (R) ff2/D
+
+                          Clock: (R) CK1
+
+                                    Capture         Launch
+
+                    Path Delay:+     1.000          -
+
+                    Src Latency:+    0.000          0.000
+
+                    Net Latency:+    0.010 (P)      0.010 (P)
+
+                       Arrival:=     1.010          0.010
+
+                      Setup:-     0.100
+
+                      Required Time:=   0.910
+
+                      Launch Clock:=    0.010
+
+                      Data Path:+       0.179
+
+                          Slack:=       0.721
+
+                      ----------------------------------------------------
+
+                      Pin     Edge  Direction  Phase        Arrival  Delay
+
+                                                            Time
+
+                      ----------------------------------------------------
+
+                      ff1/CK  ^     IN         CK1(C)(P) *  0.010    -
+
+                      ff1/Q   ^     OUT        CK1(D)(P) *  0.013    0.003
+
+                      buf4/Y  ^     OUT        CK1(D)(P) *  0.023    0.010
+
+                      buf5/Y  ^     OUT        CK1(D)(P) *  0.033    0.010
+
+                      and1/Y  ^     OUT        CK1(D)(P) *  0.179    0.146
+
+                      buf6/Y  ^     OUT        CK1(D)(P) *  0.189    0.010
+
+                      ff2/D   ^     IN         CK1(D)(P) *  0.189    0.000
+
+                      ----------------------------------------------------
+
+                Path 2: MET (0.987 ns) Path Delay Check with Pin out1
+
+                          Group: default
+
+                     Startpoint: (R) ff2/Q
+
+                          Clock: (R) CK1
+
+                       Endpoint: (R) out1
+
+                          Clock:
+
+                                     Capture         Launch
+
+                     Path Delay:+     1.000          -
+
+                    Src Latency:+     0.000          0.000
+
+                    Net Latency:+     0.000 (I)    0.010 (P)
+
+                        Arrival:=     1.000          0.010
+
+                       Output Delay:-     0.000
+
+                      Required Time:=     1.000
+
+                       Launch Clock:=     0.010
+
+                      Data Path:+     0.003
+
+                          Slack:=     0.987
+
+                      ----------------------------------------------------
+
+                      Pin     Edge  Direction  Phase        Arrival  Delay
+
+                                                            Time
+
+                      ----------------------------------------------------
+
+                      ff2/CK  ^     IN         CK1(C)(P) *  0.010    -
+
+                      ff2/Q   ^     OUT        CK1(D)(P)    0.013    0.003
+
+                      out1    ^     OUT        CK1(D)(P) *  0.013    0.000
+
+                      ----------------------------------------------------
+
+       Scenarios for Group Path Reporting for User-Defined Groups
+
+              *
+
+                * A user-defined group is created with the same name as any of
+                  the defined reference clocks and with the same constraint as
+                  for the "to" clock. For example, group_path  -name  CLK  -to
+                  CLK.
+
+                  In  this  case only one group named CLK will be displayed in
+                  the timing report. This will be the same default group  with
+                  reference clock CLK. Note that default groups - clock gating
+                  and  asynchronous  checks  -  will  not  be honored for this
+                  group.
+
+                *
+                   A user-defined group is created with the same name  as  any
+                  of  the  reference  clocks  but with different constraint as
+                  specified for the "to" clock.  E.g.,  group_path  -name  CLK
+                  -from pin1 -to CLK.
+
+                  In  this  case the two groups named CLK will be displayed in
+                  the timing report. One group will be the same as the default
+                  group with reference clock CLK (which will not  honor  clock
+                  gating  or  asynchronous  checks)  and the other will be the
+                  user-defined path group with name CLK, which will honor  all
+                  the checks.
+
+Related Information
+              * report_net
+
+              * report_ports
+
+              * set_table_style
+
+                           Fri Apr 04 01:25:37 2025       report_timing(25.10)

@@ -1,0 +1,87 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+deleteInst(25.10)                                            deleteInst(25.10)
+
+Name
+       deleteInst - Deletes an instance from a design
+
+Syntax
+       deleteInst
+
+       [-help]
+
+       <listOfInst>
+
+       [-moduleBased <moduleName>]
+
+       [-verbose]
+
+       Deletes  an instance from a design. Innovus checks whether the instance
+       is physical or logical, and deletes the instance accordingly.  You  can
+       use deleteInst to delete the list of logical instances in one HECO ses-
+       sion.
+
+       You  can  use wildcards (*?) to specify the instances you want the tool
+       to delete.
+
+       As deleteInst supports deletion of a list of instance, you can get  the
+       list of instances using the dbGet command  The correct way to use dbGet
+       is to use TCL join command. The following example shows the correct us-
+       age of deleteInst command with dbGet:
+
+       deleteInst [ join [dbGet top.insts.name]]
+
+       Notes:
+
+              * If  the deleteInst command deletes a constrained instance, the
+                command will delete the timing graph to  avoid  other  crashes
+                because  constraints would be referring to deleted objects and
+                a message will be displayed.
+
+              * The deleteInst command cannot be used in  the  post-mask  ECO.
+                Please  use loadECO <ecofile> -postMask to delete instances in
+                the post-mask ECO.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each deleteInst.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man deleteInst
+
+       <listOfInst>
+              Specifies the list of the instances to delete.
+
+       -moduleBased <m><oduleName>
+              Specifies the name of the Verilog module.
+
+       -verbose
+              Prints out the deleted instance message.
+
+Example
+              * The following command deletes instance i1/i2:
+
+                deleteInst i1/i2
+
+              * The  following command deletes all instances whose names begin
+                with i inside the hierarchical instance i1:
+
+                deleteInst i1/i*
+
+              * The following command deletes the instance insta from the ver-
+                ilog module HIER_2:
+
+                deleteInst -moduleBased HIER_2 insta
+
+              * The following command deletes all instances in the  SPGM  mod-
+                ule:
+
+                deleteInst * -moduleBased SPGM
+
+Related Information
+              * addInst
+
+              * loadECO
+
+                           Fri Apr 04 01:25:37 2025          deleteInst(25.10)

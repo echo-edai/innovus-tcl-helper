@@ -1,0 +1,560 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+assignPtnPin(25.10)                                        assignPtnPin(25.10)
+
+Name
+       assignPtnPin - Assigns partition pins before the partitions are commit-
+       ted
+
+Syntax
+           assignPtnPin
+
+       [-help]
+
+       [-basedOnMasterOnly]
+
+       [-blackbox]
+
+       [-debugPinAll]
+
+       [-debugPinFile <fileName>]
+
+       [-dumpVirtualPinGuide]
+
+       [-ignoreAbuttedCheck]
+
+       [-improvePinOrder]
+
+       [-improveSI]
+
+       [-layerPriority {layeridList}]
+
+       [-markFixed]
+
+       [-printPinMovementStatistics]
+
+       [-skipAutoBusBitOrder]
+
+       [-skipPlaceExternalUnconnectedPin]
+
+       [-unplacedOnly]
+
+       [<partitionName> | {{{-ptn <partitionName> {-pin {pinName list}}} |
+
+       {-pin_file  <fileName>  [-exclude_ptn  <ptnName>]} | {-exclude_pin_file
+       <ptnName>}} [-moveFixedPin ] [ -ignore_group_pins ]}]
+
+       [-alignFeedThruPinsOptWithMasterClone ]
+
+       [-autoBusGroup ]
+
+       [-enforceRoute | -enforceRouteLegal | -enforceFlyline ]
+
+       Assigns partition pins before the partitions are committed. By default,
+       the assigned pins will be in a Placed status after  running  this  com-
+       mand.  You  can specify a Fixed status by running this command with the
+       -markFixed option. The assignPtnPin command does not align pins in  the
+       local context thus avoiding mis-aligning in other scenarios. minimizing
+       maximum mis-alignment effects across farsighted net pairs (2-pin nets).
+       For  example,  in master/clone pin assignment, since the clone pin fol-
+       lows the master's position, the position of the pin on master partition
+       is determined such that pin on clone also gets aligned on clone.
+
+       Running the saveFPlan command saves the pin assignment in the floorplan
+       to a separate file named fpFileName.fp.ptnpin,  which  is  included  in
+       main fpFileName.fp floorplan file.
+
+       By  default,  the  assignPtnPin command sets the depth of all partition
+       pins equal to: MINAREA/pin width. This ensures that  the  minimum  area
+       rule is met. However, if any pin-size-related constraints are specified
+       on  these  pins,  the user-specified pin size will have a higher prece-
+       dence. The assignPtnPin command internally calls  the  reportUnaligned-
+       Nets command to generate the summary report at the command line.
+
+       When assigning pins, the assignPtnPin command does not check for viola-
+       tions  between placed pins and shapes of objects (such as macros, stan-
+       dard cells, etc) just inside the  partition  fence  (design  boundary).
+       This  may  result  in  DRV violations if the fence (design boundary) to
+       core distance is zero.
+
+       You can use this command after specifying the partitions,  placing  the
+       design,  and after running or loaded routing information. If no routing
+       information is available, the Innovus software uses the  projected  pin
+       assignment.  However, placement is not a mandatory step for pin assign-
+       ment. Placement is recommended for better QOR.
+
+       Notes:
+
+              * The assignPtnPin command honors preferred  routing  layer  at-
+                tributes  as soft constraint during pin assignment and reports
+                the nets that have some attributes assigned to them.  It  also
+                honors  the keep out spacing constraint for a pin group or net
+                group.
+
+              * This command only assigns signal pins. Power and  ground  pins
+                are  created  during partition. However, this pin optimization
+                honors power stripes and follow pins.
+
+              * This command assigns pins for blackboxes as  well  as  regular
+                partitions.  If this command is run on a blackbox that has one
+                or more pins with a single LEF port but with  multiple  shapes
+                within  the  LEF  port, the command will remove these multiple
+                shapes and create a single shape. If this command is run on  a
+                blackbox  that  has  one or more pins with multiple LEF ports,
+                the first LEF port will be processed as per  the  command  and
+                the remaining LEF ports will remain unchanged.
+
+              * The  assignPtnPin command performs automatic pin assignment of
+                partitions inside other partitions. It places pins  of  nested
+                partitions similar to single level partitions.
+
+              * In  top-down flow, the assignPtnPin command only promotes sig-
+                nal pins from the list of pins promoted  by  the  setPromoted-
+                MacroPincommand.
+
+              *
+
+                The  assignPtnPin  command honors net/pin groups that have all
+                nets from multiple buffer chains  added  in  the  same  group.
+                Such   groups   can  be  generated  through  bus  guide  flow,
+                feedthrough insertion flow, or can be user created. It  places
+                the pins of such nets in order to achieve better pin alignment
+                and improve the QoR.
+
+              *
+
+                The  assignPtnPin command can place the pins on the partitions
+                that are connected to PG supplies defined in the netlist.
+
+       Note: You can use the check_design -type pin_assign command  to  detect
+       the  potential problems and correct the design before running assignPt-
+       nPin command.
+
+Parameters
+       -alignFeedThruPinsOptWithMasterClone
+              Specifies that the pins should be  placed  such  that  they  are
+              aligned  on  different partitions across buffers on master/clone
+              partitions.
+
+              * In symmetric designs, since there is  no  conflict  with  mas-
+                ter/clone so it aligns the pins of all the path.
+
+              * In  non-symmetric designs, it will try to place pins such that
+                master-clone alignment count should not degrade.
+
+                * It only assigns a feedthru path if there is common alignment
+                  zone available between master-clone alignment  and  feedthru
+                  chain alignment.
+
+                * It  assigns  pins in common alignment zone for first pins in
+                  feedthrough path.
+
+              Data_type: bool, optional
+
+       -autoBusGroup
+              Specifies that the buses will be grouped automatically.
+
+              Note: Internally the createPinGroup command is applied on buses.
+              It is removed automatically after the command execution.
+
+              Data_type: bool, optional
+
+       -basedOnMasterOnly
+              Specifies that for designs that have partition clones, the  com-
+              mand  should consider only the partition master and use the mas-
+              ter assignment for all the clones.
+
+              Default: For designs that have partition clones, this command by
+              default also considers partition clones while assigning pins.
+
+              Data_type: bool, optional
+
+       -blackbox
+              Assigns pins of blackboxes.
+
+              Data_type: bool, optional
+
+       -debugPinAll
+              Specifies that all pins will be debugged.
+
+              Note: The -debugPinAll and -debugPinFile parameters can be  used
+              to write the following information in the log file:
+
+              * Pin assign mode information
+
+              * Connectivity information of each partition pin, including pin-
+                Group/netGroup name and NDR name
+
+              * Available pin slot information on each edge for each layer and
+                pin slot density
+
+              * PinGuide  box  and  virtual  pinGuide box information, master-
+                clone series, feedthru chain and so on.
+
+              * Reason for failure on the first failed location
+
+              * For pins with location constraints, if the pin is  not  placed
+                at  the  location  constraint then the reason is provided in a
+                tabular form.
+
+              * For placed partition pins,  the  pin  location,  layer,  edge,
+                spacing and so on are provided.
+
+              Data_type: bool, optional
+
+       -debugPinFile <fileName>
+              Specifies  the file containing the pin-list for partition or the
+              net that is to be used for debugging.
+
+              Data_type: string, optional
+
+       -dumpVirtualPinGuide
+              Writes the virtual pinGuide for netGroup and pinGroup.
+
+              Data_type: bool, optional
+
+       -enforceFlyline
+              Specifies that the pin assignment completely  follows  flylines,
+              without taking into consideration any pin constraints.
+
+              Data_type: bool, optional
+
+       -enforceRoute
+              Specifies that the pin assignment completely follows the routing
+              results  generated  by  Early  Global Route, without taking into
+              consideration any pin constraints. For  example,  the  following
+              constraints  are not considered when the -enforceRoute parameter
+              is used:
+
+              * Constraints related to pin spacing, layer, width,  depth,  and
+                side
+
+              * Pin Guide constraints and Pin Group constraints
+
+              * Constraints  specified  by  the -pinsOffStrip parameter of the
+                assignIoPinsand the assignPtnPin commands
+
+              The -enforceRoute parameter can be useful when, for example, you
+              want to compare pin locations based purely on Early Global Route
+              results with pin locations that honor  the  specified  pin  con-
+              straints.
+
+              Data_type: bool, optional
+
+       -enforceRouteLegal
+              Specifies  that during pin assignment, the pins are placed close
+              to the routing cross points but at legal locations only.  Conse-
+              quently all the pins are legally placed, even if they may not be
+              on routing cross points always.
+
+              Data_type: bool, optional
+
+       -exclude_ptn <ptnName>
+              Specifies the partitions to be excluded from the pin file.
+
+              Data_type: string, optional
+
+       -exclude_pin_file <fileName>
+              Specifies  pin-list to be excluded for a partition in a file. In
+              the pin file, the pins and nets are specified in  the  following
+              format:
+
+              Partition: <PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Partition:<PtnName/BlockName>  <Pin1>  <Pin2> <..> <PinN>Nets: <
+              ><netA ><netB ..netN>
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each  assignPtnPin parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command: man assignPtnPin.
+
+       -ignoreAbuttedCheck
+              When  enabled,  the  abutted check is ignored during pin assign-
+              ment. This results in faster pin assignment on abutted designs.
+
+              Data_type: bool, optional
+
+       -ignore_group_pins
+              Avoid placing the whole group of pins. With this  parameter  en-
+              abled,  the  pinGroup  and  netGroup pins are ignored during se-
+              lected pin assignment.
+
+              Note: If all the pins in a group have been individually selected
+              for pin assignment and -ignore_group_pins is  applied  then  the
+              pin assignment takes precedence and -ignore_group_pins parameter
+              is not honored for this group. Rest of the groups whose pins ap-
+              pear in the selection list continue to be ignored.
+
+              Data_type: bool, optional
+
+       -improvePinOrder
+              Reduces flightline crossing during pin alignment.
+
+              The partition and the blackbox pins are rearranged to be aligned
+              with external connections:
+
+              * Guided pins are reordered within the pin guide box.
+
+              * Pins are rearranged at (or close to) their original locations.
+
+              * Pin  ordering  is  performed  independently for each partition
+                edge.
+
+              The locations of fixed pins, aligned pins or multi-location pins
+              is not changed. Master-clone pins are not reordered.
+
+              Note:  -improvePinOrder is a post processing step during pin as-
+              signment so it can override the pin assignment that is complying
+              with -maxPinMovementForAlign. This option  should  not  be  used
+              with  -maxPinMovementForAlign,  if  you strictly want to control
+              the maximum pin movement for alignment.
+
+              Data_type: bool, optional
+
+       -improveSI
+              Avoid signal integrity issues by blocking tracks  while  placing
+              pins  to  avoid overlap of wires. With this parameter specified,
+              the assignPtnPin command does not allow pins to be placed on the
+              tracks in an area which spans a layer higher or  lower  (on  the
+              preferred  routing direction) and also on the tracks on the left
+              and right of the placed pin.
+
+              Data_type: bool, optional
+
+       -layerPriority {<layeridList>}
+              Specifies the metal layer(s) that should be used  with  priority
+              during  pin  assignment such that there is an increase in align-
+              ment in the prioritized layers. With this  parameter  specified,
+              there  is no degradation in the total unaligned nets of the par-
+              tition/design. There is an increase in the unaligned  number  in
+              the  prioritized layers and a decrease in the over all pin count
+              in the non-prioritized layers.
+
+              Note: The list of layers to be given priority must be  a  sunset
+              of the layers selected with setPinAssignMode -maxLayer -minLayer
+              parameters.
+
+              Note:  In case of conflict in the layer priority between the as-
+              signPtnPin command and the createPinGuide command on some edges,
+              the createPinGuide command priority takes precedence.
+
+              For example, in the following command:
+
+              assignPtnPin -layerPriority {7 6 2 3}
+
+              * Most aligned pins are in layers 7 and 3 or 6 and 2 (horizontal
+                / vertical)
+
+              * Most unaligned pins are also in 7,6,2,3
+
+              * Maximum pins are in these layers
+
+              Data_type: string, optional
+
+       -markFixed
+              Specifies that all pins will have a Fixed status.
+
+              Data_type: bool, optional
+
+       -moveFixedPin
+              If you use this parameter, the specified pins with a Fixed  sta-
+              tus can also be moved.
+
+              Note:  Pins  that  are not specified but have a Fixed status are
+              not moved.
+
+              Default: The specified pins with a Fixed status are not moved.
+
+              Data_type: bool, optional
+
+       -ptn <partitionName>
+              Specifies the partition names for pin assignment.
+
+              Default: Pins are assigned for all partitions.
+
+              Note: Pin assignment for a selected partition by specifying  the
+              <partitionName>  is obsolete and will be removed in the next ma-
+              jor release of the software. The obsolete parameter still  works
+              in  this  release, but to avoid warnings, and to ensure compati-
+              bility with future releases, update your scripts to use
+
+              -ptn<partitionName> -pin <pinList> ...
+
+              Data_type: string, optional
+
+       -pin_file <fileName>
+              Specifies the pin list for a partition in a file.
+
+              In the pin file, the pins and nets are specified in the  follow-
+              ing format:
+
+              Partition: <PtnName/BlockName> <Pin1> <Pin2> <..> <PinN>
+
+              Partition:<PtnName/BlockName>  <Pin1>  <Pin2> <..> <PinN>Nets: <
+              ><netA ><netB ..netN>
+
+              Note: While specifying the pin list in the pin_file, it is  nec-
+              essary  to  give the "Partition" keyword followed by the name of
+              the partition or block. If this is not specified, no  operations
+              are  performed.  You can specify multiple partitions in the same
+              pin_file.
+
+              The pin_file does not support buses or wild cards for pin names.
+              If a pin specified in the list or a partition is not present  in
+              the design, a warning is displayed.
+
+              Data_type: string, optional
+
+       -pin pinList ...
+              Specifies the list of pins to be assigned in the respective par-
+              titions.
+
+              Default: Pins are assigned for all partitions.
+
+              Data_type: string, optional
+
+       -printPinMovementStatistics
+              Prints  a summary of the deviation (in micrometers) of the final
+              pin locations from the point of intersection of the net and  the
+              partition  edge. The report on the screen contains the following
+              statistics:
+
+              * Maximum displacement on the X axis. This is the difference  in
+                the  x-coordinates of the point of intersection of the net and
+                the partition edge, and the point at which the pin is  finally
+                assigned.
+
+              * Maximum displacement on the Y axis.
+
+              * Maximum X+Y displacement. The X+Y displacement of a pin is the
+                sum  of  the  displacement of a pin on the X axis and the dis-
+                placement of the pin in the Y axis. For example, if a pin  has
+                moved  10 micrometers on the X axis and 5 micrometers on the Y
+                axis, the X+Y displacement for that pin is 15. Thus, if  there
+                are  three  pins and their X+Y displacements are 5, 23, and 30
+                respectively, the maximum X+Y displacement is reported as 30.
+
+              * Mean of the X+Y displacement.
+
+              The report appended to the Innovus log file contains the follow-
+              ing additional details:
+
+              * Names of the pins that have moved the maximum distances.
+
+              * The coordinates of the point of intersection of  the  net  and
+                the  partition edge, and the point at which the pin is finally
+                assigned.
+
+              Here is a sample report displayed on screen.
+
+              Partition: [tdsp_core]
+
+              maximum X = 120.1200 um (Pin: t_data_out[6])
+
+              maximum Y = 58.8000 um (Pin: rom_data_in[4])
+
+              maximum X+Y = 154.5600 um (Pin: t_data_out[6])
+
+              moved from (706.2000, 1025.0800) -> (586.0800, 990.6400)
+
+              mean X+Y = 12.5600 um
+
+              total pins = 114
+
+              pins moved = 75
+
+              The log file has additional information such as:
+
+              Pin: int: X Movement: 3.3000  um  ;  Y  Movement:  0.0000.  From
+              (701.2500, 1247.6800) -> (697.9500, 1247.6800)
+
+              Data_type: bool, optional
+
+       -skipAutoBusBitOrder
+              Skips automatically placing the bus pins together.
+
+              Data_type: bool, optional
+
+       -skipPlaceExternalUnconnectedPin
+              Skips  placing partition pins that are not connected outside the
+              partition.
+
+              Data_type: bool, optional
+
+       -unplacedOnly
+              Assigns only unplaced pins.
+
+              Data_type: bool, optional
+
+Example
+              * The following command assigns partition pins of all partitions
+
+                assignPtnPin
+
+              * The following command assigns partition pins, including  those
+                which  have  fixed  status  of all partitions and mark them as
+                fixed after assigning them
+
+                assignPtnPin -markFixed -moveFixedPin
+
+              * The following command accepts a file pinLst.txt that  contains
+                the list of pins to be placed.
+
+                assignPtnPin -pin_file pinLst.txt
+
+                Where <pinLst.txt> contains:
+
+                Partition: top
+
+                out1
+
+                out2
+
+                out3
+
+                Partition: A
+
+                in1
+
+                in2
+
+                in3
+
+                Partition: B
+
+                pina
+
+                pinb
+
+                pinc
+
+                The assignPtnPin command, considers all pins of all partitions
+                in the file, except the pins under the section Partition:top.
+
+              *
+
+                The following command ignores the partition B mentioned in the
+                pin file pin.list.
+
+                assignPtnPin -pin_file pinLst.txt -exclude_ptn {B}
+
+Related Information
+              * reportUnalignedNets
+
+              * setPinAssignMode
+
+              * getPinAssignMode
+
+              * createPinGuide
+
+              * loadPtnPin
+
+              * unloadPtnPin
+
+              * savePtnPin
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025        assignPtnPin(25.10)

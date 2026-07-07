@@ -1,0 +1,134 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setPromotedMacroPin(25.10)                          setPromotedMacroPin(25.10)
+
+Name
+       setPromotedMacroPin  -  Selects or marks signal and/or PG pin shapes to
+       be promoted later on
+
+Syntax
+        setPromotedMacroPin
+
+       [-help]
+
+       {-reset  | -reportOnlyFile <fileName.tcl> |
+
+        {[-insts {<instName> | <instNameList>}]
+
+         [-pins {<pinName> | <pinNameList>}]
+
+         [-layers {<layerId> | <layerIdList>}]
+
+         [-override ]
+
+         [-abuttedToBoundaryOnly ]}}
+
+       Selects or marks signal and/or PG pin shapes to be promoted  later  on.
+       You can use this command before assigning pins.
+
+       Note: The setPromotedMacroPin command should be called after specifying
+       the  maximum and minimum metal layer names for promoting macro pins us-
+       ing the setPinAssignMode -promotedMacroMaxLayer <maxLayer> and -promot-
+       edMacroMinLayer <minLaye>r parameters, respectively.
+
+Parameters
+       -abuttedToBoundaryOnly
+              Specifies that all macro pin shapes that are abutted to the par-
+              tition boundary will be selected for promotion. The -pins  para-
+              meter can also be used to select abutted pins .
+
+              Note: You can use the -maxChannelWidthAsAbutted parameter of the
+              setPinAssignMode  command  to enable thin channels in the design
+              to be considered as abutted partitions  in  the  pin  assignment
+              flow.
+
+              Data_type: bool, optional
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each setPromotedMacroPin  parameter. For  a  de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man setPromotedMacroPin
+
+       -insts {<instName> | <instNameList>}
+              Specifies the name of instances. You can also use wildcard (* or
+              ?)  for  specifying  the  instance  names. This parameter is op-
+              tional. If -insts is not specified, all BLOCK, PAD,  and  AREAIO
+              macros  are selected.
+
+              This is similar to specifying -insts *
+
+              Data_type: string, optional
+
+       -layers {<layerId> | <layerIdList>}
+              Specifies  the  metal layer(s) of the macro pins. This parameter
+              is optional. If -layers is not specified, all pin layers between
+              setPinAssignMode  -promotedMacroMinLayer  and   setPinAssignMode
+              -promotedMacroMaxLayer range are selected.
+
+              Data_type: string, optional
+
+       -override
+              Specifies to override specific option(s) where previous settings
+              of  these  options will be removed and be replaced by new speci-
+              fied value(s). For example, specifying setPromotedMacroPin -lay-
+              ers {} -override means no layer is promoted from now on.
+
+              Note: All setPromotedMacroPin commands are incremental  with  no
+              conflict resolution, unless the -override option is used.
+
+              Data_type: bool, optional
+
+       -pins {<pinName> | <pinNameList>}
+              Specifies  the  name of macro pins. You can also use wildcard (*
+              or ?) for specifying the pin names. This parameter is  optional.
+              If  -insts  is  not  specified,  all signal and P/G pins are se-
+              lected. This is similar to specifying -pins *
+
+              Data_type: string, optional
+
+       -reportOnlyFile <fileName.tcl>
+              Writes out all setPromotedMacroPin settings in  memory  into  an
+              output TCL file.
+
+              Data_type: string, optional
+
+       -reset Resets all or specified promoted pin selections.
+
+              Data_type: bool, optional
+
+Examples
+              * The  following command promotes the top most layer pins of se-
+                lected macros
+
+                setPinAssignMode  -promotedMacroMinLayer   4   -promotedMacro-
+                MaxLayer 8
+
+                setPromotedMacroPin -reset
+
+                setPromotedMacroPin -insts {A B} -pins * -layers {7 8}
+
+                setPromotedMacroPin -insts B -pins X -layers 8 -override
+
+                setPromotedMacroPin -insts C -layers 5 -abuttedToBoundaryOnly
+
+                setPromotedMacroPin -insts C -layers {8}
+
+                setPromotedMacroPin -insts C -pins D[*] -layers {} -override
+
+                setPromotedMacroPin -insts D -pins OUT
+
+                setPromotedMacroPin -insts D -pins CLK -abuttedToBoundaryOnly
+
+                assignIoPins
+
+Related Information
+              *
+
+                * setPinAssignMode
+
+                * assignIoPins
+
+                * Partitioning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025 setPromotedMacroPin(25.10)

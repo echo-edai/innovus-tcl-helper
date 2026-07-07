@@ -1,0 +1,63 @@
+{
+  "command": "set_message",
+  "is_cmd": true,
+  "summary": "设置或更改消息的严重性级别（INFO、WARNING 或 ERROR）",
+  "description": "此命令用于指定更改消息严重性级别（INFO、WARNING 或 ERROR），这些级别显示在消息的开头。它允许你控制特定设计中显示的消息。例如，如果某些警告对设计至关重要，你可以将消息严重性更改为 ERROR。同样，如果你想忽略某些消息，可以将其严重性更改为 INFO。错误消息的示例是：**ERROR: (GLOBAL-105): Unknown global 'timing_enable_socv_analysis' specified。所有 ERROR 和 WARN 消息都以类似 **ERROR: (<msg_id>): 或 **WARN: (<msg_id>): 的标题开头。消息 ID 的格式为：<前缀>-<数字>（例如，'GLOBAL' 是前缀，'105' 是数字）。你可以使用消息 ID 通过以下选项更改该特定消息的处理方式。",
+  "usage": "set_message -help -id <list_of_msg_ids> [-severity {warn error info reset} | -limit <number> | -no_limit | -suppress | -unsuppress | -on_error {msg_only exit stop_script | -stop_script_limit <limitNumber>}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个 set_message 参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-id",
+      "description": "指定需要更改的消息 ID 列表。如果未指定任何消息 ID，则更改将应用于所有消息 ID。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-severity",
+      "description": "指定要修改的消息的新严重性级别。reset 参数将消息严重性设置回其原始状态。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-limit",
+      "description": "设置每个公共命令的消息限制为 <数字>。默认限制为 20，因此任何特定消息在一个命令中最多输出 20 次，之后该消息的进一步输出将被禁用（并会显示一条附加消息说明已超出消息限制）。如果数字设置为 0，则该消息将在下一个触发该消息的公共命令中被完全抑制。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-no_limit",
+      "description": "移除所选消息的任何现有限制。注意：被抑制的消息在应用 -unsuppress 选项之前将保持抑制状态。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-suppress",
+      "description": "完全抑制消息。不会给出关于超出消息限制的警告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-unsuppress",
+      "description": "取消抑制消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-on_error",
+      "description": "指定错误消息（非警告或信息消息）的额外操作。如果未指定消息，则该操作适用于所有错误消息。msg_only：仅打印错误消息，命令正常继续。这是默认设置。exit：立即退出并返回 Linux。stop_script：等待当前 Tcl 命令完成，然后停止执行任何 Tcl 脚本，并返回到交互式 Tcl 提示符。注意，如果消息严重性从错误更改为警告或信息，它将不再触发此额外操作。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stop_script_limit",
+      "description": "设置每个公共命令的消息限制。如果设置 -stop_script_limit 10，则在消息第 10 次被一个命令触发时，工具将等待当前 Tcl 命令完成，然后停止执行任何 Tcl 脚本，并返回到交互式 Tcl 提示符。默认值为 -1，表示无限制。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

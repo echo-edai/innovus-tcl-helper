@@ -1,0 +1,57 @@
+{
+  "command": "setWhatIfDriveType",
+  "is_cmd": true,
+  "summary": "设置黑盒或黑块中指定类型单元的输出和双向端口作为接口网络的驱动器",
+  "description": "此命令用于设置黑盒或黑块内具有指定类型单元的输出和双向端口，使其作为接口网络上的驱动器。在Verilog网表中黑盒或黑块的模块定义及其I/O可用后，方可使用此命令。软件会存储驱动器类型规格，并在指定延迟后用于创建时序弧。注意：不能为终止于同一输出端口的两个不同时序弧指定两个不同的驱动器。对于组合逻辑的假设分析时序弧描述，驱动器的时序感知会被考虑在内——应用驱动器类型时，组合弧的时序感知会被驱动器时序弧的时序感知所替换。对于时序弧，时序感知始终设置为非单边。",
+  "usage": "setWhatIfDriveType <blackBoxCellName> [-port <outputPortName>] [-lib <libName>] -cell <cellName> [-slew <value> [-outputCap <value>]] [-inputPin <libraryInputPin>] [-outputPin <libraryOutputPin>]",
+  "options": [
+    {
+      "name": "<blackBoxCellName>",
+      "description": "指定黑盒或黑块单元的名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-port",
+      "description": "指定输出端口的名称。如果未指定端口名，软件会将所有输出和双向端口设置为接口网络上的驱动器。每次修改黑盒或黑块输出端口上的驱动器时，软件都会使用新的驱动器规格重新计算连接到该输出端口的所有时序弧。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lib",
+      "description": "指定时序库的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定单元的名称。如果存在两个同名的单元，软件将使用找到的第一个。可以使用此参数指定一个复杂单元（具有多个输入和/或输出）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-slew",
+      "description": "指定驱动器单元输入端的转换时间。如果指定了转换时间值，软件将根据输出电容创建一个一维时序表。如果未指定转换时间值，软件将创建一个包含输入转换时间和输出电容值的二维时序表。在这种情况下，软件假定黑盒或黑块的输入端口与驱动器输入引脚之间没有转换时间变化。必须在归一化时序模型模式下使用此参数。此参数在固有时序模型模式下不可用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-outputCap",
+      "description": "指定输出电容值。其值设置规则如下：如果setWhatIfTimingMode命令的-context参数值设置为in，则输出电容值等于实际电容值，此时setWhatIfDriveType命令的-outputCap参数不适用。如果setWhatIfTimingMode命令的-context参数值设置为out：如果setWhatIfDriveType命令指定了-outputCap参数，则输出电容设置为此值；如果setWhatIfDriveType命令未指定-outputCap参数，则使用setWhatIfTimingMode命令的-outputCap参数指定的outputCap值作为setWhatIfDriveType命令的输出电容。不能在固有时序模型模式下使用此参数。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-inputPin",
+      "description": "指定单元（由-cell参数指定）的输入或输入输出引脚，其源弧将用于设置端口上的驱动器类型。默认值：如果未指定此参数，软件会自动选择一个输入或输入输出引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-outputPin",
+      "description": "指定库的输出或输入输出引脚，其源弧将用于设置端口上的驱动器类型。默认值：如果未指定此参数，软件会自动选择一个输出或输入输出引脚。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

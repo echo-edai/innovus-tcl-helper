@@ -1,0 +1,110 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_vt_skew_config(25.10)                            set_vt_skew_config(25.10)
+
+Name
+       set_vt_skew_config  -  Allows  customization of the combinations of Vth
+       classes to be analyzed
+
+Syntax
+       set_vt_skew_config
+
+        [-help]
+
+       [-analysis_mode {setup | hold | both}]
+
+       [-clocks_only]
+
+       [-correlated_vt_groups <<corr_group>>]
+
+        [-exclude <<exclude>>]
+
+        [-exclude_nominal]
+
+       [-include_only <<include_only>>]
+
+        [-unique_vt_mode {none | slow | fast | nominal}]
+
+       Allows customization of the combinations of Vth classes to be analyzed.
+       By default, the software will analyze all the possible combinations.
+
+       This command is not cumulative as each invocation will  reset  any  op-
+       tions  previously  set  by  its default value unless that option is re-
+       specified.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -analysis_mode {setup | hold | both}
+              Specifies the analysis mode for which the configuration is to be
+              used.
+
+       -clocks_only
+              Allows the software to consider only launch  and  capture  clock
+              VTs post CPPR point when enumerating Vth combinations.
+
+              By  default,  the software will consider Vth classes on the data
+              path as well.
+
+       -correlated_vt_groups <corr_group>
+              Specifies the groups for correlation.
+
+              By default, all Vth groups are considered  uncorrelated.   If  a
+              set  of  Vth groups is specified as correlated then they will be
+              considered as one entity when determining  the  combinations  of
+              Vth  groups.   All  the correlated VT's will use the same (fast,
+              slow, nominal) derate factor.
+
+       -exclude <exclude>
+              Specifies the configurations to be excluded.
+
+              When this parameter is specified,  the  software  excludes  some
+              combinations of Vth classes from the full elaborated set of com-
+              binations. The argument to this parameter is a Tcl list-of-lists
+              as  described  for  -include_only.  The -exclude expression is a
+              secondary filter which acts against the the current included set
+              of enumerations - either all by default, or a subset  configured
+              by -include_only.
+
+       -exclude_nominal
+              Determines whether to enumerate fast, slow, nominal combinations
+              or just fast, slow.
+
+       -include_only <include_only>
+              Specifies the configurations to be included.
+
+              You  can  specify  only the Vth combinations of interest. By de-
+              fault, all the possible combinations are analyzed. The  argument
+              to  this parameter is a Tcl list-of-lists structure, which asso-
+              ciates a Vth group with the set of analyses to consider for that
+              group.
+
+              Note: The options for -include_only and -exclude parameters is a
+              Tcl list-of-lists that provides a way to customize the Vth  enu-
+              merations that are analyzed. The format is a Vth group name fol-
+              lowed by an enum list of combinations of fast, slow, or nominal.
+              If  a  Vth  group  is  missing from the specification a value of
+              'all' will be assumed.
+
+       -unique_vt_mode {none | slow | fast |nominal}
+              Allows the software to consider  only  the  launch  and  capture
+              clock VTs post CPPR point when enumerating Vth combinations.
+
+              By  default,  the software will consider Vth classes on the data
+              path as well. The unique Vt analysis  mode  is  applicable  only
+              during the path-based analysis (PBA) step.
+
+Examples
+              * The  following  command defines the derate mode to use in both
+                GBA and PBA when the path has unique VT:
+
+                set_vt_skew_config -unique_vt_mode slow
+
+                Setting a unique Vt mode is required for  the  GBA  unique  Vt
+                flow.
+
+Related Information
+              * set_threshold_voltage_group
+
+              * set_vt_skew_derate
+
+                           Fri Apr 04 01:25:37 2025  set_vt_skew_config(25.10)

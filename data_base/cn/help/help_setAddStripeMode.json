@@ -1,0 +1,393 @@
+{
+  "command": "setAddStripeMode",
+  "is_cmd": true,
+  "summary": "设置添加电源地线（Stripe）的模式和参数",
+  "description": "该命令用于配置在版图中添加电源地线（Stripe）时的各种行为模式、约束条件和优化选项。它提供了丰富的参数来控制走线的生成、延伸、打断、连接、间距、宽度、过孔处理以及与现有布局结构（如模块、环、引脚）的交互方式，是进行电源网络规划和布线的重要工具。",
+  "usage": "setAddStripeMode [-help] [-reset] [-allow_jog {none|padcore_ring|block_ring}] [-allow_nonpreferred_dir {none|blockring|corering|padring|stripe}] [-area {<lx ly ux uy> | <x1 y1 x2 y2 x3 y3 ...>}] [-break_at {none|block_ring|selected_block|unassigned_bump|overlap_ringpin|outer_ring|outside_ringmacro|blocks_without_same_net}] [-color_balance {same_color|alternate_color|none}] [-continue_on_no_selection {true|false}] [-detailed_log {true|false}] [-domain_offset_from_core {true|false}] [-extend_to_closest_target {ring|stripe|same_dir_stripe|area_boundary|none}] [-extend_to_first_ring {true|false}] [-ignore_block_check {true|false}] [-ignore_blockring_when_breaking {true|false}] [-ignore_DRC {true|false}] [-ignore_nondefault_domains {true|false}] [-inside_cell_allow_shift {true|false}] [-inside_cell_only {true|false}] [-keep_pitch_after_snap {true|false}] [-max_extension_distance <value>] [-max_via_size {shape width% height% target_penetration%}] [-merge_with_all_layers {true|false}] [-mesh_via {true|false}] [-offset_from_core {true|false}] [-optimize_stripe_for_routing_track {shift|none}] [-orthogonal_offset {edge1 offset_value ...}] [-orthogonal_only {true|false}] [-over_row_extension {true|false}] [-partial_set_thru_domain {true|false}] [-recommend_width <file_name>] [-remove_floating_stapling {true|false}] [-remove_floating_stripe_over_block {true|false}] [-remove_stripe_under_ring {true|false}] [-route_over_rows_only {true|false}] [-rows_without_stripes_only {true|false}] [-same_sized_stack_vias {true|false}] [-skip_via_on_pin {pad|block|cover|standardcell|physicalpin}] [-skip_via_on_wire_shape {blockring|stripe|followpin|corewire|blockwire|iowire|padring|ring|fillwire|noshape}] [-spacing_from_block <value>] [-spacing_type {edge_to_edge|center_to_center}] [-split_long_via {threshold step offset length}] [-split_vias {true|false}] [-split_wire_spacing <value>] [-split_wire_weight <integer_0_to_10>] [-split_wire_width <value>] [-stacked_via_bottom_layer <layerName>] [-stacked_via_top_layer <layerName>] [-stapling_extend_to_minimum_spacing {true|false}] [-stapling_nets_style {end_to_end|side_to_side|side_to_side_full_nets}] [-stapling_shift {true|false}] [-stop_at_closest_target {none|block_ring|core_ring|stripe}] [-stop_at_last_wire_for_area {true|false}] [-stripe_min_length <value>] [-stripe_min_width <value>] [-switch_cellname <cellname>] [-switch_layer_overlap_length <value>] [-trim_antenna_back_to_shape {none|block_ring|core_ring|pad_ring|stripe}] [-trim_antenna_max_distance <value>] [-trim_stripe {none|design_boundary|core_boundary}] [-use_exact_spacing {true|false}] [-use_point2point_router {true|false}] [-use_stripe_width {true|false}] [-via_using_exact_crossover_size {true|false}] [-respect_routes {none||fixed||fixed_and_clock||all} ]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定选项重置为默认值",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_jog",
+      "description": "指定允许的拐角类型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-allow_nonpreferred_dir",
+      "description": "指定是否允许使用非首选方向拐向目标。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-area",
+      "description": "指定矩形区域、多边形区域或它们的组合。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-break_at",
+      "description": "指定走线的断点。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-color_balance",
+      "description": "same_color 对应组间交错，alternate_color 对应组内交错。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-continue_on_no_selection",
+      "description": "指定在没有选择的情况下是否继续。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-detailed_log",
+      "description": "指定是否输出详细的日志文件 addStripe.log。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-domain_offset_from_core",
+      "description": "指定是否为电源域走线使用全局偏移。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-extend_to_closest_target",
+      "description": "指定走线延伸至的目标。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-extend_to_first_ring",
+      "description": "指定是否将走线天线延伸至最近的环。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignore_block_check",
+      "description": "指定是否忽略模块检查。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignore_blockring_when_breaking",
+      "description": "指定是否在模块外部打断走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignore_DRC",
+      "description": "指定在生成走线时是否忽略DRC检查，通常用于原型流程。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-ignore_nondefault_domains",
+      "description": "指定是否在非默认域处打断。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-inside_cell_allow_shift",
+      "description": "指定允许创建的单元内支柱在遇到DRC时进行移位。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-inside_cell_only",
+      "description": "指定是否仅在选定或指定的单元内生成走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-keep_pitch_after_snap",
+      "description": "（布尔值）",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-max_extension_distance",
+      "description": "指定当启用 -extend_to_closest_target 时的最大延伸距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-max_via_size",
+      "description": "交叉过孔的最大尺寸。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-merge_with_all_layers",
+      "description": "指定是否在所有层上合并走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-mesh_via",
+      "description": "使用网状过孔以减少内存占用。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-offset_from_core",
+      "description": "指定是否从核心区域偏移第一条或最后一条走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-optimize_stripe_for_routing_track",
+      "description": "移动走线位置以保留布线资源。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-orthogonal_offset",
+      "description": "指定正交边的偏移量。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-orthogonal_only",
+      "description": "过孔仅连接到正交目标。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-over_row_extension",
+      "description": "指定是否延伸走线以覆盖行末的 followpin。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-partial_set_thru_domain",
+      "description": "指定如果域包含指定网络，是否穿过电源域。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-recommend_width",
+      "description": "指定文件名中推荐的宽度值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-remove_floating_stapling",
+      "description": "如果没有过孔连接，则移除浮动的钉扎走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-remove_floating_stripe_over_block",
+      "description": "指定是否移除起始和结束都在同一模块或环宏内的走线片段。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-remove_stripe_under_ring",
+      "description": "指定是否移除环下方的那些走线段。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-respect_routes",
+      "description": "指定在生成走线期间是否尊重预先存在的布线。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-route_over_rows_only",
+      "description": "指定是否仅在边界内的行上方布线走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-rows_without_stripes_only",
+      "description": "指定是否仅在无走线的行上方生成走线。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-same_sized_stack_vias",
+      "description": "生成相同尺寸的堆叠过孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-skip_via_on_pin",
+      "description": "防止在指定类型的引脚上生成过孔。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-skip_via_on_wire_shape",
+      "description": "防止在指定的线形状上生成过孔。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-spacing_from_block",
+      "description": "指定与模块的间距。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-spacing_type",
+      "description": "指定 addStripe -spacing 的内部间距类型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-split_long_via",
+      "description": "将长度超过阈值的过孔分割成具有指定步长、底部/左端偏移和垂直/水平长度的较小过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-split_vias",
+      "description": "创建多个部分过孔。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-split_wire_spacing",
+      "description": "指定每条分割线之间的间距。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-split_wire_weight",
+      "description": "删除最少的IO线以适应大约 n/10 的分割走线。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-split_wire_width",
+      "description": "指定每条分割线的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-stacked_via_bottom_layer",
+      "description": "lef 层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stacked_via_top_layer",
+      "description": "lef 层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stapling_extend_to_minimum_spacing",
+      "description": "指定自动延伸相邻的钉扎走线，只要足够满足端到端最小间距且无DRC违规。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-stapling_nets_style",
+      "description": "如果指定了多个网络，则指定钉扎样式。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stapling_shift",
+      "description": "移动钉扎走线以自动避免DRC。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-stop_at_closest_target",
+      "description": "指定当启用 over_pins 时，走线停止的目标。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stop_at_last_wire_for_area",
+      "description": "指定是否将走线天线修剪回同一网络最近的线或引脚。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-stripe_min_length",
+      "description": "指定走线的最小长度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stripe_min_width",
+      "description": "指定修剪后剩余走线的最小宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-switch_cellname",
+      "description": "指定被视为环的开关单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-switch_layer_overlap_length",
+      "description": "指定用于走线层和切换到的层之间过孔的重叠距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-trim_antenna_back_to_shape",
+      "description": "指定天线末端与阻塞目标之间的距离。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-trim_antenna_max_distance",
+      "description": "指定天线末端与阻塞目标之间的距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-trim_stripe",
+      "description": "指定走线是否被指定形状修剪。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-use_exact_spacing",
+      "description": "指定是否使用精确间距。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-use_point2point_router",
+      "description": "指定是否使用精确间距。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-use_stripe_width",
+      "description": "指定是否使用走线宽度。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-via_using_exact_crossover_size",
+      "description": "生成精确交叉尺寸的部分过孔。",
+      "required": false,
+      "type": "bool"
+    }
+  ]
+}

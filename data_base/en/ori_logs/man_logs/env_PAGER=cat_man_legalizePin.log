@@ -1,0 +1,276 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+legalizePin(25.10)                                          legalizePin(25.10)
+
+Name
+       legalizePin - Moves a pin from its existing location
+
+Syntax
+        legalizePin
+
+       [-help]
+
+       [-auto_pairing]
+
+       [-ignore   {pin_spacing   pin_spacing_constraint   pin_spacing_routeBlk
+       pin_width pin_depth pin_layer  pin_min_area  pin_on_track  pin_abutment
+       pin_non_nbr_abutment clones pin_color}
+
+       [-internalPin]
+
+       [-keepLayer]
+
+       [-keepOrder]
+
+       [-moveFixedPin]
+
+       [-pin {<pinName>| <pinNameList>}]
+
+       [-ptn <ptnName>]
+
+       [-snapToBoundary]
+
+       [-verbose]
+
+       [-ptn <ptnName>| {-pin_file <fileName>[-exclude_ptn <ptnName>]}]
+
+       [-pin_file <fileName  >| -exclude_pin_file <fileName>]
+
+       Moves  a  pin from its existing location. It moves the pins in the fol-
+       lowing cases:
+
+              * The pin overlaps with any other object  or  pin.  The  objects
+                considered are:The pin violates pin-to-pin spacing constraints
+
+                * stripes
+
+                * vias
+
+                * feedthrough buffers
+
+                * routing blockages
+
+                * pin blockages
+
+              * The  pin is on a non-preferred layer, a non-reserved layer, or
+                the Metal1 layer
+
+              * The pin is not on the routing track
+
+              * The pin does not honor corner mask settings
+
+       The pin is assigned to the nearest legal location.
+
+       Note: The pin-related commands (editPin, checkPinAssignment, and legal-
+       izePins) do not consider regular wires for checking and correcting  DRC
+       violations and overlaps while placing I/O or partition pins.
+
+       Note:  If  this  command is run on a blackbox that has one or more pins
+       with a single LEF port but with multiple shapes within  the  LEF  port,
+       the  command  will  remove  these  multiple  shapes and create a single
+       shape. If this command is run on a blackbox that has one or  more  pins
+       with  multiple  LEF  ports, the first LEF port will be processed as per
+       the command and the remaining LEF ports will remain unchanged.
+
+       The legalizePin command supports nested partitions and corrects the pin
+       position of illegal pins across hierarchies. It gives a warning if  the
+       first  level  pin is placed in second level partition or vice versa and
+       legalizes them to the nearest track. It also supports  pin  overlapping
+       across N levels for overlapping partition boundaries.
+
+       The  legalizePin  command  honors net weights and accordingly legalizes
+       pins. For example, if there are 2 or 3 pins that  can  be  put  into  a
+       slot,  the legalizePin command automatically looks at the net weight of
+       these pins and assigns the slot according the net weight priority.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each legalizePin parameter. For a detailed de-
+              scription of the command and all of its parameters, use the  man
+              command: man legalizePin
+
+       -auto_pairing
+              Automatically  calculates  the channel width or distance between
+              pins in a design which will be considered for pairing.
+
+              Data_type: bool, optional
+
+       -exclude_ptn <ptnName>
+              Specifies the list of excluded partition for pin file.
+
+              Data_type: string, optional
+
+       -exclude_pin_file <fileName>
+              Specifies pin-list to be excluded for partition in a file.
+
+              Data_type: string, optional
+
+       -ignore {pin_spacing pin_spacing_constraint pin_spacing_routeBlk
+       pin_width pin_depth pin_layer pin_min_area pin_on_track pin_abutment
+       pin_non_nbr_abutment clones pin_color}
+              Legalizes by taking the category(ies) of ignore types  into  ac-
+              count.
+
+              Data_type: (enum)+, optional
+
+       -internalPin
+              Legalizes  internal  pins by moving them to the closest track on
+              the preferred routing layer.
+
+              Data_type: bool, optional
+
+       -keepLayer
+              Maintains the pin layer while legalizing the pins. If the pin is
+              on a layer that is not on the allowed partition layer list  then
+              an error is reported and the pin is not legalized.
+
+              Data_type: bool, optional
+
+       -keepOrder
+              Maintains  the  pin  order while legalizing pins irrespective of
+              the layers. Initially, the pins are legalized within  the  range
+              of   original   pin   locations.  However,  if  the  legalizePin
+              -keepOrder command is unable to find a  legal  location,  legal-
+              izePin  will  try  to  find a valid location that is outside the
+              original range and give warning message. If legalizePin fails to
+              find a valid location, it reports an error.
+
+              Note: The option is only applicable for pins on  the  fence.  It
+              does not apply to internal pins.
+
+              Data_type: bool, optional
+
+       -moveFixedPin
+              If  you use this parameter, the specified pins with a Fixed sta-
+              tus can also be moved.
+
+              Note: Pins that are not specified but have a  Fixed  status  are
+              not moved.
+
+              Default:  If  you do not specify this option, the specified pins
+              with a Fixed status are not moved.
+
+              Data_type: bool, optional
+
+       -ptn <ptnName>
+              Specifies the partition for which the pins will be checked. This
+              parameter is required if the partition is not the top-level mod-
+              ule.
+
+              Note: The legalizePin command can also  resolve  I/O  pins  from
+              overlapping  power  stripes. In this case, ptnName specifies the
+              block-level design name.
+
+              Data_type: string, optional
+
+       -pin {<pinName> | <pinNameList>}
+              Specifies that the command should be run on the specified pin(s)
+              only.
+
+              Data_type: string, optional
+
+       -pin_file <fileName>
+              Specifies the pin list for a partition in a  file.  In  the  pin
+              file, the pins and nets are specified in the following format:
+
+              Partition: PtnName/BlockName
+
+              <Pin1>
+
+              <Pin2>
+
+              <..>
+
+              Partition: PtnName/BlockName
+
+              <Pin1>
+
+              <Pin2>
+
+              <..>
+
+              Nets:
+
+              <netA >
+
+              <netB >
+
+              <..>
+
+              Note:  While specifying the pin list in the pin_file, it is nec-
+              essary to give the "Partition" keyword followed by the  name  of
+              the  partition or block. If this is not specified, no operations
+              are performed.  You can specify multiple partitions in the  same
+              pin_file.
+
+              The pin_file does not support buses or wild cards for pin names.
+              If  a pin specified in the list or a partition is not present in
+              the design, a warning is displayed.
+
+              Data_type: string, optional
+
+       -snapToBoundary
+              Snaps internal partition pins  to  the  boundary  and  legalizes
+              them.
+
+              Note:  The  -snapToBoundary parameter does not work with -inter-
+              nalPin as both work on internal pins and their results are  dif-
+              ferent.
+
+              Data_type: bool, optional
+
+       -verbose
+              Reports all the existing pin violations.
+
+              Data_type: bool, optional
+
+Example
+       The  following  command  legalizes  pins in same the metal as they were
+       present and moves fixed pins if they are placed illegally:
+
+       legalizePin -keepLayer -moveFixedPin
+
+       The following command accepts a file that contains the list of pins for
+       partition A and partition B and legalizes them.
+
+       legalizePin -ptn {A B} -pin_file pinLst.txt
+
+       where, the <pinList.txt >
+
+       Partition: top
+
+       out1
+
+       out2
+
+       out3
+
+       Partition: A
+
+       in1
+
+       in2
+
+       in3
+
+       Partition: B
+
+       pina
+
+       pinb
+
+       pinc
+
+Related Information
+              * checkPinAssignment
+
+              * assignPtnPin
+
+              * assignIoPins
+
+              * setPtnPinStatus
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Validating Pin Placement
+
+                           Fri Apr 04 01:25:37 2025         legalizePin(25.10)

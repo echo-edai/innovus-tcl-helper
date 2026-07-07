@@ -1,0 +1,266 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoDesign(25.10)                                              ecoDesign(25.10)
+
+Name
+       ecoDesign  -  Takes an Innovus database and a modified netlist as input
+       and performs ECO operations
+
+Syntax
+        ecoDesign
+
+       [-help]
+
+       sessionDirectoroy
+
+       design
+
+       newNetList
+
+       [-allow_to_load_binary_timing_file]
+
+       [-addHierPortForTieOff]
+
+       [-cpfFile <newCPFFile> | -1801File <new1801File>]
+
+       [-def <defFile>]
+
+       [-ecoMMMC <newMMMCFile>]
+
+       [-ecoSDC <newSDCFile>]
+
+       [-keepInstLoc]
+
+       [-lef_files <LEFFilesName>]
+
+       [-noAddFiller]
+
+       [-skipCcopt]
+
+       [-fillerPrefix <prefix >| -noDeleteFiller]
+
+       [-modifyOnlyLayers <MLb:MLt>]
+
+       [-noEcoPlace]
+
+       [-noEcoRoute]
+
+       [-noTiming]
+
+       [-place_detail_use_GA_filler_groups]
+
+       [-postMask]
+
+       [-reportFile <reportFile>]
+
+       [-spareCells <spareCellName>]
+
+       [-suffix <suffix>]
+
+       [-tieCell <cellNameList>]
+
+       [-useGACells <GACoreSite>| -useGAFillerCells <list_of_filler_cells >]
+
+       Takes an Innovus database and a modified netlist as input and  performs
+       ECO operations. It restores the design, examines the changes in the new
+       netlist,   and  automatically  implements  the  required  changes  with
+       ecoPlace and ecoRoute.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ecoDesign.
+
+               For  a detailed description of the command and all of its para-
+              meters, use the man command:
+
+              man ecoDesign
+
+       -1801File <new1801File>
+              Specifies the name of the new 1801 file.
+
+       -allow_to_load_binary_timing_file
+              Allows the tool to load the binary timing graph  or  the  timing
+              constraint file.
+
+              If  you execute ecoDesign based on binary timing graph or timing
+              constraints, the tool will give an error and  stop  loading  the
+              new  design. This is because the timing graph or the timing con-
+              straints file from the loaded design is a binary  file,  and  if
+              you  keep  on  loading  it,  it may cause fatal error. In such a
+              case, you need to restore the original design and  then  save  a
+              new  design with the no-binary timing file. Then, execute ecoDe-
+              sign based on the new design. If you still want to load the cur-
+              rent  design,  you  need  to  run  ecoDesign  -allow_to_load_bi-
+              nary_timing_file 1 to turn on the control.
+
+       -addHierPortForTieOff
+              Allows the added tie cells to connect to the tie pins across hi-
+              erarchical  boundaries  if  other  constraints,  such as maximum
+              fanout and maximum distance, allow it.
+
+              This parameter can be used only with -postMask and -tieCell  op-
+              tions.
+
+       -cpfFile <newCPFFile>
+              Specifies the name of the CPF file.
+
+       -def <fileName>
+              Specifies  the  DEF file you want the software to load automati-
+              cally when performing ECO. This parameter automatically  assigns
+              the  location of the new ECO cells. As a result, you do not need
+              to run ecoPlace after performing the ECO.
+
+       <design>
+              Specifies the top cell name of the design.
+
+       -ecoMMMC <newMMMCFile>
+              Specifies the name of the new view definition file.
+
+       -ecoSDC <newSDCFile>
+              Specifies the name of the new SDC file.
+
+       -fillerPrefix <prefix>
+              Specifies the filler cell instance prefix. The ecoDesign command
+              removes all filler cells before placing the ECOs. If you do  not
+              specify a prefix, deleteFiller removes filler instances based on
+              the  setFillerMode  command  settings.  If you have not set set-
+              FillerMode, then no filler cells are removed.
+
+       -keepInstLoc
+              Keeps the instance location of changed cells.
+
+       -lef_files <LEFFilesName>
+              Specifies the LEF files name for loading. Use this option if you
+              want to replace the existing LEF files in  the  original  design
+              with  new  LEF files. Refer to restoreDesign -lef_files for more
+              details and limitations.
+
+              For example, tech.lef, A.lef are the existing LEFs used in orig-
+              inal design. You can change A.lef to A_v2.lef using the  follow-
+              ing command:
+
+              ecoDesign  original.enc.dat  myDesign  myDesign.new.v -lef_files
+              {tech.lef A_v2.lef}
+
+       -noAddFiller
+              Skips filler insertion in the pre-mask eco flow.
+
+       -modifyOnlyLayers MLb:MLt
+              Specifies the layers to be modified during the ECO process.
+
+       <newNetList>
+              Specifies the name of new netlist file.
+
+       -noDeleteFiller
+              Skips deleting filler.
+
+       -noEcoPlace
+              Prevents placement during the ECO  process.  ecoPlace  must  run
+              manually based on the design's needs.
+
+              If  you do not specify -noEcoPlace, ecoDesign calls ecoPlace in-
+              ternally.
+
+       -noEcoRoute
+              Prevents routing during the ECO process.
+
+       -noTiming
+              Ignores timing libraries and MMMC configuration
+
+       -place_detail_use_GA_filler_groups
+              Specifies that filler cell instances will only  be  replaced  by
+              the logic instances that belong to the same GA groups.
+
+              This  option  can only be used when there is a filler group cre-
+              ated    by     createGAFillerGroup.     ecoDesign     -place_de-
+              tail_use_GA_filler_groups  first  finds the optimal location for
+              each instance based on its connectivity, then searches  for  the
+              nearest  GA  filler  cell  that  is  included in the same filler
+              group, places a GA cell at the GA filler location,  and  deletes
+              the original GA filler.
+
+              If the GA cell is smaller than the GA filler, the placer creates
+              a  new  GA  filler instance using the list of GA filler cells in
+              the same filler group and places the filler in the gap.
+
+       -postMask
+              Specifies that the changes are being made on a post-mask design.
+
+              * If you do not specify -postMask, ecoDesign runs  the  pre-mask
+                flow.
+
+              * If  you  specify  -postMask only without any GA filler option,
+                tool runs the spare cell flow.
+
+              * If you specify -postMask with any GA filler option, tool  runs
+                the  GA  filler  flow. GA filler flow options are -useGACells,
+                -useGAFillerCells, -place_detail_use_GA_filler_groups
+
+              -postMask is required when option -suffix, -spareCells, -modify-
+              OnlyLayers, -tieCell, or -addHierPortForTieOff is specified.
+
+       -reportFile <reportFile       >
+              Specifies the name of the report file.
+
+              Note: By default,  ecoDesign  creates  the  default  ecoRestore-
+              Design.rpt  file. However, this default file will be overwritten
+              by the file name specified using the -reportFile option in  next
+              eco RUN.
+
+       <sessionDirectory>
+              Specifies the .dat directory from which to load the files.
+
+       -skipCcopt
+              Skips restore ccopt config for signoffTimeDesign.
+
+       -spareCells <spareCellName>
+              Specifies  the  name  of  the  spare  cell to use during the ECO
+              process.
+
+       -suffix <suffix>
+              Specifies the suffix to be appended to the spare cells. You  can
+              specify this parameter only if you specify -postMask.
+
+              Default: _SPARE
+
+       -tieCell "<cellName1> <cellName2>"
+              Specifies  the  existing tie cells to be reused to make tie con-
+              nections for newly created SPARE instance in the design. You can
+              only specify a maximum of two tie-cells, where one cell must  be
+              a  tie-high driver, and the other a tie-low driver. The two tie-
+              cell names must be surrounded by quotation marks.
+
+              This parameter can be used only with -postMask option.
+
+       -useGACells <GA_site>
+              Specifies the site name of the GA cell. Check the site name  de-
+              fined in the LEF file.
+
+       -useGAFillerCells <list_of_filler_cells>
+              Specifies  a list of Gate Array (GA)-style filler cells that the
+              tool can replace with GA cells during  post-mask  ECO.  You  can
+              only use this parameter in a post-mask ECO flow.
+
+              Note:  You  cannot  specify the -useGACells parameter if you use
+              this parameter.
+
+Examples
+              * The following command performs a pre-mask ECO:
+
+                ecoDesign original.enc.dat myDesign myDesign.new.v
+
+              * The following command and options  are  used  to  implement  a
+                post-mask ECO:
+
+                ecoDesign  -postMask -modifyOnlyLayers 2:3 -spareCells *spare*
+                original.enc.dat myDesign myDesign.new.v
+
+Related Information
+              *
+
+                restoreDesign
+
+              *
+
+                ECO Flows
+
+                           Fri Apr 04 01:25:37 2025           ecoDesign(25.10)

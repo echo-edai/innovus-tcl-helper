@@ -1,0 +1,498 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+routeDesign(25.10)                                          routeDesign(25.10)
+
+Name
+       routeDesign  - Runs routing or postroute via or wire optimization using
+       the NanoRoute router
+
+Syntax
+       routeDesign
+
+       [-help]
+
+       [-backside]
+
+       [-bump]
+
+       [-fill_area {<x1 y1 x2 y2>}]
+
+       [-highFrequency]
+
+       [-selected]
+
+       [-viaPillarOpt]
+
+       [[[-clockEco ] [-globalDetail ]
+
+         [-placementCheck | -noPlacementCheck ]
+
+         [[ -trackOpt ] [-idealClock ]]
+
+         [-viaOpt ] [-wireOpt ]] | [-passiveFill ]]
+
+       Runs routing or postroute via or wire optimization using the  NanoRoute
+       router.  If  you  specify  this  command without any arguments, it runs
+       global and detailed routing.
+
+       The routeDesign command has the following characteristics:
+
+              * It supports multiple-CPU processing.
+
+              * It checks for conflicts in option settings and issues  warning
+                messages  when  it  finds problems. For example, trying to fix
+                postroute lithography problems and optimize vias  concurrently
+                can cause conflicts.
+
+                If  routeDesign  detects requests for both types of operation,
+                it issues a warning, turns off via optimization, and  proceeds
+                with fixing lithography problems.
+
+              * It  honors all setNanoRouteMode settings that do not have con-
+                flicts
+
+              * routeDesign is a super command that  handles  the  setting  of
+                NanoRoute  variables  so  that it is run in timing-driven mode
+                then sets them back postRoute. It runs SMART  routing  by  de-
+                fault;  that is, it runs in both timing- and signal integrity-
+                driven mode by default.
+
+                Note: The other routing commands are not timing- or signal-in-
+                tegrity driven by default, but you can use the following  set-
+                NanoRouteMode  parameters  to  turn  on timing- and signal-in-
+                tegrity-driven routing for those commands:
+
+                To turn on timing-driven routing, run  the  following  command
+                before running routeDesign:
+
+                setNanoRouteMode -route_with_timing_driven true
+
+                To turn on SI-driven routing, run the following command before
+                running routeDesign:
+
+                setNanoRouteMode -route_with_timing_driven true
+
+                If  you  run  either (or both) of these commands, the software
+                stores the mode settings in the .mode file. If you restore the
+                design and run routeDesign again, it  honors  the  these  set-
+                tings.  For  example,  if you type the following commands, the
+                next time you restore  the  design  and  run  routeDesign,  it
+                routes the design in timing-driven mode:
+
+                setNanoRouteMode -route_with_timing_driven true
+
+                routeDesign -globalDetail
+
+                saveDesign
+
+              * It  updates  the  timing file automatically after all the nets
+                are detail routed in timing-driven mode. Updating the file en-
+                sures that critical nets are not touched during postroute mul-
+                tiple-cut via swap, wire spreading and wire widening. When de-
+                termining whether all the nets are detail routed,  the  router
+                skips pins without physical ports.
+
+              * It  runs  a  placement  check  prior to routing and displays a
+                warning message if the placement is not clean.
+
+              * To turn off the placement check, specify the following parame-
+                ter: -noPlacementCheck
+
+              * It changes the status of clock nets from FIXED to ROUTED so it
+                can modify them during routing and routes them before  routing
+                other  nets.  Once  the  status  of  the  clock nets is set to
+                ROUTED, it does not change it back to FIXED.
+
+                To keep clock nets' status FIXED, run  the  following  command
+                before running routeDesign:
+
+                setNanoRouteMode -route_fix_clock_nets true
+
+                To stop the router from routing clock nets first, run the fol-
+                lowing command before running routeDesign:
+
+                setNanoRouteMode -route_route_clock_nets_first false
+
+       Note:  You  can use the check_design -type route command  to detect the
+       potential problems and correct the  design  before  running  the  rout-
+       eDesign command
+
+              * For  issues  related to unplaced instances that clearly affect
+                routing, the check_design command displays error messages  and
+                returns a status to discontinue the flow. You must resolve the
+                issue before continuing to the route phase.
+
+              * For  issues  related  to  adherence  to  the  track rules, the
+                check_design command checks the design. It currently  makes  a
+                basic  check  that the structures needed for routing adhere to
+                the tracking rules before routing begins.
+
+              * For issues related to unplaced top level pins that clearly af-
+                fect routing, the check_design command displays error messages
+                and returns a status to discontinue the flow. You must resolve
+                the issue before continuing to the route phase.
+
+              * For issues related to adherence to  the  third  party  routing
+                rules,  the  check_design  command checks the design for metal
+                violations. If the design is taped out or known to  be  clean,
+                the  presence  of  violations represents a discrepancy between
+                the design and the tech.lef. It normally  indicates  that  the
+                tech  may be of the wrong version or may need to be updated to
+                the technology that the design was taped out using. These  is-
+                sues  must  be understood in detail and waved individually and
+                on purpose by changing the tech.lef before continuing  to  the
+                route phase.
+
+              *
+
+                For  issues  related  to overlapping cells that clearly affect
+                routing, the check_design command displays error messages  and
+                returns a status to discontinue the flow. You must resolve the
+                issue before continuing to the route phase.
+
+              * For  issues  related  pin spacing violations, the check_design
+                command checks if the pin has a  spacing  violation  with  the
+                same  cell  or a different metal cell. It checks macro pin re-
+                lated spacing violations and runs the  verify_drc  command  to
+                catch  spacing  issues  that may block the pin access.You must
+                resolve the issue before continuing to the route phase.
+
+              *
+
+                For issues related to  routing  congestion,  the  check_design
+                command  checks the NanoRoute congestion table and reports the
+                congestion in the NanoRoute log format (with  the  information
+                that  the  source  is NanoRoute Global). Alternatively, it re-
+                ports the Early Global Route congestion in the NanoRoute  for-
+                mat.  By  default, the check_design command stops if the Worst
+                Over Congested Gcell is above 0.75%. Even though these  issues
+                can  be ignored, it is recommended that you understand them in
+                detail and wave them individually  before  continuing  to  the
+                route phase.
+
+              * For  issues  related to a blockage between the pin and the at-
+                tribute constraint layer at the pin location, the check_design
+                command displays error messages and returns a status  to  dis-
+                continue  the flow. You must resolve the issue before continu-
+                ing to the route phase.
+
+              * For issues related to pre-existing violations in ECO  routing,
+                the  check_design command runs the verify_drc command and then
+                checks the results for routing wire DRC and ignores  non-rout-
+                ing  wire  DRC. If any metal violation is found, the check_de-
+                sign command displays error messages and returns a  status  to
+                discontinue  the  flow. You must resolve the issue before con-
+                tinuing with ECO routing.
+
+              * For issues related to adherence to  the  third  party  routing
+                rules,  the  check_design  command checks the design for metal
+                violations. If the design is taped out or known to  be  clean,
+                the  presence  of  violations represents a discrepancy between
+                the design and the tech.lef. It normally  indicates  that  the
+                tech  may be of the wrong version or may need to be updated to
+                the technology that the design was taped out using. These  is-
+                sues  must  be understood in detail and waved individually and
+                on purpose by changing the tech.lef before continuing  to  the
+                route phase.
+
+              * For issues related to unplaced top level pins that clearly af-
+                fect routing, the check_design command displays error messages
+                and returns a status to discontinue the flow. You must resolve
+                the issue before continuing to the route phase.
+
+              * For  issues  related  to pin access for non-default rules, the
+                check_design command checks each NDR nets output pin for  two-
+                cut  APA accessibility. For macros, it checks if the pin width
+                is less than or equal to the  NDR.  The  check_design  command
+                displays  error messages if the NDR is hard or if the no taper
+                property is set to true. You must  resolve  the  issue  before
+                continuing to the route phase.
+
+Parameters
+       -backside
+              Routes back side layers only. The NanoRoute router supports back
+              side  routing  for  the  layers defined as "BACKSIDE" in LEF and
+              cell library pins.  When the -backside parameter is enabled, the
+              router connects the pins in the back side layers only.
+
+              Note: Back side routing layer has the  "BACKSIDE"  LEF  property
+              assigned  to  it. The back side rule is used to specify that the
+              routing layer is used on the underside of the die.
+
+              Data_type: bool, optional
+
+       -bump  Enables interposer routing to connect the macro bumps  with  bus
+              routing patterns.
+
+              Note:  Before  enabling this functionality, you must specify the
+              routing settings using the -route_interposer* parameters of  the
+              setNanoRouteMode  command.  All routing settings that do not use
+              the -route_interposer* parameters or were set using  the  setDe-
+              signModeor  setAttribute commands are not valid for use with the
+              routeDesign -bump parameter.
+
+              Note: After running the routeDesign -bump  command,  the  inter-
+              poser  routing rules are restored in the design. To get informa-
+              tion on these rules, use the following command:
+
+              dbGet $net.interposer*
+
+              For example, to check the interposer routing signal route  rule,
+              use:
+
+              dbGet $net.interposerTrunkRules
+
+              Data_type: bool, optional
+
+       -clockEco
+              Runs eco routing only on clock nets.
+
+              Data_type: bool, optional
+
+       -fill_area {<x1 y1 x2 y2>}
+              Enables  you  to control the area for which passive fill is per-
+              formed.
+
+              For example,
+
+              routeDesign -passiveFill -fill_area "x1 y1 x2 y2"
+
+              Data_type: box, optional
+
+       -globalDetail
+              Runs timing-driven and SI-driven global  and  detailed  routing.
+              -globalDetail is the default value for this command. When speci-
+              fied,  it  unfixes  the clock nets and then routes all nets, in-
+              cluding clocks that still need to be routed.  It  does  not  ECO
+              route  the  clock  nets prior to other signals so clock nets are
+              not given priority as they are with routeDesign.
+
+              Note: Running the routeDesign command without the  -globalDetail
+              parameter,  unfixes  the clock nets and will ECO route the clock
+              nets first before routing the remaining signal nets.
+
+              Data_type: bool, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation for each routeDesign parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man routeDesign.
+
+       -highFrequency
+              Runs  high  frequency  routing. It routes high frequency digital
+              signals to achieve critical performance.
+
+              Data_type: bool, optional
+
+       -idealClock
+              Performs timing optimization using ideal clocks instead of prop-
+              agated clocks. Using ideal clocks enables you to either optimize
+              timing without building a clock tree first, or to ignore the ex-
+              isting clock tree, to close ideal timing. If this  parameter  is
+              not specified, the software assumes that the clock tree has been
+              built, and optimizes timing based on propagated clocks.
+
+              Note: The -trackOpt parameter must be specified while using this
+              parameter.
+
+              Note:  When  this  parameter  is specified, all propagated clock
+              mode settings are reset; the  setAnalysisMode  -clockPropagation
+              parameter is set to forcedIdeal.
+
+              Data_type: bool, optional
+
+       -noPlacementCheck
+              Turns  off  placement  checking.  By default, routeDesign runs a
+              placement check before routing and displays a warning message if
+              the placement is not clean.
+
+              For information on the types of checks and the violation report,
+              see checkPlace.
+
+              Data_type: bool, optional
+
+       -passiveFill
+              Performs passive fill.
+
+              Data_type: bool, optional
+
+       -placementCheck
+              Checks for placement violations before routing. If the placement
+              is not clean, routeDesign display a warning message.  To  bypass
+              this check use routeDesign -noPlacementCheck.
+
+              Data_type: bool, optional
+
+       -selected
+              Routes selected nets only.
+
+              Data_type: bool, optional
+
+       -trackOpt
+              Performs  timing  optimization  after  track assignment. Specify
+              this option to ensure that TQuantus model file  is  used  during
+              timeDesign and optDesign -postRoute stages.
+
+              Note: If this parameter is specified and the TQuantus model file
+              is  missing,  the  TQuantus model file will be generated and set
+              automatically. If the timing library does not exist, timing  op-
+              timization will be skipped and continue routing.
+
+              For  details of the TQuantus model file usage, see the "Creating
+              RC Model Data in TQuantus Model File"  section  in  the  Innovus
+              User Guide.
+
+              Data_type: bool, optional
+
+       -viaOpt
+              Optimizes vias after routing.
+
+              Warning: Exercise caution with the use of this parameter, as the
+              router  might  create  violations during postroute via optimiza-
+              tion. It runs a search and repair step after optimization if vi-
+              olations occur.
+
+              Data_type: bool, optional
+
+       -viaPillarOpt
+              Performs opportunistic via pillar insertion.
+
+              Note: After the design is routed or  post-route  optimized,  the
+              NanoRoute  router looks for available tracks around the instance
+              pin to either add a new  via  pillar  or  upgrade  the  original
+              smaller via pillar to the one with more fingers. You can perform
+              opportunistic via pillar insertion by using the routeDesign -vi-
+              aPillarOpt  command.  After  opportunistic via pillar insertion,
+              there is no need for ecoRoute; opportunistic via  pillar  inser-
+              tion is DRC clean by construction.
+
+              Data_type: bool, optional
+
+       -wireOpt
+              Optimizes  wires  after routing. This parameter, when specified,
+              widens and shrinks wires after  detail  routing  has  been  per-
+              formed. The settings specified using the following setNanoRoute-
+              Mode options impact the behavior of this parameter:
+
+              * -route_detail_post_route_wire_widen
+
+              * -route_detail_post_route_spread_wire
+
+              * -route_detail_post_route_wire_widen_rule
+
+              Data_type: bool, optional
+
+Examples
+Routing
+              * To run timing- and SI-driven global and detailed routing, type
+                the following command:
+
+                routeDesign
+
+              * To run timing- and SI-driven global and detailed routing, type
+                the following commands:
+
+                routeDesign -globalDetail
+
+              * To run non-timing-driven global and detailed routing, type the
+                following commands:
+
+                setNanoRouteMode -route_with_timing_driven false
+
+                routeDesign -globalDetail
+
+Postroute Yield Optimization
+              * To run postroute single-cut via to multiple-cut via swap, type
+                the following commands:
+
+                setNanoRouteMode          -route_detail_min_slack_for_opt_wire
+                <slack>setNanoRouteMode -route_detail_post_route_swap_via mul-
+                tiCut
+
+                routeDesign -viaOpt
+
+              * To run non-timing-driven postroute single-cut via to multiple-
+                cut via swap, type the following commands:
+
+                setNanoRouteMode -route_with_timing_driven false
+
+                setNanoRouteMode -route_detail_post_route_swap_via multiCut
+
+                routeDesign -viaOpt
+
+              * To run postroute wire widening, type the following commands:
+
+                setNanoRouteMode -route_detail_min_slack_for_opt_wire slack
+
+                setNanoRouteMode -route_detail_post_route_wire_widen_rule  ru-
+                leName
+
+                setNanoRouteMode -route_detail_post_route_wire_widen widen
+
+                routeDesign -wireOpt
+
+              * To  run  non-timing  driven  postroute wire widening, type the
+                following commands:
+
+                setNanoRouteMode -route_detail_post_route_wire_widen_rule  ru-
+                leName
+
+                setNanoRouteMode -route_with_timing_driven false
+
+                setNanoRouteMode -route_detail_post_route_wire_widen widen
+
+                routeDesign -wireOpt
+
+              * To run postroute wire unwidening, type the following commands:
+
+                setNanoRouteMode -route_detail_min_slack_for_opt_wire slack
+
+                setNanoRouteMode  -route_detail_post_route_wire_widen_rule ru-
+                leName
+
+                setNanoRouteMode -route_detail_post_route_wire_widen shrink
+
+                routeDesign -wireOpt
+
+              * To run non-timing-driven postroute wire unwidening,  type  the
+                following commands:
+
+                setNanoRouteMode  -route_detail_post_route_wire_widen_rule ru-
+                leName
+
+                setNanoRouteMode -route_with_timing_driven false
+
+                setNanoRouteMode -route_detail_post_route_wire_widen shrink
+
+                routeDesign -wireOpt
+
+              * To run postroute wire spreading, type the following commands:
+
+                setNanoRouteMode -route_detail_min_slack_for_opt_wire slack
+
+                setNanoRouteMode -route_detail_post_route_spread_wire true
+
+                routeDesign -wireOpt
+
+              * To run non-timing-driven postroute wire  spreading,  type  the
+                following commands:
+
+                setNanoRouteMode -route_with_timing_driven false
+
+                setNanoRouteMode -route_detail_post_route_spread_wire true
+
+                routeDesign -wireOpt
+
+Related Information
+              * setNanoRouteMode
+
+              * Using the NanoRoute Router chapter in the Innovus User Guide
+
+                * Using the routeDesign Supercommand
+
+                * Postroute Via Optimization
+
+              * Accelerating the Design Process By Using Multiple-CPU Process-
+                ing chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025         routeDesign(25.10)

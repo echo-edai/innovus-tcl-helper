@@ -1,0 +1,491 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dbSchema(25.10)                                                dbSchema(25.10)
+
+Name
+       dbSchema  - Returns all of the available objects and attributes for the
+       specified database object
+
+Syntax
+        dbSchema
+
+       [-help]
+
+       [<objNamePattern>< >[<objAttrNamePattern>]]
+
+       [-parent <objNamePatternForParent >[-list]]
+
+       Returns all of the available objects and attributes for  the  specified
+       database object. It also includes the following information.
+
+              * A short description for each object and attribute.
+
+              * The type for each object.
+
+              * The legal enum values for each attribute.
+
+              * Whether  the  attribute  value  can  be set (whether it is ed-
+                itable).
+
+       You can specify an object name, or a simple search pattern to match ob-
+       ject names. If you specify dbSchema, the software returns a list of the
+       database object names. If you specify dbSchema *, the software  returns
+       information  for  all database objects. All query information is output
+       in the log file.
+
+       The dbSchema command also obeys the setDbGetMode -displayFormat setting
+       to determine whether information is returned in simple or table format.
+
+       You can use the dbSchema command to return information on any  database
+       object listed in the Innovus Database Object Information.
+
+       Note: The information returned by the dbSchema command is equivalent to
+       that  returned by the dbGet command with the .?h operator; however, the
+       dbSchema command does not require the object you query to actually  ex-
+       ist  in the database. For example, if you want to query related objects
+       and attributes for a placement blockage, but do not have any  placement
+       blockages  in the design, you can use the dbSchema command, but not the
+       dbGet command.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each dbSchema parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command: man dbSchema.
+
+       -list  Return the list of  parent  objects.  This  option  is  of  type
+              boolean and is optional.
+
+       <objNamePattern>
+              Specifies  the  object  for which to return the information. You
+              can specify an object name (such as inst, or term), or a  string
+              expression  to use to match object names. The software uses sim-
+              ple wildcard matching (*, ?).
+
+       objAttrNamePattern
+              Specifies a secondary pattern for filtering  object,  or  obejct
+              attributes for the specified objects. This is similar to the .?h
+              [<pattern>] filtering in the dbGet command.
+
+       -parent <objNamePatternForParent >
+              Displays the Object/Attribute for which parents need to be found
+              from the specified object type(s). This option is of type string
+              and is optional.
+
+Examples
+              * The  following  command  returns  the available net attributes
+                that begin with is:
+
+                dbSchema net is*
+
+                ===========================================================================
+
+                net: Canonical (flat) net (equivalent to connectivity  in  DEF
+                NETS and
+
+                SPECIALNETS
+
+                ============================================================================
+
+                isClock: bool, Indicates that net is a clock net
+
+                isExternal:  bool, Indicates that net is connected to a termi-
+                nal
+
+                isFixedBump: bool, Indicates that the net is  connected  to  a
+                bump
+
+                isGnd: bool, Indicates that net is ground
+
+                isPatternTrunk:  bool, Indicates that the net is routed with a
+                trunk pattern
+
+                isPhysOnly: bool, Indicates that the net is physical only
+
+                isPwrOrGnd: bool, Indicates that net is power or ground
+
+                isScanNet: bool, Indicates that net is a scan net
+
+              * The following command returns all objects that contain the at-
+                tribute pStatus:
+
+                dbschema * pStatus
+
+                ============================================================================
+
+                bump: Bump
+
+                 ----------
+
+                pStatus(settable):  enum(cover  fixed  placed  softFixed   un-
+                placed),            Bump            placement           status
+                ===============================================================================================
+
+                inst: Instance - canonical (flat), equivalent  to  DEF  COMPO-
+                NENT. Points to a libCell or ptnCell.
+
+                ============================================================================
+
+                pStatus(settable):   enum(cover  fixed  placed  softFixed  un-
+                placed), This attribute is the placement status of an instance
+                during placement and optimization. The  placer  will  look  at
+                both  pStatus  and  pStatusCTS  and  use  the more restrictive
+                value.
+
+                ===============================================
+
+                term: Terminal for libCell, ptnCell, or topCell
+
+                ===============================================
+
+                pStatus(settable):  enum(cover  fixed  placed  softFixed   un-
+                placed), Placement Status of terminal (not for libCell terms)
+
+              * The  following  command  returns the available objects and at-
+                tributes for an instance:
+
+                dbSchema inst
+
+                ===========================================================================
+
+                inst: Instance - canonical (flat), equivalent  to  DEF  COMPO-
+                NENT. Points to a libCell or ptnCell.
+
+                ============================================================================
+
+                box: rect, Bounding box of the instance
+
+                cell:  obj(libCell  ptnCell),  Pointer to child cell master or
+                ptnCell
+
+                instTerms: objList(instTerm), List  of  pointers  to  instance
+                terminals
+
+                isDontTouch: bool, Indicates that the instance is marked Don't
+                Touch
+
+                isHaloBlock: bool, Indicates that the instance is a halo block
+
+                isJtagElem:  bool,  Indicates that the instance is a Jtag ele-
+                ment
+
+                isPhysOnly: bool, Indicates that the instance is physical only
+
+                isSpareGate: bool, Indicates that the instance is a spare gate
+
+                name: string, Fully qualified (path) name of the instance
+
+                objType: enum(bndry densityShape fPlan group  hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Instance
+
+                orient(settable): enum(MX MX90 MY MY90 R0 R180  R270  R90  Un-
+                known), Instance placement orientation
+
+                pStatus(settable): enum(cover fixed placed unplaced), Instance
+                placement status
+
+                pgCellTerms: objList(term), List of pointers to the instance's
+                power terminals
+
+                pgTermNets: objList(net), List of pointers to nets attached to
+                P/G terminals
+
+                pt(settable): pt, Location of the instance
+
+              * The  following  command  returns the available objects and at-
+                tributes for database objects that start with the letter p:
+
+                dbSchema p*
+
+                ===============================================
+
+                pBlkg: Placement blockage (hard, soft, partial)
+
+                ===============================================
+
+                attr(settable):  enum(inst  pushdown   undefined),   Indicates
+                whether  the  blockage  has  been pushed down or is assoicated
+                with an instance.
+
+                name(settable): string, Name of partial blockage
+
+                objType: enum(bndry densityShape fPlan group  hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Placement blockage
+
+                shapes:  objList(densityShape  shape),  List  of  pointers  to
+                shapes (hard/soft) or densityShapes (partial)
+
+                type(settable):  enum(hard partial soft), Blockage type (hard,
+                soft, partial)
+
+                ================
+
+                pd: Power domain
+
+                ================
+
+                core2Bot(settable): coord, Distance between the  power  domain
+                edge and it's core box
+
+                core2Left(settable):  coord, Distance between the power domain
+                edge and it's core box
+
+                core2Right(settable): coord, Distance between the power domain
+                edge and it's core box
+
+                core2Top(settable): coord, Distance between the  power  domain
+                edge and it's core box
+
+                extBot(settable):  coord,  Maximum  search  distance for power
+                connections
+
+                extLeft(settable): coord, Maximum search  distance  for  power
+                connections
+
+                extRight(settable):  coord,  Maximum search distance for power
+                connections
+
+                extTop(settable): coord, Maximum  search  distance  for  power
+                connections
+
+                gapBot(settable):  coord,  Minimum  spacing to other power do-
+                mains or rows
+
+                gapLeft(settable): coord, Minimum spacing to other  power  do-
+                mains or rows
+
+                gapRight(settable):  coord, Minimum spacing to other power do-
+                mains or rows
+
+                gapTop(settable): coord, Minimum spacing to  other  power  do-
+                mains or rows
+
+                group: obj(group)
+
+                isAlwaysOn(settable): bool, Indicates that the power domain is
+                always on
+
+                isDefault:  bool,  Indicates  that the power domain is the de-
+                fault power domain
+
+                name: string, Name of the power domain
+
+                objType: enum(bndry densityShape fPlan group  hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Power domain
+
+                ==============
+
+                prop: Property
+
+                ==============
+
+                name: string, Property name
+
+                objType: enum(bndry densityShape fPlan group  hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Property
+
+                parent: obj(parent), Pointer to the parent object  referencing
+                the property
+
+                value: value, Property value (depends on valueType)
+
+                valuetype:  enum(Double  bits box integer loc pointer string),
+                Type of value stored in the property (int, float, etc.)
+
+                =====================================================
+
+                ptnCell: Partition cell, created by partition command
+
+                =====================================================
+
+                name: string, Name of cell
+
+                numBidirs: int, Number of bidir terminals in the cell
+
+                numInputs: int, Number of input terminals in the cell
+
+                numPGTerms: int, Number of power/ground terminals in the cell
+
+                numRefs: int, Number of times cell is used in design
+
+                numTerms: int, Number of terminals in the cell
+
+                objType: enum(bndry densityShape fPlan group  hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Partition cell
+
+                pgTerms: objList(term), List of power/ground terminals in  the
+                cell
+
+                props: objList(prop), List of pointers to properties
+
+                terms:  objList(term),  List  of  pointers to terminals in the
+                cell
+
+              * The following command returns the available object and attrib-
+                utes for all types of blockages:
+
+                dbSchema *Blkg
+
+                ===============================================
+
+                pBlkg: Placement blockage (hard, soft, partial)
+
+                ===============================================
+
+                attr(settable):  enum(inst  pushdown   undefined),   Indicates
+                whether  the  blockage  has  been pushed down or is assoicated
+                with an instance.
+
+                name(settable): string, Name of partial blockage
+
+                objType: enum(bndry densityShape fPlan group  hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Placement blockage
+
+                shapes:  objList(densityShape  shape),  List  of  pointers  to
+                shapes (hard/soft) or densityShapes (partial)
+
+                type(settable):  enum(hard partial soft), Blockage type (hard,
+                soft, partial)
+
+                =======================
+
+                rBlkg: Routing blockage
+
+                =======================
+
+                attr(settable): enum(default exceptPGNet fills  inst  pushdown
+                slots), Routing blockage qualifier (inst, pushdown, etc.)
+
+                layer: obj(layer), Pointer to layer of blockage
+
+                name(settable): string, Name of routing blockage
+
+                objType:  enum(bndry  densityShape fPlan group hInst hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd prop ptnCell rBlkg row sWire shape term topCell  vCell  via
+                wire), Object type: Routing blockage
+
+                shapes: objList(shape), List of pointers to shapes that define
+                the blockage area
+
+              * The  following  commands  return all available objects and at-
+                tributes for a via in table format:
+
+                setDbGetMode -displayFormat table
+
+                dbSchema via
+
+                ================================================
+
+                via: Via cell (equivalent to LEF VIA or DEF VIA)
+
+                ================================================
+
+                botLayer                         | obj(layer), Pointer to bot-
+                tom routing layer
+
+                botRects                         | rect,  List  of  rectangles
+                (typically only one) on bottom layer
+
+                cutLayer | obj(layer), Pointer to cut layer
+
+                cutRects | rect, List of rectangles on cut layer
+
+                isDefault | bool, Indicates that the via is a default via (LEF
+                VIA DEFAULT)
+
+                isNonDefault                      |  bool,  Indicates that the
+                via is declared in a LEF NONDEFAULTRULE
+
+                name | string, Via name
+
+                objType | enum(bndry densityShape fPlan group hInst  hInstTerm
+                hNet hTerm head inst instTerm layer libCell net netGroup pBlkg
+                pd  prop  ptnCell rBlkg row sWire shape term topCell vCell via
+                wire), Object type: Via cell
+
+                topLayer | obj(layer), Pointer to top routing layer
+
+                topRects | rect, List of rectangles (typically  only  one)  on
+                top routing layer
+
+              * The  following  command  returns  clarifies that the attribute
+                name is varied on querying it as an object or attribute:
+
+                dbschema fPlan pBlkg
+
+                **ERROR: (IMPDBTCL-325): No pattern of attribute 'pBlkg' found
+                in the supported patterns. For help use  'dbSchema  fPlan'  or
+                'dbSchema fPlan *' to get list of all supported attributes.
+
+                Normally, the attribute name should be plural,as shown below:
+
+                 dbschema fPlan pBlkgs
+
+                fPlan: Floorplan header with pointers to floorplan objects
+
+                pBlkgs:  objList(pBlkg),  List of pointers to placement block-
+                ages dbschema pBlkg
+
+                pBlkg: Placement blockage (hard, soft, partial, macroOnly)
+
+                area: area, Area of the placement blockage as defined  by  the
+                LEF MACRO SIZE or OVERLAP information
+
+                 attr(settable):  enum(pushdown  undefined), Indicates whether
+                the blockage has been pushed down
+
+                boxes(settable): list(rect), List of  rectangles  that  define
+                the shape of placement blockage
+
+                density(settable):  float,  The  max placement density percent
+                allowed inside this pBlkg. It must be in the  range  of  5  to
+                100,  in steps of 5. It is only valid if the type = partial or
+                soft. For example, a partial placement percentage of  75  per-
+                cent  means  that up to 75 percent of placement density is al-
+                lowed in the area. If the type is not partial or soft, a value
+                of 0 is returned.
+
+                inst: obj(inst), Pointer to the instance  that  the  placement
+                blockage  is  associated  with  (equivalent to DEF BLOCKAGES +
+                COMPONENT)
+
+                isNoFlop(settable): bool, Indicate a partial placement  block-
+                age to prevent flops to be placed underneath.
+
+                isPushdown(settable):  bool, Indicates that placement blockage
+                has been pushed down from a higher level in the design hierar-
+                chy.
+
+                name(settable): string, Name of placement blockage
+
+                objType: enum(antennaData antennaModel bndry bump bus busGuide
+                busSinkGroup cellDensity densityShape fPlan foreign gCellGrid-
+                Def group guiLine guiPoly guiRect guiText hInst hInstTerm hNet
+                hTerm head inst instTerm io layer layerRule layerShape libCell
+                marker net netGroup pBlkg pWire  pd  pgInstTerm  pin  pinGroup
+                pinGuide  pkgComponent  pkgObject  prop ptn ptnCell ptnPinBlkg
+                rBlkg resistor resizeBlkg routeType row  rule  sViaInst  sWire
+                sdp  shape shapeVia site stackViaRule term text topCell track-
+                Def vCell vWire  via  viaInst  viaRuleGenerate  wire),  Object
+                type: Placement blockage
+
+                shapes:  objList(densityShape  shape),  List  of  pointers  to
+                shapes
+
+                type(settable): enum(hard macroOnly  partial  soft),  Blockage
+                type (hard, macroOnly, partial, soft)
+
+                           Fri Apr 04 01:25:37 2025            dbSchema(25.10)

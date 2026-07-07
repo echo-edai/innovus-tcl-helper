@@ -1,0 +1,51 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+lib_build_asynch_de_assert_arc(25.10)    lib_build_asynch_de_assert_arc(25.10)
+
+Name
+       lib_build_asynch_de_assert_arc
+
+Syntax
+       lib_build_asynch_de_assert_arc
+
+       {true | false}
+
+       Default: true
+
+       Controls  whether  input  to  output arcs from the preset or clear pins
+       transitioning to inactive state are included when the timing system  is
+       initialized.
+
+       When  the control signal to the preset or clear pins transitions to in-
+       active state (deassertion), in some cases, the output  pin  can  subse-
+       quently  transition.  In the case of edge-triggered flip-flops, the re-
+       moval timing check (a type of hold check) prevents the preset or  clear
+       from  deasserting too close to the active edge of the clock; therefore,
+       there is usually no chance of the output changing, and no need to  have
+       an additional arc to model this transition.
+
+       However,  in  the case of latches, it is possible that the removal con-
+       straint will still allow the signal to deassert when the  latch  is  in
+       transparent  mode. If the input state of the latch is not equivalent to
+       the state previously forced by the preset or clear, an  output  transi-
+       tion  results.  In  these  situations, an additional arc is required to
+       model this transition. A similar corner-case can result when both  pre-
+       set and clear signals are asserted, and one of them is subsequently re-
+       leased.
+
+       Note:  The  timing_enable_preset_clear_arcs  global variable has higher
+       priority than lib_build_asynch_de_assert_arc. If both of  these  global
+       variables  are  set  to true, then all the asynchronous arcs are recog-
+       nized.  If  timing_enable_preset_clear_arcs  is   set   to   true   and
+       lib_build_asynch_de_assert_arc  is  set  to false, then only the assert
+       asynchronous arcs are recognized.   If  timing_enable_preset_clear_arcs
+       is  set  to false, then both the assert and de-assert asynchronous arcs
+       will not be recognized.
+
+       Because the timing_enable_preset_clear_arcs and lib_build_asynch_de_as-
+       sert_arc global variables affect how the timing graph is built,  it  is
+       important  to set the desired state before performing any timing analy-
+       sis.
+
+       To set this global variable, use the set_global command.
+
+                           Fri Apr 04 01:2l5i:b3_7bu2i0l2d5_asynch_de_assert_arc(25.10)

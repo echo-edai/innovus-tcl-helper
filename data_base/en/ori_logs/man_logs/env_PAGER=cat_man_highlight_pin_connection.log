@@ -1,0 +1,192 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+highlight_pin_connection(25.10)                highlight_pin_connection(25.10)
+
+Name
+       highlight_pin_connection  - Highlights the full timing path or its seg-
+       ment in the text format while generating the sign-off timing report
+
+Syntax
+       highlight_pin_connection
+
+       [-help]
+
+        -from_pin <pin>[-mode {wire_segment | whole_net | flight_line}]
+
+        -to_pin <pin>[-with_arrow | -select_only]
+
+        [-net_color_index <index_value >| -select_only]
+
+       [-inst_color_index <index_value >| -select_only]
+
+       Highlights the full timing path or its segment in the text format while
+       generating the sign-off timing report. Use this command to quickly  de-
+       bug the timing path (timing point information) used in the tool.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each highlight_pin_connection parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man highlight_pin_connection
+
+       -from_pin <pin>
+              Specifies the name of the starting pin or IO port  to  be  high-
+              lighted.
+
+       -inst_color_index <index_value>
+              Specifies  the instance color index value (an integer value from
+              1 to 64) for the specified timing path.
+
+       -mode {wire_segment | whole_net | flight_line}
+              Specifies the draw mode between the starting and ending pins.
+
+       -net_color_index <index_value>
+              Specifies the net color index value (an integer value from 1  to
+              64) for the specified timing path.
+
+       -select_only
+              Selects only the specified path for highlighting.
+
+       -to_pin <pin>
+              Specifies  the  name  of  the  ending pin or IO port to be high-
+              lighted.
+
+       -with_arrow
+              Specifies whether or not the connection is defined with  an  ar-
+              row.
+
+Example
+       The  following command highlights a line drawn from the specified input
+       pin to output pin while generating the sign-off timing report:
+
+       highlight_pin_connection -from_pin ffa/Q -to_pin U7/A -mode flight_line
+
+       The timing report generated is shown below:
+
+       :::::::Timing Report:::::::::::
+
+         Startpoint: ffa (rising edge-triggered flip-flop clocked by CLK)
+
+         Endpoint: ffd (rising edge-triggered flip-flop clocked by CLK)
+
+         Path Group: CLK
+
+         Path Type: max
+
+         Point                        Fanout      Cap       Trans         Incr
+       Path
+
+         -----------------------------------------------------------------------------
+
+         clock   CLK   (rise  edge)                                       0.00
+       0.00
+
+         clock  network  delay   (propagated)                             4.90
+       4.90
+
+         ffa/CLK   (DTC10)                                   0.30         0.10
+       5.00 r
+
+         ffa/Q   (DTC10)                                     0.57         1.70
+       6.70 f
+
+         b (net)                       2     3.85
+
+         U7/A   (IV110)                                      0.57         0.00
+       6.70 f
+
+         U7/Y   (IV110)                                      1.32         0.84
+       7.55 r
+
+         QA (net)                     50    32.59
+
+         U12/A   (NA310)                                     3.02         4.00
+       11.55 r
+
+         U12/Y   (NA310)                                     2.47         4.04
+       15.58 f
+
+         n9 (net)                      3     8.87
+
+         U17/A   (NA211)                                     2.47         0.00
+       15.58 f
+
+         U17/Y   (NA211)                                    1.01          1.35
+       16.94 f
+
+         n14 (net)                     2     4.87
+
+         U23/A   (IV120)                                     1.01         0.00
+       16.94 f
+
+         U23/Y   (IV120)                                     0.51         0.37
+       17.30 r
+
+         n13 (net)                     1     2.59
+
+         U15/A2   (BF003)                                    0.51         0.00
+       17.31 r
+
+         U15/Y   (BF003)                                     0.88         0.81
+       18.12 f
+
+         n12 (net)                     1    15.61
+
+         U16/B2   (BF003)                                    3.88         3.00
+       21.12 f
+
+         U16/Y   (BF003)                                     2.46         0.99
+       22.11 r
+
+         n7 (net)                      1     2.61
+
+         U10/A    (AN220)                                     2.46        0.00
+       22.11 r
+
+         U10/Y   (AN220)                                     0.46         1.04
+       23.15 r
+
+         n15 (net)                     1     2.63
+
+         ffd/D   (DTN10)                                     0.46         0.00
+       23.15 r
+
+         data                           arrival                           time
+       23.15
+
+        clock   CLK   (rise   edge)                                      10.00
+       10.00
+
+         clock  network  delay   (propagated)                             3.50
+       13.50
+
+         ffd/CLK                                                       (DTN10)
+       13.50 r
+
+         library   setup   time                                          -1.33
+       12.17
+
+         data                           required                          time
+       12.17
+
+         -----------------------------------------------------------------------------
+
+         data                          required                           time
+       12.17
+
+         data                           arrival                           time
+       -23.15
+
+         -----------------------------------------------------------------------------
+
+         slack                                                      (VIOLATED)
+       -10.98
+
+       :::::::END:::::::::::
+
+       The  drawn layout along with the highlighted line is shown in the below
+       picture:
+
+                           Fri Apr 04 01:25:37 2h0i2g5hlight_pin_connection(25.10)

@@ -1,0 +1,45 @@
+{
+  "command": "setMaxTranPerFreq",
+  "is_cmd": true,
+  "summary": "为时序库中的现有最大转换时间语句添加一个基于频率的最大转换时间表。",
+  "description": "此命令用于向时序库中现有的max_transition语句添加一个基于频率的最大转换时间表。时序分析使用此表来检测违规，而optDesign则尝试修复这些违规。该命令应在加载时序库文件（即导入或恢复设计）之后的任何时间使用。时序引擎根据实例所连接的时钟域（如果存在多个，则是最快的时钟域）来推导其实例频率。对于时钟实例（即时钟树的一部分），使用实际的时钟频率。对于组合逻辑（例如触发器或连接到触发器输出的逻辑）中的实例，使用的频率等于相关时钟域频率的一半，因为触发器输出只能以输入时钟速率的一半进行翻转。时序分析直接从时序图中计算频率。使用dbSetNetFrequency命令将有效频率写入数据库中的相关网络。使用dbNetFrequency数据库命令检查任何给定网络的频率值。频率值以赫兹为单位存储在数据库中。通过dbSetNetFrequency数据库命令修改此值仅影响verifyACLimit。注意：此命令支持MMMC，并根据视图频率执行DRV计算。通过将全局变量set_global timing_report_drv_enable_frequency_per_view设置为true来启用此功能。",
+  "usage": "setMaxTranPerFreq [-help] [-lib libName] [-force] -freq {<freq1 ><freq2 freq3>...} -tran {<tran1 ><tran2 tran3>...} -pins {cell pin}",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个setMaxTranPerFreq参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lib",
+      "description": "仅修改指定库中匹配的单元引脚。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-force",
+      "description": "仅根据插值的-freq和-tran值计算最大转换时间，并忽略库中这些引脚先前定义的任何max_transition值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-freq",
+      "description": "指定至少两个频率值的列表，这些值必须大于或等于0。必须指定相同数量的-freq和-tran值，并且频率值必须按升序指定。类型：浮点数，以Hz为单位。",
+      "required": true,
+      "type": "float+"
+    },
+    {
+      "name": "-tran",
+      "description": "指定转换值的列表，这些值必须大于或等于0。必须指定相同数量的-freq和-tran值。软件使用表中的两个频率值，通过线性插值（或外推）为给定的频率值推导出最大转换时间限制。类型：浮点数，以ns为单位。",
+      "required": true,
+      "type": "float+"
+    },
+    {
+      "name": "-pins",
+      "description": "将新的转换约束添加到指定的单元和引脚集合中。可以指定输入、输出或双向引脚。单元或引脚名称中可以使用星号(*)通配符。如果已存在与引脚关联的表，则用新表替换。",
+      "required": true,
+      "type": "string+"
+    }
+  ]
+}

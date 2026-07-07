@@ -1,0 +1,278 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+editDeselect(25.10)                                        editDeselect(25.10)
+
+Name
+       editDeselect - Deselects wires and vias based on specified parameters
+
+Syntax
+       editDeselect
+
+       [-help]
+
+       [-area {<x1><y1><x2><y2>}]
+
+       [-direction {H | V | 45 | 135}]
+
+       [-floating_via]
+
+       [-layer <list_of_layers>]
+
+       [-nets <net>*]
+
+       [-physical_pin_only]
+
+       [-regular_wire_with_drc]
+
+       [-shape {RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE PADRING
+
+                BLOCKRING FILLWIRE FILLWIREOPC DRCFILL None}]
+
+       [-shield]
+
+       [-shield_only]
+
+       [-status {COVER FIXED NOSHIELD ROUTED SHIELD UNKNOWN}]
+
+       [-subclass <sublass_name>]
+
+       [-type {Regular Special Patch}]
+
+       [-use {CLOCK POWER SIGNAL}]
+
+       [-via_cell <cell_name_list>]
+
+       [-with_edit_flag {0 | 1}]
+
+       [-object_type {Wire Via} ]
+
+       [-from_pin <pin_name> -to_pin <pin_name>]
+
+       Deselects  wires  and vias based on specified parameters. Use this com-
+       mand when nets are selected.
+
+       You can use this command to deselect nets by property. For example,  to
+       delete all regular nets except clock nets, select all regular nets with
+       editSelect,  deselect the clock nets with this command, then delete the
+       selected nets with editDelete.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each editDeselect parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man editDeselect
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the coordinates for the area from  which  to  deselect
+              wires and vias.
+
+       -direction {H | V | 45 | 135}
+              Specifies the orientation of the wires to deselect.
+
+              Default:  If  you do not specify this parameter, deselects wires
+              in any orientation.
+
+              *
+
+                H: Specifies that horizontal wires are to be deselected.
+
+              *
+
+                V: Specifies that vertical wires are to be deselected.
+
+              * 45: Specifies that 45-degree wires are to be deselected.
+
+              * 135: Specifies that 135-degree wires are to be deselected.
+
+       -floating_via
+              Specifies that only floating vias are to be deselected.  A  via,
+              or  a  stack of vias, is floating, if it is not connected to an-
+              other object, wire, pin, or via, on either  its  top  or  bottom
+              metal layer or on both these layers.
+
+       -from_pin <pin_name>
+              Specifies  the  name of the starting pin of the wire to be dese-
+              lected.
+
+              The starting pin you specify should be connected to the same net
+              as the ending pin specified with -to_pin.  If  they  connect  to
+              different nets, the tool reports an error.
+
+              Note:  Deselection  of wires between specified pins is supported
+              only for signal and clock nets.
+
+       -layer <list_of_layers>
+              Specifies the layers from which to deselect wires and vias. This
+              option supports backside and Through Silicon Via (TSV) layers as
+              well.
+
+              If you are specifying multiple  layers,  enclose  the  names  in
+              braces.
+
+              Default:  If  you do not specify this parameter, deselects wires
+              and vias from all layers.
+
+       -nets <net>*
+              Specifies the net names from which to deselect wires and vias.
+
+              Note: You can use wildcard values in this field. For example, if
+              you specify V*, deselects wires and vias from nets VDD and VSS.
+
+       -object_type {Wire Via}
+              Specifies whether wires or vias or both should be deselected. If
+              the parameter is not specified, only wires are deselected.
+
+              Default: Wire
+
+       -physical_pin_only
+              Specifies that physical pins are to be deselected.  By  default,
+              editDeselect does not deselect physical pins.
+
+              You  can  use the -physical_pin_only parameter along with -area,
+              -layer, or -nets to deselect the physical pins in the  specified
+              area, layer, or net, respectively.
+
+       -regular_wire_with_drc
+              Deselects regular wires with violation markers.
+
+       -shape {RING STRIPE FOLLOWPIN IOWIRE COREWIRE BLOCKWIRE PADRING BLOCK-
+       RING FILLWIRE FILLWIREOPC DRCFILL None}
+              Specifies the shapes of the wires and vias to be deselected. Use
+              all  upper-case  letters for the shapes. If you specify multiple
+              shapes, enclose the list of shapes in braces. For shape  defini-
+              tions,  see  Shapes,  in the "DEF Syntax" chapter of the LEF/DEF
+              Language Reference.
+
+              Default: If you do not specify this parameter,  deselects  wires
+              and vias of all shapes.
+
+       -shield
+              Deselects  the  wires  and  vias  of the nets specified with the
+              -nets parameter, along with the wires  and  vias  shielding  the
+              specified nets.
+
+              Note: This parameter cannot be used with -shield_only.
+
+       -shield_only
+              Deselects  only the shield wires associated with the nets speci-
+              fied using the -nets parameter. The signal nets  being  shielded
+              remain selected.
+
+              Note: This parameter cannot be used with -shield.
+
+       -status {COVER FIXED NOSHIELD ROUTED SHIELD UNKNOWN}
+              Specifies the status of the wires and vias to be deselected. Use
+              all  upper-case letters for the status. If you specify more than
+              one status, enclose the status list in curly braces.
+
+              Note: If you select -type Special -status NOSHIELD or -type Sig-
+              nal -status SHIELD the software generates an error message.
+
+       -subclass <sublass_name>
+              Specifies the subclass name of the wires and vias  to  be  dese-
+              lected. Use this parameter if you want to deselect wires or vias
+              belonging  to  a  specific  subclass. Here, <subclass_name> is a
+              user-defined attribute that has been  previously  defined  using
+              the  -uda parameter of the addSplitPowerVia, addRing, addStripe,
+              or sroute command.
+
+              For wires, use this parameter if you want to deselect or  delete
+              rings, stripes, or other wires belonging to a specific subclass.
+              Only special wire is supported by this option.
+
+              Note: You can use wildcards in <subclass_name>.
+
+       -to_pin <pin_name>
+              Specifies  the  name  of  the ending pin of the wire to be dese-
+              lected.
+
+              The ending pin you specify should be connected to the  same  net
+              as the starting pin specified with -from_pin. If they connect to
+              different nets, the tool reports an error. In addition, the from
+              and to pins you specify should be connected to the same wire. If
+              there  there are more than one wire or via between the specified
+              starting and ending pins, the command is not  able  to  deselect
+              the wire path and returns an error.
+
+              The  -from_pin  and  -to_pin parameters are compatible with only
+              the -direction, -layer, -object_type, and -status options of the
+              editDeselect command. If you use -from_pin and -to_pin with  any
+              other editDeselect parameters, the tool returns an error.
+
+              Note:  Deselection  of wires between specified pins is supported
+              only for signal and clock nets.
+
+       -type {Regular Special Patch}
+              Specifies whether to deselect regular wires  and  vias,  special
+              wires and vias, or patch wires.
+
+              Note: If you specify Regular, you must omit the -shape parameter
+              or specify -shape None.
+
+       -use {CLOCK POWER SIGNAL}
+              Specifies  whether  to  deselect  only  CLOCK  wires/vias, POWER
+              wires, or SIGNAL wires.
+
+       -via_cell <cell_name_list>
+              Specifies the via cells of the vias to be  deselected.  You  can
+              use wildcards while specifying via cell names. If you are speci-
+              fying multiple cell names, enclose them in braces.
+
+       -with_edit_flag {0 | 1}
+              Deselects  all  modified  wires and vias, that is wires and vias
+              with value 1 for the isEdit property on the net.
+
+              Notes
+
+              * As the isEdit property is added on  the  whole  net,  all  the
+                wires  and  vias on the net with isEdit value set to 1 will be
+                deselected.
+
+              * The isEdit property is used to flag nets with  modified  wires
+                and vias. This is useful when evaluating how many objects need
+                to  be  modified  for  fixing DRC violations and then deciding
+                whether to fix the violations manually or through ECO routing.
+                The  isEdit  property  is   controlled   through   the   -cre-
+                ate_is_edit_flag  parameter  of  setEditMode. By default, this
+                parameter is set to 0. If you set the value of this  parameter
+                to  1,  the isEdit property is set to 1 for nets with modified
+                wires or vias.
+
+Examples
+              * The following command deselects all  horizontal  fillwires  on
+                the METAL1 layer:
+
+                editDeselect -layers METAL1 -direction H -shape FILLWIRE
+
+              * The following command deselects all vias:
+
+                editDeselect -object_type Via
+
+              * The following command deselects all wires:
+
+                editDeselect
+
+              * The following command deselects all wires and vias:
+
+                editDeselect -object_type {Wire Via}
+
+Related Information
+              * editSelect
+
+              * getEditMode
+
+              * redo
+
+              * setEditMode
+
+              * undo
+
+              * Editing Wires chapter in the User Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Wire section
+
+                           Fri Apr 04 01:25:37 2025        editDeselect(25.10)

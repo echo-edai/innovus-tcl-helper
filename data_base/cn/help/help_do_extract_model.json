@@ -1,0 +1,183 @@
+{
+  "command": "do_extract_model",
+  "is_cmd": true,
+  "summary": "提取时序模型命令",
+  "description": "该命令用于从当前设计或指定视图中提取时序模型（ETM），并支持多种格式输出。它允许用户配置提取精度、验证选项、输入输出条件（如转换时间、负载）以及生成相关的验证文件和Verilog封装文件。",
+  "usage": "do_extract_model [-help] <model_filename> [-abs_tol_val <float>] [-abs_tol_val_optimistic <float>] [-abs_tol_val_pessimistic <float>] [-assertions <constraint filename>] [-cell_name <cell_name>] [-clock_slews {<clk_slew1 clk_slew2>...}] [-format <string>] [-gain <integer>] [-include_aocv_weights] [-include_power] [-input_slews {<input_slew1 input_slew2>...}] [-lib_name <lib_name>] [-max_num_loads <value>] [-max_num_slews <value>] [-output_loads {<output_load1 output_load2>...}] [-per_tol_val <float>] [-per_tol_val_optimistic <float>] [-per_tol_val_pessimistic <float>] [-pg] [-precision <integer>] [-resolution <float>] [-tolerance <float>] [-validate <string>] [-verilog_shell_file <filename>] [-verilog_shell_module <top_module_name>] [-view <string>] [-check]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<model_filename>",
+      "description": "指定输出模型文件的名称",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-abs_tol_val",
+      "description": "指定验证提取的ETM时使用的绝对容差值（单位：ns/ps）。仅在启用'-validate'时使用。默认值为3ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-abs_tol_val_optimistic",
+      "description": "指定标记乐观路径失败的绝对容差限值。仅在启用'-validate'时使用。默认值为15ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-abs_tol_val_pessimistic",
+      "description": "指定标记悲观路径失败的绝对容差限值。仅在启用'-validate'时使用。默认值为15ps。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-assertions",
+      "description": "导出用于模型验证流程的约束文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_name",
+      "description": "指定时序模型中使用的单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-clock_slews",
+      "description": "指定所有时钟引脚使用的转换时间范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-format",
+      "description": "指定提取模型的格式，如tlf、dotlib、syntech。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gain",
+      "description": "表示移除引脚时延迟弧数量的增加量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-include_aocv_weights",
+      "description": "在单独的延迟弧上写入阶段权重。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-include_power",
+      "description": "写入模块功耗信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-input_slews",
+      "description": "指定所有数据输入端口使用的转换时间范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lib_name",
+      "description": "指定时序模型中使用的库名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_num_loads",
+      "description": "指定输出负载值的最大数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_num_slews",
+      "description": "指定输入转换时间或时钟转换时间的最大数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-output_loads",
+      "description": "指定所有输出端口使用的负载值范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-per_tol_val",
+      "description": "指定验证提取的ETM时使用的百分比容差值。仅在启用'-validate'时使用。默认值为3%。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-per_tol_val_optimistic",
+      "description": "指定标记乐观路径失败的百分比容差限值。仅在启用'-validate'时使用。默认值为3%。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-per_tol_val_pessimistic",
+      "description": "指定标记悲观路径失败的百分比容差限值。仅在启用'-validate'时使用。默认值为3%。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-pg",
+      "description": "写入引脚的电源地信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-precision",
+      "description": "指定时序模型使用的浮点数精度。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-resolution",
+      "description": "指定提取过程中可忽略的延迟差异量级。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-tolerance",
+      "description": "以百分比形式指定提取器的精度级别。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-validate",
+      "description": "启用对生成的ETM的验证，并显示验证结束时的失败数量。必须使用此选项指定验证目录的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verilog_shell_file",
+      "description": "生成一个实例化时序模型的Verilog封装文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verilog_shell_module",
+      "description": "指定Verilog封装文件的顶层模块名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-view",
+      "description": "指定需要提取模型的视图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check",
+      "description": "使用Valus检查生成的ETM库。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

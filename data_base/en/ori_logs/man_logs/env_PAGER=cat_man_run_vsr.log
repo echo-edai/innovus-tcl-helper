@@ -1,0 +1,208 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+run_vsr(25.10)                                                  run_vsr(25.10)
+
+Name
+       run_vsr - Launches the Virtuoso Space-based Router (VSR) from Innovustm
+       Implementation System
+
+Syntax
+       run_vsr
+
+        [-help]
+
+        [-log_file <fileName>]
+
+        [-no_taper_to_pinwidth]
+
+        [-post_load_script <scriptname>]
+
+        [-pre_load_script <scriptname>]
+
+        [-remove_existing_route]
+
+        [-route_type_order {bus diffPair match nets shield}]
+
+       [-run_VSR_Script <scriptname>]
+
+        [-share_shields]
+
+        [-sel_net <list_of_selected_nets> | -incl_net_type {bus diffPair match
+       nets shield} | -nets_file <fileName>]
+
+       Launches the Virtuoso Space-based Router (VSR) from Innovustm Implemen-
+       tation  System.  It works on OpenAccess design as well as restored non-
+       OpenAccess designs. It routes the nets  specified  with  the  -sel_net,
+       -nets_file,  or  -incl_net_type option. If the -incl_net_type option is
+       used, the nets are routed in the following order: diffPair, match, bus,
+       nets, and shield. To invoke this wrapper, make sure Virtuoso is  avail-
+       able in your path.
+
+       Before running the run_vsr command, set the following:
+
+       setOaxMode -compressLevel 1
+
+       Notes
+
+              * Integration  constraints  are used to convey the design intent
+                in a mixed-signal design. These constraints are fully interop-
+                erable between the digital and custom environments.
+
+              *
+
+                If you run run_vsr on an abstract inferred  from  layout,  you
+                may see the following WARNING message:
+
+                "The current database uses quick abstract inference and should
+                be used only for floorplanning and not for routing purposes."
+
+       For  more  information on using run_vsr, see the Routing Constraint In-
+       teroperability chapter in the Mixed Signal Interoperability Guide.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each run_vsr parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command
+
+               man run_vsr
+
+       -incl_net_type {bus diffPair match nets shield}
+              Specifies the list of valid net types for VSR to route.
+
+              Note:  The  -sel_net,  -nets_file, and -incl_net_type parameters
+              are mutually exclusive. Do not specify these parameters  at  the
+              same time.
+
+       -log_file <fileName>
+              Specifies the file name for writing the routing report.
+
+       -nets_file <fileName>
+              Specifies the name of the file listing the nets to be routed.
+
+              Note:  The  -sel_net,  -nets_file, and -incl_net_type parameters
+              are mutually exclusive. Do not specify these parameters  at  the
+              same time.
+
+       -no_taper_to_pinwidth
+              Does  not perform tapering based on the pin width. For instance,
+              if the rule applied on a mixed signal net is  NDR1  whose  width
+              exceeds the pin width for a particular layer, then VSR automati-
+              cally  tapers the wire to match the pin width. If this option is
+              specified, then tapering is not done.
+
+       -post_load_script <scriptname>
+              Specifies the name of the script to be  executed  by  VSR  after
+              loading the design.
+
+       -pre_load_script <scriptname>
+              Specifies  the  name  of the script to be executed by VSR before
+              loading the design.
+
+       -remove_existing_route
+              Deletes the nets (fixed, normal), including shield, and  exclud-
+              ing  power  nets,  which are specified by the -sel_net parameter
+              before routing
+
+       -route_type_order {bus diffPair match nets shield}
+              Specifies the list of valid constraint types  in  the  preferred
+              routing order.
+
+       -run_VSR_Script <scriptname>
+              Specifies  a  user-defined  script  to  be run by VSR for custom
+              routing. If this option is specified, the router skips all  pre-
+              setting  from VSR and routes the design by sourcing the complete
+              custom script as provided.
+
+       -share_shields
+              Shares the shielded nets. Using this parameter, you  can  selec-
+              tively specify the list of shared shielded nets.
+
+       -sel_net <list_of_selected_nets>
+              Specifies the list of nets that have to be routed.
+
+Using Scripts and Environmental Variables with run_vsr
+       The  run_vsr  command  in  Innovus supports a limited set of options to
+       route the analog/mixed-signal nets. To have more control of the VSR en-
+       gine, you can set additional settings through the .cdsenv file.
+
+       Settings through .cdsenv
+
+       Here are two examples of how you can use .cdsenv  settings  to  control
+       VSR:
+
+              * To force VSR to route on-grid:
+
+                layout routeUseGrid cyclic "Routing"
+
+              * To force VSR to use the rules from the specified route spec:
+
+                layout wireConstraintGroup string "LEFDefaultRouteSpec"
+
+       If  you  set  the above settings in the .cdsenv file before running the
+       run_vsr command, Virtuoso initializes them before calling the  VSR  en-
+       gine.
+
+       In  addition  to the settings through .cdsenv file, the run_vsr command
+       is  enhanced  to  pass  additional   variables   or   scripts   through
+       -pre_load_script and -post_load_script.
+
+       Preloadscript
+
+       Usage of settings through -pre_load_script is only for expert VSR users
+       and generally not recommended.
+
+       Postloadscript
+
+       Example:
+
+              * To  enable VSR to use the custom vias and not generated or de-
+                rived vias:
+
+                setvar db.enable_create_derived_vias false
+
+              * To enable VSR to connect the wires to the center of the pin
+
+                setvar droute.snap_to_pin_center true
+
+       You can set the above environmental variables in a  script  and  enable
+       them through the following command:
+
+       run_vsr -sel_net { neta .....} -post_load_script scriptname...
+
+       For  more  information on the environmental variables which can be set,
+       refer to the following documentation:
+
+              * "Environment Variables" chapter  in  the  Cadence  Space-based
+                Router and Chip Optimizer Command Reference
+
+       Note: Consult Cadence for the best use of these variables to obtain the
+       desired results.
+
+Examples
+              * The following command routes the bus nets using VSR:
+
+                run_vsr  -sel_net  {DATA[0]  DATA[1]  DATA[2]  DATA[3] DATA[4]
+                DATA[5] DATA[6] DATA[7]}
+
+              * The following command routes the given  net  lbk_bstart  using
+                mixed-signal constraint, if any constraint has been applied to
+                this net which will be taken from OpenAccess database:
+
+                run_vsr -sel_net lbk_bstart
+
+              * The following command routes all the nets which have diffPair,
+                matchPair  and  then  net class in the following order of con-
+                straint types:
+
+                run_vsr -incl_net_type {diffPair match nets}
+
+Related Information
+              * Routing Constraint Interoperability chapter in the Mixed  Sig-
+                nal Interoperability Guide
+
+              * Tools Menu chapter in the Menu Reference
+
+                * Mixed Signal -> Run VSR
+
+                           Fri Apr 04 01:25:37 2025             run_vsr(25.10)

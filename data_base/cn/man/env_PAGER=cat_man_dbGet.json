@@ -1,0 +1,105 @@
+{
+  "command": "dbGet",
+  "is_cmd": true,
+  "summary": "返回设计中指定数据库对象的对象和属性信息",
+  "description": "dbGet 命令用于查询设计数据库中指定对象的详细信息及其属性。该命令以一个对象或对象列表作为起点，使用点号（.）来遍历相关的其他对象或访问属性。通过添加更多的点号可以继续遍历数据库模式。例如，命令 `dbGet top.insts.cell.name` 可以返回设计中所有实例的主单元名称。该命令不区分大小写，空字段返回 0x0 值。为避免工具崩溃，请勿复制 dbGet 命令输出的指针并粘贴到其他命令作为输入，或在不同会话间复制指针。",
+  "usage": "dbGet [-help] [. <objType> ]...[. <attrName> | .? | .?? | .?h] [-d] [-e] [expression] [-i <num>] [-l] {<obj> | <objList> | head | top | selected} [-p <num>] [<pattern>] [-regexp] [-u] [-v]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 dbGet 参数类型和默认信息的简要描述",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": ".<objType>",
+      "description": "指定要查询的对象类型",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": ".?",
+      "description": "返回对象和属性名称（不含值）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": ".??",
+      "description": "返回对象和属性及其值",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": ".?h",
+      "description": "返回对象和属性的详细帮助信息，包括简短描述、类型、合法枚举值以及是否可编辑",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "以数据库整数形式返回值（默认以用户单位的浮点数形式返回）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-e",
+      "description": "避免打印 NULL (0x0) 指针和结果（布尔类型可选选项，影响所有类型的输出）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-i <num>",
+      "description": "从输出列表中选择第 <num> 个元素（从 0 开始计数），并减少 box 和 pt 类型属性的起始 '{' 和结束 '}'",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-l",
+      "description": "返回结果时自动换行",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-p <num>",
+      "description": "指定查询时回溯遍历指定对象的层级数（例如 -p1 回溯一级，-p2 回溯两级）",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-regexp",
+      "description": "使用正则表达式模式匹配（Tcl regexp 命令），默认使用简单通配符模式匹配",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-u",
+      "description": "从查询结果中移除重复对象，使结果列表仅包含唯一条目",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-v",
+      "description": "返回所有不匹配模式/表达式的属性，或反转模式/表达式匹配的结果（类似于 UNIX 中的 grep -v 选项）",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<objList> | head | top | selected",
+      "description": "指定查询的起点：objList（一个或多个对象指针）、head（设计的根或头部指针）、top（设计中顶层单元的指针）或 selected（选中的对象）",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "<pattern>",
+      "description": "指定用于匹配对象或属性名称或属性值的字符串表达式（匹配名称时不区分大小写，匹配属性值（字符串或枚举）时区分大小写）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<expression>",
+      "description": "指定一个 Tcl 表达式，其中可以访问和利用属性的值以及对象的值，进行 Tcl \"expr\" 风格的比较（注意：只能访问待测试对象的子属性和对象，不允许额外的遍历）",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

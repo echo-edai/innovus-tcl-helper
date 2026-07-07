@@ -1,0 +1,557 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+check_pg_library(25.10)                                check_pg_library(25.10)
+
+Name
+       check_pg_library - Specifies to perform a comprehensive check of power-
+       grid views (PGV) to be used in rail analysis
+
+Syntax
+       check_pg_library
+
+       [-help]
+
+       <power_library_paths>
+
+       [-cell_list_file<file>]
+
+       [-check_compatibility {<PGV1 PGV2 ...>} | -lef_consistency]
+
+       [-check_parameters]
+
+       [-integrity_check]
+
+       [-output <file>]
+
+       [-list]
+
+       [-report]
+
+       [-rule_file <file>]
+
+       [-skip_signal_net_check {true | false}]
+
+       [-skip_layer_list_file <filename>]
+
+       [-summary]
+
+       [-tap_node_text_dump]
+
+       [-tech_layers]
+
+       [-total_currents]
+
+       [-report_detail_multiple_voltage_cap]
+
+       [-command_dump]
+
+       [-metal_density_map]
+
+       Specifies to perform a comprehensive check of power-grid views (PGV) to
+       be used in rail analysis. These checks include:
+
+              * Verify that all the PGV views exist: Early/IR/EM
+
+              * Report the dynamic PWL and static current
+
+              * Perform  a compatibility check on version, layermap and resis-
+                tivity parameters
+
+              * Check any missing information, such as  temperature,  qrcTech-
+                File location, and so on.
+
+Parameters
+       -help  Outputs the command usage.
+
+       <power_library_path>
+              Default: None
+
+              (Mandatory)  Specifies  the  absolute  path to the power library
+              (.cl) file. You can run multiple power library  files  (.cl)  at
+              the same time.
+
+       -cell_list_file<file>
+              Default: None
+
+              Specifies  a file containing the list of cells for which the LEF
+              consistency checks will be done. This parameter  allows  you  to
+              perform the consistency checks only for the user-defined cells.
+
+              The format of the input file is:
+
+              CELL1
+
+              CELL2
+
+              CELL3
+
+       -check_compatibility {<PGV1 PGV2 ...}>
+              Default: None
+
+              Checks  for  compatibility between the specified cell libraries.
+              It checks whether the following parameters are the same for  the
+              libraries that are to be merged:
+
+              * Time Units
+
+              * Capacitance Units
+
+              * Layout Scale Factor
+
+              * Manufacturing Grid
+
+              If  one  or more of these parameters are not the same, a warning
+              message appears stating that the libraries  are  not  compatible
+              and  cannot be merged. It also specifies the parameters that are
+              different.
+
+              Based on the above electrical/physical parameter check,  a  com-
+              patibility  report (compatibility.report) with pass/fail is gen-
+              erated. Fail implies that the library is not compatible and can-
+              not be used in Voltus rail analysis.
+
+       -check_parameters
+              Default: None
+
+              Checks for the following electrical parameters of the  specified
+              cell libraries:
+
+              * CINT_MIN and CINT_MAX: Intrinsic device capacitance
+
+              * CG_MIN and CG_MAX: Grid capacitance
+
+              * RON_MIN and RON_MAX: On-resistance for powergates
+
+              * IDSAT_MIN and IDSAT_MAX: Saturation current for powergates
+
+              * ILEAK_MIN and ILEAK_MAX: Leakage current for powergates
+
+              * IAVG_MIN and IAVG_MAX: Static current
+
+              * IPEAK_MIN and IPEAK_MAX: Dynamic peak current
+
+              * ESR_MIN and ESR_MAX: Equivalent series resistance
+
+              For  powergates,  -check_parameters will check the Vds-Ids table
+              for the correct trend. It checks whether:
+
+              * for a given Vgs, Ids increases with Vds
+
+              * for a given Vds, Ids increases with Vgs
+
+              where;
+
+              Vgs is voltage across gate and source
+
+              Vds is voltage across drain and source
+
+              Ids is current from drain to source (of a transistor)
+
+              This parameter allows you to check the powergate parameters  for
+              all the voltages of a multi-voltage characterized powergate PGV.
+
+       -command_dump
+              Default: None
+
+              Specifies to print the settings used during PGV characterization
+              to a text file called command_list.txt.
+
+              This parameter allows you to determine the user-specified or de-
+              fault  settings  used  during  PGV  generation for the specified
+              power library (.cl).
+
+       -integrity_check
+              Specifies to load all the views from a power-grid library to en-
+              sure that the library contains the required data. This parameter
+              checks if there are any missing files or views, and that the PGV
+              is usable in rail analysis.
+
+       -lef_consistency
+              Default: None
+
+              Checks for LEF consistency of the cells in  the  specified  cell
+              libraries.
+
+              It  reads the LEF and PGV files, and compares the given LEF file
+              with the LEF file used in PGV generation.
+
+       -list  Default: None
+
+              Specifies to list the PGVs and the cells in each PGV. The  para-
+              meter  allows  you to determine the name of the PGV library that
+              contains a specific cell and determine whether a cell  is  there
+              in multiple libraries.
+
+              The format of the output file is:
+
+              PGV Library: <Number of PGV libraries>
+
+              <Lib_1> <TOOL VERSION> <PGV VERSION> <GENERATE_DATE> <Path>
+
+              <Lib_2> <TOOL VERSION> <PGV VERSION> <GENERATE_DATE> <Path>
+
+              Duplicated Cells: <Number of cells in multiple libraries>
+
+              <CELLNAME> <Lib_1 Lib_2 Lib_3>
+
+              Cell List: <Number of cells in a library>
+
+              <CELLNAME> <LIB#>
+
+       -metal_density_map
+              Default: None
+
+              Generates   the   metal   density   map   report   file  (<<pgv-
+              name>>.metal_density) in the PGV  output  directory.  This  file
+              contains  information  about  the macro size, number of tiles in
+              the x and y direction, metal layer ID,  layer  name,  and  metal
+              density values for each tile.
+
+              Usage Guidelines:
+
+              This  parameter  is used with the -calculate_metal_layer_density
+              parameter of the set_pg_library_mode command.
+
+       -output <dir_name>
+              Default: The default is the current working directory.
+
+              Specifies the name of the output directory in which  the  power-
+              grid library report is created.
+
+       -report
+              Default: None
+
+              Specifies  to generate the power-grid library report. The report
+              name is <<pgvname>>.report.
+
+       -report_detail_multiple_voltage_cap
+              Default: None
+
+              Specifies to generate a voltage-dependent capacitance table that
+              contains the detailed capacitance values of the given power-grid
+              library.  The  capacitance   table   file   is   called   <<pgv-
+              name>>.cap_table.
+
+              Usage Guidelines:
+
+              This parameter is used with the -enable_multi_voltage_cap_gener-
+              ation parameter of the set_pg_library_mode command.
+
+       -rule_file <file>
+              Default: None
+
+              Specifies  the  rule file name used for parameter checking. This
+              file contains the list of electrical parameters to be checked.
+
+              File Format:
+
+              CINT_MIN <<min cap value>>
+
+              CINT_MAX <<max cap value>>
+
+              RON_MIN <<value>>
+
+              RON_MAX <<value>>
+
+              IDSAT_MIN <<value>>
+
+              IDSAT_MAX <<value>>
+
+              ILEAK_MIN <<value>>
+
+              ILEAK_MAX <<value>>
+
+              IPEAK_MIN <<value>>
+
+              IPEAK_MAX <<value>>
+
+              IAVG_MIN <<value>>
+
+              IAVG_MAX <<value>>
+
+              ESR_MIN <<value>>
+
+              ESR_MAX <<value>>
+
+              Usage Guidelines:
+
+               This parameter must be specified with the -check_parameters pa-
+              rameter.
+
+       -skip_layer_list_file <filename>
+              Default: None
+
+              Specifies the name of a file containing a list of layers to  ig-
+              nore while checking PGV and LEF compatibility. Its format is one
+              layer per line.
+
+              Usage Guidelines:
+
+               This  parameter must be specified with the -check_compatibility
+              parameter.
+
+       -skip_signal_net_check {true | false}
+              Default: false
+
+              Specifies to skip LEF consistency checks for signal  nets.  This
+              forces  skipping of the signal pin checks when performing a com-
+              prehensive check of power-grid views to be used in  rail  analy-
+              sis.  The  -skip_signal_net_check  parameter  can be used if you
+              want to check LEF consistency of only the power and ground pins.
+
+       -summary
+              Default: None
+
+              Specifies to generate a detailed report of the library  contents
+              for the specified cells that can be used for debugging purpose.
+
+       -tap_node_text_dump
+              Default: None
+
+              Specifies  to generate a detailed report of the tap current dis-
+              tribution for each interface node. The report name is tapNodeDe-
+              tailReport.txt. It lists both the peak and average current  val-
+              ues,  capacitance  value, and the number of taps for each inter-
+              face node.
+
+       -tech_layers
+              Default: None
+
+              Specifies to report technology layer information and layer  map-
+              ping.
+
+       -total_currents
+              Default: None
+
+              Specifies  to  report  the  static current for each power/ground
+              net, and dynamic PWL for each mode. For each  mode,  it  reports
+              the peak and average current, and the number of points for power
+              supply nets.
+
+              When    specified,    the   total   current   is   reported   in
+              <<lib_name>>.total_current for each library.
+
+Examples
+              * The  following  command  creates  a  report  for  the  library
+                std_cells.cl:
+
+                check_pg_library std_cells_fast/std_cells_fast.cl -report
+
+              * The following command checks for LEF consistency:
+
+                read_lib -lef ddk.0.lef
+
+                read_lib -lef ddk.1.lef
+
+                check_pg_library -lef_consistency \
+
+                "/../library1.cl\
+
+                /../library2.cl"
+
+              * The  following command displays the list of layers (defined in
+                the technology file) on stdout:
+
+                check_pg_library   -tech_layers   ./check_param/powergate/std-
+                cells.cl
+
+              * The  following  command  checks  for compatibility between the
+                specified cell libraries and generates a compatibility  report
+                (compatibility.report) in the output directory:
+
+                check_pg_library      -output     out     -check_compatibility
+                {/../lib1.cl /../lib2.cl}
+
+              * The following command specifies to list the cells  correspond-
+                ing to the specified libraries, pgv1.cl and pgv2.cl:
+
+                check_pg_library -list {/../pgv1.cl  /../pgv2.cl}
+
+              *
+
+                The  following command checks for electrical parameters of the
+                stdcells.cl library:
+
+                check_pg_library -output OUT -check_parameters ./stdcells.cl
+
+                The following is a sample output of this command:
+
+                           PARAM                VALUE                    RANGE
+                PASS/FAIL
+
+                Cell: Cell1
+
+                   Net VDDG
+
+                        Device Cap    4.50e-14    (1.00e-18,1.00e-11)    PASS
+
+                   Net VSS
+
+                        Device Cap    2.61e-14    (1.00e-18,1.00e-11)    PASS
+
+                   Net VDD
+
+                        Device Cap    2.13e-14    (1.00e-18,1.00e-11)    PASS
+
+                   Power Gate SLEEP
+
+                             Ron      1.84e+01    (2.00e+01,1.00e+03)    FAIL
+
+                             Ileak    7.01e-08    (1.00e-15,1.00e-06)    PASS
+
+                             Idsat    3.36e-02    (1.00e-09,1.00e-02)    FAIL
+
+                   Trend Checks:
+
+                       Ron Trend   : PASS
+
+                       Idsat Trend  : PASS
+
+                       Ileak Trend : PASS
+
+              * The  following  command  reports  the  static current for each
+                power/ground net:
+
+                check_pg_library -total_currents /../pg.cl
+
+                The following is a sample output of this command:
+
+                Net VSS
+
+                Static current = -0.00021181
+
+                Net VDD
+
+                Static current = 0.000211809
+
+                MODE1
+
+                Trigger Condition: ( !CEN & !WEN )
+
+                Net VDD
+
+                    Peak = 0.0138308
+
+                    Avg = 0.000276053
+
+                    Number of points 190
+
+                Net VSS
+
+                    Peak = -0.0166879
+
+                    Avg = -0.000300184
+
+                    Number of points 190
+
+                MODE2...
+
+              * The following command generates a  capacitance  table  (power-
+                gate_stdcells.cap_table)  that  contains  the detailed capaci-
+                tance values of the powergate_stdcells.cl library:
+
+                check_pg_library -report_detail_multiple_voltage_cap ../power-
+                gate_stdcells.cl
+
+                The following is a snippet of the capacitance table file (pow-
+                ergate_stdcells.cap_table):
+
+                ==========================================================================
+
+                CellName    NetName      Voltage       Capacitance
+
+                --------------------------------------------------------------------------
+
+                powercell    vccm        0.1000        4.586e-14
+
+                powercell    vccm        0.2825        4.102e-14
+
+              * The following command specifies to output  the  settings  used
+                during  generation of macros_pll.cl to a text file called com-
+                mand_list.txt:
+
+                check_pg_library -command_dump macro_pgv/macros_pll.cl
+
+                The following is a  sample  snippet  of  the  command_list.txt
+                file:
+
+                temperature 25
+
+                spice_subckts /../spice.sp
+
+                spice_models /../spectre_load.sp
+
+                extraction_tech_file /../tech.tch
+
+                gds_files /../file1.gds
+
+                stop@via VIA_1
+
+                spice_subckts_xyscaling 1000
+
+                use_powergate_data_from_lib 0
+
+                default_frequency 2e+08
+
+                decap_frequency 1e+08
+
+              * The following command generates the power-grid library report:
+
+                check_pg_library -output report -report /../pg.cl
+
+                The following is a sample output of this command:
+
+                ==============================================================================
+
+                Library path name:        /it/../library
+
+                Library name:            pg
+
+                Hierarchical library:    NO
+
+                User login:              user
+
+                Date:                      2015-Sep-03  03:58:45  (2015-Sep-03
+                10:58:45 GMT)
+
+                ToolIdentifier:          VOLTUS
+
+                Application version:     15.20-d127_1
+
+                Number of cells in library:    1
+
+                ==============================================================================
+
+                Cell                PowerNets       Capacitance      PowerGrid
+                Views
+
+                ---------------------------------------------------------------------------------------------------------------------|
+
+                cell1
+
+                                    VSS(0.0000)     5.3e-12          EARLY(255
+                taps) EM(8827 taps) IR(8827 taps)
+
+                                    VDD(0.9000)     6.8e-12          EARLY(193
+                taps) EM(7534 taps) IR(7534 taps)
+
+                 Cell               Type                =                MACRO
+                Cell_Status: PASS
+
+                INFO:
+                 Dynamic  Tap  Current views were created for this cell. MODE1
+                has Conditional input = "( !CEN & !WEN ) " and Conditional pin
+                = "CLK RISE".
+
+                INFO: Dynamic Tap Current views were created  for  this  cell.
+                MODE2 has Conditional input = "( CEN & WEN ) " and Conditional
+                pin = "CLK RISE".
+
+                ---------------------------------------------------------------------------------------------------------------------|
+
+Related Information
+              * validate_pg_library
+
+              * "Power-Grid  Library  Generation"  in  the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025    check_pg_library(25.10)

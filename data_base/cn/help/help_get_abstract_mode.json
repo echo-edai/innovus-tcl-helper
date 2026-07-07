@@ -1,0 +1,183 @@
+{
+  "command": "get_abstract_mode",
+  "is_cmd": true,
+  "summary": "获取或设置用于生成单元抽象（LEF）的模式参数",
+  "description": "该命令用于配置或查询在Cadence Innovus工具中生成单元抽象（LEF文件）时的各种模式参数。它允许用户指定输入文件（如技术LEF、GDS层映射文件）、定义单元类型（标准单元、IO单元、模块单元）、控制天线效应模型的提取、设置引脚命名规则、选择导出版本以及控制其他详细的提取和生成行为。用户可以通过此命令精细控制从物理布局（如GDS）生成逻辑抽象（LEF）的过程。",
+  "usage": "get_abstract_mode [-help] [-abstract_blockage_cut_around_pin] [-antenna_connectivity] [-antenna_diffusion_geom] [-antenna_gate_geom] [-blockage_detailed_layers] [-boundary_layers] [-cell_symmetry] [-export_lef_version] [-extract_layers_power] [-extract_layers_signal] [-extract_pin_layers_power] [-extract_pin_layers_signal] [-input_cell_type] [-input_gds_layer_map_file] [-input_lef_tech_file] [-keep_temp_files] [-pins_analog_names] [-pins_clock_names] [-pins_ground_names] [-pins_output_names] [-pins_power_names] [-pins_text_pin_map] [-pre_skill] [-selected_cells] [-site_name] [-verbose] [-quiet] [-nonDefault]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-abstract_blockage_cut_around_pin",
+      "description": "对于标准单元，通常不希望覆盖引脚上的阻挡层（OBS）。此参数用于设置需要切割阻挡层的金属层和通孔层列表。对于标准单元（std），设置为所有金属和通孔层名列表；对于模块（block）或IO单元（io），设置为所有通孔层名列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_connectivity",
+      "description": "指定需要提取天线效应连接性的层。语法为：{<层1> <连接层> <层2>}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_diffusion_geom",
+      "description": "指定扩散层，以及用于从扩散区域移除栅极沟道面积的表达式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_gate_geom",
+      "description": "指定构成栅极的多晶硅层，以及用于推导栅极面积的层表达式。此选项也会触发天线模型的创建。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-blockage_detailed_layers",
+      "description": "指定需要创建详细阻挡模型的层。详细阻挡模型仅在单元内该层存在实际图形的地方生成阻挡。此选项仅适用于IO单元和模块单元，不适用于标准单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-boundary_layers",
+      "description": "默认列表为空，使用prBoundary。prBoundary来自一个明确的GDS层，用于计算LEF的SIZE（以及用于非矩形边界的OVERLAP OBS图形）。如果没有明确的GDS prBoundary层，边界可以通过此列表中层上的几何图形的边界框计算。注意：此选项对核心标准单元几乎不适用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_symmetry",
+      "description": "指定单元对称性的属性值。有效值包括：{R0 | X | Y | R90 | X Y | X R90 | Y R90 | X Y R90}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-export_lef_version",
+      "description": "指定导出的LEF文件版本。默认版本与导入的技术LEF文件版本相同。可选枚举值：5.3, 5.4, 5.5, 5.6, 5.7, 5.8。",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-extract_layers_power",
+      "description": "指定提取器用于提取每个电源网络的层。如果单元抽象提取耗时过长，可用于减少搜索空间。通常不适用于标准单元。对于模块，通常只提取顶部一两层金属层上的电源网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extract_layers_signal",
+      "description": "指定提取器用于提取每个网络的层。如果单元抽象提取耗时过长，可用于减少搜索空间。通常不适用于标准单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extract_pin_layers_power",
+      "description": "决定提取器发现的哪些形状应转换为引脚。仅当相关的层、几何规格和连接性已在技术LEF中提供时，此参数才有效。通常不适用于标准单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-extract_pin_layers_signal",
+      "description": "决定提取器发现的哪些形状应转换为引脚。仅当相关的层、几何规格和连接性已在技术LEF中提供时，此参数才有效。通常不适用于标准单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-input_cell_type",
+      "description": "选择正在通过abstract命令转换的单元类型。工具会根据此选择调整其设置。可选枚举值：std（标准单元）, io（IO单元）, block（模块单元）。",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-input_gds_layer_map_file",
+      "description": "指定将GDS层号/数据类型映射到Virtuoso格式LEF层名称的文件。必需参数。用于非彩色化或彩色化的GDS文件流。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-input_lef_tech_file",
+      "description": "输入技术LEF文件。用于获取所有层名称、类型（布线、切割等）以及用于提取连接性的层顺序。必需参数。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-keep_temp_files",
+      "description": "命令完成后不清理过程中创建的临时文件/库。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-pins_analog_names",
+      "description": "基于Abstract中的标签字符串识别模拟引脚名称，以设置LEF的\"USE ANALOG\"属性。输入模拟引脚的可能名称列表，可以是正则表达式列表，用空格分隔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins_clock_names",
+      "description": "基于Abstract中的标签字符串识别时钟引脚名称，以设置LEF的\"USE CLOCK\"属性。输入时钟引脚的可能名称列表，可以是正则表达式列表，用空格分隔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins_ground_names",
+      "description": "基于Abstract中的标签字符串识别地线引脚名称，以设置LEF的\"USE GROUND\"属性。输入地线引脚的可能名称列表，可以是正则表达式列表，用空格分隔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins_output_names",
+      "description": "基于GDS中的标签字符串识别输出引脚，以将LEF方向设置为OUTPUT。输入用空格分隔的正则表达式列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins_power_names",
+      "description": "基于Abstract中的标签字符串识别电源引脚名称，以设置LEF的\"USE POWER\"属性。输入电源引脚的可能名称列表，可以是正则表达式列表，用空格分隔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pins_text_pin_map",
+      "description": "将文本标签映射到网络上的引脚。指定层-用途对，基于此，抽象生成器将搜索任何给定层-用途对上带有文本标签的几何图形。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pre_skill",
+      "description": "一个SKILL文件，将在abstract执行自动生成的脚本之前执行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-selected_cells",
+      "description": "使用正则表达式风格的表达式选择要为其创建抽象的单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-site_name",
+      "description": "用于宏单元的Site名称。此site将被添加到所有单元中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verbose",
+      "description": "启用详细模式，输出额外信息。",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-quiet",
+      "description": "仅以Tcl列表格式显示当前设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonDefault",
+      "description": "仅显示非默认设置的当前设置。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

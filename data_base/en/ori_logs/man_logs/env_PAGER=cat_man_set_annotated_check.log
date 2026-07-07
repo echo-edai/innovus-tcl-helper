@@ -1,0 +1,115 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_annotated_check(25.10)                          set_annotated_check(25.10)
+
+Name
+       set_annotated_check  -  Annotates the setup, hold, recovery, or removal
+       timing check value between two or more pins of a cell  in  the  current
+       design
+
+Syntax
+       set_annotated_check
+
+       [-help]
+
+       <check_value>
+
+       [-clock <clock_check>]
+
+       [-cond <sdf_condtion>]
+
+       [-fall]
+
+       -from <from_pins>
+
+       [-incremental]
+
+       [-max]
+
+       [-min]
+
+       [-rise]
+
+       -to <to_pins>
+
+       {-setup   |   -hold   |   -recovery   |  -removal  |  -nochange_high  |
+       -nochange_low}
+
+       Annotates the setup, hold, recovery, or removal timing check value  be-
+       tween two or more pins of a cell in the current design.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <check_value>
+              Specifies the timing check value.
+
+       -clock <clock_check>
+              Specifies clock rising or falling.
+
+              Default:  Sets  checks  for  both  clock  rise and fall. Use the
+              <clock_check> argument to specify rise or fall.
+
+       -cond <sdf_condition>
+              Specifies the condition only if the library has a condition  at-
+              tached  to  the  specified  timing  check  arc. The <sdf_expres-
+              sion>must match the syntax of the condition specified in the li-
+              brary.
+
+       -fall  Specifies the data fall transition for the timing check.
+
+              Default: Sets both -rise and -fall.
+
+       -from <from_pins>
+              Specifies start points of the timing arcs for which  checks  are
+              annotated.  Use  the  <from_pins>  argument to specify a list of
+              leaf cell clock pins.
+
+       -incremental
+              Set incremental checks.
+
+       -max   Specifies the maximum timing check for both data rise  and  data
+              fall  transitions. Use this option only if the design uses mini-
+              mum and maximum (min-max) operating conditions.
+
+       -min   Specifies the minimum timing check for both data rise  and  data
+              fall  transitions. Use this option only if the design uses mini-
+              mum and maximum (min-max) operating conditions.
+
+       -rise  Specifies the data rise transition for the timing check.
+
+              Default: Sets both rise and fall.
+
+       -setup | -hold | -recovery | -removal | -nochange_high | -nochange_low
+              Specifies the timing check type. Make sure  there  is  a  corre-
+              sponding  timing  arc  between the <from_pins> and the <to_pins>
+              arguments.
+
+       -to<to_pins>
+              Specifies endpoints of the timing arcs for which checks are  an-
+              notated.  Use  the  <to_pins> argument to specify a list of leaf
+              cell clock pins.
+
+Examples
+              * The following commands annotates a nochange check between data
+                low and clock low. The nochange margin before the clock is 1.3
+                and the nochange margin after the clock is 2.4:
+
+                set_annotated_check -nochange_low 1.3 -clock fall -fall  -from
+                {I1/CP} -to {I1/EN}
+
+                set_annotated_check  -nochange_low 2.4 -clock fall -rise -from
+                {I1/CP} -to {I1/EN}
+
+              * The following command annotates a 2.0 setup time  between  the
+                CP  clock  pin and the A data pin of the <<instance_name>> in-
+                stance:
+
+                set_annotated_check -setup 2.0 -from <<instance_name>>/CP  -to
+                <<instance_name>>/A
+
+Related Information
+              * reset_annotated_check
+
+              * set_annotated_delay
+
+                           Fri Apr 04 01:25:37 2025 set_annotated_check(25.10)

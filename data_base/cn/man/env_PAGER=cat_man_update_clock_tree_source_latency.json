@@ -1,0 +1,21 @@
+{
+  "command": "update_clock_tree_source_latency",
+  "is_cmd": true,
+  "summary": "存储时钟树源组根节点的时钟到达时间和转换时间，为多抽头时钟树综合做准备",
+  "description": "该命令用于在时钟树源组的根节点处存储时钟到达时间和转换时间，为多抽头时钟树综合（CTS）做准备。它对于配置时钟网格驱动源组根节点的时钟结构到达时间特别有帮助。对于其他如H树等每个网络有单一驱动器的结构，CTS通常会自动从时钟源传播到达时间。然而，对于网格应用，CTS无法自动通过时钟网格传播到达时间。此命令通过查询时序引擎获取到达时间和转换时间，并在指定源组的根节点设置source_latency和source_input_max_trans属性，从而简化了这一过程。注意：该命令会查询时序图，如果时序不可用，将首先执行可能耗时的时序图更新。它假设特定源组的所有根节点存在一个共同的时钟相位，否则将报错退出。如果指定的源组包含任何生成时钟树，命令也会报错退出。",
+  "usage": "update_clock_tree_source_latency [-help] -clock_tree_source_groups <source_group_list>",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出update_clock_tree_source_latency命令的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-clock_tree_source_groups",
+      "description": "指定需要存储延迟的时钟树源组列表。此参数必须指定。",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

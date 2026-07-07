@@ -1,0 +1,91 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoAddBacksideConstraint(25.10)                ecoAddBacksideConstraint(25.10)
+
+Name
+       ecoAddBacksideConstraint  -  Adds  a new backside layer constraint on a
+       net
+
+Syntax
+       ecoAddBacksideConstraint
+
+       [-help]
+
+       -embeddedFtvCells {list of cells}
+
+       -net <netName>
+
+       -topPreferredLayer <top-layer-name>
+
+       [-groupTerms {{..} {..}} | -minimumFtvs ]
+
+       [-loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc}  [-bufOrient  {R0  |
+       R90 | R180 | R270 | MX | MX90 | MY | MY90}]]
+
+       Adds a new backside layer constraint on a net.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each ecoAddBacksideConstraint.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoAddBacksideConstraint
+
+       -bufOrient {R0 | R90 | R180 | R270 | MX | MX90 | MY | MY90}
+              Specifies the orientation for FTV instance(s)
+
+              Valid orientation values are: R0, R90, R180, R270, MX, MX90, MY,
+              MY90.
+
+       -embeddedFtvCells {list of cells}
+              Specifies the name of FTVO and FTVI cells (one each) .
+
+       -groupTerms {{..} {..}}
+              Specifies groups of terms with common FTV cell
+
+       -loc {xLoc yLoc} | { xLoc yLoc inv_xLoc inv_yLoc}
+              Specifies location(s) where FTV instance(s) will be placed.
+
+              You can provide multiple (x y) locations as arguments. The count
+              of arguments should match the number of groups  specified  using
+              -groupTerms.  The  tool  will use the corresponding location for
+              the corresponding group in -groupTerms.
+
+       -minimumFtvs
+              Inserts two embedded FTV cells or two FTV cells,  one  connected
+              to  the  driver of the original net to go to the backside layer,
+              and the other FTV drives all sinks of original nets in order  to
+              go back to the frontside layer.
+
+       -net <netName >
+              Specifies  the  name  of  the  net  on which FTV cells are to be
+              added.
+
+       -topPreferredLayer <top-layer-name>
+              Specifies the name of the preferred top back-side layer.
+
+Examples
+              * The following command will add FTV cell FTV_out and FTV_in  in
+                the net net_A.  The FTV net from FTV_out and FTV_in will  con-
+                nect through backside layer.
+
+                ecoAddBacksideConstraint  -net net_A -embeddedFtvCells {FTV_in
+                FTV_out} -topPreferredLayer B_M0
+
+              * The following command with "-minimumFtvs" will  only  add  two
+                ftvs, one connected to the driver of the original net to go to
+                the  backside  layer,  and  the  other FTV drives all sinks of
+                original nets.
+
+                ecoAddBacksideConstraint -net net_A -embeddedFtvCells  {FTV_in
+                FTV_out} -topPreferredLayer B_M0 -minimumFtvs
+
+              * The  following command will place the FTVO in the location (a,
+                b) FTVI in the location (c, d) when tool add two  FTV  in  the
+                net_A.
+
+                ecoAddBacksideConstraint  -net net_A -embeddedFtvCells {FTV_in
+                FTV_out} -topPreferredLayer B_M0 -loc {a b c d}
+
+                           Fri Apr 04 01:25:37 2e0c2o5AddBacksideConstraint(25.10)

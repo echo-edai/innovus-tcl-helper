@@ -1,0 +1,306 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_lib_arcs(25.10)                                  report_lib_arcs(25.10)
+
+Name
+       report_lib_arcs
+
+Syntax
+       report_lib_arcs
+
+        [-help]
+
+        -arc <string>
+
+        [-fall]
+
+       [-nldm]
+
+        [-quiet]
+
+        [-rise]
+
+       [-lvf  [-early]]
+
+       [-lvf  [-late]]
+
+       [-moments  [-mean_shift]]
+
+        [-moments  [-std_dev]]
+
+       [-moments  [-skewness]]
+
+       [-input_net_transition <float> | -constrained_pin_transition <float>]
+
+        [-input_net_transition <float> | -related_pin_transition <float>]
+
+       [-total_output_net_capacitance  <float>  |  -constrained_pin_transition
+       <float>]
+
+        [-total_output_net_capacitance   <float>   |   -related_pin_transition
+       <float>]
+
+        [-constrained_pin_transition     <float>    |    -delay    ]    [-con-
+       strained_pin_transition <float> | -transition ]
+
+       [-related_pin_transition <float> | -delay ]
+
+        [-related_pin_transition <float> | -transition ]
+
+       Reports the library arc data. The command also returns the  data  in  a
+       Tcl object, which can be used in scripts.
+
+       This  command  uses a collection of arcs as input, which can be queried
+       using the get_lib_arcs command.
+
+       The units for the input and output  data  can  be  obtained  using  the
+       get_time_unit and get_capacitance_unit commands.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -arc <string>
+              Specifies the arc(s) for which the report is to be printed.
+
+       -constrained_pin_transition <float>
+              Specifies  the  constrained pin slew (valid for constraint arcs)
+              at which the parameters need to be reported.
+
+              The slew units must be specified using  the  get_time_unit  com-
+              mand.
+
+       -delay Specifies if delay is to be reported.
+
+       -early Specifies if early LVF data is to be reported.
+
+              This parameter can be used only in conjunction with the -lvf.
+
+       -fall  Specifies if details of fall tables are to be reported.
+
+       -input_net_transition <float>
+              Specifies the slew at which the parameters need to be reported.
+
+              The  slew  units  must be specified using the get_time_unit com-
+              mand.
+
+       -late  Specifies if late LVF data is to be reported.
+
+              This parameter can be used only in conjunction with the -lvf.
+
+       -lvf   Specifies if LVF data is to be reported.
+
+       -mean_shift
+              Specifies if the mean shift data is to be reported.
+
+              This parameter can be used only in  conjunction  with  the  -mo-
+              ments.
+
+       -moments
+              Specifies if moments data is to be reported.
+
+       -nldm  Specifies if NLDM data is to be reported.
+
+       -quiet Disables output to be displayed on the screen.
+
+       -related_pin_transition <float>
+              Specifies  the  related  pin slew (valid for constraint arcs) at
+              which the parameters need to be reported.
+
+              The slew units must be specified using  the  get_time_unit  com-
+              mand.
+
+       -rise  Specifies if details of rise tables are to be reported.
+
+       -skewness
+              Specifies if skewness data is to be reported.
+
+              This  parameter  can  be  used only in conjunction with the -mo-
+              ments.
+
+       -std_dev
+              Specifies if standard deviation data is to be reported.
+
+              This parameter can be used only in  conjunction  with  the  -mo-
+              ments.
+
+       -total_output_net_capacitance <float>
+              Specifies the load at which the parameters need to be reported.
+
+              The  load  must be specified using the get_capacitance_unit com-
+              mand.
+
+       -transition
+              Specifies if the output slew is to be reported.
+
+Examples
+              * The following command reports the library arc data  containing
+                mean shift rise tables:
+
+                report_lib_arcs  -arc  [get_lib_arcs  -from  cell_w/DFF/CK -to
+                cell_w/DFF/Q] -input_net_transition 0.08 /
+
+                       -total_output_net_capacitance 0.055  -mean_shift  -rise
+                -delay -moments -nldm
+
+                Units of Report:- Time: '1000ps', Capacitance: '1000fF'.
+
+                input_net_transition:0.080000,        total_output_net_capaci-
+                tance:0.055000
+
+                --------------------------------------------------------------------
+
+                | Index | Timing Arc | Value(s) |
+
+                |
+                ------------------------------------------------------------------------------|
+
+                |       | Cell       | Source/Sink Pin | Timing Sense | Timing
+                Type | cell_rise |
+
+                ---------------------------------------------------------------------------------
+
+                | 1     | cell_w/DFF | CK -> Q         | non_unate     |  ris-
+                ing_edge | 0.258444  |
+
+                ---------------------------------------------------------------------------------
+
+                {{cell_rise 0.258444279432} {ocv_mean_shift_cell_rise NA}}
+
+              * The  following command reports the library arc data containing
+                fall tables for moments data:
+
+                report_lib_arcs  -arc  [get_lib_arcs  -from  cell_w/BUF/A  -to
+                cell_w/BUF/Y] /
+
+                    -input_net_transition  0.055 -total_output_net_capacitance
+                0.15 -fall -delay -moments -nldm
+
+                Units of Report:- Time: '1000ps', Capacitance: '1000fF'.
+
+                input_net_transition:0.055000,        total_output_net_capaci-
+                tance:0.150000
+
+                -------------------------------------------------------------------------------------
+
+                |            Index            |           Timing           Arc
+                | Value(s)   |
+
+                |
+                ----------------------------------------------------------------------------------|
+
+                |       | Cell       | Source/Sink Pin | Timing Sense   | Tim-
+                ing Type  | cell_fall  |
+
+                -------------------------------------------------------------------------------------
+
+                | 1     | cell_w/BUF | A -> Y          | positive_unate | com-
+                binational| 0.129744   |
+
+                --------------------------------------------------------------------------------------------------------
+
+                {{cell_fall      0.129}       {ocv_std_dev_cell_fall       NA}
+                {ocv_mean_shift_cell_fall NA} {ocv_skewness_cell_fall NA}}
+
+              * The  following command reports the library arc data containing
+                rise tables data with output slew:
+
+                report_lib_arcs -arc  [get_lib_arcs  -from  cell_w/DFF/CK  -to
+                cell_w/DFF/Q] -input_net_transition 0.08 /
+
+                     -total_output_net_capacitance   0.055  -mean_shift  -rise
+                -delay -moments -nldm -transition
+
+                Units of Report:- Time: '1000ps', Capacitance: '1000fF'.
+
+                input_net_transition:0.080000,        total_output_net_capaci-
+                tance:0.055000
+
+                ---------------------------------------------------------------------------------------------------
+
+                |            Index            |           Timing           Arc
+                | Value(s)  |
+
+                |
+                -------------------------------------------------------------------------------------------------
+
+                |       | Cell       | Source/Sink Pin | Timing Sense | Timing
+                Type | rise_transition | cell_rise |
+
+                ---------------------------------------------------------------------------------------------------
+
+                | 1     | cell_w/DFF | CK -> Q         | non_unate     |  ris-
+                ing_edge | 0.21692         | 0.258444  |
+
+                ---------------------------------------------------------------------------------------------------
+
+                {{cell_rise        0.258}        {rise_transition       0.216}
+                {ocv_mean_shift_cell_rise NA}  {ocv_mean_shift_rise_transition
+                NA}}
+
+                This command also returns the data in a Tcl object that can be
+                parsed  and used in scripts. A 3-Dimensional Tcl List will re-
+                turn the following information:
+
+                {{TableName  Value}  {TableName  Value}}  {{TableName   Value}
+                {TableName Value}}
+
+                Here,  the  first list (left column) indicates the Table-Value
+                pair in one arc. The second list indicates the various  tables
+                present  per  arc.  And the third list (last column) indicates
+                the list of total arcs in the collection.
+
+              * The following command reports the slew and capacitance load:
+
+                set  items  [report_lib_arcs   -arc   [   get_lib_arcs   -from
+                sc_cmoslp/AO22X/clk -to sc_cmoslp/AO22X /out1] /
+
+                     -input_net_transition 0.003 -total_output_net_capacitance
+                0.021]
+
+                Units of Report:- Time: '1000ps', Capacitance: '1000fF'.
+
+                input_net_transition:0.003, total_output_net_capacitance:0.021
+
+                ------------------------------------------------------------------------------------------------------------------------------------------
+
+                |            Index            |           Timing           Arc
+                | Value(s) |
+
+                |-----------------------------------------------------------------------------------------------------------------------------------------
+
+                |       | Cell            | Source/Sink Pin | Timing Sense   |
+                Timing Type   | rise_transition | fall_transition |  cell_rise
+                | cell_fall |
+
+                ------------------------------------------------------------------------------------------------------------------------------------------
+
+                | 1     | sc_cmoslp/AO22X | clk -> out1     | positive_unate |
+                combinational  |  0.20**           |  0.30**          | 1.00**
+                | 1.20**    |
+
+                ------------------------------------------------------------------------------------------------------------------------------------------
+
+                | 2     | sc_cmoslp/AO22X | clk -> out1     | negative_unate |
+                combinational | 0.20**           |  0.30**           |  1.00**
+                | 1.20**    |
+
+                ------------------------------------------------------------------------------------------------------------------------------------------
+
+                **  --> Scalar Value{{cell_rise 0.999} {rise_transition 0.199}
+                {cell_fall 1.199} {fall_transition 0.299}} {{cell_rise  0.999}
+                {rise_transition  0.199}  {cell_fall  1.199}  {fall_transition
+                0.299}}
+
+                tempus 5 > puts $items
+
+                {{cell_rise 0.999} {rise_transition 0.199}  {cell_fall  1.199}
+                {fall_transition  0.299}}  {{cell_rise 0.999} {rise_transition
+                0.199} {cell_fall 1.199} {fall_transition 0.299}}
+
+Related Information
+              * get_lib_arcs
+
+              * get_time_unit
+
+              * get_capacitance_unit
+
+                           Fri Apr 04 01:25:37 2025     report_lib_arcs(25.10)

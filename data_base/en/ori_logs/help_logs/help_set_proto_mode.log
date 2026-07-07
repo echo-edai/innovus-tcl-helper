@@ -1,0 +1,136 @@
+Usage: set_proto_mode [-help] [-reset] [-allow_model_with_io {true|false}]
+                      [-allow_powerdomain_in_flexmodel {true|false}]
+                      [-create_dir <dir>]
+                      [-create_high_fanout_psPM {true|false}]
+                      [-create_lib <libName>] [-create_metal_fill_NDR <double>]
+                      [-create_metal_fill_nominal <double>]
+                      [-create_multi_corner_psPM {true|false}]
+                      [-create_NDR_psPM_model {auto|on|off}]
+                      [-create_no_flex_filler {true|false}]
+                      [-create_partition_as_flexmodel {true|false}]
+                      [-create_pipeline_flop {*AB*}]
+                      [-create_powerdomain_psPM {true|false}]
+                      [-create_timing_budget {true|false}]
+                      [-identify_algorithm {auto|module_based|instgroup_based}]
+                      [-identify_estimated_flexmodel_number <number>]
+                      [-identify_exclude_module {<mod1> <mod2> ...}]
+                      [-identify_exclude_module_and_parent {<mod1> <mod2> ...}]
+                      [-identify_exclude_module_tree {<mod1> <mod2> ...}]
+                      [-identify_honor_objects_hierarchy {object_list}]
+                      [-identify_max_inst <maxInsts>]
+                      [-identify_min_inst <minInsts>]
+                      [-keep_inst_file_only {true|false}]
+                      [-keep_instance_defined_in_sdc {true|false}]
+                      [-keep_slack_improve_NDR {true|false}]
+                      [-max_report_NDR_net <double>]
+                      [-route_net_NDR <rule_name>]
+                      [-timing_net_delay_model {best_layer_no_detour|best_layer_blockage_aware|use_actual_wire}]
+                      [-timing_ps_per_micron {M<num1>[:M<num2>] <psPerMicron> ...}, {MetalLayerName1[:MetalLayerName2] <psPerMicron> ...} {1[:2] <psPerMicron> ...}, or {view {M<num1>[:M<num2>] <psPerMicron> ...} ...}, {view {MetalLayerName1[:MetalLayerName2] <psPerMicron> ...} ...} {view {1[:2] <psPerMicron> ...} ...}]
+                      [-verbose {true|false}]
+
+-help                                     # Prints out the command usage
+-reset                                    # Resets all or specified options to default value
+-allow_model_with_io {true|false}         # Supports model with I/Os.
+                                          # (bool, default=false)
+-allow_powerdomain_in_flexmodel {true|false}
+                                          # Allow powerdomain in flexmodel (bool, default=false)
+-create_dir <dir>                         # Specifies the directory to save
+                                          # created models.
+                                          # (string, default=proto_model)
+-create_high_fanout_psPM {true|false}     # Create high fanout psPM models.
+                                          # (bool, default=true)
+-create_lib <libName>                     # Specifies the OA library to save
+                                          # created models.
+                                          # (string, default=proto_model_lib)
+-create_metal_fill_NDR <double>           # Will be used by
+                                          # create_ps_per_micron_model for
+                                          # creating psPM model for  nets with
+                                          # non default rules. (float, default=0)
+-create_metal_fill_nominal <double>       # Will be used by
+                                          # create_ps_per_micron_model for
+                                          # creating psPM model for normal 
+                                          # nets. (float, default=0.5)
+-create_multi_corner_psPM {true|false}    # Create multi corner psPM models.
+                                          # (bool, default=false)
+-create_NDR_psPM_model {auto|on|off}      # Control whether
+                                          # create_ps_per_micron_model should
+                                          # generate psPM model for non default
+                                          # rule or not
+                                          # (enums={auto on off}, default=auto)
+-create_no_flex_filler {true|false}       # Create proto model without adding
+                                          # flex filler. (bool, default=false)
+-create_partition_as_flexmodel {true|false}
+                                          # Create partition specified as
+                                          # flexmodel automatically.
+                                          # (bool, default=false)
+-create_pipeline_flop {*AB*}              # Specifies a list of pipeline flop
+                                          # instance patterns that are used in
+                                          # the design. (string, default="")
+-create_powerdomain_psPM {true|false}     # Create power domain psPM models.
+                                          # (bool, default=false)
+-create_timing_budget {true|false}        # Keep consistent setting of
+                                          # deriveTimingBudget
+                                          # (bool, default=false)
+-identify_algorithm {auto|module_based|instgroup_based}
+                                          # identify_proto algorithm
+                                          # <default=auto>
+                                          # (enums={auto module_based instgroup_based}, default=auto)
+-identify_estimated_flexmodel_number <number>
+                                          # Specified the estimated flexModel
+                                          # number to identify for the design
+                                          # when using instance group based
+                                          # identify_proto_model.
+                                          # (int, default=20)
+-identify_exclude_module {<mod1> <mod2> ...}
+                                          # Excludes specified module(s) but
+                                          # not its sub-modules for being
+                                          # marked as models. (string, default="")
+-identify_exclude_module_and_parent {<mod1> <mod2> ...}
+                                          # Excludes specified module(s) and
+                                          # their parents for being marked as
+                                          # models. (string, default="")
+-identify_exclude_module_tree {<mod1> <mod2> ...}
+                                          # Excludes specified module(s) and
+                                          # its sub-modules for being marked as
+                                          # models. (string, default="")
+-identify_honor_objects_hierarchy {object_list}
+                                          # Specified the list of objects which
+                                          # instance group based
+                                          # identify_proto_model will honor its
+                                          # hierarchy. (string, default="")
+-identify_max_inst <maxInsts>             # Specifies the maximum instance
+                                          # count threshold of a module to be
+                                          # marked as model.(default=8% of
+                                          # total instance count and no lower
+                                          # than 300K instances) (int, default=-1)
+-identify_min_inst <minInsts>             # Specifies the minimum instance
+                                          # count threshold of a module to be
+                                          # marked as model. (int, default=1000)
+-keep_inst_file_only {true|false}         # FlexModel only contains inst in
+                                          # keep_inst_file. (bool, default=false)
+-keep_instance_defined_in_sdc {true|false}
+                                          # FlexModel will keep inst defined in
+                                          # sdc file (bool, default=false)
+-keep_slack_improve_NDR {true|false}      # Will be used by report_NDR_WNS_gain
+                                          # to keep top critical nets as non
+                                          # default rule nets .
+                                          # (bool, default=false)
+-max_report_NDR_net <double>              # Will be used by
+                                          # create_ps_per_micron_model for
+                                          # creating psPM model for  nets with
+                                          # non default rules.
+                                          # (float, default=0.05)
+-route_net_NDR <rule_name>                # Will be used by
+                                          # create_ps_per_micron_model for
+                                          # creating psPM model for  nets with
+                                          # non default rules.
+                                          # (string, default="")
+-timing_net_delay_model {best_layer_no_detour|best_layer_blockage_aware|use_actual_wire}
+                                          # set mode of calculating wire delay (enums={best_layer_no_detour best_layer_blockage_aware use_actual_wire}, default=best_layer_no_detour)
+-timing_ps_per_micron {M<num1>[:M<num2>] <psPerMicron> ...}, {MetalLayerName1[:MetalLayerName2] <psPerMicron> ...} {1[:2] <psPerMicron> ...}, or {view {M<num1>[:M<num2>] <psPerMicron> ...} ...}, {view {MetalLayerName1[:MetalLayerName2] <psPerMicron> ...} ...} {view {1[:2] <psPerMicron> ...} ...}
+                                          # Specifies the estimated delay per
+                                          # micron for each routing layer.
+                                          # Layer range is from 1 to maximum
+                                          # routing layers. (string, default="")
+-verbose {true|false}                     # Output detailed information into
+                                          # .log file. (bool, default=false)

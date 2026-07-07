@@ -1,0 +1,1018 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setExtractRCMode(25.10)                                setExtractRCMode(25.10)
+
+Name
+       setExtractRCMode - Sets the native RC extraction mode
+
+Syntax
+       setExtractRCMode
+
+       [-help]
+
+       [-reset]
+
+       [-assumeMetFill <scalevalue>]
+
+       [-capFilterMode {relOnly | relAndCoup | relOrCoup}]
+
+       [-cerebrus_license_only {true | false}]
+
+       [-compressOptMemRCDB {true | false}]
+
+       [-coupled {true | false}]
+
+       [-coupling_c_th <value_in_fF>]
+
+       [-defViaCap {true | false}]
+
+       [-effortLevel {low | medium | high | signoff}]
+
+       [-engine {preRoute | postRoute}]
+
+       [-extraCmdFile fileName]
+
+       [-extractionFillStreamMapFile <fileName>]
+
+       [-extract_rc_quantus_executable <path_to_Quantus_executable>]
+
+       [-extract_rc_signoff_stream_layer_map_ccl <file_name>]
+
+       [-hardBlockObs {true | false}]
+
+       [-incremental {true | false}]
+
+       [-iquantus_cap_high_accuracy_mode {true | false}]
+
+       [-layerIndependent {0 | 1}]
+
+       [-lefTechFileMap <fileName>]
+
+       [-localCpu number_of_cpu]
+
+       [-pvs_fill {true | false}]
+
+       [-qrcCmdFile <fileName>]
+
+       [-qrcCmdType {auto | partial | custom}]
+
+       [-qrcOutputMode {rcdb | spef}]
+
+       [-qrcRunMode {concurrent | sequential}]
+
+       [-relative_c_th <value>]
+
+       [-signoff_stream_layer_map <fileName>]
+
+       [-total_c_th <value_in_fF>]
+
+       [-tQuantusModelFile <fileName>]
+
+       [-tsvSubcktFile <file_name>]
+
+       [-turboReduce {true | false | auto}]
+
+       [-useQrcOAInterface {true | false}]
+
+       [-useShieldingInDetailMode {true | false}]
+
+       [-viaCap {true | false}]
+
+       [-writeDefOptionsForSignoffExtract list_of_def_options]
+
+       Sets  the  native RC extraction mode. Use this command before using the
+       extractRC command. You can use the  setExtractRCMode  command  multiple
+       times  during  an  Innovus  session to specify additional parameters or
+       change the previously defined values for the extraction mode.  You  can
+       perform  RC extraction during preRoute and postRoute stages, and select
+       an extraction engine based on the expected run time and accuracy level.
+       Each extraction engine supports a specific set of setExtractRCMode com-
+       mand parameters. The following table lists the engine support for  each
+       parameter.
+
+       Note:  In  previous releases, the setExtractRCMode command accepted in-
+       complete parameter names. Now, only complete parameter names are recog-
+       nized by the software. If you enter an incomplete parameter  name,  the
+       software  will  return an error that the given parameter is not a legal
+       argument. To avoid this error, update your scripts  to  use  the  legal
+       (documented) parameter syntax.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setExtractRCMode parameter.  For  a  detailed
+              description  of  the  command and all of its parameters, use the
+              man command:
+
+              man setExtractRCMode
+
+       -assumeMetFill <scalevalue>
+              Takes into account the metal fill in the design.  For  postRoute
+              extraction,  only  extraction  engine with -effortLevel low sup-
+              ports this parameter.
+
+              In postRoute extraction with -effortLevel low,  <scalevalue>  is
+              not  required  and  will  be ignored. Detail extraction uses the
+              FILLACTIVESPACING values from LEF to account for metal  fill  in
+              the design. If the FILLACTIVESPACING values are not specified in
+              the  LEF  file,  the  software  uses the default value, which is
+              0.6um.
+
+              In preRoute extraction, when calculating the  capacitance  of  a
+              wire  segment  in layer <N>, this parameter always assumes layer
+              <N-1> and layer <N+1> to be filled. Specify one of the following
+              values:
+
+              * 0: Assume no metal fill in layer <N>.
+
+                            * When you do  not  specify  this  parameter,  the
+                              software  assumes  no  metal  fill in layer <N>.
+                              This is equivalent to setting the scalevalue pa-
+                              rameter to 0.
+
+              * 1: Assume full metal fill at minimum spacing distance.
+
+                            * Where there is  a  minimum  of  signal-to-signal
+                              spacing,  the cross-coupling capacitance will be
+                              extracted and reported.
+
+                            * Where there is no wire within the minimum  spac-
+                              ing, a capacitance to ground will mimic minimum-
+                              spaced metal fill in that location.
+
+              * x:  Capacitance  value is calculated once with full metal fill
+                and once without metal fill. The  user-specified  scale  value
+                (decimal  value  between 0 and 1) determines the interpolation
+                point between the two calculated values, for example, 0.5
+
+              Default: 0
+
+       -capFilterMode { relOnly | relAndCoup | relOrCoup }
+              Specifies the capacitance filtering mode.  The  filtering  modes
+              are  conditions  which  define how to use the -coupling_c_th and
+              -relative_c_th values, or their combination. Based on  the  fil-
+              tering  mode  specified, the software determines the nets in the
+              design, which will have their coupling capacitance lumped to the
+              ground.
+
+              Note: TQuantus only supports the relandCoup mode of this parame-
+              ter. It does not support the relOnly and relOrCoup modes as they
+              are for old nodes only.
+
+              Note: The behavior of the -total_c_th filter is  independent  of
+              the -capFilterMode parameter setting. Nets that have a total ca-
+              pacitance  value  lower  than  the value specified with the -to-
+              tal_c_th  parameter  will  have  their   coupling   capacitances
+              grounded regardless of the -capFilterMode setting.
+
+              You can use one of the following modes:
+
+              * relOnly: Grounds the coupling capacitance of nets based on the
+                threshold value set by the -relative_c_th parameter.
+
+              * relAndCoup: Grounds the coupling capacitance of nets only when
+                it is lower than the threshold value specified with the -rela-
+                tive_c_th  parameter  as well as the -coupling_c_th parameter.
+                In this mode, you enforce maximum restriction on grounding the
+                coupling capacitances.
+
+              * relOrCoup: Grounds the coupling capacitance of nets if  it  is
+                lower than the threshold value specified with one of the -rel-
+                ative_c_th or -coupling_c_th parameters.
+
+              Default:  For TQuantus, IQuantus, and Standalone Quantus extrac-
+              tion, the default value is relAndCoup. For postRoute  extraction
+              with  -effortLevel  low,  the  default value is dependent on the
+              process node specified with the setDesignMode -process  command.
+              If  the process node is 130nm or below, the default value is re-
+              lAndCoup and if the process node is  above  130nm,  the  default
+              value is relOnly.
+
+       -cerebrus_license_only {true | false}
+              This parameter is applicable to the Cerebrus-Quantus flow.
+
+              When  set  to true, only the Cerebrus license will be considered
+              and Innovus will not fall back to use Quantus license when Cere-
+              brus license(s) is/are not available. By default, the option  is
+              set  to  false,  which means the regular Quantus license will be
+              considered when Cerebrus license(s) is/are not available.
+
+              Default: false
+
+       -compressOptMemRCDB {true | false }
+              Generates compressed RCDB data.
+
+              Default: false
+
+              Note: This functionality reduces the disk  usage  but  leads  to
+              marginal increase in run time.
+
+       -coupled {true | false}
+              Separately  outputs grounded and coupling capacitance. The -cou-
+              pled false value is typically used for static  timing  analysis.
+              Signal Integrity analysis requires the coupled mode.
+
+              Default: true (for postRoute extraction)
+
+              Note: The TQuantus extraction engine supports this parameter.
+
+       -coupling_c_th <value_in_fF>
+              Specifies the threshold value that determines when the extractor
+              lumps  a net's coupling capacitance to ground. This parameter is
+              applicable only when the -coupled parameter is set to true.
+
+              The software decouples the coupling capacitance of nets when the
+              total coupling capacitance between the pair  of  nets  is  lower
+              than the threshold specified with this parameter. The actual de-
+              coupling also depends on the setting of the -capFilterMode para-
+              meter.
+
+              Default:  0.2fF.  If  the  setDesignMode -process <process_node>
+              command is used, the software assigns  the  recommended  default
+              value for this parameter based on the process node specified.
+
+              Note: See the setDesignMode command for the list of default val-
+              ues that are applied based on the process node setting.
+
+              Note: The TQuantus extraction engine supports this parameter.
+
+       -defViaCap {true | false}
+              Takes  into  account  the via capacitance in the preRoute RC ex-
+              traction results. Specify a value of true, if you are experienc-
+              ing correlation issues caused by  deviations  in  clock  latency
+              when running preRoute RC extraction.
+
+              Default: false
+
+              Note:  For 20nm and below nodes, the default value of this para-
+              meter is set to true.
+
+       -effortLevel { low | medium | high | signoff }
+              Specifies the postRoute engine variant that you want to use  for
+              performing RC extraction.
+
+              Default: low
+
+              Note:  TQuantus  (-effortLevel medium) is the default extraction
+              engine in the postRoute flow for 65 nm and below  designs.  How-
+              ever,  TQuantus  and IQuantus require a Quantus Techfile. There-
+              fore, Native Detailed (-effortLevel low) engine remains the  de-
+              fault engine if no Quantus Techfile has been defined.
+
+              This parameter supports the following values:
+
+              * low:  Invokes  the  native detailed extraction engine. This is
+                the same as specifying the -engine postRoute setting.
+
+              * medium: Invokes the TQuantus extraction  engine.  This  engine
+                supports  distributed  processing.  TQuantus  engine is recom-
+                mended for process nodes < 65nm. For this effort level,  spec-
+                ify the extra command file using the -extraCmdFile parameter.
+
+              * high: Invokes the Integrated-Quantus (IQuantus) extraction en-
+                gine.
+
+                IQuantus  provides  superior  accuracy  compared  to TQuantus.
+                IQuantus is recommended for extraction after ECO. In addition,
+                IQuantus supports  distributed  processing.  For  this  effort
+                level,  specify the extra command file using the -extraCmdFile
+                parameter.
+
+                Note: IQuantus requires a Quantus-XL license.
+
+              * signoff: Invokes the  Standalone  Quantus  extraction  engine.
+                This  engine  choice provides the highest accuracy. The engine
+                has several runModes, thereby, providing maximum  flexibility.
+                For  this  effort  level, specify the extra command file using
+                the -qrcCmdFile parameter.
+
+       -engine { preRoute | postRoute }
+              Specifies the extraction engine to use.
+
+              * preRoute: Uses preRoute engine. RC extraction is done  by  the
+                fast  density  measurements of the surrounding wires; coupling
+                is not reported.
+
+                Use this mode to perform extraction on pre-routed designs  af-
+                ter clock tree synthesis.
+
+              * postRoute: Uses postRoute engine. RC extraction is done by the
+                detailed measurement of the distance to the surrounding wires;
+                coupling is reported. The -effortLevel parameter further spec-
+                ifies which postRoute engine is used for balancing performance
+                versus accuracy needs.
+
+              Default: preRoute
+
+       -extraCmdFile <fileName>
+              Specifies  the  Quantus extra command file for TQuantus/IQuantus
+              extraction. The extra command file supports the following  vari-
+              ables:
+
+              * log_file -dump_options {true | false}
+
+              * extraction_setup -copy_port_to_obs {true|false}
+
+              * extraction_setup -remove_net_pin_overlap {true |false}
+
+              * metal_fill -type {grounded | floating | virtual}
+
+              * output_setup -compress_temporary_files {true | false}
+
+              Notes:
+
+              * TQuantus   only  supports  advanced  virtual  metal  fill   in
+                metal_fill in the extra command file. It does not support  the
+                grounded and floating options.
+
+              * When  the  metal_fill  type  is  virtual, provide the absolute
+                paths to the vmf rule file and the metal schema file. For  ex-
+                ample,
+
+                metal_fill \
+
+              -type                              virtual \
+
+              -enable_advanced_virtual_fill         true \
+
+              -vmf_metal_scheme_file                .../saveTestcase_vmf/miss-
+              ing_vmf_files/abc.vmf_metal_scheme \
+
+              -vmf_rule_file                        .../saveTestcase_vmf/miss-
+              ing_vmf_files/abc.vmf_rule
+
+              * The -extraCmdFile parameter becomes "non-portable" if  the vmf
+                rule  file  and/or schema file have been specified. This means
+                that the two file paths will not be automatically modified  or
+                ported.  You  can  modify the file paths, if required. To make
+                the extra command file portable, ensure that the vmf rule file
+                and schema files are available at the locations  specified  in
+                the extra command file.
+
+              * The bold text in the above example indicates that these values
+                are used by default when the commands are not explicitly spec-
+                ified  in  the  extra  command file. For example, IQuantus ex-
+                tracts the "floating" metal fills by default when  either  the
+                -extraCmdFile  option is not specified or the metal_fill vari-
+                able is not specified in the extra command file.
+
+              * This parameter is only valid if -effortLevel medium or high is
+                specified.
+
+              * This parameter is not available on the IBM platform.
+
+              Default: " "
+
+       -extractionFillStreamMapFile <fileName>
+              This parameter is specified only when -pvs_fill parameter is set
+              to true. When the -pvs_fill parameter is set to true, a  Quantus
+              stream/oasis  map  Tcl  command  is  required  to  map  the  PVS
+              layer/dtype data to the corresponding Quantus layers.
+
+              If the pvs_fill.data is generated based on stream (GDS), the map
+              file should be in the following format:
+
+              #layer gds_layer gds_dtype
+
+              <<layer_name>> <<layer_number>> <<data_type>>
+
+              ...
+
+              If the pvs_fill.data is generated based on OASIS, the  map  file
+              should be in the following format:
+
+              #layer oasis_layer oasis_dtype
+
+              <<layer_name>> <<layer_number>> <<data_type>>
+
+              ...
+
+              Where,
+
+              * layer_name is the layer name in the design
+
+              * layer_number is the layer ID in the GDS/OASIS file
+
+              * data_type is the datatype specified in the GDS/OASIS file
+
+              For example,
+
+              M1  31  0
+
+              M1  31  1
+
+              M2  32  0
+
+              M2  32  1
+
+              Note: This parameter only affects signoff Quantus extraction.
+
+              Default: " "
+
+       -extract_rc_quantus_executable <path_to_Quantus_executable>
+              Specifies  the path to the Quantus executable different from the
+              one packaged within Innovus. You can specify either a  directory
+              (path  to where the Quantus executable is stored) or a file (di-
+              rect path to the Quantus executable). Following are the use mod-
+              els for this parameter:
+
+              * If the specified path exists and Quantus executable is  avail-
+                able  from  the specified installation path, the software will
+                use that version.
+
+              * If the specified path does not exist, the software will  error
+                out.
+
+              * If  this  parameter  is  not  specified, the software uses the
+                Quantus executable available from the env PATH. It may use the
+                Quantus version packaged with Innovus  or  any  other  Quantus
+                version  if  you  have updated the env PATH inside Innovus. An
+                example of the latter scenario is:
+
+                set                                                  env(PATH)
+                "/lan/ssv/ext/ext_2122/inst_hier/lnx86/21.2.2-s116_03-01-2023/DEV/bin:$env(PATH)"
+
+                auto_reset
+
+              Default: ""
+
+       -extract_rc_signoff_stream_layer_map_ccl <file_name>
+              Specifies  the  Quantus stream layer map file in CCL format. Use
+              this parameter to provide stream layer map to be used when  run-
+              ning Standalone Quantus.
+
+              For example,
+
+              setExtractRCMode        -extract_rc_signoff_stream_layer_map_ccl
+              ./RULE/qrc_layer.ccl_map
+
+              The CCL file includes the layer map information in below format.
+
+              extraction_setup -stream_layer_map \
+
+              M1 31 1 fill 1 \
+
+              M1 31 7 fill 2 \
+
+              M2 32 1 fill 1 \
+
+              M2 32 7 fill 2 \
+
+              M3 33 1 fill 1 \
+
+              M3 33 7 fill 2 \
+
+              M4 34 1 fill 1 \
+
+              M4 34 7 fill 2 \
+
+              M5 35 1 fill 1 \
+
+              Default: ""
+
+       -hardBlockObs {true | false}
+              Makes cell geometries on  metal  layers  from  obstruction,  and
+              power  and  ground  pin shapes visible to the extractor for hard
+              blocks only. The software recognizes the following  three  types
+              of hard blocks:
+
+              * Hard macro (CLASS BLOCK in LEF file)
+
+              * Blackbox (CLASS BLACKBOX in LEF file)
+
+              * Partition (Committed during the Innovus session)
+
+              Specify  a  value of true when routing goes over the listed hard
+              blocks. A value of true removes the optimism  for  such  routes,
+              and provides better correlation with sign-off extraction without
+              significantly impacting runtime.
+
+              Note: This parameter is not supported when the extraction engine
+              is TQuantus.
+
+              Default: false
+
+       -incremental {true | false}
+              Uses incremental IQuantus extraction mode.
+
+              If  the incremental mode is set after performing initial extrac-
+              tion on full design, extraction checks for design  changes,  and
+              if  the amount of changes are below threshold, extraction is re-
+              run in incremental mode on the modified areas only.
+
+              Incremental mode can provide significant performance improvement
+              during signal integrity optimization phase.
+
+              Default: true
+
+       -iquantus_cap_high_accuracy_mode {true | false}
+              When set to true, enables the high accuracy capacitance mode for
+              IQuantus.
+
+              Default: false
+
+       -layerIndependent {0 | 1}
+              By default, this parameter is set to 1. In this mode,  layer-in-
+              dependent extraction is enabled. This mode of extraction is rec-
+              ommended  for  designs  with  layer stacks that have significant
+              variations in RC characteristics. This mode uses advanced  tech-
+              niques to avoid timing jumps due to differences in routing-layer
+              assignments between preRoute and postRoute stages.
+
+              When set to 0, layer-independent extraction is disabled.
+
+              Note: PreRoute extraction scale-factors should be computed with-
+              out setting this mode.
+
+              Default: 1
+
+       -lefTechFileMap <fileName>
+              Specifies  the  location  of the optional layer map file for the
+              IQuantus and Standalone Quantus engines.
+
+              Note: For IQuantus, layer mapping between the LEF  or  DEF  file
+              and  the Quantus technology file is done automatically. This pa-
+              rameter is only necessary if this mechanism fails. If necessary,
+              you can use a copy of the automatically generated layer map file
+              extLogDir/IQRC_*/<design>.layermap.log and modify  it  for  your
+              own use.
+
+              Layer map file is required for use with Standalone Quantus.
+
+              For  TSV  designs,  you  are required to provide the name of the
+              layer map file for IQuantus and Standalone Quantus.
+
+              Note: If used, the layer map file must be in the Common  Command
+              Language (CCL) format.
+
+              The following is an example of the layer map file format:
+
+              extraction_setup \
+
+              -technology_layer_map \
+
+              # <LEF/DEF Name> #<Tech File Name>
+
+              M1 METAL_1 \
+
+              VIA1 VIA_1 \
+
+              M2 METAL_2 \
+
+              Note: For cell-level IQuantus layer map, the DEF/LEF layer names
+              are case sensitive, but ICT layer names are case-insensitive.
+
+              Default: " "
+
+       -localCpu <number_of_cpus>
+              Specifies the number of CPUs to be used for IQuantus extraction.
+
+              Note:
+
+              * This option is only applicable for IQuantus extraction engine.
+
+              * When  specified,  it  overrides the setMultiCpuUsage -localCpu
+                option for IQuantus.
+
+              Default: As specified in the setMultiCpuUsage -localCpu setting.
+
+       -pvs_fill
+              When set to true, the PVS fill  data  attached  to  the  Innovus
+              database is sent to Quantus so that the effects of the fill data
+              are  extracted.  This parameter only affects signoff Quantus ex-
+              traction. It has no effect on tQuantus  or  iQuantus  extraction
+              done  inside  Innovus.  This  parameter requires that either the
+              -extractionFillStreamMapFile    parameter    or    the     -sig-
+              noff_stream_layer_map parameter is specified.
+
+              Default: false
+
+       -qrcCmdFile <fileName>
+              Specifies  the  user created Quantus command file to be used for
+              running Standalone Quantus. This command file should be  in  the
+              new CCL syntax.
+
+              Note:  This  parameter is only valid if -effortLevel signoff and
+              -qrcCmdType partial or custom is selected.
+
+              Default: " "
+
+       -qrcCmdType {auto | partial | custom}
+              Specifies whether to derive the  settings  for  running  Quantus
+              from the Innovus settings, or from user-created command file us-
+              ing the -qrcCmdFile parameter. The -qrcCmdType parameter is only
+              valid  if  -effortLevel signoff is selected. This parameter sup-
+              ports the following values:
+
+              *
+
+                auto: Derives the Quantus settings automatically from the  In-
+                novus parameter settings.
+
+                Note:  In this mode, the -lefTechFileMap parameter is required
+                to be specified.
+
+              * partial: Appends user commands from the qrcCmdFile to the set-
+                tings derived from the Innovus parameter  settings.  You  must
+                provide  the  partial mode command file in CCL syntax. Use the
+                partial command file only when you add  extraction  directives
+                for those options that cannot be set in Innovus.
+
+                Following are some important restrictions:
+
+                * Do  not  specify  the  following options in the partial mode
+                  command file:
+
+                       * Threshold setting
+
+                       * Coupled/decoupled mode
+
+                       * Quantus Techfile (s)
+
+                       * Operating Temperature
+
+                * Do not specify the "-directory_name" and  "-temporary_direc-
+                  tory_name" in the output_setup section of the command file
+
+                * Do  not  specify  output  file using output_setup -file_name
+                  command in the partial command file
+
+              Note: The multi-temperature multi-corner extraction (MTMC)  fea-
+              ture  is  enabled in the partial mode only if process technology
+              is not specified in the user command file. In  MTMC  extraction,
+              for  RC  corners with same Quantus technology file but different
+              temperatures, resistance is extracted for multiple corners while
+              capacitance is extracted only for a single corner.
+
+              Note: There is no checking for syntax or content of  this  file.
+              This file is appended as is to the automatically created Quantus
+              command file.
+
+              * custom:  Gets the complete Quantus settings from the user-cre-
+                ated command file. Except for input and  output,  no  settings
+                from  Innovus  parameters  are used. You must provide the com-
+                plete Quantus command file in CCL syntax. Following  are  some
+                important restrictions for using custom command file:
+
+                * Do not specify an input DEF/OA DB in the custom mode command
+                  file
+
+                * Do  not specify the "-directory_name" and "-temporary_direc-
+                  tory_name" and "-file_name" in the output_setup  section  of
+                  the command file.
+
+                * Specify  the  output SPEF file with the following convention
+                  for the name:<design.spef>.
+
+                  In the MMMC mode, the output SPEF files will be named:  <de-
+                  sign>_<corner>_<Temperature>.spef.
+
+                  Here "design" refers to the top cell name.
+
+                  Note: Do not prefix or postfix the output file name.
+
+                * Specify  the  Quantus  Techfile(s)  to  be used. In the MMMC
+                  mode, the corner names should match the names  used  in  the
+                  create_rc_corner command
+
+                * Provide  Quantus  Techfile  layermapping  information in the
+                  custom command file
+
+                * If GDS is provided for  cell  contents,  provide  a  Quantus
+                  Techfile to GDS layer number matching
+
+              Note:  The  MTMC extraction feature is not enabled in the custom
+              mode of Quantus extraction.
+
+              Note: There is no checking for syntax or content of this command
+              file prior to running the extraction. The command file  will  be
+              used  as  is. If the output file is not specified correctly, the
+              resulting parasitic file will not be read into  the  Innovus  RC
+              database.
+
+              Default: auto
+
+       -qrcOutputMode {rcdb | spef}
+              Sets the Quantus output write mode to RCDB or SPEF.
+
+              Note: This parameter is only valid if -effortLevel is signoff.
+
+              Default: spef
+
+       -qrcRunMode {concurrent | sequential}
+              Specifies the Quantus run mode in MMMC designs.
+
+              Note:  For MMMC designs, in Quantus partial command type, do not
+              specify the output SPEF file name and RC corner name in the com-
+              mand file to run Quantus in concurrent or sequential mode.
+
+              For MMMC designs, in Quantus custom command type, do not specify
+              the output SPEF file name and RC corner  name  together  in  the
+              command file. Quantus sequential mode is not supported in custom
+              command type.
+
+              This parameter supports the following values:
+
+              * Concurrent: Runs Quantus for all active corners concurrently.
+
+              * Sequential: Runs Quantus for all active corners sequentially.
+
+              Default: concurrent
+
+       -relative_c_th <value>
+              Sets  a ratio threshold value that determines when the extractor
+              lumps a net's coupling capacitance to ground. This parameter  is
+              applicable only when the -coupled parameter is set to true.
+
+              If the total coupling capacitance between a pair of nets is less
+              than the percentage (specified with this parameter) of the total
+              capacitance of the net with the smaller total capacitance in the
+              pair,  the  coupling  capacitance between these two nets will be
+              considered for grounding. The actual decoupling also depends  on
+              the setting of the -capFilterMode parameter.
+
+              The range of this value is 0 to 1. If the setDesignMode -process
+              <process_node>  command is used, the software assigns the recom-
+              mended default value for this parameter  based  on  the  process
+              node specified.
+
+              Note: See the setDesignMode command for the list of default val-
+              ues that are applied based on the process node settings.
+
+              Note: The tQuantus extraction engine supports this parameter.
+
+              Default: 0.03
+
+       -reset Resets the extraction status of the loaded design and the setEx-
+              tractRCMode parameters to their default values.
+
+              The  -reset  parameter must be the first parameter specified. If
+              you specify -reset by itself, the software resets all setExtrac-
+              tRCMode parameters to their default values. If you specify para-
+              meters after -reset , the software resets only those  parameters
+              to  their  default  values. Any values that do not already match
+              the default value and are reset will be reported.
+
+       -signoff_stream_layer_map <fileName>
+              This parameter is specified only when the -pvs_fill parameter is
+              set to true. When the -pvs_fill parameter  is  set  to  true,  a
+              Quantus  stream/oasis map Tcl command is required to map the PVS
+              layer/dtype data to the corresponding Quantus layers.
+
+              If the pvs_fill.data is generated based on  stream  (GDS/OASIS),
+              the map file should be in the following format:
+
+              #layer gds_layer gds_dtype use-type color-ID
+
+              <<layer_name>>   <<layer_number>>   <<data_type>>   <<use-type>>
+              <<color-ID>>
+
+              ...
+
+              Where,
+
+              * layer_name is the LEF layer name in the design
+
+              * layer_number is the layer ID in the GDS/OASIS file
+
+              * data_type is the datatype of the layer in the GDS/OASIS file
+
+              * use_type is the keyword for identifying the use of  the  data.
+                The valid values are:
+
+              *
+
+                * gray: library data in the GDS/OASIS file
+
+                * fill: regular metal fill data in the GDS/OASIS file
+
+                * active: active metal fill data in the GDS/OASIS file
+
+              * color-ID  is the color ID. Use "1" or "2" if the layer is col-
+                ored, or use hyphen "-" if the layer is not colored
+
+              For example,
+
+              M1  31  0 gray -
+
+              M1  31  1 fill -
+
+              M2  32  0 gray -
+
+              M2  32  1 fill -
+
+              Note: This parameter only affects signoff Quantus extraction.
+
+              Default: ""
+
+       -total_c_th <value_in_fF>
+              Specifies the threshold value (femtoFarads) that determines when
+              the extractor lumps a net's coupling capacitance to ground. This
+              parameter is applicable only when the -coupled parameter is  set
+              to true.
+
+              The  software  grounds  the  coupling  capacitances for the nets
+              which have a total capacitance value less than the value  speci-
+              fied with this parameter.
+
+              If  the  setDesignMode  -process <process_node> command is used,
+              the software assigns the recommended default value for this  pa-
+              rameter based on the process node specified.
+
+              Note: See the setDesignMode command for the list of default val-
+              ues that are applied based on the process node settings.
+
+              Note: The TQuantus extraction engine supports this parameter.
+
+              Default: 5 fF
+
+       -tQuantusModelFile <fileName>
+              Specifies  the  name  of  the tQuantus model file to be used for
+              postRoute effort-level medium extraction.
+
+              You can specify the model file as follows:
+
+              setExtractRCMode -engine postRoute -effortLevel  medium  -tQuan-
+              tusModelFile tQuantus_model.bin
+
+              For  details  of  the  use  model, see Creating RC Model Data in
+              TQuantus Model File in the Innovus User Guide.
+
+              Default: ""
+
+              Note: If this file is not specified, it will be generated  auto-
+              matically by the software.
+
+       -tsvSubcktFile <file_name>
+              Specifies  the name of the Through Silicon Via (TSV) subckt file
+              to be used. The file contains the .subckt model information  for
+              TSV. The file has a Spice format. A sample file is shown below.
+
+              R1 top n2 0.03075
+
+              R2 n2 bottom 0.03075
+
+              C1 n2 0 28f
+
+              Where,
+
+              top and bottom refer to the terminal nodes on the top and bottom
+              layers of the TSV
+
+              n2 is the internal node between the top and bottom layers
+
+              R1  top  n2  0.03075  means that a resistor with a resistance of
+              0.03075 Ohms is added between the top and n2 nodes
+
+              R2 n2 bottom 0.03075 means that a resistor with a resistance  of
+              0.03075 Ohms is added between the bottom and n2 nodes
+
+              C1 n2 0 28f means that a ground capacitance of 28 fF is added on
+              the n2 node
+
+              Note: The IQuantus engine might not keep the subckt connectivity
+              as  it  is.  The optimization of RES network will remove node n2
+              (if there is no other connections) and keep  a  single  resistor
+              between the top and bottom nodes with an accumulated resistance.
+              For  example,  in  the above example, the accumulated resistance
+              will be 0.0615 Ohms. Capacitance will also be moved to a "higher
+              layered node". In the above example, this layer is top.
+
+              Default: "" (empty string)
+
+       -turboReduce {true|false|auto}
+              Controls the turbo reduction feature for tQuantus/IQuantus,  and
+              Standalone Quantus extraction. It has no effect on tQuantus.
+
+              This is a cell-level reduction that provides a complimentary re-
+              duction  capability and only affects the coupling capacitors. It
+              has no effect on lumped capacitor extraction.
+
+              When set to auto, the software automatically turns on turbo  re-
+              duction and proceeds when the required Quantus license is avail-
+              able.  However, if the required Quantus license is not installed
+              in the license server,  the  software  automatically  turns  off
+              Turbo  reduction and proceeds with a warning message. If the li-
+              cense is installed in the license  server  but  temporarily  not
+              available,  then  two  scenarios are possible. First, if the li-
+              cense wait mode is not turned on, then Quantus will look for the
+              license right away and error out  because  the  license  is  not
+              available.  Second,  if the license wait mode is turned on, then
+              IQuantus will wait and check for the license periodically  until
+              timeout.  If  the license is available before the timeout, turbo
+              reduction will be performed but if the license is not  available
+              before timeout, IQuantus will error out.
+
+              When  set to true, the turbo reduction engine is on. However, if
+              the required Quantus license is not  installed  in  the  license
+              server, then Standalone Quantus and IQuantus will error out with
+              a  message  and the run will stop. It is because setting the op-
+              tion to true means the user really wants to perform turbo reduc-
+              tion.
+
+              When set to false, the turbo reduction engine is switched off.
+
+              For details, see the table titled, Behavior of Turbo  Reduction,
+              below.  However, note that the licensing rules given in this ta-
+              ble are not applicable to tQuantus because tQuantus does not re-
+              quire any Quantus license.
+
+              Default: auto
+
+       -useQrcOAInterface {true | false}
+              When set to true, specifies that OpenAccess  (OA)  interface  be
+              used  for  invoking Quantus extraction instead of using the DEF-
+              based flow.
+
+              Default: false
+
+       -useShieldingInDetailMode {true | false}
+              Assumes shielding for any wire segment of a clock net that  does
+              not  have any shielding yet, and the space between the wire seg-
+              ment and its neighbor is greater than or equal  to  the  follow-
+              ing:2s+w
+
+              where,
+
+               <s> = minimum spacing or non-default spacing
+
+               <w> = minimum width or non-default width
+
+              This  parameter  is available in postRoute -effortLevel low mode
+              only.
+
+              Default: false
+
+       -viaCap {true | false}
+              Extracts capacitance values considering part of the  via  geome-
+              tries  that  do not overlap with the wire geometries. Via geome-
+              tries that do not overlap the wire geometries are often found if
+              you are designing using newer design technologies such  as  90nm
+              or when using multiple cut via.
+
+              This  parameter  is only available in postRoute -effortLevel low
+              mode.
+
+              Default: true
+
+       -writeDefOptionsForSignoffExtract <list_of_def_options>
+              Specifies the list of defOut options for signoff extraction.
+
+              For signoff extraction, setExtractRCMode -engine postRoute  -ef-
+              fortLevel signoff, the software internally calls the defOut com-
+              mand.  However,  in some specific scenarios, you need to provide
+              additional options for the defOut command. Use this parameter to
+              provide the list of defOut options to be included.
+
+              When this parameter is specified, extractRC will  include  these
+              options while calling the defOut command.
+
+              Default: ""
+
+Behavior of Turbo Reduction
+Examples
+              * The following command selects the fastest postRoute extraction
+                engine:
+
+                setExtractRCMode -engine postRoute -effortLevel low
+
+                extractRC
+
+                rcOut -rc_corner corner1 -spef fe_extended.spef
+
+              * The following is a typical command sequence for the metal fill
+                parameter:
+
+                setExtractRCMode -engine postRoute -effortLevel low
+
+                -assumeMetFill 1
+
+                extractRC
+
+              * The  following  command resets the -relative_c_th parameter to
+                its default value:
+
+                setExtractRCMode -reset -relative_c_th
+
+              * The following command selects the Standalone Quantus for  sig-
+                noff grade extraction and uses a user supplied command file:
+
+                setExtractRCMode  -engine postRoute -effortLevel signoff -qrc-
+                CmdFile
+
+                custom_qrc.cmd -qrcCmdType custom
+
+                extractRC
+
+                rcout -rc_corner corner1 -spef signoff.spef
+
+Related Information
+              * extractRC
+
+              * setDesignMode
+
+              * getExtractRCMode
+
+              * The following topic in the Innovus User Guide
+
+                     * Performing Extraction in Innovus
+
+                           Fri Apr 04 01:25:37 2025    setExtractRCMode(25.10)

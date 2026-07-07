@@ -1,0 +1,63 @@
+{
+  "command": "create_buffer_psPM_table",
+  "is_cmd": true,
+  "summary": "自动计算指定缓冲器或反相器在指定布线层上的驱动距离，并生成中继器规则文件。",
+  "description": "该命令用于为指定的缓冲器或反相器列表，在一组布线层上自动计算其可驱动的距离，并生成一个用于中继器插入的规则文件。对于每个中继器和布线层，它会创建一个以该中继器为源端和接收端的双引脚网络。基于时序分析，命令会自动调整源端和接收端之间的距离，直到接收端的转换时间（slew）接近源端的输入转换时间。命令会输出一个中继器规则文件，其中为每个指定的中继器包含一个条目，该条目给出了在所有转换时间和布线层中总延迟最小的距离值。此规则文件可作为 addRepeaterByRule 等按规则插入中继器命令的输入。",
+  "usage": "create_buffer_psPM_table [-help] [-buffers <string>] [-file <string>] [-inverters <string>] [-layer <string>] -max_target_slew <float> -min_target_slew <float> [-rpt_file <string>] [-slew_interval <float>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-buffers",
+      "description": "输入缓冲器列表。指定的缓冲器应只有一个输入和一个输出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-file",
+      "description": "指定 addRepeaterByRule 规则文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inverters",
+      "description": "输入反相器列表。指定的反相器应只有一个输入和一个输出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer",
+      "description": "指定布线层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_target_slew",
+      "description": "最大目标转换时间（单位：皮秒）。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-min_target_slew",
+      "description": "最小目标转换时间（单位：皮秒）。",
+      "required": true,
+      "type": "float"
+    },
+    {
+      "name": "-rpt_file",
+      "description": "报告文件名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-slew_interval",
+      "description": "计算步长和转换时间范围间隔。指定值应在 [0.01 1.0] 范围内。步长计算公式为：($max_target_slew - $min_target_slew) * $slew_interval。",
+      "required": false,
+      "type": "float"
+    }
+  ]
+}

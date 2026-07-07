@@ -1,0 +1,223 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_inactive_arcs(25.10)                        report_inactive_arcs(25.10)
+
+Name
+       report_inactive_arcs  -  Reports  information about disabled timing and
+       timing check arcs in the design
+
+Syntax
+       report_inactive_arcs
+
+       [-help]
+
+       [<instance_or_port_list>]
+
+       [-exclude_type {const snipped  disable  library_disable  global_disable
+       conditional_disable Library_Mode power_mode_disable}]
+
+       [-include_net_arcs]
+
+       [-include_when_cond]
+
+       [-type  {const  snipped  disable  library_disable global_disable condi-
+       tional_disable Library_Mode power_mode_disable}]
+
+       [-view <view_name>]
+
+       [> <filename[.gz]>]
+
+       [>> <filename[.gz]>]
+
+       [-delay_arcs_only | -check_arcs_only]
+
+       Reports information about disabled timing and timing check arcs in  the
+       design. Reports all arcs disabled due to user-specified exceptions such
+       as set_disable_timingor set_case_analysis, as well as information about
+       arcs  disabled  by constant propagation during timing analysis, snipped
+       loop arcs, and arcs disabled in the timing library.
+
+       The report output prints only the 'from' and 'to' information of  arcs,
+       and not the full instance name for each arc.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <instance_or_port_list>
+              Reports disabled timing arcs for the specified list of instances
+              or  ports.  If you specify a list of instances, the software re-
+              ports all disabled arcs of the specified cells. If you specify a
+              list of ports, the software reports all disabled  arcs  directly
+              connected to the ports.
+
+              Default: Reports all disabled net and cell arcs.
+
+       -check_arcs_only
+              Lists  only  disabled check arcs. The check_arcs are disabled by
+              using the set_disable_timing command.
+
+              Default: Both disabled timing delay  arcs  and  check  arcs  are
+              listed.
+
+       -delay_arcs_only
+              Lists only disabled timing delay arcs.
+
+       -exclude_type {const snipped disable library_disable global_disable
+       conditional_disable Library_Mode power_mode_disable}
+              Excludes the disabled arcs that belong to the specified category
+              of disabled arcs.
+
+              The valid options are: const, snipped, disable, library_disable,
+              global_disable,     conditional_disable,    Library_Mode,    and
+              power_mode_disable.
+
+       -include_net_arcs
+              Includes disabled net arcs in the report.
+
+       -include_when_cond
+              Shows the when_cond of arcs in the output report.
+
+       -type {const snipped disable library_disable global_disable condi-
+       tional_disable Library_Mode power_mode_disable}
+              Lists only the disabled arcs that belong to the specified  cate-
+              gory of disabled arcs.
+
+              The  -type  options restrict the report to only those arcs which
+              are disabled due to a particular timing analysis step,  such  as
+              constant  propagation, specified disables, or loop arc disables.
+              The valid type options are:
+
+              * const:Propagated constant -- arcs disabled due to  a  constant
+                value.  The  constant  value  can  apply  to  one  of  the arc
+                nets/pins, to side inputs which disable a  condition  for  the
+                arc,  to nets that disable an active mode for the arc, or dis-
+                able a default conditional arc.
+
+              * snipped:Loop snipped arcs -- arcs  automatically  disabled  by
+                the software as part of a feedback loop.
+
+              * disable:Defined by using the set_disable_timing command.
+
+              * library_disable:  Delay  arc disabled due to library disables.
+                These disables may be caused by the following conditions:
+
+                * Disables specified using the set_disable_timing command.
+
+                * The arc is an asynchronous arc  and  the  timing_enable_pre-
+                  set_clear_arcs global variable is set to false.
+
+              * global_disable: Lists the arcs that are disabled through user-
+                specified global variable settings.
+
+              * conditional_disable:  Arcs  disabled  if  a  when condition is
+                specified. There is no constant on sink or source pin and  arc
+                is disabled due to the when condition.
+
+              * Library_Mode: Displays library mode of disabled arcs.
+
+              * power_mode_disable:  Reports  the arcs for which power mode is
+                disabled.
+
+       -view <view_name>
+              Generates the report for the specified analysis view  only.  You
+              can  specify  this parameter only when the software is in multi-
+              mode multi-corner timing analysis mode.
+
+       {> | >>} <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The <filename> parameter must be the last argument in the list.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+Examples
+              * The following command reports all disabled arcs in the design:
+
+                report_inactive_arcs > Report
+
+                The following example shows the report generated:
+
+                -----------------------------------------------
+
+                Flags :   const                propagated constant
+
+                          snipped              loop snipped arcs
+
+                          disable              set_disable_timing
+
+                          disable_clock_gating set_disable_clock_gating
+
+                          library_disable      set_disable_cell_timing
+
+                          Missing_Phase        No Arc Phase Data
+
+                From              To                 DisableType       ArcType
+                Reason
+
+                ----------------------------------------------------------------------
+
+                u8/CK  ^       u8/D  ^        const       hold_rising_clk_rise
+                u8/D = 1
+
+                u8/CK ^      u8/D  v        const        hold_falling_clk_rise
+                u8/D = 1
+
+                seg3/u12/A    ^   seg3/u12/Y   v   disable       combinational
+                User Disable
+
+                ----------------------------------------------------------------------
+
+              * When the software is in multi-mode multi-corner analysis mode,
+                the report generated lists the disabled arcs by active  analy-
+                sis view, as shown in the following example:
+
+                --------------------------------------------------
+
+                Flags : const propagated constant
+
+                snipped loop snipped arcs
+
+                disable set_disable_timing
+
+                disable_clock_gating set_disable_clock_gating
+
+                library_disable set_disable_cell_timing
+
+                Missing_Phase No Arc Phase Data
+
+                From         To                  DisableType  ArcType   Reason
+                View
+
+                --------------------------------------------------------------------------
+
+                gscanmode ^ FE_O305_gmode/I ^  const       net_arc   gscanmode
+                = 0  setup_view2
+
+                gscanmode  v FE_O305_gmode/I v  const       net_arc  gscanmode
+                = 0  setup_view2
+
+                gscanmode ^ FE_O305_gmode/I ^  const       net_arc   gscanmode
+                = 0  hold_view1
+
+                gscanmode  v FE_O305_gmode/I v  const       net_arc  gscanmode
+                = 0  hold_view1
+
+                gscanmode ^ FE_O305_gnmode/I ^ const       net_arc   gscanmode
+                = 0  hold_view2
+
+                --------------------------------------------------------------------------
+
+Related Information
+              * set_disable_timing
+
+              * set_case_analysis
+
+                           Fri Apr 04 01:25:37 2025report_inactive_arcs(25.10)

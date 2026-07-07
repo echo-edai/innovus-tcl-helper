@@ -1,0 +1,143 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+place_opt_design(25.10)                                place_opt_design(25.10)
+
+Name
+       place_opt_design
+
+Syntax
+       place_opt_design
+
+       [-help]
+
+       [-expanded_views]
+
+       [-incremental]
+
+       [-incremental_timing]
+
+       [-num_paths <number_of_paths>]
+
+        [-out_dir <outputDirectory>]
+
+       [-predict_prects]
+
+       [-prefix <outputFileName>]
+
+       [-timing_debug_report]
+
+       Executes pre-CTS flow with both placement and pre-CTS optimization.
+
+       Earlier,  users  had to perform the following two steps to do placement
+       and preCTS optimization:
+
+              * place_design
+
+              * optDesign -preCTS
+
+       With place_opt_design, users need to run only a single  command  to  do
+       placement and preCTS optimization.
+
+       The place_opt_design command provides better integration between place-
+       ment and optimization to achieve faster runtime and better PPA.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each place_opt_design parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man place_opt_design.
+
+       -expanded_views
+              Prints timing information for each active view at the end of the
+              command restoring all pruned views if absent.
+
+       -incremental
+              Specifies place_opt_design to be run in the incremental mode. In
+              the incremental mode place_opt_design incrementally improves the
+              existing placement based on the critical timing paths  and  con-
+              gestion.  The command then re-optimizes the netlist based on the
+              new placement. The optimization in incremental  place_opt_design
+              does DRV fixing, WNS, and TNS optimization.
+
+              The  input to place_opt_design -incremental can be either a par-
+              tial placement or full placement with placement violations,  and
+              the output is a legal placement as place_detail is called at the
+              end. This can be used if you want to further improve the conges-
+              tion  and timing QoR or if there is a minor floorplan change and
+              this by default, congestion-driven, and timing-driven.  It  also
+              honors  density  screens  and  floorplan constraints. If you run
+              place_opt_design and notice some areas of  congestion,  you  can
+              introduce density screens and run place_opt_design -incremental.
+              As  place_opt_design  -incremental  honors  density  screens, it
+              would spread out some of the cells, reducing congestion in  that
+              area.  In  contrast,  place_detail  would not do this as it only
+              works on the hard placement violations such  as  cell  overlaps,
+              while density screens is a "soft" constraint.
+
+              There  is no scan-reordering done in place_opt_design -incremen-
+              tal.
+
+              Note: Early clock flow mode place_opt_design -incremental reuses
+              the existing early clock flow clock tree without any logical  or
+              physical  modification and makes adjustments only to useful skew
+              using virtual delays. It is also  essential  to  note  that  the
+              CCOpt  clock  tree spec must not be deleted between the original
+              and incremental place_opt_design steps, just like it must not be
+              done between place_opt_design and  ccopt_design,  otherwise  any
+              useful skew will be lost.
+
+       -incremental_timing
+              In the incremental_timing mode,  place_opt_design does incremen-
+              tal DRV and timing optimization. In this mode,  place_opt_design
+              incrementally  optimizes the critical timing path. Also, the op-
+              timization in incremental timing  place_opt_design does DRV fix-
+              ing, WNS, and TNS optimization.
+
+       -num_paths <number_of_paths>
+              Specifies the number of paths reported in the timing report.  By
+              default, all timing paths are reported.
+
+       -out_dir <outputDirectory>
+              Specifies  the  output directory in which the timing/drv reports
+              will be saved.
+
+       -predict_prects
+              Performs optimization specific to physical synthesis exchange.
+
+       -prefix <outputFileName>
+              Specifies the file name prefix for the timing/drv  reports  that
+              are generated at the end of place_opt_design.
+
+       -timing_debug_report
+              When specified, generates a machine-readable timing debug report
+              after  completing placement and preCTS optimization. This report
+              is used for debugging timing results using the timing debug fea-
+              ture in Innovus.
+
+              Note: You can specify the number of paths to be  reported  using
+              the -num_paths parameter.
+
+Related Information
+              * optDesign
+
+              * place_design
+
+              * setOptMode
+
+              * setPlaceMode
+
+              * Following chapters in the Innovus User Guide
+
+              *
+
+                * Optimizing Timing
+
+                * Pre-CTS Optimization Command Sequence
+
+                * Early Clock Flow
+
+                * Using the Early Clock Flow
+
+                * Placing the Design
+
+                           Fri Apr 04 01:25:37 2025    place_opt_design(25.10)

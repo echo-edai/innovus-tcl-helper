@@ -1,0 +1,195 @@
+{
+  "command": "create_bump",
+  "is_cmd": true,
+  "summary": "根据指定模式创建凸点和凸点单元的实例",
+  "description": "该命令用于根据指定的模式创建凸点（bump）和凸点单元的实例。它支持多种放置模式，如全芯片阵列、单边阵列、环形阵列、中心阵列等。用户可以通过参数控制凸点的位置、间距、方向、命名格式、重叠处理、DRC检查以及与嵌入式凸点或模块引脚的相对关系。该命令还可用于创建机械虚拟凸点，并支持基于引脚位置创建凸点。",
+  "usage": "create_bump [-help] [-allow_outside_of_die] [-allow_overlap_control {keep_all keep_existing_bumps keep_new_bumps}] -cell <bumpcell_name> [-check_drc] [-edge_spacing {<left bottom right top>}] [-exclude_bump_area {<rect_list>}] [ [-keep_out_region <width height>] | [-keep_out_pitch <value>] ] [-loc <x y>] [-loc_type {cell_center | cell_lowerleft | geometry_center | geometry_lowerleft}] [-name_format {<string>, %i, %r, %c}] [-orientation {R0 R90 R180 R270 MX MX90 MY MY90}] [-respect_placement_blockage] [-return_bumps_name] [-start_index <index>] [-pitch <x y> [-pattern_full_chip | -pattern_side {<side width>} | -pattern_array {<row column>} | -pattern_ring <width> | -pattern_center {<row column>}]] [-stagger_type <type> [-stagger_offset <value>]] [-relative_type {embedded_bump inst_pin_port block} [[-relative_object {<inst_pin_port_list>}] [-relative_block <inst>+] [-relative_block_constraint <fileName>] [-relative_assignment] [-relative_offset <x y>]]] [{-pattern_full_chip | -pattern_array {<row column>} | -pattern_center {<row column>}} [-start_from {lower_left upper_left lower_right upper_right}]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印每个参数的简要描述，包括类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_outside_of_die",
+      "description": "允许在芯片区域外创建凸点。指定此选项时，工具在创建凸点阵列模式时会忽略布局规划约束。仅当同时指定了 -pattern_array 和 -location 时才可使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_overlap_control",
+      "description": "指定重叠控制类型。允许的值：keep_all（保留所有重叠凸点）、keep_existing_bumps（保留调用 create_bump 前已存在的凸点，跳过重叠的新凸点）、keep_new_bumps（删除调用 create_bump 前已存在的凸点，放置新凸点）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-cell",
+      "description": "指定用于创建凸点的凸点单元名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-check_drc",
+      "description": "检查DRC规则，在存在违规的位置不创建凸点，并发出相应的警告信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-edge_spacing",
+      "description": "指定最外层凸点到芯片边缘的最小距离（微米），格式为 {左 下 右 上}。距离计算点由 -loc_type 决定。",
+      "required": false,
+      "type": "float_list"
+    },
+    {
+      "name": "-exclude_bump_area",
+      "description": "指定禁止放置凸点的区域（矩形列表）。凸点几何形状不允许进入指定区域。支持多个矩形。",
+      "required": false,
+      "type": "rect_list"
+    },
+    {
+      "name": "-keep_out_region",
+      "description": "定义一个动态的禁止区域（宽度和高度组成的矩形框，中心与凸点中心相同），如果该区域内存在现有凸点，则不创建新凸点。",
+      "required": false,
+      "type": "float_list"
+    },
+    {
+      "name": "-keep_out_pitch",
+      "description": "定义一个以凸点中心为圆心、指定值为半径的圆形禁止区域。如果某位置的凸点中心间距小于此值，工具会根据 -allow_overlap_control 设置处理重叠。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-loc",
+      "description": "指定基于位置类型的凸点创建起始点的 X 和 Y 坐标（微米）。对于不同凸点模式，起始点的含义不同。",
+      "required": false,
+      "type": "float_list"
+    },
+    {
+      "name": "-loc_type",
+      "description": "指定凸点创建的位置类型。可选值：cell_center（默认）、cell_lowerleft、geometry_center、geometry_lowerleft。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-name_format",
+      "description": "指定凸点名称的格式，类似于 printf 格式，但使用 %i 表示索引，%r 表示行号，%c 表示列号。默认格式为 Bump_%i。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-orientation",
+      "description": "指定凸点生成时的方向。对于矩形支柱凸点，可旋转以缓解封装和芯片布线问题。默认值：R0。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-respect_placement_blockage",
+      "description": "指定正在创建的凸点（包括虚拟凸点）不应与任何布局阻挡区域重叠。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-return_bumps_name",
+      "description": "返回生成的凸点名称。如果 create_bump 未能生成任何凸点，则返回空字符串。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-start_index",
+      "description": "指定要创建的凸点的起始索引号。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pitch",
+      "description": "指定凸点中心之间的距离（微米）。对于不同的凸点模式，{x y} 的解释方式不同。",
+      "required": false,
+      "type": "float_list"
+    },
+    {
+      "name": "-pattern_full_chip",
+      "description": "创建覆盖整个芯片的凸点阵列。阵列从由 -edge_spacing 设置的边界最近点开始，并在 -edge_spacing 约束下延伸到芯片边界。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-pattern_side",
+      "description": "沿芯片一侧创建凸点阵列。阵列长度等于边长，宽度由 <width> 指定。合法的 <side> 名称：left, top, right, bottom。",
+      "required": false,
+      "type": "enum_list"
+    },
+    {
+      "name": "-pattern_array",
+      "description": "创建凸点阵列。凸点从 -loc 指定的坐标开始，并根据 -start_from 指定的起始角扩展到给定的 <行 列> 数。",
+      "required": false,
+      "type": "int_list"
+    },
+    {
+      "name": "-pattern_ring",
+      "description": "围绕芯片边界创建凸点环，环的宽度由 <width> 指定（整数值）。环在 -edge_spacing 约束下延伸。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pattern_center",
+      "description": "创建以芯片中心为中心的凸点阵列，并扩展到给定的 <行 列> 数。中心点可通过 -loc 直接设置。",
+      "required": false,
+      "type": "int_list"
+    },
+    {
+      "name": "-stagger_type",
+      "description": "指定交错类型模式。允许的值：odd_rows（奇数行右移）、odd_columns（奇数列上移）、even_rows（偶数行右移）、even_columns（偶数列上移）、trapezoid（仅与 -pattern_side 一起使用时支持梯形模式）。不能与 -pattern_ring 一起使用。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stagger_offset",
+      "description": "指定生成的凸点模式中行或列之间的凸点偏移量（微米）。与 -stagger_type 一起使用。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-start_from",
+      "description": "指定创建凸点阵列的起始角。仅当指定了 -pattern_array、-pattern_center 或 -pattern_full_chip 时才可使用。默认值：lower_left。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-relative_type",
+      "description": "指定相对对象的类型：embedded_bump（嵌入式凸点）、inst_pin_port（实例引脚端口）、block（模块）。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-relative_object",
+      "description": "指定 inst_pin_port 列表，支持通配符。格式为 {<实例>:<引脚>:<端口> ...}，端口为整数类型。",
+      "required": false,
+      "type": "string_list"
+    },
+    {
+      "name": "-relative_block",
+      "description": "指定基于顶层模块引脚创建顶层凸点的模块列表。当 -relative_type 设置为 block 时必须指定。支持通配符。",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-relative_block_constraint",
+      "description": "指定用于基于顶层模块引脚创建顶层凸点的块约束文件名。仅当指定了 -relative_type block 时才可使用，且为可选。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-relative_assignment",
+      "description": "将相对对象的对应网络分配给正在创建的凸点。仅当指定了 -relative_type 时才可使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-relative_offset",
+      "description": "指定凸点位置相对于相对对象的偏移量。创建的凸点的几何中心是相对对象的几何中心加上此偏移量。仅当指定了 -relative_type 时才可使用。",
+      "required": false,
+      "type": "float_list"
+    }
+  ]
+}

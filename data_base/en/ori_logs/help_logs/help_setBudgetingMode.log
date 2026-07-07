@@ -1,0 +1,179 @@
+Usage: setBudgetingMode [-help] [-reset] [-abutted {true|false}]
+                        [-accumulated {true|false}]
+                        [-boundaryConditionTemplatePath <string>]
+                        [-bufferDelayLibCell <libname/cellname>]
+                        [-bufferDelaySelectionEffort {low|high|none}]
+                        [-ccd {true|false}] [-constantModel {true|false}]
+                        [-distributeMMMC {true|false}]
+                        [-dontWriteWireLoad {true|false}]
+                        [-driveConstraint {drive|drive_cell|input_transition}]
+                        [-fixTopLevelPaths {none|all|negativeOnly|positiveOnly}]
+                        [-handleComplexSDC {true|false}]
+                        [-honorPortBoundaryCondition {true|false}]
+                        [-honorPortDelays {true|false}]
+                        [-honorReportTimingFormat {true|false}]
+                        [-ignoreDontTouch {true|false}]
+                        [-includeLatency {true|false}]
+                        [-includeWireLoadsInLib {true|false}]
+                        [-inputLoad {true|false}]
+                        [-justify {delay|exception|lib_arc|boundary_condition|all}]
+                        [-justifyBudgetDir <string>]
+                        [-keepPinListsForBlockPorts {true|false}]
+                        [-latencyOnClocks {true|false}]
+                        [-localLatency {true|false}]
+                        [-localUncertainty {true|false}]
+                        [-makeNegativeInputDelayZero {true|false}]
+                        [-makeReducedTimingGraph {true|false}]
+                        [-masterClone {masterOnly|merged|uniqueViewPerHInst}]
+                        [-noFalsePathsForUnCstrPorts {true|false}]
+                        [-noHoldView {true|false}] [-noSetupView {true|false}]
+                        [-reportOrModifyBudget {true|false}]
+                        [-rptNegSlackOnPorts <double>]
+                        [-sdcContents {full|||pushDownOnly|||boundaryConstraintsOnly|||noBoundaryCondition|||noBoundaryConstraints}]
+                        [-stageBasedFanoutDrivingFactor <value>]
+                        [-stageBasedPartitionMultiplier <string>]
+                        [-stageBasedWeight {S C B}]
+                        [-useBoundaryCondition {optimized|template|actual|empty}]
+                        [-virtualClock {true|false}]
+                        [-virtualOptEngine {none|earlyTimingEngine|proto}]
+                        [-writeConstraintsForClkOutputPorts {true|false}]
+                        [-writeFPForHold {true|false}]
+                        [-writeLatencyPerClock {true|false}]
+
+-help                                  # Prints out the command usage
+-reset                                 # Resets all or specified options to default value
+-abutted {true|false}                  # Assumes all partitions are abutted
+                                       # (bool, default=false)
+-accumulated {true|false}              # Write both interface and flat
+                                       # constraints for nested partitions
+                                       # under if {budget_use_accumulated != 1}
+                                       # { } else { } conditions.
+                                       # (bool, default=false)
+-boundaryConditionTemplatePath <string>    # Directory path containing model
+                                           # files to be used with option
+                                           # useBoundaryCondition template
+                                           # (string, default="")
+-bufferDelayLibCell <libname/cellname> # user defined buffer which should be
+                                       # used for virtual buffer adjustment
+                                       # (string, default="")
+-bufferDelaySelectionEffort {low|high|none}
+                                       # controls the tool effort for
+                                       # calculating the buffer delay
+                                       # adjustment internally
+                                       # (enums={low high none}, default=none)
+-ccd {true|false}                      # Generates scripts for verification of
+                                       # time budgeting top and block
+                                       # constraints against pre-budget chip
+                                       # constraints using the CCD
+                                       # (bool, default=false)
+-constantModel {true|false}            # Specifies the type of timing model
+                                       # created (bool, default=true)
+-distributeMMMC {true|false}           # Distribute multiple analysis views
+                                       # over multiple sessions
+                                       # (bool, default=false)
+-dontWriteWireLoad {true|false}        # write set_load with -wire_load
+                                       # information (bool, default=false)
+-driveConstraint {drive|drive_cell|input_transition}
+                                       # Driving boundary constraint to be
+                                       # written on block input port
+                                       # (enums={drive drive_cell input_transition}, default=drive_cell)
+-fixTopLevelPaths {none|all|negativeOnly|positiveOnly}
+                                       # Slack value for which the top-level
+                                       # timing budget is fixed, and remaining
+                                       # budget is proportioned only for
+                                       # partitions
+                                       # (enums={none all negativeOnly positiveOnly}, default=none)
+-handleComplexSDC {true|false}         # handle sdc files with complex
+                                       # constructs and regular expressions in
+                                       # push down (bool, default=false)
+-honorPortBoundaryCondition {true|false}
+                                       # Push down chip IO constraints to block
+                                       # boundary pins which are directly
+                                       # connected to chip IO (bool, default=true)
+-honorPortDelays {true|false}          # Push down chip IO SID SOD values to
+                                       # block IO if the two are directly
+                                       # connected and abutting.
+                                       # (bool, default=true)
+-honorReportTimingFormat {true|false}  # honor set_global report_timing_format
+                                       # in justification reports
+                                       # (bool, default=true)
+-ignoreDontTouch {true|false}          # Specifies the handling of don't touch
+                                       # objects (bool, default=false)
+-includeLatency {true|false}           # Specifies whether the clock latency is
+                                       # included in the set_input_delay and
+                                       # set_output_delay constraints
+                                       # (bool, default=true)
+-includeWireLoadsInLib {true|false}    # Include the wire loads in library
+                                       # model pin capacitance
+                                       # (bool, default=false)
+-inputLoad {true|false}                # write set_load for input pins
+                                       # (bool, default=false)
+-justify {delay|exception|lib_arc|boundary_condition|all}
+                                       # controls the type of justification (enums={delay exception lib_arc boundary_condition all}_list, default="")
+-justifyBudgetDir <string>             # Alternate directory name for justify
+                                       # reports when -justify is given with
+                                       # deriveTimingBudget
+                                       # (string, default=budget_justify)
+-keepPinListsForBlockPorts {true|false}    # Preserve all fan-in and fan-out
+                                           # lists (bool, default=true)
+-latencyOnClocks {true|false}          # write set_clock_latency on clocks
+                                       # (bool, default=true)
+-localLatency {true|false}             # Write user specific set_clock_latency
+                                       # constraints, provided through
+                                       # setPtnUserCnsFile command, in
+                                       # partition constraint files
+                                       # (bool, default=false)
+-localUncertainty {true|false}         # Use local uncertainty specified
+                                       # through setPtnUserCnsFile command for
+                                       # partitions (bool, default=false)
+-makeNegativeInputDelayZero {true|false}
+                                       # To be backward compatible where
+                                       # negative set input delays were made
+                                       # zero (bool, default=true)
+-makeReducedTimingGraph {true|false}   # Enable running ART before Budgeting.
+                                       # (bool, default=false)
+-masterClone {masterOnly|merged|uniqueViewPerHInst}
+                                       # controls the tool behaviour for master
+                                       # clones
+                                       # (enums={masterOnly merged uniqueViewPerHInst}, default=masterOnly)
+-noFalsePathsForUnCstrPorts {true|false}
+                                       # do not create false paths for
+                                       # unconstrained ports (bool, default=false)
+-noHoldView {true|false}               # Disable hold view budgeting
+                                       # (bool, default=false)
+-noSetupView {true|false}              # Disable setup view budgeting
+                                       # (bool, default=false)
+-reportOrModifyBudget {true|false}     # Enable the collection of data to use
+                                       # the reportBudget and modifyBudget
+                                       # commands (bool, default=false)
+-rptNegSlackOnPorts <double>           # save warnings for ports having slack
+                                       # less than the specified value
+                                       # (float, default=-1000000)
+-sdcContents {full|||pushDownOnly|||boundaryConstraintsOnly|||noBoundaryCondition|||noBoundaryConstraints}
+                                       # option to control SDC contents (enums={full | pushDownOnly | boundaryConstraintsOnly | noBoundaryCondition | noBoundaryConstraints}, default=full)
+-stageBasedFanoutDrivingFactor <value> # Fanout count of the pin, above which
+                                       # we will add buffer stages in Timing
+                                       # Graph (int, default=-1)
+-stageBasedPartitionMultiplier <string>    # List of partition hinsts with its
+                                           # corresponding multiplication
+                                           # factor (string, default="")
+-stageBasedWeight {S C B}              # List of weights given for {Sequential
+                                       # Combinational Buffer} cells
+                                       # (string, default=1 1 1)
+-useBoundaryCondition {optimized|template|actual|empty}
+                                       # Mechanism used for finding buffers to
+                                       # be used as driver/load
+                                       # (enums={optimized template actual empty}, default=template)
+-virtualClock {true|false}             # Create additional virtual clocks for
+                                       # budgeting (bool, default=true)
+-virtualOptEngine {none|earlyTimingEngine|proto}
+                                       # Specifies the virtual optimization
+                                       # engine to be used
+                                       # (enums={none earlyTimingEngine proto}, default=none)
+-writeConstraintsForClkOutputPorts {true|false}
+                                       # Write constraints for clock output
+                                       # ports (bool, default=false)
+-writeFPForHold {true|false}           # write false path -hold for all I/Os in
+                                       # setup budgeting (bool, default=false)
+-writeLatencyPerClock {true|false}     # write latency per clock instead of per
+                                       # port (bool, default=false)

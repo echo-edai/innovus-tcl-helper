@@ -1,0 +1,87 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+dd_get(25.10)                                                    dd_get(25.10)
+
+Name
+       dd_get - Returns OpenAccess library information
+
+Syntax
+       dd_get
+
+        {-all_lib}  |{-dd <dd_objHandle> | -lib <libName> | -cell {<lib cell>}
+       | -cellview {<lib cell view>} }
+
+        [-children | -file | -path | -type |-name]}
+
+       Returns OpenAccess library information.
+
+Parameters
+       -all_lib
+              Returns a list of design data (dd) object handles for  the  list
+              of libraries present in the library definition file ( cds.lib).
+
+       -cell {<lib cell>}
+              Specifies the names of the library and cell to be processed.
+
+       -cellview {<lib cell view>}
+              Specifies  the  names  of  the  library,  cell,  and  view to be
+              processed.
+
+       -children
+              Returns the dd object handles of the children of  the  specified
+              dd  object  handle. Children of libraries are cells. Children of
+              cells are views.
+
+       -dd <dd_objHandle>
+              Specifies the dd object to be processed.
+
+       -file  Returns the dd object handles of all the files in the  specified
+              dd object handle.
+
+       -lib <libName>
+              Specifies the name of the library to be processed.
+
+       -name  Returns the name of the specified dd object handle.
+
+       -path  Returns  the  absolute  path name (dd path) of the specified  dd
+              object handle.
+
+       -type  Returns the type of the specified dd object handle.
+
+Examples
+              * The  following  command  returns   the   path   of   the   li-
+                brary/cell/view as shown below:
+
+                dd_get -cellview {pdkLib cell1 abstract} -path
+
+                returns:
+
+                /libs/pkdLib/cell1/abstract
+
+                This command is equivalent to the following SKILL function:
+
+                ddGetObjReadPath(ddGetObj("pdkLib" "cell1" "abstract"))
+
+              * The  following proc traverses the cds.lib structure (expanding
+                #INCLUDE as required) to get the complete list  of  OpenAccess
+                libraries and their full paths:
+
+                #  expand #INCLUDE as needed and print all libraries and their
+                full paths
+
+                proc print_all_lib_paths {} {
+
+                    puts [format "%16s -> %s" "Library Name" "Library Path"]
+
+                    puts
+                "----------------------------------------------------------------"
+
+                    foreach oa_lib [dd_get -all_lib] {
+
+                        puts [format "%16s -> %s" [dd_get -dd  $oa_lib  -name]
+                [dd_get -dd $oa_lib -path]]
+
+                    }
+
+                }
+
+                           Fri Apr 04 01:25:37 2025              dd_get(25.10)

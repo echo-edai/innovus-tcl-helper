@@ -1,0 +1,239 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ecoDefIn(25.10)                                                ecoDefIn(25.10)
+
+Name
+       ecoDefIn  -  Restores  physical information from an old design and com-
+       pares this information with the design in memory
+
+Syntax
+       ecoDefIn
+
+       [-help]
+
+       [-postMask [-suffix <suffixName>]]
+
+       [-useGACells <GACoreSite>]
+
+       [-reportFile <fileName>]
+
+       [-cleanFEData]
+
+       [-keepInstLoc]
+
+       [-mergeFloatingRouteToPGNet <netName>]
+
+       [-ecoDef {<new_DEF_fileName>}]
+
+       <filename>
+
+       Restores physical information from an old design and compares this  in-
+       formation  with  the  design in memory. This command uses the specified
+       DEF file in the following ways for pre-mask and post-mask ECO:
+
+              * Used in pre-mask mode (without the -postMask  parameter)  this
+                command behaves as follows:
+
+                     * New cells and nets
+
+                       Cells  that exist in memory but not in the DEF file be-
+                       come unplaced.
+
+                     * Deleted cells or nets
+
+                       Cells and nets that exist in the DEF file  but  not  in
+                       memory are discarded.
+
+                     * Modified nets
+
+                       Nets  found  both  in  the  DEF file and in memory, but
+                       whose connections are different, are marked  as  "modi-
+                       fied" for further processing during ecoRoute.
+
+                     * Matched cells/nets
+
+                       Nets  and  cells that exist both in the DEF file and in
+                       memory, and have the same connections,  are  placed  as
+                       described  in  the  DEF  file.  This  includes the soft
+                       matching capability used in defIn.
+
+       Soft matching happens when a DEF net name does not have  an  equivalent
+       name  and another net is found in memory, that has the same connections
+       as described in the DEF file.
+
+       The most common case for soft  matching  is  when  nets  have  multiple
+       aliases   in   a   hierarchical   design   "net1"   =   "inst1/net2"  =
+       "inst1/inst2/net3" and so on. Any of these net names can be used in the
+       DEF and can have the same connections.
+
+       Without soft matching, net `a', for example, is removed and net `b'  is
+       created in it's place, resulting in ripping of the wire.
+
+              * In post-mask mode (with the -postMask parameter), the software
+                can  only change nets, not cells. This command behaves as fol-
+                lows:
+
+                     * New added cells and nets
+
+                       Cells that exist in memory but not in the DEF file  be-
+                       come  unplaced.  Later,  these  cells will be mapped to
+                       spare cells when you use ecoPlace-useSpareCells.
+
+                     * Deleted cells
+
+                       Cells and instances that exist in DEF but not in memory
+                       are added to a spare cell list in Innovus: They are not
+                       discarded. Deleted cells are renamed with their  origi-
+                       nal name and the suffix you specify. The default suffix
+                       is  _SPARE.  For example, cellA is renamed cellA_SPARE.
+                       The software retains deleted nets  and  their  routing,
+                       which ecoRoute reroutes later.
+
+                     * Deleted nets
+
+                       Nets  that  exist in DEF but not in memory are kept and
+                       processed later when you use the ecoRoute command.
+
+                     * Modified nets
+
+                       Same behavior as in the pre-mask mode.
+
+                     * Matched cells and nets
+
+                       Same behavior as in the pre-mask mode.
+
+                     * Physical cells
+
+                       Cells that exist in the DEF file  but  not  in  memory,
+                       which are marked with +SOURCE DIST in the DEF file, are
+                       restored.
+
+       If  you specify -useGACells, this implies a post-mask mode. This option
+       behaves as follows:
+
+              * For cells that match the specified GA core site:
+
+                     * New added GA cell that exists in memory but not in  the
+                       DEF file are left unplaced.
+
+                     * New GA cells that exist in the DEF file but not in mem-
+                       ory are deleted.
+
+              * For  cells  that  do not match the specified GA core site, the
+                software treats them as standard cells as described in  -post-
+                Mask mode.
+
+       If  you  specify  a report filename, this command reports the following
+       information:
+
+              * New cells and nets found in memory but not in the DEF file
+
+              * Deleted cells and nets found in DEF but not in memory
+
+              * Nets whose connection does not match
+
+              * Cells and nets that match in Innovus and DEF
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ecoDefIn.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ecoDefIn
+
+       -cleanFEData
+              Specifies  that  the  routed data is DRC clean. ECO routing will
+              skip routing analysis.
+
+       -ecoDef {<new_def_fileName>}
+              Specifies the name of a partial DEF file. The tool compares  the
+              original  routed DEF file or Innovus database with this file and
+              marks the changed instances, changed location  of  the  existing
+              instances, and changed segments or wires.
+
+       <fileName>
+              Specifies the name of the routed/original DEF file to load.
+
+       -keepInstLoc
+              Applies the placement status and location of the instance in the
+              DEF file to the instance in db.
+
+              This  option  is only applicable in the following special situa-
+              tion:
+
+              When an instance in DEF file and an instance in db have the same
+              name but the master cell of the instance in the DEF and  in  the
+              db  do  not  match,  then  the  instance in DEF is considered as
+              deleted while the instance in db is added. In this case, if  the
+              option  is not specified, the general rule for addition or dele-
+              tion of an instance is applied as  described  earlier.  For  the
+              added  instance, the placement status is set to unplaced. If the
+              option is specified, the placement status and  location  of  the
+              instance in the DEF file is applied to the instance in db.
+
+       -mergeFloatingRouteToPGNet <netName>
+              Merges  the  routing data to the specified PG net. In this case,
+              the physical-only net will not be created.
+
+              When this parameter is not specified, if a net is deleted in the
+              new netlist but exists in the DEF file, then the  ecoDefIn  com-
+              mand  discards  the  net in pre-mask ECO and creates a physical-
+              only net in post-mask ECO to preserve the routing  data  on  the
+              net.
+
+       -postMask
+              Runs this command in post-route mode.
+
+       -reportFile <fileName>
+              Specifies the name for the report generated by the ecoDefIn com-
+              mand.
+
+              Default: ecoDefIn.rpt
+
+       -suffix <suffixName>
+              Appends  the  specified  suffix  to cells that appear in the DEF
+              file but have been deleted in the new netlist.
+
+              Default: _SPARE
+
+       -useGACells <GACoreSite>
+              Specifies the GA Core Site.
+
+Examples
+       The following example reads a DEF file, myOld.def, for post-mask ECO.
+
+       ecoDefIn -postMask -suffix _SPARE -reportFile ecoDefIn.rpt myOld.def
+
+       When the software converts a deleted instance to a spare cell, it  adds
+       the  _SPARE  suffix  to  the  instance. This command generates a report
+       ecoDefIn.rpt.
+
+       The following example shows a report file:
+
+       DELINST DTMF_INST/TDSP_CORE_INST/PROG_BUS_MACH_INST/i_9649 INVX1
+
+       (converted to spare cell
+
+       DTMF_INST/TDSP_CORE_INST/PROG_BUS_MACH_INST/i_9649_SPARE)
+
+       ADDINST DTMF_INST/TDSP_CORE_INST/PROG_BUS_MACH_INST/i_9649 BUFX8
+
+       MODIFYNET dtmf_chip_TIELO_Y_r2c1
+
+       ADDNET DTMF_INST/UNCONNECTED_000
+
+       ADDNET DTMF_INST/UNCONNECTED_001
+
+       ADDNET DTMF_INST/TDSP_CORE_INST/UNCONNECTED_000
+
+       ADDNET DTMF_INST/TDSP_CORE_INST/UNCONNECTED_009
+
+       ADDNET DTMF_INST/TDSP_CORE_INST/UNCONNECTED_010
+
+Related Information
+              * ecoPlace
+
+              * ecoRoute
+
+                           Fri Apr 04 01:25:37 2025            ecoDefIn(25.10)

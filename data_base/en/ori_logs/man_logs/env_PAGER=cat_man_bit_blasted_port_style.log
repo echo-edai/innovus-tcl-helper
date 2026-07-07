@@ -1,0 +1,53 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+bit_blasted_port_style(25.10)                    bit_blasted_port_style(25.10)
+
+Name
+       bit_blasted_port_style
+
+Syntax
+        bit_blasted_port_style %s_%d
+
+       Type: String
+
+       Default: %s_%d, persistent
+
+       This global variable is used to define the bus bit blasted port name.
+
+       Specifies  the  naming style to be used if mapped ports are bit blasted
+       with the command bitblast_ports. The values of this global need to con-
+       tain elements %s and %d.
+
+       The following rules apply:
+
+              * A port name always starts with the base name  (represented  by
+                %s)
+
+              * The suffix is appended to the base name to form port name, ac-
+                cording to the format specified in the global value.
+
+              * %d represents the bit information.
+
+Example
+       The default of %s_%d will convert a bus-bit A[0] to A_0.
+
+       If  you  want to keep the original bus-bit name but have it turned into
+       an escaped scalar name you can use:
+
+       set_db bit_blasted_port_style {%s\[%d\]}
+
+       This will convert a bus-bit A[0] to an escaped scalar  name  A\[0\]  in
+       Tcl,  so  the  port  .name  would be "A[0]", the .escaped_name would be
+       "A\[0\]", the dual-ported-object name would look like {port:top/A\[0\]}
+       with Tcl adding the {} around it to protect the \ chars, and  the  Ver-
+       ilog port would look like "\A[0] ".
+
+       One  advantage  of  this  is that SDC commands and Innovus Tcl commands
+       that use port names with A[0] will still "soft-match"  the  new  A\[0\]
+       name,  so  they do not have to change. However, using escaped names may
+       require careful Tcl scripting to make sure  you  do  not  inadvertently
+       lose the escaped \ chars when you want them.
+
+Related Information
+              * bitblast_ports
+
+                           Fri Apr 04 01:25:37 202b5it_blasted_port_style(25.10)

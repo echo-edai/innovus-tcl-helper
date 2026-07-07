@@ -1,0 +1,160 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+scanReorder(25.10)                                          scanReorder(25.10)
+
+Name
+       scanReorder - Reorders the scan cells after running placement
+
+Syntax
+       scanReorder
+
+       [-help]
+
+       [-addScanPortPrefix <prefix>]
+
+       [-clkAware {true|false}]
+
+       [-preferH {true|false}]
+
+       [-preferV {true|false}]
+
+       [-keepPDPorts {true|false} ]
+
+       [-scanEffort {low|medium|high|auto} ]
+
+       [-skipMode {skipNone|skipBuffer}]
+
+       Reorders  the scan cells after running placement. Controls the skipping
+       and removal of buffers and inverters in the scan chain.
+
+       Set global parameters for this command with the setScanReorderMode com-
+       mand.
+
+       This command automatically detects multiple power domains and minimizes
+       the number of scan chains that pass through them. It respects rectilin-
+       ear and rectangular power domain boundaries. If a  scan  chain  crosses
+       power  domains  that operate at the same voltage, the software does not
+       insert level shifters. If the scan chain crosses power domains  operat-
+       ing  at  different voltages, the software inserts the appropriate level
+       shifters.
+
+       If scan reorder fails, use the scanTrace -verbose command to see  where
+       the scan chain stops.
+
+       Note:  Parameters  set  by  this  command  override the settings of the
+       setScanReorderMode command.
+
+       Note: This command supports multithreading.
+
+Parameters
+       -addScanPortPrefix <prefix>
+              Specifies the prefix to be added to scan hports.
+
+              Default: ""
+
+       -clkAware {true | false}
+              Specifies whether scan reordering is clock tree aware.
+
+              * When true, scan reordering is clock tree aware, and  is  clock
+                tree driven.
+
+              * When  false,  scan  reordering is not clock tree aware, and is
+                wirelength driven.
+
+              Default: false (The software is not clock tree aware)
+
+              This parameter can also have the value  0,  1  or  any  floating
+              point  number  between  0 and 1. If this parameter is not speci-
+              fied, or if 0 is specified for this parameter,  this  indicates:
+              Do  not  consider clock tree at all. If the value is close to 1,
+              this indicates: Give greater consideration to clock tree.
+
+       -keepPDPorts {true | false}
+              Maintains or corrects the hierarchical ports without deleting or
+              inserting shifters, and reorders the remaining scan chain.
+
+              To turn this option off, use scanReorder -keepPDports  false  or
+              setScanReorderMode -keepPDPorts false.
+
+              Default: true
+
+              Note: This parameter works in the MSV flow only.
+
+       -preferH {true | false}
+              Specifies  that the preferred direction for scan reordering con-
+              nections is horizontal. Reorders the scan chain to snake a side-
+              ways "S" configuration if the block is short and wide or the de-
+              sign has vertical routing congestion.
+
+              Default: false
+
+              Note: If both -preferV and -preferH are set to true,  the  soft-
+              ware  does not honor the setting and treats them both as if they
+              were false.
+
+       -preferV {true | false}
+              Specifies that the preferred direction for scan reordering  con-
+              nections  is vertical. Reorders the scan chain to snake a verti-
+              cal "S" configuration if the block is long and narrow or the de-
+              sign has horizontal routing congestion.
+
+              Default: false
+
+              Note: If both -preferV and -preferH are set to true,  the  soft-
+              ware  does not honor the setting and treats them both as if they
+              were false.
+
+       -scanEffort {low|medium|high|auto}
+              Specifies the effort level for reordering scan chains.
+
+              Default: -medium
+
+              Specify one of the following values:
+
+              * auto: Runs internal reorder effort, and it may tune at differ-
+                ent stages.
+
+              * high: Runs more iterations of scan reorder to  achieve  better
+                net length. Using this parameter increases the run time.
+
+              * low:  Runs  fewer  iterations  of scan reorder to minimize net
+                length quickly.
+
+              * medium: Runs a normal number of iterations.
+
+       -skipMode {skipNone | skipBuffer}
+              Specifies how scan reordering handles buffers and  inverters  in
+              the scan chain.
+
+              Default: skipNone
+
+              Specify one of the following:
+
+              * skipNone:  Specifies  that  buffers and inverters remain after
+                the scan chain reorder.
+
+              * skipBuffer: Ignores buffers in the scan chain. If a buffer  is
+                not connected elsewhere in the design, scanReorder removes the
+                buffer.
+
+Command Order
+       Use  this  command after running placement with the ignore scan connec-
+       tion parameter (setPlaceMode -place_global_ignore_scan true), and after
+       specifying the scan chain or loading scan chain information in the  DEF
+       or TDF files.
+
+Example
+       The  following  command  reconnects  the scan chain so that buffers are
+       skipped:
+
+       scanReorder -skipMode skipBuffer
+
+Related Information
+              * scanTrace
+
+              * setScanReorderMode
+
+              * Placing the Design chapter in the Innovus User Guide
+
+                * Optimizing and Reordering Scan Chains
+
+                           Fri Apr 04 01:25:37 2025         scanReorder(25.10)

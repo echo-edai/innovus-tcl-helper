@@ -1,0 +1,33 @@
+{
+  "command": "setGenerateViaMode",
+  "is_cmd": true,
+  "summary": "为默认规则和非默认规则自动生成布线所需的通孔",
+  "description": "该命令用于自动生成nanoroute布线所需的通孔，适用于默认规则和非默认规则。生成的通孔基于布线规则的线宽，并满足所有DRC通孔包围规则，同时考虑良好的引脚接入、双切通孔利用率的变体，以及为无连接线的堆叠通孔满足最小金属面积规则而生成的最小面积通孔。此命令应在init_design之前使用，以便在初始网表加载时创建通孔。如果在加载设计后更改设置，需要使用saveDesign/restoreDesign来触发新设置下的通孔自动生成。若要在单个Innovus会话中尝试不同设置，请改用generateVias命令。该命令需要正确的DRC规则（如包围、间距、最小切割、最小面积规则等），并且每个用于布线的通孔层至少需要一个LEF VIARULE GENERATE语句（或OpenAccess standardViaDef）。除非是旧版LEF技术文件（LEF版本5.5及更早，不推荐使用），否则VIARULE GENERATE语句中的切割包围值不会被使用。VIARULE的切割间距值被忽略，仅使用DRC切割间距值。不需要预定义的通孔（例如LEF VIA DEFAULT或NONDEFAULTRULE USEVIA不是必需的，OpenAccess路由ConstraintGroup定义也不需要任何validVias列表）。如果存在预定义的通孔，生成的通孔会与之进行几何比较，若完全相同，则不会保留该特定生成的通孔，以避免重复。在这种情况下，nanoroute将使用预定义和自动生成通孔的组合。自动生成的通孔是参数化通孔，而非固定通孔。",
+  "usage": "setGenerateViaMode [-help] [-reset] [-auto {true|false}] [-ndr_only {true|false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个setGenerateViaMode参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定选项重置为默认值。任何与默认值不匹配并被重置的值将被报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto",
+      "description": "启用设计加载时的自动通孔生成。此选项为布尔类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ndr_only",
+      "description": "仅生成非默认规则的通孔。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

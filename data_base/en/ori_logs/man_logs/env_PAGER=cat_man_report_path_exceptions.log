@@ -1,0 +1,220 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_path_exceptions(25.10)                    report_path_exceptions(25.10)
+
+Name
+       report_path_exceptions - Generates a report about path exceptions spec-
+       ified  using  the  set_false_path,  set_min_delay,  set_max_delay,  and
+       set_multicycle_path commands
+
+Syntax
+        report_path_exceptions
+
+       [-help]
+
+       [-all]
+
+       [-early | -late]
+
+       [-ignored]
+
+       [-view <view_name>]
+
+       [{> | >>} <filename> | -tcl_list]
+
+       Generates  a  report  about  path  exceptions   specified   using   the
+       set_false_path,  set_min_delay,  set_max_delay, and set_multicycle_path
+       commands.
+
+       By default, the report_path_exceptions command only  reports  activated
+       path  exceptions. To report only the path exceptions that have been ig-
+       nored by timing analysis, specify the -ignored parameter.
+
+       If more than one path exception is applied on a timing  path,  multiple
+       path exceptions that match a given path are prioritized. The adjustment
+       on the path honors the path exception with the highest priority.
+
+       When  the  software is in multi-mode multi-corner timing analysis mode,
+       the report generates path exception information for every active analy-
+       sis view.
+
+       The report_path_exceptions command output also includes 2 columns  that
+       show  the  file name and line number. The report output shows the exact
+       file name and line number of the applied/ignored constraints. The  com-
+       pressed  constraints will be decompressed first and then shown as indi-
+       vidual constraints as written in the SDC file.
+
+Parameters
+       -help  Prints out command usage.
+
+       -all   Reports all the applied and ignored path exceptions.
+
+       {> | >>} <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  <filename> parameter must be the last argument in the list.
+              The <filename> and -tcl_list parameters are mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -early | -late
+              Generates the path exception report for either  early  paths  or
+              late paths.
+
+              Default: Generates a report based on the current timing analysis
+              mode.
+
+       -ignored
+              Reports  only the path exceptions that have been ignored by tim-
+              ing analysis. This parameter can  be  used  for  debugging  con-
+              straints  that may be ineffective or incorrectly entered. A path
+              exception may be ineffective if it is covered by, or  overridden
+              by, another path exception. For example:
+
+              set_false_path -to OUT
+
+              set_multicycle_path -to OUT 2
+
+              In  the  above scenario, the set_multicycle_path command will be
+              ignored as false paths have higher priority over cycle  addition
+              on the same timing paths.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -view <view_name>
+              Generates a path exception report  for  the  specified  analysis
+              view only. You can specify this parameter only when the software
+              is in multi-mode multi-corner timing analysis mode.
+
+Examples
+              * The  following  commands  shows that a false path has priority
+                over cycle addition on the same path:
+
+                set_false_path -from seg1/u3/CK -to seg1/u9/d
+
+                set_multicycle_path -from seg1/u3/CK -to seg1/u9/D 2
+
+                > report_path_exception -ignored
+
+                ------------------------------------------------------
+
+                From       To          Early           Late
+
+                -----------------------------------------------------
+
+                seg1/u3/CK  seg1/u9/D   false ignored   false ignored
+
+                seg1/u3/CK  seg1/u9/D   -               add 1 ignored
+
+                seg1/u3/CK  seg1/u9/D   add 0 ignored   -
+
+                -----------------------------------------------------
+
+                The following command shows how edges are handled:
+
+                set_false_path -rise_from {IN1} -through {OUT1}
+
+                set_false_path -rise_from {IN1 IN2} -fall_to {OUT1}
+
+                set_false_path -rise_from {IN1}
+
+                tempus> report_path_exceptions -ignored
+
+                -------------------------------------------------------------
+
+                From        Through    To      Early            Late
+
+                -------------------------------------------------------------
+
+                ^ IN1 IN2   -          v OUT1  false ignored   false ignored
+
+                ^ IN1       OUT1       -       false ignored   false ignored
+
+                -------------------------------------------------------------
+
+                > report_path_exceptions -early
+
+                ------------------------------------
+
+                From       Through    To  Early
+
+                ------------------------------------
+
+                ^ IN1      -          -   false
+
+                ------------------------------------
+
+                tempus> report_path_exceptions -late
+
+                ------------------------------------
+
+                From   Through  To  Late
+
+                ------------------------------
+
+                ^ IN1  -       -    false
+
+                ------------------------------
+
+                When the software is in multi-mode multi-corner timing  analy-
+                sis  mode,  the  software generates path exception information
+                for every active analysis view:
+
+                set_analysis_view -setup {setup1 setup2} -hold {hold1 hold2}
+
+                > report_path_exceptions
+
+                -----------------------------------------
+
+                From              Early  Late     View
+
+                                                  Name
+
+                -----------------------------------------
+
+                test_mode reset  false           setup2
+
+                test_mode reset  false           setup1
+
+                test_mode reset         false    hold1
+
+                test_mode reset         false    hold2
+
+                ----------------------------------------
+
+                Specify the -view parameter to generate a report  only  for  a
+                specific active analysis view:
+
+                > report_path_exceptions -view setup1
+
+                --------------------------------------------
+
+                From       Early    Late     View
+
+                                             Name
+
+                --------------------------------------
+
+                test_mode reset    false     setup1
+
+                --------------------------------------
+
+Related Information
+              * report_timing
+
+                           Fri Apr 04 01:25:37 202r5eport_path_exceptions(25.10)

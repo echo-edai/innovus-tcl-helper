@@ -1,0 +1,111 @@
+{
+    "name": "innovus-tcl-helper",
+    "displayName": "Innovus TCL Helper",
+    "description": "TCL 语言支持，集成 Cadence Innovus EDA 工具命令的智能提示、悬停文档和静态检查",
+    "version": "0.1.0",
+    "publisher": "echoro",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Linters"
+    ],
+    "keywords": [
+        "tcl",
+        "innovus",
+        "cadence",
+        "eda",
+        "semiconductor"
+    ],
+    "activationEvents": [
+        "onLanguage:tcl"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "tcl",
+                "extensions": [
+                    ".tcl"
+                ],
+                "aliases": [
+                    "Tcl",
+                    "tcl"
+                ]
+            }
+        ],
+        "commands": [
+            {
+                "command": "innovus-tcl.reloadDB",
+                "title": "Innovus TCL: 重新加载命令数据库"
+            },
+            {
+                "command": "innovus-tcl.showHelp",
+                "title": "Innovus TCL: 显示插件信息"
+            }
+        ],
+        "configuration": {
+            "title": "Innovus TCL Helper",
+            "properties": {
+                "innovus-tcl.language": {
+                    "type": "string",
+                    "default": "zh",
+                    "enum": [
+                        "zh",
+                        "en"
+                    ],
+                    "enumDescriptions": [
+                        "中文 (DeepSeek 结构化翻译)",
+                        "English (原生 help 输出解析)"
+                    ],
+                    "description": "命令文档的显示语言"
+                },
+                "innovus-tcl.dataRoot": {
+                    "type": "string",
+                    "default": "",
+                    "description": "data_base 目录的绝对路径。留空则自动使用插件同级目录下的 data_base/"
+                },
+                "innovus-tcl.dataPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "[已废弃] 请使用 dataRoot。Innovus 命令 JSON 数据目录路径"
+                },
+                "innovus-tcl.version": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Innovus 版本号（如 25.1）。留空使用默认版本。数据目录需对应存在: data_base/help/v{version}/deepseek-chat/"
+                },
+                "innovus-tcl.enableDiagnostics": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "启用 TCL 语法静态检查"
+                },
+                "innovus-tcl.enableHover": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "启用命令悬停提示"
+                },
+                "innovus-tcl.enableCompletion": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "启用命令自动补全"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "node scripts/prepublish.mjs && npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "prepublish": "node scripts/prepublish.mjs",
+        "package": "node scripts/prepublish.mjs && npm run compile && vsce package",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.85.0",
+        "@types/node": "^20.11.0",
+        "typescript": "^5.3.3"
+    }
+}

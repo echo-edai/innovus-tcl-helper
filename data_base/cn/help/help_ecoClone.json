@@ -1,0 +1,153 @@
+{
+  "command": "ecoClone",
+  "is_cmd": true,
+  "summary": "用于自动或手动克隆实例以优化负载分布的命令",
+  "description": "该命令用于执行实例克隆（ecoClone），以优化驱动门上的负载分布。它可以通过自动分析或手动指定实例、网络、引脚等方式来创建指定数量的克隆副本。命令提供了丰富的选项来控制克隆行为，例如是否允许在时序门上进行克隆、负载平衡的百分比、是否删除原有缓冲树、是否进行合法化检查、是否调整实例尺寸、克隆的迭代次数、遍历的层级限制、负载数量的范围限制、克隆的放置半径以及是否仅考虑同层次负载等。此外，还可以预览克隆效果而不实际修改网表。",
+  "usage": "ecoClone [-help] [-allow_sequential] [-balance <num>] [-delete_buffer_trees] [-dont_legalize] [-dont_resize] [-force] [-loop <num>] [-max_levels <integer>] [-max_num_loads <integer>] [-preview] [-radius <num>] [-same_hier_only] [-verbose] [-instances <inst>+ | -nets <net>+ | -to <instTerm|term>+] [] [-numClones <num> | -to <instTerm|term>+] [-numClones <num> | -from <instTerm|term>+] [-auto | -cells <libCell/ptnCell>+] [-auto | -terms <string>] [-auto | -locs {{x1 y1} {x2 y2}...}] [-auto | -numClones <num> | -min_num_loads <integer>] [-instances <inst>+ | -nets <net>+ | -auto] [-instances <inst>+ | -nets <net>+ | -from <instTerm|term>+]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_sequential",
+      "description": "在自动模式下，也尝试在时序门上进行克隆",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto",
+      "description": "自动应用克隆和缓冲",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-balance",
+      "description": "强制每个克隆上的负载数量在指定百分比内；默认平衡为10%",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-cells",
+      "description": "用于克隆的单元（一个或多个）",
+      "required": false,
+      "type": "libCell/ptnCell+"
+    },
+    {
+      "name": "-delete_buffer_trees",
+      "description": "尝试删除由待克隆实例驱动的缓冲树",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dont_legalize",
+      "description": "可能使克隆实例与原始实例重叠放置",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dont_resize",
+      "description": "不调整原始实例或新实例的尺寸",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-force",
+      "description": "强制进行实例克隆，即使可能恶化QoR或导致非法布局",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-from",
+      "description": "指定的起始引脚",
+      "required": false,
+      "type": "instTerm|term+"
+    },
+    {
+      "name": "-instances",
+      "description": "仅分析这些指定的实例",
+      "required": false,
+      "type": "inst+"
+    },
+    {
+      "name": "-locs",
+      "description": "当指定克隆数量时，克隆的位置列表。如果列表包含克隆数量+1个位置，则第一个位置用于原始门",
+      "required": false,
+      "type": "point_list"
+    },
+    {
+      "name": "-loop",
+      "description": "最多重复克隆指定次数，只要持续有新实例被创建；在每次迭代中，负载数量在最小/最大范围内的原始实例和新实例都是有效目标。默认0表示无限制",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_levels",
+      "description": "从'to'引脚向后遍历的最大层级数。默认0表示无限",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_num_loads",
+      "description": "跳过驱动负载数超过此值的实例克隆。默认50000",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-min_num_loads",
+      "description": "克隆至少驱动此数量负载的实例",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-nets",
+      "description": "仅分析这些指定的网络",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-numClones",
+      "description": "指定克隆的数量",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-preview",
+      "description": "显示将要执行的操作，但不实际修改网表",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-radius",
+      "description": "将克隆放置在距离其首选位置（基于原始实例位置和新负载集合质心）指定行数半径内。默认10",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-same_hier_only",
+      "description": "仅考虑与驱动门在同一层次结构中的负载",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-terms",
+      "description": "通过一系列终端列表进行聚类。该列表与位置列表平行",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-to",
+      "description": "指定的目标引脚",
+      "required": false,
+      "type": "instTerm|term+"
+    },
+    {
+      "name": "-verbose",
+      "description": "显示关于操作过程的额外信息",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

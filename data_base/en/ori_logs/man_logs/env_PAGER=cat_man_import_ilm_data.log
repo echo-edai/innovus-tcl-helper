@@ -1,0 +1,148 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+import_ilm_data(25.10)                                  import_ilm_data(25.10)
+
+Name
+       import_ilm_data
+
+Syntax
+       import_ilm_data
+
+       [-help]
+
+       [-cell <block_name>]
+
+       [-incr]
+
+       -model_type {timing | cts | si}
+
+       [-overwrite]
+
+       [-xtwf <xtwf_file.spef>]
+
+       {-dir <directory_name> | -cell_view <lib> <cell> <view>}
+
+       [-verilog <cell_name.v> [-cell_prefix <cell_prefix> -uniquify_netlist]]
+
+       [-sdc <file_name> -timing_view <view_name>]
+
+       [-spef <spef_file.spef> -rc_corner <RC_corner_name>]
+
+       [-optStage <opt_stage>]
+
+       Creates  an  ILM  directory from existing data. It can only create non-
+       merged models. This command is useful in situations where an ILM is  to
+       be  created through external inputs or using data from third party mod-
+       els into a format that could be recognized by Innovus.
+
+       If the data files already exist in the specified  directory,  the  tool
+       stops  and generates an error message. You can overwrite existing files
+       by specifying -overwrite. You can add files to the directory by  speci-
+       fying -incr.
+
+       The  command also creates a tcl script (cell_name_ILM.tcl) that you can
+       source in your command file. The script contains the following command:
+
+       specifyIlm -cell <cell_name> -dir <dir_name>
+
+Parameters
+       -cell <block_name>
+              Specifies the name of the block.
+
+       -cell_prefix <cell_prefix>
+              Specifies the cell prefix.
+
+       -cell_view <lib cell view>
+              Specifies the library name, cell name, and view name in the Ope-
+              nAccess database format.
+
+       -dir <dir_name>
+              Stores the ILM data in the specified directory: the absolute di-
+              rectory path or the path relative to the current directory.
+
+       -incr  Lets you add files in addition to the existing files to the  di-
+              rectory.
+
+       -model_type {timing | cts | si}
+              Specifies the type of ILM model, i.e timing, cts or si,.
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each import_ilm_data parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man import_ilm_data.
+
+       -optStage
+              Specifies the optimization stage, preCTS or postCTS.
+
+       -overwrite
+              Overwrites existing files in the directory.
+
+       -rc_corner <RC_corner_name>
+              Specifies the RC corner name for MMMC  analysis.  It  identifies
+              the specified corner to be used with -spef.
+
+       -sdc <file_name>
+              Specifies  an existing .sdc file that you want to include in the
+              directory. It identifies the sdc file to be used with the speci-
+              fied view.
+
+       -spef <spef_name>.spef
+              Specifies an existing .spef file that you want to include in the
+              directory. It identifies the spef file to be used with the spec-
+              ified corner.
+
+       -timing_view <view_name>
+              Specifies the view name for the ILM module.  It  identifies  the
+              specified view to be used with -sdc.
+
+       -uniquify_netlist
+              Uniquifies  the  input  Verilog netlist. This ensures that there
+              are no errors when ILMs are being loaded.
+
+              Using this parameter, each sub-module for an ILM  has  a  unique
+              name, which is composed of the time stamp and its original name.
+
+              For example, in top_sm WedJun31138212009$data_path, top_sm spec-
+              ifies the top-level design, WedJun31138212009 specifies the time
+              stamp, and $data_path specifies the original module name.
+
+              Default: Off
+
+       -verilog <netlist_name>.v
+              Specifies  the  verilog file you want to include in the ILM data
+              directory.
+
+       -xtwf <xtwf_file.spef>
+              Specifies the .xtwf file that you want to include in the  direc-
+              tory.
+
+Examples
+              *
+
+                The following commands create two module directories:
+
+                import_ilm_data  -cell blk1 -dir A -model_type timing -verilog
+                V1.v -spef  1.spef  -rc_corner  corner1  -sdc  sdcfile1  -tim-
+                ing_view view1
+
+                import_ilm_data -cell blk2 -dir A -model_type si -verilog V2.v
+                -spef  2.spef  -rc_corner  corner2  -sdc sdcfile2 -timing_view
+                view2
+
+              *
+
+                The command creates two tcl files in  the  current  directory.
+                The blk1_ILM.tcl file contains the following command:
+
+                specifyIlm -dir A -cell blk1
+
+                The blk2_ILM.tcl file contains the following command:
+
+                specifyIlm -dir A -cell blk2
+
+Related Information
+              * specifyIlm
+
+                           Fri Apr 04 01:25:37 2025     import_ilm_data(25.10)

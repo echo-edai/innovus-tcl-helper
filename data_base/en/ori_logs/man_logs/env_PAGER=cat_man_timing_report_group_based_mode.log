@@ -1,0 +1,72 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+timing_report_group_based_mode(25.10)    timing_report_group_based_mode(25.10)
+
+Name
+       timing_report_group_based_mode
+
+Syntax
+        timing_report_group_based_mode
+
+       {true | false}
+
+       Default: false
+
+       Groups paths by clock domain.
+
+       When set to true, the behavior of the following reporting commands will
+       change as follows:
+
+report_timing
+       The  behavior of the following report_timing parameters changes as fol-
+       lows:
+
+              * -max_points: In this mode you are not required to specify this
+                parameter. If specified, the parameter is mapped to -max_paths
+                option.
+
+              * -max_paths M: Reports M paths per clock group.
+
+              * -nworst N: Limits the number of paths per endpoint  per  clock
+                group. By default, the value of -nworst is 1.
+
+       The  report_timing command will have the following four types of groups
+       (if design does not have user-defined path groups):
+
+              * Asynch group: Recovery/removal checks.
+
+              * Clock gating group: Inferred and library clock gating checks.
+
+              * Default group: Combinational max delay or min delay paths.
+
+              * Clock Groups: Groups for all design clocks. For a design  with
+                three  clocks,  three  groups  will be reported, one group for
+                each clock. Endpoints sharing the same reference clock will be
+                part of the same group. If an  endpoint  belongs  to  multiple
+                groups then it will be reported separately in each group.
+
+       Note:  If  user-defined  path  groups  are specified, the software will
+       override the path groups described above.
+
+report_min_pulse_width
+       The report_min_pulse_width command reports pulse width  slacks  of  all
+       the  clocks for a pin. In summary mode, the "clock" column will be dis-
+       played. In verbose mode (with path_type option), the behavior  will  be
+       similar to the report_timing output in group-based mode.
+
+report_constraint
+       The report_constraint command will perform the following checks:
+
+              * For  max_delay/setup and min_delay/hold type checks paths will
+                be reported for each clock group separately.
+
+              * The behavior of pulse width check types will be  the  same  as
+                report_min_pulse_width command.
+
+report_analysis_coverage
+       The  report_analysis_coverage  command will report a check at end point
+       for all the clocks. In verbose mode, the "clock" column  will  be  dis-
+       played.
+
+       To set this global variable, use the set_global command.
+
+                           Fri Apr 04 01:2t5i:m3i7ng2_0r2e5port_group_based_mode(25.10)

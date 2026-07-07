@@ -1,0 +1,45 @@
+{
+  "command": "loadECO",
+  "is_cmd": true,
+  "summary": "读取包含ECO指令的文件，并将更改应用到当前网表",
+  "description": "该命令用于读取包含工程变更指令（ECO）的文件，并将这些指令所描述的更改应用到当前设计的网表中。它可以在导入设计后的任何时间使用。该命令在应用ECO指令时会执行一致性检查，并在更改完成后再次检查，同时也会检查并遵守电源域规则。其输出结果与ecoDefIn命令兼容，因此后续需要使用ecoPlace和ecoRoute命令来完成完整的ECO流程。ECO指令通常不影响布线，除非是DELETENET（删除指定被删网表的布线）或DELETEINST（删除实例但会留下悬空的连线，之后可通过布线器修复）这类特定指令。如果想对整个设计进行重新布线，应在运行loadECO命令之前先删除现有布线。该命令通过-useGACells和-postMask参数支持门阵列设计的ECO。如果读取ECO文件时发生错误，命令将停止并停止读取文件中的后续指令，同时将错误信息写入innovus.log文件。注意：ECO文件的第一行必须是'FORMATVERSION 2'。",
+  "usage": "loadECO [-help] [-postMask | -useGACells <GACoreSiteName>] [-suffix <suffix>] [-verbose] <fileName ...>",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令及其参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-postMask",
+      "description": "后掩模模式。添加实例时，新单元将不被放置，这些未放置的单元将在后续使用`ecoPlace -useSpareCells`命令进行放置时映射到备用单元。删除实例时，软件会将实例重命名为原始层次结构的实例名，并附加指定的后缀（若未指定-suffix参数，则默认附加SPARE）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-useGACells",
+      "description": "指定在添加或删除实例时使用门阵列单元。此参数仅适用于门阵列设计。如果ECO文件中指定了ADDINST，则应用ADDINST的默认行为。如果包含DELETEINST，则软件会删除那些单元主模板（master）使用与指定<GACoreSite>相同站点的实例，<GACoreSite>可以是LEF文件中定义的任何门阵列站点名称。若不指定此参数，DELETEINST会直接从网表中移除实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-suffix",
+      "description": "指定此命令为通过删除实例而创建的备用单元添加的后缀。默认后缀是SPARE。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verbose",
+      "description": "提供详细报告，包括没有驱动器的网表以及没有网表连接的实例输入引脚信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<fileName>",
+      "description": "指定包含ECO指令的文件名。可以指定多个文件，文件名之间必须用一个空格分隔。",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

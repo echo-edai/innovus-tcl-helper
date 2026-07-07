@@ -1,0 +1,660 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reinforce_pg(25.10)                                        reinforce_pg(25.10)
+
+Name
+       reinforce_pg  -  Reinforces PG stripes between the existing original PG
+       stripes in Innovus to fix the IR drop violations reported from Voltus
+
+Syntax
+        reinforce_pg
+
+       [-help]
+
+        [-area {<x1 y1 x2 y2>}]
+
+       [-area_blockage {{<x1 y1 x2 y2>} {<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}]
+
+        [-pattern_file <file_name>]
+
+       [-snap_wire_center_to_grid {default | Grid}]
+
+        {-pattern_map  {{<irdrop_value1>   <pattern_name1>}   {<irdrop_value2>
+       <pattern_name2>}..} | -write_pattern_template <file_name> | -boxes_file
+       <file_name >| -auto_ir_fix {preroute | postroute}}
+
+        [[-tile_row_column  {<x  y>}   |  -tile_size  {<x y>} | -number_region
+       <value>] | -write_pattern_template <file_name>]
+
+       [-rail_analysis_directory   {<directory>}   |   -write_pattern_template
+       <file_name>]
+
+       Reinforces  PG  stripes between the existing original PG stripes in In-
+       novus to fix the IR drop violations reported from Voltus.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each reinforce_pg parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man reinforce_pg
+
+       -area {<x1 y1 x2 y2>}
+              Specifies the coordinates of the area in which the IR drop  vio-
+              lation  boxes  from Voltus can be fixed by the reinforce_pg com-
+              mand.
+
+       -area_blockage {{<x1 y1 x2 y2>} {<x1 y1 x2 y2 x3 y3 x4 y4> ...} ...}
+              Specifies the blockage coordinates of one or more  area  regions
+              to restrict the addition of any stripes. This parameter supports
+              both  the  rectangular  and  rectilinear area regions along with
+              their combinations. Their spacing is 0 during the stripe genera-
+              tion. Following are the possible parameter usage scenarios:
+
+              * Single Rectangular Area:
+
+                -area_blockage {<x1 y1 x2 y2>}
+
+                For example:
+
+                -area_blockage {100 100 200 200}
+
+              * Single Rectilinear Area:
+
+                -area_blockage {<x1 y1 x2 y2 x3 y3 x4 y4> <x5 y5 x6 y6>}
+
+                For example:
+
+                -area_blockage {100 100 100 200 150 200 150 150  200  150  200
+                100}
+
+              * Multiple Rectangular Areas:
+
+                -area_blockage {{x1 y1 x2 y2} {a1 b1 a2 b2} ...}
+
+              * Multiple Rectilinear Areas:
+
+                -area_blockage  {{x1  y1  x2  y2 ... } {a1 b1 a2 b2 a3 b3 ...}
+                ...}
+
+              * Combination of Rectangular and Rectilinear Areas:
+
+                -area_blockage {{x1 y1 x2 y2} {a1 b1 a2 b2} ... {x1 y1  x2  y2
+                x3 y3 ...} {a1 b1 a2 b2 a3 b3 ...} ...}
+
+              While blocking multiple areas using this parameter, each of them
+              must  be  inside the braces. The areas that are not included in-
+              side the braces will be  ignored.  For  example,  -area_blockage
+              {{x1  y1  x2 y2} a1 b1 a2 b2 a3 b3 ... {c1 d1 c2 d2 c3 d3 ...}},
+              {x1 y1 x2 y2}, and {c1 d1 c2 d2 c3 d3 ...} will be  accepted  by
+              the parameter, and a1 b1 a2 b2 a3 b3 ... will be ignored.
+
+       -auto_ir_fix {preroute | postroute}
+              Fixes  IR drop with an automated flow. No pattern is needed with
+              the automated flow provided by this  parameter.  This  parameter
+              extracts  violation tiles based on RLRP, and automatically fixes
+              the IR drop based on the location provided  by  Voltus  at  each
+              layer. When this parameter is used, Voltus rail analysis is per-
+              formed.
+
+              The tile size and location is provided by Voltus.
+
+              Use one of the following values with this parameter:
+
+              * preroute: Fixes IR drop using minimum resources. Use this flow
+                before signal routing to ensure a good stripe connection. When
+                this  parameter  value is specified, the software adds several
+                metal layers between the weak point and high  PG  stripe.  The
+                location  and  layer are automatically controlled by the soft-
+                ware analyzer. The following figure presents an example of us-
+                ing -auto_ir_fix preroute:
+
+              * postroute: Fixes IR drop  with  all  the  remaining  available
+                metal  resources.  Use this flow after routing so that all the
+                available resources can be used. When this parameter value  is
+                specified,  the  software adds all the rest metal resources at
+                every metal layer according to the information  received  from
+                Voltus.  By  this, every metal layer makes connection with the
+                adjacent layer. The layer and tile location are  automatically
+                controlled  by  the  software  analyzer. By default, set_rein-
+                force_pg_mode -respect_routes is set to all when  reinforce_pg
+                -auto_ir_fix postroute is specified, which you can change man-
+                ually.  The  following  figure  presents  an  example of using
+                -auto_ir_fix postroute:
+
+              When the -auto_ir_fix parameter is used with pattern  flow,  the
+              pattern is ignored.
+
+              Default: none
+
+       -boxes_file <file_name>
+              Specifies  the  file  for including the list of boxes and corre-
+              sponding pattern names. The format of the file is mentioned  be-
+              low:
+
+              Pattern1 x01 y01 x02 y02
+
+              Pattern2 x11 y11 x12 y12
+
+              ......
+
+       -number_region <value>
+              Specifies  the number of regions to be analyzed by the software.
+              The integer value of this parameter ranges from 1 to 65536.
+
+              Default: 100
+
+       -pattern_map {{<irdrop_value1> <pattern_name1>} {<irdrop_value2> <pat-
+       tern_name2>}..}
+              Specifies the pattern for IR drop fixing  through  the  IR  drop
+              value  and  pattern name defined by the -pattern_file parameter.
+              If irdrop_value1 is lesser than irdrop_value2, the  reinforce_pg
+              command  uses  pattern_name1  to  fix  the  IR  drop between ir-
+              drop_value1 and irdrop_value2. And pattern_name2 is used to  fix
+              the  IR drop bigger than or equal to irdrop_value2. It is recom-
+              mended to specify the irdrop_value in the ascending order.
+
+       -rail_analysis_directory {<directory>}
+              Allows the reinforce_pg command to read the rail analysis infor-
+              mation available in the specified directory.
+
+       -snap_wire_center_to_grid {default | Grid}
+              Specifies the snap wire center for routing grid. Use this  para-
+              meter to control the added stripe for turning on or off the grid
+              for  the  reinforce_pg command. Following are the parameter val-
+              ues:
+
+              * default: Snaps the added wires to gird or half grid, according
+                to the wire width.
+
+              * grid: Snaps the the added wires only to the grid.
+
+              Default: default
+
+       -tile_row_column {<x y>}
+              Specifies the number of tiles for power analysis in the x and  y
+              directions.  This  parameter  enables tile-based analysis of the
+              hot-spot regions to divide the design based on user-defined tile
+              count and reports IR drop violations on each tile.
+
+       -tile_size {<x y>}
+              Specifies the size of tiles for power analysis in the  x  and  y
+              directions.  This  parameter  enables tile-based analysis of the
+              hot-spot regions to divide the design based on user-defined tile
+              size and reports IR drop violations on each tile.
+
+       -write_pattern_template <file_name>
+              Specifies the template of the pattern file. This parameter  can-
+              not  be used with other parameters. Refer to the following exam-
+              ple to understand the usage of this parameter:
+
+              reinforce_pg -write_pattern_template pattern.cfg
+
+       -pattern_file <file_name>
+              Defines the  pattern  for  the  pattern  template  of  reinforce
+              stripes.  The  reinforce_pg  command uses different patterns for
+              fixing the corresponding IR drop value sections.
+
+              The following is the file syntax of  the  pattern  template  for
+              single metal layer:
+
+              NAME  pattern_name
+
+              NETS   {list_of_nets}
+
+              LAYER  metal_layer
+
+              MAXPITCH         real_value
+
+              MINDISTANCE         real_value
+
+              WIDTH  real_value
+
+              VIACONTROL      {metal_of_viaHookUpBot metal_of_viaHookUpTop}
+
+              SPACING  real_value                             ##optional
+
+              UDA  subclass_string                     ##optional
+
+              Note:  You can define the density of the added PG using the MAX-
+              PITCH and MINDISTANCE parameters.
+
+              The following is the description of the pattern template parame-
+              ters for a single metal layer:
+
+                     * NAME: Specifies the  name  of  the  pattern.  The  pat-
+                       tern_name used at pattern_map should be the same as the
+                       name defined in the pattern file.
+
+                     * NETS:  Specifies  the  names  of the nets for which the
+                       stripes are required to be generated.
+
+                     * LAYER: Specifies the name of the  layer  in  which  the
+                       stripes are required to be generated.
+
+                     * WIDTH: Specifies the width of the stripes.
+
+                     * VIACONTROL:  Specifies  the  metal  layers to which the
+                       generated PG wires will be connected.
+
+                     * SPACING: Specifies the spacing between the stripes/nets
+                       defined for the NETS attribute. If SPACING is  not  de-
+                       fined, the Multi nets defined through NETS will use the
+                       minimum DRC free distance.
+
+                     * UDA:  Displays  the  user-defined attribute attached to
+                       every generated stripe segment.
+
+                     *
+
+                       MAXPITCH: Specifies the maximum  distance  between  the
+                       generated PG stripes. The distance between the added PG
+                       wires  and original PG stripes cannot be more than MAX-
+                       PITCH.
+
+                     *
+
+                       MINDISTANCE: Specifies the minimum distance between the
+                       generated PG stripes. The  distance  between  added  PG
+                       wires  and  original  PG  stripes  should  be more than
+                       MINDISTANCE.
+
+              Note: You can define the density of the added PG using the  MAX-
+              PITCH  and  MINDISTANCE  parameters. If the distance between the
+              two PG wires for any  net  is  smaller  than  MINDISTANCE  after
+              adding the PG, the added PG wires will be deleted.
+
+              The  following  is  the  file syntax of pattern template for two
+              metal layers:
+
+              NAME  pattern_name
+
+              NETS    {list_of_nets}
+
+              LAYER  metal_layer1 metal_layer2
+
+              MAXPITCH         real_value1   [real_value2]
+
+              MINDISTANCE         real_value1   [real_value2]
+
+              WIDTH  real_value1   [real_value2]
+
+              VIACONTROL       {metal_of_viaHookUpBot   metal_of_viaHookUpTop}
+              [{metal_of_viaHookUpBot metal_of_viaHookUpTop}]
+
+              SPACING  real_value                    ##optional
+
+              UDA  subclass_string                   ##optional
+
+              Note: If both the MAXPITCH and MINDISTANCE parameters define the
+              same value and the two added metal layers are in the same direc-
+              tion, then metal_layer2 should align with metal_layer1.
+
+              The following is the description of the pattern template parame-
+              ters for two metal layers:
+
+              * NETS:  Specifies  the  net names of the two metal layers to be
+                created.
+
+                Note: The list of nets is not based on the metal layers. Every
+                metal layer needs to generate all the nets defined.
+
+              * LAYER: Specifies the name of the layers in which  stripes  are
+                to be created. Two metal layers are required in this scenario.
+
+              * WIDTH,  VIACONTROL,  SPACING, MAXPITCH, and MINDISTANCE: These
+                parameters can be defined twice for  the  corresponding  metal
+                layer.  If  only  one value is specified for these parameters,
+                two metal layers will use the same value.
+
+              You can use an  optional  keyword,  OVERVIAMETAL  <metal_layer>,
+              which  makes  the  reinforce_pg  command  create PG over the via
+              metal of same PG net. Else than the  OVERVIAMETAL  keyword,  the
+              <metal_layer>  parameter  is  also optional. If <metal_layer> is
+              defined with the OVERVIAMETAL keyword, only  the  defined  metal
+              layers  follow the OVERVIAMETAL rule. Else, all the metal layers
+              defined at the LAYER need to follow the OVERVIAMETAL rule.
+
+              The following is the syntax of the OVERVIAMETAL keyword:
+
+              OVERVIAMETAL <metal_layer>*
+
+              The following is the file syntax of the special pattern template
+              for multiple layers:
+
+              NAME pattern_name
+
+              TYPE SMART
+
+              NETS {list_of_nets}
+
+              LAYERS                                             layer1:layer2
+              ##optional
+
+              PITCHFACTOR                                        integer_value
+              ##optional
+
+              VIACONTROL     {metal_of_viaHookUpBot     metal_of_viaHookUpTop}
+              ##optional
+
+              UDA                                              subclass_string
+              ##optional
+
+              Following are the pattern template attributes:
+
+              * NAME: Specifies the name of pattern. The NAME  attribute  used
+                with  pattern_map  should  be  same as the name defined in the
+                pattern file.
+
+              * TYPE: Specifies the type of the PG pattern. If TYPE is  speci-
+                fies  as SMART, reinforce_pg runs PG pattern by smart PG flow.
+                Otherwise, it runs PG pattern with the normal pattern flow.
+
+              * NETS: Specifies the names of the nets for which stripes are to
+                be created.
+
+              * LAYERS: Specifies the name of the layer in which stripes  need
+                to  be  created.  This  is  an optional attribute and presents
+                smart PG pattern support layer range.  Following  are  various
+                attribute values:
+
+                * layer1:layer2:  Signifies  all  the  layers  from  layer1 to
+                  layer2.
+
+                * -: Presents the default top or bottom routing layer.
+
+                * -:layer2: Signifies the default  bottom  routing  layers  to
+                  layer2.
+
+                * layer1:-:  Specifies  that  layer1  will  be default for top
+                  routing layers.
+
+                * default: Includes all the routing layers.
+
+              * UDA: Displays the user-defined attribute attached to each cre-
+                ated stripe segment. This is an optional attribute.
+
+                Default: rpg_$pattern1
+
+              * PITCHFACTOR: Specifies the average pitch  number  between  two
+                added stripes. This is an optional attribute.
+
+                Default: 1
+
+              * VIACONTROL:  Specifies the metal layers to which the generated
+                PG of bottom layer and top layer will be connected.
+
+                Default: The adjacent lower layer of defined  layer1  and  the
+                adjacent upper layer of defined layer2 of LAYERS.
+
+Examples
+              * The following command defines pattern for the pattern template
+                of  reinforce stripes with the following pattern.tcl file val-
+                ues:
+
+                NAME   smart1
+
+                TYPE   SMART
+
+                NETS   VDD VSS:
+
+                reinforce_pg  -pattern_file  pattern.tcl  -pattern_map   {0.04
+                smart1}
+
+                The following is the output of the above command:
+
+              * The following command defines pattern for the pattern template
+                of  reinforce stripes with the following pattern.tcl file val-
+                ues:
+
+                NAME   smart1
+
+                TYPE   SMART
+
+                NETS   VDD
+
+                LAYERS   M5
+
+                PITCHFACTOR   2
+
+                VIACONTROL   M2 M6
+
+                UDA   PGSmart_1
+
+                reinforce_pg  -pattern_file  pattern.tcl  -pattern_map   {0.04
+                smart1}
+
+                The following is the output of the above command:
+
+              * The following command defines pattern for the pattern template
+                of  reinforce  stripes  on  multiple layers with the following
+                pattern.tcl file values:
+
+                NAME   smart1
+
+                TYPE   SMART
+
+                NETS   VDD VSS
+
+                LAYERS   M5:M7
+
+                VIACONTROL   M4 M10
+
+                UDA   PGSmart_1
+
+                reinforce_pg  -pattern_file  pattern.tcl  -pattern_map   {0.04
+                smart1}
+
+                The following is the output of the above command:
+
+              *
+
+                The  following  command presents an example of defining a pat-
+                tern file parameters and calculating the number of  additional
+                stripes  to  be added between two adjacent stripes of the same
+                net:
+
+                reinforce_pg -pattern_file pattern.tcl -pattern_map {0.03 PAT-
+                TERN1}
+
+                The following is the output of the above command:
+
+                The following are the  contents  of  the  defined  pattern.tcl
+                file:
+
+                NAME  PATTERN1
+
+                NETS   VDD
+
+                LAYER  M5
+
+                MAXPITCH    15
+
+                MINDISTANCE      5
+
+                WIDTH  0.3
+
+                VIACONTROL  {M4 M6}
+
+                UDA  PGFIX_1
+
+                Additional stripes can only be added when the distance between
+                the two adjacent stripes of the same net is more than MAXPITCH
+                and 2*MINDISTANCE, as shown below:
+
+                Distance1 > MAXPITCH  &&  Distance1 > 2*MINDISTANCE
+
+                To  calculate the number of additional stripes to be added be-
+                tween two adjacent stripes of the same net:
+
+                N = ceil (distance1 / MAXPITCH)
+
+                The N-1 stripes will be evenly distributed between  two  adja-
+                cent stripes with:
+
+                step = distance1/N
+
+                Note: When some new stripes added between two adjacent stripes
+                are  shifted  and  the  distance between them is more than the
+                Maxpitch, the tool adds extra stripe to satisfy  the  Maxpitch
+                defined.
+
+              *
+
+                The following command defines a metal layer with two nets:
+
+                reinforce_pg -pattern_file pattern.tcl -pattern_map {0.06 pat-
+                tern2}
+
+                The following is the output of the above command:
+
+                The  following  are  the  contents  of the defined pattern.tcl
+                file:
+
+                NAME        pattern2
+
+                NETS         VDD VSS
+
+                LAYER                M5
+
+                MAXPITCH         10
+
+                MINDISTANCE   3
+
+                WIDTH        0.3
+
+                SPACING        0.3
+
+                VIACONTROL    {M2 M8}
+
+                UDA        PGFIX_2
+
+              * The following command defines two metal layers in the same di-
+                rection and the MAXPITCH and MINDISTANCE parameters  with  one
+                value. Here, the M6 metal layer should align with M4. The num-
+                ber  and location of the additional stripes will depend on the
+                first layer defined:
+
+                reinforce_pg -pattern_file pattern.tcl -pattern_map {0.06 pat-
+                tern3}
+
+                The following is the output of the above command:
+
+                The following are the  contents  of  the  defined  pattern.tcl
+                file:
+
+                NAME  pattern3
+
+                NETS   VDD
+
+                LAYER  M4 M6
+
+                MAXPITCH       20
+
+                MINDISTANCE    5
+
+                WIDTH  0.3  0.5
+
+                VIACONTROL {M3 M5}  {M5 M7}
+
+                UDA  PGFIX_3
+
+              * The  following  command defines two metal layers with same di-
+                rection and  and MAXPITCH and MINDISTANCE parameters with  two
+                values.  The  additional stripes of two metal layers will also
+                be added respectively:
+
+                reinforce_pg -pattern_file pattern.tcl -pattern_map {0.06 pat-
+                tern4}
+
+                The following is the output of the above command:
+
+                The following are the  contents  of  the  defined  pattern.tcl
+                file:
+
+                NAME  pattern4
+
+                NETS   VDD
+
+                LAYER  M4 M6
+
+                MAXPITCH       20 30
+
+                MINDISTANCE    5   8
+
+                WIDTH  0.3  0.5
+
+                VIACONTROL {M3 M5}  {M5 M7}
+
+                UDA  PGFIX_3
+
+                The  M4  and M6 metal layers calculate this step respectively,
+                where M4 uses step1 and M6 uses step2 to generate PG.
+
+              * The following command defines two metal layers with  different
+                directions  and  MAXPITCH  and MINDISTANCE parameters with two
+                values. The additional stripes of two metal layers  will  also
+                be added respectively:
+
+                reinforce_pg -pattern_file pattern.tcl -pattern_map {0.06 pat-
+                tern5}
+
+                The following is the output of the above command:
+
+                The  following  are  the  contents  of the defined pattern.tcl
+                file:
+
+                NAME  pattern5
+
+                NETS   VDD
+
+                LAYER  M4 M7
+
+                MAXPITCH       20 30
+
+                MINDISTANCE    5   8
+
+                WIDTH  0.3  0.5
+
+                VIACONTROL {M1 M5}  {M6 M10}
+
+                UDA  PGFIX_3
+
+              * The following command defines a metal layer with  the  OVERVI-
+                AMETAL keyword:
+
+                reinforce_pg -pattern_file pattern.tcl -pattern_map {0.06 pat-
+                tern6}
+
+                The following is the output of the above command:
+
+                The  following  are  the  contents  of the defined pattern.tcl
+                file:
+
+                NAME pattern6
+
+                 OVERVIAMETAL
+
+                 NETS  VDD
+
+                 LAYER M5
+
+                 MAXPITCH    15
+
+                 MINDISTANCE      5
+
+                 WIDTH 0.3
+
+                 VIACONTROL  {M4 M6}
+
+                 UDA PGFIX_1
+
+Related Information
+              * get_reinforce_pg_mode
+
+              * set_reinforce_pg_mode
+
+              * Power Planning and Routing chapter in the Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025        reinforce_pg(25.10)

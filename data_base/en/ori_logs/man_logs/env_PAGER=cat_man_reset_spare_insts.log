@@ -1,0 +1,108 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_spare_insts(25.10)                              reset_spare_insts(25.10)
+
+Name
+       reset_spare_insts - Asserts the specified instance is not a spare gate
+
+Syntax
+       reset_spare_insts
+
+       [-help]
+
+       {-cell <cellName> | -inst <instName> | -hinst <hinstName>}
+
+       Asserts the specified instance is not a spare gate. This command can be
+       used after specifySpareGate.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each reset_spare_insts parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man reset_spare_insts.
+
+       -cell <cellName>
+              Specifies the name of the spare cell to be reset. Wildcards  are
+              supported.
+
+       -hinst <hinstName>
+              Specifies  the name of the spare hierarchical instance to be re-
+              set. Wildcards are supported.
+
+       -inst <instName>
+              Specifies the name of the spare instance to be reset.  Wildcards
+              are supported.
+
+Example
+              * In  the following example, "AND2X1" cell is defined as a spare
+                cell in the design. The example shows the query result of  the
+                spare cell of AND2X1:
+
+                innovus 36> dbGet [dbGet [dbGet top.insts.cell.name AND2X1 -p2
+                ].isSpareGate 1 -p ].name
+
+                spr_51/spr_gate0       spr_48/spr_gate0       spr_47/spr_gate0
+                spr_46/spr_gate0       spr_45/spr_gate0       spr_44/spr_gate0
+                spr_43/spr_gate0       spr_42/spr_gate0       spr_41/spr_gate0
+                spr_40/spr_gate0 spr_39/spr_gate0
+
+              * The following example resets the spare cell instance,  spr_39,
+                with  the -inst option. As a result, the spare cell is removed
+                from spare module list and is not a spare gate any more:
+
+                innovus 32> dbGet [dbGetInstByName  spr_39/spr_gate0].isSpare-
+                Gate
+
+                1
+
+                innovus 33> reset_spare_insts -inst spr_39/spr_gate0
+
+                Resetting spare instance [spr_39/spr_gate0].
+
+                Reset 1 spare instances.
+
+                innovus  34> dbGet [dbGetInstByName spr_39/spr_gate0].isSpare-
+                Gate
+
+                0
+
+              *
+
+                The following commands reset the spare cell  hierarchical  in-
+                stance,  spr_40,  with  the -hinst option, removes it from the
+                spare module list, and it is not a spare gate any more.
+
+                innovus 29> dbGet [dbGetInstByName  spr_40/spr_gate0].isSpare-
+                Gate
+
+                1
+
+                innovus 30> reset_spare_insts -hinst spr_40
+
+                Resetting spare mode HInst [spr_40].
+
+                innovus  31> dbGet [dbGetInstByName spr_40/spr_gate0].isSpare-
+                Gate
+
+                0
+
+              * The following commands reset the spare cell type, AND2X1,  us-
+                ing  the  -cell  option.  All the instances of the AND2X1 cell
+                type are removed from spare module list and it is not a  spare
+                gate any more.
+
+                innovus 37> reset_spare_insts -cell AND2X1
+
+                Resetting all spare instances of cell [AND2X1].
+
+                innovus 38> dbGet [dbGet [dbGet top.insts.cell.name AND2X1 -p2
+                ].isSpareGate 1 -p ].name
+
+                0x0
+
+Related Information
+              * addSpareInstance
+
+              * specifySpareGate
+
+                           Fri Apr 04 01:25:37 2025   reset_spare_insts(25.10)

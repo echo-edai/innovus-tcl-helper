@@ -1,0 +1,144 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_package(25.10)                                          set_package(25.10)
+
+Name
+       set_package  -  Specifies  the  package model information to be used in
+       power rail analysis
+
+Syntax
+       set_package
+
+       [-help]
+
+       -reset | {-spice <model_file>
+
+       [-mapping <mapping_file>]
+
+       [-offset {x y}]
+
+       [-die_instance_name <dieinstname>]
+
+       [-rotate <rotation_angle_in_degrees>]
+
+       [-flip {true | false}]
+
+       [-subckt <subcircuitname>]
+
+       [-scale <scaling_factor_number>]
+
+       [-mapping_type { distributed | lumped }]
+
+       }
+
+       Specifies the package model information to be used in power rail analy-
+       sis.
+
+Parameters
+       -die_instance_name <dieinstname>
+              Specifies the die instance name for multi-die analysis. This op-
+              tion is only available in  multi-die  analysis  (set_rail_analy-
+              sis_mode -die_mode multi-die).
+
+       -flip {true | false}
+              Specifies to flip the die along the Y axis.
+
+              Default: false
+
+       -help  Outputs  a  brief description that includes the type and default
+              information for each set_package parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command man set_package.
+
+       -mapping<mapping_file>
+              Specifies the name of the package terminal mapping  file,  which
+              contains the mapping of the terminals of the SPICE subcircuit in
+              the package model file (Specified by the -spice <model_file> pa-
+              rameter) to the locations at the grid or top-level pins.
+
+              The mapping file formats supported by the software are:
+
+              * Model Connection Protocol (MCP)
+
+              * Voltus-specific Format
+
+              For  more  information on the mapping file formats, refer to the
+              Package Model and Mapping File section  in  the  "File  Formats"
+              chapter of Voltus User Guide.
+
+       -mapping_type { distributed | lumped }
+              Specifies  the type of mapping to be used in the Voltus-specific
+              terminal mapping file that will be added in  the  rail  analysis
+              flow. The possible arguments are:
+
+              * distributed - A distributed mapping file lists out the mapping
+                for  each  bump  on the die to its corresponding package port.
+                The mapping file is specified with  the  set_package  -mapping
+                parameter.
+
+              * lumped - A lumped mapping file allows for auto-grouping of the
+                die  bumps  to the lumped package ports. When lumped is speci-
+                fied, the software implements a lumped package  by  internally
+                creating a lumped package model and its mapping file.
+
+                The format of the lumped mapping file is:
+
+                <terminal_name>   <die | vsrc>    <net_name>
+
+                   vddcore_in        die           vddcore
+
+                   vddcore_out       vsrc          vddmpu
+
+                In this format:
+
+                * the  software  connects  "<terminal_name> die <net_name>" to
+                  the bumps belonging to <net_name> on the die
+
+                * the software connects "<terminal_name> vsrc  <net_name>"  to
+                  the voltage source of <net_name>
+
+                * The  number  of lines in the lumped mapping file are few and
+                  are equal to the number of terminals on the package model
+
+              Default: distributed
+
+       -offset {x y}
+              Specifies to adjust and shift the X Y  coordinates  in  the  MCP
+              header for each pin.
+
+              When  performing  package  analysis,  the MCP is used to map the
+              terminals of the SPICE subcircuit in the package model  file  to
+              the locations at the grid or top-level pins in DEF. The die ori-
+              gin  specified  in  MCP must be same as specified in DEF. If the
+              die origin is not the same, you can use the -offset parameter to
+              modify the XY location specified in the MCP file.
+
+       -reset Resets all the previous set_package command settings to the  de-
+              fault settings.
+
+       -rotate <rotation_angle_in_degrees>
+              Specifies  the  rotation  angle  of the die. The possible values
+              are: 0/45/90/135/180/225/270/315.  Rotation  is  always  in  the
+              counter  clockwise  direction  from  the original point. Default
+              value is 0.
+
+              This information is required to do coordinate conversion for  xy
+              based pin mapping.
+
+       -scale <scaling_factor_number>
+              Specifies to scale the package model.
+
+       -spice<model_file>
+              Specifies  a  file  containing a SPICE subcircuit describing the
+              package model.
+
+       -subckt <subcircuitname>
+              Defines the top level subcircuit in package files.
+
+Related Information
+              * create_die_model
+
+              * "Package Analysis" in the Voltus IC Power  Integrity  Solution
+                User Guide
+
+                           Fri Apr 04 01:25:37 2025         set_package(25.10)

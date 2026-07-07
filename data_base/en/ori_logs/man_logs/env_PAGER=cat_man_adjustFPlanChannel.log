@@ -1,0 +1,145 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+adjustFPlanChannel(25.10)                            adjustFPlanChannel(25.10)
+
+Name
+       adjustFPlanChannel  -  Automatically  adjusts the channel width between
+       objects to prevent potential routing congestion
+
+Syntax
+        adjustFPlanChannel
+
+       [-help]
+
+       [-channelUtil <utilizationValue>]
+
+       [-constraints <constraint_file>]
+
+       [-moveOnly]
+
+       [-report <output_file>]
+
+       [-reportOnly [-report_low_utilized_channels <value>]
+
+         [-type {all fenceToFence fenceToCore fenceToMacro macroToMacro macro-
+       ToCore}]]
+
+       Automatically adjusts the channel width between objects to prevent  po-
+       tential  routing  congestion.  You can use this command after importing
+       the design,  loading  a  completed  floorplan,  and  then  running  the
+       place_design and earlyGlobalRoute commands.
+
+Parameters
+       -channelUtil <utilizationValue>
+
+       < >    Specifies  the  maximum utilization of routing tracks in a chan-
+              nel.
+
+              Data_type: float, optional
+
+       -constraints <constraint_file>
+              Specifies the file that contains constraints for  floorplan  ob-
+              jects.  A constraint file is a text file that can contain a list
+              of seeds to use when generating fences and  module  guides,  and
+              basic  relative,  spacing  and orientation constraints to follow
+              during macro placement.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each adjustFPlanChannel parameter. For a detailed
+              description of the command and all of its  parameters,  use  the
+              man command:
+
+              man adjustFPlanChannel
+
+       -moveOnly
+              Specifies that only move-only adjustment is allowed.
+
+              Data_type: bool, optional
+
+       -report <output_file>
+              Generates  a  report  that contains the channel congestion, tar-
+              geted channel adjustment, and final real floorplan adjustment.
+
+              Default: topcell.channel
+
+              Data_type: string, optional
+
+       -reportOnly
+              Generates a report of the channel congestion  without  adjusting
+              the floorplan.
+
+              Data_type: bool, optional
+
+       -report_low_utilized_channels <value>
+              Reports channel congestion whose track utilization is lower than
+              the user-specified threshold value.
+
+              Minimum: 0
+
+              Maximum: 1.0
+
+              Data_type: float, optional
+
+       -type {all fenceToFence fenceToCore fenceToMacro macroToMacro macroTo-
+       Core}
+              Reports  channel  congestion for specified type. You can specify
+              more than one type at a time.
+
+              Default: all
+
+              Data_type: enum_list, optional
+
+Example
+              * The following command generates a  report  of  only  fence-to-
+                fence congestion, without adjusting the floorplan:
+
+                adjustFPlanChannel -reportOnly -type {fenceToFence}
+
+              * The  following  command  generates a channel congestion report
+                without adjusting the floorplan:
+
+                adjustFPlanChannel -reportOnly -report reportfile
+
+                The following report is generated:
+
+                Channel (315.48 357.67 361.60 511.57)
+
+                Left: CORE
+
+                Right: DTMF_INST/PLLCLK_INST
+
+                Congested utilization: 200/185 (108.1% V)
+
+                Expected channel width increase: 6.48 um
+
+                Channel (315.48 511.57 351.33 646.17)
+
+                Left: CORE
+
+                Right: DTMF_INST/RAM_128x16_TEST_INST/RAM_128x16_INST
+
+                Congested utilization: 128/117 (109.4% V)
+
+                Expected channel width increase: 5.51 um
+
+                Channel (466.52 646.17 792.28 670.01)
+
+                Bottom: DTMF_INST/RAM_128x16_TEST_INST/RAM_128x16_INST
+
+                Top: DTMF_INST/ROM_512x16_0_INST
+
+                Congested utilization: 52/42 (123.8% H)
+
+                Expected channel height increase: 7.38 um
+
+Related Information
+              * checkDesign
+
+              * place_design
+
+              * earlyGlobalRoute
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025  adjustFPlanChannel(25.10)

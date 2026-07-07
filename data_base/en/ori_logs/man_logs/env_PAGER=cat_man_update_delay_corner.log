@@ -1,0 +1,381 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+update_delay_corner(25.10)                          update_delay_corner(25.10)
+
+Name
+       update_delay_corner - Modifies the parameters of an existing delay cal-
+       culation corner object
+
+Syntax
+       update_delay_corner
+
+       [-help]
+
+       [-early_estimated_worst_irDrop_factor <percent>]
+
+       [-early_irdrop_data <files_or_directories>]
+
+       [-early_irdrop_file <list_of_files>]
+
+       [-early_library_set <libSetName>]
+
+       [-early_opcond <opcondName>]
+
+       [-early_opcond_library <libName>]
+
+       [-early_rc_corner rcCornerObj]
+
+       [-early_temp_file <tempName>]
+
+       [-irdrop_data <files_or_directories>]
+
+       [-irdrop_file <list_of_files>]
+
+       [-late_estimated_worst_irDrop_factor <percent>]
+
+       [-late_irdrop_data <files_or_directories>]
+
+       [-late_irdrop_file <list_of_files>]
+
+       [-late_library_set <libSetName>]
+
+       [-late_opcond <opcondName>]
+
+       [-late_opcond_library <libName>]
+
+       [-late_rc_corner <rcCornerObj>]
+
+       [-late_temp_file <tempName>]
+
+       [-library_set <libSetObj>]
+
+       -name <delayCornerObj>
+
+       [-opcond <opcondName>]
+
+       [-opcond_library <libName>]
+
+       [-pg_net_voltages <voltage_pairs>]
+
+       [-power_domain <powerDomainName>]
+
+       [-rc_corner <rcCornerObj>]
+
+       [-si_enabled {true | false}]
+
+       [-supply_set <supplySetName>]
+
+       [-temp_file <tempName>]
+
+       Modifies the parameters of an existing delay calculation corner object.
+       You  can use the update_delay_corner command to add or change attribute
+       values for an existing delay calculation corner object, or for  an  ex-
+       isting power domain definition.
+
+       You  can update a delay calculation corner object before the multi-mode
+       multi-corner definition file is loaded into the design, or after.  How-
+       ever,  after the software processes the file, any change to an existing
+       object when the software is in multi-mode multi-corner mode results  in
+       the timing, delay calculation, and RC data being reset.
+
+       You  also can use the update_delay_corner command to add a power domain
+       definition to the specified delay calculation  corner.  Instances  con-
+       tained within an MSMV power domain often require a different library or
+       operating  condition  that used for the default power domain. Power do-
+       main definitions within a delay calculation corner object can  be  used
+       to assign specific libraries and PVT settings per power domain.
+
+       Note: Use separate delay calculation corners to define major PVT corner
+       differences.  Use  the  -early_* and -late_* parameters within a single
+       delay calculation corner to control on-chip-variation.
+
+       The -early_* and -late_* parameters can be specified separately, to up-
+       date a delay corner object with early or late information. If you  only
+       specify  one  of  the -early_* or -late_* parameters, the software uses
+       the original information pointer in place of the missing early/late pa-
+       rameter.
+
+       For example, if you initially created a delay corner object using:
+
+       create_delay_corner
+
+       -library_set libsNominal
+
+       If you specify update_delay_corner  -early_library_set  libsEarly,  the
+       software actually uses:
+
+       update_delay_corner
+
+       -early_library_set libsEarly
+
+       -late_library_set libsNominal
+
+       Use  this  command after creating at least one delay calculation corner
+       (create_delay_corner).
+
+Parameters
+       -help  Prints out the command usage.
+
+       -early_estimated_worst_irDrop_factor <percent>
+              Specifies the early voltage derating factor.
+
+              When this parameter is specified, the  software  performs  delay
+              calculations using the voltage = nomVolt * (1 - value).
+
+              Default: 0.0
+
+       -early_irdrop_data <files_or_directories>
+              Specifies  the IR drop files or directories to apply when calcu-
+              lating the early arrival times at a single delay corner.
+
+       -early_irdrop_file <list_of_files>
+              Specifies the list of IR drop files to  apply  when  calculating
+              early arrival times at a single power domain.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+              Note: This parameter is obsolete and will be removed in a future
+              release.  To  ensure  compatibility  with  future  releases, you
+              should update your scripts.
+
+       -early_library_set <libSetName>
+              Specifies the library set to associate with the power domain for
+              calculating early arrival times for this power domain.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+       -early_opcond <opcondName>
+              Specifies the operating condition to use for  calculating  early
+              arrival times for this power domain.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+              Default:  Each library in the early library set uses its own de-
+              fault operating condition.
+
+       -early_opcond_library <libName>
+              Specifies the internal library name for the library in which the
+              early operating condition is defined. This is  not  the  library
+              file name.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+              Default:  The  software  searches  the early library set for the
+              specified operating condition (-early_opcond), starting with the
+              master library.
+
+       -early_rc_corner <rcCornerObj>
+              Specifies the RC corner object to associate with the early  cor-
+              ner object.
+
+       -early_temp_file <tempName>
+              Specifies the name of the temperature file for temperature aware
+              delay calculation for early corner.
+
+       -irdrop_data <files_or_directories>
+              Specifies  the IR drop files or directories to apply to both the
+              early and late delay calculation for the specified delay  corner
+              object.
+
+       -irdrop_file <list_of_files>
+              Specifies  the  list of IR drop files to apply to both early and
+              late delay calculation for this power domain object.
+
+              This parameter is used primarily to configure  single-corner  or
+              Best-Case Worst-Case (BC-WC) analysis modes.
+
+              Note: This parameter is obsolete and will be removed in a future
+              release.  To  ensure  compatibility  with  future  releases, you
+              should update your scripts.
+
+       -late_estimated_worst_irDrop_factor <percent>
+              Specifies the late voltage derating factor.
+
+              When this parameter is specified, the  software  performs  delay
+              calculations using the voltage = nomVolt * (1 - value).
+
+              Default: 0.0
+
+       -late_irdrop_data <files_or_directories>
+              Specifies  the IR drop files or directories to apply when calcu-
+              lating the late arrival times at a single delay corner.
+
+       -late_irdrop_file <list_of_files>
+              Specifies the list of IR drop files to  apply  when  calculating
+              late arrival times at a single power domain.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+              Note: This parameter is obsolete and will be removed in a future
+              release.  To  ensure  compatibility  with  future  releases, you
+              should update your scripts.
+
+       -late_library_set <libSetName>
+              Specifies the library set to associate with  this  delay  corner
+              object for calculating late arrival times for this power domain.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+       -late_opcond <opcondName>
+              Specifies  the  operating  condition to use for calculating late
+              arrival times for this power domain.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+              Default: Each library in the late library set uses its  own  de-
+              fault operating condition.
+
+       -late_opcond_library <libName>
+              Specifies the internal library name for the library in which the
+              late  operating  condition  is  defined. This is not the library
+              file name.
+
+              This parameter is used primarily when configuring the multi-mode
+              multi-corner environment for on-chip-variation (OCV) analysis.
+
+              Default: The software searches the  late  library  set  for  the
+              specified  operating condition (-late_opcond), starting with the
+              master library.
+
+       -late_temp_file <tempName>
+              Specifies the name of the temperature file for temperature aware
+              delay calculation for late corner.
+
+       -late_rc_corner <rcCornerObj>
+              Specifies the RC corner object to associate with the late corner
+              object.
+
+       -library_set <libSetName>
+              Specifies the library set to associate with  the  power  domain.
+              All of the cells and macros in the power domain get their timing
+              and power information from these libraries.
+
+              This  parameter  is used primarily to configure single-corner or
+              Best-Case Worst-Case (BC-WC) analysis modes.
+
+       -name <dcCornerObj>
+              Specifies the delay calculation corner to which to add the power
+              domain definition, or to which to update  the  delay  corner  or
+              power domain attribute values.
+
+       -opcond <OpcondName>
+              Specifies the operating condition to use for the power domain.
+
+              This  parameter  is used primarily to configure single-corner or
+              Best-Case Worst-Case (BC-WC) analysis modes.
+
+              Default: Each library in the library set uses  its  own  default
+              operating condition.
+
+       -opcond_library <libName>
+              Specifies the internal library name for the library in which the
+              operating  condition  is  defined.  This is not the library file
+              name.
+
+              This parameter is used primarily to configure  single-corner  or
+              Best-Case Worst-Case (BC-WC) analysis modes.
+
+              Default: The software searches the library set for the specified
+              operating condition (-opcond), starting with the master library.
+
+       -pg_net_voltages <voltage_pairs>
+              Specifies  the  power/ground  net  voltages  to be used for both
+              early/late timing analysis.
+
+       -power_domain <powerDomainName>
+              Specifies the name of the power domain to add to the delay  cal-
+              culation corner. This name must match the name of a power domain
+              specified in the power domain file.
+
+              Note:  This  parameter  is required for all the designs that use
+              power domains and should be specified for each delay  corner  in
+              the MMMC file.
+
+       -rc_corner <rcCornerObj>
+              Specifies  the new RC corner object to associate with this delay
+              corner.
+
+       -si_enabled {true | false}
+              Controls signal integrity (SI) analysis.
+
+              When set to true, the analysis of all MMMC views will include SI
+              analysis by default. You can use this parameter to  further  de-
+              termine  which  analysis  views receive SI analysis and which do
+              not.
+
+              When this parameter is set to false on a delay corner, the soft-
+              ware will disable SI analysis for all the views  that  reference
+              that corner. By default (or when this parameter is set to true),
+              SI analysis is computed for all the views related to that corner
+              - whenever SI is globally enabled. (The global control of signal
+              integrity  (SI)  analysis  is  determined by the setDelayCalMode
+              -SIAware setting.)
+
+       -supply_set <supplySetName>
+              Specifies the name of the supply set to add to the delay  calcu-
+              lation corner.
+
+       -temp_file <tempName>
+              Specifies the name of the temperature file for temperature aware
+              delay calculation for single corner.
+
+       Examples
+
+              * The  following  command  creates  the delay calculation corner
+                dc1:
+
+                create_delay_corner -name dc1
+
+                -library_set libs-2volt
+
+                -opcond_library delayvolt_2V
+
+                -opcond slow_2V
+
+                -rc_corner rc-cworst
+
+              * The following commands add definitions for the  power  domains
+                domain-3V and domain-5V to the dc1 delay calculation corner:
+
+                update_delay_corner -name dc1
+
+                -power_domain domain-3V
+
+                -library_set libs-3volt
+
+                -opcond_library delayvolt_3V
+
+                -opcond slow_3V
+
+                update_delay_corner -name dc1
+
+                -power_domain domain-5V
+
+                -library_set libs-5volt
+
+                -opcond_library delayvolt_5V
+
+                -opcond slow_5V
+
+              * The  following command changes the libraries used by the delay
+                calculation corner dc1 to those in the library  set  IsCOM-2v,
+                and changes the RC corner associated with dc1 to rc-ctyp:
+
+                update_delay_corner -name dc1
+
+                -library_set IsCOM-2V
+
+                -rc_corner rc-ctyp
+
+Related Information
+              * create_delay_corner
+
+              * get_delay_corner
+
+                           Fri Apr 04 01:25:37 2025 update_delay_corner(25.10)

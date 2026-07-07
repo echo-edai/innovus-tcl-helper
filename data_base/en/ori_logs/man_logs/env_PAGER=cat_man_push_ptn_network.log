@@ -1,0 +1,230 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+push_ptn_network(25.10)                                push_ptn_network(25.10)
+
+Name
+       push_ptn_network  -  Pushes  down  a  network  (std cells and connected
+       wires) logically and physically into overlapping partitions
+
+Syntax
+       push_ptn_network
+
+       [-help]
+
+       [-exclude_ptn_list <ptnNameList>]
+
+       [-filter string]
+
+       [-inst_prefix <instPrefixName>]
+
+       [-logical_only]
+
+       [-net_prefix <netPrefixName>]
+
+       [-output_logical_only_nets string]
+
+       [-output_nets_for_wire_distribution <string>]
+
+       [-ptn_net_dir <fileName>]
+
+       {-nets netNameList | -file  <fileName>  |  -buf_only  |  -insts  <inst-
+       NameList> }
+
+       [-check_only [-output<fileName>]]
+
+       Pushes  down  a  network  (std cells and connected wires) logically and
+       physically into overlapping partitions. The push_ptn_network command:
+
+              *
+                 Logically pushes down a set of nets into  overlapping  parti-
+                tions by doing all the necessary logical port creations.
+
+              *
+                 Physically  pushes  down  the  special wires of the nets into
+                overlapping partitions and does all  the  necessary  partition
+                pin  creations.  The pushed wires look exactly the same as the
+                original wires.
+
+              * Creates Verilog assign statements wherever required to  ensure
+                that  the pushed logic is logically equivalent to the original
+                logic.
+
+       Notes:
+
+              * The push_ptn_network command does  not  support  designs  with
+                master  and  clone partitions. In such scenarios, only masters
+                will be seen and the  overlapping  wires  and  logic  will  be
+                pushed down into masters only.
+
+              * The  push_ptn_network command takes care of new nets connected
+                at top level nets automatically post committing partitions.
+
+              * The push_ptn_network command supports partially  routed  nets.
+                It  does  not  require the wires of a net to be DRC/LVS clean.
+                Wires need not connect to the  instance-pin  of  a  driver  or
+                loads.  Even  if  a  wire  is in the 5u radius of a source-in-
+                stance-pin or a sink-instance-pin, the tool considers the  net
+                for pushdown.
+
+Parameters
+       -buf_only
+              Specifies  that only all buffers, and their connected nets, will
+              be considered for pushed down.
+
+              Data_type: bool, required
+
+       -check_only
+              Informs which nets are going to be pushed down.
+
+              Data_type: bool, optional
+
+       -exclude_ptn_list <ptnNameList>
+              Specifies that the instances/nets within  the  specified  parti-
+              tion(s) will not be pushed down.
+
+              Data_type: string, optional
+
+       -file <fileName>
+              Specifies  the  name  of  the file that contains the list of net
+              names to be considered for push down.
+
+              Note: The net names should be listed in the file using the  fol-
+              lowing format:
+
+              set list_of_net_names_to_push_down { \
+
+              <net_name_1>\
+
+              <net_name_2>\
+
+              }
+
+              Note:  list_of_net_names_to_push_down,  as mentioned above, is a
+              reserved keyword. Do not modify it.
+
+              Data_type: string, required
+
+       -filter <string>
+              Specifies that only instances/nets whose name matches this spec-
+              ified regular expression will be pushed down.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information for each push_ptn_network parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man push_ptn_network
+
+       -inst_prefix <instPrefixName>
+              Specifies a custom prefix for instances that are pushed down.
+
+              Data_type: string, optional
+
+       -insts <instNameList>
+              Specifies  that all instances, and their connected nets, will be
+              considered for pushed down.
+
+              Note: The push_ptn_network command accepts instances names  with
+              backspace '\' in them.
+
+              Data_type: string, required
+
+       -logical_only
+              Logically pushes down network into overlapping partitions.
+
+              Data_type: bool, optional
+
+       -net_prefix <netPrefixName>
+              Specifies a custom prefix for nets that are pushed down.
+
+              Data_type: string, optional
+
+       -nets <netNameList>
+              Specifies that list of net names, and their connected instances,
+              will be considered for pushed down.
+
+              Note: The push_ptn_network command accepts nets names with back-
+              space '\' in them.
+
+              Data_type: string, required
+
+       -output <fileName>
+              Specifies  a  file  name  in which net names, to be pushed down,
+              will be mentioned. This parameter is used with -check_only.
+
+              Data_type: string, optional
+
+       -output_logical_only_nets <string>
+              Specifies a file name in which net names are mentioned. This pa-
+              rameter is used with -logical_only.
+
+              Data_type: string, optional
+
+       -output_nets_for_wire_distribution <string>
+              Outputs the user-specified nets so that they can be  used  later
+              during the partition command.
+
+              Data_type: string, optional
+
+       -ptn_net_dir <fileName>
+              Specifies the directory that consists of the names of the pushed
+              nets corresponding to each partition.
+
+              Data_type: string, optional
+
+Example
+              * The  following  command  consider  nets n1, n2 and n3 for push
+                down.
+
+                push_ptn_network -nets {n1 n2 n3}
+
+              * The following command generates  a  file,  push_down_nets.txt,
+                containing  the  names of nets that would have been considered
+                for push down.
+
+                push_ptn_network -nets [dbGet  -e  top.nets.name]  -check_only
+                -output push_down_nets.txt
+
+              * The  following  command  generates a file, push_down_nets.txt,
+                containing the names of nets (connected to the  specified  in-
+                stances)that would be considered for push down.
+
+                push_ptn_network  -insts [dbGet -e top.insts.name] -check_only
+                -output push_down_nets.txt
+
+              * The following command considers all buffers for push down.
+
+                push_ptn_network -buf_only
+
+              * The following command considers all  buffers  and  their  con-
+                nected  nets  for push down which have their hierarchical name
+                (TCL) regexp matching to KK.*.
+
+                push_ptn_network -buf_only -filter KK.*
+
+              * The following command considers all  buffers  and  their  con-
+                nected  nets  for push down. The pushed down buffers will have
+                their base names starting with II_
+
+                push_ptn_network -buf_only -inst_prefix II
+
+              * The following command considers all  buffers  and  their  con-
+                nected  nets  for push down. The pushed down buffers will have
+                their base names starting with II_, and the pushed  down  nets
+                will  have their base names starting with NN_.push_ptn_network
+                -buf_only -inst_prefix II -net_prefix NN
+
+Related Information
+              *
+
+                create_pushdown_eco
+
+              *
+
+                commit_pushdown_eco
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Partition Pushdown Replay Flow
+
+                           Fri Apr 04 01:25:37 2025    push_ptn_network(25.10)

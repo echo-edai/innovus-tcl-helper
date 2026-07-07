@@ -1,0 +1,69 @@
+{
+  "command": "set_reinforce_pg_mode",
+  "is_cmd": true,
+  "summary": "设置用于 reinforce_pg 命令的全局变量",
+  "description": "此命令用于设置全局变量，这些变量控制着 reinforce_pg 命令在电源地（PG）网络加固（例如添加条纹、多边形）时的行为。它允许用户配置IR修复力度、关键路径时序松弛度、层次化IR分析、对现有布线/网络的尊重程度以及对标准单元几何形状的考虑等，从而实现时序感知、DRC清洁且高效的PG网络增强。",
+  "usage": "set_reinforce_pg_mode [-help] [-auto_ir_fix_effort {low | medium | high}] [-critical_path_slack {<slack>}] [-irdrop_hierarchical_block {block1 block2 ... | *}] [-irdrop_hierarchical_top_rail_analysis_directory {<directory_name>}] [-reset] [-respect_defined_nets {<file_name>}] [-respect_routes {none | fixed | fixed_and_clock | all}] [-respect_stdcell_geometry {none | sequential | all}] [-timing_aware_effort {none | low | medium | high}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认值的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto_ir_fix_effort",
+      "description": "指定在条纹生成期间的IR修复力度级别（低、中、高）。力度越高，从Voltus传回给RPG进行多边形插入的瓦片数量越多，从而插入更多多边形。仅当与 reinforce_pg -auto_ir_fix 参数一起使用时生效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-critical_path_slack",
+      "description": "指定时序驱动PG条纹加固期间关键网络的松弛阈值（纳秒）。所有松弛值小于此值的违规路径都将被考虑。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-irdrop_hierarchical_block",
+      "description": "指定要修复IR压降的层次化模块列表（或使用 * 表示所有实例）。这些模块应是已加载主模块的实例。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-irdrop_hierarchical_top_rail_analysis_directory",
+      "description": "指定包含全芯片轨分析信息的目录路径，用于层次化流程模块，以收集IR压降信息并用于修复。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定的参数重置为其默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-respect_defined_nets",
+      "description": "指定一个文件名，其中列出了用户定义的关键网络。在条纹生成时，reinforce_pg 将尊重这些网络，在其周围预留空间，确保新添加的PG线与这些网络DRC清洁。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-respect_routes",
+      "description": "指定在条纹生成时需要尊重的预存在布线类型（none: 不尊重任何布线；fixed: 尊重固定的常规线；fixed_and_clock: 尊重固定的和已布线的时钟；all: 尊重固定的、已布线的时钟以及已布线的信号线）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-respect_stdcell_geometry",
+      "description": "指定在通孔生成时需要尊重的标准单元几何类型（包括引脚和障碍物）（none: 不尊重；sequential: 尊重时序单元；all: 尊重所有单元）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-timing_aware_effort",
+      "description": "指定对 reinforce_pg 关键路径的时序感知力度级别（none, low, medium, high）。当设置为 low/medium/high 时，reinforce_pg 会执行时序分析。需要与 -critical_path_slack 参数配合使用以确定松弛范围。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

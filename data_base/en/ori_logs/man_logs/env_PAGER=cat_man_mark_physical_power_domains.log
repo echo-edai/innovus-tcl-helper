@@ -1,0 +1,68 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+mark_physical_power_domains(25.10)          mark_physical_power_domains(25.10)
+
+Name
+       mark_physical_power_domains  -  Marks  the  physical power domains that
+       need fences in case the power domains share the same primary supply net
+       and the available supply net setting (if specified)
+
+Syntax
+       mark_physical_power_domains
+
+       [-help]
+
+       {-domains <physical_domain_list> | -reset | -checkOnly}
+
+       [-groupPhyLogicalDomains {{<phyPd lpd1 lpd2> ...} ...}]
+
+       Marks the physical power domains that need fences in case the power do-
+       mains share the same primary supply net and the  available  supply  net
+       setting (if specified). The command also enables the logical domains to
+       exist without any fence.
+
+       Note:  mark_physical_power_domains  needs to be called again (after the
+       initial use), whenever the tool reads in an power  intent  file.  Else,
+       the file content is not recognized.
+
+Parameters
+       -help  Prints  out the command usage. For a detailed description of the
+              command and all its parameters, use the man command:
+
+              man mark_physical_power_domains
+
+       -checkOnly
+              Checks the fence sharing against Power/Ground (P/G) nets.
+
+       -domains <physical_domain_list>
+              Marks listed power domains as physical domains (a physical power
+              domain must have a fence). Once a physical domain is marked, the
+              power domain sharing the same P/G nets (not marked in this  com-
+              mand)  are  recognized  as logical domain (or fenceless domain).
+              Therefore, this domain can be implemented without a  fence.  The
+              instances  within  logical domain are placed within the fence of
+              its corresponding physical domain. This parameter also  executes
+              the-checkOnly parameter, by default.
+
+              Note:  Default  power domain is not required to be marked, it is
+              marked by default. This command needs to be  called  after  each
+              run of commit_power_intent. Otherwise the physical/logical power
+              domain information will be lost in the database.
+
+       -groupPhyLogicalDomains {{<phyPd lpd1 lpd2> ...} ...}
+              Groups a list of physical and logical domains for the mark_phys-
+              ical_power_domains command.
+
+       -reset Resets   the   status   marking   settings  after  running  com-
+              mit_power_intent.
+
+Example
+       The following command marks PDdefault as physical domain:
+
+       mark_physical_power_domains -domains {PDdefault}
+
+Related Information
+              * commit_power_intent
+
+              * Low Power Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:3m7ar2k0_2p5hysical_power_domains(25.10)

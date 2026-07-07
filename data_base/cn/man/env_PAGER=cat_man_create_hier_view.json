@@ -1,0 +1,159 @@
+{
+  "command": "create_hier_view",
+  "is_cmd": true,
+  "summary": "创建层次化电源网格视图",
+  "description": "该命令用于创建层次化电源网格视图（HPGV），是顶层层次化电源轨分析的一部分。它通过指定块的LEF或GDS文件、提取工作目录、库名称、电源/地网络列表等参数，生成一个表示块电源网格连接性和提取数据的库文件（.cl格式），以便在顶层分析中进行集成。",
+  "usage": "create_hier_view [-help] -library_name <name> [-output_dir <dir>] [-block_lef <lef_file>|-block_gds <gds_file>] [-block_lef <lef_file> | -gds_port_file <gds_port_file>] [-libgen_command_file <file>] [-max_viacluster_mode {true | false}] [-extraction_mode {fast | accurate}] [-cell_name <name>] [-def <list_of_DEF_files>] [-oaRef <OA_reference_libs>] [-powergrid_view_libraries <primitive_cells.cl>] [-ground_nets {<pin1><pin2> ...<pinN>}] [-power_nets {<pin1><value1><pin2><value2> ...<pinN><valueN>}] [-extraction_work_directory <path_to_extraction_work_directory>] [-compress_powergrid_database {true | false}] [-parasitic_extractor_command_file <filename>] [-cluster_via1_ports {true | false}] [-cluster_via_rule { {<via_layer1> <number_of_equidistant_vias>}...}] [-cluster_via_size <value>] [-ignore_fillers {true | false}] [-ignore_decaps {true | false}] [-ignore_shorts {true | false}] [-force_library_merging{true | false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-library_name",
+      "description": "指定块电源网格视图将被放置的库名称，系统会自动添加.cl扩展名。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-output_dir",
+      "description": "指定保存结果的输出目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_lef",
+      "description": "指定块的LEF文件名，该文件必须包含层次化块的所有电源引脚端口几何定义。与-block_gds互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_gds",
+      "description": "在没有块LEF的情况下，可以指定块GDS和端口标签文件来生成层次化电源网格视图。与-block_lef互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-gds_port_file",
+      "description": "在没有块LEF的情况下，可以指定块GDS和端口标签文件来生成层次化电源网格视图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-libgen_command_file",
+      "description": "指定电源网格库生成命令文件的文件名，该文件内容将被包含在自动生成的libgen.cmd文件中。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_viacluster_mode",
+      "description": "指定提取器自动聚类通孔以减少RC元件，从而降低动态模式下的IR压降分析运行时间。默认值为true。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extraction_mode",
+      "description": "确定创建何种电源网格视图，取决于执行快速还是精确提取。默认情况下，HPGV会生成详细视图和简化视图。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell_name",
+      "description": "指定块单元名称，与块DEF文件中指定的名称一致。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-def",
+      "description": "为层次化分析指定一个块DEF文件列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-oaRef",
+      "description": "读取OpenAccess参考库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-powergrid_view_libraries",
+      "description": "为层次化PGV生成指定一个原始单元库列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-ground_nets",
+      "description": "指定块的地网络列表。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-power_nets",
+      "description": "指定块的电源网络列表及其标称电压值。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-extraction_work_directory",
+      "description": "指定重用已提取的电源网格数据库来生成HPGV。仅支持生成设计中块的层次化提取视图。与-state_directories和-def参数互斥。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-compress_powergrid_database",
+      "description": "指定压缩提取和电源轨分析生成的输出文件以节省磁盘空间，但会带来约5-10%的性能损失。默认值为false。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-parasitic_extractor_command_file",
+      "description": "指定由库生成引擎调用的提取器的输入文件名，该文件包含设计中的单元信息，用于电阻和电容提取。通常用于调试。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cluster_via1_ports",
+      "description": "对于在M1和M2层具有随引脚布线（follow-pin routing）的设计，其标准单元库LEF包含M1、M2和VIA1端口。此参数指定是否聚类此类单元的VIA1端口以提高整体提取和电源轨分析性能。默认值为true。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cluster_via_rule",
+      "description": "控制基于层的通孔聚类数量。此参数指定的通孔聚类规则将覆盖给定精度模式的默认聚类规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cluster_via_size",
+      "description": "指定用于聚类除VIA1外所有通孔层的通孔阵列大小。默认值为625（25x25通孔阵列），静态HD模式下的默认值为16（4x4）。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-ignore_fillers",
+      "description": "在电源轨分析期间忽略填充单元。如果填充单元用于保持随引脚布线的连接性，则必须将此参数设置为false。默认值：静态分析为true，动态分析为false。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_decaps",
+      "description": "在电源轨分析期间忽略去耦电容单元。如果去耦电容用于保持随引脚布线的连接性，则必须将此参数设置为false。不建议在动态分析中忽略去耦电容。默认值：静态分析为true，动态分析为false。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_shorts",
+      "description": "忽略在提取过程中发现的短路并继续层次化PGV生成。如果设计包含GDS，则无法应用此参数。默认值为false。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-force_library_merging",
+      "description": "指定强制合并具有不同电阻率和层的PGV。它使用第一个库的技术信息。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

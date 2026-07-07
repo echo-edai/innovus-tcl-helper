@@ -1,0 +1,218 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setMsvMode(25.10)                                            setMsvMode(25.10)
+
+Name
+       setMsvMode - Sets the special handling for inter-domain nets and to use
+       effective power domains for ISO/LS insertion
+
+Syntax
+       setMsvMode
+
+       [-help]
+
+       [-allowNestedDefaultDomain {true | false}]
+
+       [-allowPowerDomainMinGapZero {true | false}]
+
+       [-checkAllNetsForDomainCrossing {true | false}]
+
+       [-handleBackToBackIsolation {true | false}]
+
+       [-handlePD {true|false}]
+
+       [-handlePDComplex {true|false}]
+
+       [-honorCpfGlobalConnectionSpecForAoBuffer {true | false}]
+
+       [-honorCpfGlobalConnectionSpecForShifter {true | false}]
+
+       [-honorDotLibRelatedPGPin {true | false}]
+
+       [-honorEffectiveDomainForIsoLsInsertion {true | false}]
+
+       [-markIsoEnablePinAsAlwaysOn {true | false}]
+
+       [-notUseTopFTermDomainForVoltage {true|false}]
+
+       [-reset]
+
+       [-shareWellAOBufferingSupport {true|false}]
+
+       [-upf_allow_shifter_voltage_mismatch {true|false}]
+
+       [-upf_insert_on_floating_pins {true|false}]
+
+       Sets  the  special  handling for inter-domain nets and to use effective
+       power domains for ISO/LS insertion.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each setMvsMode parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man setMvsMode
+
+       -allowNestedDefaultDomain {true | false}
+              Allows a non-default power domain member to be logically  nested
+              in  a default power domain. This default power domain member has
+              fence constraint.
+
+              By default, due to grouping, the fence constraint  is  lost  for
+              the non-default power domain member. Set true to enable.
+
+              In  the  netlist:  modules HInst11 and HInst12 are under HInst1;
+              and HInst1 is under the top.
+
+              You have the following:
+
+              create_power_domain -instances HInst1
+
+              create_power_domain -default -instances {HInst11 HInst12}...
+
+              That means HInst11 and HInst12 are cut from  HInst1  to  default
+              power  domain. If there is a fence/region constraint for HInst11
+              and HInst12 in default  power  domain,  then  please  turn  this
+              global  on.  Otherwise, the fence/region for HInst11 and HInst12
+              will be lost.
+
+              Default: true
+
+       -allowPowerDomainMinGapZero {true | false}
+              Allows users to set power domain zero minGap.
+
+              Default: true
+
+       -checkAllNetsForDomainCrossing {true | false}
+              Checks all the nets for domain crossings. Set true to enable.
+
+              Default: true
+
+       -handleBackToBackIsolation {true | false}
+              Supports back-to-back isolation insertion along one cross-domain
+              net based on the CPF ISO rule. Set true to enable.
+
+              Default: false
+
+       -handlePD {true|false}
+              Routes intra-power domain and global nets using  the  specifica-
+              tions  of  the power domains. On using this option, earlyGlobal-
+              Route routes intra-power domain nets only within their power do-
+              mains. Global nets that do not connect with a  power  domain  do
+              not get routed through that power domain.
+
+              Default: true
+
+       -handlePDComplex {true|false}
+              Routes  nets belonging to more than one power domain so that the
+              routing does not violate power domain boundaries, in addition to
+              routing intra-power domain and global nets using the  specifica-
+              tions of the power domains.
+
+              For  example,  when  you specify -handlePDComplex true, if a net
+              belongs to power domains PD1 and PD3, but not PD2,  earlyGlobal-
+              Route  routes  the  net  without going over the PD2 power domain
+              boundary.
+
+              Default: true
+
+       -honorCpfGlobalConnectionSpecForAoBuffer {true | false}
+              Honors connection pecs for AO buffer based on the CPF rules. Set
+              true to enable.
+
+              Default: false
+
+       -honorCpfGlobalConnectionSpecForShifter {true | false}
+              Honors connection specs for shifters based on the CPF rules. Set
+              true to enable.
+
+              Default: false
+
+       -honorDotLibRelatedPGPin {true | false}
+              Honors library related PG pins. Set true to enable.
+
+              Default: true
+
+       -honorEffectiveDomainForIsoLsInsertion {true | false}
+              Honors effective domains for ISO/LS insertions. Set true to  en-
+              able.
+
+              Default: true
+
+       -markIsoEnablePinAsAlwaysOn {true | false}
+              Insert  ISO/LS for all the inter-domain nets using effective do-
+              main based on the CPF rules. Set true to enable.
+
+              Default: true
+
+       -notUseTopFTermDomainForVoltage {true|false}
+              Controls voltage using top fterm domain for IO pin voltage.
+
+              Default: false
+
+       -reset Resets the MSV mode to the default value. Any values that do not
+              already match the default value and are reset. will be reported.
+
+       -shareWellAOBufferingSupport {true|false}
+              Shares the isolated Nwell AO buffers.
+
+              Default: true
+
+       -upf_allow_shifter_voltage_mismatch {true|false}
+              When set to false, it prevents insertion of  level  shifters  by
+              allowing voltage tolerance.
+
+              Default: true
+
+       -upf_insert_on_floating_pins {true|false}
+              Allows  controlling  of low power cell insertion on the floating
+              pins.
+
+              Default: true
+
+Examples
+              * In the following example,allows the non-default  power  domain
+                members  nested in the default power domain member are allowed
+                logically and physically and this default power domain has the
+                fence constraint:
+
+                setMsvMode -allowNestedDefaultDomain true
+
+              * In the following example, all the nets for the  iso/ls  inser-
+                tion are checked:
+
+                setMsvMode -checkAllNetsForDomainCrossing true
+
+              * In  the  following  example, back-to-back isolation along with
+                one net are inserted:
+
+                setMsvMode -handleBackToBackIsolation true
+
+              * In  the  following  example,  the  CPF   specification   (cre-
+                ate_global_connection  -domain) are used for the ISO/LS PG pin
+                connection:
+
+                setMsvMode -honorCpfGlobalConnectionSpecForShifter true
+
+              * In the following example, the pin  power  domain  is  assigned
+                based on the related power pin specified in *.lib:
+
+                setMsvMode -honorDotLibRelatedPGPin true
+
+              * In  the following example, effective domain for the iso/ls in-
+                sertion is used:
+
+                setMsvMode -honorEffectiveDomainForIsoLsInsertion true
+
+              * In the following example, the iso  enable  based  on  the  tag
+                (power modes) is marked:
+
+                setMsvMode -markIsoEnablePinAsAlwaysOn false
+
+Related Information
+              * getMsvMode
+
+              * Low Power Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025          setMsvMode(25.10)

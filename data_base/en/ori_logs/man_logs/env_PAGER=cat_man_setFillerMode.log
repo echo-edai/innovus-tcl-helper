@@ -1,0 +1,338 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setFillerMode(25.10)                                      setFillerMode(25.10)
+
+Name
+       setFillerMode  -  Controls  certain  aspects  of  how the software adds
+       filler cells
+
+Syntax
+       setFillerMode
+
+       [-help]
+
+       [-reset]
+
+       [-add_fillers_with_drc {true|false}]
+
+       [-avoid_abutment_patterns { 1:1 1:2 ...}]
+
+       [-check_signal_drc {true | false}]
+
+       [-check_trim_rule {true|false}]
+
+       [-core {{list_of_cells1} {list_of_cells2} ...}]
+
+       [-corePrefix <prefix>]
+
+       [-createRows {true | false}]
+
+       [-keepFixed {true | false}]
+
+       [-diffCellViol {true | false}]
+
+       [-distribute_implant_evenly {true|false}]
+
+       [-double_height_filler_insertion {true|false}]
+
+       [-ecoMode {true | false}]
+
+       [-enable_restore_filler_flow {true|false}]
+
+       [-fitGap {true | false}]
+
+       [-honorPrerouteAsObs {true | false}]
+
+       [-horizontal_exception_cell {fillerCell ...}]
+
+       [-horizontal_max_length <instance_length>]
+
+       [-horizontal_repair_cell {fillCell ...}]
+
+       [-preserveUserOrder {true | false}]
+
+       [-scheme {locationFirst | cellFirst}]
+
+       [-swap_cell {{cell swap pair1} {cell swap pair2} ...}]
+
+       [-vertical_stack_exception_cell <ListOfCellNames>}]
+
+       [-vertical_stack_left_edge_exception_cell <ListOfCellNames>]
+
+       [-vertical_stack_max_length <instance_length>]
+
+       [-vertical_stack_repair_cell {fillerCell ...}]
+
+       [-vertical_stack_repair_edge {left|right}]
+
+       [-vertical_stack_right_edge_exception_cell <ListOfCellNames>]
+
+       [-y_flip_type { integer : { first | last } ... }]
+
+       Controls certain aspects of how the software  adds  filler  cells.  The
+       mode  setting  is  persistent  and saved along with the database by the
+       saveDesign command.
+
+       Use getFillerMode to return the current settings for the  setFillerMode
+       command.
+
+       The  setFillerMode parameters affect the behavior of the following com-
+       mands:
+
+              * addFiller
+
+              * deleteFiller
+
+                Note: Parameters specified by the  addFiller  or  deleteFiller
+                command  supersede  those  specified by the setFillerMode com-
+                mand.
+
+Parameters
+       -add_fillers_with_drc {true|false}
+              Calls the second addFiller without DRC checking.
+
+              Default: true
+
+              Note: When -add_fillers_with_drc is true, only DRC  checking  is
+              switched  off  with routing in the second pass addFiller for the
+              opt stage.
+
+       -avoid_abutment_patterns { 1:1 1:2 ...}]
+              Specifies illegal abutment patterns.
+
+       -check_signal_drc {true | false}
+              When addFiller is called after routing, instructs  the  software
+              to  run DRC checks of filler pins with signal net wires. To dis-
+              able the DRC checks, set this parameter to false.
+
+              Default: true
+
+       -check_trim_rule {true|false}
+              Controls trim rule checking during the  filler  insertion.  When
+              set to true, the trim rule is checked, and runtime increases.
+
+              Default: false
+
+       -core {{list_of_cells1} {list_of_cells2} ...}
+              Specifies  the  filler  cells to add with addFiller. Enclose the
+              filler cell names in quotation marks (") or curly braces ({  }).
+              You  can  specify  multiple  cell lists at one time, using curly
+              braces ({ }) to separate each one.
+
+              Default: "" (empty string)
+
+       -corePrefix <prefix>
+              Specifies the prefix for the added filler cells.
+
+              Default: "" (empty string)
+
+       -createRows {true | false}
+              Instructs addFiller to create rows in the floorplan.
+
+              Default: true. If a cell's site does not have rows in the floor-
+              plan, addFiller creates the rows.
+
+       -keepFixed {true | false}
+              Keeps the FIXED filler cells.
+
+              Default: false
+
+       -diffCellViol {true|false}
+              Checks violations between different cell types.
+
+              Default: false
+
+              Note: Using this feature will increase the runtime of addFiller.
+
+       -distribute_implant_evenly {true|false}
+              Distributes implant evenly for fillers.
+
+              Default: false
+
+       -double_height_filler_insertion {true|false}
+              Enables double height filler during filler insertion.
+
+              Default: false
+
+       -ecoMode {true | false}
+              Resolves overlaps of standard cells with fillers by removing the
+              overlapping fillers and inserting new  fillers  in  existing  or
+              newly  created gaps due to partial overlaps. If you use this pa-
+              rameter after routing, the command also resolves DRC  violations
+              of filler geometries of all fillers with regular wires.
+
+              Default: false
+
+       -enable_restore_filler_flow {true|false}
+              When this option is set to false, deleteFiller does not save the
+              fillers in the memory (which is default i.e the save and restore
+              filler insertion flow is default ON).
+
+              Default: true
+
+       -fitGap {true | false}
+              Fills  a gap between cells by adding a combination of cells, in-
+              stead of by adding the single largest cell that fits,  if  doing
+              so avoids leaving an unfilled single-width gap.
+
+              Default: true
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setFillerMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man setFillerMode.
+
+       -honorPrerouteAsObs {true | false}
+              Instructs  addFiller  to  honor  the  setting  of   setPlaceMode
+              -place_detail_preroute_as_obs.  By  default,  addFiller does not
+              consider any preroutes to be obstructions.
+
+              When this parameter is true, addFiller treats preroutes on metal
+              layers where filler cells have geometries as  obstructions,  and
+              ignores  preroutes  on  other  layers. In most cases, this means
+              that addFiller treats preroutes on metal1  as  obstructions  and
+              ignores  preroutes  on other metal layers. For example, if  set-
+              PlaceMode -place_detail_preroute_as_obs is  set  to  metal1  and
+              metal2,  and  all  the  filler  cell  geometries  are on metal1,
+              addFiller treats metal1 preroutes as obstructions but  does  not
+              treat metal2 preroutes as obstructions.
+
+              Default:   false.  addFiller  ignores   setPlaceMode  -place_de-
+              tail_preroute_as_obs and inserts fillers in all legal sites.
+
+       -horizontal_exception_cell {fillerCell ...}
+              Specifies the list of exceptional  cells  for  horizontal  stack
+              checking.
+
+              Default: ""
+
+       -horizontal_max_length <instance_length>
+              Specifies  the  instance  max  length (in micron) aligned in the
+              horizontal direction.
+
+              Default: 100
+
+              Min: 0
+
+              Max: 50000
+
+       -horizontal_repair_cell {fillCell ...}
+              Specifies the list of filler cells to  fix  the  horizontal  max
+              length violation.
+
+              Default: ""
+
+       -preserveUserOrder {true | false}
+              Specifies  whether using the user defined filler cells order for
+              filler insertion.
+
+              Default: false
+
+              Filler cells in each core list are sorted from largest to small-
+              est.
+
+              Note: The -fitGap and -preserveUserOrder  options  are  mutually
+              exclusive.
+
+       -scheme {locationFirst | cellFirst}
+              Specifies the filler insertion scheme.
+
+              Default: locationFirst
+
+              locationFirst fills each given location with the best filler be-
+              fore  proceeding  to  next  location.  It always starts with the
+              first empty site.
+
+              cellFirst inserts filler cells based on the user-specified list.
+              The tool tries to insert the first filler from the user list  in
+              all  possible  locations before moving to the second cell in the
+              list.
+
+       -swap_cell {{cell swap pair1} {cell swap pair2} ...}
+              Swaps the specified cell pairs.
+
+              Default: ""
+
+       -vertical_stack_exception_cell <ListOfCellNames>
+              Specifies the list  of  exceptional  cells  for  vertical  stack
+              checking.
+
+              Default: ""
+
+              -vertical_stack_left_edge_exception_cell      <ListOfCellNames>"
+              Specifies a list of cells in which only the left edge  will  not
+              be checked for vertical stack violation.
+
+              Default: ""
+
+       -vertical_stack_max_length <instance_length>
+              Specifies  the  instance  max  length (in micron) aligned in the
+              vertical direction.
+
+              Default: 50
+
+              Min: 0
+
+              Max: 20000
+
+       -vertical_stack_repair_cell {fillerCell ...}
+              Specifies the list of filler  cells  to  fix  the  vertical  max
+              length violation.
+
+              Default: ""
+
+       -vertical_stack_repair_edge {left|right}
+              Specifies the edge to use the vertical repair cell.
+
+              Default: left
+
+       -vertical_stack_right_edge_exception_cell <ListOfCellNames>
+              Specifies  a list of cells in which only the right edge will not
+              be checked for vertical stack violation.
+
+              Default: ""
+
+       -reset Resets parameters to their default values. The -reset  parameter
+              must  be the first parameter specified. If you specify -reset by
+              itself, the software  resets  all  setFillerMode  parameters  to
+              their  default  values.  If you specify parameters after -reset,
+              the software resets only those parameters to their default  val-
+              ues.
+
+              Any  values  that do not already match the default value and are
+              reset will be reported.
+
+       -y_flip_type { integer : { first | last } ... }
+              Defines the first or the last cell with certain cell size should
+              be y-flipped.
+
+              Default: ""
+
+Examples
+              * The following command assigns a prefix of ABC  to  filler  in-
+                stances  of  cells FILL64 and FILL8 when addFiller inserts the
+                instances:
+
+                setFillerMode -corePrefix ABC -core "FILL64 FILL8"
+
+              * The following command resets all setFillerMode  parameters  to
+                their default values:
+
+                setFillerMode -reset
+
+              * The following command make addFiller insert filler cells based
+                on the user specified cell order {FILLER8 FILLER16 FILLER4}.
+
+                setFillerMode   -core   {FILLER8   FILLER16   FILLER4}   -pre-
+                serveUserOrder true
+
+Related Information
+              * addFiller
+
+              * deleteFiller
+
+              * getFillerMode
+
+              * setPlaceMode
+
+                           Fri Apr 04 01:25:37 2025       setFillerMode(25.10)

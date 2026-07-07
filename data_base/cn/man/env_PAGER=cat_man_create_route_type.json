@@ -1,0 +1,117 @@
+{
+  "command": "create_route_type",
+  "is_cmd": true,
+  "summary": "创建一个新的布线类型并为网络设置布线属性",
+  "description": "此命令用于创建标准的 route_type，它定义了一系列布线属性，例如非默认规则 (NDR)、屏蔽网络、首选层等。然后可以将这些属性应用于特定时钟树的所有叶网或所有主干网。创建的 route_type 对象的类型取决于使用此命令指定的参数。如果指定了 -non_default_rule、-shield_net、-top_preferred_layer 或 -preferred_routing_layer_effort 参数，则会创建一个标准的 route_type 对象。",
+  "usage": "create_route_type [-help] [-em_ndr_dist <float>] [-em_ndr_rule <rule_name>] [-min_stack_layer <layer>] -name <string> [-one_side_spacing_range <bottomLayerNum:topLayerNum>] [-prefer_multi_cut_via] [-shield_side {one_side | both_side}] [-shield_tap_instance_insertion_effort {none | standard | high}] [-stack_distance <float>] [[-non_default_rule <ndr_name>] [-shield_net <net_name>] [-bottom_shield_layer <layer>] [-top_preferred_layer <layer>] [-bottom_preferred_layer <layer>] [-preferred_routing_layer_effort {low | medium | high}]] [-mask <mask_number> [-layer_mask_range <bottomLayerNum:topLayerNum>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 create_route_type 参数的类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-em_ndr_dist",
+      "description": "指定应用 em_ndr_rule 到网络时，与输出引脚相关的距离。在此距离范围外布线时，路由器将使用常规导线或常规非默认布线 (NDR)（如果此网络上启用了常规 NDR 设置）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-em_ndr_rule",
+      "description": "指定与此布线类型关联的 EM NDR 规则。在距离输出引脚 -em_dist 指定的距离内布线时，路由器将使用此 ndr 规则进行布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-min_stack_layer",
+      "description": "指定网络的输出引脚使用堆叠通孔从引脚到给定的 <layer>，其余连接从提到的 <layer> 开始。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定布线类型对象的名称。这是必需的。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-one_side_spacing_range",
+      "description": "指定应应用单边间距约束的层范围。默认情况下，NDR 间距应用于 NDR 网络或导线的两侧。使用此选项指定只有一侧需要遵循较大 NDR 间距的导线的层范围。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-prefer_multi_cut_via",
+      "description": "指定是否在网络驱动引脚处使用多切割通孔进行连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-shield_side",
+      "description": "指定对指定的布线类型执行单侧还是双侧屏蔽。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shield_tap_instance_insertion_effort",
+      "description": "通过高值和标准值分别指定用于高频率和低频率时钟屏蔽的时钟布线类型。这些值之间的主要区别在于连接单元实例/通孔为实现屏蔽段的电气连接所使用的地线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stack_distance",
+      "description": "指定 -min_stack_layer 中定义的堆叠通孔中相邻层上切割的切割距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-non_default_rule",
+      "description": "指定与此 route_type 关联的非默认布线 (NDR) 规则。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shield_net",
+      "description": "指定一个特殊网络作为关键或高速网络的屏蔽。通常，屏蔽网络在其他网络布线之前布线。只能指定一个屏蔽网络。但是，无法控制与信号布线在同一层布线的特殊网络使用哪一侧。屏蔽在引脚附近终止。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_shield_layer",
+      "description": "允许屏蔽到指定的屏蔽层。此参数为屏蔽时钟网络提供了额外的灵活性。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_preferred_layer",
+      "description": "指定布线类型的顶部首选层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_preferred_layer",
+      "description": "指定首选的最低布线层。此属性是一个软限制，这意味着，NanoRoute 可能会在必要时使用指定层以下的层来完成布线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-preferred_routing_layer_effort",
+      "description": "指定首选布线层工作是低、中还是高。此参数决定了 NanoRoute 路由器在为指定网络布线设置层限制时的灵活性。将此参数与 -top_preferred_layer 和 -bottom_preferred_layer 参数一起使用。指定中或高布线层工作级别以使 NanoRoute 在为指定网络布线设置层限制时更不灵活。NanoRoute 将更严格地遵守首选布线层范围。指定低以使 NanoRoute 在为指定网络布线设置层限制时更灵活。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mask",
+      "description": "指定允许范围内的掩码编号 (min=0, max=3)。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-layer_mask_range",
+      "description": "指定应应用掩码约束的层范围。例如，3:4 表示约束应应用于 metal3 和 metal4。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

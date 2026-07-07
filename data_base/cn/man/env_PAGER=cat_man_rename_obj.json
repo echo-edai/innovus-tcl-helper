@@ -1,0 +1,45 @@
+{
+  "command": "rename_obj",
+  "is_cmd": true,
+  "summary": "重命名单个设计对象（如实例、层次实例、设计、模块、端口、层次端口或层次网络）的基名称。",
+  "description": "该命令用于重命名单个设计对象的基名称，对象类型仅限于实例（inst）、层次实例（hinst）、设计（design）、模块（module）、端口（port）、层次端口（hport）或层次网络（hnet）。此命令仅更改指定对象的基名称，无法在网表层次结构中移动这些对象。执行后会返回重命名后对象的新名称。需要注意的是，只有在SDC时序约束已加载到内存中时，才能使用此命令修改其使用的名称。因此，在运行rename_obj命令前，应确保使用set_analysis_view命令加载所有时序视图，以便正确更新SDC约束。重命名对象后，可以检索修改后的SDC文件。此命令无法更新CPF功耗意图文件中使用的名称，因为CPF使用假定CPF文件是黄金标准且不应修改。要更改CPF文件中的名称，需先手动更新CPF文件，然后使用更新后的CPF文件运行rename_obj命令。IEEE1801功耗意图文件允许在设计流程中更改，因此使用rename_obj命令更改名称将自动更新IEEE1801对象名称。可以使用此命令写出包含更新名称的新IEEE1801文件。",
+  "usage": "rename_obj [-help] [-escape_ok] [-flexible] <inst|hinst|module|design|port|hport|hnet|test_clock|test_clock_domain> <new_name> [-quiet]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "提供命令的简要描述，包括其参数的类型和默认信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-escape_ok",
+      "description": "允许new_name中包含层次字符'/'或总线位字符'[]'，这些字符将被自动转义。如果未指定此参数，new_name中的任何'/'或'[]'字符将导致错误，对象不会被重命名。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-flexible",
+      "description": "如果new_name与现有名称冲突，此参数会附加后缀（如_1、_2）以区分。如果未指定此参数，此类名称冲突将导致错误，且指定对象不会被重命名。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<inst|hinst|module|design|port|hport|hnet|test_clock|test_clock_domain>",
+      "description": "指定要重命名的对象。如果对象是端口或层次端口，任何与其连接且具有相同基名称的层次网络也会被重命名以保持匹配。如果对象是层次网络且连接到具有相同基名称的端口或层次端口，则会发生错误，此时必须更改端口或层次端口名称才能继续。如果层次网络名称与其关联的网络名称匹配，则使用rename_obj命令时网络名称也会被重命名。此命令不允许重命名总线位对象。",
+      "required": true,
+      "type": "inst|hinst|module|design|port|hport|hnet|test_clock|test_clock_domain"
+    },
+    {
+      "name": "<new_name>",
+      "description": "为指定对象指定新的基名称。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-quiet",
+      "description": "抑制关于重命名对象的消息。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

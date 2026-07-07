@@ -1,0 +1,27 @@
+{
+  "command": "bitblast_ports",
+  "is_cmd": true,
+  "summary": "将指定设计、模块或层次实例的端口总线（或层次端口总线）拆分为标量端口",
+  "description": "该命令将指定的端口总线（或层次端口总线）进行位拆分，使其成为独立的标量端口，而不是总线位。这有助于提高优化的灵活性，例如仅改变总线中某些位的极性。拆分后端口的新名称遵循全局变量 `bit_blasted_port_style` 定义的命名规则，默认格式为 `%s_%d`，其中 `%s` 是总线名，`%d` 是总线位值。每个被重命名的总线位都会在发生变化的模块中报告。需要注意的是，只有在内存中加载的 SDC 时序约束名称才能被修改，因此必须在运行此命令前使用 `set_analysis_view` 加载所有时序视图。修改后的 SDC 文件可以写出以供后续使用，或者以不使用原始总线位名称的方式编写约束和 Tcl 脚本。存在一个限制：CPF 功耗意图文件中使用的端口名称不能被更改，因为 CPF 文件被视为黄金文件不应修改。如需更改 CPF 文件中的名称，需要手动更新 CPF 文件，然后在运行 `bitblast_ports` 后重新读入。相比之下，IEEE1801 功耗意图文件允许在设计流程中更改，因此使用 `bitblast_ports` 更改的任何端口名称都会自动更新 IEEE1801 名称，并可以写出更新后的文件。对于非唯一化的网表，如果对层次实例进行位拆分，其对应的模块以及克隆的层次实例也会被拆分。",
+  "usage": "bitblast_ports [-help] <topCell>|<vCell|hInst>+ [-bus <busname>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<topCell>|<vCell|hInst>+",
+      "description": "指定设计、模块或层次实例的列表。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-bus",
+      "description": "仅拆分指定的总线（例如仅指定 \"A\" 而不是 \"A[3:0]\"），而不是模块的所有总线。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_proto_model(25.10)                            create_proto_model(25.10)
+
+Name
+       create_proto_model  - Creates prototyping models for the modules or in-
+       stance groups that are marked as FlexModels on a disk
+
+Syntax
+       create_proto_model
+
+       [-help]
+
+       [-keep_inst_file <string>]
+
+       [ [-out_dir <string>] [-module_model_tag <string>] ]
+
+       Creates prototyping models for the modules or instance groups that  are
+       marked  as  FlexModels  on a disk. By default, ART based FlexModels are
+       generated.
+
+       Note: To improve the usability, the create_proto_model  command  checks
+       at  the  beginning  if  the current loaded design has any marking Flex-
+       Model. If the design has marked some modules as  FlexModels,  then  the
+       create_proto_model  creates  prototyping  models for the modules or in-
+       stance groups that are marked as FlexModels. If no FlexModel is marked,
+       then it stops and displays a warning that no FlexModel will be created.
+       Alternatively, if the design has existing FlexModels, which  means  the
+       netlist has been reduced, then the create_proto_model command cannot be
+       run and you need to switch to full netlist to re-generate it.
+
+       To  generate  prototyping models in a specific directory, type the fol-
+       lowing command:
+
+       set_proto_mode -create_dir <directory_name>
+
+       The default directory name is proto_model.
+
+       Note: This command supports multi-CPU settings and distributed process-
+       ing.
+
+       setMultiCpuUsage -remoteHost 2 -cpuPerRemoteHost 1
+
+       setDistributeHost -local
+
+       create_proto_model -out_dir
+
+       Note: This command can handle only upto 1000 FlexModels in a design.
+
+       Note: Scan chains are supported during FlexModel creation.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each create_proto_model parameter.
+
+              For  detailed description of the command and all its parameters,
+              use the man command: man create_proto_model.
+
+       -keep_inst_file <string>
+              Specifies the name of the file that contains  the  list  of  in-
+              stances to be kept specifically for FlexModel generation.
+
+              Note: One instance name must be specified per line.
+
+              Data_type: string, optional
+
+       -module_model_tag <string>
+              Specifies  the  module  model tag to be used for ART based Flex-
+              Model generation in the iHDB directory  structure.  This  module
+              model tag is used in the Integrated Hierarchical Database (iHDB)
+              flow.
+
+              Note: This parameter is part of the iHDB flow. Before using this
+              parameter,  you  must  set  the  default  central directory name
+              (set_module_model -default_dir <default_model_data_directory>  )
+              where the module models data will be saved/loaded.
+
+              For example:
+
+              If  there is a design ptn_wrapper and the default central direc-
+              tory is /project/DATA
+
+              on specifying
+
+              create_proto_model -module_model_tag proto_model
+
+              a flexModel will be created in the following directory:
+
+              /project/DATA/ptn_wrapper/proto_model/pnr
+
+              Note: The structure followed here is:
+
+              <<module_model_data_dir>>/<<design_name>>/<<tag_name>>/<<type>>
+
+              Data_type: string, optional
+
+       -out_dir <string>
+              Specifies a directory name where ART based FlexModel design will
+              be saved.
+
+              Default: DBS/model_gen.enc
+
+              Data_type: string, optional
+
+Examples
+              * The following command creates FlexModels for all  the  identi-
+                fied modules in the proto_dir directory:
+
+                set_proto_mode -identify_min_inst 2000 -identify_max_inst 5000
+
+                identify_flexmodel
+
+                set_proto_mode -create_dir proto_dir
+
+                create_proto_model -out_dir DBS/model_design.enc
+
+              * The following command generates models using ART technique and
+                save  committed FlexModel design into DBS/model_design.enc.dat
+                directory
+
+                create_proto_model -out_dir DBS/model_design.enc
+
+Related Information
+              *
+
+                set_proto_mode
+
+              *
+
+                setMultiCpuUsage
+
+              *
+
+                setDistributeHost
+
+              *
+
+                Prototyping Methodologies chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025  create_proto_model(25.10)

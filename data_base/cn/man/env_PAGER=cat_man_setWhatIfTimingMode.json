@@ -1,0 +1,45 @@
+{
+  "command": "setWhatIfTimingMode",
+  "is_cmd": true,
+  "summary": "设置设计中所有黑盒或黑块的时序模型模式",
+  "description": "此命令用于为设计中的所有黑盒（blackboxes）或黑块（blackblobs）设置时序模型模式。用户只能为所有黑盒或黑块选择一种模式。如需了解时序模型的详细信息，请参阅 Innovus 用户指南中的“What-If Timing Analysis”章节。如果修改了至少一条时序弧，则不能直接更改黑盒或黑块的模式，必须首先使用 deleteWhatIfTimingAssertions 命令删除其时序弧规格。此命令可在 Verilog 网表中包含 I/O 的黑盒或黑块模块定义可用后使用。",
+  "usage": "setWhatIfTimingMode [-help] [-reset] [-context {in | out}] [-defaultOutputCap <value>] [-model {intrinsic | normalized}] [-portPriority {cellType | portParam}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 setWhatIfTimingMode 参数类型和默认值的简要描述。如需命令及其所有参数的详细描述，请使用 man 命令：man setWhatIfTimingMode。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将参数重置为其默认值。此参数必须是命令中指定的第一个参数。如果单独使用 -reset，软件会将所有 setWhatIfTimingMode 参数重置为默认值。如果在 -reset 后指定其他参数，则软件仅重置这些参数。注意：任何与默认值不匹配且被重置的值将被报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-context",
+      "description": "指定时序模式描述是芯片级上下文中的（in-context）还是上下文外的（out-context）。in-context 指芯片环境（如布局布线后）就绪后创建的描述，软件会考虑设计的电容。out-context 指在芯片环境外（如布局规划前）描述，用户需为给定电容提供时序弧值。此参数仅在标准化（normalized）模式下可用。一旦定义了时序弧，此参数的值将被冻结。默认值为 out。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-defaultOutputCap",
+      "description": "指定端口上的默认输出电容值。此参数仅在标准化（normalized）模式下可用。一旦定义了时序弧，此参数的值将被冻结。单位为皮法（pF）。默认值为 0。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-model",
+      "description": "指定时序模型模式是固有的（intrinsic）还是标准化的（normalized）。默认模式为 normalized。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-portPriority",
+      "description": "在输出端口上，电容值、最大电容值、最大转换值或最大扇出值等参数可能来自驱动器（setWhatIfDriveType 命令）或通过 setWhatIfPortParameters 命令设置。此参数用于指定在发生冲突时，哪组参数值具有优先权。cellType 表示 setWhatIfDriveType 命令设置的参数值优先；portParam 表示 setWhatIfPortParameters 命令设置的参数值优先。一旦定义了 what-if 时序弧，此参数的值将被冻结。默认值为 portParam。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "command": "set_proto_mode",
+  "is_cmd": true,
+  "summary": "设置原型模式，用于配置创建和管理原型模型（如FlexModel）的各种参数。",
+  "description": "该命令用于配置原型模型（proto model）的创建、识别和管理行为。它提供了丰富的选项来控制模型识别算法、模型创建目录、库、时序预算、金属填充、非默认规则（NDR）处理、延迟模型以及各种开关，如是否允许I/O模型、是否创建多角点psPM模型等。用户可以通过此命令精细调整原型建模流程，以适应不同的设计需求和优化目标。",
+  "usage": "set_proto_mode [-help] [-reset] [-allow_model_with_io {true|false}] [-allow_powerdomain_in_flexmodel {true|false}] [-create_dir <dir>] [-create_high_fanout_psPM {true|false}] [-create_lib <libName>] [-create_metal_fill_NDR <double>] [-create_metal_fill_nominal <double>] [-create_multi_corner_psPM {true|false}] [-create_NDR_psPM_model {auto|on|off}] [-create_no_flex_filler {true|false}] [-create_partition_as_flexmodel {true|false}] [-create_pipeline_flop {*AB*}] [-create_powerdomain_psPM {true|false}] [-create_timing_budget {true|false}] [-identify_algorithm {auto|module_based|instgroup_based}] [-identify_estimated_flexmodel_number <number>] [-identify_exclude_module {<mod1> <mod2> ...}] [-identify_exclude_module_and_parent {<mod1> <mod2> ...}] [-identify_exclude_module_tree {<mod1> <mod2> ...}] [-identify_honor_objects_hierarchy {object_list}] [-identify_max_inst <maxInsts>] [-identify_min_inst <minInsts>] [-keep_inst_file_only {true|false}] [-keep_instance_defined_in_sdc {true|false}] [-keep_slack_improve_NDR {true|false}] [-max_report_NDR_net <double>] [-route_net_NDR <rule_name>] [-timing_net_delay_model {best_layer_no_detour|best_layer_blockage_aware|use_actual_wire}] [-timing_ps_per_micron {M<num1>[:M<num2>] <psPerMicron> ...}, {MetalLayerName1[:MetalLayerName2] <psPerMicron> ...} {1[:2] <psPerMicron> ...}, or {view {M<num1>[:M<num2>] <psPerMicron> ...} ...}, {view {MetalLayerName1[:MetalLayerName2] <psPerMicron> ...} ...} {view {1[:2] <psPerMicron> ...} ...}] [-verbose {true|false}]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定的选项重置为默认值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_model_with_io",
+      "description": "支持包含I/O的模型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-allow_powerdomain_in_flexmodel",
+      "description": "允许在FlexModel中包含电源域。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_dir",
+      "description": "指定保存所创建模型的目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_high_fanout_psPM",
+      "description": "创建高扇出psPM模型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_lib",
+      "description": "指定保存所创建模型的OA库。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_metal_fill_NDR",
+      "description": "用于create_ps_per_micron_model，为使用非默认规则的网络创建psPM模型。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-create_metal_fill_nominal",
+      "description": "用于create_ps_per_micron_model，为普通网络创建psPM模型。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-create_multi_corner_psPM",
+      "description": "创建多角点psPM模型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_NDR_psPM_model",
+      "description": "控制create_ps_per_micron_model是否应为非默认规则生成psPM模型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_no_flex_filler",
+      "description": "创建原型模型时不添加flex filler。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_partition_as_flexmodel",
+      "description": "自动将指定的分区创建为FlexModel。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_pipeline_flop",
+      "description": "指定设计中使用的流水线触发器实例模式列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_powerdomain_psPM",
+      "description": "创建电源域psPM模型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-create_timing_budget",
+      "description": "保持deriveTimingBudget设置的一致性。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-identify_algorithm",
+      "description": "指定identify_proto算法。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-identify_estimated_flexmodel_number",
+      "description": "在使用基于实例组的identify_proto_model时，指定为设计识别的预估FlexModel数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-identify_exclude_module",
+      "description": "排除指定的模块（但不包括其子模块）被标记为模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-identify_exclude_module_and_parent",
+      "description": "排除指定的模块及其父模块被标记为模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-identify_exclude_module_tree",
+      "description": "排除指定的模块及其子模块被标记为模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-identify_honor_objects_hierarchy",
+      "description": "指定对象列表，基于实例组的identify_proto_model将遵循其层次结构。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-identify_max_inst",
+      "description": "指定一个模块被标记为模型的最大实例数阈值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-identify_min_inst",
+      "description": "指定一个模块被标记为模型的最小实例数阈值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-keep_inst_file_only",
+      "description": "FlexModel仅包含keep_inst_file中的实例。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-keep_instance_defined_in_sdc",
+      "description": "FlexModel将保留SDC文件中定义的实例。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-keep_slack_improve_NDR",
+      "description": "将被report_NDR_WNS_gain使用，以保留顶层关键网络作为非默认规则网络。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-max_report_NDR_net",
+      "description": "用于create_ps_per_micron_model，为使用非默认规则的网络创建psPM模型。",
+      "required": false,
+      "type": "double"
+    },
+    {
+      "name": "-route_net_NDR",
+      "description": "用于create_ps_per_micron_model，为使用非默认规则的网络创建psPM模型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-timing_net_delay_model",
+      "description": "设置计算线延迟的模式。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-timing_ps_per_micron",
+      "description": "为每个布线层指定预估的每微秒延迟。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-verbose",
+      "description": "将详细信息输出到.log文件。",
+      "required": false,
+      "type": "enum"
+    }
+  ]
+}

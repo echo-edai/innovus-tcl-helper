@@ -1,0 +1,204 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+read_stream(25.10)                                          read_stream(25.10)
+
+Name
+       read_stream  -  Reads in-stream files or a layer map and outputs a sum-
+       mary of the cell names read in, and any layer/data types that have data
+       with no map_file entry
+
+Syntax
+       read_stream
+
+       [-help]
+
+       -layer_map <layer_map_files>
+
+       {[-pvs_fill ] | [[<in_files>] [-cells <cell_list> [-offset {x y}]]]}
+
+       Reads in-stream files or a layer map and outputs a summary of the  cell
+       names read in, and any layer/data types that have data with no map_file
+       entry.  The  data is automatically scaled during reading to the correct
+       DB units based on the stream units.
+
+              * It reads in the metal fill stream data (with top cell name and
+                offset) to overlay on the design. The fill data  is  displayed
+                to  database fill shapes (equivalent to reading DEF FILL data)
+                to allow editing or changing the fill data.
+
+                Reading in fill data is done once per session.
+
+              * It reads in-stream cells that have the same names  as  Innovus
+                cell names to display the stream cell data (for example, over-
+                lay  or  toggle  between  stream shapes and LEF shapes for the
+                cells).
+
+                If a stream cell name is repeated, it  replaces  any  previous
+                data for that cell.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each read_stream parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command: man read_stream.
+
+       -cells <cell_list>
+              Reads only the specified cells from GDS files.
+
+       <in_files>
+              Lists GDS and OASIS files.
+
+       -layer_map <layer_map_files>
+              Specifies the layer map file to map GDS layer to design layer
+
+       -offset <x><y>
+              Specifies, in microns, the offset for the top-level fill cell.
+
+       -pvs_fill
+              Specifies to process the PVS FILL data in the read process.
+
+       Layer Map File Format
+
+       The -layer_map file maps stream layer/dtype data to Innovus  layer  and
+       objects.  Stream data does not have net ids, so you can only map stream
+       data for display, or to fill, fill_opc or fill_blockage shapes.
+
+       The format for the layer map file is one line for each stream layer and
+       dtype:
+
+       <layer data_type layer_name object_type>
+
+       Where
+
+              * layer is an stream layer number. It is an integer.
+
+              * data_type is a stream data_type number. It must be  either  an
+                integer, or a range (e.g. 0-255).
+
+              * layer_name  is normally must be a LEF (or OA tech) layer name.
+                It can only be a "custom" layer name if the obj_type is  "dis-
+                play"  (e.g. this data is not on any of the LEF layers, but is
+                useful for display purposes). Any custom layer  data  will  be
+                displayed    like   data   created   with   add_gui_shape   or
+                add_gui_text. The layer_name is case-sensitive.
+
+              * object_type is one of these keywords:
+
+                * fill: Equivalent to DEF FILL shapes
+
+                * fill_opc: Equivalent to DEF FILL with + OPC shapes
+
+                * fill_blockage: Equivalent to DEF BLOCKAGE + FILLS shapes
+
+                * display: Is only for display purposes, and cannot  be  flat-
+                  tened.
+              fill, fill_opc, and display can optionally be followed by
+
+              :mask:<mask_num>
+
+              where mask_num is the mask number for the shape for a multi-mask
+              layer (equivalent of DEF + MASK <mask_num> for a shape).
+
+              fill_blockage can optionally be followed by
+
+              :name:<blockage_name>
+
+              where<  blockage_name>  is  the  name given to all the blockages
+              from this layer/dtype.
+
+              Any text on the same layer/data_type will be mapped to the  same
+              DB layer as a text object on that layer. About the TEXT font and
+              size,  font  0  could  be default (or other font decided by RD).
+              Size could use the original size in GDS and scale it if dbu mis-
+              match to Innovus.
+
+              The object_type keywords are case insensitive. The tool  ignores
+              blank lines or lines beginning with #.
+
+              A given layer/dtype combination can only appear once.
+
+       Example of Stream map-file for metal fill, via-fill, and fill blockages
+
+       #Stream map-file for metal fill, via-fill, and fill blockages
+
+       #only metal1 has two masks
+
+       #layer    dtype     layer_name     obj_type
+
+       1         1         metal1         fill:mask:1
+
+       1         2         metal1         fill:mask:2
+
+       51        1         cut1           fill
+
+       2         1         metal2         fill
+
+       52        1         cut2           fill
+
+       3         1         metal3         fill
+
+       ...
+
+       101       1         metal1         fill_blockage:name:blkg1
+
+       101       2         metal1         fill_blockage:name:blkg2
+
+       101       3-255     metal1         fill_blockage
+
+       Example  of Stream map-file for cell-data to display on top of LEF cell
+       data
+
+       #Stream map-file for cell-data to display on top of LEF cell data
+
+       #Only routing layers and the cell-outline on custom layer "outline"
+
+       #are mapped. It does not show cut layers or layers below metal1.
+
+       #layer    dtype     layer_name     obj_type
+
+       1         0-255     metal1         display
+
+       2         0-255     metal2         display
+
+       #custom layer "outline" is created if it does not already exist
+
+       100       1         outline        display
+
+Examples
+       Parse stream cells with specified layer map display stream cell data on
+       top  of  LEF  cell  data.  The   report   output   is   redirected   to
+       read_stream.rpt.
+
+       >read_stream   {stdcells.gds  memory.gds}  -layer_map  gds_layer.map  >
+       read_stream.rpt
+
+       Read in metal-fill data and overlay it on the design. The  report  will
+       be in the log file.
+
+       >read_stream fill.gds -cell top_fill -layer_map gds_layer.map
+
+       Example of output report
+
+       #Cell names read in:
+
+       top_fill
+
+       fill_1
+
+       fill_2
+
+       ...
+
+       #Layer/dtype data in the stream file with no map-file entry
+
+       1    10
+
+       4    1, 9
+
+       ...
+
+Related Information
+              * Map Files section of the Importing and Exporting Designs chap-
+                ter of Innovus User Guide.
+
+                           Fri Apr 04 01:25:37 2025         read_stream(25.10)

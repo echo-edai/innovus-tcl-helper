@@ -1,0 +1,248 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_area(25.10)                                          report_area(25.10)
+
+Name
+       report_area  -  Reports  the combined standard cell area in each of the
+       hierarchy modules and the top-level design
+
+Syntax
+       report_area
+
+       [-help]
+
+       [-detail]
+
+       [-hierarchical_instance <hinst_name>]
+
+       [-include_physical]
+
+       [-min_area <area_per_module>]
+
+       [-min_count <instance_count>]
+
+       [-out_file <filename>]
+
+       [-show_leaf_cells]
+
+       [-show_msv_cells]
+
+       [-sort_by {name count area}]
+
+       [-table_style {horizontal vertical}]
+
+       [-summary | -depth <depth_of_hierarchy>]
+
+       Reports the combined standard cell area in each of the  hierarchy  mod-
+       ules and the top-level design. Also reports the cell area based on dif-
+       ferent  cell types if the -detail option is specified. The command pro-
+       vides breakdown based on the cell type (such as .is_* attributes).  The
+       report  represents the design hierarchy, and therefore, provides better
+       readability.
+
+       Note: The units used in the report depend on the units used in the  li-
+       brary.  The  area  for  each module is calculated from all the standard
+       cells within each module using the LEF information.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each  report_area  parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man report_area
+
+       -depth <depth_of_hierarchy>
+              Specifies the depth of hierarchy, all levels if  not  specified;
+              the top of the hierarchy (design) is 1.
+
+              Data_type: int, optional
+
+       -detail
+              Report the area in different cell type (buffer, inverter, combi-
+              national, flop, latch, clock_gate, macro, physical).
+
+              Data_type: bool, optional
+
+       -hierarchical_instance <hinst_name>
+              Reports  the area of the leaf instances in the specified hierar-
+              chical instance. You can use the -depth option  to  control  the
+              analysis depth of the specified hierarchical instance.
+
+              Data_type: (hinst), optional
+
+       -include_physical
+              Specifies  to include physical cells in the area calculation and
+              report. By default, it reports only logical cells.
+
+              Data_type: bool, optional
+
+       -min_count <instance_count>
+              Specifies the min instance count per module. The generated  out-
+              put  will  report  the  area  of hinsts with number of instances
+              greater than the specified min_count value.
+
+              Default: 0
+
+              Data_type: float, optional
+
+       -min_area <area_per_module>
+              Specifies the min area per module.  The  generated  output  will
+              report  the  area of hinsts with area greater than the specified
+              min_area lib_units.
+
+              Default: 0
+
+              Data_type: int, optional
+
+       -out_file <filename>
+              Specifies the name of the output file.
+
+              Data_type: string, optional
+
+       -show_leaf_cells
+              Specifies to include the leaf cells at the design level and each
+              hinst level. These are the instances whose parent is  the  hinst
+              display.
+
+              Default: 0 (Shows the hinst children in the report)
+
+              Data_type: bool, optional
+
+       -show_msv_cells
+              Includes  multiple  supply voltage cells in the report. This op-
+              tion works with "-table_style vertical"
+
+       -sort_by {name count area}
+              Specifies the order of hinst names.
+
+              Default: name
+
+              Data_type: bool, optional
+
+       -table_style {horizontal vertical}
+              Specifies whether the base report should be expanded in the ver-
+              tical or horizontal direction.
+
+              Default: horizontal
+
+              Data_type: enum, optional
+
+       -summary
+              It will print the area summary for the design. It will be equiv-
+              alent as doing "-depth 0".
+
+              Data_type: bool, optional
+
+Examples
+       The following command shows the standard cell area  in  different  base
+       classes.
+
+       report_area -detail
+
+       The following command shows the leaf cells at the hinst level.
+
+       report_area -show_leaf_cells
+
+                 Hinst    Name                                  Module    Name
+       Cell Count  Cell Area  Total Area
+
+       -----------------------------------------------------------------------------------------------------------------
+
+       dtmf_recvr_core
+       4283  37949.153  41732.426
+
+        (Leaf                                                           Cells)
+       995  32001.000  33406.000
+
+        RESULTS_CONV_INST                                         results_conv
+       1331   2201.472   3311.412
+
+        TDSP_CORE_INST_MPY_32_INST_csa_tree_mul_61_28                 csa_tree
+       623   1158.419   1618.517
+
+        TDSP_CORE_INST_EXECUTE_INST                                  execute_i
+       570   1251.382   1613.524
+
+        TDSP_CORE_INST_ALU_32_INST                                      alu_32
+       466    779.159   1087.752
+
+          sub_84_22                                           sub_unsigned_801
+       93    185.926    225.347
+
+          add_81_22                                           add_unsigned_799
+       77    171.284    200.101
+
+          inc_add_54_27_1                                   increment_unsigned
+       31    107.604    121.866
+
+        TDSP_CORE_INST_MPY_32_INST_final_adder_mul_61_28          add_unsigned
+       74    165.287    192.921
+
+        TDSP_CORE_INST_MPY_32_INST_addinc_add_62_54_8         add_signed_carry
+       76    164.052    192.625
+
+        TDSP_CORE_INST_TDSP_CORE_GLUE_INST_sll_120_49      shift_left_vlog_un-
+       signed_393          92    131.947    182.961
+
+        TDSP_CORE_INST_TDSP_CORE_GLUE_INST_sll_121_36      shift_left_vlog_un-
+       signed              56     95.609    126.436
+
+       The following command shows the base report in the vertical direction.
+
+       report_area -detail -table_style vertical
+
+        Hinst   Name                   Module   Name             Inst    Count
+       Total Area
+
+       ----------------------------------------------------------------------------------
+
+       dtmf_recvr_core                                                    4283
+       37949.15
+
+         (Buffer)                                                            9
+       9.53
+
+         (Inverter)                                                        491
+       262.84
+
+         (Combinational)                                                  3279
+       5223.91
+
+         (Flop)                                                            501
+       2535.22
+
+         (Latch)                                                             0
+       0.00
+
+         (Clock-Gate)                                                        0
+       0.00
+
+         (Macro)                                                             3
+       29917.66
+
+         RESULTS_CONV_INST                results_conv                    1331
+       2201.47
+
+           (Buffer)                                                          0
+       0.00
+
+           (Inverter)                                                      150
+       79.38
+
+           (Combinational)                                                 981
+       1126.49
+
+           (Flop)                                                          200
+       995.60
+
+           (Latch)                                                           0
+       0.00
+
+           (Clock-Gate)                                                      0
+       0.00
+
+           (Macro)                                                           0
+       0.00
+
+                           Fri Apr 04 01:25:37 2025         report_area(25.10)

@@ -1,0 +1,103 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_via(25.10)                                                  add_via(25.10)
+
+Name
+       add_via - Adds a new special-route via instance to the design
+
+Syntax
+       add_via
+
+       [-help]
+
+       [-net <net>]
+
+       -pt {<x y>}
+
+        [-shape  {blockring  | blockagewire | blockwire | corewire | drcfill |
+       fillopc | fillwire | followpin | iowire |  none  |  padring  |  ring  |
+       stripe}]
+
+        [-shield_net <net>]
+
+        [-status {routed | fixed | cover | shield}]
+
+       [-user_class <value>]
+
+        -via <via_def>
+
+       Adds  a  new  special-route via instance to the design. A DB pointer is
+       returned to the via, if successful. You can  use  the  command  at  any
+       point in the design flow. To add regular route via, see editAddVia.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each add_via parameter. For a detailed  descrip-
+              tion of the command and
+
+              all of parameters, use the man command: man add_via
+
+       -net <net>
+              Specifies  the  name or pointer of the net to associate with the
+              via instance.
+
+              If not specified, the via is assigned  as  a  floating  fillwire
+              via, unless -shape is specified.
+
+       -pt {<x y>}
+              Specify the placement location (in microns) of the via instance.
+
+       -shape {blockring | blockagewire | blockwire | corewire | drcfill |
+       fillopc | fillwire | followpin | iowire | none | padring | ring |
+       stripe}
+              Specifies  the  special  route  shape  (DEF  SPECIALNETS wiring+
+              SHAPE).
+
+              If -net is specified, the default shape is none. If -net is  not
+              specified, the default shape is fillwire.
+
+       -shield_net <net>
+              Specifies  the  name or pointer of the net to be shielded by the
+              via instance.
+
+              Only valid when -status is set to shield.
+
+       -status {routed | fixed | cover | shield}
+              Specifies the special route (DEF SPECIALNETS) wiring status.
+
+              Default: routed
+
+       -user_class <value>
+              Specifies the user-defined string to be added  to  the  via  in-
+              stance that is created.
+
+       -via <via_def>
+              Specify  the  via-master  name  or  pointer of the via-master to
+              place.
+
+Examples
+              * The following command adds a   via  with  via-master  name  of
+                my_via1:
+
+                add_via -via my_via1 -pt {100.1 200.5} -net VSS -shape follow-
+                pin
+
+              * The  following  command  adds  a VSS via (via cell VIA2X) that
+                shields reset net:
+
+                add_via -via VIA2X -pt {13.0 145.5} -net VSS -shield_net reset
+                -status shield
+
+              * To add a parameterized via you can look up the via-master with
+                add_via_definition (in this case a 1x2 cut via  with  all  the
+                other parameters the default value).
+
+                It will either return an existing via-master with the same pa-
+                rameters,  or create it.  Then use it to create an instance of
+                the via.
+
+                set myvia [add_via_definition -via_rule via1_rule -row_col  {1
+                2}]
+
+                add_via -via $myvia -pt {10.5 10.5} -net VS
+
+                           Fri Apr 04 01:25:37 2025             add_via(25.10)

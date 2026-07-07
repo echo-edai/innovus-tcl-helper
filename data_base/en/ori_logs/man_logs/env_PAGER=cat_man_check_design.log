@@ -1,0 +1,394 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+check_design(25.10)                                        check_design(25.10)
+
+Name
+       check_design  - Checks that all prerequisites to run all or part of the
+       hierarchical or block implementation flow are met
+
+Syntax
+       check_design
+
+       [-help]
+
+       [-id <violation_id>]
+
+       [-out_file <fileName>]
+
+       {[-type {library netlist  synthesis  power_intent  timing  hierarchical
+       pin_assign budget assign_statements extract_rc place opt cts route sig-
+       noff  all}  |-type_3d  {db  tech_lib  netlist power_intent timing place
+       floorplan route report_only all}}[-format {table detail}]]
+
+       [-no_check ]}
+
+       Checks that all prerequisites to run all or part of the hierarchical or
+       block implementation flow are met.
+
+       The check_design command checks the preconditions for major flow  steps
+       before  they  are run.  If there are errors identified by check_design,
+       the current script will stop.check.  Note that output  to  console  and
+       log  file  is  controlled by message display limit.  A complete list of
+       errors is dumped to -out_file.
+
+       Some examples of problems that will cause design  checks  to  fail  in-
+       clude:
+
+              * Cells used in the design that cannot be legally placed
+
+              * Tracks misaligned with some or all cell pins
+
+              * In  advanced  processes,  power nets that cannot be colored in
+                the expected pattern once cells are placed
+
+              * Cell rows that are unblocked for placement but where pin  lay-
+                ers are obstructed
+
+              * Cell  rows that are unusable due to orientation and power rail
+                misalignment
+
+              * Cells instantiated in the netlist that have  no  timing  model
+                defined
+
+              * Tracks blocked by power grid spacing constraints
+
+              * Instances not covered by a true timing path in any view
+
+              * ILM model with no clock tree defined
+
+              * No hold fixing cells are specified and delay cells are not us-
+                able
+
+              * No  clock  inverters,  buffers, clock gates or logic cells are
+                specified and the library cells are not usable for clock trees
+
+              * CTS cannot balance all skew groups without  increasing  inser-
+                tion delay
+
+              * Preserved  nets  and cells in the clock tree that will violate
+                other constraints because they cannot be resized or buffered.
+
+Parameters
+       -help  Prints a brief description that includes a list  of  parameters,
+              their usage, and their defaults.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man check_design.
+
+              No other args allowed with -help
+
+       -format {table detail}
+              Specifies the format for reporting violations.
+
+              * table: Prints the results in the table format.
+
+              * detail: Prints details of violations.
+
+       -id <violation_id>
+              Specifies the violation IDs.
+
+       -type  Specifies the category of the flow to be checked.
+
+              The  intent  is to run check_design before each of the operation
+              in the list. Each of the categories run several  checks  related
+              to that operation.
+
+              * library:  Checks for the integrity of the library and for cor-
+                rect binding of all design instances to library cells  or  RTL
+                modules. Individual checks are as follows:
+
+                * For  physical_only  library, check_design will flag libcells
+                  that have only LEF but no .lib representation.
+
+                *
+
+                  For logical_only library, check_design  will  flag  libcells
+                  that have only .lib but no LEF representation.
+
+              * netlist:  Checks  the  netlist  integrity  at any point in the
+                flow.
+
+                *
+
+                  For undriven netlist, check_design will check  the  list  of
+                  input/inout  hpins/pins  with no driver on the net connected
+                  to it (driver can be input port or output hpin/pin).
+
+                *
+
+                  For multiple_driver netlist,  check_design  will  check  the
+                  list  of  input/inout  pins  or output/inout ports with more
+                  than one driver on their net)
+
+                *
+
+                  For unloaded netlist, check_design will check the  input/in-
+                  out  ports  or  output  hpins/pins with no load (input/inout
+                  pins) in their fanout or hinsts/insts that have nothing con-
+                  nected to any output pin)
+
+                *
+
+                  For constant netlist, check_design  will  check  the  output
+                  ports  or input pins/hpins that are driven by a logical con-
+                  stant 0/1.
+
+                *
+
+                  For feedthrough netlist, check_design will check the hinsts,
+                  where every output pin is directly driven by an  input  pin,
+                  w/o any logic in between).
+
+                *
+
+                  For  empty_modules,  check_design will reports empty modules
+                  in the design.
+
+              * synthesis: Checks the following violations
+
+                * The design has unresolved references.
+
+                * Insufficient number of latches available.
+
+                * Insufficient number of clock gates available.
+
+                * Design has combinational loops.
+
+              * power_intent: Checks related to MSV setup including power  do-
+                main/fence checks.
+
+              * timing:  Performs  checks  related  to timing setup integrity.
+                This check is run prior to running any operation that requires
+                timing information.  Note:  The  check_timing  command  should
+                still be used for more exhaustive timing checks.
+
+              * hierarchical:  When  you  use the hierarchical, pin_assign, or
+                budget options with the -type parameter, the check_design com-
+                mand checks for hierarchical partitions in the design. It per-
+                forms checks related  to  the  hierarchical  flow.  This  type
+                checks if the partition has a fence and if the fence is inside
+                the  core boundary. If not, it displays an error message. This
+                check is run before running hierarchical design operations.
+
+              * pin_assign: Checks related to pin assignment for  partitioning
+                flows. This check is run before pin assignment.
+
+              * budget:  Checks  related  to  time  budgeting for partitioning
+                flows. This check is run before timing budgeting.
+
+              * assign_statements: Performs checks for the netlist for  assign
+                statements.  This  check is run before exporting a netlist for
+                signoff.
+
+              * extract_rc: Checks if the lef layer map is  correctly  defined
+                and  outputs  warning/error  when  it finds issues such as lef
+                layer not defined, QRC layer not defined.  Also  performs  the
+                FTV subcircuit file check.
+
+              * place:  Checks related to placement such as PG rail alignment,
+                pin access issues, missing followpin in the rails of  standard
+                cells, misaligned well tap cell, and missing termination cell.
+                This check is run before placement.
+
+              * opt:  Checks related to optimization such as checks for avail-
+                able cells. This check is run before optimization.
+
+              * cts: Checks related to clock  tree  definition  such  as  con-
+                straint  targets  and  route types. This is run before cts but
+                after creating the clock tree spec. This check cannot run with
+                pre-cts Innovus DB (just after place_opt_design). You need  to
+                set  CCOpt  option  (target  skew, target trans, etc) and also
+                need to load the CCOpt spec file.
+
+              * route: Checks related to routing such  as  congestion,  place-
+                ment,  and  pin  access  issues. The -type route cannot be run
+                with pre-placed DB. This check is run before  routing.  It  is
+                useful  to  run  check_drc ahead of time so the design markers
+                are up to date. Also checks if the probe pin is logically con-
+                nected, directly, to the SI pin. If not, the tool will show  a
+                violation  marker on the probe marker. The violation marker is
+                of the same size and the same location as the probe marker.
+
+              * signoff: Checks related to the  signoff  activities  including
+                extraction and ECOs. This check is run before TSO. To use this
+                types,  you  need  to  set the Tempus path, else the tool will
+                give an error.
+
+              * all: Checks related to all categories.
+
+              Note: -type or -no_check is required (except  when  using  -help
+              argument)
+
+       -no_check
+              Do  not  run any checks, echo the error messages associated with
+              the checks that would  be  run  for  the  specified  -type.  Run
+              check_design -no_check to see the list of checks.
+
+               -type  or  -no_check is required (except when using -help argu-
+              ment)
+
+       -out_file <fileName>
+              Specifies the output report file. Contents dumped to  this  file
+              are in the Tcl format.
+
+              Sourcing  this  file  will create a TCL dictionary of the viola-
+              tions found by check_design.
+
+       -type_3d {db tech_lib netlist power_intent timing place floorplan route
+       all}}
+              Specifies the 3DIC design categories to check. You  can  specify
+              single or multiple categories
+
+              * db
+
+                * Checks if the die is defined in the design stack file
+
+                * Checks if the 3D DB setup correct
+
+              * tech_lib
+
+                * Checks the library integrity and corrects binding
+
+                * Checks all timing lib wh
+
+              * netlist
+
+                * Checks the library integrity and corrects binding
+
+              * power_intent
+
+                * Checks  related  to  MSV  setup including power domain/fence
+                  checks.
+
+                * Checks related power domain bind to correct design
+
+              * timing
+
+                * Performs checks related to timing setup integrity.
+
+              * place
+
+                * Checks related to placement such as pin alignment
+
+              * floorplan
+
+                * Checks related to floorplanning
+
+              * route
+
+                * Checks related to routing
+
+              * all
+
+                * Checks all categories
+
+Examples
+              * The following example shows the usage of the -out_file option:
+
+       > check_design -type "place cts route" -out_file checks.tcl
+
+       *** Summary of all messages that are not suppressed in this session:
+
+        Severity ID Count Summary
+
+        WARNING CHKCTS-16 1 Preferred routing layers for route_type ...
+
+        ERROR CHKCTS-1 3 CTS maximum transition target must be se...
+
+        ERROR CHKCTS-10 1 Route type(s) %s used for trunk or top c...
+
+        WARNING CHKCTS-21 1 Clock logic cells are not specified for ...
+
+        WARNING CHKCTS-46 1 Clock logic cells are not specified for ...
+
+        WARNING NRIG-1323 65 Net %s has bottom preferred routing laye...
+
+       > source checks.tcl
+
+       > dict keys $design_checks
+
+        cts route
+
+       > dict keys [dict get $design_checks place]
+
+       CHKCTS-1 CHKCTS-10 CHKCTS-16 CHKCTS-21 CHKCTS-46
+
+       # Each check as the following keys
+
+       > dict keys [dict get [dict get $design_checks cts] CHKCTS-1]
+
+       severity count violations
+
+       # For information regarding the check, use get_message:
+
+       > get_message -id CHKCTS-1 short
+
+       CTS maximum transition target must be set to a numeric  value  for  de-
+       lay_corner %s and delay_type %s for clock_tree %s and net_type %s.
+
+       # To query the violations, use the check dictionary:
+
+       > dict get [dict get [dict get $design_checks cts] CHKCTS-1] violations
+
+       {dc_0.9v_125c late clk top}
+
+       {dc_0.9v_125c late clk trunk}
+
+       {dc_0.9v_125c late clk leaf}
+
+              * The  following  command  generates  a list of errors that will
+                prevent or seriously impact the running of the place  step  in
+                the implementation flow.
+
+                check_design -type place -out_file place.checkDesign
+           ###############################################################
+           #  Generated by:      Cadence Innovus 17.12-e034_1
+           #  OS:                Linux x86_64(Host ID ip-172-19-134-167)
+           #  Generated on:      Mon Nov  6 05:53:12 2017
+           #  Design:            fuuBar
+           #     Command:             check_design   -type   place   -out_file
+       place.checkDesign
+           ###############################################################
+           #Design Check : place (12432915)
+           #
+       -------------------------------------------------------------------------------------
+           # Message: The via for net %s in DPT layer %s does not  align  with
+       the tracks at %.4f %.4f.
+           #    Help:
+           #
+       --------------------------------------------------------------------------------------
+           dict set design_checks place IMPPP-4418 {
+             count 12432915
+             violations {
+               {vddcx_2 M3 464.7360 2139.8625}
+               {vddcx_2 M3 464.3520 2139.8625}
+               {vddcx_2 M3 463.8720 2139.8625}
+               {vddcx_2 M3 464.7360 2139.8825}
+               ...
+             }
+           }
+           #Design Check : place (7280)
+           #
+       --------------------------------------------------------------------------------------
+           #  Message:  The color of PG wire which is a non-default width %.4f
+       wire for net %s in layer %s should have the  opposite  color  with  the
+       track at %.4f %.4f.
+           #    Help:
+           #
+       --------------------------------------------------------------------------------------
+           dict set design_checks place IMPPP-4420 {
+             count 7280
+             violations {
+               {0.0800 vssx_0 M0 202.3680 1095.6000}
+               {0.0800 vddcx_2 M0 202.3680 1095.3000}
+               ...
+             }
+           }
+
+Related Information
+              * check_timing
+
+              * setMessageLimit
+
+                           Fri Apr 04 01:25:37 2025        check_design(25.10)

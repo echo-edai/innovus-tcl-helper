@@ -1,0 +1,81 @@
+{
+  "command": "verifyWellTap",
+  "is_cmd": true,
+  "summary": "生成缺失阱接触单元以及阱接触单元间距不符合规则的违规标记",
+  "description": "该命令用于检查并生成违规标记，主要针对两种情况：一是缺失的阱接触单元，二是阱接触单元之间的间距不符合指定规则。它可以选择性地生成阱接触违规报告。该命令遵循 set_well_tap_mode 设置中关于 -cell、-rule、-well_cut_cell、-bottom_tap_cell 和 -top_tap_cell 选项的配置。它会在阱接触单元放置违反规则的区域标记违规，覆盖相邻行共享的阱区域。如果没有相邻行，则仅标记覆盖半行的违规。报告会显示阱接触单元之间的实际距离和规则距离。如果某一行及其相邻行中没有阱接触单元，或者行末端与模块边缘之间没有阱接触单元，软件会生成消息。该命令不会检查被模块及其光晕区域或布局阻挡覆盖的行区域。软件使用 addWellTap 命令放置阱接触单元，可以使用 deleteFiller 命令删除阱接触单元。",
+  "usage": "verifyWellTap [-help] [-area <x1 y1 x2 y2>] [-avoidAbutment] [-check <string>] [-cell <list_of_well_tap_cells>] [-fromEdge] [-layer <layer_name>] [-powerDomain <powerDomainName>] [-report <filename>] [-rule <distance>] [-siteOffset <number_of_sites>] [-wellCutCell <list_of_well_cut_cells>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个 verifyWellTap 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-area",
+      "description": "指定需要验证阱接触单元的区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-avoidAbutment",
+      "description": "检查在垂直和水平方向上是否存在相邻的阱接触单元。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-check",
+      "description": "检查 N 阱或 P 阱的闩锁效应规则违规。<string> 可以是 power（用于 N 阱检查）或 ground（用于 P 阱检查）。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定阱接触单元。如果未指定，则使用 LEF 文件宏定义部分中定义为 CLASS CORE WELLTAP 的单元。",
+      "required": false,
+      "type": "list_of_well_tap_cells"
+    },
+    {
+      "name": "-fromEdge",
+      "description": "从阱接触单元的左右边缘检查规则距离，而不是从中线检查。当设计中阱接触单元宽度不同时使用此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layer",
+      "description": "指定要检查规则的层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-powerDomain",
+      "description": "将检查限制在指定的电源域。如果不使用此参数，对于 N3 或以下节点的设计，<verifyWellTap> 检查默认域；对于其他节点，检查整个设计。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-report",
+      "description": "指定报告文件名。默认：<topCellName>.welltap.rpt",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rule",
+      "description": "指定两个阱接触单元之间的最大距离。两个阱接触单元之间的间距，在中心到中心或边缘到边缘测量时，应为 -rule 值的两倍。阱接触单元与行末端之间的距离应与 -rule 值相同。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-siteOffset",
+      "description": "检查垂直阱接触单元需要感知的偏移值（以站点数为单位）。最小值：1，最大值：INT_MAX。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-wellCutCell",
+      "description": "指定包含阱切割单元的列表。使用此选项来标记因阱切割单元引起的闩锁效应违规。",
+      "required": false,
+      "type": "list_of_well_cut_cells"
+    }
+  ]
+}

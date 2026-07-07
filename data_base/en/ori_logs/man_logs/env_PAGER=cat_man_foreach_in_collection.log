@@ -1,0 +1,109 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+foreach_in_collection(25.10)                      foreach_in_collection(25.10)
+
+Name
+       foreach_in_collection  -  Iterates through all objects in the specified
+       collection and executes the commands in the specified script body
+
+Syntax
+       foreach_in_collection
+
+       [-help]
+
+       <var_name><collection><body>
+
+       Iterates through all objects in the specified collection  and  executes
+       the commands in the specified script body.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <body> Specifies  the  script of commands to execute during each itera-
+              tion.
+
+       <collection>
+              Specifies the collection of objects through which to iterate.
+
+       <var_name>
+              Specifies  the  iterator  variable.   During   each   iteration,
+              <var_name>  is  set  to  a collection of exactly one object. Any
+              command that accepts collections  can  accept  <var_name>  as  a
+              value.
+
+Examples
+              * The following command prints out the hierarchical names of all
+                the cells in a design:
+
+                foreach_in_collection iCell [get_cells *] {
+
+                puts "Cell = [get_property $iCell hierarchical_name]"
+
+                }
+
+                Cell = ck_0
+
+                Cell = ck_1
+
+                Cell = ck_2
+
+                Cell = ck_4
+
+              * The  following  example  shows a more complex use of the fore-
+                ach_in_collection command:
+
+                set cellCollection [get_cells temp1_reg]
+
+                set libCellCollection [get_lib_cells -of_objects  $cellCollec-
+                tion]
+
+                set libArc [get_lib_arcs -of_objects $libCellCollection]
+
+                foreach_in_collection arc $libArc {
+
+                set fpin [get_property $arc from_lib_pin]
+
+                set tpin [get_property $arc to_lib_pin]
+
+                set sense [get_property $arc timing_type]
+
+                set from_pin_name [get_property $fpin name]
+
+                set to_pin_name [get_property $tpin name]
+
+                puts  [format "%25s -> %25s %-20s" $from_pin_name $to_pin_name
+                $sense]}
+
+       CK -> D           setup_rising
+
+       CK -> D           hold_rising
+
+       CK -> CK          minimum_period
+
+       CK -> CK          minimum_period
+
+       CK -> CK          min_pulse_width
+
+       foreach_in_collection.txt
+
+       CK -> CK          min_pulse_width
+
+       RN -> RN          min_pulse_width
+
+       CK -> RN          recovery_rising
+
+       CK -> RN          removal_rising
+
+       CK -> Q           falling_edge
+
+       RN -> Q           clear
+
+Related Information
+              * add_to_collection
+
+              * compare_collections
+
+              * copy_collection
+
+              * filter_collection
+
+                           Fri Apr 04 01:25:37 2025foreach_in_collection(25.10)

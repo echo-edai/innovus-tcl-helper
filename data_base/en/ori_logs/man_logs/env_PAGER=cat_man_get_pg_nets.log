@@ -1,0 +1,73 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_pg_nets(25.10)                                          get_pg_nets(25.10)
+
+Name
+       get_pg_nets - Creates a collection of netlist-level instance PG nets of
+       leaf cells/pins in the current design
+
+Syntax
+       get_pg_nets
+
+       [-help]
+
+       [-filter <expr>]
+
+       [-of_objects <object_list>]
+
+       Creates  a  collection  of  netlist-level  instance  PG  nets  of  leaf
+       cells/pins in the current design. An empty collection is returned if no
+       PG net definitions/connections are found in the design netlist.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -filter <expr>
+              Specifies the filters for the collection with the specified  ex-
+              pression.
+
+              For  any  pg nets that match the pattern, the software evaluates
+              the expression based on the attribute of the net.
+
+              You can filter pg nets along with the  -of_objects  parameter  -
+              using  any  of the pg net properties of object type pg_net (sup-
+              ported through the get_property command).
+
+              For details on how to create filter expressions,  refer  to  the
+              filter_collection command.
+
+       -of_objects <object_list>
+              Creates  a  collection of all the PG nets, or PG nets associated
+              with the specified cells or PG pins.
+
+              You can specify a list of cells or a list of pg  pins,  but  you
+              cannot specify a list that contains cells and pg pins together.
+
+              The  -of_objects parameter supports get_cells and get_pg_pins as
+              valid objects. See "Examples" below.
+
+Examples
+              * The following command filters the collection of all pg nets of
+                the cell instance object to return only the pg nets containing
+                the string name defined with the pg_net hierarchical_name  at-
+                tribute:
+
+                get_pg_nets  -of_objects [get_cells iA/out_reg] -filter "hier-
+                archical_name =~ *VDD*"
+
+              * The following command gets the collection of all  pg  nets  of
+                the cell instance object:
+
+                get_pg_nets -of_objects [get_cells iA/out_reg]
+
+              * The  following  command  gets the collection of all pg nets of
+                the pg_pins of the cell instance object:
+
+                get_pg_nets -of_objects  [get_pg_pins  -of_objects  [get_cells
+                iA/out_reg]]
+
+Related Information
+              * get_pg_pins
+
+              * get_pins
+
+                           Fri Apr 04 01:25:37 2025         get_pg_nets(25.10)

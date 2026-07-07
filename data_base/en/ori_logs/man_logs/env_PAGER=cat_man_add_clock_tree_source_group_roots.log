@@ -1,0 +1,176 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+add_clock_tre...ce_group_roots(25.10)    add_clock_tre...ce_group_roots(25.10)
+
+Name
+       add_clock_tree_source_group_roots - This command updates the design and
+       clock tree specification to create a multiple-tree "source group" below
+       the specified driving root pin
+
+Syntax
+       add_clock_tree_source_group_roots
+
+       [-help]
+
+       -cell <driverCell>
+
+       [-locations {{x1 y1} {x2 y2}...}]
+
+       -name <sourceGroupName>
+
+       -pin <rootPin>[-grid {columns rows} [[-adjust_grid_for_aspect_ratio]
+
+       [-grid_rect {lx ly ux uy}]
+
+       [-grid_search_area {width height}]
+
+       [-grid_exclusion_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}]]]
+
+       This  command updates the design and clock tree specification to create
+       a multiple-tree "source group" below the specified driving root pin.  A
+       source  group  is  a set of multiple, logically equivalent, clock trees
+       that drive a collection of clock tree sinks. The actual  allocation  of
+       sinks  to  specific source group roots is chosen during clock tree syn-
+       thesis.
+
+       This command performs the following tasks:
+
+              * Inserts the instances that will become the  clock  tree  roots
+                into  the netlist. Their input pins will be driven by the root
+                pin and the fanout originally driven by the root pin  will  be
+                rewired to the output of a single root instance.
+
+              * Defines  clock  trees  at the outputs of each of the newly in-
+                serted root instances.
+
+              * Defines a clock source group to combine the clock trees.
+
+       You can insert a grid of tap buffers and also omit a tap buffer at grid
+       points that are blocked. For this, you can specify grid coordinates,  a
+       two-value  pair {x y}, that place the source group driver at that loca-
+       tion.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for each add_clock_tree_source_group_roots parameter.
+              For a detailed description of the command and all of its parame-
+              ters,       use       the        man        command:         man
+              add_clock_tree_source_group_roots.
+
+       -adjust_grid_for_aspect_ratio
+
+       When specified, exchanges rows and columns to match the aspect ratio.
+
+       -cell <driverCell>
+              Specifies  the  buffer  cell to use for new source group # roots
+              (libCell/ptnCell).
+
+              This is a required parameter.
+
+       -grid {columns rows}
+              Specifies a grid of target locations. By  default,  the  command
+              attempts  to  create a full grid consisting of columns and rows.
+              However, if a particular grid target point falls within  an  ex-
+              clusion rectangle, specified using the -grid_exclusion_rects pa-
+              rameter,  then  that  grid  point  will  be skipped. If the -ad-
+              just_grid_for_aspect_ratio parameter is specified,  the  columns
+              and  rows  will be swapped if doing so better matches the aspect
+              ratio of the grid rectangle area.
+
+              Note: The -grid and -locations parameters can be used  together.
+              For  example, you can specify a grid, and then use -locations to
+              add a few additional taps in specific floor-plan locations.
+
+       -grid_exclusion_rects {{lx1 ly1 ux1 uy1} {lx2 ly2 ux2 uy2}...}
+              Provides the coordinates of rectangular areas  that  should  not
+              contain  source  group roots. Any grids that fall within the ex-
+              clusion rectangle will be ignored.
+
+       -grid_rect {lx ly ux uy}
+              Specifies the area that the grid should  cover.  This  parameter
+              provides the overall rectangle intended to be driven by the taps
+              requested by the -grid parameter.
+
+              Note:  This  parameter  does not specify the bounding box of the
+              grid taps. Basically the overall -grid_rect rectangle is cut  up
+              into m x n smaller rectangles, and a tap is targeted at the cen-
+              ter  of each smaller rectangle. to understand more clearly, con-
+              sider the below example.
+
+              If you have -grid {2 2} and -grid_rect {0 0 100 100}, the corre-
+              sponding target locations will be {{25 25} {25 75} {75  25}  {75
+              75}}.
+
+              This  is  different than if the -grid_rect were the bounding box
+              of tap locations, in which case it would be {{0 0} {0 100}  {100
+              0} {100 100}}).
+
+       -grid_search_area {width height}
+              Specifies the size of the search area around each grid point.
+
+       -locations {{x1 y1} {x2 y2}...}
+              Specifies  a  list of (x,y) locations for the new roots that are
+              to be created. The specified roots are inserted at  the  nearest
+              legal location.
+
+              Note:  This  parameter takes a list of points, not rectangles. A
+              specified point will be taken as a tap target location, and  the
+              software  will  search  for  the  nearest legal location. If the
+              -grid_search_area {width height}  parameter  is  specified,  the
+              search  will  be limited to the points specified using the -grid
+              parameter and not points specified using the -locations  parame-
+              ter.  If it is not specified, the software will search as far as
+              needed to find a legal location for a tap. If a  legal  location
+              cannot  be  found,  either  within the specified search area, or
+              anywhere in the floorplan, the tap will be added at  the  target
+              location and not legalized. If all taps can be inserted at legal
+              locations,  they will be set to locked for CTS placement status.
+              If one or more taps cannot be legalized, the command will  print
+              a warning and all taps will be left in simple placed status.
+
+              Note:  The  behavior  when  a  tap  cannot be legalized, and for
+              whether taps are locked applies to all taps created by this com-
+              mand - from the -grid and/or -locations parameters.
+
+       -name <prefix>
+              Specifies the name of the source group to  be  created  for  the
+              roots.  The  name  should be unique. The multi-tap roots will be
+              named using this string as a prefix.
+
+              For example, sourceGroupName_0,  sourceGroupName_1..sourceGroup-
+              Name_n.
+
+              Note:
+
+              * The skew group name will be <<prefix>>_skew_group.
+
+              * The  clock tree name for a tap will be <<prefix>>_<index>, and
+                <<prefix>>_<index>_inst for the corresponding cell instance.
+
+              This is a required parameter.
+
+       -pin <rootPin>
+              Specifies the name of the root pin that will drive the multi-tap
+              root inputs. The pin must be an output pin and must drive a net.
+
+              The entire clock structure, including clock gates, flops, and so
+              on that are to be driven by the multi-tap  roots  should  origi-
+              nally be connected below this pin. If there are multiple drivers
+              on  the  root net, any one of their output pins may be specified
+              as the -pin parameter.
+
+              This is a required parameter.
+
+Related Information
+              * assign_clock_tree_source_groups
+
+              * create_ccopt_clock_tree_source_group
+
+              * delete_ccopt_clock_tree_source_group
+
+              * get_ccopt_clock_tree_source_groups
+
+              * The following chapter in the Innovus User Guide
+
+                * Clock Tree Synthesis
+
+                           Fri Apr 04 01:2a5d:d3_7cl2o0c2k5_tre...ce_group_roots(25.10)

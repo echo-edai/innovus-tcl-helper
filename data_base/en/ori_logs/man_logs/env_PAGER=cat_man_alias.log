@@ -1,0 +1,99 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+alias(25.10)                                                      alias(25.10)
+
+Name
+       alias - Create command aliases for any Tcl command
+
+Syntax
+         alias
+
+       [-help]
+
+       <new_cmd>
+
+       <old_cmd>
+
+       [-args {{<new> <old>} ...}]
+
+       Create  command aliases for any Tcl command. It is a wrapper around the
+       built-in Tcl "interp alias" command. All command aliases are public, so
+       partial command matching and using <tab> to complete a typed in command
+       work on them. It also supports argument name aliases for procs that use
+       define_proc_arguments and parse_proc_arguments for  parsing  the  argu-
+       ments,  and  for application commands. The argument aliases do not work
+       for built-in Tcl commands. The argument aliases are  private,  so  they
+       are not shown by -help, and do not support partial-option completion or
+       matching.
+
+       You can use this command to migrate an existing Tcl script when some of
+       the commands or argument names have changed, but are otherwise compati-
+       ble.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each bindkey parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+               man bindkey
+
+       <new_cmd>
+              Specifies the new command name that is an alias for the existing
+              <old_cmd>  name. It can be the same name as the <old_cmd> if you
+              only want to create new -arg aliases, and do not need a new com-
+              mand alias.
+
+              Data_type: string, required
+
+       <old_cmd>
+              Specifies the existing old command name.
+
+              Data_type: string, required
+
+       -args {{<new><old>} ...}
+              Specifies a list  of  new  and  old  argument  names  to  create
+              aliases.  You  can  give multiple <new> names for the same <old>
+              name. The new aliases are private,  and  do  not  show  up  with
+              -help.  You  can  create  more than one alias for the same <old>
+              name.
+
+              Data_type: string, optional
+
+Example
+       The following command adds a new command name  alias  new_read_sdf  and
+       some arg name aliases for read_sdf:
+
+       >alias new_read_sdf read_sdf -args {
+
+         {-ignore_error -continue_on_error}
+
+         {-summary -report_summary}
+
+         {-sum -report_summary}
+
+       }
+
+       Then, the following commands
+
+       >new_read_sdf in.sdf -ignore_error -summary
+
+       >new_read_sdf in.sdf -ignore_error -sum
+
+       >new_read_s in.sdf -ignore_error -sum
+
+       would behave the same as
+
+       >read_sdf in.sdf -continue_on_error -report_summary
+
+       Note:  Tcl  partial  command  matching  works if the partial command is
+       unique as shown in the above example, but the alias argument names  are
+       private, and will not support partial option matching, or appear in the
+       -help output.
+
+Related Information
+              * define_proc_arguments
+
+              * parse_proc_arguments
+
+                           Fri Apr 04 01:25:37 2025               alias(25.10)

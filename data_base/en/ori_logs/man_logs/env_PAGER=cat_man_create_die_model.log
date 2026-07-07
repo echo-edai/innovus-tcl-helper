@@ -1,0 +1,500 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_die_model(25.10)                                create_die_model(25.10)
+
+Name
+       create_die_model  - Specifies to generate a reduced n-port die model in
+       the form of equivalent die parasitic and  current  profile  after  rail
+       analysis  to  perform  system-level analysis with extracted package and
+       board models
+
+Syntax
+       create_die_model
+
+       [-accuracy {xd | hd }]
+
+       [-output_directory <directory_name>]
+
+       -state_directory <directory_name>
+
+       [-rail_analysis_domain <domain_name> | -net <net_name>]
+
+       [-repeat <time>]
+
+       [-probing_node_file <file_name>]
+
+       [-use_sigrity_repeat]
+
+       [-max_ports_per_net <integer>]
+
+       [-enable_reference_node]
+
+       [-enable_package_pin_map { true|false }]
+
+       [-disable_isrc_node_zero { true|false }]
+
+       [-disable_global_node_zero { true|false }]
+
+       [-multi_die {true | false}]
+
+       [-port_grouping_by_ploc_files { true|false }]
+
+       [-port_grouping_file<filename>]
+
+       [-temp_directory_name <directory>]
+
+       [-effective_rc]
+
+       [-probing_region_file<filename>]
+
+       [-effective_rc_deck]
+
+       [-port_grouping_tiles_file  <filename>]
+
+       [-enable_xp {true | false}]
+
+       [-ignore_port_grouping_conflict]
+
+       [-generate_sipi_port_definition_file {true | false}]
+
+       [-grid_reduction_cut_layer <layer_name>]
+
+       Specifies to generate a reduced n-port die model in the form of equiva-
+       lent die parasitic and current profile after rail analysis  to  perform
+       system-level  analysis  with  extracted package and board models. Reso-
+       nance and electro-magnetic interference like system-level analyses  can
+       be  performed  using  this die-model in package designing software like
+       Allegro Package Design and Sigrity.
+
+       This command requires a VTS-XL license.
+
+Parameters
+       -accuracy {xd | hd }
+              Specifies the accuracy mode for die-model generation.
+
+              Default : hd
+
+              * xd: xd or accelerated definition accuracy  mode  is  used  for
+                faster  die model generation with slight reduction in RC accu-
+                racy.
+
+              * hd: hd or high definition accuracy mode is used for most accu-
+                rate die model generation.
+
+       -disable_isrc_node_zero { true|false }
+              Specifies to disable node zero for current sources (isrc)  in  a
+              generated  die-model.  The isrc node zero is used to connect de-
+              coupling capacitance and the current  source  in  the  generated
+              die-model. This parameter is added to generate a die model with-
+              out isrc node zero.
+
+              By  default, a virtual ground is used to connect decoupling caps
+              and the current source in the generated die-model.
+
+              When set to true, generates die model without the virtual ground
+              and uses the ground network for connecting decoupling  caps  and
+              current    sources.   It   also   creates   the   <BLOCK>_nport-
+              Model.sp.isrc_balanced file in  the  die-model  directory.  This
+              file  has information on the current sources and their port con-
+              nections. The .subckt file generated for Spice simulation points
+              to the .isrc_balanced file.
+
+              Default: false
+
+       -disable_global_node_zero { true|false }
+              Specifies to disable the global node zero  in  a  generated  die
+              model.
+
+              * When  set  to  true,  generates die models without the virtual
+                ground and uses the ground network for  connecting  decoupling
+                caps and current sources.
+
+              * When  set to false, a virtual ground is used to connect decou-
+                pling caps and the current source in the generated die-model.
+
+              Default: true
+
+       -enable_package_pin_map { true|false }
+              Specifies to support the 6-column style MCP format to map  pack-
+              age pins to circuit ports. The following are the old and new MCP
+              file formats:
+
+              The original 5-column format is:
+
+              <vsrc_name> <Ckt_port> <Net_name> <X coord> <Y coord>
+
+              The new 6-column format is:
+
+              <package_pin>   <Ckt_port>   <Net_name>   <X  coord>  <Y  coord>
+              <vsrc_name>
+
+              Example:
+
+              Original format:
+
+              chip1/bmp_100_6_12 D1_bmp_100_6_12 VDDE 350.000 147.000
+
+              chip2/bmp_122_3_15 D2_bmp_122_3_15 VDD2 321.000 983.800
+
+              New format:
+
+              bmp_100_6_12    D1_bmp_100_6_12     VDDE     350.000     147.000
+              chip1/bmp_100_6_12
+
+              bmp_122_3_15     D2_bmp_122_3_15     VDD2     321.000    983.800
+              chip2/bmp_122_3_15
+
+       -effective_rc
+              Generates an additional report file (.txt) containing the effec-
+              tive resistance and capacitance information.  The  parameter  is
+              used  for generation of a table for effective resistance and ca-
+              pacitance across multiple operating frequencies.
+
+              The following is a sample report format:
+
+              # Net:VDD_AO, Net:VSS
+
+              # frequency      # rdie           # cdie
+
+              1.0000000e+07    4.73148443       2.47034747e-11
+
+              1.2589254e+07    4.90209173       2.46916698e-11
+
+              # Net:VDD_external, Net:VSS
+
+              # frequency      # rdie           # cdie
+
+              1.0000000e+07    -183.231085      6.65466673e-12
+
+              1.2589254e+07    -164.007129      6.55112569e-12
+
+       -effective_rc_deck
+              Specifies to include the Rdie/Cdie (effective resistance/capaci-
+              tance) calculation for the die-model frequency domain simulation
+              setup in the Spice (.sp) format.
+
+              The following is a snippet of the .sp file with  the  frequency-
+              domain setup for Rdie/Cdie calculation:
+
+              ******************************************************
+
+              * Frequency domain analysis to capture input impedance.
+
+              ******************************************************
+
+       -enable_reference_node
+              Specifies  to  replace  the  global node zero with the reference
+              port in the generated die model.
+
+       -enable_xp {true | false}
+              Specifies to generate the die model in the Extensively  Parallel
+              (XP) mode in which processing is distributed over a large number
+              of machines.
+
+              Default : false
+
+       -generate_sipi_port_definition_file {true | false}
+              Generates  a  ports  definition  file during die-model creation.
+              When set to  true,  the  port  definitions  are  output  to  the
+              port_defintion.txt file, which is later used by Sigrity SystemPI
+              for connecting the die model to the package design.
+
+              Default : false
+
+       -grid_reduction_cut_layer <layer_name>
+              Specifies a cut via layer below which all the layers will be re-
+              duced.  This  feature  minimizes  data and enables efficient die
+              model generation.
+
+       -ignore_port_grouping_conflict
+              Specifies to not generate an error message in case  there  is  a
+              conflict  between the user-defined port grouping and the default
+              port groups (voltage sources that are grouped by mapping to  the
+              same  package  terminal).  For example, vsrcA and vsrcB are both
+              mapped to the package terminal PKG_T, but in the  user-specified
+              grouping file, vsrcA and vsrcB belong to two groups.
+
+              When  this parameter is specified, the tool will not generate an
+              error message if there is a conflict, but instead will group the
+              voltage sources according to the  user-specified  port  grouping
+              file.
+
+              If  this  parameter  is not specified and there is a conflict in
+              port grouping, an error will be generated.
+
+       -max_ports_per_net <integer>
+              Specifies the maximum number of ports allowed for each net in  a
+              generated die model.
+
+              If  you  do  not specify this parameter, the software by default
+              enables port grouping with number of ports set to  200.  If  the
+              number specified through this parameter is 0, port grouping will
+              be  disabled. The maximum number of ports per net should be 0 or
+              a positive value. A negative value will be treated as 0.
+
+              Note: The -max_ports_per_net parameter is only meaningful for N-
+              port die model creation. The 2-port die  model  creation  always
+              groups all ports together.
+
+       -multi_die {true | false}
+              Specifies to generate a complete die model for a TSV/SiP design.
+
+              Default: false
+
+       -output_directory <directory_name>
+              Specifies the directory in which you save the die-model files.
+
+       -port_grouping_by_ploc_files {true | false}
+              Specifies  to  read the PLOC group information from the user-de-
+              fined PLOC files. You can specify the port  information  in  the
+              PLOC file, as shown below:
+
+              Vsource_5_VDD 21985.00 23785.00 AP VDD p18 # with net and group
+
+              Vsource_7_VDD  22385.00  23785.00  AP  VDD p18 C=1e-09 L=1e-11 #
+              with capacitance and inductance
+
+              When -port_grouping_by_ploc_files is set to true, the die  model
+              flow  will read the user-specified port grouping information and
+              generate a reduced die model. This parameter is mutually  exclu-
+              sive with the -port_grouping_file parameter.
+
+       -port_grouping_file <filename>
+              Specifies  a  text file containing the user-defined pin grouping
+              details on a per power/ground net basis. When this parameter  is
+              specified,  a  reduced  die  model  is generated that honors the
+              user-specified port grouping. This die model has  a  reduced  RC
+              netlist  and  .isrc   when compared with the original un-grouped
+              die model. The degree of reduction will depend on how many  pins
+              are being grouped.
+
+              The format of the pin grouping file is as follows:
+
+              NET <netname>
+
+              <grouped pin name> <vsrc names which have to be grouped>
+
+              <grouped pin name> <vsrc names which have to be grouped>
+
+              NET <netname>
+
+              <grouped pin name> <vsrc names to be grouped>
+
+              <grouped pin name> <vsrc names to be grouped>
+
+              END
+
+              where,
+
+              * NET is a keyword followed by the power or ground net name
+
+              * grouped pin name is the user defined port name
+
+              * <vsrc names>are the actual design voltage sources that need to
+                be grouped
+
+       -port_grouping_tiles_file   <filename>
+              Specifies to group power ground ports by a user-defined tile ar-
+              ray. All the ports in a specific tile are grouped together.
+
+              The use model of the parameter is:
+
+              create_die_model -port_grouping_tiles_file tiles.txt
+
+              The  following  is  the format of the port grouping tiles format
+              is:
+
+              NET <<net>>
+
+              BBOX <<x1 y1 x2 y2>>
+
+              ROWS <<num rows>>
+
+              COLUMNS <<num columns>>
+
+              Here,
+
+              * the keywords are highlighted in blue.
+
+              * <net> is the power supply net name
+
+              * <x1 y1 x2 y2> are the coordinates of the  bounding  box  lower
+                and  upper  corners.  This is optional. If the bounding box is
+                not specified, the default is the chip bounding box.
+
+              * <num rows> is the number of rows in the tile array
+
+              * <num columns> is the number of columns in the tile array
+       This parameter allows you to partition the voltage sources of  the  die
+       model  in  to several port groups. If the same grouping pattern is used
+       for the voltage sources of the die model and the package pins, it  will
+       help  in  matching  the die ports and package terminals, and connecting
+       the die model to the package netlist.
+
+              The grouping information is available in the MCP header  of  the
+              generated die model file, as shown below:
+
+              * [REM]
+
+              * [Power Nets]
+
+              * vsrc_821 VDD2_GROUP_BUMP_tile01 VDD2 6316.25 20
+
+              * vsrc_820 VDD2_GROUP_BUMP_tile01 VDD2 623.75 20
+
+              * vsrc_822 VDD2_GROUP_BUMP_tile00 VDD2 5000 40
+
+              * vsrc_823 VDD2_GROUP_BUMP_tile00 VDD2 5002 40
+
+              ......
+
+              *[Ground Net]
+
+              * vsrc_100 VSS_GROUP_BUMP_tile01 VSS 6300 25
+
+              * vsrc_101 VSS_GROUP_BUMP_tile01 VSS 6250 25
+
+              * vsrc_102 VSS_GROUP_BUMP_tile00 VSS 4000 40
+
+              * vsrc_103 VSS_GROUP_BUMP_tile00 VSS 4002 40
+
+              Here
+
+              * the first column is the voltage source name.
+
+              * the  second  column  is  the port name under which the voltage
+                sources are grouped. It also displays the tile number to check
+                a specific tile's power and group port during simulation.
+
+              * the third column is the net name.
+
+              * the fourth and fifth columns indicate the X and Y coordinates,
+                respectively. The unit of x/y coordinate location is  microme-
+                ter (<mu>m).
+
+       -probing_node_file <file_name>
+              Specifies  the  probe  node file containing the probe point on a
+              die. The file format for specifying probing nodes is as follows:
+
+              <user defined unique probe name> <location = x> <location  =  y>
+              <layer> <Power/ground net name>
+
+              You can also specify the package node voltages and resistor cur-
+              rents that are to be probed in the following format:
+
+              <probe name> pkg ir <pkg circuit node name>
+
+              <probe name> pkg rc <pkg circuit resistor name>
+
+Example
+              probe_1 18 16 METAL_1 VDD
+
+              # pkg node voltage
+
+              probe_pkg_1 pkg ir GND.in0
+
+              probe_pkg_6 pkg ir VDD.in2
+
+              # pkg resistor current
+
+              probe_pkg_cur_1 pkg rc R_1_1
+
+              probe_pkg_cur_2 pkg rc R_5_2
+
+              Note: The units of x and y should be in microns.
+
+       -probing_region_file   <filename>
+              Specifies  a probe node region file to define a probe region and
+              use all points in the region as probe contact points on the die.
+
+              The file format for specifying a probing region is as follows:
+
+              <region_label x1 y1 x2 y2 layer_name net_name>
+
+       -rail_analysis_domain <domain_name> | -net <net_name>
+              Specifies the domain name or net name for which the die-model is
+              to be generated.
+
+              When the domain name is specified, coupled die-model  is  gener-
+              ated  and  it includes all power and ground nets associated with
+              the specified domain.
+
+              When net name is specified, decoupled die-model is generated for
+              the specified net. Before specifying this command parameter, the
+              power net name must be specified using the set_pg_nets command.
+
+              This is a required option and one of them must be specified.
+
+       -repeat <time>
+              Specifies the repeat time in ns.
+
+              When this parameter is specified without the -use_sigrity_repeat
+              parameter, the generated die model has the dynamic current  pro-
+              file  of the die repeated to the specified time. By default, the
+              die model consists of the default simulation period saved in dy-
+              namic current files during IR drop anlaysis.
+
+              When this parameter is specified along with the -use_sigrity_re-
+              peat parameter, the software forces to write out repeating wave-
+              forms in the Sigrity specific format. If the -use_sigrity_repeat
+              parameter is specified, the value specified through the  -repeat
+              parameter  indicates  the  starting point of the repeating wave-
+              form.
+
+       -state_directory <directory_name>
+              Specifies the top-level state directory that is generated by the
+              static or dynamic IR drop analysis. This  state  directory  con-
+              tains analysis of all nets associated with the power domain; For
+              example, core_25C_dynamic_1.
+
+              This is a required parameter.
+
+       -temp_directory_name <directory>
+              Specifies a directory to save temporary files for die-model gen-
+              eration.
+
+       -use_sigrity_repeat
+              When  this parameter is specified along with the -repeat parame-
+              ter of the create_die_model  command,  the  software  forces  to
+              write out repeating waveforms in the Sigrity specific format. If
+              the -use_sigrity_repeat parameter is specified, the value speci-
+              fied  through the -repeat parameter indicates the starting point
+              of the repeating waveform. If -use_sigrity_repeat  is  specified
+              without  specifying  -repeat,  time  0  is used for the starting
+              point. The default unit for the value is "ns".
+
+              Note: When the -use_sigrity_repeat parameter is  specified,  the
+              software will write the stimulus current in the specific Sigrity
+              format, which cannot be used by other Spice like simulators.
+
+Examples
+              * The  following  command creates an n-port die model having the
+                dynamic current profile of the die repeated upto  50ns,  using
+                the  state  directory  allDomains_25C_dynamic_1  and saves the
+                generated n-port die-model file in the n_port_diemodel  output
+                directory:
+
+                create_die_model
+
+                -state_directory irdrop_allOn/allDomains_25C_dynamic_1
+
+                 -rail_analysis_domain       allDomains      -output_directory
+                n_port_diemodel -repeat 50
+
+              * The following example shows the use model of the -effective_rc
+                parameter to create a report file containing the effective re-
+                sistance and capacitance information:
+
+                create_die_model
+
+                  -effective_rc         -state_directory         staticRailRe-
+                sults/ALL_125C_avg_1/
+
+                  -output_directory static_die_model -rail_analysis_domain ALL
+
+Related Information
+              * set_package
+
+              * "Package  Analysis"  in the Voltus IC Power Integrity Solution
+                User Guide
+
+                           Fri Apr 04 01:25:37 2025    create_die_model(25.10)

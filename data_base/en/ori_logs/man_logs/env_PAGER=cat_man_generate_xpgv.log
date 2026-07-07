@@ -1,0 +1,157 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+generate_xpgv(25.10)                                      generate_xpgv(25.10)
+
+Name
+       generate_xpgv - Creates power-grid view (xPGV) models for large digital
+       blocks.The block xPGV can be generated either after the signoff dynamic
+       IR  drop analysis or after the dynamic Early Rail Analysis (ERA) of the
+       block
+
+Syntax
+       generate_xpgv
+
+       -cell <cell_name>
+
+       [-inst_list <inst1> inst2 .. <instn>]
+
+       [-libgen_include <file_name>]
+
+       [-output_dir <directory_name>]
+
+       [-rail_include <file_name>]
+
+       [-reuse_block_state_directory <directory_name>]
+
+       -state_directory <directory_name>
+
+       [-mvmf_config <config_file>]
+
+       Creates power-grid view (xPGV)  models  for  large  digital  blocks.The
+       block  xPGV  can  be generated either after the signoff dynamic IR drop
+       analysis or after the dynamic Early Rail Analysis (ERA) of  the  block.
+       In  both  cases,  the xPGV is generated using the R-C grid of the block
+       and currents captured at the  via  layer  during  the  analysis.  These
+       block-level xPGVs can then be instantiated during the next level of the
+       design  or the top-level full-chip analysis. The next level rail analy-
+       sis will run faster with the block-level xPGVs because these  runs  use
+       the power-grid that is modeled inside the xPGV.
+
+Parameters
+       -help  Outputs the command usage.
+
+       -cell <cell_name>
+              Specifies the block name for which xPGV model is generated.
+
+       -inst_list <inst1> inst2 .. <instn>
+              Specifies the block instances for which xPGV model is generated.
+
+       -libgen_include <file_name>
+              Specifies a file that includes additional library generation op-
+              tions that will be run for xPGV model generation.
+
+       -mvmf_config <config_file>
+              Specifies  to  generate a single xPGV model with different func-
+              tional modes. Using this parameter, you can specify a file  that
+              includes the different modes and the mapping state directory for
+              each  mode. When -mvmf_config is specified, the block-level cur-
+              rents are saved for multiple voltages and frequency  (MvMf)  per
+              each functional mode in a single PGV.
+
+              During xPGV instantiation, the different modes are automatically
+              selected  based  on  the power domain to which each mode is con-
+              nected.
+
+              The format of the <config_file> file is:
+
+              <<modeName1>>  <<stateDir_1>>
+
+              <<modeName2>>  <<stateDir_2>>
+
+               ...
+
+              <<modeNameN>>  <<stateDir_N>>
+
+              Before generating MvMf-xPGV, you need to perform  multiple  rail
+              analysis  runs for different corners to generate different state
+              directories (stateDir_*) to be  included  in  the  configuration
+              file.
+
+       -output_dir <directory_name>
+              Specifies  the  name of the output directory in which the power-
+              grid library report is created. The default is the current work-
+              ing directory.
+
+       -rail_include <file_name>
+              Specifies a file that includes additional rail analysis  options
+              that will be run for xPGV model generation.
+
+       -reuse_block_state_directory <directory_name>
+              Specifies  an  existing  rail  analysis  state directory to skip
+              block extraction. The software  assumes  that  the  design  data
+              (DEFs  and  GDS)  and  power-grid libraries are not changed, and
+              will generate xPGV using the extraction data inside  the  speci-
+              fied  state  directory.  If the state directory does not contain
+              the necessary design and power-grid database files, it will  is-
+              sue  an  error  message  and  provide information on the missing
+              files.
+
+              The -reuse_block_state_directory parameter is used if the entire
+              design that is analyzed in the rail run should be used to create
+              the xPGV. However, this parameter must not be used in  case  you
+              require  to  generate  xPGVs for each instance (sub-blocks) of a
+              block. That is, for generating xPGVs for the sub-blocks B and  C
+              of  the  block  A  (rail analysis was performed on block A), you
+              need to re-extract the block-level grids of B and C as  part  of
+              xPGV  generation for accurate current calculation. In this case,
+              -reuse_block_state_directory must not be specified.
+
+              For net based analysis, you should specify net-based  state  di-
+              rectory, as shown below:
+
+              * generate_xpgv -reuse_block_state_directory<VDD_25C_avg_1>
+
+              For domain based analysis, you should specify the domain's state
+              directory, as shown below:
+
+              * generate_xpgv      -reuse_block_state_directory<domain_25C_dy-
+                namic_1>
+
+              A new state directory will be generated  for  the  new  analysis
+              with  soft  links  to  the  old  state directory files that were
+              reused.
+
+       -state_directory <directory_name>
+              Specifies the path to the rail analysis state directory.
+
+Examples
+              *
+
+                The following command creates an xPGV library hier_block.cl:
+
+                generate_xpgv   -state_directory    dynamic_rail/core_125C_dy-
+                namic_1/ -cell hier_block -output_dir ../xpgv/
+
+              * The  following  command creates an xPGV library super_filter_A
+                with multiple functional modes specified  in  the  mode.config
+                file:
+
+                generate_xpgv  -cell  super_filter_A  -mvmf_config mode.config
+                -output_dir ./mode_mvmf -rail_include rail.inc
+
+                The following is a snippet from the mode.config file:
+
+                label1 dynamic_rail/core_25C_dynamic_1
+
+                lable2 dynamic_rail/core_25C_dynamic_1
+
+Related Information
+              * set_pg_library_mode
+
+              * set_advanced_pg_library_mode
+
+              * generate_pg_library
+
+              * "Power-Grid Library Generation" in the  Voltus  IC  Power  In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025       generate_xpgv(25.10)

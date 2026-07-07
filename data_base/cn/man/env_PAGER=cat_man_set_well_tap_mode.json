@@ -1,0 +1,201 @@
+{
+  "command": "set_well_tap_mode",
+  "is_cmd": true,
+  "summary": "控制 addWellTap 命令的行为",
+  "description": "此命令用于配置 addWellTap 命令的详细行为模式。这些设置是持久性的，会随数据库通过 saveDesign 命令保存。使用 get_well_tap_mode 可以返回当前 set_well_tap_mode 的设置。注意：addWellTap 命令指定的参数会覆盖 set_well_tap_mode 命令的设置。",
+  "usage": "set_well_tap_mode [-help] [-reset] [-abut_boundary_tap_distance {{<cell1 cell2 distance1>} {<cell1 cell3 distance1>} {<cell2 cell3 distance3>} ... }] [-antenna_tap_break_cell <cell_list>] [-antenna_tap_cell <cell_list>] [-antenna_tap_left_cell <cell_list>] [-antenna_tap_pitch <microns>] [-antenna_tap_right_cell <cell_list>] [-antenna_tap_right_top_edge_cell <cell_list>] [-avoid_vertical_well_abutment {none|ntap|ptap|all_tap}] [-avoidAbutment {true|false}] [-block_boundary_only {true | false}]] [-bottom_tap_cell cellName] [-bottom_termination_cell <cellList>] [-cell <cellName>] [-channel_offset <offset_value>] [-check_channel {true|false}] [-column_cell <cellList>] [-create_rows {true|false}] [-disable_check_zone_at_boundary {none|vdd|vss|both}] [-inRowOffset <offset_value>] [-insert_cells <cellName rule dense_layer dense_rule boundary_layer boundary_rule>] [-rule microns] [-siteOffset <number_of_sites>] [-tap_function_cells <cell_list>] [-tap_termination_alignment {true|false}] [-termination_align {left|right|center}] [-termination_cell <cellList>] [-top_tap_cell <cellName>] [-top_termination_cell <cellList>] [-vertical_boundary_spacing <spacing_with_well_tap>] [-well_cut_cell <cellList>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出每个 set_well_tap_mode 参数的简要描述，包括类型和默认值信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定的选项重置为默认值。任何被重置且与默认值不匹配的值将被报告。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-abut_boundary_tap_distance",
+      "description": "指定垂直邻接时的边界单元及其抽头距离。如果不设置此选项，邻接单元仍使用单单元距离。如果指定此选项，邻接单元抽头覆盖距离将使用定义的新值。当抽头单元棋盘格无法覆盖该区域时，需要在该区域添加额外的抽头单元。此参数适用于 N4 工艺。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_tap_break_cell",
+      "description": "指定会断开抽头接地连接的单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_tap_cell",
+      "description": "指定普通的天线抽头单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_tap_left_cell",
+      "description": "指定左边界边缘的天线抽头单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_tap_pitch",
+      "description": "指定天线抽头单元的间距。它应该是 TAP 保护距离的两倍。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-antenna_tap_right_cell",
+      "description": "指定右边界边缘的天线抽头单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-antenna_tap_right_top_edge_cell",
+      "description": "指定右上内角的天线抽头单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-avoid_vertical_well_abutment",
+      "description": "指定禁止哪种类型的阱抽头单元进行垂直邻接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-avoidAbutment",
+      "description": "指定插入的抽头是否应避免水平和垂直邻接。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-block_boundary_only",
+      "description": "指定是否仅为块边界上的阱抽头列插入终止抽头单元。默认值为 false，终止单元会同时插入到核心边界行和块边界行。注意：此参数仅在插入终止单元时有效。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_tap_cell",
+      "description": "指定在封闭式端盖插入期间插入到底部行的阱抽头。注意：当 `setEndCapMode -boundary_tap true` 时必须指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-bottom_termination_cell",
+      "description": "指定要使用的底部终止单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cell",
+      "description": "指定技术库中用作阱抽头的单元名称。该单元应为 CORE 类型。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-channel_offset",
+      "description": "指定通道中抽头与障碍物之间的偏移值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-check_channel",
+      "description": "指定是否检查障碍物通道。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-column_cell",
+      "description": "指定需要终止的阱抽头列列表。此参数对于终止抽头单元插入是必须指定的。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_rows",
+      "description": "为在版图规划中没有行的阱抽头单元技术位点创建行。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-disable_check_zone_at_boundary",
+      "description": "禁用边界处的检查区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inRowOffset",
+      "description": "指定行中第一个阱抽头与行起始点之间的距离。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-insert_cells",
+      "description": "根据单元、层和间隔插入阱抽头。可以定义多个单元，每个单元用 {} 分隔。每个单元应至少定义一个规则、密集层或边界层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rule",
+      "description": "指定添加阱抽头时要遵守的规则。如果未定义此规则，工具将使用 LEF 规则。如果两者都未指定，工具将报错。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-siteOffset",
+      "description": "指定一个以位点数为单位的偏移值，以便垂直抽头能够感知到。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-tap_function_cells",
+      "description": "定义具有抽头功能的端盖单元。使用抽头功能单元可以减少需要插入的抽头单元数量。定义的端盖单元在抽头单元插入期间被视为抽头功能单元。工具将考虑阱抽头单元与定义的具有抽头功能的端盖单元之间的抽头距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tap_termination_alignment",
+      "description": "指定是否对齐阱抽头和终止单元。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-termination_align",
+      "description": "指定终止单元的对齐方式。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-termination_cell",
+      "description": "指定可用作终止抽头的单元列表。addWellTap 命令从此列表中选择最合适的终止单元，并将其插入到阱抽头列段的顶部和底部。注意：此参数对于终止抽头单元插入是必须指定的。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_tap_cell",
+      "description": "指定在封闭式端盖插入期间插入到顶部行的阱抽头。注意：当 setEndCapMode -boundary_tap 设置为 true 时必须指定此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-top_termination_cell",
+      "description": "指定要使用的顶部终止单元列表。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-vertical_boundary_spacing",
+      "description": "指定抽头单元中心与垂直边界之间的间距。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-well_cut_cell",
+      "description": "指定具有阱切割的单元列表。addWellTap 会考虑指定的单元切割行。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+ungroup(25.10)                                                  ungroup(25.10)
+
+Name
+       ungroup - Ungroups the specified hinsts
+
+Syntax
+       ungroup
+
+       [-help]
+
+       [-check_only]
+
+       <hInst>+
+
+       [-exclude <hinst>+]
+
+       [-flatten]
+
+       [-honor_dont_touch]
+
+       [-threshold <instance_count>]
+
+       [-verbose]
+
+       [-simple  | -prefix <prefix> | -escaped ]
+
+       [-force | -only_user_hierarchy ]
+
+       Ungroups  the  specified  hinsts.  Ungrouping  dissolves the hinsts and
+       moves the contents into its parent directory. By default, an  hinst  or
+       an  inst inside one of the ungrouped hinsts is renamed by concatenating
+       its name to its parent's name with  "_".  for  example,  "ungroup  h1",
+       would rename h1/i1 to h1_i1.  Name collisions are resolved by appending
+       _1,  _2,  etc. until a unique name is found. If a given hinst cannot be
+       ungrouped, a warning is issued about why it cannot be ungrouped.
+
+Parameters
+       -help  Outputs a brief description that includes the type  and  default
+              information for each ungroup.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man ungroup
+
+       <hInst>+
+              Specifies the hinst(s) to be ungrouped.
+
+       -check_only
+              Checks  all constraints on the specified hinsts to be ungrouped.
+              No actual ECO operation takes place.
+
+       -escaped
+              Flattened names use escaped hinst names.
+
+              For example, h1/i1 becomes \h1/i1 in Verilog and h1\/i1 in DEF.
+
+       -exclude <hinst>+
+              Excludes specified hinst(s) as ungroup targets.
+
+       -flatten
+              Ungroups recursively below the specified hinst(s)
+
+       -force Ungroups all hierarchy, mapped or not, and overrides ungroup_al-
+              lowed if it is set to false.
+
+       -honor_dont_touch
+              Skips the hinst that is marked as dont touch.
+
+       -only_user_hierarchy
+              Ungroups only user hierarchy, synthesized module will not be un-
+              grouped.
+
+       -prefix <prefix>
+              Flattened names use a prefix. For example, h1/i1  becomes  <pre-
+              fix>_i1.
+
+       -simple
+              Flattened  names  use  the base_name. For example, h1/i1 becomes
+              i1.
+
+       -threshold <instance_count>
+              Ungroups only those hinsts that have an instance count less than
+              or equal to the specified integer.
+
+       -verbose
+              Prints the names of the hierarchies that are being ungrouped.
+
+Example
+              * The following command will flatten h1, h2/h3. It  will  recur-
+                sively  flatten any lower hinsts that have an inst count <= 10
+                and do not have `cpu' in their name.
+
+                >ungroup {h1 h2/h3}  -exclude  *cpu*  -flatten  -threshold  10
+                -prefix test
+
+              *
+
+                This command ungroups all hinsts matching h1* and uses escaped
+                names  for the flattened names. This is useful so external SDC
+                files that only refer to inst and pin names  will  still  work
+                but  it  may  cause  problems in down-stream tools that do not
+                support escaped names. Note that hpins and hnets of  ungrouped
+                hinsts  will disappear, so usage of those names will no longer
+                work.
+
+                >ungroup h1* -escaped
+
+                An inst named h1/i1 will become h1\/i1.  Various commands like
+                get_cells will still "soft-match" h1/i1 to the escaped  h1\/i1
+                name.
+
+Related Information
+              * group_instance_suffix
+
+              * group
+
+                           Fri Apr 04 01:25:37 2025             ungroup(25.10)

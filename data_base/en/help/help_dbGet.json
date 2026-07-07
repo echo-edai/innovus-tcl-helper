@@ -1,0 +1,75 @@
+{
+  "command": "dbGet",
+  "is_cmd": true,
+  "summary": "Database get.",
+  "description": "Database get.",
+  "usage": "dbGet [-help] [-d] [-u] [-v] [-e] [-i <num>] [-regexp] [-p[<num>]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "Prints out the command usage",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "User specified values and return values are in database units. Default: All values are in user units, in microns.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-u",
+      "description": "Removes duplicate objects from the query results so that the results list contains only unique entries.",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-v",
+      "description": "Return values will be items that do not match the specified <pattern> or <expression> (bool, optional) Example: dbGet -v -p2 top.nets.sWires.layer.name M4 returns list of pointers to sWire objects on layers other than M4",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-e",
+      "description": "For avoiding NULL (0x0) pointers and results from being printed. (bool, optional) This would effect all kinds of outputs. In cases of nested dbGet statements -e option should not be used in the inner dbGet statement. This is an incorrect usage Example : CORRECT USAGE : dbGet -e [dbGet -p2 [dbGet -p top.insts.pStatus fixed].cell.name INV1] If none of the instances have 'fixed' placement status, the outer dbGet will not return a 0x0 but an empty list which TCL would not consider as a list element INCORRECT USAGE : dbGet [dbGet -p2 [dbGet -p -e top.insts.pStatus fixed].cell.name INV1]",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-i",
+      "description": "For selecting a specific element from the list being returned as output -i <num> would select the the <num>th element starting from 0 -i <num> option would also reduce a starting '{' and ending '}' for box and pt type attributes Example : dbGet top.nets.name sum* -p -i 0 would return 1st pointer in the list of the nets whose name matches the pattern sum*",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-l",
+      "description": "return the result with auto-newline",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-regexp",
+      "description": "Uses regular expression <pattern> matching (equivalent to Tcl regexp command) for string/enum attributes. The option does not apply to filtering done using the <expression> method, where the Tcl regexp command can be used directly. Default: Uses simple wild card pattern matching (bool, optional) Example: dbGet -regexp -p top.insts.name M.* returns list of pointers to instances whose name starts with M",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-p",
+      "description": "Specifies the number of levels to traverse back through the specified objects for the query. (-p = 1 level, num indicates 1 or more) (bool, optional) The -p option is used only with either a <pattern> or an <expression> to filter out objects. Example: dbGet -p2 top.nets.sWires.layer.name M4 returns list of pointers to sWire objects on layer M4 {<obj>|<objList>|head|top|selected}[.<objType>]...[.<attrName>|.?|.??|.?h] DB object-hierarchy-string. {<obj>|<objList>|head|top|selected}: Specifies the starting point for the query; .<objType>: Specifies the object type to query. You can specify more than one object in the query; .<attrName>|.?|.??|.?h: Specifies the type of information to return.",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "<pattern>",
+      "description": "Specifies a string expression, numeric value, or boolean to use to match object or attribute names or attribute values (string, optional) Example: dbGet top.nets.name *clk* returns list of pointers to net names that match the *clk* pattern",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<expression>",
+      "description": "Specifies a tcl expression, using dbtcl attributes and objects, to use to match objects which satisfy the tcl expression after replacing the dbtcl attributes and objects values at runtime. (string, optional) Example: dbGet top.nets {.numTerms > 4} returns list of pointers to net objects with greater than 4 connections.",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

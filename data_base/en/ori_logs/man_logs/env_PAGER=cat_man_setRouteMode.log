@@ -1,0 +1,289 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+setRouteMode(25.10)                                        setRouteMode(25.10)
+
+Name
+       setRouteMode  -  Sets  global  parameters for the Early Global Route or
+       earlyGlobalRoute
+
+Syntax
+       setRouteMode
+
+       [-help]
+
+       [-reset]
+
+       [-earlyGlobalEffortLevel {standard | medium | low }]
+
+       [-earlyGlobalHonorMsvRouteConstraint {true|false}]
+
+       [-earlyGlobalNumTracksPerClockWire <value>]
+
+       [-earlyGlobalReverseDirection "( <x1 y1 x2 y2> ) <Metal2:Metal2> (  <x3
+       y3 x4 y4> ) <Metal3:Metal3 ...> "]
+
+       [-earlyGlobalRoutePartitionAllowFeedthru <list_of_ptn_cell_names>]
+
+       [-earlyGlobalRoutePartitionHonorFence <list_of_ptn_cell_names>]
+
+       [-earlyGlobalRoutePartitionHonorPin <list_of_ptn_cell_names>]
+
+       [-earlyGlobalRoutePartitionPinGuide {true|false}]
+
+       [-earlyGlobalRouteSecondPG {true|false}]
+
+       [-earlyGlobalRouteSelectedNetsOnly {true|false}]
+
+       [-earlyGlobalRouteStripeLayerRange {<layerIdx1>:<layerIdx2>}]
+
+       [-earlyGlobalSecondPGMaxFanout< integer>]
+
+       Sets  global parameters for the Early Global Route or earlyGlobalRoute.
+       The parameters that you specify with setRouteMode are then  used  auto-
+       matically  whenever  you run the Early Global Router through the early-
+       GlobalRoute command or internally during in-place optimization,  parti-
+       tioning, or placement.
+
+       The  setRouteMode  command parameter settings affect the results of the
+       Early Global Router, which is run in all the steps during the  preRoute
+       flow.  Consequently,  with  changes  in  these settings, the results of
+       place_opt_design, ccopt_design, and postCTS will change.
+
+       Note: If not required, it is best not to  change  the  tool  technology
+       settings.
+
+       Use  the  getRouteMode  command  to return the current settings for the
+       setRouteMode command.
+
+       Early Global Route supports nested partitions. The partitions specified
+       with the  -earlyGlobalRoutePartitionHonorFence  and  the  -earlyGlobal-
+       RoutePartitionHonorPin  parameters  are routed in the style that honors
+       fence and pin constraints. All other partitions are routed
+
+Parameters
+       -earlyGlobalEffortLevel {standard| medium | low }
+              Specifies the congestion effort level.
+
+              Note: The low effort level value will reduce the  runtime  while
+              standard effort level will increase the congestion accuracy
+
+              * standard: Congestion is more accurate and runtime is larger.
+
+              * medium:   Runtime  will  be much smaller and congestion report
+                will have less accuracy.
+
+              * low: Runtime is faster than medium but less accurate.
+
+              Default: standard
+
+              Note: While the setRouteMode  -earlyGlobalEffortLevel  parameter
+              is mainly used for speed (low and medium will make it faster but
+              less  accurate), the setDesignMode -congEffort parameter is used
+              to increase optimization  effort  to  resolve  congestion.  Even
+              though  these  parameters are not related directly, changing the
+              Early Global Route effort level (decreasing it ) will change the
+              results for the required congestion effort. Hence,  if  you  set
+              the setDesignMode-congEffort as high, it is recommended that you
+              keep the setRouteMode -earlyGlobalEffortLevel parameter at stan-
+              dard (default) level.
+
+              Data_type: enum, optional
+
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each setRouteMode parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man setRouteMode.
+
+       -earlyGlobalHonorMsvRouteConstraint {true | false}
+              Honors MSV domain constraints. This option  is  used  to  decide
+              whether  Early Global Route  should honor power domain settings.
+
+              By default, Early Global Route ignores the power domain settings
+              and routes as flat design. When enabled, Early Global Route hon-
+              ors power domain settings and route wires inside preferred power
+              domain as much as possible.
+
+              Default : false
+
+              Data_type: bool, optional
+
+       -earlyGlobalNumTracksPerClockWire value
+              Specifies the special number of tracks per clock wires.
+
+              Max: 8
+
+              Min: 0
+
+              Default: 0
+
+              Data_type: int, optional
+
+       -reset Restores all parameters modified using setRouteMode to their de-
+              fault settings. The -reset parameter must be the first parameter
+              specified.  If you specify -reset by itself, the software resets
+              all setRouteMode parameters to  their  default  values.  If  you
+              specify  parameters after -reset, the software resets only those
+              parameters to their default values.
+
+              Any values that do not already match the default value  and  are
+              reset will be reported.
+
+       -earlyGlobalReverseDirection
+       Reverses  the  routing  direction  in the given region on the specified
+       layer-range. It specifies an area in  which  the  Early  Global  Router
+       routes wires in the non-preferred direction.
+
+       Note:  You can define the reverse direction routing area by "(<x1 y1 x2
+       y2>)" and routing layer by<  "Metal2:Metal2">.  In  release  16.1,  the
+       Early Global Router only supports a single layer with this option. Con-
+       sequently, <"Metal2:Metal3"> is not supported.
+
+       The  -earlyGlobalReverseDirection parameter only has impact on the con-
+       gestion value calculation. By routing on reverse direction, you can re-
+       duce the routing capacity on the specified layer and  add  extract  re-
+       source  on  the  above  and  below layers. Innovus does not display the
+       routing wires in reverse direction routing region.
+
+       For example, the following command reverses the  routing  direction  in
+       the specified region on layer<Metal3>.
+
+       setRouteMode  -earlyGlobalReverseDirection  "(757.996  542.697  995.323
+       772.5685) Metal3:Metal3"
+
+       The congestion value without reverse direction routing:
+
+       Overflow after earlyGlobalRoute 0.02% H + 0.00% V
+
+       The congestion value with reverse direction routing:
+
+       earlyGlobalRoute overflow: 0.93% H + 0.10% V
+
+       Default: ""
+
+       Data_type: string, optional
+
+       -earlyGlobalRoutePartitionAllowFeedthru <list_of_ptn_cell_names>
+       Specifies the partition cell names for which the  Early  Global  Router
+       honors partition fences.
+
+       Default :  ""
+
+       Data_type: string, optional
+
+       -earlyGlobalRoutePartitionHonorFence <list_of_ptn_cell_names>
+       Honors  partition fences with a single-entry constraint and also honors
+       fixed pins. Under the single-entry constraint once a hierarchical route
+       enters a partition fence it does not  cross  the  boundary  again.  The
+       -earlyGlobalRoutePartitionHonorFence  parameter  routes a net belonging
+       to more than one partition so that the routing does not violate  parti-
+       tion boundaries, in addition to routing intra-partition and global nets
+       using  the  specifications of the partitions. For example, if a net be-
+       longs to partitions P1 and P3, but not P2, the net  is  routed  without
+       going over the P2 partition boundary.
+
+       Notes:
+
+       * For flat partitioned designs, you can specify -earlyGlobalRouteParti-
+         tionHonorFence to simulate channel-based routing. For channelless de-
+         signs, you must perform feedthrough insertion before using this para-
+         meter.
+
+       * Supports designs with up to 180 partitions.
+
+       * Early  Global Route supports nested partitions. The partitions speci-
+         fied with the -earlyGlobalRoutePartitionHonorFence  and  the  -early-
+         GlobalRoutePartitionHonorPin  parameters are routed in the style that
+         honors fence and pin constraints. All  other  partitions  are  routed
+         flat.
+
+       Default :  ""
+
+       Data_type: string, optional
+
+       -earlyGlobalRoutePartitionHonorPin <list_of_ptn_cell_names>
+       Honors  partition  fences with single-entry constraint and pre-assigned
+       pins (pins marked  FIXED ) and assigned pins (pins marked  PLACED ).
+
+       Default: ""
+
+       Data_type: string, optional
+
+       -earlyGlobalRoutePartitionPinGuide {true | false}
+       Honors partition pin guides. It uses the pin guide  statements  in  the
+       floorplan file to guide the routing through partition pin points.
+
+       Note:  Fixed  pins  and  pin guides are only honored when -earlyGlobal-
+       RoutePartitionPinGuide is true.
+
+       Default: true
+
+       Data_type: bool, optional
+
+       -earlyGlobalRouteSecondPG {true | false}
+       Specifies whether the secondary PG pin should be routed  or  not.  When
+       enabled, it routes the pin specified by the setPGPinUseSignalRoute com-
+       mand.
+
+       Default: false
+
+       Data_type: bool, optional
+
+       -earlyGlobalRouteSelectedNetsOnly {true | false}
+       Specifies  that  only the nets that are selected in the database are to
+       be routed.
+
+       Default: false
+
+       Data_type: bool, optional
+
+       -earlyGlobalRouteStripeLayerRange { <layerIdx1>:<layerIdx2>}
+       Specifies the stripe layer range that is routed  to  the  secondary  PG
+       pin.
+
+       Default: " "
+
+       Data_type: string, optional
+
+       -earlyGlobalSecondPGMaxFanout <integer>
+       Specifies the maximum fanout value during secondary PG pin routing.
+
+       Max:INT_MAX
+
+       Min:1
+
+       Default: 2147483647
+
+       Data_type: int, optional
+
+Example
+              * The  following command honors partition fences with single en-
+                try and does not allow crossing other partitions, when  early-
+                GlobalRoute is run:
+
+                setRouteMode -earlyGlobalRoutePartitionHonorFence {.}
+
+                earlyGlobalRoute
+
+              * The  following command honors partition fences with single en-
+                try and also honors placed pins, when earlyGlobalRoute is run:
+
+                setRouteMode -earlyGlobalRoutePartitionHonorPin {.}
+
+                earlyGlobalRoute
+
+              * The following command resets all  setRouteMode  parameters  to
+                their default values:
+
+                setRouteMode -reset
+
+Related Information
+              * getRouteMode
+
+              * earlyGlobalRoute
+
+              * Using  Early  Global  Route for Congestion and Timing Analysis
+                chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2025        setRouteMode(25.10)

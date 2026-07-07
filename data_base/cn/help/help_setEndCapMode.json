@@ -1,0 +1,411 @@
+{
+  "command": "setEndCapMode",
+  "is_cmd": true,
+  "summary": "设置版图边界端盖（EndCap）的插入模式",
+  "description": "该命令用于配置版图边界端盖单元的插入模式。端盖单元是放置在标准单元行（core area）边缘的特殊物理单元，用于确保制造工艺的规则性，例如防止阱（well）和扩散区（diffusion）在边界处悬空，并管理天线效应。此命令提供了大量选项，允许用户为版图的顶部、底部、左侧、右侧边缘以及各个角落指定不同的端盖单元库，并控制其插入行为，如奇偶站点对齐、屏障（break）单元插入、边界抽头（tap）单元生成等。它支持高级工艺节点（如N10、N2）的特定设计规则和流程。",
+  "usage": "setEndCapMode [-help] [-reset] [-antenna_tap_fill_wall_cells {listOfCellNames}] [-avoidTwoSitesCellAbut {true|false}] [-barrier_border_cell_bottom_y <cellNames>] [-barrier_border_cell_top_y <cellNames>] [-barrier_cell_x <cellNames>] [-barrier_cell_xy <cellNames>] [-barrier_cell_y <cellNames>] [-barrier_keepout_from_boundary {value_x value_y}] [-barrier_pitch {x_pitch y_pitch}] [-barrier_termination_bottom_y <cellNames>] [-barrier_termination_top_y <cellNames>] [-barrier_termination_x <cellNames>] [-barrier_y_mode {1|2}] [-bottomEdge <ListOfCellNames>] [-boundary_tap {true|false}] [-boundary_tap_swap_flow {true|false}] [-cells <ListOfCellNames>] [-create_rows {true|false}] [-DoubleHeightIncornerProtrusion {true|false}] [-enable_shrink_physical_cell_flow {true|false}] [-flipY {true|false}] [-incrementalLeftEdge <ListOfCellNames>] [-incrementalRightEdge <ListOfCellNames>] [-insert_nppp_wall {{Wall_Cell} {Wall_Pad}}] [-leftBottomCorner <ListOfCellNames>] [-leftBottomCornerEven <cellName>] [-leftBottomCornerNeighbor <cellName>] [-leftBottomCornerOdd <cellName>] [-leftBottomEdge <cellName>] [-leftBottomEdgeEven <cellName>] [-leftBottomEdgeNeighbor <cellName>] [-leftBottomEdgeOdd <cellName>] [-leftCornerBottomBorder <ListOfCellNames>] [-leftCornerTopBorder <ListOfCellNames>] [-leftEdge <listOfCellNames>] [-leftEdgeBottomBorder <ListOfCellNames>] [-leftEdgeEven <cellName>] [-leftEdgeOdd <cellName>] [-leftEdgeTopBorder <ListOfCellNames>] [-leftTopCorner <ListOfCellNames>] [-leftTopCornerEven <cellName>] [-leftTopCornerNeighbor <cellName>] [-leftTopCornerOdd <cellName>] [-leftTopEdge <cellName>] [-leftTopEdgeEven <cellName>] [-leftTopEdgeNeighbor <cellName>] [-leftTopEdgeOdd <cellName>] [-min_horizontal_channel_width <rowNums>] [-min_jog_height <rowNums>] [-min_jog_width <siteNums>] [-min_vertical_channel_width <siteNums>] [-nppp_wall_pitch <value>] [-nppp_wall_to_FILLWALL_spacing <value>] [-nppp_wall_to_incorner_spacing <value>] [-prefix <endcap-prefix>] [-rightBottomCorner <ListOfCellNames>] [-rightBottomCornerEven <cellName>] [-rightBottomCornerNeighbor <cellName>] [-rightBottomCornerOdd <cellName>] [-rightBottomEdge <cellName>] [-rightBottomEdgeEven <cellName>] [-rightBottomEdgeNeighbor <cellName>] [-rightBottomEdgeOdd <cellName>] [-rightCornerBottomBorder <ListOfCellNames>] [-rightCornerTopBorder <ListOfCellNames>] [-rightEdge <listOfCellNames>] [-rightEdgeBottomBorder <ListOfCellNames>] [-rightEdgeEven <cellName>] [-rightEdgeOdd <cellName>] [-rightEdgeTopBorder <ListOfCellNames>] [-rightTopCorner <ListOfCellNames>] [-rightTopCornerEven <cellName>] [-rightTopCornerNeighbor <cellName>] [-rightTopCornerOdd <cellName>] [-rightTopEdge <cellName>] [-rightTopEdgeEven <cellName>] [-rightTopEdgeNeighbor <cellName>] [-rightTopEdgeOdd <cellName>] [-topBottomEdge <ListOfCellNames>] [-topEdge <ListOfCellNames>] [-useEvenOddSite {none|even|odd}] [-wall_keepout_from_vertical_boundary <macro>] [-wall_offset <macro>] [-wall_pitch <macro>] [-wall_shift_step <macro>] [-wall_to_convex_corner_spacing <macro>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-reset",
+      "description": "将所有或指定选项重置为默认值",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-antenna_tap_fill_wall_cells",
+      "description": "N2 SPR流程的填充墙单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-avoidTwoSitesCellAbut",
+      "description": "避免N10工艺中两个站点的边界单元与内角单元邻接",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-barrier_border_cell_bottom_y",
+      "description": "水平底部边界断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_border_cell_top_y",
+      "description": "水平顶部边界断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_cell_x",
+      "description": "垂直断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_cell_xy",
+      "description": "水平垂直重叠断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_cell_y",
+      "description": "水平断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_keepout_from_boundary",
+      "description": "断开单元在X和Y方向上与边界的保持距离",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_pitch",
+      "description": "断开单元在X和Y方向上的间距值",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_termination_bottom_y",
+      "description": "水平底部终止断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_termination_top_y",
+      "description": "水平顶部终止断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_termination_x",
+      "description": "垂直终止断开单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-barrier_y_mode",
+      "description": "为屏障Y单元插入使用模式1或2",
+      "required": false,
+      "type": "enums"
+    },
+    {
+      "name": "-bottomEdge",
+      "description": "底部边缘带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-boundary_tap",
+      "description": "同时添加端盖单元和抽头单元的新流程",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-boundary_tap_swap_flow",
+      "description": "边界抽头交换流程",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-cells",
+      "description": "为N10工艺指定已在LEF中定义的端盖单元候选列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-create_rows",
+      "description": "为没有行的端盖单元技术站点创建行",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-DoubleHeightIncornerProtrusion",
+      "description": "允许双高度内角单元突出到核心区域",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-enable_shrink_physical_cell_flow",
+      "description": "三星缩小左/右边缘单元流程",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-flipY",
+      "description": "如果站点对称性允许，则在Y方向翻转端盖实例的方向",
+      "required": false,
+      "type": "bool"
+    },
+    {
+      "name": "-incrementalLeftEdge",
+      "description": "左侧边缘带N阱的端盖列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-incrementalRightEdge",
+      "description": "右侧边缘带N阱的端盖列表",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-insert_nppp_wall",
+      "description": "用于NP墙的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomCorner",
+      "description": "左下角带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomCornerEven",
+      "description": "左下角带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomCornerNeighbor",
+      "description": "在R0方向与leftBottomCorner左侧邻接的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomCornerOdd",
+      "description": "左下角带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomEdge",
+      "description": "左下边缘带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomEdgeEven",
+      "description": "左下边缘带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomEdgeNeighbor",
+      "description": "在R0方向与leftBottomEdge右侧邻接的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftBottomEdgeOdd",
+      "description": "左下边缘带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftCornerBottomBorder",
+      "description": "内角的底部边框单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftCornerTopBorder",
+      "description": "内角的顶部边框单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftEdge",
+      "description": "左侧边缘带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftEdgeBottomBorder",
+      "description": "左侧边缘带N阱、底部边界带多晶硅的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftEdgeEven",
+      "description": "左侧边缘带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftEdgeOdd",
+      "description": "左侧边缘带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftEdgeTopBorder",
+      "description": "左侧边缘带N阱、顶部边界带多晶硅的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopCorner",
+      "description": "左上角带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopCornerEven",
+      "description": "左上角带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopCornerNeighbor",
+      "description": "在R0方向与leftTopCorner左侧邻接的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopCornerOdd",
+      "description": "左上角带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopEdge",
+      "description": "左上边缘带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopEdgeEven",
+      "description": "左上边缘带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopEdgeNeighbor",
+      "description": "在R0方向与leftTopEdge右侧邻接的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-leftTopEdgeOdd",
+      "description": "左上边缘带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-min_horizontal_channel_width",
+      "description": "最小水平通道宽度（行数）",
+      "required": false,
+      "type": "uint"
+    },
+    {
+      "name": "-min_jog_height",
+      "description": "最小凹凸高度（行数）",
+      "required": false,
+      "type": "uint"
+    },
+    {
+      "name": "-min_jog_width",
+      "description": "最小凹凸宽度（站点数）",
+      "required": false,
+      "type": "uint"
+    },
+    {
+      "name": "-min_vertical_channel_width",
+      "description": "最小垂直通道宽度（站点数）",
+      "required": false,
+      "type": "uint"
+    },
+    {
+      "name": "-nppp_wall_pitch",
+      "description": "NP墙间距",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-nppp_wall_to_FILLWALL_spacing",
+      "description": "NP墙到填充墙的间距",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-nppp_wall_to_incorner_spacing",
+      "description": "NP墙到内角的间距",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-prefix",
+      "description": "端盖单元的前缀",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomCorner",
+      "description": "右下角带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomCornerEven",
+      "description": "右下角带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomCornerNeighbor",
+      "description": "在R0方向与rightBottomCorner右侧邻接的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomCornerOdd",
+      "description": "右下角带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomEdge",
+      "description": "右下边缘带N阱的端盖单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomEdgeEven",
+      "description": "右下边缘带N阱的端盖单元，偶数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomEdgeNeighbor",
+      "description": "在R0方向与rightBottomEdge左侧邻接的单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightBottomEdgeOdd",
+      "description": "右下边缘带N阱的端盖单元，奇数站点",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightCornerBottomBorder",
+      "description": "内角的底部边框单元",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-rightCornerTopBorder",
+      "description": "内角的顶部边框单元",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

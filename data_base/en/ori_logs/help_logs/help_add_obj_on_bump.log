@@ -1,0 +1,51 @@
+Usage: add_obj_on_bump [-help] {{-cell <string> | -selected | -feedthru } {-relative_pin_layer <layer> | -rect {x1 y1 x2 y2} | -polygon {{x1 y1} {x2 y2}...}}} [-check_only <string> | -write_script <string>] {[-shape <layer>+ ] [-placement_blockage ] [-routing_blockage <layer>+] [-physical_pin <layer>+]} [{-shape <layer>+ } [-check_only <string>] [-incremental ] [-shape_keep_net ]] [-feedthru [-cdl_map_file <string>]]
+
+-help                          # Prints out the command usage
+-cdl_map_file <string>         # output cdl map file for LVS.
+                               # (string, optional)
+-cell <string>                 # Specify the bump cell name to add objects on
+                               # it. (string, optional)
+-check_only <string>           # check if there's shape on the specified bumps
+                               # and output a report file. (string, optional)
+-feedthru                      # Add objects on the bump, which contains TSV
+                               # layer and whose net is feedthrough net.
+                               # (bool, optional)
+-incremental                   # Add shapes in incremental modes. Delete the
+                               # shapes where's no bump and add new shapes on
+                               # the bumps where has no shape. 
+                               # Incremental only checks the shapes on the same
+                               # layer. If first command "add_obj_on_bump
+                               # -shape M1" and the second command
+                               # "add_obj_on_bump -shape DRTSV -incremental",
+                               # the layers are different, so that
+                               # add_obj_on_bump will not delete previous added
+                               # shape on M1. The results of second command
+                               # "add_obj_on_bump -shape DRTSV -incremental" is
+                               # same with command "add_obj_on_bump -shape
+                               # DRTSV". (bool, optional)
+-physical_pin <layer>+         # Specify the layer to add physical pins.
+                               # ((layer)+, optional)
+-placement_blockage            # Add placement blockage on bumps.
+                               # (bool, optional)
+-polygon {{x1 y1} {x2 y2}...}  # Specify point list of polygon to add
+                               # objects.The center of specified polygon
+                               # bounding box align to the center of specified
+                               # bump's cell center. (point_list, optional)
+-rect {x1 y1 x2 y2}            # Specify rectangle to add objects.The center of
+                               # specified rectangle align to the center of
+                               # specified bump's cell center. (box, optional)
+-relative_pin_layer <layer>    # Specify the pin layer of pin shape of
+                               # specified bump. add shape based on specified
+                               # pin shape of bump. ((layer), optional)
+-routing_blockage <layer>+     # Specify the layer to add routing blockages on
+                               # bumps. ((layer)+, optional)
+-selected                      # Add objects on the selected bumps.
+                               # (bool, optional)
+-shape <layer>+                # Specify the layer to add shapes.
+                               # ((layer)+, optional)
+-shape_keep_net                # Keep the net when adding the layer shape.
+                               # (bool, optional)
+-write_script <string>         # specify file name to dump a tcl script for
+                               # adding objects on bumps. With this commands,
+                               # tool will not add objects on bumps directly.
+                               # (string, optional)

@@ -1,0 +1,173 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+get_ccopt_eff...ax_capacitance(25.10)    get_ccopt_eff...ax_capacitance(25.10)
+
+Name
+       get_ccopt_effective_max_capacitance  -  Returns  the  value of the fre-
+       quency-dependent effective  maximum  capacitance  constraint  that  the
+       software will apply at a given pin in the clock tree
+
+Syntax
+       get_ccopt_effective_max_capacitance
+
+       [-help]
+
+       pin | port
+
+       [-delay_corner <corner>]
+
+       [-delay_type {early | late}]
+
+       [-source]
+
+       [-value]
+
+       Returns  the value of the frequency-dependent effective maximum capaci-
+       tance constraint that the software will apply at a  given  pin  in  the
+       clock tree. By default, the software returns the following information:
+
+              * The  actual value of the maximum effective capacitance or con-
+                strained maximum capacitance at the specified pin
+
+              * The source of the constraint
+
+       To annotate a clock period at a point in the clock tree, a new property
+       called clock_period is provided. To aid debugging of clock period prop-
+       agation, the effective or the computed clock period will be  accessible
+       for any given pin in the clock tree by querying the read only property,
+       effective_clock_period. This property lists the set of pins that define
+       the  fastest  effective_clock_period  at  a given pin. Details of these
+       properties are provided below.
+
+Parameters
+       -help  Outputs a brief description that includes type and  default  in-
+              formation  for  each get_ccopt_effective_max_capacitance parame-
+              ter. For a detailed description of the command and  all  of  its
+              parameters, use the man command: man get_ccopt_effective_max_ca-
+              pacitance.
+
+       -delay_corner <corner>
+              Specifies the delay corner of the specified pin for which effec-
+              tive maximum capacitance information is provided.
+
+              By default, if delay corner is not specified, CCOPT uses the CTS
+              primary  corner  as  configured by the primary_delay_corner <de-
+              lay_corner_name>property of  the  set_ccopt_propertycommand.  If
+              this  is not set, it will use the default setup analysis view as
+              configured by the command, set_default_view -setup  <newDefault-
+              SetupView>.
+
+       -delay_type {early | late}]
+              Specifies whether to use early or late half delays.
+
+              When  early is specified, CCOPT uses only early path timing data
+              to calculate effective maximum capacitance,  for  the  specified
+              clock  edge.  When  late is specified, CCOPT uses only late path
+              timing data to calculate effective maximum capacitance, for  the
+              specified clock edge.
+
+              By  default,  if neither early or late are specified, CCOPT will
+              use late half delays to calculate effective maximum capacitance.
+
+       <pin | port>
+              Specifies the pin for which the  effective  maximum  capacitance
+              value is to be returned. This is a required parameter.
+
+       -source
+              Reports the source of the effective maximum capacitance. It is a
+              boolean type. The reported source may be any of the following:
+
+              * library_or_sdc:  Specifies  that the most constraining capaci-
+                tance came from a non-frequency dependent  library  constraint
+                on a library cell pin or SDC override.  This can also apply to
+                clock  roots based on the source_driver property where a clock
+                root can be modeled as a specific type of library cell.
+
+              * freq_dep_library: Specifies that the most constraining capaci-
+                tance value  came  from  a  frequency-dependent  library  con-
+                straint.   As per library_or_sdc, this can also apply to clock
+                roots via library cell modeling.
+
+              * target_max_capacitance: Specifies that the  most  constraining
+                capacitance value came from an explicit target_max_capacitance
+                property value.
+
+              * source_max_capacitance:  Specifies  that the most constraining
+                capacitance value came from the  source_max_capacitance  prop-
+                erty.
+
+              * computed_source_max_capacitance:  Specifies that the most con-
+                straining capacitance value was computed by CCOpt for a  clock
+                root based on a library cell and a transition target.
+
+              For more information about the above properties, use the follow-
+              ing command:
+
+               get_ccopt_property -help <property_name>
+
+       -value Reports the effective maximum capacitance value of the specified
+              pin.
+
+Examples
+              * Use  the  following  command  to return the list of clock tree
+                cells:
+
+                get_ccopt_clock_tree_cells TEST*
+
+                TEST_CONTROL_INST/CPF_LS_101_clk        TEST_CONTROL_INST/g145
+                TEST_CONTROL_INST/g144 TEST_CONTROL_INST/g136 ...
+
+              * Use the following command to return the pins for the specified
+                object:
+
+                get_pins -of_object TEST_CONTROL_INST/g139
+
+                TEST_CONTROL_INST/g139/A1  TEST_CONTROL_INST/g139/A2 TEST_CON-
+                TROL_INST/g139/B TEST_CONTROL_INST/g139/ZN
+
+              * Use the following command to return the source of  the  effec-
+                tive maximum capacitance value:
+
+                get_ccopt_effective_max_capacitance  TEST_CONTROL_INST/g139/ZN
+                -source
+
+                The software returns the following:
+
+                library_or_sdc
+
+              * Use the following command to return the effective maximum  ca-
+                pacitance value:
+
+                get_ccopt_effective_max_capacitance  TEST_CONTROL_INST/g139/ZN
+                -value
+
+                The software returns the following:
+
+                0.0853199996948
+
+Related Information
+              * get_ccopt_property
+
+              * get_ccopt_clock_tree_cells
+
+              * get_pins
+
+              * set_ccopt_property
+
+              * set_default_view
+
+              * The following properties:
+
+                * clock_period
+
+                *
+
+                  effective_clock_period
+
+                *
+
+                  effective_clock_period_sources
+
+       For details, see the CCOpt  Properties  chapter  in  the  Innovus  User
+       Guide.
+
+                           Fri Apr 04 01:2g5e:t3_7cc2o0p2t5_eff...ax_capacitance(25.10)

@@ -1,0 +1,127 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+merge_pg_library(25.10)                                merge_pg_library(25.10)
+
+Name
+       merge_pg_library - Specifies to merge power-grid libraries
+
+Syntax
+        merge_pg_library
+
+       [-help ]
+
+       [-force {true | false}]
+
+       -library_list_file <file_name>
+
+       [-library_prefix <prefix>]
+
+       [-merge_ddv_currents {true |false}]
+
+       [-merge_single_voltage_pgvs {true |false}]
+
+       [-output <directory><_name>]
+
+       [-remove_tech{true | false}]
+
+       [-validate_rail_merge {true | false}]
+
+       Specifies  to  merge  power-grid libraries. Using this command, you can
+       merge multiple same-type power-grid  libraries  into  one  consolidated
+       power-grid library.
+
+Parameters
+        -help Outputs the command usage.
+
+       -force {true | false}
+              Specifies  to  force  merge  PGVs with different resistivity and
+              layers. It uses the technology information of the first library.
+              If multiple tech-only PGVs are specified, it will take the first
+              tech-only PGV definition and the first cell definition.  If  you
+              are  merging  a  tech-only PGV with other PGVs, it will keep the
+              tech-only technology definition and the first cell definition.
+
+              The default value of the parameter is false.
+
+       -library_list_file <file_name>
+              Specifies the file containing the list of libraries.
+
+       -library_prefix <prefix>
+              Specifies a prefix for the generated power-grid library.
+
+       -merge_ddv_currents {true |false}
+              Specifies to merge the tap currents from multiple DDV PGVs  hav-
+              ing  different  voltages.  The parameter can be used during rail
+              analysis to consider multiple single-voltage DDVs for a particu-
+              lar cell like a multi-voltage PGV for that cell.
+
+              The default value of the parameter is false.
+
+              Usage Guidelines:
+
+              This parameter is  applicable  only  for  macro  PGV  generation
+              (-celltype macros).
+
+       -merge_single_voltage_pgvs {true |false}
+              Specifies  to  merge  all  the single voltage PGVs into a multi-
+              voltage PGV for better handling of the library  characterization
+              flow.  This parameter is used in a scenario when you have gener-
+              ated multiple PGVs for different voltages, instead of generating
+              a single multi-voltage PGV that  has  voltage-dependent  capaci-
+              tance.
+
+              The default value of the parameter is false.
+
+       -output <directory_name>
+              Specifies  the  name of the output directory in which power-grid
+              libraries are created. The default is the current working direc-
+              tory.
+
+              Note: If you specify both -output <output_dir> and -library_pre-
+              fix <prefix> parameters, the command generates the  PGV  in  the
+              output_dir directory with PGV name prefix.cl.
+
+       -remove_tech{true | false}
+              Specifies  to remove technology dependency from the specified or
+              merged library. The newly created library will not  contain  the
+              technology information.
+
+              The default value of the parameter is false.
+
+       -validate_rail_merge {true | false}
+              Specifies  to  validate  the  merged PGV in the same way as done
+              when merging PGV during rail analysis. When  this  parameter  is
+              specified,  the  log  file reports error, warning, and info mes-
+              sages if the tool finds any issues during PGV merging. The para-
+              meter allows you to check the PGV  merging  issues  as  reported
+              during rail analysis, without having to run the full design.
+
+              -validate_rail_merge  is  used  only for validation purpose, and
+              the merged PGV is not to be used for analysis.
+
+Examples
+              * The following command merges the power-grid  libraries  speci-
+                fied  in  the merge_lib.list file into one consolidated power-
+                grid library:
+
+                merge_pg_library -library_list_file  "merge_lib.list"  -output
+                ./ -library_prefix "new_merged"
+
+                The content of merge_lib.list file is:
+
+                library1.cl
+
+                library2.cl
+
+                library3.cl
+
+Related Information
+              * set_pg_library_mode
+
+              * set_advanced_pg_library_mode
+
+              * generate_pg_library
+
+              * "Power-Grid  Library  Generation"  in  the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025    merge_pg_library(25.10)

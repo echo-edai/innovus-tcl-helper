@@ -1,0 +1,249 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+route_opt_design(25.10)                                route_opt_design(25.10)
+
+Name
+       route_opt_design  -  Combines  the  routing and post-route optimization
+       flows into a single flow
+
+Syntax
+       route_opt_design
+
+       [-help]
+
+       [-drv]
+
+       [-hold]
+
+       [-ideal_clock]
+
+       [-incremental]
+
+       [-num_paths <number_of_paths>]
+
+       [-opt]
+
+       [-out_dir <directory_name>]
+
+       [-prefix <file_name_prefix>]
+
+       [-route]
+
+       [-setup]
+
+       [-timing_debug_report]
+
+       Combines the routing and post-route optimization flows  into  a  single
+       flow.  The  benefit  of this approach is to interleave the optimization
+       step with routing step. When this command is run, the software performs
+       global and detail routing, setup/hold timing optimization, and DRV fix-
+       ing. The route_opt_design command can be used instead of using two sep-
+       arate commands listed below:
+
+              * routeDesign
+
+              * optDesign -postRoute -setup -hold
+
+       Note: The route_opt_design flow is different from routeDesign  followed
+       by  optDesign -postRoute -setup -hold in that the route_opt_design com-
+       mand performs more optimization during the routing stage.
+
+       The route_opt_design command has parameters to split the  routing  part
+       (-route)  and  the  optimization part (-opt). When these parameters are
+       specified, the flow exits the interleaved mode, and goes  back  to  the
+       traditional  flow with separate commands. This means that route_opt_de-
+       sign -route is equivalent to routeDesign, and route_opt_design -opt  is
+       equivalent to optDesign -postRoute -setup -hold.
+
+       By  default, the optimization step of route_opt_design fixes both setup
+       and hold timing in the interleaved mode with routing. To fix setup tim-
+       ing only, use route_opt_design -setup. When  the  -setup  parameter  is
+       specified,  the  software performs setup timing optimization, and skips
+       hold timing fixing.
+
+       Any partial optimization, using the -drv or -hold parameters cannot  be
+       worked  in  the interleaved mode. Therefore, if any of these parameters
+       are specified, the software redirects to the optDesign -postRoute  com-
+       mand with the specified option.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each route_opt_design parameter.  For  a  detailed
+              description  of  the  command and all of its parameters, use the
+              man command:
+
+              man route_opt_design
+
+       -drv   Fixes the max_cap and max_tran violations by using the postRoute
+              optimization flow. This is equivalent  to  optDesign  -postRoute
+              -drv.
+
+              Note:
+
+              * Ensure that the design is routed before using this parameter.
+
+              * The -drv parameter can only be used with the -opt parameter.
+
+       -hold  When  this  parameter  is specified without -setup, the software
+              exits the interleaved mode, and  fixes  hold  timing  violations
+              with the postRoute optimization flow. This is equivalent to opt-
+              Design -postRoute -hold.
+
+              Note: Ensure that the design is routed before using this parame-
+              ter.
+
+              When  this  parameter is specified along with the -setup parame-
+              ter, either -hold -setup or -setup -hold,  both  the  setup  and
+              hold  timing  violations are fixed in the interleaved mode. This
+              is the default behavior of route_opt_design.
+
+              Note:
+
+              * The  design  should  be  in  the  post  CCOpt  stage  to   use
+                route_opt_design.
+
+              * The -hold and -drv parameters are mutually exclusive.
+
+              * The -hold parameter can only be used with the -opt parameter.
+
+       -ideal_clock
+              Performs timing optimization using ideal clocks instead of prop-
+              agated clocks. Using ideal clocks enables you to optimize timing
+              without  building  a  clock  tree  first, or ignore the existing
+              clock tree, to close ideal timing.  If  this  parameter  is  not
+              specified,  the  software assumes the clock tree has been built,
+              and optimizes timing based on propagated clocks.
+
+       -incremental
+              When specified, performs post-route optimization in  incremental
+              mode.  This parameter is used when route_opt_design is unable to
+              close timing in the first run. It is used to run an  incremental
+              route_opt_design  on  top  of  the first run to further optimize
+              timing.
+
+              By default, both setup and hold  timing  violations  are  fixed.
+              When this parameter is specified in combination with below para-
+              meters, the following types of violations are fixed:
+
+              * -setup: only setup timing violations are fixed.
+
+              * -hold: only hold timing violations are fixed.
+
+              * -drv: only drv violations are fixed.
+
+              Note:
+
+              * This  parameter  is  only  supported once the route_opt_design
+                command has been run.
+
+              * This parameter is mutually exclusive with the -opt and  -route
+                parameters.
+
+              * This  parameter  honors  setOptMode -opt_allow_only_cell_swap-
+                pingtrue setting to  run  DRV/TNS/Power/Hold  optimization  in
+                LEF-safe mode.
+
+       -num_paths <number_of_paths>
+              Specifies the number of timing paths generated in the timing re-
+              port. By default, all timing paths are reported.
+
+       -out_dir <directoryName>
+              Specifies the directory where the software writes timing reports
+              generated when this command runs.
+
+              Default: timingReports
+
+       -opt   When  specified, uses the optDesign -postRoute -setup -hold com-
+              mand and fixes both setup and hold violations for the  postRoute
+              optimization  flow. The software exits the interleaved mode, and
+              skips routing.
+
+              Note: Ensure that the design is routed before using this parame-
+              ter.
+
+               By default, both setup and hold timing violations are fixed. To
+              limit the scope of the optimization, use the -setup, -hold,  and
+              -drv parameters along with -opt parameter.
+
+              Note: The parameters -route and -opt are mutually exclusive.
+
+       -prefix <fileNamePrefix>
+              Specifies a prefix for route_opt_design report file names.
+
+              Default:   <DesignName_DesignStage>,   where   <DesignStage>  is
+              postCTS, or postRoute for route_opt_design.
+
+       -route Specifies that only routing should be done. This  is  equivalent
+              to  routeDesign without performing track optimization in the in-
+              terleaved mode.
+
+              Note: The design should be in the post CCOpt stage.
+
+              Note: The -route parameter and the following parameters are  mu-
+              tually exclusive; -opt, -setup, -hold, and -drv.
+
+       -setup Corrects  setup  violations in the interleaved mode. When speci-
+              fied without the -hold parameter, the software skips the  fixing
+              of hold timing violations.
+
+              Note: The design should be in the post CCOpt stage.
+
+              Note: The -setup and -drv parameters are mutually exclusive.
+
+       -timing_debug_report
+              When specified, generates a machine-readable timing debug report
+              after completing routing and postRoute optimization. This report
+              is used for debugging timing results using the timing debug fea-
+              ture in Innovus.
+
+              Note:  You  can specify the number of paths to be reported using
+              the -num_paths parameter.
+
+Examples
+              * Use the following command to enable  interleaved  track  opti-
+                mization during the routing stage, for fixing setup violations
+                only:
+
+                route_opt_design -setup
+
+              * Use either one of the following commands to enable interleaved
+                track  optimization  during the routing stage, for fixing both
+                setup and hold violations:
+
+                route_opt_design
+
+                or
+
+                route_opt_design -setup -hold
+
+              * Use the following command to exit interleaved track  optimiza-
+                tion mode and perform routing only:
+
+                route_opt_design -route
+
+              * Use  the following command to exit interleaved track optimiza-
+                tion mode and perform postRoute optimization only  for  fixing
+                setup timing:
+
+                route_opt_design -opt -setup
+
+                This  is  equivalent  to  optDesign  -postRoute  or  optDesign
+                -postRoute -setup
+
+              * Use the following command to exit interleaved track  optimiza-
+                tion  mode  and perform postRoute optimization for fixing both
+                setup and hold timing:
+
+                route_opt_design -opt
+
+                This is equivalent to optDesign -postRoute -setup -hold
+
+Related Information
+              * routeDesign
+
+              * optDesign
+
+              * The following topic in the Innovus User Guide
+
+                * Using the route_opt_design Flow
+
+                           Fri Apr 04 01:25:37 2025    route_opt_design(25.10)

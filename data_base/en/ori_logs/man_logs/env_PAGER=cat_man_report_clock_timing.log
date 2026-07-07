@@ -1,0 +1,966 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_clock_timing(25.10)                          report_clock_timing(25.10)
+
+Name
+       report_clock_timing
+
+Syntax
+       report_clock_timing
+
+       [-absolute_compare]
+
+       [-cppr_relative]
+
+       [-latency_greater_than]
+
+       -type [{skew interclock_skew jitter summary latency cppr_stage_count}
+
+             [ [-launch | -capture]
+
+               [-rise | -fall]
+
+               | [-histogram [-histogram_range <interval size>]]
+
+               [-logic_level [-source {clock_root | generated_clock}]]
+
+               ]
+
+             ]
+
+       [-early | -late]
+
+       [-clock <clock_list>]
+
+       [-from_clock <from_clock_list>]
+
+       [-to_clock <to_clock_list>]
+
+       [-from <from_list>]
+
+       [-to <to_list>]
+
+       [-nworst <worst_entries>]
+
+       [-greater_than <lower_limit>]
+
+       [-view <view_name>]
+
+       [-verbose]
+
+       [-format <column_list>]
+
+       [-tcl_list]
+
+       [{> | >>} <filename>]
+
+       Generates  a clock analysis report for the current design. The software
+       generates a separate report for each specified clock or pair of clocks.
+       You specify the clocks using the -clock parameter, and clock pairs  us-
+       ing  the  -from_clock and -to_clock parameters. You can use the -nworst
+       and -greater_than parameters with the -from_clock and -to_clock parame-
+       ters to generate reports with skew to the specified sink pins. You  can
+       use  the  -early and -late parameters to specify the type of skew to be
+       reported.
+
+       Note: To remove common path pessimism from the reported skew,  use  the
+       setAnalysisMode -cppr both command before using the report_clock_timing
+       command.  The report contains a separate column for common path adjust-
+       ment values.
+
+       You can use the report_clock_timing command to perform MMMC based  SSTA
+       analysis.  In MMMC mode, the command reports the latency and clock skew
+       for all individual views. You can use the report_clock_timing -view pa-
+       rameter to report clock timing for a user-specified view.
+
+Parameters
+       {> | >>} <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  <filename> parameter must be the last argument in the list.
+              The <filename> and -tcl_list parameters are mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       -absolute_compare
+              Reports skews with values compared in absolute form.
+
+       -clock <clock_list>
+              Specifies the list of clocks to be reported.
+
+       -cppr_relative
+              Reports the latency in skew reports from the  CPPR  common  pin.
+              When  specified,  the  reports are printed with latency measured
+              from branch point to the register's CK pin. The CPPR value is no
+              longer required in reports.
+
+       -early Uses hold skew to generate the report. Hold skew is the  differ-
+              ence  between  minimum  latency at the start point flip-flop and
+              the maximum latency at the end point flip-flop.
+
+              Default: Uses the setup skew.
+
+       -format <column_list>
+              Specifies which columns to display for path reports, and the or-
+              der in which they should appear.
+
+              For example:
+
+              -format {instance arc pin cell slew load}
+
+              The -format parameter can be used only for latency or  skew  re-
+              ports (-type skew, -type interclock_skew, or -type latency), and
+              if the -verbose parameter is specified.
+
+       -from <from_list>
+              Specifies  the  list of sequential device clock pins or ports to
+              consider as from-pins in the generated report. If any pin in the
+              <from_list> is not a sequential device clock pin, it is replaced
+              with all the sequential device  clock  pins  in  the  transitive
+              fanout  of the named pin. If there are no sequential pins in the
+              transitive fanout of the pin, the software drops  the  pin  from
+              the list and generates a warning message.
+
+       -from_clock <from_clock_list>
+              Specifies  the  list of from-clocks to be used in generating the
+              current interclock skew report. You can use this option only  in
+              an interclock skew report.
+
+              Default:  Report  is  generated  considering all clocks as from-
+              clocks.
+
+       -greater_than <lower_limit>
+              Reports skews with values greater than the lower_limit value.
+
+       -histogram
+              Generates a textual histogram of the latency report.
+
+              The -histogram parameter can be used only when -type latency  is
+              specified. When specified in conjunction with the -clock parame-
+              ter,  the software limits the latency reporting to the specified
+              clocks only. When specified with  the  -greater_than  parameter,
+              the  software  limits the latency reporting to clocks with a la-
+              tency value that is greater than the specified value.
+
+              Note: The -histogram parameter cannot be specified  in  conjunc-
+              tion  with  the  following  parameters: -launch,-capture, -from,
+              -to, -from_clock, -to_clock, -verbose, -nworst.
+
+       -histogram_range <interval_size>
+              Generates the histogram report at the specified  intervals.  The
+              interval  size  specified  must be a positive integer or decimal
+              values.
+
+              For example, if the maximum latency value is 437, and you  spec-
+              ify  -histogram_range  50, the histogram would be generated with
+              intervals of: 0-50, 50-100, 100-150, ... 400-450.
+
+              Note: The unit of <interval_size> will be the same as that  used
+              for generating the timing report.
+
+              This parameter can be used only when the -histogram parameter is
+              specified.
+
+       -late  Uses  setup  skew to generate the report. Setup skew is the dif-
+              ference between the maximum latency at the start point flip-flop
+              and minimum latency at the end point flip-flop.
+
+       -latency_greater_than <<lower_limit>>
+              Reports are filtered based on the specified -type  option.  When
+              specified with:
+
+              * -type  skew  or  interclock_skew: Reports are filtered for la-
+                tency greater than the provided value or depth.
+
+              * -type cppr_stage_count: Reports are filtered for depth greater
+                than the provided value.
+
+       -launch | -capture
+              When specified with -type latency, generates a report of  either
+              the launch latency values (-launch), or the capture latency val-
+              ues (-capture).
+
+              Note: You can specify these parameters only with -type latency.
+
+              Default: -launch
+
+       -logic_level
+              Reports  the levels (the stage count of gates) between the clock
+              root, or generated clock root, and the capturing register.
+
+              The -logic_level parameter can be used only when  -type  latency
+              is specified.
+
+              The  -logic_level  parameter  cannot be specified in conjunction
+              with the following  parameters:  -launch,-capture,  -from,  -to,
+              -from_clock, -to_clock, -verbose, -nworst.
+
+       -nworst <worst_entries>
+              Specifies the number of entries to be reported per clock domain.
+
+              Default: 1
+
+       -rise | -fall
+              Specifies active transition at sequential devices clock pins.
+
+              The -rise and -fall parameters are mutually exclusive and cannot
+              be specified together.
+
+              Note:  You  can specify these parameters only with the -type la-
+              tency parameter.
+
+       -source {clock_root | generated_clock}
+              Reports the latency from either the master clock, or the  gener-
+              ated clock that was derived from it.
+
+              The  -source  parameter  can  be  used only when -logic_level is
+              specified.
+
+              The -source parameter cannot be specified  in  conjunction  with
+              the   following   parameters:   -launch,-capture,   -from,  -to,
+              -from_clock, -to_clock, -verbose, -nworst.
+
+              Default: Reports the latency  from  the  master  clock  (-source
+              clock_root)
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The  -tcl_list and <filename> parameters are mutually exclusive;
+              you cannot specify them together.
+
+       -to <to_list>
+              Specifies the list or collection of sequential device clock pins
+              or ports to be considered for  reporting.  If  any  pin  in  the
+              <to_list>  is  not a sequential device clock pin, it is replaced
+              with all the sequential device  clock  pins  in  the  transitive
+              fanout  of the named pin. If there are no sequential pins in the
+              transitive fanout of the pin, the software drops  the  pin  from
+              the list and generates a warning message.
+
+       -to_clock <to_clock_list>
+              Specifies  the  list  of  to-clocks to be used in generating the
+              current interclock skew report. You can use this option only  in
+              an interclock skew report.
+
+              Default:  Report  is  generated  considering  all  clocks as to-
+              clocks.
+
+       -type {skew interclock_skew jitter summary latency cppr_stage_count}
+              Specifies the type of report to generate. The -type options  are
+              described below:
+
+              * skew:  Reports the skew for all clocks, or for clocks that you
+                specify using the -clock parameter.
+
+              * interclock_skew: Reports the skew between all clocks  (exclud-
+                ing same clock pair) in the design, or between clocks that you
+                specify using the -from_clock and -to_clock parameters.
+
+                Note:  The  skew option can be used to report the previous re-
+                sults that show the missed out same  clock  skew  values  (re-
+                ported using the interclock_skew option).
+
+              * jitter: Reports the difference in late and early arrival times
+                of  a  clock  phase  at a clock end point. When specified, the
+                software generates a clock jitter report  for  one  clock  end
+                point, for each clock in the design.
+
+                You can generate a jitter report for all clocks, or for clocks
+                specified  with the -clock parameter. You can limit the report
+                to a specific clock end point using the -to parameter.
+
+                Note: The report_clock_timing-typejitter option  can  be  used
+                only  when  the  software is in On-Chip Variation (OCV) timing
+                analysis mode. Jitter analysis does not remove any common path
+                pessimism.
+
+              * summary:Generates a summary report  for  each  analyzed  clock
+                that includes the following information:
+
+                * When setup skew is used (-late):
+
+                     *
+
+                       * maximum launch latency
+
+                     *
+
+                       * minimum capture latency
+
+                     *
+
+                       * maximum setup skew
+
+              *
+
+                * When hold skew is used (-early):
+
+                     *
+
+                       * minimum launch latency
+
+                     *
+
+                       * maximum capture latency
+
+                     *
+
+                       * maximum hold skew
+
+              * latency: Reports the network and source latency values for all
+                the clock pins in the design, or for clock pins that you spec-
+                ify using the -clock parameter.
+
+              * cppr_stage_count:The  generated report is arranged in terms of
+                difference of stages from common pin to CK  pin.  The  reports
+                are  generated on the basis of logical CPPR points derived be-
+                tween each pair of phases reaching the launch/capture CK pins.
+                Only same clock pairs (similar to type skew) are  picked.  For
+                example,
+
+                Branch Point  Difference  Depth  Clock Pin
+
+                -------------------------------------------
+
+                inv2/Y
+
+                                          5       r ffc1/CK
+
+                              4           1       f ffc3/CKN
+
+       -verbose
+              Generates  a  report  that contains the full clock path from the
+              clock source to the sink pin (the  clock  pin  of  the  flop  or
+              latch).
+
+              You  can specify the -verbose parameter only for skew or latency
+              reports (-type skew, -type interclock_skew, or -type latency).
+
+              When this parameter is specified in SOCV mode, the  intermediate
+              arrival times of pins are shown as "-" in the report output.
+
+       -view <view_name>
+              Generates a report for the specified analysis view only. You can
+              specify  this  parameter only when the software is in multi-mode
+              multi-corner timing analysis mode.
+
+Examples
+              * The following command reports worst case skew for  all  clocks
+                in a design:
+
+                report_clock_timing -type skew -nworst 4
+
+       Clock: CLK_W_4
+
+       Skew    Latency   Clock Pin
+
+       ----------------------------
+
+               0.150 r   u99/CK
+
+       0.000   0.150 r   u55/CK
+
+       Clock: CLK_W_3
+
+       Skew   Latency   Clock Pin
+
+       -----------------------------
+
+               0.682 r seg3/u9/CK
+
+       0.061   0.621 r seg3/u14/CK
+
+       Clock: CLK_W_2
+
+       Skew    Latency Clock Pin
+
+       -----------------------------
+
+               0.682 r seg2/u9/CK
+
+       0.061   0.621 r seg2/u14/CK
+
+       Clock: CLK_W_1
+
+       Skew    Latency Clock Pin
+
+       ------------------------------
+
+               0.682 r seg1/u9/CK
+
+       0.061   0.621 r seg1/u14/CK
+
+       Here  'r' indicates the transition (r - rise, f - fall) at the reported
+       register clock pin.
+
+              * The   following   command   reports   interclock   skew   with
+                -from_clock, -to_clock, -from, and -to parameters defined:
+
+                report_clock_timing  -type  interclock_skew  -nworst  10 -from
+                CLK4 -to u5/CK -from_clock CLK_W_4 -to_clock CLK_W_4_gen2
+
+       Clocks: CLK_W_4 -> CLK_W_4_gen2
+
+       Skew       Latency Clock Pin
+
+       ------------------------------
+
+                          CLK4
+
+                  0.180 r u99/CK
+
+                          u2/Q
+
+                          u8/Q
+
+       -0.205    0.386 ri u5/CK
+
+       Here 'r' indicates the transition (r - rise, f - fall) at the  reported
+       register  clock  pin.  The 'i' refers to the 'inverted' polarity of the
+       clock signal at the reported register clock pin.
+
+              * The following command reports skew for all clocks in  the  de-
+                sign including common path pessimism removal:
+
+                set_analysis_mode -cppr both
+
+                report_clock_timing -type skew -nworst 10
+
+       Clock: CLK_W_4
+
+       Skew    Latency    CPPR    Clock Pin
+
+       -----------------------------------------
+
+               0.180              r u99/CK
+
+       0.000   0.120       -0.060 r u55/CK
+
+       Clock: CLK_W_3
+
+       Skew     Latency  CPPR    Clock Pin
+
+       -----------------------------------------
+
+                0.818            r seg3/u9/CK
+
+       0.139    0.496 -0.183     r seg3/u14/CK
+
+       Clock: CLK_W_2
+
+       Skew    Latency  CPPR     Clock Pin
+
+       -------------------------------------------
+
+               0.818             r seg2/u9/CK
+
+       0.139   0.496    -0.183   r seg2/u14/CK
+
+       Clock: CLK_W_1
+
+       Skew     Latency   CPPR     Clock Pin
+
+       --------------------------------------------
+
+                0.818              r seg1/u9/CK
+
+       0.139    0.496    -0.183    r seg1/u14/CK
+
+              * The  following  command  generates  a  summary  report for the
+                clock:
+
+                report_clock_timing -type summary -nworst 10 -clock CLK_W_1
+
+       Clock: CLK_W_1
+
+                         Skew    Latency    Clock Pin
+
+       ---------------------------------------------
+
+       Maximum launch latency:   0.818 r    seg1/u9/CK
+
+       Minimum capture latency:  0.000 r    u2/CK
+
+       Maximum skew:             0.818 r    seg1/u9/CK
+
+                         0.322   0.496 r    seg1/u14/CK
+
+       ---------------------------------------------
+
+              * The following command reports the Network and  source  latency
+                values for the clock CLK_W_1:
+
+       report_clock_timing -type latency -nworst 10 -clock CLK_W_1
+
+       Clock: CLK_W_1
+
+       ---Latency---
+
+       Source  Network  Total   Clock Pin
+
+       ---------------------------------------------
+
+       0.000   0.818    0.818   r seg1/u9/CK
+
+       0.000   0.000    0.000   r u2/CK
+
+       --------------------------------------------
+
+              * The  following  command reports the Network and source latency
+                values for the clock GCLK1, as well as the full clock paths:
+
+                report_clock_timing -type latency -verbose -clock CLK_W_1
+
+       Clock: CLK_W_1
+
+       ---Latency---
+
+       Source Network Total Clock Pin
+
+       -----------------------------------------
+
+       0.000 0.818 0.818 r seg1/u9/CK
+
+       Clock latency Path
+
+       Clock Rise Edge 0.000
+
+       = Beginpoint Arrival Time 0.000
+
+       Other End Path:
+
+       -----------------------------------------
+
+       Instance       Arc      Cell     Delay   Clock
+
+       Latency
+
+       ----------------------------------------------
+
+       -            CLK1 ^       -      -       0.000
+
+       seg1/u16     A ^ -> Y ^  CLKBUF   0.111  0.111
+
+       seg1/u17     A ^ -> Y ^  CLKBUF   0.126  0.236
+
+       seg1/u17_a   A ^ -> Y ^  CLKBUF   0.107  0.343
+
+       seg1/and1    B ^ -> Y ^  AND      0.071  0.818
+
+       seg1/u9      CK ^        DFF      0.000  0.818
+
+       ---------------------------------------------
+
+              * When the software is in multi-mode multi-corner timing  analy-
+                sis  mode,  the  software  generates a report for every active
+                analysis view in the design:
+
+                report_clock_timing -type latency
+
+       Clock: EJ_TCK
+
+       Analysis View: hold_view1
+
+       ---Latency---
+
+       Source Network Total Clock Pin
+
+       ------------------------------------------
+
+       0.000 0.000 0.000 r cregister_q_reg_3_/CP
+
+       Clock: EJ_TCK
+
+       Analysis View: hold_view2
+
+       ---Latency---
+
+       Source Network Total Clock Pin
+
+       -----------------------------------------
+
+       0.000 0.000 0.000 r cregister_q_reg_3_/CP
+
+       Clock: EJ_TCK
+
+       Analysis View: setup_view1
+
+       ---Latency---
+
+       Source Network Total Clock Pin
+
+       -----------------------------------------
+
+       0.000 0.000 0.000 r cregister_q_reg_3_/CP
+
+              * Specify the -view parameter to generate a report  only  for  a
+                specific analysis view:
+
+                report_clock_timing -view setup_view1 -type latency
+
+       Clock: EJ_TCK
+
+       Analysis View: setup_view1
+
+       ---Latency---
+
+       Source    Network    Total    Clock       Pin
+
+       ------------------------------------------
+
+       0.000     0.000      0.000    r    cregister_q_reg_3_/CP
+
+       Clock: SI_ClkIn
+
+       Analysis View: setup_view1
+
+       ---Latency---
+
+       Source   Network   Total    Clock        Pin
+
+       -------------------------------------------
+
+       0.000    0.000     0.000     r     cregister_q_reg_13_/CP
+
+              * The following command generates a textual histogram of the la-
+                tency report:
+
+                report_clock_timing -type latency -histogram
+
+                [Delay Chart: CLK4(CLK_W_4_gen2)]
+
+                ***************************************
+
+                Min Delay : 0.778
+
+                Max Delay : 0.778
+
+                Count : 1
+
+                ***************************************
+
+                ---------------------------------------
+
+                Delay    Range
+
+                Min      Max      Count   1
+
+                ----------------------------------------
+
+                0.000  100.000 1          |o
+
+              * The following command generates the histogram report at inter-
+                vals of 0.5:
+
+                report_clock_timing  -type latency -histogram -histogram_range
+                0.5
+
+       [Delay Chart: CLK4(CLK_W_4_gen2)]
+
+       ***************************************
+
+       Min Delay : 0.778
+
+       Max Delay : 0.778
+
+       Count : 1
+
+       ***************************************
+
+       --------------------------------------
+
+       Delay Range
+
+       Min    Max    Count   1
+
+       -------------------------------------
+
+       0.500  1.000  1       |o
+
+       0.000  0.500  0
+
+              * The following command generates a latency report that includes
+                the stage gate counts between  the  clock  root  or  generated
+                clock root, and the capturing register:
+
+                report_clock_timing -type latency -logic_level
+
+       ***************************************************
+
+       Start point:CLK2(CLK_W_4_gen1(CLK_W_3))
+
+       ----------------------------------------------
+
+       Delay   Count   End Point
+
+       1.018   8       seg2/u9/CK r
+
+       1.018   8       seg2/u3/CK r
+
+       0.945   7       seg2/u14/CK r
+
+       ***************************************************
+
+       Start point:CLK3(CLK_W_4_gen2(CLK_W_4))
+
+       ----------------------------------------------
+
+       Delay   Count  End Point
+
+       1.345   8      seg3/u6/CK r
+
+       1.345   8      seg3/u1/CK r
+
+       1.218   7      seg3/u12/CK r
+
+              * The following command generates a latency report starting from
+                the  generated  clock,  and includes the stage gate counts be-
+                tween the generated clock and the capturing register:
+
+                report_clock_timing -type latency -logic_level -source  gener-
+                ated_clock
+
+       ***************************************************
+
+       Start point:CLK2(CLK_W_4_gen1(CLK_W_3))
+
+       ----------------------------------------------
+
+       Delay   Count   End Point
+
+       0.818   8       seg2/u9/CK r
+
+       0.818   8       seg2/u3/CK r
+
+       0.745   7       seg2/u14/CK r
+
+       ***************************************************
+
+       Start point:CLK3(CLK_W_4_gen2(CLK_W_4))
+
+       ----------------------------------------------
+
+       Delay   Count   End Point
+
+       0.845   8       seg3/u6/CK r
+
+       0.845   8       seg3/u1/CK r
+
+       0.718   7       seg3/u12/CK r
+
+              * The following command generates a latency report starting from
+                the  generated clock CLK_W_4_gen2, and includes the stage gate
+                counts between the generated clock and the capturing register:
+
+                report_clock_timing -type latency -logic_level -source  gener-
+                ated_clock -clock CLK_W_4_gen2
+
+       ***************************************************
+
+       Start point:CLK3(CLK_W_4_gen2(CLK_W_4))
+
+       ----------------------------------------------
+
+       Delay   Count    End Point
+
+       0.845   8        seg3/u6/CK r
+
+       0.845   8        seg3/u1/CK r
+
+       0.718   7        seg3/u12/CK r
+
+              * The  following command uses the -format parameter to customize
+                the generated latency report:
+
+                report_clock_timing -type latency -verbose  -format  {instance
+                arc pin cell slew load user_derate}
+
+                Clock: CLK_W_4
+
+                ---Latency---
+
+                Source     Network      Total      Clock Pin
+
+                ---------------------------------------------------------------------------
+
+                0.000      0.152         0.152      r u55/CK
+
+                Clock latency Path
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Other End Path:
+
+                -----------------------------------------------------------------
+
+                Instance    Arc           Pin     Cell   Slew    Load     User
+
+                                                                          Der-
+                ate
+
+                ----------------------------------------------------------------
+
+                -           CLK4 ^        CLK4    -      0.003   0.025    -
+
+                b11          A  ^  ->  Y  ^     Y        BUF     0.131   0.011
+                1.000
+
+                b12         A  ^  ->  Y  ^     Y        BUF     0.117    0.015
+                1.000
+
+                u55           CK   ^           CK       DFF     0.117    0.015
+                1.000----------------------------------------------------------------
+
+              * The following command reports the worst case  jitter  for  all
+                clocks in the design:
+
+                report_clock_timing -type jitter -nworst 2
+
+                *******************************************
+
+                 Report: clock timing
+
+                 -type jitter
+
+                 -setup
+
+                 -nworst 2
+
+                 CRPR analysis: off
+
+                *******************************************
+
+                 Clock: CLK1
+
+                 Jitter   Latency(Late)   Latency(Early)   Clock Pin
+
+                -------------------------------------------------------
+
+                 0.186    0.350 r         0.164 r          i_17/CK
+
+                 0.118    0.227 r         0.109 r          i_15/CK
+
+                 Clock: CLK0
+
+                 Jitter Latency(Late)  Latency(Early)    Clock Pin
+
+                ----------------------------------------------------------
+
+                 0.387  0.508     r    0.120      r      i_5/CK
+
+                 0.178  0.336     r    0.159      r      i_7/CK
+
+              * The  following  command  reports the worst case jitter for the
+                clock CLK1:
+
+                report_clock_timing -type jitter -clock CLK1 -nworst 2
+
+                *******************************************
+
+                 Report: clock timing
+
+                 -type jitter
+
+                 -setup
+
+                 -nworst 2
+
+                 CRPR analysis: off
+
+                *******************************************
+
+                 Clock: CLK1
+
+                 Jitter   Latency(Late) Latency(Early) Clock Pin
+
+                -----------------------------------------------------
+
+                 0.186    0.350    r    0.164    r     i_17/CK
+
+                 0.118    0.227    r    0.109    r     i_15/CK
+
+              * The following command reports the worst case  jitter  for  the
+                specified clock end point:
+
+                report_clock_timing -type jitter -to i_15/CK
+
+                *******************************************
+
+                 Report: clock timing
+
+                 -type jitter
+
+                 -setup
+
+                 -nworst 2
+
+                 CRPR analysis: off
+
+                *******************************************
+
+                 Clock: CLK1
+
+                 Jitter   Latency(Late)  Latency(Early)   Clock Pin
+
+                ----------------------------------------------------------
+
+                 0.118    0.227      r   0.109      r     i_15/CK
+
+                ---Latency---
+
+                Source     Network      Total      Clock Pin
+
+                ---------------------------------------------------------------------------
+
+                0.000      0.152         0.152      r u55/CK
+
+                Clock latency Path
+
+                Clock Rise Edge 0.000
+
+                = Beginpoint Arrival Time 0.000
+
+                Other End Path:
+
+                -----------------------------------------------------------------
+
+                Instance    Arc           Pin     Cell   Slew    Load     User
+
+                                                                          Der-
+                ate
+
+                ----------------------------------------------------------------
+
+                -           CLK4 ^        CLK4    -      0.003   0.025    -
+
+                b11          A  ^  ->  Y  ^     Y        BUF     0.131   0.011
+                1.000
+
+                b12         A  ^  ->  Y  ^     Y        BUF     0.117    0.015
+                1.000
+
+                u55           CK   ^           CK       DFF     0.117    0.015
+                1.000
+
+                ----------------------------------------------------------------
+
+Related Information
+              * setAnalysisMode
+
+              * report_timing
+
+                           Fri Apr 04 01:25:37 2025 report_clock_timing(25.10)

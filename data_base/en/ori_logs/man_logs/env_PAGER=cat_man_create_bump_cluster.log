@@ -1,0 +1,162 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+create_bump_cluster(25.10)                          create_bump_cluster(25.10)
+
+Name
+       create_bump_cluster - Creates bump clusters according to region, layer,
+       pitch, and size
+
+Syntax
+       create_bump_cluster
+
+       [-help]
+
+       [-area {<x1 y1 x2 y2>}]
+
+       [-enclosure {<a b>}]
+
+       -layer <name>
+
+       -pitch {<x y>}
+
+       -size {<n m>}
+
+       [[-type {signal | power | ground}] | [-nets {<net>+}]]
+
+       Creates  bump  clusters  according  to  region, layer, pitch, and size.
+       fcroute can be used to route bump clusters and connect to  IO  pads  or
+       probing pads. Both signal and PG nets are supported. The routing layers
+       are  specified using the fcroute -layerChangeBotLayer and -layerChange-
+       TopLayer parameters.
+
+       The created clusters are defined by a special wire with a single pin in
+       the bump layer and have subclass names (bump_cluster_%d).  The  cluster
+       is a rectangular metal on the bump layer.
+
+       The tool returns an error in the following scenarios:
+
+              * The created bump cluster can cause DRCs:
+
+                Fail to create bump_cluster_"%d" as DRC exists.
+
+              * A different bump cell exists in the area of the bump cluster:
+
+                Fail to create bump clusters as inconsistent bump cell.
+
+       You need to check bump clusters before routing. You can:
+
+              * Delete a cluster using editDelete -subclass:
+
+                editDelete -subclass {<cluster_name>}
+
+                This  deletes  clusters with the specified name. Wildcards can
+                be used in cluster_name.
+
+              * Select a cluster using editSelect -subclass.
+
+                editSelect -subclass {<cluster_name>}
+
+                This selects clusters with the specified name.  Wildcards  can
+                be used in cluster_name.
+
+       You can also delete or select clusters using the GUI.
+
+Parameters
+       -help  Outputs  a  brief description that includes type and default in-
+              formation for each create_bump_cluster parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man create_bump_cluster
+
+       -area {<x1 y1 x2 y2>}
+              Limits the area from which bumps need to be  grouped  into  bump
+              clusters.  The tool creates bump clusters from left to right and
+              bottom to top in this region.
+
+              By default, the entire floorplan area is used for grouping bumps
+              into clusters.
+
+              Data_type: box, optional
+
+       -enclosure {<a b>}
+              Specifies that the distance from  the  bump-array  edge  to  the
+              cluster-metal edge is a in the x direction and b in the y direc-
+              tion.
+
+              a and b are unified in all bump cluster groups.
+
+              Data_type: point, optional
+
+       -layer <name>
+              Specifies  the  metal layer of the cluster. The default layer is
+              the bump layer.
+
+              Data_type: string, required
+
+       -nets {<net>+}
+              Specifies the nets of the bumps to be included in clusters. Only
+              bumps with the same net can be grouped together in a  particular
+              cluster.  The type of the cluster net can be specified using the
+              -type parameter. If -type and -nets are not specified, all  sig-
+              nal and PG nets are considered as bump cluster nets.
+
+              Data_type: (net)+, optional
+
+       -pitch {<x y>}
+              Specifies the <x> pitch and <y> pitch for the bumps in the clus-
+              ter.  Only bumps with the specified bump pitch can be grouped in
+              bump clusters.
+
+              Data_type: point, required
+
+       -size {<n m>}
+              Specifies the <n*m> size of clusters. There are n*m bumps in one
+              cluster.
+
+              Data_type: string, required
+
+       -type {signal power ground}
+              Specifies the type of the bump cluster net. If -type  and  -nets
+              are not specified, all signal and PG nets are considered as bump
+              cluster nets.
+
+              Data_type: enum, optional
+
+Examples
+              *
+
+                The  following  command creates 3x4-sized bump clusters in the
+                specified region:
+
+                create_bump_cluster -area {0 0 80 100} -pitch {3 2} -enclosure
+                {1.5 1} -size {3 4}
+
+                The expected result is as shown below:
+
+                Notes
+
+                * The bumps on the top left of the specified area have a  dif-
+                  ferent  pitch  so are not included in the bump clusters cre-
+                  ated by this command.
+
+                * Both the bump clusters in red-dash squares are  not  created
+                  to prevent DRC issues.
+
+              * The following set of commands route the bump clusters:
+
+                setFlipChipMode -route_bump_cluster true
+
+                fcroute  -type  signal -layerChangeBotLayer AP -layerChangeTo-
+                pLayer AP
+
+Related Information
+              * editDelete
+
+              * editSelect
+
+              * fcroute
+
+              * setFlipChipMode
+
+                           Fri Apr 04 01:25:37 2025 create_bump_cluster(25.10)

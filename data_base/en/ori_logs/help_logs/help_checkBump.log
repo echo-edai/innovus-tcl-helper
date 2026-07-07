@@ -1,0 +1,84 @@
+Usage: checkBump [-help] [-bumpToPinOverlap <inst+>] [-outfile <string>]
+                 [-resetViolationMarker] [-select_violation_bumps] [-selected  | -area {x1 y1 x2 y2}] [-relative_type {embedded_bump inst_pin_port} [[-relative_object {inst_pin_port_list}] [-relative_assignment ] [-relative_offset <x y>]]] [ [[-relative_type {embedded_bump inst_pin_port}] [-bumpToPinPitch {pitch_value {[bump_name] [inst_pin_name [pin_x pin_y]]}}]] | -nets <net+> ] [-bumpToEdgePitch <pitch_value> [-edgeOffset {offset [cornerOffset]}]] [ [[-bumpPitch {pitch_value [bump_name]}] [-bumpToPinPitch {pitch_value {[bump_name] [inst_pin_name [pin_x pin_y]]}}]] | -bumpMaxPitch <max_pitch_value> | -bumpToEdgePitch <pitch_value> ] [-onBumpGrid  [-onBumpGridTolerance <bump_grid_name value>]]
+
+-help                                    # Prints out the command usage
+-area {x1 y1 x2 y2}                      # Check constraints for the bumps in
+                                         # the specific area. If it's used with
+                                         # -bumpPitch, only check the bump
+                                         # pitch for the bumps in the specific
+                                         # area. Otherwise, check the default
+                                         # constraints for the bumps in the
+                                         # specific area. The unit is microns.
+                                         # (box, optional)
+-bumpMaxPitch <max_pitch_value>          # It checks the max center-to-center
+                                         # pitch between neighboring bumps in
+                                         # microns. (float, optional)
+-bumpPitch {pitch_value [bump_name]}     # Checks the center-to-center pitch
+                                         # between bumps. Here: pitch_value
+                                         # represents the center-to-center
+                                         # pitch value in microns. bump_name is
+                                         # the name of the bump. You can check
+                                         # pitch between two or more bumps.
+                                         # Wildcards can be used to specify
+                                         # bump names. If more than two bumps
+                                         # are specified, bump pitch is checked
+                                         # for all possible pairings. In the
+                                         # following example, checkBump checks
+                                         # center-to-center pitch between B1
+                                         # and B2; B1 and B3; B2 and B3:
+                                         # checkBump -bumpPitch {100 {B1 B2
+                                         # B3}} Any illegal pitch is logged as
+                                         # "Bump pitch between B1 and B2 XX <
+                                         # 100.". Note: You can specify pitch
+                                         # checking multiple times in this
+                                         # option. If {bump_name} is specified,
+                                         # -bumpPitch works on the specified
+                                         # bumps. Otherwise, -bumpPitch works
+                                         # on the all bumps in the design or
+                                         # the bumps specified by
+                                         # -selected/-area. (string, optional)
+-bumpToEdgePitch <pitch_value>           # It checks the bump center to guard
+                                         # edge pitch in microns.
+                                         # (float, optional)
+-bumpToPinOverlap <inst+>                # It checks if bump and pins of
+                                         # specified block are overlapped.
+                                         # ((inst)+, optional)
+-bumpToPinPitch {pitch_value {[bump_name] [inst_pin_name [pin_x pin_y]]}}
+                                         # bump-pin pitch checking, support
+                                         # pitch checking multiple times in
+                                         # this option. (string, optional)
+-edgeOffset {offset [cornerOffset]}      # It defines the guard edge shape if
+                                         # it is different with die boundary.
+                                         # (string, optional)
+-nets <net+>                             # It specifies the net names.
+                                         # ((net)+, optional)
+-onBumpGrid                              # It checks if bumps are on bump
+                                         # grids. (bool, optional)
+-onBumpGridTolerance <bump_grid_name value>
+                                         # It specifies the tolerance value
+                                         # when check if bumps are on bump
+                                         # grid. (string, optional)
+-outfile <string>                        # file name (string, optional)
+-relative_assignment                     # It checks the net assignment of bump
+                                         # is equivalent to corresponding
+                                         # relative object. (bool, optional)
+-relative_object {inst_pin_port_list}    # It specifies the inst pin port list.
+                                         # Format is {inst:pin:port ...} and
+                                         # port is int type. (string, optional)
+-relative_offset <x y>                   # It specifies the offset of bump
+                                         # location compared with the
+                                         # corresponding relative object.
+                                         # (point, optional)
+-relative_type {embedded_bump inst_pin_port}
+                                         # It specifies the type of relative
+                                         # object. (enum, optional)
+-resetViolationMarker                    # reset violation markers ignoring
+                                         # other options (bool, optional)
+-select_violation_bumps                  # It automatically selects the
+                                         # violation bumps. (bool, optional)
+-selected                                # Check constraints for selected
+                                         # bumps. If it's used with -bumpPitch,
+                                         # only check the bump pitch for the
+                                         # selected bumps. Otherwise, check the
+                                         # default constraints for the selected
+                                         # bumps. (bool, optional)

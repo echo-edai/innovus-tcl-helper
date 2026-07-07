@@ -1,0 +1,317 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_annotated_check(25.10)                    report_annotated_check(25.10)
+
+Name
+       report_annotated_check - Reports coverage of annotated timing checks
+
+Syntax
+       report_annotated_check
+
+       [-check_type <check_type_list>]
+
+       [-max_line <number>]
+
+       [instance_list]
+
+       [-list_annotated]
+
+       [-list_non_annotated]
+
+       [-view <viewName>]
+
+       [> | >> <filename>[.gz] | -tcl_list]
+
+       Reports coverage of annotated timing checks.
+
+Parameters
+       -check_type <check_type_list>
+              Allows you to specify the check type.
+
+              The  valid  check  types are setup, hold, pulse_width, clock_pe-
+              riod,    clock_gating_setup,    clock_gating_hold,    clock_gat-
+              ing_pulse_width,   data_setup,   data_hold,  recovery,  removal,
+              clock_separation, no_change_setup, no_change_hold, and skew.
+
+       > <filename>
+              When specified with >, writes the report to the  specified  file
+              name. If the file already exists, the software overwrites it.
+
+              When  specified with >>, writes the report to the specified file
+              name. If the file already exists, the software concatenates  the
+              report to the end of the file.
+
+              The  <filename> parameter must be the last argument in the list.
+              The <filename> and -tcl_list parameters are mutually  exclusive;
+              you cannot specify them together.
+
+              Note: To write a compressed report, add the .gz extension to the
+              file name.
+
+              Default:  Report  is  displayed on standard output without being
+              saved.
+
+       instance_list
+              Specifies instance names for which annotations of check arcs are
+              to be reported.
+
+       -list_annotated
+              Lists the detailed annotation information for the following tim-
+              ing checks:
+
+              * setup
+
+              * hold
+
+              * recovery
+
+              * removal
+
+              * pulse-width
+
+              * nochange-setup
+
+              * clock-period
+
+              * skew
+
+              Note: If the  software  is  in  multi-mode  multi-corner  timing
+              analysis mode, you need to specify the -view parameter.
+
+       -list_non_annotated
+              Lists  the timing checks that do not have annotated delay infor-
+              mation. The software checks for the following timing checks:
+
+              * setup
+
+              * hold
+
+              * recovery
+
+              * removal
+
+              * pulse-width
+
+              * nochange-setup
+
+              * clock-period
+
+              * skew
+
+              Note: If the  software  is  in  multi-mode  multi-corner  timing
+              analysis mode, you need to specify the -view parameter.
+
+       -max_line <number>
+              Controls  the number of output lines reported by the -list_anno-
+              tated or list_non_annotated parameter.
+
+       -tcl_list
+              Produces the report in Tcl list format instead of a tabular for-
+              mat. This is useful for integrating timing with custom Tcl func-
+              tions, and also for customizing report generation.
+
+              The -tcl_list and <filename> parameters are mutually  exclusive;
+              you cannot specify them together.
+
+       -view <viewName>
+              Reports  coverage  of  annotated timing checks for the specified
+              analysis view. You can specify  this  parameter  only  when  the
+              software is in multi-mode multi-corner timing analysis mode.
+
+              Default:  Reports annotated timing checks for the default analy-
+              sis view.
+
+Examples
+              * The report_annotated_check command shows the following  report
+                output in simultaneous setup and hold analysis mode:
+
+                tempus> report_annotated_check
+
+                ---------------------------------------------------------------------
+
+                | Check arc type         | Total | Annotated | Not       |Per-
+                centage|
+
+                |                        |       |           | Annotated |Arcs
+                |
+
+                |                         |       |           |           |An-
+                notated |
+
+                |------------------------+-------+-----------+-----------+----------|
+
+                | Setup arcs             | 1642  |  2          |  1640       |
+                0.121803 |
+
+                |  Hold  arcs               |  1642  | 1         | 1641      |
+                0.060901 |
+
+                | Recovery arcs          | 368   |  0          |  368        |
+                0.000000 |
+
+                |  Removal  arcs            |  367   | 1         | 366       |
+                0.272480 |
+
+                | Min pulse width arcs   | 1403  |  0          |  1403       |
+                0.000000 |
+
+                |  Period  arcs             |  6     | 0         | 6         |
+                0.000000 |
+
+                | Clock gating hold arcs | 2     |  0          |  2          |
+                0.000000 |
+
+                +------------------------+-------+-----------+-----------+----------+
+
+                |  All  arcs                |  5430  | 4         | 5426      |
+                0.073665 |
+
+                +-------------------------------------------------------------------+
+
+              * The following command lists down all the annotated  checks  in
+                the f_slow view:
+
+                tempus> report_annotated_check -list_annotated -view f_slow
+
+       ----------------------------------------------------
+
+       Analysis View: f_slow
+
+       +--------------------------------------------------------------------------------------------------------+
+
+       |       Setup       Checks      |                                     |
+       |
+
+       |-------------------------+------------------------+--------------------------+--------------------------|
+
+       | SourceSignal        | RefSignal           | Delays            |  Type
+       |Cond      |View   |
+
+       |--------------------------------+--------------------------------+-------------------+-------------------
+
+       |    DTMF_IN/TDSP_CR/PROG|   DTMF_IN/TDSP_CR/PROG|   0.500:0.500:0.500|
+       setup_rising_clk_rise|RN_EQ_1_AN|f_slow |
+
+       |  BUS_MC_IN/dt_reg_2   |  BUS_MC_IN/dt_reg_2    |                    |
+       |                  |
+
+       |  D  ^                  |  CK  ^                 |                   |
+       |          |       |
+
+       |              DTMF_IN/TDSP_CR/PROG|              DTMF_IN/TDSP_CR/PROG|
+       0.500:0.500:0.500|setup_falling_clk_rise|RN_EQ_1_AN|f_slow |
+
+       |   BUS_MC_IN/dt_reg_2    |  BUS_MC_IN/dt_reg_2   |                   |
+       |          |       |
+
+       |  D  v                  |  CK  ^                 |                   |
+       |          |       |
+
+       +---------------------------------------------------------------------------------------------------------
+
+       +-------------------------------------------------------------------+
+
+       | Check arc type        | Total | Annotated | Not       | Percentage|
+
+       |                       |       |           | Annotated | Arcs      |
+
+       |                       |       |           |           | Annotated |
+
+       |----------------------+-------+-----------+-----------+------------|
+
+       | Setup arcs           | 1642   | 2         | 1640      | 0.121803  |
+
+       | Recovery arcs        | 368    | 0         | 368       | 0.000000  |
+
+       | Min pulse width arcs | 1403   | 0         | 1403      | 0.000000  |
+
+       | Period arcs          | 6      | 0         | 6         | 0.000000  |
+
+       +----------------------+-------+-----------+-----------+------------+
+
+       | All arcs             | 3419   | 2         | 3417      | 0.058497  |
+
+       +-------------------------------------------------------------------+
+
+              * The  following  command lists down all the annotated checks in
+                the f_slow view:
+
+                tempus > report_annotated_check -list_annotated -view f_slow
+
+       ----------------------------------------------------
+
+       Analysis View: f_fast
+
+       +--------------------------------------------------------------------------------------------------------+
+
+       |      Hold       Checks       |                                      |
+       |
+
+       |-------------------------+------------------------+--------------------------+--------------------------|
+
+       |  SourceSignal         | RefSignal           | Delays           | Type
+       |Cond      |View   |
+
+       |--------------------------------+--------------------------------+-------------------+-------------------
+
+       |  DTMF_INST/TEST_INST  |  DTMF_INST/TEST_INST   |   0.400:0.400:0.400|
+       hold_rising_clk_rise |          | f_fast|
+
+       |  RAM_INST/A[5]  ^      |  RAM_INST/CLK  ^       |                   |
+       |          |       |
+
+       |  DTMF_INST/TEST_INST  |   DTMF_INST/TEST_INST   |   0.400:0.400:0.400
+       hold_falling_clk_rise|          | f_fast|
+
+       |  RAM_INST/A[5]  v      |  RAM_INST/CLK  ^       |                   |
+       |          |       |
+
+       +--------------------------------------------------------------------------------------------------------+
+
+       +--------------------------------------------------------------------------------------------------------+
+
+       |      Removal      Checks      |                                     |
+       |
+
+       |-------------------------+------------------------+--------------------------+--------------------------|
+
+       |  SourceSignal         |  RefSignal           | Delays          | Type
+       |Cond      |View    |
+
+       |--------------------------------+--------------------------------+-------------------+------------------|
+
+       |   DTMF_IN/SPI_IN/dflag|    DTMF_IN/SPI_IN/dflag|0.300:0.300:0.300|re-
+       moval_rising_clk_rise|         | f_fast |
+
+       |   N  ^                  |  K  ^                  |                  |
+       |         |        |
+
+       +--------------------------------------------------------------------------------------------------------+
+
+       +--------------------------------------------------------------------+
+
+       | Check arc type         | Total | Annotated | Not       | Percentage|
+
+       |                        |       |           | Annotated | Arcs      |
+
+       |                        |       |           |           | Annotated |
+
+       |----------------------+-------+-----------+-----------+-------------|
+
+       | Hold arcs              | 1642  | 1         | 1641      | 0.060901  |
+
+       | Removal arcs           | 367   | 1         | 366       | 0.272480  |
+
+       | Clock gating hold arcs | 2     | 0         | 2         | 0.000000  |
+
+       +------------------------+-------+-----------+-----------+-----------+
+
+       | All arcs               | 2011  | 2         | 2009      | 0.099453 |
+
+       +--------------------------------------------------------------------+
+
+Related Information
+              * set_annotated_check
+
+              * reset_annotated_check
+
+                           Fri Apr 04 01:25:37 202r5eport_annotated_check(25.10)

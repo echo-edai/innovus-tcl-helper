@@ -1,0 +1,129 @@
+{
+  "command": "check_pg_library",
+  "is_cmd": true,
+  "summary": "对用于轨分析（rail analysis）的电源网格视图（PGV）执行全面检查的命令。",
+  "description": "该命令用于对电源网格库（PGV）执行全面检查，以确保其可用于轨分析。检查内容包括：验证所有PGV视图（Early/IR/EM）是否存在；报告动态PWL和静态电流；对版本、层映射和电阻率参数执行兼容性检查；检查缺失的信息，如温度、qrcTechFile位置等。",
+  "usage": "check_pg_library [-help] <power_library_paths> [-cell_list_file<file>] [-check_compatibility {<PGV1 PGV2 ...>} | -lef_consistency] [-check_parameters] [-integrity_check] [-output <file>] [-list] [-report] [-rule_file <file>] [-skip_signal_net_check {true | false}] [-skip_layer_list_file <filename>] [-summary] [-tap_node_text_dump] [-tech_layers] [-total_currents] [-report_detail_multiple_voltage_cap] [-command_dump] [-metal_density_map]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出命令用法。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "<power_library_paths>",
+      "description": "（必需）指定电源库（.cl）文件的绝对路径。可以同时运行多个电源库文件。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-cell_list_file",
+      "description": "指定一个包含单元列表的文件，将对这些单元执行LEF一致性检查。允许仅对用户定义的单元执行一致性检查。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_compatibility",
+      "description": "检查指定单元库之间的兼容性。检查待合并的库的以下参数是否相同：时间单位、电容单位、版图缩放因子、制造网格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-lef_consistency",
+      "description": "检查指定单元库中单元的LEF一致性。读取LEF和PGV文件，并将给定的LEF文件与PGV生成中使用的LEF文件进行比较。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-check_parameters",
+      "description": "检查指定单元库的以下电气参数：CINT_MIN/MAX, CG_MIN/MAX, RON_MIN/MAX, IDSAT_MIN/MAX, ILEAK_MIN/MAX, IAVG_MIN/MAX, IPEAK_MIN/MAX, ESR_MIN/MAX。对于功率门，还会检查Vds-Ids表的正确趋势。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-integrity_check",
+      "description": "从电源网格库加载所有视图，以确保库包含所需数据。检查是否有任何缺失的文件或视图，以及PGV是否可用于轨分析。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-output",
+      "description": "指定创建电源网格库报告的输出目录名称。默认为当前工作目录。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-list",
+      "description": "列出每个PGV中的PGV和单元。允许确定包含特定单元的PGV库名称，以及确定某个单元是否存在于多个库中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-report",
+      "description": "指定生成电源网格库报告。报告名称为 <<pgvname>>.report。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rule_file",
+      "description": "指定用于参数检查的规则文件名。该文件包含要检查的电气参数列表。必须与 -check_parameters 参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_signal_net_check",
+      "description": "指定跳过信号网的LEF一致性检查。如果只想检查电源和地引脚的LEF一致性，可以使用此参数。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-skip_layer_list_file",
+      "description": "指定一个包含层列表的文件名，在检查PGV和LEF兼容性时忽略这些层。必须与 -check_compatibility 参数一起指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-summary",
+      "description": "为指定单元生成库内容的详细报告，可用于调试目的。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tap_node_text_dump",
+      "description": "为每个接口节点生成抽头电流分布的详细报告。报告名称为 tapNodeDetailReport.txt。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tech_layers",
+      "description": "报告技术层信息和层映射。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-total_currents",
+      "description": "报告每个电源/地网的静态电流，以及每个模式的动态PWL。对于每个模式，报告峰值和平均电流，以及电源网的点数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-report_detail_multiple_voltage_cap",
+      "description": "生成一个电压相关电容表，包含给定电源网格库的详细电容值。电容表文件称为 <<pgv-name>>.cap_table。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-command_dump",
+      "description": "指定将PGV表征期间使用的设置打印到名为 command_list.txt 的文本文件中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-metal_density_map",
+      "description": "在PGV输出目录中生成金属密度图报告文件 (<<pgv-name>>.metal_density)。该文件包含有关宏大小、x和y方向的瓦片数量、金属层ID、层名以及每个瓦片的金属密度值的信息。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

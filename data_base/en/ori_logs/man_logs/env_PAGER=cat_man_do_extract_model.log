@@ -1,0 +1,360 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+do_extract_model(25.10)                                do_extract_model(25.10)
+
+Name
+       do_extract_model  -  Builds  a  Liberty (.lib) format model for the top
+       cell, which is the timing model equivalent of the original design
+
+Syntax
+       do_extract_model
+
+       [-help]
+
+       <model_filename>
+
+       [-abs_tol_val <float>]
+
+       [-abs_tol_val_optimistic <float>]
+
+       [-abs_tol_val_pessimistic <float>]
+
+       [-assertions <constraint filename>]
+
+       [-cell_name <cell_name>]
+
+       [-clock_slews {<clk_slew1 clk_slew2>...}]
+
+       [-format <string>]
+
+       [-gain <integer>]
+
+       [-include_aocv_weights]
+
+       [-include_power]
+
+       [-input_slews {<input_slew1 input_slew2>...}]
+
+       [-lib_name <lib_name>]
+
+       [-max_num_loads <value>]
+
+       [-max_num_slews <value>]
+
+       [-output_loads {<output_load1 output_load2>...}]
+
+       [-per_tol_val <float>]
+
+       [-per_tol_val_optimistic <float>]
+
+       [-per_tol_val_pessimistic <float>]
+
+        [-pg]
+
+       [-precision <integer>]
+
+       [-resolution <float>]
+
+       [-tolerance <float>]
+
+       [-validate <string>]
+
+       [-verilog_shell_file <filename>]
+
+       [-verilog_shell_module <top_module_name>]
+
+       [-view <string>]
+
+       [-check]
+
+       Builds a Liberty (.lib) format model for the top  cell,  which  is  the
+       timing  model equivalent of the original design. The model is extracted
+       for the given analysis modes, PVT conditions, and  parasitics.  If  any
+       one  of  these  parameters will change, then you must extract the model
+       again. The model is extracted for a range of input slews and  load  ca-
+       pacitances.  If you do not specify these ranges, the software automati-
+       cally computes the default values. The extracted model defines  all  of
+       the  top-level ports of the design as pins. Additionally, all other de-
+       sign pins that are targets of  create_clock  or  create_generated_clock
+       are retained as internal pins.
+
+       For model extraction, your design must be properly constrained. For ex-
+       ample,  no clock or data conflicts can be present. Use the check_timing
+       command and correct all errors prior to model extraction.
+
+Parameters
+       -help  Prints out the command usage.
+
+       -abs_tol_val <float>
+              Specifies the absolute tolerance value to  be  used  during  the
+              validation  of the extracted timing model. For more details, re-
+              fer to the compare_model_timing -absolute_tolerance command  op-
+              tion.
+
+              This  parameter  can  be  used only when the -validate option is
+              specified.
+
+              The integer value specified with this option is  read  as  ns/ps
+              depending upon the time unit.
+
+              Default: 10ps
+
+       -abs_tol_val_optimistic <float>
+              Specifies  the  absolute  tolerance  limit for flagging an opti-
+              mistic failure. An optimistic path  violating  the  absolute  as
+              well  as  percentage  tolerance limit will be flagged as FAIL in
+              the compare_model_timing command output report.
+
+              You can use this parameter when the -validate is used with model
+              extraction.
+
+              Default: 10ps
+
+       --abs_tol_val_pessimistic <float>
+              Specifies the absolute  tolerance  limit  for  flagging  a  pes-
+              simistic  failure.  A pessimistic path violating the absolute as
+              well as percentage tolerance limit will be flagged  as  FAIL  in
+              the check_timing_model command output report.
+
+              You can use this parameter when the -validate is used with model
+              extraction.
+
+              Default: 10ps
+
+       -assertions <constraint filename>
+              Dumps  the constraints for a model, which is used in the valida-
+              tion flow.
+
+              Default: model.asrt
+
+       -cell_name <cell_name>
+              Specifies the cell name used in the timing model.
+
+              Default: The name of the top cell to be extracted.
+
+       -check Checks the extracted timing model for any possible  liberty  re-
+              lated issue. When specified, the command displays detailed error
+              and warning messages, and their summary.
+
+       -clock_slews {<clk_slew1 clk_slew2>...}
+              Specifies  a  range  of  slew values used at all clock pins. The
+              list of values must be enclosed by curly braces. If this parame-
+              ter is not specified, the software  automatically  computes  the
+              appropriate values.
+
+       -format <string>
+              Specifies  the format for the extracted model in tlf, dotlib, or
+              syntech.
+
+       -gain <integer>
+              Represents an increase in the number of delay arcs if a  pin  is
+              removed. This option reduces the extracted model size in scenar-
+              ios where removing a pin can result in increased model size. The
+              gain at an internal pin can be defined as:
+
+              (number  of incoming delay arcs * number of outgoing delay arcs)
+              - (number of incoming delay arcs + number of outgoing delay arcs
+
+              If an internal pin has a gain greater than the specified number,
+              then that pin needs to be preserved in order to reduce  the  ex-
+              tracted model size.
+
+              Default: 0
+
+       -include_aocv_weights
+              Writes  the  stage  weight on individual arcs. Before using this
+              option, it is mandatory that the AOCV libraries are read in  and
+              AOCV  analysis is enabled (by using setAnalysisMode -aocv true).
+              The weights written in ETM are not meant to  derate  the  model.
+              Model  itself  will  be containing the derated delays. The stage
+              weight extracted on arcs will be used  to  calculate  the  stage
+              count  of  chip  level  paths  going  across  the ETM. The stage
+              weights in the extracted model are dumped as  user  defined  at-
+              tributes.  This  will  require  defining  two  attributes at arc
+              level.
+
+              * define ("aocv_weight","timing","float");
+
+              * define ("clock_aocv_weight","timing","float");
+
+              The first attribute will be used for combinational  and  trigger
+              arc and will be dumped at arc level as below.
+
+              timing () {
+
+              timing_type : combinational;
+
+              timing_sense : positive_unate;
+
+              aocv_weight : 4;
+
+              }
+
+              The  check  arcs  will be dumped with two separate stage weights
+              for data and clock.
+
+              timing () {
+
+              timing_type : setup_rising;
+
+              aocv_weight : 4;
+
+              clock_aocv_weight : 3;
+
+              }
+
+       -include_power
+              Writes information about power consumed by a block.
+
+       -input_slews {<input_slew1> <input_slew2> ...}
+              Specifies a range of slew values used at all input pins. Enclose
+              the list of values with curly braces. If this parameter  is  not
+              specified,  the  software automatically computes the appropriate
+              values.
+
+       -lib_name <lib_name>
+              Specifies the library name used in the timing model.  Write  ex-
+              tracted  timing  models  in the liberty format by specifying the
+              .lib file suffix.
+
+              Default: The name of the top cell to be extracted.
+
+       -max_num_loads <value>
+              Specifies the maximum number of output load values used for  de-
+              lay arc characterization. A low value of 1 or 2 improves runtime
+              and  memory  usage but may significantly degrade model accuracy.
+              Use this parameter only if the model size  or  model  extraction
+              time is critical.
+
+              Default: 64
+
+       -max_num_slews <value>
+              Specifies  the maximum number of input slews or clock slews used
+              for delay and check arc characterization. Specifying a low value
+              of 1 or 2 improves runtime and memory but may significantly  de-
+              grade  model  accuracy. Using the -max_num_slews parameter has a
+              larger impact on runtime and memory than the -max_num_loads  pa-
+              rameter.  Use this parameter only if the model size or the model
+              extraction time is critical.
+
+              Default: 64
+
+              The max_num_slews and max_num_loads parameters specify only  the
+              maximum  limits on how many slew and load points are chosen. The
+              software scans the gates connected to the input and output ports
+              to calculate the number of points.
+
+       <model_filename>
+              Specifies the name of the output file.
+
+              Avoid problems with rebind by using the -lib_name and -cell_name
+              parameters instead of using the default names.
+
+       -output_loads {<output_load1><output_load2> ...}
+              Specifies a range of load values used at all  output  pins.  En-
+              close  the  list of values by curly braces. If this parameter is
+              not specified, the software automatically computes the appropri-
+              ate values.
+
+       -per_tol_val <float>
+              Specifies the percentage tolerance value to be used  during  the
+              validation  of  extracted ETM. This option can be used only when
+              -validate option is also specified.
+
+              For more details  refer  to  compare_model_timing-percent_toler-
+              ance.
+
+              Default: 5%
+
+       -per_tol_val_optimistic <float>
+              Specifies  the  percentage tolerance limit for flagging an opti-
+              mistic failure. An optimistic path violating percentage as  well
+              as  absolute tolerance limit will be flagged as FAIL in the com-
+              pare_model_timing command output report.
+
+               You can use the this parameter when the -validate is used  with
+              model extraction.
+
+              Default: 5%
+
+       -per_tol_val_pessimistic <float>
+              Specifies  the  percentage  tolerance  limit for flagging a pes-
+              simistic failure. A pessimistic  path  violating  percentage  as
+              well  as absolute tolerance limit will be flagged as FAIL in the
+              compare_model_timing command output report.
+
+              You can use the this parameter when the -validate is  used  with
+              model extraction.
+
+              Default: 5%
+
+       -pg    Allows  power  or ground related pin information to be extracted
+              inside the extracted model.
+
+       -precision <integer>
+              Specifies the floating  point  precision  used  for  the  timing
+              model.
+
+              For  example,  the  floating  point  precision for 3.0089 can be
+              changed as follows: Precision      Data Value in .lib
+
+              4                3.0089
+
+              3                    3.009
+
+              2                    3.01
+
+              1                    3.0
+
+              Default: 4
+
+       -resolution <float>
+              Specifies the magnitude of delay difference that can be  ignored
+              by the extractor.
+
+              Default: 0.001
+
+              Type: Float
+
+       -tolerance <float>
+              Specifies  the accuracy level of extractor in percent. For exam-
+              ple, 5.0 represents a plus or a minus 5.0 percent allowable  er-
+              ror in the extracted model. The higher the tolerance, the faster
+              the extraction time.
+
+              Default: 1.0
+
+              Type: Float
+
+       -validate <string>
+              Validates  the timing model generated for the corresponding view
+              and displays the number of failures corresponding to  setup  and
+              hold checks
+
+       -view <string>
+              Specifies the current active view.
+
+       -verilog_shell_file <filename>
+              Generates  a  Verilog  shell  file  that instantiates the timing
+              model. This parameter is useful for validating  the  model.  Use
+              the  -verilog_shell_module  parameter to specify the name of the
+              top module in this Verilog file.
+
+       -verilog_shell_module <top_module_name>
+              Specifies the top module name of the Verilog shell file.
+
+              Default: test_shell
+
+Examples
+              * The following command builds a .lib model (block.lib) for  the
+                block:
+
+                do_extract_model block.lib
+
+              * The  following  command  creates  the  timing  model  for  the
+                test_model cell belonging to the test_lib library, and  writes
+                the model into the test.lib liberty file:
+
+                do_extract_model  -cell_name test_model -library_name test_lib
+                test.lib
+
+                           Fri Apr 04 01:25:37 2025    do_extract_model(25.10)

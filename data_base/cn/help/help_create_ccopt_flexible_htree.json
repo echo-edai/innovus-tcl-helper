@@ -1,0 +1,165 @@
+{
+  "command": "create_ccopt_flexible_htree",
+  "is_cmd": true,
+  "summary": "创建一个灵活的时钟树H型结构",
+  "description": "该命令用于在EDA（Cadence Innovus）工具中创建一个灵活的时钟树H型结构（Flexible H-tree）。它允许用户通过指定各种参数来定义H-tree的拓扑、驱动单元、接收端（sink）的布局方式（如手动指定区域或自动生成网格）、极性控制、功耗权衡等，以优化时钟网络的时序、功耗和面积。该命令支持多种模式，包括基于设计规则约束（DRV）的驱动插入模式，并可以处理分区边界和对称性要求。",
+  "usage": "create_ccopt_flexible_htree [-help] [-adjust_sink_grid_for_aspect_ratio <string>] [-auto_sinks_sink_area <string>] [-final_cell <libCell/ptnCell>] [-image_directory <string>] -name <string> [-partition_boundary_polarity {non_inverting inverting ignore}] -pin <instTerm|term|hInstTerm>+ [-sink_grid_box <string>] [-sink_grid_exclusion_zones {string1 string2 ...}] [-sink_grid_sink_area <string>] {[-sinks {string1 string2 ...}] [-sink_grid <string>] [-auto_sinks <string>]} [ -layer_density <float> ] [ -hv_balance <string> ] [ -inverting ] [ -omit_symmetry <string> ] [ -power_weight <float> ] [ -stop_at_sdc_clock_roots ] [ -sinks {string1 string2 ...} ] [ -max_driver_distance <string> [ -max_root_distance <string> ]] [ -partition_groups <string> ]  [ -sink_instance_prefix <string> ] [ -mode <string> ] [-trunk_cell <libCell/ptnCell> ] [-sinks {string1 string2 ...} | -auto_sinks <string>] [ -sink_grid <string> | -auto_sinks <string>] [-hv_balance <string>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-adjust_sink_grid_for_aspect_ratio",
+      "description": "如果为true，则根据接收端网格框（若指定）或版图的宽高比调整接收端网格",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-auto_sinks",
+      "description": "指定每个分区层次化实例和顶层实例的接收端矩形数量",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-auto_sinks_sink_area",
+      "description": "描述自动计算的接收端矩形初始宽度和高度的近似尺寸 {宽度 高度}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-final_cell",
+      "description": "用于H-tree接收端的库单元（必须是缓冲器或反相器）",
+      "required": false,
+      "type": "libCell/ptnCell"
+    },
+    {
+      "name": "-hv_balance",
+      "description": "指定水平与垂直走线是否只能与同方向的走线进行平衡（true，默认），或任何走线都可以与任何其他走线平衡（false）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-image_directory",
+      "description": "写入图像文件的目录名称",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inverting",
+      "description": "指定该H-tree是否对其输入进行反相",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layer_density",
+      "description": "在DRV模式下，用于基于顶层网络的非默认规则计算H-tree网络在H-tree综合期间时序估计的寄生参数时假定的层密度（默认1.0）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-max_driver_distance",
+      "description": "在距离模式下，连接H-tree驱动器的网络的最大长度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_root_distance",
+      "description": "在距离模式下，连接根节点和H-tree第一个驱动器的网络的最大长度",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mode",
+      "description": "指定驱动器插入模式（默认'drv'）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "灵活H-tree的名称",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-omit_symmetry",
+      "description": "省略创建对称驱动器和/或分支以平衡H-tree",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-partition_boundary_polarity",
+      "description": "时钟信号在进入分区时相对于源端的极性",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-partition_groups",
+      "description": "在无通道设计中分区被聚类到的组。嵌套列表表示组之间允许的交叉",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "在其下创建H-tree的输出引脚或端口",
+      "required": true,
+      "type": "instTerm|term|hInstTerm+"
+    },
+    {
+      "name": "-power_weight",
+      "description": "指定功耗权重（默认1.0）",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-sink_grid",
+      "description": "指定H-tree接收端网格的列数和行数 {列 行}，如果-adjust_sink_grid_for_aspect_ratio为true，列和行可能会互换",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_grid_box",
+      "description": "描述H-tree接收端网格应覆盖区域的方框 {xmin ymin xmax ymax}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_grid_exclusion_zones",
+      "description": "描述不应被H-tree接收端网格覆盖区域的方框列表 {xmin ymin xmax ymax}",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-sink_grid_sink_area",
+      "description": "描述网格中每个H-tree接收端最终单元（由-final_cell给出）有效位置的矩形近似尺寸 {宽度 高度}",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_instance_prefix",
+      "description": "用于H-tree接收端最终单元（由-final_cell给出）的实例名称前缀",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sinks",
+      "description": "将H-tree接收端指定为最终单元（由-final_cell给出）位置的近似矩形区域，或要连接到的引脚。嵌套列表表示聚类关系。列表格式为 {引脚 | {xmin ymin xmax ymax}}",
+      "required": false,
+      "type": "list"
+    },
+    {
+      "name": "-stop_at_sdc_clock_roots",
+      "description": "在为H-tree接收端定义生成时钟树时，在遇到SDC时钟根节点时停止搜索时钟树部分",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-trunk_cell",
+      "description": "用于H-tree内部的库单元（必须是缓冲器或反相器）",
+      "required": false,
+      "type": "libCell/ptnCell"
+    }
+  ]
+}

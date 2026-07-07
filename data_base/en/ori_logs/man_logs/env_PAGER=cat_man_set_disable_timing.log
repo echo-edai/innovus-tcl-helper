@@ -1,0 +1,90 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_disable_timing(25.10)                            set_disable_timing(25.10)
+
+Name
+       set_disable_timing  - Disables timing propagation through the specified
+       arcs, or a collection of instance-specific arcs that are created  using
+       the get_arcs command
+
+Syntax
+        set_disable_timing
+
+       [-from <pin_name> -to <pin_name>]
+
+       <object_list>
+
+       Disables timing propagation through the specified arcs, or a collection
+       of instance-specific arcs that are created using the get_arcs command.
+
+Parameters
+       -from <pin_name>-to <pin_name>
+              Specifies  the arc that is to be disabled. Specify the -from and
+              -to options together.
+
+              You can specify the -from  and  -to  parameters  when  the  <ob-
+              ject_list>  contains  instance  or  library cell objects. Do not
+              specify the -from and -to parameters when the <object_list>  in-
+              cludes instance pin or library cell pin objects.
+
+              The  -from  and  -to options are optional. If not specified, all
+              cell arcs found in the instance or library cell objects are dis-
+              abled.
+
+       object_list
+              Specifies the instance, instance pin, library cell, library cell
+              pin objects, collection of library arcs, or collection of timing
+              arcs.
+
+              If the <object_list> includes instance pin or library  cell  pin
+              objects, all cell arcs attached to the specified pin objects are
+              disabled.
+
+              If  the <object_list> contains instance or library cell objects,
+              and the -from and -to parameters are  not  specified,  all  arcs
+              found in the specified instance or library cell objects are dis-
+              abled.
+
+Examples
+              * The  following command disables the arcs that lead to the out-
+                put pins of the i1, i2, and i3  instances.  Note  that  timing
+                checks  at  the  inputs  of  i1,  i2, and i3 are still active.
+                set_disable_timing [get_cells {i1 i2 i3}]
+
+              * The following command disables the arc from pin B to pin Z  in
+                the  i1  and  i2 instances, and the arc from pin A to pin Z in
+                the i3 instance: set_disable_timing -from B -to  Z  [get_cells
+                {i1 i2}]
+
+                set_disable_timing -from A -to Z [get_cells {i3}]
+
+              * The  following example disables timing check arcs from pin CLK
+                to pin D of the ff1 instance: set_disable_timing -from CLK -to
+                D [get_cells ff1]
+
+              * The following example disables the outgoing cell arcs from in-
+                stance input pin i1/B: set_disable_timing [get_pins i1/B]
+
+              * The following example disables all arcs found in any instances
+                whose reference cell is AN2: set_disable_timing [get_lib_cells
+                AN2]
+
+              * The following example disables a collection of timing arcs:
+
+                set  arcs  [get_lib_arcs  -from  typical/MX2X1/S0  -to   typi-
+                cal/MX2X1/Y]
+
+                set_disable_timing [index_collection $arcs 3]
+
+              * The  following example disables arcs created using filter_col-
+                lection on library timing arcs:
+
+                set arc [filter_collection $arcs {when == "((A)&(!(B)))"}]
+
+                set_disable_timing $arc
+
+Related Information
+              * report_timing
+
+              * reset_disable_timing
+
+                           Fri Apr 04 01:25:37 2025  set_disable_timing(25.10)

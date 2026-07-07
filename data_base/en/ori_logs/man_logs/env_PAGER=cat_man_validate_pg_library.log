@@ -1,0 +1,318 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+validate_pg_library(25.10)                          validate_pg_library(25.10)
+
+Name
+       validate_pg_library - Specifies to validate a macro PGV
+
+Syntax
+       validate_pg_library
+
+       [-help]
+
+       [-activity <value>]
+
+       -cell<cell_name>[-clock {<clk1> <clk2> ...}]
+
+       [-disable_rail_analysis {true | false}]
+
+       [-dynamic_analysis_duration <value>]
+
+       [-enable_xp {true | false}]
+
+       [-extraction_include_file <filename>]
+
+       -extraction_tech_file <tech_file_path>
+
+       [-frequency <value>]
+
+       [-input_pin_set_case_analysis_low {<pin1> <pin2> ...}]
+
+       [-input_pin_set_case_analysis_high {<pin1> <pin2> ...}]
+
+       [-liberty <liberty_file>
+               ]
+
+       [-max_ir_drop <value>]
+
+       [-net_capacitance <value>]
+
+       [-output <output_dir>]
+
+       [-pin_capacitance <value>]
+
+       -power_grid_library_path <pgv_path>
+
+       [-power_grid_library_view <view_name>]
+
+       [-power_pad_size <value>]
+
+       [-rail_analysis_type {static | dynamic}]
+
+       [-sdc_file <filename>]
+
+       [-set_power_switching_pattern <trigger_file>]
+
+       [-set_total_power <value>]
+
+       [-step_size <value>]
+
+       [-supply_voltage <value>]
+
+       -tech_lef_file <tech_lef_file_path>
+
+       [-transition_time <time>]
+
+       [-power_include_file <filename>]
+
+       [-rail_include_file_begin <filename>]
+
+       [-rail_include_file_end <filename>]
+
+       [-rail_trigger_switching_pattern <pattern>]
+
+       [-temperature <value>]
+
+       [-twf_path <twf_location>]
+
+       [-user_defined_ploc_file<filename>]
+
+       [-pgv_mode_dynamic_switch_pattern <pattern]>
+
+       Specifies  to  validate  a macro PGV. The command takes a macro PGV and
+       Liberty file as input, and performs IR Drop based validation by running
+       static and dynamic power and rail analysis. In this flow, Library  Gen-
+       eration  will read the input PGV and generate a dummy DEF file that has
+       an instance of the macro (one-cell design). It will then run static/dy-
+       namic power and rail analysis on this design. You can analyze the power
+       and rail results to check for hotspots, connectivity, and current  dis-
+       tribution inside the PGV.
+
+Parameters
+       -help  Outputs the command usage.
+
+       -activity <value>
+              Specifies the activity value for input pins. If not specified, a
+              default activity of 0.2 is used. The activity specifies the num-
+              ber of times an input pin switches in a clock cycle.
+
+       -cell<cell_name >
+              Specifies the name of the cell to be validated.
+
+       -clock {<clk1> <clk2> ...}
+              Specifies the list of clock pins.
+
+       -disable_rail_analysis {true | false}
+              Specifies  to disable rail analysis during macro PGV validation.
+              The following is the  behavior  of  -disable_rail_analysis  true
+              with the -enable_xp parameter:
+
+              * if  -enable_xp  is  set  to true, the tool will run only power
+                analysis in the XP mode
+
+              * if -enable_xp is set to false, the tool will enable only power
+                analysis in the non-XP or normal mode
+
+              Default: false
+
+       -dynamic_analysis_duration <value>
+              Specifies the simulation period that dynamic power analysis will
+              use. It is the duration for which a window is selected for  cal-
+              culation  of IR drop during power analysis. The default value is
+              10ns.
+
+       -enable_xp {true | false}
+              Specifies to validate the macro PGV in the extensively  parallel
+              (XP) mode.
+
+              Default: false
+
+       -extraction_include_file <filename>
+              Specifies  the extractor (ZX) commands and variables in the form
+              of an include file. This parameter is applicable  only  for  the
+              standalone   report  generation  flow  in  the  XP  mode  (vali-
+              date_pg_library -enable_xp true).
+
+       -extraction_tech_file <tech_file_path>
+              Specifies the path of the extraction technology file.
+
+       -frequency <value>
+              Specifies the clock frequency. The default value is 100Mhz.
+
+       -input_pin_set_case_analysis_low {<pin1> <pin2>...}
+              Specifies the list of pins to be kept  at  a  logical  low.  The
+              set_case_analysis command in the SDC file will have the same ef-
+              fect as the set pin to constant value command described here.
+
+       -input_pin_set_case_analysis_high {<pin1> <pin2>...}
+              Specifies  the  list  of  pins to be kept at a logical high. The
+              set_case_analysis command in the SDC file will have the same ef-
+              fect as the set pin to constant value command described here.
+
+       -liberty <liberty_file>
+              Specifies the name of the Liberty file for power calculation.
+
+              This parameter is optional for the static power  analysis  flow,
+              and  is  mandatory  for  the dynamic power analysis flow. In the
+              static flow, you need to specify  either  -liberty  or  -set_to-
+              tal_power.  If  both  the parameters are specified, the -set_to-
+              tal_power parameter will be honored.
+
+       -max_ir_drop <value>
+              Specifies the maximum IR drop allowed. Default is 5 (in percent-
+              age).
+
+       -net_capacitance <value>
+              Specifies the value of the net capacitance. The default value is
+              1pF.
+
+       -output <output_dir>
+              Specifies the name of the output directory. This directory saves
+              the power and rail reports, and the design output (such as .lef,
+              .def, and so on).
+
+       -pgv_mode_dynamic_switch_pattern <pattern>
+              Specifies the switching patterns for the functional modes in the
+              dynamic power calculation flow. The use model of this  parameter
+              is same as the set_power -dynamic_switch_pattern parameter.
+
+              In  the following example, the mode write will switch in the 1st
+              clock cycle, the mode read will switch in the 2nd and 4th  clock
+              cycles,  and  none of the modes will switch in the 3rd clock cy-
+              cle:
+
+              validate_pg_library  -pgv_mode_dynamic_switch_pattern  {   write
+              read - read }
+
+       -pin_capacitance <value>
+              Specifies the value of the pin capacitance. The default value is
+              1pF.
+
+       -power_grid_library_path <pgv_path>
+              Specifies the path of the power-grid library file.
+
+       -power_grid_library_view <view_name>
+              Specifies the power-grid view name.
+
+       -power_include_file <filename>
+              Specifies  a  power  analysis  include file. This file specifies
+              certain commands of the dynamic engine that do not have a Voltus
+              equivalent. This parameter is applicable  only  to  the  dynamic
+              power analysis flow.
+
+       -power_pad_size <value>
+              Specifies the distance between two adjacent DEF voltage sources.
+              The default value is 50 (in Micron).
+
+       -rail_analysis_type {static | dynamic}
+              Specifies  whether  static or dynamic analysis will be done. The
+              default value is static.
+
+       -rail_include_file_begin <filename>
+              Provides a file that includes additional rail  options that will
+              be run prior to the analyze command. This can be used for  those
+              legacy  rail analysis commands that do not have a Voltus equiva-
+              lent.
+
+       -rail_include_file_end <filename>
+              Provides a file that includes additional rail  options that will
+              be run after the analyze command. This can  be  used  for  those
+              legacy  rail analysis commands that do not have a Voltus equiva-
+              lent.
+
+       -rail_trigger_switching_pattern <pattern>
+              Default: None
+
+              Specifies a dynamic trigger file. When a Macro EM view with cur-
+              rent signature is used in a design, it needs  to  be  determined
+              when  this  block/cell is triggered. The dynamic trigger file is
+              used to determine this. The use model of this parameter is  same
+              as the set_rail_analysis_mode -dynamic_trigger_file parameter.
+
+       -sdc_file <filename>
+              Specifies the name of the timing constraints file.
+
+       -set_power_switching_pattern <trigger_file>
+              Default: None
+
+              Specifies  the  stimulus  pattern on the pins of an instance and
+              cell. Specify this parameter only in the dynamic  mode  for  the
+              type  instance and cell. The use model of this parameter is same
+              as the set_power -dynamic_switch_pattern parameter.
+
+       -set_total_power <value>
+              Specifies the total power for the design in Watts. This power is
+              distributed based on cell area.
+
+       -step_size <value>
+              Specifies the simulation step size, in picoseconds. The  default
+              value  is 20ps. This parameter is applicable only to the dynamic
+              power analysis flow.
+
+       -supply_voltage <value>
+              Specifies the voltage of each  power  supply  pin.  The  default
+              value is 1V.
+
+       -tech_lef_file <tech_lef_file_path>
+              Specifies the path of the technology LEF file.
+
+       -temperature <value>
+              Sets  the  temperature for static power calculation. The default
+              is 125 degrees.
+
+       -transition_time <time>
+              Specifies the transition time for specific pins or instances  in
+              the  design.  This  parameter  is applicable only to the dynamic
+              power analysis flow.
+
+       -twf_path <twf_location>
+              Specifies the location of the Timing Window File (TWF) for noise
+              and power calculation.
+
+       -user_defined_ploc_file<filename>
+              Specifies the name of a file containing  net  names  and  corre-
+              sponding  user-defined  ploc  or  power  pad files (.pploc). The
+              .pploc file includes power pin or voltage source  locations  for
+              power  and  ground nets. The parameter gives you the flexibility
+              to  include  either  user-specified  or  tool-generated  voltage
+              sources.
+
+              The  following  is a sample file with the list of nets and power
+              pad files:
+
+              ----ploc.list----
+
+              #<NET_NAME> <Pointer to ploc file>
+
+              VDD   input/ploc/VDD.pploc VDDA  input/ploc/VDDA.pploc VDDF  in-
+              put/ploc/VDDF.pploc VSS   input/ploc/VSS.pploc
+
+              When specified, the voltage source location  files  (.pploc)  in
+              the  given <ploc.list> file will be used for library generation.
+              If the pploc file is missing for a few nets in  the  <ploc.list>
+              file, then library generation will automatically generate .pploc
+              for those nets.
+
+Examples
+              * The  following command specifies to validate the cell cell1 by
+                running static power and rail analysis:
+
+                validate_pg_library -cell cell1 -liberty 125c.lib -clock {CLKW
+                CLKR}   -power_grid_library_path    macros_cell.cl    -extrac-
+                tion_tech_file  caps.tch -tech_lef_file tech.lef -output vali-
+                date_pg_output_static -rail_analysis_type static
+
+              * The following command specifies to validate the cell cell1  by
+                running dynamic power and rail analysis
+
+                validate_pg_library -cell cell1 -liberty 125c.lib -clock {CLKW
+                CLKR} -power_grid_library_path macros_cell.cl -temperature 122
+                -extraction_tech_file caps.tch -tech_lef_file tech.lef -output
+                validate_pg_output_dynamic -rail_analysis_type dynamic
+
+Related Information
+              * check_pg_library
+
+              * "Power-Grid  Library  Generation"  in  the Voltus IC Power In-
+                tegrity Solution User Guide
+
+                           Fri Apr 04 01:25:37 2025 validate_pg_library(25.10)

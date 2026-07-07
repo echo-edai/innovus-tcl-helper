@@ -1,0 +1,106 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+define_parameter(25.10)                                define_parameter(25.10)
+
+Name
+       define_parameter - Provides variation information to Tempus
+
+Syntax
+       define_parameter
+
+        [-help]
+
+       [<setup | hold>]
+
+        [-correlation <string>]
+
+       [-distribution <string>]
+
+        [-moments <string>]
+
+        [-name <string>]
+
+        [-range <string>]
+
+       [-related <string>]
+
+        -scope <string>
+
+        [-view <string>]
+
+       Provides  variation information to Tempus. You can directly specify the
+       range information and Tempus will internally calculate moments and  use
+       it for wire variation calculation.
+
+Parameters
+       -help  Prints out the command usage.
+
+       setup | hold
+              Defines parameter that is valid for setup or hold.
+
+       -correlation <<string>>
+              Specifies  correlation  between different parameters of the same
+              scope - parameters need to be pre-defined.
+
+       -distribution <<string>>
+              Specifies the parameter distribution. You can also use  user-de-
+              fined distribution.
+
+       -moments <<string>>
+              Specifies the parameter moments - mean or std-dev.
+
+       -name <<string>>
+              Specifies the name of the parameter.
+
+       -range <<string>>
+              Specifies the parameter minimum or maximum range - min or max.
+
+       -related <<sting>>
+              Specifies  the  related  information  on  sub-scope of parameter
+              within the specified -scope.
+
+              For back end-of-line (BEOL), the allowed arguments are:
+
+              * <layer  name>: capacitance
+
+              * <layer name>:resistance
+
+       -scope <<string>>
+              Specifies the  parameter  scope  -  vtskew,  wire_variation,  or
+              via_variation.
+
+       -view <<string>>
+              Specifies the view name.
+
+Examples
+              * The  following  command defines R/C range for normal distribu-
+                tion for M1 layer for setup for view view1:
+
+                define_parameter setup -view  view1  -name  param_M1_R  -scope
+                wire_variation -distribution gaussian -range {1 1.15}
+
+                define_parameter  setup  -view  view1 -name -param_M1_C -scope
+                wire_variation -distribution gaussian -range {0.95 1}
+
+              * The following command defines R/C moments for normal distribu-
+                tion for M1 layer for setup for all views:
+
+                define_parameter setup -name param_M1_R -scope  wire_variation
+                -distribution gaussian -moments {0.2 0.01}
+
+                define_parameter  setup -name param_M1_C -scope wire_variation
+                -distribution gaussian -moments {0.95 1}
+
+              * The following command defines correlation between metal layers
+                - if M1, M2 and M3 are fully correlating:
+
+                define_parameter    -scope    wire_variation      -correlation
+                {{param_M1_C param_M2_C param_M3_C} {1.0}}
+
+Related Information
+              * report_parameter
+
+              * set_wire_variation_mode
+
+              * get_wire_variation_mode
+
+                           Fri Apr 04 01:25:37 2025    define_parameter(25.10)

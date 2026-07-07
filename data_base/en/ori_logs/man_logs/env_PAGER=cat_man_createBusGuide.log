@@ -1,0 +1,135 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createBusGuide(25.10)                                    createBusGuide(25.10)
+
+Name
+       createBusGuide  -  Creates  bus  guides  associated with net groups, to
+       guide routing for all the nets of the specified net group
+
+Syntax
+       createBusGuide
+
+       [-help]
+
+       [-type {hard | soft}]
+
+       -netGroup <netGrpName>
+
+       -layer {id | id1:id2}
+
+       {[{-centerLine {<x1 y1 x2  y2>}  -width  <value>}  [-beginExt  <value>]
+       [-endExt <value>]] | -rect {<x1 y1 x2 y2>}}
+
+       Creates bus guides associated with net groups, to guide routing for all
+       the  nets of the specified net group. You can create horizontal, verti-
+       cal, and 45-degree bus guide segments. 45-degree  bus  guides  are  re-
+       quired for flip chip routing.
+
+       Use  this  command  after  defining a net group that will be associated
+       with the new bus guide segment.
+
+       After a bus guide is created, you can modify its layer or  width  later
+       by using the update_bus_guide command.
+
+Parameters
+       -help  Prints a brief description that includes type and default infor-
+              mation for each createBusGuide parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createBusGuide.
+
+       -beginExt <value>
+              Specifies  the value, in microns, by which the bus guide segment
+              is to be extended in the beginning.
+
+       -centerLine <x1><y1><x2><y2>
+              Specifies the coordinates of the center line of  the  bus  guide
+              segment.
+
+              The  direction of the guide segment is derived from the x1 y1 x2
+              y2 coordinate values.
+
+              Note: Non-orthogonal bus guide segments are not supported.
+
+       -endExt <value>
+              Specifies the value, in microns, by which the bus guide  segment
+              is to be extended in the end.
+
+       -layer {<id> | <id1>:<id2>}
+              Specifies the routing layer constraint honored by the router.
+
+              Routing  done on non-preferred routing layers or on layers which
+              are not part of the specified layer  constraint  can  have  high
+              cost implications
+
+       -netGroup <netGrpName>
+              Specifies the name of the net group that will be associated with
+              the new bus guide segment that you are creating.
+
+       -rect {<x1 y1 x2 y2>}
+              Specifies the lower-left and upper-right coordinates of the rec-
+              tangle formed by the bus guide segment.
+
+       -type {hard | soft}
+              Specifies the constraint type of the bus guide:
+
+              * hard - After running Early Global Route (eGR), NanoRoute (NR),
+                or NanoRoute High Frequency Router (NRHF), the route obeys the
+                path of the bus guide.
+
+              * soft  -  After  running  eGR,  NR, or NRHF, the bus guide only
+                guides the route path. The tool can route the net out  of  the
+                bus guide.
+
+              Default:  soft  (If you don't specify the -type parameter to de-
+              fine the constraint type, the value of constraint type is  taken
+              as soft.)
+
+       -width <value>
+              Specifies  the  width, in microns, of the bus guide segment that
+              you are creating.
+
+Examples
+              * The following command creates a horizontal bus  guide  segment
+                whose  width  is  120  microns,  and  layer constraint is from
+                METAL4 to METAL8:
+
+                createBusGuide -netGroup netGroup1 -centerLine 4421.8 10749.36
+                4960.8 10749.36 -width 120 -layer METAL4:METAL8
+
+              *
+
+                The following command creates a bus guide segment whose lower-
+                left coordinate is at pt {464 1240} and upper-right coordinate
+                is at pt {528 1260} for the net group test and  with  a  layer
+                constraint of Metal1 to Metal4:
+
+                createBusGuide -netGroup test -layer {1:4} -rect {464 1240 528
+                1260}
+
+              *
+
+                The following command creates a 45-degree bus guide segment:
+
+                createBusGuide  -netGroup  test3Group  -centerLine 400 500 450
+                550 -width 20 -layer {METAL7:METAL8}
+
+Related Information
+              * createNetGroup
+
+              * deleteBusGuide
+
+              * selectBusGuide
+
+              * update_bus_guide
+
+              * Bus Planning chapter in the User Guide
+
+                * Creating a Bus Guide
+
+              * Edit Menu chapter in the Menu Reference
+
+                * Bus Guide
+
+                           Fri Apr 04 01:25:37 2025      createBusGuide(25.10)

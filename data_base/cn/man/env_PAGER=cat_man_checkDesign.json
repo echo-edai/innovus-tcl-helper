@@ -1,0 +1,117 @@
+{
+  "command": "checkDesign",
+  "is_cmd": true,
+  "summary": "检查设计库和数据的缺失或不一致性，并生成文本和HTML报告。",
+  "description": "该命令用于在设计流程的任何阶段检查缺失或不一致的库和设计数据，并将结果写入文本和HTML报告。这消除了手动执行这些检查的需要。默认情况下，HTML报告保存为<design_name>.main.htm，而文本版本报告保存为<design_name>.main.htm.ascii。Innovus软件会检查以下数据：I/O、网表、物理库、时序库、电源和地引脚、高电平和低电平连接引脚、布局规划以及布局。Cadence建议按以下顺序检查库和数据：I/O检查可在任何时间进行；网表检查应在设计加载后的任何时间进行；物理库检查应在布局规划前进行；时序库检查应在任何与时序相关的操作（如时序驱动布局布线、时序优化、时钟树综合和静态时序分析）前进行；电源/地检查应在布线和提取、以及验证几何和连通性前进行；高/低电平连接检查应在布线和提取前进行。",
+  "usage": "checkDesign [-help] { -all [-danglingNet [highlight]] | [[-io] [-netlist [-danglingNet [highlight]]] [-physicalLibrary] [-timingLibrary] [-powerGround] [-tieHiLo] [-floorplan] [-place] [-spef][-assigns]] } [[-noText] [-outdir directoryName] [-browser]] | [-noHtml [-outfile fileName]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印包含每个checkDesign参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-all",
+      "description": "执行所有检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-danglingNet",
+      "description": "检查设计中是否存在没有实例或顶层端口的网络，并将其名称输出到报告文件中。该参数仅在指定了-netlist或-all参数时可用。如果指定highlight，软件还会在checkDesign命令完成后在主窗口中高亮显示“悬空”网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-io",
+      "description": "检查I/O焊盘，生成警告消息，并报告以下信息：未放置的I/O单元、属于I/O焊盘的悬空引脚（警告）、连接到非I/O实例的I/O引脚（直接连接到核心单元）、未放置的I/O引脚、悬空的I/O引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-netlist",
+      "description": "检查网表，生成错误或警告消息，并报告以下信息：连接到电源/地网络的输出引脚（例如，BUFX1 U1 (.A(net1),.Y1(1'b0))）、悬空的输入引脚（警告）、多驱动网络（警告）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-physicalLibrary",
+      "description": "检查物理库，并报告所有单元是否具有LEF视图。软件会为以下情况生成错误消息：未在LEF中定义的单元、缺少尺寸的单元、缺少方向的引脚、缺少几何形状的单元引脚、单元尺寸不是核心站点尺寸的整数倍、宏没有完全覆盖的障碍物、固定掩模块有一些引脚未着色。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-timingLibrary",
+      "description": "检查设计中使用的单元是否已在时序库中定义。此选项不检查时序弧的存在。所有物理单元均不在此检查范围内。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-powerGround",
+      "description": "检查电源和地连接，生成警告消息，并报告以下信息：连接到地网络的电源端口、连接到电源网络的地端口、悬空的电源和地端口、连接到非电源和地网络的电源和地端口。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-tieHiLo",
+      "description": "报告未连接的高电平或低电平端口以及连接到不同网络的高/低电平和电源/地引脚。系统会生成警告消息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-floorplan",
+      "description": "检查布局规划，生成错误或警告消息，并报告以下信息：离网的水平和垂直轨道、未对齐到行站点的实例、未放置的I/O引脚、离网的电源/地预布线、不在制造网格上的实例、不在制造网格上的预布线（错误）、不在轨道上的常规预布线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-place",
+      "description": "检查布局，生成错误或警告消息，并报告以下信息：存在布局违规的实例数量、放置在核心区域外的实例、与其他实例重叠的实例、与布局障碍物重叠的实例。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-spef",
+      "description": "检查SPEF。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-assigns",
+      "description": "报告网表中的所有assign语句，包括对1'b0/1'b1的赋值。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noText",
+      "description": "仅生成HTML版本的报告。默认：报告同时以HTML和文本格式生成。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outdir",
+      "description": "指定保存HTML和文本报告的目录。如果指定了-noText，则仅将HTML版本报告保存到指定目录。注意：-outdir参数不能与-noHtml一起使用。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-browser",
+      "description": "打开浏览器并显示报告的HTML版本。注意：此选项不能与-noHtml一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noHtml",
+      "description": "仅生成文本版本的报告。默认：报告同时以HTML和文本格式生成。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outfile",
+      "description": "将报告的文本版本写入指定文件。注意：仅当指定了-noHtml时才能指定此选项。默认：如果指定了-noHtml但未指定-outfile，软件会将报告的文本版本写入名为<design_name>.main.htm.ascii的文件。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

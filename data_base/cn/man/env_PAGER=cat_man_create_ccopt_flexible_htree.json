@@ -1,0 +1,165 @@
+{
+  "command": "create_ccopt_flexible_htree",
+  "is_cmd": true,
+  "summary": "在指定引脚下创建一个灵活 H 树的设计对象。",
+  "description": "创建一个用于灵活 H 树的设计对象，该 H 树会考虑布局和布线障碍以及任何电源布线。您可以在一个序列中指定此命令以创建多个灵活 H 树。注意：此命令不合成灵活 H 树。使用此命令创建或定义灵活 H 树后，需使用 synthesize_ccopt_flexible_htrees 命令来合成所有已创建的灵活 H 树。",
+  "usage": "create_ccopt_flexible_htree [-help] [-adjust_sink_grid_for_aspect_ratio {true | false}] [-auto_sinks {{[floorplan_num] [{{partition_hinst | design} num}] ...}}] [-auto_sinks_sink_area {<width height>}] -final_cell <base_cell> [-hv_balance {true | false}] [-image_directory <dirName>] [-inverting] [-layer_density <value>] [-max_driver_distance <value>] [-max_root_distance <value>] [-mode {drv | distance}] -name <flexibleHtreeName> [-omit_symmetry <string>] [-partition_boundary_polarity {non_inverting | inverting | ignore}] [-partition_groups {{partition ...} [max_boundary_net_length] [inverting | non_inverting] [subtree] ...}] [-power_weight <value>] -pin {pin | port} [-sink_grid {columns rows}] [-sink_grid_box {<xmin ymin xmax ymax>}] [-sink_grid_exclusion_zones {{<xmin ymin xmax ymax>} ...}] [-sink_instance_prefix <prefixName>] [-sink_grid_sink_area {<width height>}] [-sinks {{pin_name | {<xmin ymin xmax ymax>}} ...}] [-stop_at_sdc_clock_roots] -trunk_cell <base_cell>",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个 create_ccopt_flexible_htree 参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-adjust_sink_grid_for_aspect_ratio",
+      "description": "设置为 true 时，根据宽高比调整接收器网格。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-auto_sinks",
+      "description": "指定每个分区层次实例和顶层的接收器矩形数量。根据灵活 H 树根下时钟接收器的密度添加 floorplan_num 个接收器矩形。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-auto_sinks_sink_area",
+      "description": "指定描述自动计算的接收器矩形初始宽度和高度的近似矩形大小 {<width height>}。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-final_cell",
+      "description": "指定用于时钟树末端的库单元（缓冲器或反相器）。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-hv_balance",
+      "description": "设置为 true 时，指定水平和垂直金属线只能与相同方向的其他线进行平衡。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-image_directory",
+      "description": "指定 H 树合成算法生成的图像写入的目录名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-inverting",
+      "description": "指定树是否反转其输入。默认情况下，此参数未启用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-layer_density",
+      "description": "指定用于计算 H 树网络时序估计的寄生参数的层密度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_driver_distance",
+      "description": "指定后，软件忽略 DRV 并使用给定值作为连接 H 树驱动器的网络的最大长度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-max_root_distance",
+      "description": "指定后，软件忽略 DRV 并使用给定值作为连接根和 H 树第一个驱动器的网络的最大长度。仅当同时指定了 -max_driver_distance 参数时才能指定此值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-mode",
+      "description": "指定驱动器插入模式。设置为 drv 时，插入驱动器以避免 DRV。设置为 distance 时，参数 -max_driver_distance 和 -max_root_distance 决定允许的最大网络长度。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定要创建的灵活 H 树的名称。此参数为必需。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-omit_symmetry",
+      "description": "指定不应添加对称驱动器和/或分支来平衡灵活 H 树中网络的引脚负载。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-partition_boundary_polarity",
+      "description": "指定时钟信号在进入分区时相对于灵活 H 树源极的极性。允许的值有：non_inverting、inverting、ignore。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-partition_groups",
+      "description": "指定在无通道设计中分区聚集的组。嵌套列表暗示组之间允许的交叉。每个组有零个或一个输入端口，每个分区只能指定一次。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-power_weight",
+      "description": "指定功耗与插入延迟之间的权衡。有效值在 0 到 1 之间，指定在灵活 H 树合成期间对功耗优化的权重。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-pin",
+      "description": "指定在其下创建灵活 H 树的引脚。此参数为必需。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-sink_grid",
+      "description": "指定 H 树接收器网格的列和行。如果 -adjust_sink_grid_for_aspect_ratio 参数设置为 true，则列和行可能会交换。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_grid_box",
+      "description": "指定 H 树网格应覆盖的框区域。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_grid_exclusion_zones",
+      "description": "指定如果区域完全覆盖相应的接收器区域，则从这些区域排除接收器网格的接收器。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_instance_prefix",
+      "description": "指定用于最终单元实例名称的前缀，这些最终单元使用 -final_cell 参数指定，接收器使用 -sinks 参数指定。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sink_grid_sink_area",
+      "description": "指定描述网格中每个 H 树接收器的有效最终单元（使用 -final_cell 参数指定）位置的矩形的近似大小。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-sinks",
+      "description": "指定树末端缓冲器位置（使用 -final_cell 参数指定或引脚）的近似矩形接收器区域。指定的引脚必须在时钟树中。嵌套列表暗示聚类关系。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-stop_at_sdc_clock_roots",
+      "description": "指定时钟树定义应在 SDC 时钟的根处停止搜索时钟树的部分。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-trunk_cell",
+      "description": "指定此单元应用于灵活 H 树内部的缓冲器。此参数为必需。",
+      "required": true,
+      "type": "string"
+    }
+  ]
+}

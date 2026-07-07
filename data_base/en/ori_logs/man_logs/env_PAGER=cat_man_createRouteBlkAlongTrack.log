@@ -1,0 +1,120 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+createRouteBlkAlongTrack(25.10)                createRouteBlkAlongTrack(25.10)
+
+Name
+       createRouteBlkAlongTrack  -  Creates routing blockages that are aligned
+       to specified tracks which are in the shrunken row area
+
+Syntax
+        createRouteBlkAlongTrack
+
+       [-help]
+
+       -align_track <string>
+
+       [-consider_cells_as_macros <string>]
+
+       [-consider_macros_as_cells <string>]
+
+       [-edge_shrink {<x y>}]
+
+       -layer <string>
+
+       [-no_cut_row]
+
+       Creates routing blockages that are aligned to  specified  tracks  which
+       are  in the shrunken row area. Use this command during partition floor-
+       planning.
+
+       Note:
+
+              * Routing blockages are also created with  align  to  the  track
+                which  is near to the shrunken row area with less than half of
+                layer width.
+
+              * Routing blockages honor rectilinear row area.
+
+Parameters
+       -align_track <string>
+              Specifies the track layer to which the route blockages align to.
+
+              Data_type: string, required
+
+       -help  Prints a brief description that includes the  type  and  default
+              information for each createRouteBlkAlongTrack parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the man command:
+
+              man createRouteBlkAlongTrack
+
+       -consider_cells_as_macros <string>
+              Specifies  the names of the cells that are considered as macros.
+              Blockages are not created over them.
+
+              Data_type: string, optional
+
+       -consider_macros_as_cells <string>
+              Specifies the names of the cells  that  are  considered  as  std
+              cells. Blockages are created over them.
+
+              Data_type: string, optional
+
+       -edge_shrink {<x y>}
+              Shrinks row area from the edge in X and Y direction.
+
+              Data_type: point, optional
+
+       -layer <string>
+              Specifies  the name of the layer on which the tool creates rout-
+              ing blockages for steam out.
+
+              Data_type: string, required
+
+       -no_cut_row
+              Specifies whether the  blockages to be added should be based  on
+              the no-cut row site area even if the row site area is not cut in
+              the design.
+
+              * Without  the -no_cut_row parameter, the tool will create route
+                blockages based on the current row area. So the rows  for  ob-
+                jects  like  insts, place blockages are expected to be cut out
+                before running the createRouteBlkAlongTrack command to get ex-
+                pected results.
+
+              * With the -no_cut_row parameter, the  tool  will  identify  the
+                rows have not been cut before and will call the cutRow command
+                to  get  a cut row shape during the action. The route blockage
+                is created based on the cut row shape. The  actual  row  shape
+                will not be changed.
+
+              * The  setFPlanMode  -no_cut_row  true  command has the same use
+                with this option.
+
+              Example:
+
+              In the following illustration, the rows are not cut before. Now,
+              without the -no_cut_row parameter, the tool will create a  route
+              blockage  over  the  place  blockage  and  the  inst.  With  the
+              -no_cut_row parameter, the tool will not create  route  blockage
+              over them.
+
+              Default: false
+
+              Data_type: bool, optional
+
+Example
+              * The  following command creates a routing blockage on layer M2.
+                The route blockages align to track layer M2:
+
+                createRouteBlkAlongTrack    -layer    M2    -align_track    M3
+                -edge_shrink {5 5}
+
+Related Information
+              * createRouteBlk
+
+              * deleteRouteBlk
+
+              * Floorplanning the Design chapter in the Innovus User Guide
+
+                           Fri Apr 04 01:25:37 2c0r2e5ateRouteBlkAlongTrack(25.10)

@@ -1,0 +1,197 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+map_dies(25.10)                                                map_dies(25.10)
+
+Name
+       map_dies  - A utility to generate the inter die data mapping file based
+       on the design stack configuration file and die ploc files
+
+Syntax
+       map_dies
+
+       [-help]
+
+       -3dic_design_stack_file< filename>[-component_config_file<filename>]
+
+       [-die_pad_file_pair {{<<die_name1>> <<pad file1>>} {<<die_name1>> <<pad
+       file2>>}...}]
+
+       [-map_search_distance <distance>]
+
+       [-mode sanity_check]
+
+       [-output <directory>]
+
+       [-stacked_die_mapping <filename>]
+
+       A utility to generate the inter die data mapping file based on the  de-
+       sign  stack configuration file and die ploc files. This mapping file is
+       required if there is a direct connection between  dies.  The  generated
+       mapping  file  defines  the connection between dies (between interposer
+       and  logic  die).  This  mapping  file  is  then  specified  with   the
+       set_multi_die_analysis_mode  -stacked_die_mapping command for multi-die
+       analysis.
+
+Parameters
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       -3dic_design_stack_file <filename>
+              Specifies the name of the XML file containing the  design  stack
+              information. This file is from the Integritytm 3D-IC product. It
+              includes each die's tier level (Z direction), die instance name,
+              size  (post shrink size if there is a scale factor), flip, rota-
+              tion  (counter,  clockwise),  placement  location,  and  contact
+              layer.
+
+       -component_config_file<filename>
+              Specifies  the  name of the design configuration file. This file
+              is used to define the power pad location files,  and  the  power
+              and ground net names.
+
+              File Format:
+
+              COMPONENT IDIE
+
+               Power_pad { {ldie_VDD.ploc VDD_AO} {ldie_VSS.ploc VSS} }
+
+               [Power_net { VDD_AO}]
+
+               [Ground_net {VSS}]
+
+               END
+
+               COMPONENT LDIE
+
+               Power_pad { {ldie_ALL.ploc all} }
+
+               [Power_net {VDD1}]
+
+               [Ground_net {VSS2}]
+
+               END
+
+       -die_pad_file_pair {{<<die_name1>> <<pad file1>>} {<<die_name1>> <<pad
+       file2>>}...}
+              Specifies  the mapping between die instance names and their cor-
+              responding power pad file for the interposer die and logic dies.
+
+       -map_search_distance <distance>
+              Specifies the legal mapping distance range  between  the  inter-
+              poser and legal dies. The unit for distance is micrometer (um).
+
+       -mode sanity_check
+              Specifies  to  perform  sanity  checks for the generated mapping
+              file.
+
+       -output <directory>
+              Specifies the output directory containing the  mapping  results.
+              The   output   folder   contains   the  generated  mapping  file
+              (die_die.map).
+
+              The format of the 6-column mapping file is:
+
+              IDIE_INST_NAME(idie_inst_name)       Inet_name        Ibump_name
+              LDIE_INST_NAME(ldie_inst_name) Lnet_name Lbump_name
+
+              Here,
+
+              * The  first 3 columns are for the interposer die instance name,
+                net name, and bump name(vsrc name), and the last 3 columns are
+                for the logic die instance name, net name, and bump name.
+
+              * The die instance names are written in upper case that is  fol-
+                lowed  by the die instance names specified in the rail TCL for
+                each die instance name.
+
+              * The file is split in two sections, POWER and GROUND.
+
+       -stacked_die_mapping <filename>
+              Specifies the mapping file used to define the connection between
+              dies (between interposer and logic die). This file provides  the
+              information  on  bump-to-bump  mapping (one bump from interposer
+              die and the other bump from logic die) to provide  logical  con-
+              nectivity.
+
+              The format of the 6-column mapping file is:
+
+              IDIE VDD_AO BUMP_PWR_1 LDIE1 VDD_AO LDIE_PWR_BUMP7
+
+              IDIE VDD_AO BUMP_PWR_2 LDIE1 VDD_AO LDIE_PWR_BUMP8
+
+              Here,  the  first  3 columns are for the interposer die instance
+              name, net name, and bump name, and the last 3  columns  are  for
+              the logic die instance name, net name, and bump name.
+
+Output
+       The  following  is  the  list  of reports that are generated for sanity
+       checking:
+
+              * die_map.summary - This report has 2 sections:
+
+                *
+                   Interface mapping summary - Lists all the die_inst1/net  to
+                  die_inst2/net mapping pairs, and their matched bump mappings
+                  in the overlap region.
+
+                * Die  connect-terminal  summary  -  Reports matched and total
+                  terminals for each die instance/net/layer group.
+
+              * map_diagnosis.log - Reports a list of unmapped bumps/terminals
+                for a die-to-die pair list and the reasons  for  the  unmapped
+                bumps (For example, unknown die, unknown net, undefined termi-
+                nal, power to ground short, and floating terminal).
+
+              * terminal_map.rpt  -  Lists  mapping  pairs (die1:net1:bump1 ::
+                die2:net2:bump2) that pass the mapping and  alignment  checks,
+                therefore are considered as legal mapping pairs.
+
+              * terminal_offset.rpt  -  Reports all mapping pairs where offset
+                is greater than the specified map_search_distance.
+
+Examples
+              *
+
+                The following command generates a mapping file  that  includes
+                the connection between dies (between interposer die INTERPOSER
+                and logic dies DIE0, DIE1, DIE2, DIE3):
+
+                map_dies \
+
+                -output results \
+
+                -3dic_config_file ../data/design_stack.xml \
+
+                -die_pad_file_pair  { {INTERPOSER ../data/Interposer_all.ploc}
+                \
+
+                                     {DIE0 ../data/Die0_all.ploc} \
+
+                                     {DIE1 ../data/Die1_all.ploc} \
+
+                                     {DIE2 ../data/Die2_all.ploc} \
+
+                                     {DIE3 ../data/Die3_all.ploc} }
+
+              * The following command performs the sanity check for the gener-
+                ated mapping file:
+
+                map_dies \
+
+                -mode sanity_check \
+
+                -output Results \
+
+                -3dic_design_stack_file ./data/design_stack.xml \
+
+                -3dic_config_file ./data/design_stack.xml \
+
+                -component_config_file ./data/Components.config \
+
+                -stacked_die_mapping ./data/die2die_bump.map \
+
+                -map_search_distance 5 \
+
+Related Information
+              * "Package Analysis" in the Voltus User Guide
+
+                           Fri Apr 04 01:25:37 2025            map_dies(25.10)

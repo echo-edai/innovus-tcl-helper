@@ -1,0 +1,211 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+report_resource(25.10)                                  report_resource(25.10)
+
+Name
+       report_resource  - Displays the peak memory used during a software ses-
+       sion
+
+Syntax
+       report_resource
+
+       [-help]
+
+       [-peak]
+
+       [-verbose]
+
+       [-start <string> | [-end <string> [-session_cpu]
+
+       [-diff_memory]]]
+
+       [-check_MemCpu {true | false} [-period <integer>]]
+
+       [-memory_threshold <<float>>]]
+
+       Displays the peak memory used during a software session.  This  command
+       is  used  to measure the peak memory at any given point in the flow and
+       and make the script better for automation flows.
+
+       Note: The report_resource command is only supported in the 64-bit  ver-
+       sion of the software and Linux port.
+
+Parameters
+       -help  Outputs the command usage and a brief description about the com-
+              mand parameters.
+
+       -check_MemCpu {true | false}
+              Checks  the  machine's  physical  memory and CPU resources. When
+              specified, the software enables memory/CPU checking and  reports
+              a  warning  if  the  free memory is below 5 percent of the total
+              memory or if the average CPU load large.
+
+       -diff_memory
+              Outputs different peak memory and  current  memory  between  the
+              step start and step end.
+
+       -end <string>
+              Specifies the end point to measure the peak memory attained dur-
+              ing a specific command.
+
+       -memory_threshold <float>
+              Specifies  the threshold as ratio of total machine/LSF memory. A
+              warning is issued  if  the  available  memory  goes  below  this
+              threshold.
+
+              Min: 0
+
+              Max: 1
+
+       -peak  Reports  current  peak memory till a given point in a flow. This
+              parameter also works with the -start and -end parameters of  the
+              report_resource command so that peak memory observed by an indi-
+              vidual command can be reported.
+
+       -period <integer>
+              Specifies  the  period  for checking the physical memory and CPU
+              usage.
+
+              Default: 1800s
+
+              Min: 1
+
+              Max: INT_MAX
+
+       <->start <string>
+              Specifies the start point to measure the  peak  memory  attained
+              during a specific command.
+
+              Note: The <->start and <->end parameters support any user-speci-
+              fied  string,  such as fullFlow, timeDesign, and TD_PR. You must
+              specify the same string for both the -start and -end  parameters
+              to measure the peak memory attained during a specific command.
+
+       -session_cpu
+              Reports  the  current  CPU  and real time after the reports last
+              step status.
+
+       -verbose
+              Gives detailed memory usage information. It  displays  how  much
+              memory  is being used at any time and of what form (physical vs.
+              virtual). When specified,  the  following  information  is  dis-
+              played:
+
+              * Cpu(s) is the number of available processors in the machine.
+
+              * Load  average  is  the  system  load  averages  for the last 1
+                minute, 5 minutes, and 15 minutes.
+
+              * Mem and Swap are the current memory  information  of  the  ma-
+                chine.
+
+              * Data  Resident  Set  (DRS)is the amount of physical memory de-
+                voted to other than executable code. "current mem" shows  this
+                value (Total current DRS) .
+
+              * Private  Dirty  (DRT)  is  the memory which must be written to
+                disk before the corresponding physical memory location can  be
+                used for some other virtual page. "peak res"  shows this value
+                (Total peak DRT). This is the minimum number that you must re-
+                serve to run the program.
+
+              * Virtual  Size  (VIRT)  is the total  amount  of virtual memory
+                used by the task.
+
+              * Resident Size (RES) is the non-swapped physical memory a  task
+                has  used.  The number of  "Total Peak RES" is the recommended
+                physical memory to reserve.
+
+Examples
+              * The following command script specifies  to  display  the  peak
+                memory attained during the optDesign command:
+
+                report_resource -start "optD"
+
+                 optDesign
+
+                 report_resource -end "optD"
+
+                The following message is displayed:
+
+                Ending   "optD"   (total   cpu=0:15:00,   real=0:15:09,   peak
+                res=468.8M, current mem=396.3M)
+
+              * The following command script specifies  to  display  the  peak
+                memory attained during the timeDesign command:
+
+                report_resource -start fullFlow
+
+                 report_resource -start TD_PR
+
+                 timeDesign -postRoute
+
+                 report_resource -end TD_PR
+
+                 report_resource -start OD_PR
+
+                 optDesign -postRoute
+
+                 report_resource -end OD_PR
+
+                 report_resource -end fullFlow
+
+                The following message is displayed:
+
+                Ending    TD_PR   (total   cpu=0:15:00,   real=0:15:09,   peak
+                res=468.8M, current mem=396.3M)
+
+                 Ending   OD_PR   (total   cpu=0:15:00,   real=0:15:09,   peak
+                res=968.8M, current mem=796.3M)
+
+                 Ending   fullFlow   (total  cpu=0:35:03,  real=0:40:09,  peak
+                res=968.8M, current mem=796.3M)
+
+              * The following command script specifies  to  display  the  peak
+                memory attained during the optDesign command:
+
+                report_resource -peak -start optD1
+
+                 report_resource -start optD
+
+                 optDesign -postRoute
+
+                 report_resource -end optD
+
+                 `Ending  "optD"  (total  cpu=0:00:12.9,  real=0:00:48.0, peak
+                res=358.8M, current mem=300.2M)'
+
+                 report_resource -peak -end optD1
+
+                 `Ending "optD1" peak res=358.8M'
+
+              * The following command specifies to display detailed memory in-
+                formation:
+
+                report_resource -verbose
+
+                The following output is displayed:
+
+                Current (total cpu=0:00:23.5, real=0:10:24,  peak  res=567.8M,
+                current mem=567.8M)
+
+                Cpu(s)  40,  load  average (past 1 minute): 7.41, load average
+                (past 5 minutes): 7.46, load average (past 15 minutes): 7.52
+
+                Mem: 527321900k total, 317217944k used, 210103956k free, 3752k
+                buffers
+
+                Swap: 134217724k total, 0k used, 134217724k  free,  183952200k
+                cached
+
+                Memory Detailed Usage :
+
+                                  Data  Resident  Set(DRS)  Private Dirty(DRT)
+                Virtual Size(VIRT)  Resident Size(RES)
+
+                Total    current    :       642.3M                      155.6M
+                1743.3M             567.8M
+
+                peak      :                 642.3M                      155.6M
+                1743.3M             567.8M
+
+                           Fri Apr 04 01:25:37 2025     report_resource(25.10)

@@ -1,0 +1,81 @@
+{
+  "command": "dbGet",
+  "is_cmd": true,
+  "summary": "从数据库中查询和提取对象及其属性的命令",
+  "description": "dbGet 命令用于在 Cadence Innovus 数据库中进行层级化查询。它允许用户指定一个起始对象（如 top、head、selected 或特定对象/列表），然后通过对象类型链进行遍历，最终可获取特定属性、进行模式匹配或表达式过滤。该命令支持多种选项来控制单位、去重、反向匹配、空指针处理、结果索引选择、正则表达式匹配和查询层级回溯等，是访问和操作数据库对象的核心工具。",
+  "usage": "dbGet [-help] [-d] [-u] [-v] [-e] [-i <num>] [-regexp] [-p[<num>]] {<obj>|<objList>|head|top|selected}[.<objType>]...[[.<attrName>|.?|.??|.?h] [<pattern>] | [expression]]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法信息",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-d",
+      "description": "指定用户输入值和返回值使用数据库单位。默认情况下，所有值使用用户单位（微米）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-u",
+      "description": "从查询结果中移除重复对象，确保结果列表仅包含唯一项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-v",
+      "description": "返回不匹配指定<pattern>或<expression>的项（反向匹配）。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-e",
+      "description": "避免打印 NULL (0x0) 指针和结果。此选项会影响所有类型的输出。在嵌套 dbGet 语句中，不应在内层语句使用此选项。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-i",
+      "description": "从作为输出返回的列表中选择特定元素。-i <num> 选择从 0 开始的第 <num> 个元素。对于 box 和 pt 类型的属性，此选项还会减少起始的 '{' 和结束的 '}'。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-l",
+      "description": "返回结果时自动换行。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-regexp",
+      "description": "对字符串/枚举属性使用正则表达式<pattern>匹配（等同于 Tcl regexp 命令）。此选项不适用于使用<expression>方法进行的过滤，在表达式中可以直接使用 Tcl regexp 命令。默认使用简单的通配符模式匹配。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-p",
+      "description": "指定为查询回溯遍历指定对象的层级数（-p = 1 层，<num> 表示 1 层或更多）。-p 选项仅与<pattern>或<expression>一起使用，用于过滤对象。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "{<obj>|<objList>|head|top|selected}[.<objType>]...[.<attrName>|.?|.??|.?h]",
+      "description": "数据库对象层次结构字符串。{<obj>|<objList>|head|top|selected}：指定查询的起点；.<objType>：指定要查询的对象类型，可以指定多个对象；.<attrName>|.?|.??|.?h：指定要返回的信息类型。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "<pattern>",
+      "description": "指定用于匹配对象或属性名称或属性值的字符串表达式、数值或布尔值。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<expression>",
+      "description": "指定一个 Tcl 表达式，使用 dbtcl 属性和对象，在运行时替换 dbtcl 属性和对象的值后，用于匹配满足该表达式的对象。",
+      "required": false,
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reset_mode(25.10)                                            reset_mode(25.10)
+
+Name
+       reset_mode  -  Resets  the Liberty timing library modes for a specified
+       instance
+
+Syntax
+       reset_mode
+
+       [-type cell]
+
+       <list_of_modes>
+
+       <object_list>
+
+       Resets the Liberty timing library modes for a specified instance.
+
+       Library modes are set using the set_mode command. By default,  all  li-
+       brary  modes  in  the  timing library are active. If you specify one or
+       more library modes using the set_mode command,  only  the  timing  arcs
+       consistent  with the specified mode(s) are active for the instance. All
+       other library modes become inactive. When you reset  the  library  mode
+       for the instance, all library modes become active again.
+
+Parameters
+       <object_list>
+              Specifies the instances to which to reset the library modes.
+
+       <list_of_modes>
+              Specifies the name of the library modes to reset.
+
+       -type cell
+              Resets the library mode at the instance level.
+
+              Note: Setting the library mode at the instance level is the only
+              form of set_mode that is currently supported. This parameter ex-
+              ists to support constraints coming from external sources.
+
+Examples
+              * The following command specifies that only the timing arcs con-
+                sistent  with the test_A library mode are active for instances
+                of b1:
+
+                The test_A library mode is made inactive.
+
+                set_mode test_mode [get_cells BUF]
+
+                The following command reports the status of all library  modes
+                associated  with BUF 'b1' . It shows that test_A is active and
+                test_B is inactive.
+
+                > report_mode b1
+
+                -------------------------------
+
+                Mode Group test_mode of b1
+
+                -------------------------------
+
+                Mode     Status    Condition
+
+                Name
+
+                -------------------------------
+
+                test_B   Inactive  !(Y)
+
+                test_A   ACTIVE    Y
+
+                -------------------------------
+
+                The following command resets the library mode for instances of
+                b1 :
+
+                reset_mode test_A b1
+
+                If you generate a report of the library mode status for b1, it
+                shows that both modes are now active:
+
+                > report_mode b1
+
+                -----------------------------
+
+                Mode Group test_mode of b1
+
+                -----------------------------
+
+                Mode    Status   Condition
+
+                Name
+
+                -----------------------------
+
+                test_B  ACTIVE    !(Y)
+
+                test_A  ACTIVE    Y
+
+                -----------------------------
+
+Related Information
+              * set_mode
+
+              * report_mode
+
+                           Fri Apr 04 01:25:37 2025          reset_mode(25.10)

@@ -1,0 +1,228 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+reportFreqViolation(25.10)                          reportFreqViolation(25.10)
+
+Name
+       reportFreqViolation  - Runs electromigration (EM) analysis based on the
+       frequency table defined in the Liberty library  and  generates  a  fre-
+       quency violation report
+
+Syntax
+       reportFreqViolation
+
+       [-help]
+
+       [-outfile <fileName>]
+
+       [-selInstFile <selInstFileName>]
+
+       [-em_type {avg | peak | rms | all}]
+
+       [-excInstFile <excInstFileName>]
+
+       [-tableScale <float>]
+
+       [-detailed]
+
+       [-slew {min | max}]
+
+       [-sort {name | freq | minDiff | maxDiff | minFreq | maxFreq}]
+
+       [-reportFormat <integer>]
+
+       [-view <viewName>]
+
+       Runs  electromigration  (EM)  analysis based on the frequency table de-
+       fined in the Liberty library and generates a  frequency  violation  re-
+       port.
+
+       You must run the following commands prior to setting the reportFreqVio-
+       lation command:
+
+              * write_tcf<activityFile>
+
+              * read_activity_file -format TCF<activityFile>
+
+              * propagate_activity
+
+              * read_activity_file -set_net_freq true -format TCF activityFile
+
+              * set_analysis_view    -setup   default_view_setup   -hold   de-
+                fault_view_hold
+
+              * setAnalysisMode -checkType hold
+
+       Note: If activity files are not defined, then the frequency can also be
+       calculated on a pin by the clock period. There will also be  a  default
+       frequency  of  500M  (toggle  count 1e+9) if there is no clock phase on
+       this pin.
+
+Parameters
+       -help  Prints a brief description that includes the  type  and  default
+              information for each reportFreqViolation parameter.
+
+              For  a  detailed  description of the command and all its parame-
+              ters, use the man command:
+
+              man reportFreqViolation
+
+       -detailed
+              Generates a detailed report containing information for instances
+              with violations.
+
+       -em_type {avg | peak | rms | all}
+              Specifies the electromigration type.
+
+              Default: avg
+
+       -excInstFile <excInstFileName>
+              Specifies an instance file that lists the names of instances  to
+              be excluded from the frequency violation report.
+
+              Note:  The  instance file is a text file that contains a list of
+              instances. Each instance name appears in one line in  the  file.
+              The  comments  begin  with  "#". Leading or ending spaces in in-
+              stance names are ignored.
+
+       -outfile <fileName>
+              Specifies the report file for the violation data.
+
+       -reportFormat <integer>
+              Specifies a format for the violation report. The report  details
+              vary  according  to  the selected report format. You can specify
+              report formats 0, 1, or 2. For more information  on  the  report
+              formats, see Report Format section below.
+
+              Default: 0
+
+       -selInstFile <selInstFileName>
+              Specifies  a  file  that  lists the names of instances to be in-
+              cluded in the frequency violation report.
+
+              Note: The instance file is a text file that contains a  list  of
+              instances.  Each  instance name appears in one line in the file.
+              The comments begin with "#". Leading or  ending  spaces  in  in-
+              stance names are ignored.
+
+       -slew {min | max}
+              Specifies the minimum or maximum slew value.
+
+              Default: min
+
+       -sort {name | freq | minDiff | maxDiff | minFreq | maxFreq}
+              Sorts  the instance-based frequency data by name, freq, minDiff,
+              maxDiff, minFreq, and maxFreq. By default, the violation  report
+              is not sorted. You can use one of the following options:
+
+              *
+
+                * name: Name of a pin or arc.
+
+                * freq: Frequency value of a pin or arc.
+
+                * minDiff:  Difference  between  freq  and minFreq of a pin or
+                  arc.
+
+                * maxDiff: Difference between freq and maxFreq  of  a  pin  or
+                  arc.
+
+                * minFreq:  Minimum frequency value of a pin or arc as defined
+                  in the frequency table.
+
+                * maxFreq: Maximum frequency value of a pin or arc as  defined
+                  in the frequency table.
+
+       -tableScale <float>
+              Specifies the scale factor for EM table value.
+
+              Default: 1.0
+
+       -view <viewName>
+              Specifies the view for which to generate the frequency violation
+              report.  Use  this parameter when working with multi-mode multi-
+              corner (MMMC) designs.
+
+Example
+       The following command reports instances  that  violate  frequency  con-
+       straints and lists them in the freqViol.rpt report file:
+
+       reportFreqViolation -outfile freqViol.rpt
+
+Report Format
+       The report formats are described below.
+
+              * Format 0
+
+                The  following command generates a report providing details of
+                minFreq, Freq, Tran, Cap, Remark, and Arc/Pin and directs  the
+                output to report file summaryViol.rpt:
+
+                reportFreqViolation -outfile summaryViol.rpt -reportFormat 0
+
+                For example:
+
+                minFreq    Freq    Tran     Cap        Remark    Arc/Pin
+
+                5.985               1.009            0.0356           0.003103
+                tt0/data/r3/add_27/U1_1_6/Y
+
+              * Format 1
+
+                When reportFreqViolation-reportFormat is set to 1, the  report
+                provides details as shown in the following example:
+
+                Status   Remark   freq   minFreq   maxFreq   Arc/Pin
+
+                [P]            *              1.009       5.985          5.995
+                tt0/data/r3/add_27/U1_1_6/Y
+
+              *
+
+                Format 2
+
+                A detailed report is generated when  reportFreqViolation  -re-
+                portFormat is set to 2, as shown in the following example:
+
+                Status   Remark  freq   minFreq  maxFreq    minTran    maxTran
+                minCap         maxCap     Arc/Pin
+
+                [P]       *         1.009    5.985      5.995        3.560e-02
+                3.790e-02                3.103e-03                   3.103e-03
+                tt0/data/r3/add_27/U1_1_6/Y
+
+                Where:
+
+              Status
+                Arc or pin status - F (fail), V (violation), P  (pass),  or  ?
+                (unknown)
+
+              Remark
+                Indicates whether the pin is a clock
+
+              freq
+                Working frequency of the arc or pin
+
+              minFreq
+                Minimum frequency value taken from the frequency table
+
+              maxFreq
+                Maximum frequency value taken from the frequency table
+
+              minTran
+                Minimum slew value
+
+              maxTran
+                Maximum slew value
+
+              minCap
+                Minimum capacitance load
+
+              maxCap
+                Maximum capacitance load
+
+              Arc/Pin
+                Name of the arc or pin
+
+Related Information
+       The Identifying and Viewing Violations chapter of User Guide.
+
+                           Fri Apr 04 01:25:37 2025 reportFreqViolation(25.10)

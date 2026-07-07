@@ -1,0 +1,189 @@
+{
+  "command": "verifyConnectivity",
+  "is_cmd": true,
+  "summary": "检测并报告设计中的连接性问题，如开路、未连接线、未连接引脚、环路、部分布线和未布线网络，并在设计窗口中生成违规标记。",
+  "description": "verifyConnectivity 命令用于检测设计中的各种连接性条件，包括开路、未连接线（几何天线）、未连接引脚、环路、部分布线和未布线网络。该命令会在设计窗口中生成违规标记并报告违规情况。运行此命令不会影响数据库，除非保存设计（此时也会保存违规标记）。该功能可以利用 setMultiCpuUsage 和其他多CPU命令进行多线程处理。",
+  "usage": "verifyConnectivity [-help] [-allPGPinPort] [-append] [-centerLineConnect] [-connLoop | -geomLoop] [-dividePowerNet] [-error <integer>] [-ignorePGPin <cell_name>:<pin_name>] [-markerOnHighestLayer] [-net <netNames> | -selected] [-noAntenna] [-noFill] [-noFloatingMetal] [-noOpen] [-noSoftPGConnect] [-noUnConnPin] [-noUnroutedNet] [-noWeakConnect] [-preferredTopLayer <integer>| -honorGroundLayerRange] [-rawViolsMark] [-removeOldOpenVio] [-report <filename>] [-tsv <abstractdiefilenames>] [-type {all | special | regular}] [-useNewOpenVio] [-useVirtualConnection] [-warning <value>]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "输出包含每个参数类型和默认信息的简要描述。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allPGPinPort",
+      "description": "验证所有电源地端口的连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-append",
+      "description": "在违规浏览器中显示增量结果。默认情况下，每次运行 verifyConnectivity 时，违规标记会被新结果覆盖。指定此参数后，违规标记将追加到前一次运行的违规结果中。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-centerLineConnect",
+      "description": "使用中心线模型而非几何模型来检查常规网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connLoop",
+      "description": "检查常规导线中的连接环路。基于常规导线段的中心线端点或通孔中心检测连接环路。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-geomLoop",
+      "description": "使用几何模型检查常规网络的环路违规。网络不必在中心线上重叠。指定此参数后，Innovus 软件不会执行任何其他连接性检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-dividePowerNet",
+      "description": "将电源网络划分为四个子区域进行连接性验证。用于减少内存有限的32位机器的内存使用。根据设计情况，此参数可能增加或减少运行时间。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-error",
+      "description": "指定要报告的最大错误数。达到最大值时命令停止。默认值：1000。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-ignorePGPin",
+      "description": "指定在连接性检查期间可以忽略的包含电源地引脚的单元。格式：<cell_name>:<pin_name>。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-markerOnHighestLayer",
+      "description": "在具有多个形状的引脚的最高层上报告开路。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-net",
+      "description": "指定仅对特定网络进行连接性验证。可以指定多个网络名，用空格分隔并用大括号或引号包围。可以使用通配符 (* 和 ?)。注意：-net 和 -selected 参数互斥。默认：如果未指定 -net 或 -selected，则验证所有网络。",
+      "required": false,
+      "type": "net+"
+    },
+    {
+      "name": "-selected",
+      "description": "指定对选定的网络或连接到选定实例/宏的引脚的网络进行连接性检查。注意：-net 和 -selected 参数互斥。默认：如果未指定 -net 或 -selected，则验证设计中的所有网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noAntenna",
+      "description": "忽略由于未连接线（也称为几何天线或悬空线）引起的违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noFill",
+      "description": "忽略金属填充。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noFloatingMetal",
+      "description": "忽略浮空金属。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noOpen",
+      "description": "忽略开路违规。注意：此参数会自动开启 -noUnConnPin 参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noSoftPGConnect",
+      "description": "禁用软电源地连接检查。默认情况下，verifyConnectivity 检查 masterslice 层的连接性。如果指定此选项，则忽略这些层的连接性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noUnConnPin",
+      "description": "忽略由于引脚未连接到任何其他对象而引起的违规。注意：指定 -noOpen 参数时会自动指定此参数。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noUnroutedNet",
+      "description": "忽略未布线的网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-noWeakConnect",
+      "description": "禁用对弱连接引脚端口的多端口路由检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-preferredTopLayer",
+      "description": "指定首选顶层金属层。使用此参数时，verifyConnectivity 不检查指定的顶层及以上的层。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-honorGroundLayerRange",
+      "description": "在指定的层范围内检查地网络的连接。在层范围检查期间，超出范围的金属层被视为不存在。未指定此参数时，软件检查地网络的完整层连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rawViolsMark",
+      "description": "将开路的违规标记显示为孤岛的边界框。默认情况下，开路的违规标记显示为包含连接到该孤岛的所有导线、引脚和通孔的多边形。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-removeOldOpenVio",
+      "description": "移除旧的开路违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-report",
+      "description": "指定连接性违规数据的报告文件。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-tsv",
+      "description": "指定用于检查当前裸片与相邻裸片之间 uBumps 的 TSV 抽象裸片文件。<abstractdiefilenames> 指定使用 writeDieAbstract 命令创建的抽象裸片文件的名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-type",
+      "description": "指定要验证的导线类型。verifyConnectivity 只关心导线和通孔的类型（特殊或常规），不关心引脚的类型。无论指定何种类型，除非开启 -noUnConnPin，否则始终报告所有未连接的端子（特殊和常规）。默认值：all。选项：all, regular, special。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-useNewOpenVio",
+      "description": "使用开路违规标记来显示未连接的对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-useVirtualConnection",
+      "description": "为同一网络的所有凸块和外部 I/O 引脚建立虚拟连接。设置此参数以覆盖 verifyConnectivity 的默认行为（默认情况下，同一网络的凸块和外部 I/O 引脚不被视为互连）。这在凸块倒装芯片设计中很有用，其中电源凸块在芯片外部连接。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-warning",
+      "description": "指定要报告的最大警告数。默认值：50。范围：[0, 1000000]。类型：整数。",
+      "required": false,
+      "type": "int"
+    }
+  ]
+}

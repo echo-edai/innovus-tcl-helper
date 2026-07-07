@@ -1,0 +1,45 @@
+{
+  "command": "create_clock",
+  "is_cmd": true,
+  "summary": "创建时钟对象并在当前设计中定义其时序波形",
+  "description": "该命令用于创建一个时钟对象，并在当前设计中定义其时序波形。如果未指定任何源但指定了时钟名称，则会创建一个虚拟时钟。新时钟具有理想的时钟延迟，软件不会假设时钟网络中存在任何传播延迟。使用此命令创建的时钟每个周期不能有多个脉冲。可以使用-add参数在同一引脚上指定多个约束。如果某个源已经是某个时钟的源，则该源会从原时钟中移除。若要在同一源上指定多个时钟以进行同时分析，必须指定-add参数，将此时钟添加到现有时钟中。",
+  "usage": "create_clock -period <period_value> [-name <clock_name>] [-waveform <edge_list>] [-add] [-comment <string>] [<sources>]",
+  "options": [
+    {
+      "name": "-period",
+      "description": "指定理想时钟的周期值，单位为库时间单位。",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "name": "-name",
+      "description": "指定要创建的理想时钟的字符串名称。如果未指定此选项，时钟将获得与使用-sources选项指定的第一个时钟源相同的名称。如果未指定任何源，则必须指定此选项以创建一个与端口或引脚无关的虚拟时钟。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-waveform",
+      "description": "指定在整个时钟周期内时钟波形的上升和下降边沿时间，单位为库时间单位。边沿列表中的第一个值是时钟上第一次转换（即时间零点后的第一次上升转换）发生的时间，边沿应单调递增。这些数字应代表一个完整的时钟周期。如果未指定，则假定为默认波形，即前导边沿在0时刻，后沿边沿在周期中点，从而生成对称时钟。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-add",
+      "description": "指定在同一源上具有不同时钟波形的多个时钟，以进行同时分析。必须与-name参数一起使用。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-comment",
+      "description": "允许插入注释。注释会被读取但会被忽略（伴随一次性警告信息）。它们不用于时序分析报告，也不会在保存约束时写出。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "<sources>",
+      "description": "指定与时钟的理想时钟波形相关联的引脚或端口列表。如果未指定此选项，则必须指定-name <clock_name>选项以创建一个与端口或引脚无关的虚拟时钟。如果在已有时钟的引脚上指定新时钟，新时钟将替换旧时钟。",
+      "required": false,
+      "type": "net+"
+    }
+  ]
+}

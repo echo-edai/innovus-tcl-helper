@@ -1,0 +1,112 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+addNet(25.10)                                                    addNet(25.10)
+
+Name
+       addNet - Adds a net to the design
+
+Syntax
+       addNet
+
+       [-help]
+
+       <netName>
+
+       [-bus <startID>:<endID>]
+
+       [-moduleBased <verilogModule>]
+
+       [-power  | -ground ]
+
+       Adds a net to the design. The net can be logical or physical.
+
+Parameters
+       -help  Outputs  a  brief description that includes the type and default
+              information for each addNet parameter.
+
+              For a detailed description of the command and all of its parame-
+              ters, use the  man  command:
+
+              man addNet
+
+       -bus <startID>:<endID>
+              Specifies the bit range for bus nets. The <startID> and  <endID>
+              indicate  the  first and last bits on the bus. You must separate
+              the start and end IDs with a colon (:).
+
+              If the specified bus does not exist, tool will create  a  bussed
+              Verilog net.
+
+              If the specified bus already exists, tool will do bus net resiz-
+              ing.  The  specified bus bit range must be adjacent to the first
+              or last bit of the existing bus. Also, it must have the same as-
+              cending or descending order as existing bus.
+
+              Note: PG bus net is not supported
+
+              -ground" Adds a ground net.
+
+       -moduleBased <verilogModule>
+              Adds the new net to the specified verilog module.
+
+              If the module name contains  special  characters,  you  need  to
+              start  the  module  name  with a backslash '\' and end it with a
+              space.
+
+       <netName>
+              Specifies the net to add.
+
+              If the net name contains special characters, you need  to  start
+              the  part  of  the  net name, which contains special characters,
+              with a backslash '\' and end it with a space.
+
+              Note: You must specify <netName> before you specify other  para-
+              meters. The software issues an error message if you do not spec-
+              ify the <netName> first.
+
+       -power Adds a power net.
+
+Examples
+              * The following command adds net i1/n1:
+
+                addNet -name i1/n1
+
+              *
+
+                The  following  command  adds one bit i1/n1[6] to existing bus
+                i1/n1[2:5]:
+
+                addNet -name i1/n1 -bus 6:6
+
+              *
+
+                The following command adds  three  bits  i1/n1[-1],  i1/n1[0],
+                i1/n1[1] to existing bus i1/n1[2:5]:
+
+                addNet -name i1/n1 -bus -1:1
+
+              * The following command adds net with base name ant_net to hier-
+                archy DTMF_INST/TDSP_CORE_INST/TDSP_CORE_MACH_INST[0].g:
+
+                addNet                                                   -name
+                {DTMF_INST/TDSP_CORE_INST/\TDSP_CORE_MACH_INST[0].g /ant_net}
+
+                Here the "[" and "]" brackets between the  backslash  and  the
+                space are special characters.
+
+              * The    following    command    adds   net   with   base   name
+                TDSP_CORE_INST/TDSP_CORE_MATCH_INST[0].g/ant_net to  hierarchy
+                DTMF_INST:
+
+                addNet                                                   -name
+                {DTMF_INST/\TDSP_CORE_INST/TDSP_CORE_MATCH_INST[0].g  /ant_net
+                }
+
+              * The  following  command  adds net with base name ant_net[1] to
+                module H[1]:
+
+                addNet -name {\ant_net[1] } -moduleBased {\H[1] }
+
+Related Information
+              * deleteNet
+
+                           Fri Apr 04 01:25:37 2025              addNet(25.10)

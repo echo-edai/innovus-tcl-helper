@@ -1,0 +1,91 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_pulse_clock_min_width(25.10)              set_pulse_clock_min_width(25.10)
+
+Name
+       set_pulse_clock_min_width  -  Sets  the  minimum pulse clock width con-
+       straint on the specified pulse generator cells, pulse generator library
+       cells, clocks and/or current design
+
+Syntax
+       set_pulse_clock_min_width
+
+       [-help]
+
+       <pulse_width>
+
+       <object_list>
+
+       [-transitive_fanout]
+
+       Sets the minimum pulse clock width constraint on  the  specified  pulse
+       generator  cells,  pulse generator library cells, clocks and/or current
+       design.
+
+       When you set this constraint on a clock, the settings  are  applied  to
+       all  the  pulse generators that are driven by the clock. When this con-
+       straint is used for a design, the software applies  the  constraint  to
+       all the clock networks in the design.
+
+       The  specified  minimum  pulse  width is expected to be larger than the
+       pulse width value. The width is defined when a clock object is  created
+       and  its  waveform  is  defined  in  the current design (using the cre-
+       ate_clock -waveform parameter).
+
+       In case of conflicting minimum width constraints, the more  restrictive
+       constraint  is used. When applied on a non-pulse generator object, or a
+       non-clock target, this constraint has no effect.
+
+       Note:  You  must  specify  set_interactive_constraint_modes  constraint
+       prior to running the set_pulse_clock_min_width command.
+
+Parameters
+       -help  Prints out the command usage.
+
+       <object_list>
+              Specifies  a list of objects - pulse generator cells, pulse gen-
+              erator library cells, clocks, or current design.
+
+       <pulse_width>
+              Specifies the minimum pulse width value.
+
+       -transitive_fanout
+              Specifies the pulse width value for transitive fanout.
+
+Examples
+              * The following example sets the  min  pulse  clock  width  con-
+                straint of 0.3 ns on the pulse generator instance pg_inst:
+
+                set_pulse_clock_min_width 0.3 pg_inst
+
+                This constraint can be observed using the following command:
+
+                report_constraint pg_inst/Y -check_type pulse_clock_min_width
+
+                Fragmented output:
+
+                ------------------------------------------
+
+                Pin Required Actual Pulse Slack Clock Type
+
+                Pulse Width Width
+
+                ------------------------------------------
+
+                pg_inst/Y (high)    0.300 0.366 0.066 PG
+
+                ------------------------------------------
+
+Related Information
+              * report_constraint
+
+              * reset_pulse_clock_min_width
+
+              * set_pulse_clock_max_width
+
+              * report_min_pulse_width
+
+              * set_interactive_constraint_modes
+
+              * timing_enable_uncertainty_for_pulsewidth_checks
+
+                           Fri Apr 04 01:25:37s2e0t2_5pulse_clock_min_width(25.10)

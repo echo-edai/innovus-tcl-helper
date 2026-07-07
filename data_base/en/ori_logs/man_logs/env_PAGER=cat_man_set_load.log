@@ -1,0 +1,148 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+set_load(25.10)                                                set_load(25.10)
+
+Name
+       set_load  -  Sets  the  specified  capacitance on the defined ports (or
+       nets) of the top cell
+
+Syntax
+       set_load
+
+       [-max] [-min]
+
+       [-pin_load]
+
+        [-wire_load]
+
+       [-subtract_pin_load]
+
+       <capacitance_value>
+
+       <object_list>
+
+       Sets the specified capacitance on the defined ports (or  nets)  of  the
+       top cell.
+
+       The  specified capacitance overrides the capacitance from the wire load
+       models and SPEF.
+
+       You can use the report_ports command to view  capacitance  of  asserted
+       ports.  The pin load appears in the report as port_cap in the assertion
+       column and the wire load appears as port_wire_cap in the assertion col-
+       umn.
+
+       In the timing report (generated using the report_timing  command),  the
+       load  value  for ports is displayed as a sum of the set_load value on a
+       port and the existing wire capacitance obtained from the SPEF file, and
+       pin capacitance obtained from the library files.
+
+Parameters
+       <capacitance_value>
+              Specifies the value for the capacitance. The capacitance  is  in
+              units from the target technology library.
+
+       -min   Specifies  the  minimum  capacitance. The minimum capacitance is
+              used to compute best-case delays in BcWc analysis mode and early
+              path delays in OCV analysis mode.
+
+       -max   Specifies the maximum capacitance. The  maximum  capacitance  is
+              used to compute worst-case delays in BcWc analysis mode and late
+              path  delays  in  OCV mode. It is also used to check the maximum
+              capacitance design rule.
+
+       <object_list>
+              Specifies a list of ports or nets in the top cell.
+
+       -pin_load
+              Specifies the external pin capacitance for a port. You  can  use
+              this parameter for ports only.
+
+              For  ports,  the asserted capacitance is either the external pin
+              capacitance when the -pin_load parameter is  specified,  or  the
+              external wire capacitance when the -wire_load parameteris speci-
+              fied,  or  the total external capacitance when neither option is
+              specified.
+
+       -subtract_pin_load
+              This parameter can be used only if nets are specified in the ob-
+              ject list.
+
+              When this parameter is  specified,  the  total  net  capacitance
+              value  will be the same as set by the set_load capacitance_value
+              object_list command.
+
+              When this parameter is not specified, the  asserted  load  value
+              will  only  change the wire capacitance value from the SPEF. The
+              total net capacitance value will  be  the  set_load  capacitance
+              value plus the pin capacitance from the library file.
+
+       -wire_load
+              Interprets the specified capacitance as the external wire capac-
+              itance of the port. Use this option only for ports. Use this op-
+              tion with the <port_net_list> argument if the list contains only
+              ports.
+
+Examples
+              * The following command sets an external minimum pin capacitance
+                of  1.5 units on the in1in2 ports: set_load 1.5 -min -pin_load
+                [get_ports {in1 in2}]
+
+              * The following command sets an external  minimum  wire  capaci-
+                tance  of  1.2  units  on  the in1in2 ports: set_load 1.2 -min
+                -wire_load [get_ports {in1 in2}]
+
+              * The following command sets an external maximum pin capacitance
+                of 2.6 units on the in1in2 ports: set_load 2.6 -max  -pin_load
+                [get_ports {in1 in2}]
+
+              * The  following  command  sets an external maximum wire capaci-
+                tance of 3.0 units on the  in1in2  ports:  set_load  3.0  -max
+                -wire_load [get_ports {in1 in2}]
+
+              * The  following  command  reports  the  capacitances set on the
+                ports, as shown in example below:
+
+                report_ports -pin [get_ports {in1}]
+
+                -----------------------------------------------------------
+
+                Early Late
+
+                ------------------------------------------------------------
+
+                Pin   Dir Assertion       Clock   Rise   Fall  Rise  Fall
+
+                Name                      Name
+
+                ------------------------------------------------------------
+
+                in1   IN drive_resistance *(D)(P) 2.000  2.000  2.000  2.000
+
+                -------------------------------------------------------------
+
+                ------------------------------------------------------
+
+                Pin    Dir   Assertion     Value
+
+                Name
+
+                ------------------------------------------------------
+
+                in1   IN    port_cap      ( 1.500 : : 2.600 )
+
+                in1   IN    port_wire_cap ( 1.200 : : 3.000 )
+
+                ------------------------------------------------------
+
+Related Information
+              * all_outputs
+
+              * report_ports
+
+              * report_timing
+
+              * set_drive
+
+              * set_resistance
+
+                           Fri Apr 04 01:25:37 2025            set_load(25.10)

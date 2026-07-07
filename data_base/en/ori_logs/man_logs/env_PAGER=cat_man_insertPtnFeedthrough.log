@@ -1,0 +1,407 @@
+Product Version     25.10    Cadence Design Systems, Inc.
+insertPtnFeedthrough(25.10)                        insertPtnFeedthrough(25.10)
+
+Name
+       insertPtnFeedthrough - Inserts feedthrough buffers into the partitions,
+       changing the original netlist, to avoid routing a net over a block area
+
+Syntax
+        insertPtnFeedthrough
+
+       [-help]
+
+       [-allLowercase]
+
+       [-blockageFile <fileName>]
+
+       [-blockedEdgesFile <fileName>]
+
+       [-instPrefix <instancePrefix>]
+
+       [-netPrefix <netPrefix>]
+
+       [-repeatedSymmetricAbuttedFPlan]
+
+       [-reuseBuffer {true false 0 1}]
+
+       [-saveTopoFile <fileName>]
+
+       [-useShortName]
+
+       [-verbose]
+
+       [[[-selectNet  <fileName> | -selectMarkedNet | -autoSelectNetsByConges-
+       tion | -autoSelectNetsBySlack |
+
+       [ [-excludeNet <fileName>] ]] ] | -topoFile <topologyFileName> ]
+
+       [ -topoFile <topologyFileName>  |  -routeBased  |  -routeBasedStrict  |
+       [-excludePtnList {<ptnName> | <ptnNameList>} ] ]
+
+       [ -topoFile <topologyFileName> | -routeBased | -routeBasedStrict ]
+
+       [ -routeBased [-autoSelectNetsBySlack ] [-autoSelectNetsByCongestion ]]
+
+       [-noBuffer  |  [[-bufCell {<cellName> | <cellNameList>}] [-doubleBuffer
+       ]]]
+
+       [[-checkOnly ] | [[-ecoFile  <fileName>]  [-netMapping  <fileName>]]  ]
+       [-topoFile <topologyFileName> ] [-noBuffer ]
+
+       Inserts  feedthrough buffers into the partitions, changing the original
+       netlist, to avoid routing a net over a block area. ECO  placement  runs
+       automatically  with this command. The buffer supplied during design im-
+       port is taken as default. For Alternately, you  can  specify  a  buffer
+       with  the -bufCell parameter or specify the -noBuffer parameter to gen-
+       erate an ASSIGN statement in the netlist. You can use this command  af-
+       ter the floorplanning steps for a partitioned design.
+
+       The insertPtnFeedthrough command can detect if the design has power do-
+       mains.  This way, appropriate buffers which are inserted into power do-
+       mains will automatically be derived based on power domain library bind-
+       ing. An error message is reported if no regular buffer is found for  an
+       Always  On  power  domain  in  the feedthrough path. Both placement and
+       route based feedthrough insertions can support Always On and switchable
+       power domains.
+
+       You can save the feedthrough buffer topology tree information in a file
+       by using the -saveTopoFile parameter. You can later use  the  -topoFile
+       parameter to replicate feedthrough buffer insertions for an ECO netlist
+       by  specifying the file that has the topology tree information. You can
+       also manually create a topology file to guide feedthrough insertion for
+       specific nets.
+
+       Notes:
+
+              * The   insertPtnFeedthrough  command  by  default  derives  the
+                feedthrough topology using a shortest-path algorithm, which is
+                based on the placement results.
+
+              * The   insertPtnFeedthrough  command by default considers a de-
+                sign to be channel-less, having no channel available for rout-
+                ing. Therefore all nets are candidates for feedthrough  inser-
+                tion.
+
+                The default behavior assumes a true channel-less design - that
+                is,  the possibility of routing through channels is considered
+                minimal. It does  not  consider  routing  congestion,  routing
+                blockages,  route guides, pin guides, and bus guides. If these
+                considerations are required, use the -routeBased parameter  to
+                derive the feedthrough topology based on the routing results.
+
+              * Feedthroughs  are  inserted  in  nets that connect to floating
+                ports. Floating ports are hierarchical ports that are not con-
+                nected to any logic inside the module.
+
+              * The insertPtnFeedthrough command removes  nets  that  are  in-
+                serted  with  feedthrough buffers from any net groups to which
+                they belong. After running this command you should, therefore,
+                update the net groups that contain feedthrough nets.
+
+              * If a pin guide exists for a net for which feedthrough  buffers
+                are inserted, the pin guide information is updated.
+
+              * The insertPtnFeedthrough command will handle designs with mas-
+                ter/clone partitions automatically. However, it may create in-
+                feasible  pin  solution  for  channel-less  designs with fully
+                abutted partitions.
+
+              * The  insertPtnFeedthrough command supports nested  partitions.
+                For  inserting feedthrough buffers into nested partitions, the
+                insertPtnFeedthrough command, first, automatically deletes the
+                parent partitions and keeps only the bottom-most partition. It
+                then does a single-level feedthrough insertion and then  auto-
+                matically restores the parent partitions and brings the nested
+                partition definition back as it is. In nested designs, the in-
+                sertPtnFeedthrough  command only puts buffers and ports in the
+                bottom most level of partitions.
+
+              * The insertPtnFeedthrough command prints a summary of all  mes-
+                sages issued for nets in the log file.
+
+              * A  feedthrough  always  uses a low power compatible buffer/AO-
+                buffer. If it cannot use a low power complaint cell, then  the
+                default  buffer  (specified  with  the  -bufCell parameter) is
+                used, and the buffer name is prefixed with "MSV_INVALID".
+
+Parameters
+       -allLowercase
+              Specifies all lowercase characters for the inserted  feedthrough
+              buffer and feedthrough net names.
+
+              Data_type: bool, optional
+
+       -autoSelectNetsByCongestion
+              Specifies  that  the critical nets in congested channels will be
+              identified automatically. These critical nets are routed flat so
+              that later they can be feedthrough over partition(s)  to  reduce
+              congestion,  while  other  remaining nets are routed by honoring
+              fences. Once the routing  is  done,  feedthroughs  are  inserted
+              based on the routing result.
+
+              Data_type: bool, optional
+
+       -autoSelectNetsBySlack
+              Specifies  that  the critical nets in the design will be identi-
+              fied automatically. These critical nets are routed flat so  that
+              later  on  they  can be feedthrough over partition(s) to improve
+              timing while other remaining nets are routed by honoring fences.
+              Once the routing is done, feedthroughs are inserted based on the
+              routing result.
+
+              Data_type: bool, optional
+
+       -blockageFile <fileName>
+              Specifies a file that contains the coordinates of line  segments
+              that are considered as blockages for placement based feedthrough
+              insertion.
+
+              Note: The blockages must be defined as lines that do not overlap
+              with  partitions  or  macros. These blockage lines are supported
+              only with automatic feedthrough  insertion  or  placement  based
+              feedthrough insertion.
+
+              The following is the format of the blockage file:
+
+              <x1 y1 x2 y2>
+
+              <x1 y1 x2 y2...xn yn xm ym >
+
+              The  blockage  lines are specified as coordinates of a box, how-
+              ever, the boxes should be of zero width or height.
+
+              Data_type: string, optional
+
+       -blockedEdgesFile <fileName>
+              Specifies a file that contains the names of the partitions  fol-
+              lowed by the edge numbers for the partition which are considered
+              as blocked for the purpose of insertPtnFeedthrough command.
+
+              Data_type: string, optional
+
+       -bufCell {<cellName> | <cellNameList>}
+              Specifies the name of the feedthrough buffer cell type.
+
+              Note:  You  can  specify multiple buffer cells with MSV designs.
+              The first buffer will be used for the default power domain.
+
+              Data_type: string, optional
+
+       -checkOnly
+              Specifies that the feedthrough buffers are  not  inserted.  This
+              parameter  is  useful  when  you want to know how the insertPtn-
+              Feedthrough command will affect the design. A  summary  informa-
+              tion  will be printed. You can specify this parameter along with
+              the -saveTopoFile parameter.  This  will  save  the  feedthrough
+              topology information.
+
+              Data_type: bool, optional
+
+       -doubleBuffer
+              Adds  a  buffer  close  to  the feedthrough input pin and adds a
+              buffer close to the feedthrough output pin.
+
+              Data_type: bool, optional
+
+       -ecoFile <fileName>
+              Specifies the file for logging ECO  directives.  This  parameter
+              cannot be used with the -checkOnly parameter.
+
+              Data_type: string, optional
+
+       -excludeNet <fileName>
+              Specifies a file that contains net names to be excluded from be-
+              ing a feedthrough net for a partition.
+
+              Data_type: string, optional
+
+       -excludePtnList<{> <partitionName> | <partitionList>}
+              Specifies  that  feedthrough  buffers should not be added to the
+              specified partitions.
+
+              Data_type: string, optional
+
+       -help  Outputs a brief description that includes the type  and  default
+              information  for  each insertPtnFeedthrough parameter. For a de-
+              tailed description of the command and all of its parameters, use
+              the man command:
+
+              man insertPtnFeedthrough
+
+       -instPrefix <instancePrefix>
+              Specifies a prefix for the newly created instances.  The  prefix
+              that you specify will be used instead of the default prefix.
+
+              Data_type: string, optional
+
+       -netMapping <fileName>
+              Generates  a file that maps the original net name to the new net
+              name created for the feedthrough buffers.
+
+              Note: You must specify this parameter if you later want  to  run
+              the  hiliteFeedthroughNetscommand  to  highlight the feedthrough
+              paths of the nets.
+
+              Data_type: string, optional
+
+       -netPrefix <netPrefix>
+              Specifies a prefix for the newly created nets. The  prefix  that
+              you specify will be used instead of the default prefix.
+
+              Data_type: string, optional
+
+       -noBuffer
+              Generates  an ASSIGN statement in the netlist instead of insert-
+              ing a buffer.
+
+              Data_type: bool, optional
+
+       -repeatedSymmetricAbuttedFPlan
+              This option is relevant to master clone designs.  It  is  to  be
+              used  for the floorplans which have repeated components arranged
+              in a symmetric fashion with a data flow going from  the  top  to
+              each component independently.
+
+              Note:  If  the  design has nested partitions, it will delete all
+              the partitions which are parents. It will hold  more  partitions
+              within them, perform its operation and restore the parent parti-
+              tions once finished.
+
+              Data_type: bool, optional
+
+       -reuseBuffer {true | false | 0 | 1}
+              Reuses  inserted buffers across multiple instantiation of a mod-
+              ule within one run. This option should only be used for  designs
+              that have master and clone partitions.
+
+              Default: true
+
+              Data_type: enum, optional
+
+       -routeBased
+              Derives the feedthrough topology based on the routing results.
+
+              Data_type: bool, optional
+
+       -routeBasedStrict
+              Derives  the  feedthrough  topology based on the routing results
+              and follows each criss-cross. In comparison to  the  -routeBased
+              parameter,  the  -routeBasedStrict option inserts more number of
+              buffers depending on the routing cross-overs and  also  supports
+              special routes. It can insert buffers on intra-partition net, if
+              the  routing  crosses  outside the boundary. However, such a net
+              needs to be handled via selected feedthrough insertion  and  not
+              default  selection.  The  -routeBasedStrict parameter places the
+              pins at each of the routing cross-point.
+
+              Note:  You  can  use  the  showPtnWireX  command  to  get   [de-
+              sign_name].nets_not_crossing_mc.txt  for  a selection of nets on
+              which to use this option.
+
+              Data_type: bool, optional
+
+       -saveTopoFile <fileName>
+              Saves a file with feedthrough buffer topology  tree  information
+              from an existing floorplan.
+
+              Data_type: string, optional
+
+       -selectMarkedNet
+              Specifies  that  feedthrough  buffers  should be inserted on the
+              nets that are currently selected in the GUI.
+
+              Data_type: bool, optional
+
+       -selectNet <fileName>
+              Specifies a file that contains net names to be feedthrough  nets
+              for a partition and inserted feedthrough buffers.
+
+              Data_type: bool, optional
+
+       -topoFile <topologyFileName>
+              Specifies  the file that has the topology tree information. This
+              information is  used  to  create  feedthrough  buffers  for  the
+              netlist.  If  you  use  the -topoFile parameter, only those nets
+              that are specified in  the  topology  file  are  considered  for
+              feedthrough buffer insertion. If a net does not exist in the de-
+              sign, it should not be in the topology file. For example, if ECO
+              changes remove a net, that net should be removed from the topol-
+              ogy file.
+
+              Note:  Hierarchical  bus  names are not supported in the Innovus
+              software. Therefore, you cannot use hierarchical  bus  names  in
+              the topology file.
+
+              Note: The names of the feedthrough nets, buffers, and ports cre-
+              ated might change in the different runs of the command. Only the
+              feedthrough  path  (the  partitions  through  which the net will
+              pass) will always remain the same across the different  runs  of
+              the command.
+
+              Data_type: string, optional
+
+       -useShortName
+              Specifies  the abbreviation of inserted feedthrough net names so
+              that the net names do not extend too long for multiple runs.
+
+              Data_type: bool, optional
+
+       -verbose
+              Specifies that net-specific information is included in the logs.
+
+              Default: Only the summary information is included in the logs.
+
+              Data_type: bool, optional
+
+Examples
+              * The following command generates a file, K_ABC.topo,  with  the
+                feedthrough buffer topology tree information:
+
+                insertPtnFeedthrough -saveTopofile K_ABC.topo -netMapping abc-
+                file
+
+                The following is the generated topology file:
+
+                ###############################################################
+
+                #  Generated by:      Cadence Innovus
+
+                #  OS:                Linux x86_64(Host ID nofcnl040)
+
+                #  Generated on:      Mon Jan 21 12:34:59 2015
+
+                #  Design:            test
+
+                #    Command:             insertPtnFeedthrough   -saveTopoFile
+                K_ABC.topo ...
+
+                ###############################################################
+
+                version 1.0;
+
+                net K_ABC_NET
+
+                hinst-hinst p4 p8;
+
+                hinst-hinst p4 p7;
+
+                end net
+
+              *
+
+                The following command specifies that topology tree information
+                from  the  topology_info  file  should  be  used  to  generate
+                feedthrough buffer insertions:
+
+                insertPtnFeedthrough -topofile topology_info
+
+Related Information
+              * hiliteFeedthroughNets
+
+              * showPtnWireX
+
+              * Partitioning the Design chapter in the Innovus User Guide
+
+                * Inserting Feedthroughs
+
+                           Fri Apr 04 01:25:37 2025insertPtnFeedthrough(25.10)
