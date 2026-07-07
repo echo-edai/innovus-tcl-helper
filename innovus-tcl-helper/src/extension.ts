@@ -16,6 +16,19 @@ import { TclDiagnosticsProvider } from './diagnostics';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
 
+/**
+ * 根据配置值解析实际语言。
+ * "auto" → 跟随 VS Code 界面语言（中文 → zh，其他 → en）
+ */
+function resolveLanguage(configLang: string): Language {
+    if (configLang === 'auto') {
+        // vscode.env.language 示例: "zh-cn", "zh-tw", "en", "ja", ...
+        const vsLang = vscode.env.language.toLowerCase();
+        return vsLang.startsWith('zh') ? 'zh' : 'en';
+    }
+    return configLang as Language;
+}
+
 export function activate(context: vscode.ExtensionContext) {
     console.log('[Innovus TCL] 插件已激活');
 
@@ -24,8 +37,9 @@ export function activate(context: vscode.ExtensionContext) {
     // 初始化命令数据库
     const db = getDB(context.extensionPath);
 
-    // 读取语言设置
-    const lang = config.get<string>('language', 'zh') as Language;
+    // 读取语言设置（支持 auto 自动检测）
+    const rawLang = config.get<string>('language', 'auto');
+    const lang = resolveLanguage(rawLang);
     db.setLanguage(lang);
 
     // 读取版本设置
@@ -89,7 +103,8 @@ export function activate(context: vscode.ExtensionContext) {
     // 监听配置变更，切换语言时自动重载
     subs.push(vscode.workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration('innovus-tcl.language')) {
-            const newLang = vscode.workspace.getConfiguration('innovus-tcl').get<string>('language', 'zh') as Language;
+            const rawLang = vscode.workspace.getConfiguration('innovus-tcl').get<string>('language', 'auto');
+            const newLang = resolveLanguage(rawLang);
             db.setLanguage(newLang);
             vscode.window.showInformationMessage(
                 `Innovus TCL: 已切换为${newLang === 'zh' ? '中文' : 'English'} (${db.getCommandNames().length} 命令)`
@@ -126,6 +141,17 @@ export function activate(context: vscode.ExtensionContext) {
             `⚠️  静态检查: ${config.get('enableDiagnostics') ? '✅' : '❌'}`,
         ].join('\n');
         vscode.window.showInformationMessage(msg, { modal: true });
+    }));
+
+    // 注册命令：切换中/英文
+    subs.push(vscode.commands.registerCommand('innovus-tcl.switchLanguage', async () => {
+        const current = db.getLanguage();
+        const newLang: Language = current === 'zh' ? 'en' : 'zh';
+        const cfg = vscode.workspace.getConfiguration('innovus-tcl');
+        await cfg.update('language', newLang, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage(
+            `Innovus TCL: 已切换为${newLang === 'zh' ? '中文' : 'English'} (${db.getCommandNames().length} 命令)`
+        );
     }));
 
     // 清理
