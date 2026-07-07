@@ -261,6 +261,251 @@ function toolParseScript({ script_content }) {
 }
 
 // ════════════════════════════════════════════════════════════
+//  Tool: innovus_lint_tcl_script — 跨文件 Lint 检查
+// ════════════════════════════════════════════════════════════
+
+function toolLintScript({ scripts }) {
+    const isZh = LANGUAGE === 'zh';
+    if (!scripts || !Array.isArray(scripts) || scripts.length === 0) {
+        return { error: isZh ? '请提供 scripts 数组（至少一个脚本）' : 'Please provide scripts array (at least one script)' };
+    }
+
+    const errors = [];
+    const warnings = [];
+    const infoMessages = [];
+    const variables = {}; // varName → { value, file, line, order }
+    const varRefs = [];   // { name, file, line, defined }
+
+    // Process each script in order
+    for (let order = 0; order < scripts.length; order++) {
+        const { file, content } = scripts[order];
+        if (!content || typeof content !== 'string') { continue; }
+
+        const fileName = file || `script_${order + 1}.tcl`;
+        const lines = content.split('\n');
+
+        // Check brackets and quotes per script
+        checkBracketsScript(lines, fileName, errors);
+        checkQuotesScript(lines, fileName, errors);
+
+        // Extract set and variable references per line
+        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+            const line = lines[lineIdx];
+            const trimmed = line.trim();
+            const lineNum = lineIdx + 1;
+
+            if (!trimmed || trimmed.startsWith('#')) { continue; }
+
+            // Check for set command: set varName value
+            const setMatch = trimmed.match(/^set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+(.+)$/);
+            if (setMatch) {
+                const varName = setMatch[1];
+                const rawValue = setMatch[2].trim();
+
+                // Simple value extraction (remove quotes/braces)
+                let value = rawValue;
+                if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.slice(1, -1);
+                }
+                if (value.startsWith('{') && value.endsWith('}')) {
+                    value = value.slice(1, -1);
+                }
+
+                // Check if value references other variables
+                const refsInValue = extractVarRefs(value);
+                let isResolved = refsInValue.length === 0;
+
+                // Update variable table
+                if (!variables[varName]) {
+                    variables[varName] = [];
+                }
+                variables[varName].push({
+                    value,
+                    rawValue,
+                    file: fileName,
+                    line: lineNum,
+                    order,
+                    isResolved
+                });
+
+                // Check for references to undefined variables
+                for (const refName of refsInValue) {
+                    if (!variables[refName] || variables[refName].length === 0) {
+                        errors.push({
+                            message: isZh
+                                ? `变量 "${refName}" 未定义（在 "${varName}" 的值中引用）`
+                                : `Variable "${refName}" is undefined (referenced in value of "${varName}")`,
+                            file: fileName,
+                            line: lineNum
+                        });
+                    }
+                }
+                continue;
+            }
+
+            // Check for variable references: $varName and ${varName}
+            const refsInLine = extractVarRefs(trimmed);
+            for (const refName of refsInLine) {
+                const definitions = variables[refName];
+                const isDefined = definitions && definitions.length > 0;
+
+                if (isDefined) {
+                    // Check if defined before this reference
+                    const latestDef = definitions[definitions.length - 1];
+                    if (latestDef.order > order || (latestDef.order === order && latestDef.line >= lineNum)) {
+                        warnings.push({
+                            message: isZh
+                                ? `变量 "${refName}" 在定义之前使用（定义在 ${latestDef.file}:${latestDef.line}）`
+                                : `Variable "${refName}" used before definition (defined at ${latestDef.file}:${latestDef.line})`,
+                            file: fileName,
+                            line: lineNum
+                        });
+                    }
+                } else {
+                    errors.push({
+                        message: isZh
+                            ? `未定义的变量 "${refName}"`
+                            : `Undefined variable "${refName}"`,
+                        file: fileName,
+                        line: lineNum
+                    });
+                }
+
+                varRefs.push({
+                    name: refName,
+                    file: fileName,
+                    line: lineNum,
+                    defined: isDefined
+                });
+            }
+        }
+    }
+
+    // Check for unused variables
+    const usedVarNames = new Set(varRefs.map(r => r.name));
+    for (const varName of Object.keys(variables)) {
+        if (!usedVarNames.has(varName)) {
+            const defs = variables[varName];
+            const lastDef = defs[defs.length - 1];
+            warnings.push({
+                message: isZh
+                    ? `变量 "${varName}" 已定义但从未使用`
+                    : `Variable "${varName}" is defined but never used`,
+                file: lastDef.file,
+                line: lastDef.line
+            });
+        }
+    }
+
+    return {
+        summary: {
+            scriptCount: scripts.length,
+            variableDefCount: Object.values(variables).reduce((s, arr) => s + arr.length, 0),
+            variableRefCount: varRefs.length,
+            uniqueVariables: Object.keys(variables).length,
+            errorCount: errors.length,
+            warningCount: warnings.length,
+            infoCount: infoMessages.length
+        },
+        variables,
+        errors,
+        warnings,
+        info: infoMessages
+    };
+}
+
+/** Check brackets in a single script */
+function checkBracketsScript(lines, fileName, errors) {
+    let bracketDepth = 0;
+    let braceDepth = 0;
+    let inString = false;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.trimStart().startsWith('#')) { continue; }
+
+        for (let j = 0; j < line.length; j++) {
+            const ch = line[j];
+            const prevCh = j > 0 ? line[j - 1] : '';
+
+            if (ch === '\\' && j + 1 < line.length) { j++; continue; }
+            if (ch === '"' && prevCh !== '\\') { inString = !inString; continue; }
+            if (inString) { continue; }
+
+            if (ch === '[') { bracketDepth++; }
+            if (ch === ']') { bracketDepth--; }
+            if (ch === '{') { braceDepth++; }
+            if (ch === '}') { braceDepth--; }
+
+            if (bracketDepth < 0) {
+                errors.push({
+                    message: `多余的右方括号 "]"`,
+                    file: fileName,
+                    line: i + 1
+                });
+                bracketDepth = 0;
+            }
+            if (braceDepth < 0) {
+                errors.push({
+                    message: `多余的右花括号 "}"`,
+                    file: fileName,
+                    line: i + 1
+                });
+                braceDepth = 0;
+            }
+        }
+    }
+
+    if (bracketDepth > 0) {
+        errors.push({
+            message: `缺少 ${bracketDepth} 个右方括号 "]"`,
+            file: fileName,
+            line: lines.length
+        });
+    }
+    if (braceDepth > 0) {
+        errors.push({
+            message: `缺少 ${braceDepth} 个右花括号 "}"`,
+            file: fileName,
+            line: lines.length
+        });
+    }
+}
+
+/** Check quotes in a single script */
+function checkQuotesScript(lines, fileName, errors) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.trimStart().startsWith('#')) { continue; }
+
+        let inString = false;
+        for (let j = 0; j < line.length; j++) {
+            const ch = line[j];
+            if (ch === '\\' && j + 1 < line.length) { j++; continue; }
+            if (ch === '"') { inString = !inString; }
+        }
+        if (inString) {
+            errors.push({
+                message: `未闭合的双引号`,
+                file: fileName,
+                line: i + 1
+            });
+        }
+    }
+}
+
+/** Extract variable names from $varName and ${varName} references */
+function extractVarRefs(text) {
+    const refs = [];
+    const regex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_:]*)\}?/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        refs.push(match[2]);
+    }
+    return [...new Set(refs)];
+}
+
+// ════════════════════════════════════════════════════════════
 //  JSON-RPC 2.0 over stdio
 // ════════════════════════════════════════════════════════════
 
@@ -289,7 +534,7 @@ async function handleRequest(msg) {
                     capabilities: { tools: {} },
                     serverInfo: {
                         name: 'innovus-tcl-mcp',
-                        version: '0.3.0'
+                        version: '0.4.0'
                     }
                 });
                 break;
@@ -318,6 +563,32 @@ async function handleRequest(msg) {
                                 },
                                 required: ['script_content']
                             }
+                        },
+                        {
+                            name: 'innovus_lint_tcl_script',
+                            description: LANGUAGE === 'zh'
+                                ? '对 TCL 脚本进行静态 Lint 检查。检测括号/引号匹配、未定义变量、变量使用顺序等问题。支持传入多个脚本内容（模拟 .f 文件编译顺序）进行跨文件变量追踪。'
+                                : 'Static lint checking for TCL scripts. Detects bracket/quote matching, undefined variables, variable usage order. Supports multiple scripts (simulating .f file compilation order) for cross-file variable tracking.',
+                            inputSchema: {
+                                type: 'object',
+                                properties: {
+                                    scripts: {
+                                        type: 'array',
+                                        items: {
+                                            type: 'object',
+                                            properties: {
+                                                file: { type: 'string', description: LANGUAGE === 'zh' ? '文件名（用于报告）' : 'File name (for reporting)' },
+                                                content: { type: 'string', description: LANGUAGE === 'zh' ? 'TCL 脚本完整文本' : 'Full TCL script content' }
+                                            },
+                                            required: ['file', 'content']
+                                        },
+                                        description: LANGUAGE === 'zh'
+                                            ? 'TCL 脚本列表（按 .f 文件编译顺序排列），每个元素包含 file（文件名）和 content（脚本内容）。第一个脚本中定义的变量在后续脚本中可见。'
+                                            : 'List of TCL scripts (in .f file compilation order), each with file name and content. Variables defined in earlier scripts are visible in later scripts.'
+                                    }
+                                },
+                                required: ['scripts']
+                            }
                         }
                     ]
                 });
@@ -333,7 +604,14 @@ async function handleRequest(msg) {
                         content: [
                             { type: 'text', text: JSON.stringify(result, null, 2) }
                         ]
-                    }););
+                    });
+                } else if (toolName === 'innovus_lint_tcl_script') {
+                    const result = toolLintScript(toolArgs);
+                    sendResponse(id, {
+                        content: [
+                            { type: 'text', text: JSON.stringify(result, null, 2) }
+                        ]
+                    });
                 } else {
                     sendError(id, -32601, `Unknown tool: ${toolName}`);
                 }
@@ -352,7 +630,7 @@ async function handleRequest(msg) {
 //  Main
 // ════════════════════════════════════════════════════════════
 
-logToStderr(`Starting Innovus TCL MCP Server v0.3.0`);
+logToStderr(`Starting Innovus TCL MCP Server v0.4.0`);
 logToStderr(`Data root: ${DATA_ROOT}`);
 logToStderr(`Language: ${LANGUAGE}`);
 

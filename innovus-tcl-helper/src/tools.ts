@@ -601,6 +601,140 @@ function buildScriptContext(
 }
 
 // ════════════════════════════════════════════════════════════════
+//  Tool 4: innovus_lint_tcl_script — 跨文件 Lint 检查
+// ════════════════════════════════════════════════════════════════
+
+class LintTclScriptTool implements vscode.LanguageModelTool<{
+    scripts: Array<{ file: string; content: string }>;
+}> {
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<{
+            scripts: Array<{ file: string; content: string }>;
+        }>,
+        _token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        const db = getDB();
+        const isZh = db.getLanguage() === 'zh';
+        const input = options.input;
+
+        if (!input.scripts || !Array.isArray(input.scripts) || input.scripts.length === 0) {
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(
+                    isZh ? '错误：请提供 scripts 数组（至少一个脚本）。' : 'Error: Please provide scripts array (at least one script).'
+                )
+            ]);
+        }
+
+        const result = this.lintScripts(input.scripts, isZh);
+        return new vscode.LanguageModelToolResult([
+            new vscode.LanguageModelTextPart(result)
+        ]);
+    }
+
+    private lintScripts(
+        scripts: Array<{ file: string; content: string }>,
+        isZh: boolean
+    ): string {
+        const errors: string[] = [];
+        const warnings: string[] = [];
+        const variables: Record<string, Array<{ value: string; file: string; line: number; order: number }>> = {};
+        const usedVarNames = new Set<string>();
+        let totalSets = 0;
+        let totalRefs = 0;
+
+        for (let order = 0; order < scripts.length; order++) {
+            const { file, content } = scripts[order];
+            const fileName = file || `script_${order + 1}.tcl`;
+            const lines = content.split('\n');
+
+            for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+                const line = lines[lineIdx];
+                const trimmed = line.trim();
+                const lineNum = lineIdx + 1;
+                if (!trimmed || trimmed.startsWith('#')) { continue; }
+
+                // set command
+                const setMatch = trimmed.match(/^set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+(.+)$/);
+                if (setMatch) {
+                    const varName = setMatch[1];
+                    let value = setMatch[2].trim();
+                    if ((value.startsWith('"') && value.endsWith('"')) ||
+                        (value.startsWith('{') && value.endsWith('}'))) {
+                        value = value.slice(1, -1);
+                    }
+                    if (!variables[varName]) { variables[varName] = []; }
+                    variables[varName].push({ value, file: fileName, line: lineNum, order });
+                    totalSets++;
+                    continue;
+                }
+
+                // Variable references
+                const refRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_:]*)\}?/g;
+                let match: RegExpExecArray | null;
+                while ((match = refRegex.exec(trimmed)) !== null) {
+                    const varName = match[2];
+                    usedVarNames.add(varName);
+                    totalRefs++;
+                    if (!variables[varName] || variables[varName].length === 0) {
+                        errors.push(isZh
+                            ? `[${fileName}:${lineNum}] 未定义的变量 "\$${varName}"`
+                            : `[${fileName}:${lineNum}] Undefined variable "\$${varName}"`);
+                    }
+                }
+            }
+        }
+
+        // Check for unused variables
+        for (const varName of Object.keys(variables)) {
+            if (!usedVarNames.has(varName)) {
+                const lastDef = variables[varName][variables[varName].length - 1];
+                warnings.push(isZh
+                    ? `[${lastDef.file}:${lastDef.line}] 变量 "${varName}" 已定义但从未使用`
+                    : `[${lastDef.file}:${lastDef.line}] Variable "${varName}" is defined but never used`);
+            }
+        }
+
+        // Build report
+        let report = '';
+        report += isZh ? '# 🔍 TCL Lint 报告\n\n' : '# 🔍 TCL Lint Report\n\n';
+        report += isZh
+            ? `**脚本数:** ${scripts.length} | **变量定义:** ${totalSets} | **变量引用:** ${totalRefs}\n\n`
+            : `**Scripts:** ${scripts.length} | **Variable defs:** ${totalSets} | **Variable refs:** ${totalRefs}\n\n`;
+
+        // Variable table
+        if (Object.keys(variables).length > 0) {
+            report += isZh ? '## 📊 变量表\n\n' : '## 📊 Variable Table\n\n';
+            report += isZh
+                ? '| 变量 | 值 | 文件 | 行 |\n|------|-----|------|----|\n'
+                : '| Variable | Value | File | Line |\n|----------|-------|------|------|\n';
+            for (const [varName, defs] of Object.entries(variables)) {
+                for (const def of defs) {
+                    const displayVal = def.value.length > 50 ? def.value.substring(0, 47) + '...' : def.value || '(empty)';
+                    report += `| \`${varName}\` | ${displayVal} | ${def.file} | ${def.line} |\n`;
+                }
+            }
+            report += '\n';
+        }
+
+        if (errors.length > 0) {
+            report += isZh ? `## ❌ 错误 (${errors.length})\n\n` : `## ❌ Errors (${errors.length})\n\n`;
+            errors.forEach(e => report += `- ${e}\n`);
+            report += '\n';
+        }
+        if (warnings.length > 0) {
+            report += isZh ? `## ⚠️ 警告 (${warnings.length})\n\n` : `## ⚠️ Warnings (${warnings.length})\n\n`;
+            warnings.forEach(w => report += `- ${w}\n`);
+            report += '\n';
+        }
+        if (errors.length === 0 && warnings.length === 0) {
+            report += isZh ? '## ✅ 无问题\n\n所有检查通过。\n' : '## ✅ No Issues\n\nAll checks passed.\n';
+        }
+
+        return report;
+    }
+}
+
+// ════════════════════════════════════════════════════════════════
 //  导出
 // ════════════════════════════════════════════════════════════════
 
@@ -640,6 +774,29 @@ export const TOOL_DEFINITIONS = {
             }
         } as object,
         tags: ['innovus', 'tcl', 'eda', 'cadence']
+    },
+    lintTclScript: {
+        name: 'innovus_lint_tcl_script',
+        description: '对 TCL 脚本进行跨文件 Lint 检查。支持传入多个脚本（按 .f 文件编译顺序），检测括号/引号匹配、未定义变量、变量使用顺序、未使用变量等问题。返回结构化的错误和警告列表，以及完整的变量表。',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                scripts: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            file: { type: 'string', description: '文件名（用于报告中的位置标注）' },
+                            content: { type: 'string', description: 'TCL 脚本的完整文本内容' }
+                        },
+                        required: ['file', 'content']
+                    },
+                    description: 'TCL 脚本列表（按 .f 文件编译顺序排列），每个元素包含 file（文件名）和 content（脚本内容）'
+                }
+            },
+            required: ['scripts']
+        } as object,
+        tags: ['innovus', 'tcl', 'lint', 'eda']
     }
 };
 
@@ -654,7 +811,10 @@ export function registerAllTools(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.lm.registerTool(TOOL_DEFINITIONS.parseTclScript.name, new ParseTclScriptTool())
     );
-    console.log('[Innovus TCL] 已注册 3 个 Copilot LM Tools');
+    context.subscriptions.push(
+        vscode.lm.registerTool(TOOL_DEFINITIONS.lintTclScript.name, new LintTclScriptTool())
+    );
+    console.log('[Innovus TCL] 已注册 4 个 Copilot LM Tools');
 }
 
 /**
