@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider, InnovusPlainHelpProvider } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider, handleWebviewHelpOpen } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -109,6 +109,11 @@ export function activate(context: vscode.ExtensionContext) {
         { language: 'tcl' },
         new InnovusDefinitionProvider(context)
     ));
+
+    // 4b. 拦截 Webview 模式的虚拟文档打开 → 切换为 Webview 面板
+    subs.push(vscode.workspace.onDidOpenTextDocument((doc) => {
+        handleWebviewHelpOpen(doc, context);
+    }));
 
     // 5. Semantic Tokens - Innovus 命令/参数语法高亮
     const semanticProvider = new InnovusSemanticTokensProvider();

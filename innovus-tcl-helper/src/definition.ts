@@ -236,9 +236,9 @@ ${(info.options && info.options.length > 0) ? `
                 <td><code class="opt-name">${escapeHtml(opt.name)}</code></td>
                 <td><span class="type-tag">${escapeHtml(opt.type)}</span></td>
                 <td>${opt.required
-                    ? `<span class="req-tag required">${isZh ? '必需' : 'Required'}</span>`
-                    : `<span class="req-tag optional">${isZh ? '可选' : 'Optional'}</span>`
-                }</td>
+            ? `<span class="req-tag required">${isZh ? '必需' : 'Required'}</span>`
+            : `<span class="req-tag optional">${isZh ? '可选' : 'Optional'}</span>`
+        }</td>
                 <td>${escapeHtml(opt.description)}</td>
             </tr>`).join('\n            ')}
         </tbody>
@@ -392,7 +392,7 @@ code {
 // ════════════════════════════════════════════════════════════════
 
 export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
-    constructor(private context: vscode.ExtensionContext) {}
+    constructor(private context: vscode.ExtensionContext) { }
 
     provideDefinition(
         document: vscode.TextDocument,
@@ -409,15 +409,52 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
 
         const style = getHelpStyle();
 
-        if (style === 'plain') {
-            // 纯文本模式 → 返回虚拟文档 URI
-            const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}`);
+        if (style === 'webview') {
+            // Webview 模式 → 返回虚拟 URI（带 mode 标记），
+            // 由 onDidOpenTextDocument 监听器拦截并打开 Webview
+            const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}?mode=webview`);
             return new vscode.Location(uri, new vscode.Position(0, 0));
         }
 
-        // Webview 模式 → 打开面板，不跳转
-        HelpPanelManager.show(this.context, info);
-        return null;
+        // 纯文本模式 → 返回虚拟文档 URI
+        const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}`);
+        return new vscode.Location(uri, new vscode.Position(0, 0));
+    }
+}
+
+/**
+ * 由 extension.ts 的 onDidOpenTextDocument 调用。
+ * 当检测到 webview 模式的虚拟文档被打开时，关闭文本编辑器并打开 Webview 面板。
+ */
+export function handleWebviewHelpOpen(doc: vscode.TextDocument, context: vscode.ExtensionContext): void {
+    if (doc.uri.scheme !== HELP_SCHEME) { return; }
+
+    const query = doc.uri.query;
+    if (query !== 'mode=webview') { return; } // 纯文本模式，不拦截
+
+    const cmdName = doc.uri.path.replace(/^\//, '');
+    const db = getDB();
+    const info = db.get(cmdName);
+    if (!info) { return; }
+
+    // 关闭虚拟文本编辑器
+    closeVirtualDoc(doc);
+
+    // 打开 Webview
+    HelpPanelManager.show(context, info);
+}
+
+/** 关闭指定的虚拟文档编辑器标签页 */
+function closeVirtualDoc(doc: vscode.TextDocument): void {
+    // 找到该文档对应的 tab 并关闭
+    for (const group of vscode.window.tabGroups.all) {
+        for (const tab of group.tabs) {
+            const input = tab.input as { uri?: vscode.Uri } | undefined;
+            if (input?.uri?.toString() === doc.uri.toString()) {
+                vscode.window.tabGroups.close(tab);
+                return;
+            }
+        }
     }
 }
 
