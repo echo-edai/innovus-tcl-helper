@@ -377,11 +377,19 @@ export function tokenize(text: string): Token[] {
             word += advance();
         }
         if (word.length > 0) {
-            // 判断是否为行首命令（前一个 token 是 NEWLINE/SEMICOLON 或第一个）
-            const prev = findLastSignificantToken(tokens);
-            const isCommand = !prev ||
-                prev.type === TokenType.NEWLINE ||
-                prev.type === TokenType.SEMICOLON;
+            // 判断是否为行首命令：检查上一个非空白 token 是否为 NEWLINE/SEMICOLON
+            let isCommand = true;
+            for (let ti = tokens.length - 1; ti >= 0; ti--) {
+                const pt = tokens[ti];
+                if (pt.type === TokenType.NEWLINE || pt.type === TokenType.SEMICOLON) {
+                    isCommand = true;
+                    break;
+                }
+                if (pt.type !== TokenType.COMMENT) {
+                    isCommand = false;
+                    break;
+                }
+            }
             tokens.push({
                 type: isCommand ? TokenType.COMMAND : TokenType.WORD,
                 value: word,
