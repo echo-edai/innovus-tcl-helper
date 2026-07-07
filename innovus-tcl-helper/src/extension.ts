@@ -13,6 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
+import { InnovusDefinitionProvider, InnovusHelpContentProvider } from './definition';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
 
@@ -99,6 +100,14 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }));
     }
+
+    // 4. Definition Provider - F12/Ctrl+Click 跳转到帮助文档
+    const helpProvider = new InnovusHelpContentProvider();
+    subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', helpProvider));
+    subs.push(vscode.languages.registerDefinitionProvider(
+        { language: 'tcl' },
+        new InnovusDefinitionProvider()
+    ));
 
     // 监听配置变更，切换语言时自动重载
     subs.push(vscode.workspace.onDidChangeConfiguration((e) => {

@@ -61,25 +61,52 @@ export class InnovusCompletionProvider implements vscode.CompletionItemProvider 
             }
 
             const item = new vscode.CompletionItem(opt.name, vscode.CompletionItemKind.Property);
+
+            // 标签：参数名 + 必需/可选标记
+            item.label = opt.name;
+            if (opt.required) {
+                item.label += '  🔴';
+            }
+
             item.detail = `Innovus: ${cmdName}`;
+            item.filterText = opt.name;
+            item.sortText = opt.required ? '0' + opt.name : '1' + opt.name;
+
+            // 文档说明
+            const typeLabel = (() => {
+                switch (opt.type) {
+                    case 'string': return '字符串';
+                    case 'int': return '整数';
+                    case 'float': return '浮点数';
+                    case 'flag': return '开关';
+                    case 'enum': return '枚举';
+                    case 'point': return '坐标';
+                    default: return opt.type;
+                }
+            })();
+            const reqLabel = opt.required ? '⚠️ 必需' : '可选';
             item.documentation = new vscode.MarkdownString(
-                `**${opt.name}**  \n${opt.description}  \n*类型: ${opt.type} | ${opt.required ? '必需' : '可选'}*`
+                `**${opt.name}**  \n\n${opt.description}  \n\n*类型: \`${opt.type}\` (${typeLabel}) | ${reqLabel}*`
             );
 
-            // 排序：required 在前
-            item.sortText = opt.required ? '0' : '1';
-            item.insertText = opt.name + ' ';
-
-            // 如果是枚举类型，提供选项
-            if (opt.type === 'enum') {
-                // 从描述中提取枚举值
+            // 非 flag 类型：插入参数名 + 占位符
+            if (opt.type === 'flag') {
+                item.insertText = new vscode.SnippetString(opt.name + ' ');
+            } else if (opt.type === 'enum') {
+                // 尝试从描述中提取枚举值
                 const enumMatch = opt.description.match(/\{([^}]+)\}/);
                 if (enumMatch) {
-                    item.insertText = opt.name + ' ';
+                    const enumValues = enumMatch[1].split(/[,|/]/).map(s => s.trim()).filter(Boolean);
+                    item.insertText = new vscode.SnippetString(opt.name + ' ${1|' + enumValues.join(',') + '|} ');
                     item.documentation = new vscode.MarkdownString(
-                        `**${opt.name}**  \n${opt.description}  \n*可选值: ${enumMatch[1]}*`
+                        `**${opt.name}**  \n\n${opt.description}  \n\n*可选值: ${enumValues.join(', ')}*  \n*类型: \`enum\` | ${reqLabel}*`
                     );
+                } else {
+                    item.insertText = new vscode.SnippetString(opt.name + ' ${1:<value>} ');
                 }
+            } else {
+                const placeholder = opt.type === 'int' ? '<int>' : opt.type === 'float' ? '<float>' : '<value>';
+                item.insertText = new vscode.SnippetString(opt.name + ' ${1:' + placeholder + '} ');
             }
 
             items.push(item);

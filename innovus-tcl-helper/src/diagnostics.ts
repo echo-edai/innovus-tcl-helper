@@ -158,7 +158,8 @@ export class TclDiagnosticsProvider {
             if (!line || line.startsWith('#')) { continue; }
 
             // 跳过 TCL 内置命令
-            if (/^(if|else|for|foreach|while|set|puts|proc|return|source|eval|expr|switch|catch|error|uplevel|upvar|global|variable|namespace|package|array|list|lindex|llength|lappend|concat|split|join|string|regexp|regsub|open|close|read|write|gets|file|cd|pwd|exec|after|vwait|bind|trace|rename|interp|clock|info|scan|format|binary|encoding|fconfigure|socket)$/.test(line.split(/\s/)[0])) {
+            const firstToken = line.split(/\s/)[0];
+            if (/^(if|else|for|foreach|while|set|puts|proc|return|source|eval|expr|switch|catch|error|uplevel|upvar|global|variable|namespace|package|array|list|lindex|llength|lappend|concat|split|join|string|regexp|regsub|open|close|read|write|gets|file|cd|pwd|exec|after|vwait|bind|trace|rename|interp|clock|info|scan|format|binary|encoding|fconfigure|socket)$/.test(firstToken)) {
                 continue;
             }
 
@@ -172,22 +173,65 @@ export class TclDiagnosticsProvider {
             if (db.isCommand(cmdName)) {
                 const cmdInfo = db.get(cmdName);
                 if (cmdInfo && cmdInfo.options) {
-                    // 检查是否缺少必需参数
-                    const requiredOpts = cmdInfo.options.filter(o => o.required && o.type !== 'flag');
-                    const missingRequired = requiredOpts.filter(opt => !line.includes(opt.name));
+                    // 解析命令行中的参数
+                    const parsedArgs = this.parseArguments(line);
 
-                    if (missingRequired.length > 0) {
-                        const names = missingRequired.map(o => o.name).join(', ');
-                        diagnostics.push(this.createDiagnostic(
-                            document, i, 0, line.length,
-                            `缺少必需参数: ${names}`,
-                            vscode.DiagnosticSeverity.Warning
-                        ));
+                    // 检查必需参数
+                    for (const opt of cmdInfo.options) {
+                        if (!opt.required) { continue; }
+
+                        if (!parsedArgs.has(opt.name)) {
+                            // 必需参数缺失
+                            const msg = `缺少必需参数: ${opt.name} — ${opt.description}`;
+                            diagnostics.push(this.createDiagnostic(
+                                document, i,
+                                line.indexOf(cmdName),
+                                line.indexOf(cmdName) + cmdName.length,
+                                msg,
+                                vscode.DiagnosticSeverity.Warning
+                            ));
+                        } else if (opt.type !== 'flag' && !parsedArgs.get(opt.name)) {
+                            // 非 flag 类型参数存在但缺少值
+                            const flagIdx = line.indexOf(opt.name);
+                            const msg = `参数 ${opt.name} 需要值 (类型: ${opt.type})`;
+                            diagnostics.push(this.createDiagnostic(
+                                document, i,
+                                flagIdx,
+                                flagIdx + opt.name.length,
+                                msg,
+                                vscode.DiagnosticSeverity.Warning
+                            ));
+                        }
                     }
                 }
             }
-            // 注意：不报告未知命令，因为 TCL 脚本中可能有很多自定义 proc
         }
+    }
+
+    /**
+     * 解析命令行参数，返回 Map<flagName, value | null>
+     * flag 类型值为 null（表示存在），非 flag 类型值为跟随的字符串或 null（缺失值）
+     */
+    private parseArguments(line: string): Map<string, string | null> {
+        const args = new Map<string, string | null>();
+        const tokens = line.split(/\s+/);
+        // 跳过第一个 token（命令名）
+        for (let idx = 1; idx < tokens.length; idx++) {
+            const token = tokens[idx];
+            if (token.startsWith('-')) {
+                // 去掉可能的尾随逗号/分号
+                const cleanFlag = token.replace(/[,;]$/, '');
+                // 查看下一个 token 是否为值（非 - 开头）
+                if (idx + 1 < tokens.length && !tokens[idx + 1].startsWith('-')) {
+                    const nextToken = tokens[idx + 1].replace(/[,;]$/, '');
+                    args.set(cleanFlag, nextToken);
+                    idx++; // 跳过值 token
+                } else {
+                    args.set(cleanFlag, null);
+                }
+            }
+        }
+        return args;
     }
 
     private createDiagnostic(
