@@ -10,7 +10,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,16 +42,7 @@ function copyDir(src, dst, filter) {
 
 function main() {
     console.log('📦 复制命令数据到扩展内 data/ ...');
-
-    // 尝试清空旧数据（可能被 VS Code 文件监视器锁定）
-    if (fs.existsSync(DATA_DST)) {
-        try {
-            execSync(`rm -rf "${DATA_DST}"`, { stdio: 'pipe', timeout: 5000 });
-        } catch {
-            // 目录被锁定或超时，跳过清空，用覆盖策略
-            console.log('   ⚠️  data/ 被锁定，将覆盖更新...');
-        }
-    }
+    // copyFileSync 自动覆盖，无需先删除
 
     let total = 0;
 
