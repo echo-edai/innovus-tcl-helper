@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, showWebviewForCommand } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider, showWebviewForCommand } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -102,7 +102,9 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     }
 
-    // 4a. Definition Provider — 纯文本模式 (F12/Ctrl+Click → 虚拟文档)
+    // 4. Definition Provider — 统一入口
+    //    纯文本: Location → innovus-tcl-help:// URI → 虚拟文档
+    //    Webview: Location → command: URI → 直接执行命令，零闪烁
     const plainHelpProvider = new InnovusPlainHelpProvider();
     subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', plainHelpProvider));
     subs.push(vscode.languages.registerDefinitionProvider(
@@ -110,21 +112,9 @@ export function activate(context: vscode.ExtensionContext) {
         new InnovusDefinitionProvider()
     ));
 
-    // 4b. Document Link Provider — Webview 模式 (Ctrl+悬停下划线 → 点击直达 Webview)
-    const linkProvider = new InnovusDocumentLinkProvider();
-    subs.push(vscode.languages.registerDocumentLinkProvider(
-        { language: 'tcl' },
-        linkProvider
-    ));
-
-    // 4c. DocumentLink 点击回调命令
+    // 4b. Webview 模式回调命令（command: URI 点击后执行）
     subs.push(vscode.commands.registerCommand('innovus-tcl._showWebviewHelp', (cmdName: string) => {
         showWebviewForCommand(context, cmdName);
-    }));
-
-    // 4d. 编辑器切换时刷新 DocumentLink（解决模式切换后缓存失效）
-    subs.push(vscode.window.onDidChangeActiveTextEditor(() => {
-        linkProvider.refresh();
     }));
 
     // 5. Semantic Tokens - Innovus 命令/参数语法高亮
@@ -195,7 +185,6 @@ export function activate(context: vscode.ExtensionContext) {
         const current = cfg.get<string>('helpStyle', 'webview');
         const next = current === 'webview' ? 'plain' : 'webview';
         await cfg.update('helpStyle', next, vscode.ConfigurationTarget.Global);
-        linkProvider.refresh(); // 立即刷新 DocumentLink
         const label = next === 'webview'
             ? (db.getLanguage() === 'zh' ? 'Webview 富文本面板' : 'Webview Rich Panel')
             : (db.getLanguage() === 'zh' ? '纯文本编辑器' : 'Plain Text Editor');
