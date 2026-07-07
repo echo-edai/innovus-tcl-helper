@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider, InnovusPlainHelpProvider, handleWebviewHelpOpen } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, showWebviewForCommand } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -102,17 +102,23 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     }
 
-    // 4. Definition Provider - F12/Ctrl+Click 帮助（Webview 或纯文本）
+    // 4. Definition Provider — 纯文本模式 (F12/Ctrl+Click → 虚拟文档)
     const plainHelpProvider = new InnovusPlainHelpProvider();
     subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', plainHelpProvider));
     subs.push(vscode.languages.registerDefinitionProvider(
         { language: 'tcl' },
-        new InnovusDefinitionProvider(context)
+        new InnovusDefinitionProvider()
     ));
 
-    // 4b. 拦截 Webview 模式的虚拟文档打开 → 切换为 Webview 面板
-    subs.push(vscode.workspace.onDidOpenTextDocument((doc) => {
-        handleWebviewHelpOpen(doc, context);
+    // 4b. Document Link Provider — Webview 模式 (Ctrl+悬停下划线 → Ctrl+点击直接打开 Webview)
+    subs.push(vscode.languages.registerDocumentLinkProvider(
+        { language: 'tcl' },
+        new InnovusDocumentLinkProvider()
+    ));
+
+    // 4c. 隐藏命令：DocumentLink 点击后直接调用，无中间文档
+    subs.push(vscode.commands.registerCommand('innovus-tcl._showWebviewHelp', (cmdName: string) => {
+        showWebviewForCommand(context, cmdName);
     }));
 
     // 5. Semantic Tokens - Innovus 命令/参数语法高亮
