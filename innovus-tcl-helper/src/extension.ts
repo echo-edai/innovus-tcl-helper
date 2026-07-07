@@ -271,8 +271,8 @@ export function activate(context: vscode.ExtensionContext) {
             {
                 label: '📋 ' + (isZh ? '拼接文档（本地查看）' : 'Doc Concatenation (Local View)'),
                 description: isZh
-                    ? '将所有命令的完整文档 + 参数对照表拼接为 Markdown，在新文档中展示'
-                    : 'Concatenate all command docs + parameter comparison as Markdown in a new document'
+                    ? '将所有命令的完整文档 + 参数对照表拼接为 Markdown'
+                    : 'Concatenate all command docs + parameter comparison as Markdown'
             }
         ];
 
@@ -280,15 +280,15 @@ export function activate(context: vscode.ExtensionContext) {
             options.push({
                 label: '🤖 ' + (isZh ? 'Copilot AI 分析 (MCP)' : 'Copilot AI Analysis (MCP)'),
                 description: isZh
-                    ? '将上下文传递给 Copilot Chat，由 AI 基于命令文档进行智能分析'
-                    : 'Pass context to Copilot Chat for AI-powered analysis based on command docs'
+                    ? '复制分析提示词到剪贴板，粘贴到 Copilot Chat 即可'
+                    : 'Copy analysis prompt to clipboard, paste in Copilot Chat'
             });
         } else {
             options.push({
                 label: '🔧 ' + (isZh ? '一键安装 MCP 工具' : 'Install MCP Tools'),
                 description: isZh
-                    ? '自动配置 MCP 工具，之后可在 Copilot Chat 中让 AI 分析脚本'
-                    : 'Auto-configure MCP tools for AI analysis in Copilot Chat'
+                    ? '自动配置 MCP 工具，之后可用 AI 分析脚本'
+                    : 'Auto-configure MCP tools for AI analysis'
             });
         }
 
@@ -302,8 +302,8 @@ export function activate(context: vscode.ExtensionContext) {
         const sourceLabel = editor.document.uri.fsPath || (isZh ? '当前脚本' : 'current script');
 
         if (choice.label.startsWith('📋')) {
-            // 拼接文档模式
-            const report = buildScriptContextForCommand(content, sourceLabel);
+            // 拼接文档模式 — 纯文档，不含 AI 分析任务
+            const report = buildScriptContextForCommand(content, sourceLabel, false);
             const doc = await vscode.workspace.openTextDocument({
                 content: report,
                 language: 'markdown'
@@ -313,25 +313,16 @@ export function activate(context: vscode.ExtensionContext) {
                 preview: true
             });
         } else if (choice.label.startsWith('🤖')) {
-            // MCP 模式：生成上下文并引导用户到 Copilot Chat
-            const report = buildScriptContextForCommand(content, sourceLabel);
-            const doc = await vscode.workspace.openTextDocument({
-                content: report,
-                language: 'markdown'
-            });
-            await vscode.window.showTextDocument(doc, {
-                viewColumn: vscode.ViewColumn.Beside,
-                preview: true
-            });
-
+            // AI 分析模式 — 复制提示词到剪贴板，不发文件
+            const prompt = buildAiAnalysisPrompt(context.extensionPath, sourceLabel, isZh);
+            await vscode.env.clipboard.writeText(prompt);
             vscode.window.showInformationMessage(
                 isZh
-                    ? '已生成分析上下文。请在 Copilot Chat 中直接说："分析我当前打开的 TCL 脚本"，Copilot 会自动调用 MCP 工具进行 AI 分析。'
-                    : 'Context generated. In Copilot Chat, say: "Analyze my current TCL script" — Copilot auto-calls MCP tools for AI analysis.',
+                    ? '✅ 分析提示词已复制到剪贴板！请粘贴到 Copilot Chat 中。'
+                    : '✅ Analysis prompt copied to clipboard! Paste it in Copilot Chat.',
                 { modal: true }
             );
         } else {
-            // 安装 MCP 工具
             await vscode.commands.executeCommand('innovus-tcl.installMcp');
         }
     }));
@@ -424,14 +415,13 @@ export function activate(context: vscode.ExtensionContext) {
         if (configuredRoot && fs.existsSync(configuredRoot)) {
             dataRoot = configuredRoot;
         } else {
-            // 自动探测: 查找 data/innovus/ 目录
+            // 自动探测: 查找 data/cmds/innovus/ 目录
             const candidates = [
                 path.join(extPath, 'data'),
                 path.join(workspaceRoot, 'data'),
-                path.join(extPath, '..', 'data'),
             ];
             for (const c of candidates) {
-                const testHelpDir = path.join(c, 'innovus', '25.1', 'cn', 'help');
+                const testHelpDir = path.join(c, 'cmds', 'innovus', '25.1', 'cn', 'help');
                 if (fs.existsSync(c) && fs.existsSync(testHelpDir)) {
                     dataRoot = c;
                     break;
@@ -536,22 +526,32 @@ export function activate(context: vscode.ExtensionContext) {
     // 注册命令：编辑 AI 提示词
     subs.push(vscode.commands.registerCommand('innovus-tcl.editPrompt', async () => {
         const isZh = db.getLanguage() === 'zh';
-        const cfg = vscode.workspace.getConfiguration('innovus-tcl');
-        const currentPrompt = cfg.get<string>('aiPrompt', '');
+        const langDir = isZh ? 'cn' : 'en';
+        const cachePath = path.join(context.extensionPath, 'data', 'cache', langDir, 'ai-prompt.md');
+        const systemPath = path.join(context.extensionPath, 'prompts', langDir, 'ai-analysis.md');
 
-        const defaultPrompt = isZh
-            ? '请基于以上 TCL 脚本上下文（包含脚本全文和所有涉及命令的完整参考文档），对脚本进行全面分析。按照以下结构输出：\n\n### A. 脚本整体目的\n### B. 命令逐条分析\n### C. 流程评估\n### D. 改进建议\n\n⚠️ 请严格依据提供的命令文档分析，不要猜测或编造参数。'
-            : 'Please analyze the TCL script based on the context above (full script + complete command reference docs). Structure your analysis as:\n\n### A. Overall Purpose\n### B. Per-Command Analysis\n### C. Flow Assessment\n### D. Suggestions\n\n⚠️ Base analysis strictly on the provided command docs. Do not guess or fabricate parameters.';
+        // 读取系统默认 + 用户默认
+        let systemPrompt = '';
+        try { systemPrompt = fs.readFileSync(systemPath, 'utf-8').trim(); } catch { /* ignore */ }
+        let userPrompt = '';
+        const hasUserPrompt = fs.existsSync(cachePath);
+        if (hasUserPrompt) {
+            try { userPrompt = fs.readFileSync(cachePath, 'utf-8').trim(); } catch { /* ignore */ }
+        }
 
-        const actionEdit = isZh ? '✏️ 编辑提示词' : '✏️ Edit Prompt';
-        const actionReset = isZh ? '🔄 恢复默认' : '🔄 Reset to Default';
-        const actionView = isZh ? '👁️ 查看当前' : '👁️ View Current';
+        const activeSource = userPrompt
+            ? (isZh ? `（当前：用户默认 data/cache/${langDir}/ai-prompt.md）` : `(Active: user default data/cache/${langDir}/ai-prompt.md)`)
+            : (isZh ? `（当前：系统默认 prompts/${langDir}/ai-analysis.md）` : `(Active: system default prompts/${langDir}/ai-analysis.md)`);
+
+        const actionEdit = isZh ? '✏️ 编辑用户默认提示词' : '✏️ Edit User Default';
+        const actionReset = isZh ? '🔄 恢复系统默认' : '🔄 Reset to System Default';
+        const actionView = isZh ? '👁️ 查看当前生效提示词' : '👁️ View Active Prompt';
 
         const choice = await vscode.window.showQuickPick(
             [
-                { label: actionEdit, description: isZh ? '在编辑器中打开提示词进行修改' : 'Open prompt in editor for editing' },
-                { label: actionReset, description: isZh ? '恢复为内置默认提示词' : 'Restore built-in default prompt' },
-                { label: actionView, description: isZh ? '查看当前提示词内容' : 'View current prompt content' }
+                { label: actionEdit, description: isZh ? `编辑 data/cache/${langDir}/ai-prompt.md` : `Edit data/cache/${langDir}/ai-prompt.md` },
+                { label: actionReset, description: isZh ? `删除用户提示词，回退到 prompts/${langDir}/ai-analysis.md` : `Delete user prompt, fall back to prompts/${langDir}/ai-analysis.md` },
+                { label: actionView, description: activeSource }
             ],
             { placeHolder: isZh ? '选择操作' : 'Select action' }
         );
@@ -559,49 +559,103 @@ export function activate(context: vscode.ExtensionContext) {
         if (!choice) { return; }
 
         if (choice.label === actionEdit) {
-            const doc = await vscode.workspace.openTextDocument({
-                content: currentPrompt || defaultPrompt,
-                language: 'markdown'
-            });
-            const editor = await vscode.window.showTextDocument(doc);
+            // 确保 cache 目录存在
+            const cacheDir = path.dirname(cachePath);
+            if (!fs.existsSync(cacheDir)) { fs.mkdirSync(cacheDir, { recursive: true }); }
 
-            // 等待用户编辑完成并保存
-            const saved = await new Promise<string | undefined>((resolve) => {
-                const sub = vscode.workspace.onDidSaveTextDocument((savedDoc) => {
-                    if (savedDoc.uri.toString() === doc.uri.toString()) {
-                        sub.dispose();
-                        resolve(savedDoc.getText());
-                    }
-                });
-                // 如果文档被关闭而没有保存，也结束
-                const closeSub = vscode.workspace.onDidCloseTextDocument((closedDoc) => {
-                    if (closedDoc.uri.toString() === doc.uri.toString()) {
-                        closeSub.dispose();
-                        sub.dispose();
-                        resolve(undefined);
-                    }
-                });
-            });
+            // 如果用户还没创建过，从系统默认复制一份
+            if (!hasUserPrompt) {
+                fs.writeFileSync(cachePath, systemPrompt || (isZh ? '# 在此处编写你的自定义 AI 分析提示词\n' : '# Write your custom AI analysis prompt here\n'), 'utf-8');
+            }
 
-            if (saved !== undefined) {
-                await cfg.update('aiPrompt', saved, vscode.ConfigurationTarget.Global);
+            const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(cachePath));
+            await vscode.window.showTextDocument(doc);
+            vscode.window.showInformationMessage(
+                isZh
+                    ? '💡 编辑后 Ctrl+S 保存即可。此文件会覆盖系统默认提示词。'
+                    : '💡 Edit and Ctrl+S to save. This file overrides the system default prompt.'
+            );
+        } else if (choice.label === actionReset) {
+            if (hasUserPrompt) {
+                fs.unlinkSync(cachePath);
                 vscode.window.showInformationMessage(
-                    isZh ? '✅ AI 提示词已更新！下次分析脚本时生效。' : '✅ AI prompt updated! Will take effect on next script analysis.'
+                    isZh
+                        ? `✅ 已删除用户提示词，恢复为系统默认 prompts/${langDir}/ai-analysis.md。`
+                        : `✅ User prompt deleted. Restored to system default prompts/${langDir}/ai-analysis.md.`
+                );
+            } else {
+                vscode.window.showInformationMessage(
+                    isZh
+                        ? '当前已是系统默认提示词，无需恢复。'
+                        : 'Already using system default prompt.'
                 );
             }
-        } else if (choice.label === actionReset) {
-            await cfg.update('aiPrompt', '', vscode.ConfigurationTarget.Global);
-            vscode.window.showInformationMessage(
-                isZh ? '✅ 已恢复为默认提示词。' : '✅ Prompt reset to default.'
-            );
         } else {
             // View current
-            const promptToShow = currentPrompt || defaultPrompt;
+            const active = userPrompt || systemPrompt || (isZh ? '(无提示词)' : '(no prompt)');
+            const source = userPrompt
+                ? (isZh ? `来源：data/cache/${langDir}/ai-prompt.md` : `Source: data/cache/${langDir}/ai-prompt.md`)
+                : (isZh ? `来源：prompts/${langDir}/ai-analysis.md（系统默认）` : `Source: prompts/${langDir}/ai-analysis.md (system default)`);
             const viewDoc = await vscode.workspace.openTextDocument({
-                content: (isZh ? '# 当前 AI 分析提示词\n\n' : '# Current AI Analysis Prompt\n\n') + promptToShow,
+                content: `# ${isZh ? '当前生效 AI 分析提示词' : 'Active AI Analysis Prompt'}\n\n> ${source}\n\n${active}`,
                 language: 'markdown'
             });
             await vscode.window.showTextDocument(viewDoc, { preview: true });
+        }
+    }));
+
+    // 注册命令：打开示例 TCL 脚本
+    subs.push(vscode.commands.registerCommand('innovus-tcl.openExample', async () => {
+        const isZh = db.getLanguage() === 'zh';
+        const exampleDir = path.join(context.extensionPath, 'data', 'example', 'innovus');
+
+        if (!fs.existsSync(exampleDir)) {
+            vscode.window.showErrorMessage(
+                isZh
+                    ? `示例目录不存在: ${exampleDir}`
+                    : `Example directory not found: ${exampleDir}`
+            );
+            return;
+        }
+
+        // 读取所有 .tcl 文件
+        const tclFiles = fs.readdirSync(exampleDir)
+            .filter(f => f.endsWith('.tcl'))
+            .sort();
+
+        if (tclFiles.length === 0) {
+            vscode.window.showInformationMessage(
+                isZh ? '示例目录中没有 .tcl 文件。' : 'No .tcl files in example directory.'
+            );
+            return;
+        }
+
+        // 预览每份文件的前几行作为描述
+        const items = tclFiles.map(f => {
+            const filePath = path.join(exampleDir, f);
+            let preview = '';
+            try {
+                const content = fs.readFileSync(filePath, 'utf-8');
+                const firstLine = content.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'))[0] || '';
+                preview = firstLine.substring(0, 60) + (firstLine.length > 60 ? '...' : '');
+            } catch { /* ignore */ }
+            return {
+                label: f,
+                description: preview,
+                detail: filePath
+            };
+        });
+
+        const picked = await vscode.window.showQuickPick(items, {
+            matchOnDescription: true,
+            placeHolder: isZh
+                ? `选择示例脚本 (${tclFiles.length} 个文件)`
+                : `Select example script (${tclFiles.length} files)`
+        });
+
+        if (picked) {
+            const doc = await vscode.workspace.openTextDocument(picked.detail);
+            await vscode.window.showTextDocument(doc, { preview: false });
         }
     }));
 
@@ -609,6 +663,50 @@ export function activate(context: vscode.ExtensionContext) {
     subs.push({ dispose: () => diagnosticsProvider?.dispose() });
 
     context.subscriptions.push(...subs);
+}
+
+/**
+ * 构建 AI 分析提示词（复制到剪贴板，用户粘贴到 Copilot Chat）
+ *
+ * 优先级:
+ *   1. VS Code 设置 innovus-tcl.aiPrompt（最高）
+ *   2. data/cache/{cn|en}/ai-prompt.md（用户默认）
+ *   3. prompts/{cn|en}/ai-analysis.md（系统默认，随扩展发布）
+ */
+function buildAiAnalysisPrompt(extensionPath: string, sourceLabel: string, isZh: boolean): string {
+    const langDir = isZh ? 'cn' : 'en';
+    const cachePath = path.join(extensionPath, 'data', 'cache', langDir, 'ai-prompt.md');
+    const systemPath = path.join(extensionPath, 'prompts', langDir, 'ai-analysis.md');
+
+    // 1. VS Code 设置
+    const cfg = vscode.workspace.getConfiguration('innovus-tcl');
+    const customPrompt = cfg.get<string>('aiPrompt', '');
+    if (customPrompt) {
+        return customPrompt.replace(/\{script_name\}/g, sourceLabel);
+    }
+
+    // 2. 用户默认 (data/cache/ai-prompt.md)
+    if (cachePath && fs.existsSync(cachePath)) {
+        try {
+            const userPrompt = fs.readFileSync(cachePath, 'utf-8').trim();
+            if (userPrompt) {
+                return userPrompt.replace(/\{script_name\}/g, sourceLabel);
+            }
+        } catch { /* fall through */ }
+    }
+
+    // 3. 系统默认 (prompts/ai-analysis.md)
+    if (systemPath && fs.existsSync(systemPath)) {
+        try {
+            const sysPrompt = fs.readFileSync(systemPath, 'utf-8').trim();
+            return sysPrompt.replace(/\{script_name\}/g, sourceLabel);
+        } catch { /* fall through */ }
+    }
+
+    // 硬兜底
+    return isZh
+        ? `请分析 Innovus TCL 脚本 \`${sourceLabel}\`。调用 innovus_lint_tcl_script 和 innovus_parse_tcl_script MCP 工具，基于返回的文档进行分析，输出 Markdown 代码块。`
+        : `Analyze the Innovus TCL script \`${sourceLabel}\`. Call innovus_lint_tcl_script and innovus_parse_tcl_script MCP tools, analyze based on returned docs, output in Markdown code block.`;
 }
 
 export function deactivate() {

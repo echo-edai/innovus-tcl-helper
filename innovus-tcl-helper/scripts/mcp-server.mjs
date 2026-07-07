@@ -261,162 +261,6 @@ function toolParseScript({ script_content }) {
 }
 
 // ════════════════════════════════════════════════════════════
-//  Tool: innovus_lint_tcl_script
-// ════════════════════════════════════════════════════════════
-
-function toolLintScript({ script_content }) {
-    loadDB();
-    const isZh = LANGUAGE === 'zh';
-    if (!script_content || typeof script_content !== 'string') {
-        return { error: isZh ? '请提供 script_content' : 'Please provide script_content' };
-    }
-
-    const lines = script_content.split('\n');
-    const diagnostics = [];
-
-    // 1. Bracket matching
-    let bracketDepth = 0, braceDepth = 0;
-    let inString = false;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (line.trimStart().startsWith('#')) continue;
-
-        for (let j = 0; j < line.length; j++) {
-            const ch = line[j];
-            const prev = j > 0 ? line[j - 1] : '';
-
-            if (ch === '\\' && j + 1 < line.length) { j++; continue; }
-            if (ch === '"' && prev !== '\\') { inString = !inString; continue; }
-            if (!inString && ch === '#' && prev !== '\\') break;
-            if (inString) continue;
-
-            if (ch === '[') bracketDepth++;
-            if (ch === ']') bracketDepth--;
-            if (ch === '{') braceDepth++;
-            if (ch === '}') braceDepth--;
-
-            if (bracketDepth < 0) {
-                diagnostics.push({
-                    line: i + 1, column: j + 1,
-                    severity: 'error',
-                    message: isZh ? '多余的右方括号 "]"' : 'Extra closing bracket "]"'
-                });
-                bracketDepth = 0;
-            }
-            if (braceDepth < 0) {
-                diagnostics.push({
-                    line: i + 1, column: j + 1,
-                    severity: 'error',
-                    message: isZh ? '多余的右花括号 "}"' : 'Extra closing brace "}"'
-                });
-                braceDepth = 0;
-            }
-        }
-    }
-    if (bracketDepth > 0) {
-        diagnostics.push({
-            line: lines.length, column: 1,
-            severity: 'error',
-            message: isZh ? `缺少 ${bracketDepth} 个右方括号 "]"` : `Missing ${bracketDepth} closing bracket(s) "]"  at end of file`
-        });
-    }
-    if (braceDepth > 0) {
-        diagnostics.push({
-            line: lines.length, column: 1,
-            severity: 'error',
-            message: isZh ? `缺少 ${braceDepth} 个右花括号 "}"` : `Missing ${braceDepth} closing brace(s) "}"  at end of file`
-        });
-    }
-
-    // 2. Quote matching
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (line.trimStart().startsWith('#')) continue;
-
-        let inStr = false, strStart = -1;
-        for (let j = 0; j < line.length; j++) {
-            if (line[j] === '\\' && j + 1 < line.length) { j++; continue; }
-            if (line[j] === '"') {
-                if (!inStr) { inStr = true; strStart = j; }
-                else { inStr = false; }
-            }
-        }
-        if (inStr) {
-            diagnostics.push({
-                line: i + 1, column: strStart + 1,
-                severity: 'error',
-                message: isZh ? '未闭合的双引号' : 'Unclosed double quote'
-            });
-        }
-    }
-
-    // 3. Command parameter checking
-    for (let i = 0; i < lines.length; i++) {
-        const trimmed = lines[i].trim();
-        if (!trimmed || trimmed.startsWith('#')) continue;
-
-        const firstToken = trimmed.split(/\s/)[0];
-        if (TCL_BUILTINS.has(firstToken)) continue;
-
-        const cmdInfo = getCommand(firstToken);
-        if (!cmdInfo || cmdInfo.is_cmd === false || !cmdInfo.options) continue;
-
-        const params = extractParams(trimmed);
-        const usedFlags = new Set(Object.keys(params));
-
-        for (const opt of cmdInfo.options) {
-            if (opt.required && !usedFlags.has(opt.name)) {
-                diagnostics.push({
-                    line: i + 1, column: trimmed.indexOf(firstToken) + 1,
-                    severity: 'warning',
-                    message: (isZh
-                        ? `${firstToken}: 缺少必需参数 ${opt.name} — ${opt.description}`
-                        : `${firstToken}: Missing required parameter ${opt.name} — ${opt.description}`)
-                });
-            } else if (opt.required && params[opt.name] === null && opt.type !== 'flag') {
-                diagnostics.push({
-                    line: i + 1,
-                    column: trimmed.indexOf(opt.name) + 1,
-                    severity: 'warning',
-                    message: (isZh
-                        ? `${opt.name} 需要值 (类型: ${opt.type})`
-                        : `${opt.name} requires a value (type: ${opt.type})`)
-                });
-            }
-        }
-
-        // Check for duplicate flags
-        const flagCounts = new Map();
-        for (const f of usedFlags) {
-            flagCounts.set(f, (flagCounts.get(f) || 0) + 1);
-        }
-        for (const [flag, count] of flagCounts) {
-            if (count > 1) {
-                diagnostics.push({
-                    line: i + 1, column: trimmed.lastIndexOf(flag) + 1,
-                    severity: 'warning',
-                    message: (isZh
-                        ? `${flag} 重复指定了 ${count} 次`
-                        : `${flag} specified ${count} times (duplicate)`)
-                });
-            }
-        }
-    }
-
-    const errorCount = diagnostics.filter(d => d.severity === 'error').length;
-    const warningCount = diagnostics.filter(d => d.severity === 'warning').length;
-
-    return {
-        valid: errorCount === 0,
-        errorCount,
-        warningCount,
-        totalCount: diagnostics.length,
-        diagnostics
-    };
-}
-
-// ════════════════════════════════════════════════════════════
 //  JSON-RPC 2.0 over stdio
 // ════════════════════════════════════════════════════════════
 
@@ -474,26 +318,8 @@ async function handleRequest(msg) {
                                 },
                                 required: ['script_content']
                             }
-                        },
-                        {
-                            name: 'innovus_lint_tcl_script',
-                            description: LANGUAGE === 'zh'
-                                ? '对 Cadence Innovus TCL 脚本进行静态检查（Lint）。检查项包括：括号匹配（[] {}）、引号闭合、Innovus 命令的必需参数缺失、重复参数、参数值类型验证。返回诊断列表（错误和警告），帮助 AI 判断脚本是否正确。'
-                                : 'Static lint check for Cadence Innovus TCL scripts. Checks include: bracket matching ([] {}), quote closure, missing required Innovus command parameters, duplicate parameters, parameter value type validation. Returns a list of diagnostics (errors and warnings) to help AI determine script correctness.',
-                            inputSchema: {
-                                type: 'object',
-                                properties: {
-                                    script_content: {
-                                        type: 'string',
-                                        description: LANGUAGE === 'zh'
-                                            ? '要检查的 TCL 脚本完整文本'
-                                            : 'Full text of the TCL script to lint'
-                                    }
-                                },
-                                required: ['script_content']
-                            }
                         }
-                    ]
+]
                 });
                 break;
 
@@ -507,14 +333,7 @@ async function handleRequest(msg) {
                         content: [
                             { type: 'text', text: JSON.stringify(result, null, 2) }
                         ]
-                    });
-                } else if (toolName === 'innovus_lint_tcl_script') {
-                    const result = toolLintScript(toolArgs);
-                    sendResponse(id, {
-                        content: [
-                            { type: 'text', text: JSON.stringify(result, null, 2) }
-                        ]
-                    });
+                    }););
                 } else {
                     sendError(id, -32601, `Unknown tool: ${toolName}`);
                 }

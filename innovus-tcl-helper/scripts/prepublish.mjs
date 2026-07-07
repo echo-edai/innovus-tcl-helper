@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 /**
- * 打包前预处理：确保 data/innovus/ 目录存在
- *
- * 数据文件由用户直接在 data/innovus/ 下管理，prepublish 不再复制。
- * 仅确保必要的空目录结构存在。
+ * 打包前预处理：确保 data/cmds/ 和 data/example/ 目录存在
  */
 
 import * as fs from 'fs';
@@ -22,14 +19,17 @@ function ensureDir(dirPath) {
 }
 
 function main() {
-    console.log('📦 检查 data/innovus/ 目录结构 ...');
+    console.log('📦 检查 data/ 目录结构 ...');
 
-    ensureDir(path.join(ROOT, 'data', 'innovus', '25.1', 'cn', 'help'));
-    ensureDir(path.join(ROOT, 'data', 'innovus', '25.1', 'en', 'help'));
-    ensureDir(path.join(ROOT, 'data', 'innovus', 'test', 'cn', 'help'));
-    ensureDir(path.join(ROOT, 'data', 'innovus', 'test', 'en', 'help'));
+    ensureDir(path.join(ROOT, 'data', 'cmds', 'innovus', '25.1', 'cn', 'help'));
+    ensureDir(path.join(ROOT, 'data', 'cmds', 'innovus', '25.1', 'en', 'help'));
+    ensureDir(path.join(ROOT, 'data', 'cmds', 'innovus', 'test', 'cn', 'help'));
+    ensureDir(path.join(ROOT, 'data', 'cmds', 'innovus', 'test', 'en', 'help'));
+    ensureDir(path.join(ROOT, 'data', 'example', 'innovus'));
+    ensureDir(path.join(ROOT, 'data', 'cache', 'cn'));
+    ensureDir(path.join(ROOT, 'data', 'cache', 'en'));
 
-    console.log('✅ data/innovus/ 目录结构就绪');
+    console.log('✅ data/ 目录结构就绪');
 }
 
 main();
