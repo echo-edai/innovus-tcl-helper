@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider, InnovusPlainHelpProvider, handleActiveEditorChange } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, showWebviewForCommand } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -102,8 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     }
 
-    // 4. Definition Provider — 统一入口 (F12/Ctrl+Click)
-    //    纯文本模式 → 虚拟文档 | Webview 模式 → active editor 拦截 → Webview 面板
+    // 4a. Definition Provider — 纯文本模式 (F12/Ctrl+Click → 虚拟文档)
     const plainHelpProvider = new InnovusPlainHelpProvider();
     subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', plainHelpProvider));
     subs.push(vscode.languages.registerDefinitionProvider(
@@ -111,10 +110,21 @@ export function activate(context: vscode.ExtensionContext) {
         new InnovusDefinitionProvider()
     ));
 
-    // 4b. Webview 模式拦截: 虚拟文档成为 active editor → 关闭 & 打开 Webview
-    //    (onDidChangeActiveTextEditor 不会在 Ctrl+悬停 peek 时触发)
-    subs.push(vscode.window.onDidChangeActiveTextEditor((editor) => {
-        handleActiveEditorChange(editor, context);
+    // 4b. Document Link Provider — Webview 模式 (Ctrl+悬停下划线 → 点击直达 Webview)
+    const linkProvider = new InnovusDocumentLinkProvider();
+    subs.push(vscode.languages.registerDocumentLinkProvider(
+        { language: 'tcl' },
+        linkProvider
+    ));
+
+    // 4c. DocumentLink 点击回调命令
+    subs.push(vscode.commands.registerCommand('innovus-tcl._showWebviewHelp', (cmdName: string) => {
+        showWebviewForCommand(context, cmdName);
+    }));
+
+    // 4d. 编辑器切换时刷新 DocumentLink（解决模式切换后缓存失效）
+    subs.push(vscode.window.onDidChangeActiveTextEditor(() => {
+        linkProvider.refresh();
     }));
 
     // 5. Semantic Tokens - Innovus 命令/参数语法高亮
@@ -185,6 +195,7 @@ export function activate(context: vscode.ExtensionContext) {
         const current = cfg.get<string>('helpStyle', 'webview');
         const next = current === 'webview' ? 'plain' : 'webview';
         await cfg.update('helpStyle', next, vscode.ConfigurationTarget.Global);
+        linkProvider.refresh(); // 立即刷新 DocumentLink
         const label = next === 'webview'
             ? (db.getLanguage() === 'zh' ? 'Webview 富文本面板' : 'Webview Rich Panel')
             : (db.getLanguage() === 'zh' ? '纯文本编辑器' : 'Plain Text Editor');

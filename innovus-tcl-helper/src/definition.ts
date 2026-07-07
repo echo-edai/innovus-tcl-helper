@@ -388,13 +388,8 @@ code {
 `;
 
 // ════════════════════════════════════════════════════════════════
-//  Definition Provider — 统一处理纯文本 & Webview 模式
-//
-//  纯文本模式: Location → 虚拟文档 → TextDocumentContentProvider
-//  Webview 模式: Location → 虚拟文档 → onDidChangeActiveTextEditor 拦截 → Webview
-//
-//  关键: 用 onDidChangeActiveTextEditor 而非 onDidOpenTextDocument,
-//  因为 Ctrl+悬停 peek 不改变 active editor, 只有真正点击导航才改变.
+//  Definition Provider — 纯文本模式
+//  Ctrl+Click → 虚拟文档 → TextDocumentContentProvider
 // ════════════════════════════════════════════════════════════════
 
 export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
@@ -403,6 +398,8 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
         position: vscode.Position,
         _token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.Definition | vscode.LocationLink[]> {
+        if (getHelpStyle() !== 'plain') { return null; }
+
         const db = getDB();
         const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z_][a-zA-Z0-9_]*/);
         if (!wordRange) { return null; }
@@ -410,44 +407,62 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
         const word = document.getText(wordRange);
         if (!db.isKnown(word)) { return null; }
 
-        const style = getHelpStyle();
-        // 两种模式都返回 Location，Webview 模式带 mode 标记
-        const query = style === 'webview' ? '?mode=webview' : '';
-        const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}${query}`);
+        const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}`);
         return new vscode.Location(uri, new vscode.Position(0, 0));
     }
 }
 
-/**
- * 由 extension.ts 的 onDidChangeActiveTextEditor 调用。
- * 当 Webview 模式的虚拟文档成为活跃编辑器时 → 关闭它 → 打开 Webview。
- * Ctrl+悬停 peek 不改变 active editor，因此不会被误触发。
- */
-export function handleActiveEditorChange(editor: vscode.TextEditor | undefined, context: vscode.ExtensionContext): void {
-    if (!editor) { return; }
-    const doc = editor.document;
-    if (doc.uri.scheme !== HELP_SCHEME) { return; }
+// ════════════════════════════════════════════════════════════════
+//  Document Link Provider — Webview 模式
+//  Ctrl+悬停: 蓝色下划线  |  Ctrl+点击: command: URI → 直达 Webview
+//  无中间文档，零闪烁。refresh() 解决切换模式后缓存失效问题。
+// ════════════════════════════════════════════════════════════════
 
-    const query = doc.uri.query;
-    if (query !== 'mode=webview') { return; } // 纯文本模式，正常显示
+const WEBVIEW_CMD = 'innovus-tcl._showWebviewHelp';
 
-    const cmdName = doc.uri.path.replace(/^\//, '');
+export class InnovusDocumentLinkProvider implements vscode.DocumentLinkProvider {
+    private _onDidChangeLinks = new vscode.EventEmitter<void>();
+    readonly onDidChangeLinks = this._onDidChangeLinks.event;
+
+    /** 模式切换或编辑器切换后调用，强制 VS Code 重新查询链接 */
+    refresh(): void {
+        this._onDidChangeLinks.fire();
+    }
+
+    provideDocumentLinks(
+        document: vscode.TextDocument,
+        _token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.DocumentLink[]> {
+        if (getHelpStyle() !== 'webview') { return []; }
+
+        const db = getDB();
+        const links: vscode.DocumentLink[] = [];
+        const text = document.getText();
+        const regex = /\b([a-zA-Z_][a-zA-Z0-9_]{2,})\b/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = regex.exec(text)) !== null) {
+            const word = match[1];
+            if (!db.isKnown(word)) { continue; }
+
+            const startPos = document.positionAt(match.index);
+            const endPos = document.positionAt(match.index + word.length);
+            const range = new vscode.Range(startPos, endPos);
+
+            const args = encodeURIComponent(JSON.stringify([word]));
+            const cmdUri = vscode.Uri.parse(`command:${WEBVIEW_CMD}?${args}`);
+            links.push(new vscode.DocumentLink(range, cmdUri));
+        }
+
+        return links;
+    }
+}
+
+/** DocumentLink 点击 → 命令回调 → 直接打开 Webview */
+export function showWebviewForCommand(context: vscode.ExtensionContext, cmdName: string): void {
     const db = getDB();
     const info = db.get(cmdName);
     if (!info) { return; }
-
-    // 关闭虚拟编辑器标签
-    for (const group of vscode.window.tabGroups.all) {
-        for (const tab of group.tabs) {
-            const input = tab.input as { uri?: vscode.Uri } | undefined;
-            if (input?.uri?.toString() === doc.uri.toString()) {
-                vscode.window.tabGroups.close(tab);
-                break;
-            }
-        }
-    }
-
-    // 打开 Webview
     HelpPanelManager.show(context, info);
 }
 
