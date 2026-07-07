@@ -44,9 +44,14 @@ function copyDir(src, dst, filter) {
 function main() {
     console.log('📦 复制命令数据到扩展内 data/ ...');
 
-    // 清空旧数据（Node v25 的 rmSync/rmdirSync 在 macOS 上有 bug）
+    // 尝试清空旧数据（可能被 VS Code 文件监视器锁定）
     if (fs.existsSync(DATA_DST)) {
-        execSync(`rm -rf "${DATA_DST}"`);
+        try {
+            execSync(`rm -rf "${DATA_DST}"`, { stdio: 'pipe' });
+        } catch {
+            // 目录被锁定（VS Code 文件监视器等），跳过清空，用覆盖策略
+            console.log('   ⚠️  data/ 被锁定，将覆盖更新...');
+        }
     }
 
     let total = 0;
