@@ -2,7 +2,7 @@
  * Innovus 命令数据库 - 轻量级命令信息加载与查询
  *
  * 数据目录结构:
- *   data/innovus/
+ *   data/cmds/innovus/
  *   ├── 25.1/                    ← 默认版本 (Innovus 25.1)
  *   │   ├── cn/help/*.json       ← 中文命令文档
  *   │   └── en/help/*.json       ← 英文命令文档
@@ -14,9 +14,9 @@
  *       └── en/help/*.json
  *
  * 版本选择:
- *   默认/25.1 → data/innovus/25.1/{lang}/help/
- *   test      → data/innovus/test/{lang}/help/
- *   其他      → data/innovus/{version}/{lang}/help/
+ *   默认/25.1 → data/cmds/innovus/25.1/{lang}/help/
+ *   test      → data/cmds/innovus/test/{lang}/help/
+ *   其他      → data/cmds/innovus/{version}/{lang}/help/
  */
 
 import * as fs from 'fs';
@@ -47,13 +47,13 @@ export interface CmdInfo {
 class CommandDB {
     private commands: Map<string, CmdInfo> = new Map();
     private loaded: boolean = false;
-    private dataRoot: string;        // data/innovus/ 目录
+    private dataRoot: string;        // data/cmds/innovus/ 目录
     private language: Language = 'zh';
     private version: string = '';    // 版本标识，如 "25.1", "test", "dc"
 
     constructor(extensionPath: string) {
-        // 始终使用扩展内置的 data/innovus/ 目录
-        this.dataRoot = path.join(extensionPath, 'data', 'innovus');
+        // 始终使用扩展内置的 data/cmds/innovus/ 目录
+        this.dataRoot = path.join(extensionPath, 'data', 'cmds', 'innovus');
     }
 
     /** 设置语言 */
@@ -138,12 +138,13 @@ class CommandDB {
     }
 
     /** 获取数据文件所在目录
-     *  新结构: data/innovus/{version}/{lang}/help/
-     *  默认版本 → data/innovus/25.1/{lang}/help/
+     *  结构: data/cmds/innovus/{version}/{langDir}/help/
+     *  langDir: zh → cn, en → en
      */
     private getDataSourceDir(): string {
         const ver = this.version || '25.1';
-        return path.join(this.dataRoot, ver, this.language, 'help');
+        const langDir = this.language === 'zh' ? 'cn' : 'en';
+        return path.join(this.dataRoot, ver, langDir, 'help');
     }
 
     /** 加载命令数据 */
