@@ -425,6 +425,11 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
 /**
  * 由 extension.ts 的 onDidOpenTextDocument 调用。
  * 当检测到 webview 模式的虚拟文档被打开时，关闭文本编辑器并打开 Webview 面板。
+ *
+ * 注意: Ctrl+悬停时 VS Code 会触发 peek definition 预览，同样会打开虚拟文档。
+ * 通过 200ms 延迟 + 检查文档是否仍活跃来区分「预览」和「真正点击」:
+ *   - 预览 → 文档在 200ms 内关闭 → 不触发 Webview
+ *   - 点击 → 文档保持打开 → 触发 Webview
  */
 export function handleWebviewHelpOpen(doc: vscode.TextDocument, context: vscode.ExtensionContext): void {
     if (doc.uri.scheme !== HELP_SCHEME) { return; }
@@ -437,11 +442,20 @@ export function handleWebviewHelpOpen(doc: vscode.TextDocument, context: vscode.
     const info = db.get(cmdName);
     if (!info) { return; }
 
-    // 关闭虚拟文本编辑器
-    closeVirtualDoc(doc);
+    const docUri = doc.uri.toString();
 
-    // 打开 Webview
-    HelpPanelManager.show(context, info);
+    // 延迟 200ms，跳过 peek 预览
+    setTimeout(() => {
+        // 检查文档是否仍然打开（预览会被 VS Code 自动关闭）
+        const stillOpen = vscode.workspace.textDocuments.some(
+            d => d.uri.toString() === docUri
+        );
+        if (!stillOpen) { return; }
+
+        // 真正点击 → 关闭虚拟文档，打开 Webview
+        closeVirtualDoc(doc);
+        HelpPanelManager.show(context, info);
+    }, 200);
 }
 
 /** 关闭指定的虚拟文档编辑器标签页 */
