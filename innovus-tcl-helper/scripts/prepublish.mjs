@@ -45,7 +45,7 @@ function main() {
 
     // 清空旧数据
     if (fs.existsSync(DATA_DST)) {
-        fs.rmSync(DATA_DST, { recursive: true });
+        fs.rmSync(DATA_DST, { recursive: true, force: true });
     }
 
     let total = 0;
