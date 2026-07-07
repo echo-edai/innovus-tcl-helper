@@ -563,24 +563,36 @@ function buildScriptContext(
     ctx += isZh
         ? '## 6. 🤖 AI 分析任务\n\n'
         : '## 6. 🤖 AI Analysis Task\n\n';
-    ctx += (isZh
-        ? '**请基于以上全部上下文，完成以下分析:**\n\n'
-        : '**Based on ALL the context above, complete the following analysis:**\n\n');
-    ctx += (isZh
-        ? '### A. 脚本整体目的\n用 2-3 句话概括此 TCL 脚本的设计目标和工作流程。\n\n'
-        : '### A. Overall Purpose\nSummarize the design goal and workflow in 2-3 sentences.\n\n');
-    ctx += (isZh
-        ? '### B. 命令逐条分析\n对每个 Innovus 命令说明:\n- 在此脚本中的具体作用\n- 参数使用是否正确（对照上面提供的文档）\n- 是否有缺失的必需参数（上面 ❌ 标注的行）\n- 参数值类型是否匹配文档定义\n\n'
-        : '### B. Per-Command Analysis\nFor each Innovus command:\n- What it does in this script\n- Are parameters correct (compare with docs above)\n- Missing required params (lines marked ❌ above)\n- Do param values match the documented types\n\n');
-    ctx += (isZh
-        ? '### C. 流程评估\n- 命令执行顺序是否合理？\n- 是否存在依赖关系问题？\n- 是否有可优化的地方？\n\n'
-        : '### C. Flow Assessment\n- Is execution order logical?\n- Any dependency issues?\n- Optimization opportunities?\n\n');
-    ctx += (isZh
-        ? '### D. 改进建议\n- 对缺失必需参数的行，给出具体的补充示例\n- 如有更优的命令或参数组合，建议替代方案\n- 标注潜在错误或风险\n\n'
-        : '### D. Suggestions\n- For missing required params, give specific fix examples\n- If better commands/params exist, suggest alternatives\n- Flag potential errors or risks\n\n');
-    ctx += (isZh
-        ? '**⚠️ 关键约束:** 以上已提供每个命令的完整参考文档和逐行参数对照。请严格依据这些文档分析，**不要猜测或编造**命令的参数。如果某参数在文档中不存在，请明确指出。\n'
-        : '**⚠️ Critical:** Full reference docs and per-line parameter comparison are provided above. Base analysis STRICTLY on these docs. Do NOT guess or fabricate parameters. If a parameter is not in the docs, point it out.\n');
+
+    // 检查是否有用户自定义提示词
+    const cfg = vscode.workspace.getConfiguration('innovus-tcl');
+    const customPrompt = cfg.get<string>('aiPrompt', '');
+
+    if (customPrompt) {
+        ctx += (isZh
+            ? '**（使用自定义提示词）**\n\n'
+            : '**（Using custom prompt）**\n\n');
+        ctx += customPrompt + '\n\n';
+    } else {
+        ctx += (isZh
+            ? '**请基于以上全部上下文，完成以下分析:**\n\n'
+            : '**Based on ALL the context above, complete the following analysis:**\n\n');
+        ctx += (isZh
+            ? '### A. 脚本整体目的\n用 2-3 句话概括此 TCL 脚本的设计目标和工作流程。\n\n'
+            : '### A. Overall Purpose\nSummarize the design goal and workflow in 2-3 sentences.\n\n');
+        ctx += (isZh
+            ? '### B. 命令逐条分析\n对每个 Innovus 命令说明:\n- 在此脚本中的具体作用\n- 参数使用是否正确（对照上面提供的文档）\n- 是否有缺失的必需参数（上面 ❌ 标注的行）\n- 参数值类型是否匹配文档定义\n\n'
+            : '### B. Per-Command Analysis\nFor each Innovus command:\n- What it does in this script\n- Are parameters correct (compare with docs above)\n- Missing required params (lines marked ❌ above)\n- Do param values match the documented types\n\n');
+        ctx += (isZh
+            ? '### C. 流程评估\n- 命令执行顺序是否合理？\n- 是否存在依赖关系问题？\n- 是否有可优化的地方？\n\n'
+            : '### C. Flow Assessment\n- Is execution order logical?\n- Any dependency issues?\n- Optimization opportunities?\n\n');
+        ctx += (isZh
+            ? '### D. 改进建议\n- 对缺失必需参数的行，给出具体的补充示例\n- 如有更优的命令或参数组合，建议替代方案\n- 标注潜在错误或风险\n\n'
+            : '### D. Suggestions\n- For missing required params, give specific fix examples\n- If better commands/params exist, suggest alternatives\n- Flag potential errors or risks\n\n');
+        ctx += (isZh
+            ? '**⚠️ 关键约束:** 以上已提供每个命令的完整参考文档和逐行参数对照。请严格依据这些文档分析，**不要猜测或编造**命令的参数。如果某参数在文档中不存在，请明确指出。\n'
+            : '**⚠️ Critical:** Full reference docs and per-line parameter comparison are provided above. Base analysis STRICTLY on these docs. Do NOT guess or fabricate parameters. If a parameter is not in the docs, point it out.\n');
+    }
 
     return ctx;
 }

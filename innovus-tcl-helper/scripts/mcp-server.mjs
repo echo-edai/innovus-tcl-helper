@@ -62,8 +62,11 @@ if (!DATA_ROOT) {
 }
 
 function getHelpDir() {
+    // 新结构: data/innovus/{version}/{lang}/help/
+    // 默认版本: 25.1
+    const version = '25.1';
     const langDir = LANGUAGE === 'en' ? 'en' : 'cn';
-    return path.join(DATA_ROOT, langDir, 'help');
+    return path.join(DATA_ROOT, 'innovus', version, langDir, 'help');
 }
 
 // ════════════════════════════════════════════════════════════

@@ -42,31 +42,17 @@ export function activate(context: vscode.ExtensionContext) {
 
     const config = vscode.workspace.getConfiguration('innovus-tcl');
 
-    // 初始化命令数据库
+    // 初始化命令数据库 — 始终使用扩展内置 data/innovus/ 目录
     const db = getDB(context.extensionPath);
 
-    // 读取语言设置（支持 auto 自动检测）
+    // 读取语言设置
     const rawLang = config.get<string>('language', 'auto');
     const lang = resolveLanguage(rawLang);
     db.setLanguage(lang);
 
-    // 读取版本设置
-    const version = config.get<string>('version', '');
-    if (version) {
-        db.setVersion(version);
-    }
-
-    // 检查是否有自定义数据根路径
-    const customRoot = config.get<string>('dataRoot');
-    if (customRoot) {
-        db.setDataRoot(customRoot);
-    }
-
-    // 兼容旧配置: innovus-tcl.dataPath
-    const legacyPath = config.get<string>('dataPath');
-    if (legacyPath) {
-        db.setDataRoot(legacyPath);
-    }
+    // 读取版本设置（默认 25.1）
+    const version = config.get<string>('version', '25.1');
+    db.setVersion(version);
 
     db.load();
 
@@ -152,11 +138,9 @@ export function activate(context: vscode.ExtensionContext) {
                 `Innovus TCL: 已切换为${newLang === 'zh' ? '中文' : 'English'} (${db.getCommandNames().length} 命令)`
             );
         }
-        if (e.affectsConfiguration('innovus-tcl.dataRoot') || e.affectsConfiguration('innovus-tcl.version')) {
-            const newRoot = cfg.get<string>('dataRoot', '');
-            if (newRoot) { db.setDataRoot(newRoot); }
-            const newVer = cfg.get<string>('version', '');
-            if (newVer) { db.setVersion(newVer); }
+        if (e.affectsConfiguration('innovus-tcl.version')) {
+            const newVer = cfg.get<string>('version', '25.1');
+            db.setVersion(newVer);
             db.reload();
             vscode.window.showInformationMessage(
                 `Innovus TCL: 已切换至版本 ${db.getVersion() || '(默认)'}，${db.getCommandNames().length} 个命令`
@@ -240,19 +224,18 @@ export function activate(context: vscode.ExtensionContext) {
         const items = versions.map(v => ({
             label: v.label,
             description: v.description,
-            detail: (v.label === '(默认)' && !currentVer) || v.label === currentVer
+            detail: v.label === currentVer || (!currentVer && v.label === '25.1')
                 ? (isZh ? '● 当前使用' : '● Current')
                 : ''
         }));
 
         const picked = await vscode.window.showQuickPick(items, {
-            placeHolder: isZh ? '选择 Innovus 版本 (test=关闭高亮, 25.1=完整数据)' : 'Select Innovus version (test=no highlight, 25.1=full data)'
+            placeHolder: isZh ? '选择版本 (test=关闭高亮, 25.1=完整数据)' : 'Select version (test=no highlight, 25.1=full data)'
         });
 
         if (picked) {
             const cfg = vscode.workspace.getConfiguration('innovus-tcl');
-            const newVer = picked.label === '(默认)' ? '' : picked.label;
-            await cfg.update('version', newVer, vscode.ConfigurationTarget.Global);
+            await cfg.update('version', picked.label, vscode.ConfigurationTarget.Global);
         }
     }));
 
@@ -441,16 +424,15 @@ export function activate(context: vscode.ExtensionContext) {
         if (configuredRoot && fs.existsSync(configuredRoot)) {
             dataRoot = configuredRoot;
         } else {
-            // 自动探测
+            // 自动探测: 查找 data/innovus/ 目录
             const candidates = [
                 path.join(extPath, 'data'),
-                path.join(workspaceRoot, '..', 'data_base'),
-                path.join(workspaceRoot, 'data_base'),
-                path.join(extPath, '..', 'data_base'),
+                path.join(workspaceRoot, 'data'),
+                path.join(extPath, '..', 'data'),
             ];
             for (const c of candidates) {
-                const helpDir = path.join(c, 'cn', 'help');
-                if (fs.existsSync(c) && fs.existsSync(helpDir)) {
+                const testHelpDir = path.join(c, 'innovus', '25.1', 'cn', 'help');
+                if (fs.existsSync(c) && fs.existsSync(testHelpDir)) {
                     dataRoot = c;
                     break;
                 }
@@ -548,6 +530,78 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (result === reloadAction) {
             await vscode.commands.executeCommand('workbench.action.reloadWindow');
+        }
+    }));
+
+    // 注册命令：编辑 AI 提示词
+    subs.push(vscode.commands.registerCommand('innovus-tcl.editPrompt', async () => {
+        const isZh = db.getLanguage() === 'zh';
+        const cfg = vscode.workspace.getConfiguration('innovus-tcl');
+        const currentPrompt = cfg.get<string>('aiPrompt', '');
+
+        const defaultPrompt = isZh
+            ? '请基于以上 TCL 脚本上下文（包含脚本全文和所有涉及命令的完整参考文档），对脚本进行全面分析。按照以下结构输出：\n\n### A. 脚本整体目的\n### B. 命令逐条分析\n### C. 流程评估\n### D. 改进建议\n\n⚠️ 请严格依据提供的命令文档分析，不要猜测或编造参数。'
+            : 'Please analyze the TCL script based on the context above (full script + complete command reference docs). Structure your analysis as:\n\n### A. Overall Purpose\n### B. Per-Command Analysis\n### C. Flow Assessment\n### D. Suggestions\n\n⚠️ Base analysis strictly on the provided command docs. Do not guess or fabricate parameters.';
+
+        const actionEdit = isZh ? '✏️ 编辑提示词' : '✏️ Edit Prompt';
+        const actionReset = isZh ? '🔄 恢复默认' : '🔄 Reset to Default';
+        const actionView = isZh ? '👁️ 查看当前' : '👁️ View Current';
+
+        const choice = await vscode.window.showQuickPick(
+            [
+                { label: actionEdit, description: isZh ? '在编辑器中打开提示词进行修改' : 'Open prompt in editor for editing' },
+                { label: actionReset, description: isZh ? '恢复为内置默认提示词' : 'Restore built-in default prompt' },
+                { label: actionView, description: isZh ? '查看当前提示词内容' : 'View current prompt content' }
+            ],
+            { placeHolder: isZh ? '选择操作' : 'Select action' }
+        );
+
+        if (!choice) { return; }
+
+        if (choice.label === actionEdit) {
+            const doc = await vscode.workspace.openTextDocument({
+                content: currentPrompt || defaultPrompt,
+                language: 'markdown'
+            });
+            const editor = await vscode.window.showTextDocument(doc);
+
+            // 等待用户编辑完成并保存
+            const saved = await new Promise<string | undefined>((resolve) => {
+                const sub = vscode.workspace.onDidSaveTextDocument((savedDoc) => {
+                    if (savedDoc.uri.toString() === doc.uri.toString()) {
+                        sub.dispose();
+                        resolve(savedDoc.getText());
+                    }
+                });
+                // 如果文档被关闭而没有保存，也结束
+                const closeSub = vscode.workspace.onDidCloseTextDocument((closedDoc) => {
+                    if (closedDoc.uri.toString() === doc.uri.toString()) {
+                        closeSub.dispose();
+                        sub.dispose();
+                        resolve(undefined);
+                    }
+                });
+            });
+
+            if (saved !== undefined) {
+                await cfg.update('aiPrompt', saved, vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage(
+                    isZh ? '✅ AI 提示词已更新！下次分析脚本时生效。' : '✅ AI prompt updated! Will take effect on next script analysis.'
+                );
+            }
+        } else if (choice.label === actionReset) {
+            await cfg.update('aiPrompt', '', vscode.ConfigurationTarget.Global);
+            vscode.window.showInformationMessage(
+                isZh ? '✅ 已恢复为默认提示词。' : '✅ Prompt reset to default.'
+            );
+        } else {
+            // View current
+            const promptToShow = currentPrompt || defaultPrompt;
+            const viewDoc = await vscode.workspace.openTextDocument({
+                content: (isZh ? '# 当前 AI 分析提示词\n\n' : '# Current AI Analysis Prompt\n\n') + promptToShow,
+                language: 'markdown'
+            });
+            await vscode.window.showTextDocument(viewDoc, { preview: true });
         }
     }));
 
