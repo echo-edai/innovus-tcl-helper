@@ -1,14 +1,31 @@
 # Innovus TCL Helper
 
-Cadence Innovus EDA 工具的 TCL 脚本辅助插件。为 `.tcl` 文件提供命令智能提示、悬停文档和静态语法检查。
+Cadence Innovus EDA 工具的 TCL 脚本辅助插件。为 `.tcl` 文件提供命令智能提示、悬停文档、跨文件编译分析和静态语法检查。
 
 ## 功能概览
 
 | 功能 | 触发方式 | 说明 |
 |------|----------|------|
-| 🔍 **悬停文档** | 鼠标悬浮在命令名上 | 显示中文命令摘要、语法、参数表格 |
+| 🔍 **悬停文档** | 鼠标悬浮在命令名/变量名上 | 显示中文命令摘要、语法、参数表格；变量值及定义位置 |
 | ✏️ **自动补全** | 输入命令名或 `-` 时 | 提示 Innovus 命令名及对应参数 |
 | ⚠️ **静态检查** | 保存文件时 | 括号/引号匹配、命令必需参数校验 |
+| 🔗 **跨文件编译** | 自动（基于 `.f` 文件） | 追踪变量定义与引用，跨文件显示变量值 |
+| 📊 **Lint 报告** | `Cmd+Shift+P` → 显示 Lint 报告 | 导出 Markdown/JSON 格式的完整编译分析 |
+
+## 快速开始 — 跨文件编译分析
+
+1. 在工作区根目录创建 `tcl.f` 文件，每行写一个 `.tcl` 文件相对路径：
+```
+# tcl.f — TCL 脚本编译列表
+0_cmd.tcl
+1_init.tcl
+2_floorplan.tcl
+3_powerplan.tcl
+```
+
+2. 打开任意 `.tcl` 文件，插件自动按顺序编译所有脚本
+3. 鼠标悬浮在 `$varName` 上查看变量值和定义位置
+4. `Cmd+Shift+P` → `Innovus TCL: 📊 显示 Lint 报告` 查看完整分析
 
 ## 安装
 
@@ -67,7 +84,28 @@ npm run publish
 | `innovus-tcl.dataPath` | string | `""` | 命令 JSON 数据目录，留空则自动定位 |
 | `innovus-tcl.enableHover` | boolean | `true` | 启用悬停提示 |
 | `innovus-tcl.enableCompletion` | boolean | `true` | 启用自动补全 |
-| `innovus-tcl.enableDiagnostics` | boolean | `true` | 启用静态检查 |
+| `innovus-tcl.enableDiagnostics` | boolean | `true` | 启用单文件语法静态检查 |
+| `innovus-tcl.enableCompilation` | boolean | `true` | 启用跨文件 TCL 编译分析 |
+| `innovus-tcl.fFile` | string | `"tcl.f"` | `.f` 编译文件列表路径（相对工作区根目录） |
+| `innovus-tcl.diagnosticLevel` | string | `"standard"` | 检查严格度: basic/standard/strict |
+
+### 跨文件编译分析
+
+在项目根目录创建 `tcl.f` 文件（或通过设置 `innovus-tcl.fFile` 自定义文件名），
+每行一个 `.tcl` 文件相对路径，按从上到下的顺序编译：
+
+```
+# tcl.f — 示例
+0_setenv.tcl
+1_init.tcl
+2_floorplan.tcl
+3_powerplan.tcl
+```
+
+编译后：
+- 鼠标悬停在 `$varName` 上显示变量值和定义位置
+- 未定义变量会标记为错误
+- `Cmd+Shift+P` → `Innovus TCL: 📊 显示 Lint 报告` 查看完整分析
 
 ### 自定义数据路径
 

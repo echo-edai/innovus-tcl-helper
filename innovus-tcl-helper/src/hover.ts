@@ -1,11 +1,23 @@
 /**
  * Hover Provider - 鼠标悬浮时显示 Innovus 命令/变量的帮助
+ *
+ * 支持:
+ *   1. Innovus 命令文档（来自命令数据库）
+ *   2. TCL 变量值（来自跨文件编译分析）
+ *   3. $varName 变量引用值
  */
 
 import * as vscode from 'vscode';
 import { getDB, CmdInfo, CmdOption } from './commands';
+import { TclLintProvider } from './lint';
 
 export class InnovusHoverProvider implements vscode.HoverProvider {
+    private lintProvider: TclLintProvider | null = null;
+
+    /** 设置 Lint Provider 引用（用于跨文件变量查询） */
+    setLintProvider(provider: TclLintProvider): void {
+        this.lintProvider = provider;
+    }
 
     provideHover(
         document: vscode.TextDocument,
@@ -14,10 +26,22 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
     ): vscode.ProviderResult<vscode.Hover> {
 
         const db = getDB();
+
+        // ── 先检查是否悬浮在 $varName 上 ──
+        const dollarVarHover = this.checkDollarVar(document, position);
+        if (dollarVarHover) { return dollarVarHover; }
+
+        // ── 普通词匹配 ──
         const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z_][a-zA-Z0-9_]*/);
         if (!wordRange) { return null; }
 
         const word = document.getText(wordRange);
+
+        // ── 检查是否为 TCL 变量（编译分析中的变量） ──
+        const varHover = this.checkCompiledVariable(word, document, position, wordRange);
+        if (varHover) { return varHover; }
+
+        // ── 检查是否为 Innovus 命令 ──
         const cmdInfo = db.get(word);
         if (!cmdInfo) { return null; }
 
@@ -78,6 +102,166 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
                 const required = opt.required ? '✅' : '';
                 const desc = escapeMd(opt.description).replace(/\n/g, ' ');
                 markdown.appendMarkdown(`| \`${escapeCode(opt.name)}\` | ${required} | \`${escapeCode(opt.type)}\` | ${desc} |\n`);
+            }
+        }
+
+        return new vscode.Hover(markdown, wordRange);
+    }
+
+    /**
+     * 检查是否悬浮在 $varName 或 ${varName} 上。
+     * 如果是，从编译分析中查找变量值并显示。
+     */
+    private checkDollarVar(
+        document: vscode.TextDocument,
+        position: vscode.Position
+    ): vscode.Hover | null {
+        if (!this.lintProvider) { return null; }
+
+        const line = document.lineAt(position.line).text;
+        const col = position.character;
+
+        // 匹配 $varName 或 ${varName}
+        const dollarRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_:]*)\}?/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = dollarRegex.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+
+            if (col >= start && col <= end) {
+                const varName = match[2];
+                const isBraceForm = match[1] === '{';
+
+                const result = this.lintProvider.getLastResult();
+                if (!result) { return null; }
+
+                const { definition, allDefs, refs } =
+                    this.lintProvider.getCompiler().queryVariable(
+                        varName, result, document.uri.fsPath, position.line + 1
+                    );
+
+                const db = getDB();
+                const isZh = db.getLanguage() === 'zh';
+
+                const markdown = new vscode.MarkdownString();
+                markdown.isTrusted = true;
+                markdown.supportHtml = true;
+
+                markdown.appendMarkdown(`## \`$${isBraceForm ? '{' : ''}${varName}${isBraceForm ? '}' : ''}\` \`${isZh ? '变量引用' : 'Variable Ref'}\`\n\n`);
+
+                if (definition) {
+                    const val = definition.value || (isZh ? '(空值)' : '(empty)');
+                    const displayVal = val.length > 100 ? val.substring(0, 97) + '...' : val;
+                    markdown.appendMarkdown(`**${isZh ? '值' : 'Value'}:** \`${escapeCode(displayVal)}\`\n\n`);
+                    markdown.appendMarkdown(`**${isZh ? '定义位置' : 'Defined at'}:** \`${definition.relativePath}:${definition.line}\`\n\n`);
+
+                    if (!definition.isResolved) {
+                        markdown.appendMarkdown(`> ⚠️ ${isZh ? '该值包含未解析的变量引用，实际值可能不同。' : 'This value contains unresolved variable references, actual value may differ.'}\n\n`);
+                    }
+
+                    // 所有定义历史
+                    if (allDefs.length > 1) {
+                        markdown.appendMarkdown(`---\n\n`);
+                        markdown.appendMarkdown(`### ${isZh ? '历史赋值' : 'Assignment History'}\n\n`);
+                        markdown.appendMarkdown(isZh
+                            ? '| 值 | 文件 | 行 |\n|-----|------|----|\n'
+                            : '| Value | File | Line |\n|-------|------|------|\n');
+                        for (const def of allDefs) {
+                            const dVal = def.value.length > 40
+                                ? def.value.substring(0, 37) + '...'
+                                : def.value || (isZh ? '(空)' : '(empty)');
+                            markdown.appendMarkdown(`| \`${escapeCode(dVal)}\` | \`${def.relativePath}\` | ${def.line} |\n`);
+                        }
+                    }
+                } else if (allDefs.length > 0) {
+                    // 有定义但在引用之后
+                    const def = allDefs[0];
+                    markdown.appendMarkdown(`**${isZh ? '值' : 'Value'}:** \`${escapeCode(def.value || (isZh ? '(空)' : '(empty)'))}\`\n\n`);
+                    markdown.appendMarkdown(`**${isZh ? '定义位置' : 'Defined at'}:** \`${def.relativePath}:${def.line}\`\n\n`);
+                    markdown.appendMarkdown(`> ⚠️ ${isZh ? '该变量在引用之后定义。' : 'Variable defined after this reference.'}\n\n`);
+                } else {
+                    markdown.appendMarkdown(`> ❌ ${isZh ? '未定义的变量' : 'Undefined variable'}\n\n`);
+                    markdown.appendMarkdown((isZh
+                        ? '在整个编译过程中都未找到该变量的定义。'
+                        : 'No definition found for this variable in the entire compilation.'));
+                }
+
+                const varRange = new vscode.Range(
+                    position.line, start, position.line, end
+                );
+                return new vscode.Hover(markdown, varRange);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 检查普通词是否匹配编译分析中的变量名。
+     * 例如在 `set my_var 1` 中的 `my_var`，悬浮时显示变量信息。
+     */
+    private checkCompiledVariable(
+        word: string,
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        wordRange: vscode.Range
+    ): vscode.Hover | null {
+        if (!this.lintProvider) { return null; }
+
+        const result = this.lintProvider.getLastResult();
+        if (!result) { return null; }
+
+        const defs = result.variables.get(word);
+        if (!defs || defs.length === 0) { return null; }
+
+        // 检查当前行是否确实在这个变量名上（不是命令名位置）
+        const line = document.lineAt(position.line).text;
+        const trimmed = line.trimStart();
+        // 排除行首命令名匹配
+        const firstWordMatch = trimmed.match(/^([a-zA-Z_][a-zA-Z0-9_]*)/);
+        if (firstWordMatch && firstWordMatch[1] === word) {
+            // 如果这个词是行首第一个词，并且是已知命令，不显示变量 hover
+            const db = getDB();
+            if (db.isCommand(word)) { return null; }
+        }
+
+        const db = getDB();
+        const isZh = db.getLanguage() === 'zh';
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+        markdown.supportHtml = true;
+
+        // 查找当前文件/行之前的最新定义
+        const filePath = document.uri.fsPath;
+        const refLine = position.line + 1;
+        const { definition, allDefs } =
+            this.lintProvider.getCompiler().queryVariable(word, result, filePath, refLine);
+
+        markdown.appendMarkdown(`## \`${escapeCode(word)}\` \`${isZh ? 'TCL 变量' : 'TCL Variable'}\`\n\n`);
+
+        if (definition) {
+            const val = definition.value || (isZh ? '(空值)' : '(empty)');
+            const displayVal = val.length > 100 ? val.substring(0, 97) + '...' : val;
+            markdown.appendMarkdown(`**${isZh ? '值' : 'Value'}:** \`${escapeCode(displayVal)}\`\n\n`);
+            markdown.appendMarkdown(`**${isZh ? '定义位置' : 'Defined at'}:** \`${definition.relativePath}:${definition.line}\`\n\n`);
+            markdown.appendMarkdown(`**${isZh ? '原始语句' : 'Raw'}:** \`${escapeCode(definition.rawText)}\`\n\n`);
+
+            if (!definition.isResolved) {
+                markdown.appendMarkdown(`> ⚠️ ${isZh ? '该值包含未解析的变量引用。' : 'This value contains unresolved variable references.'}\n\n`);
+            }
+        }
+
+        if (allDefs.length > 1) {
+            markdown.appendMarkdown(`---\n\n`);
+            markdown.appendMarkdown(`### ${isZh ? '赋值历史' : 'Assignment History'}\n\n`);
+            markdown.appendMarkdown(isZh
+                ? '| 值 | 文件 | 行 |\n|-----|------|----|\n'
+                : '| Value | File | Line |\n|-------|------|------|\n');
+            for (const def of allDefs) {
+                const dVal = def.value.length > 40
+                    ? def.value.substring(0, 37) + '...'
+                    : def.value || (isZh ? '(空)' : '(empty)');
+                markdown.appendMarkdown(`| \`${escapeCode(dVal)}\` | \`${def.relativePath}\` | ${def.line} |\n`);
             }
         }
 

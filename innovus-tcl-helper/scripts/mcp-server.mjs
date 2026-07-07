@@ -319,7 +319,7 @@ async function handleRequest(msg) {
                                 required: ['script_content']
                             }
                         }
-]
+                    ]
                 });
                 break;
 
