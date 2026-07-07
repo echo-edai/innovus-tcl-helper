@@ -13,7 +13,7 @@ import { getDB, Language } from './commands';
 import { InnovusHoverProvider } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
-import { InnovusDefinitionProvider, InnovusHelpContentProvider } from './definition';
+import { InnovusDefinitionProvider } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
@@ -102,12 +102,10 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     }
 
-    // 4. Definition Provider - F12/Ctrl+Click 跳转到帮助文档
-    const helpProvider = new InnovusHelpContentProvider();
-    subs.push(vscode.workspace.registerTextDocumentContentProvider('innovus-tcl-help', helpProvider));
+    // 4. Definition Provider - F12/Ctrl+Click 打开 Webview 帮助面板
     subs.push(vscode.languages.registerDefinitionProvider(
         { language: 'tcl' },
-        new InnovusDefinitionProvider()
+        new InnovusDefinitionProvider(context)
     ));
 
     // 5. Semantic Tokens - Innovus 命令/参数语法高亮
