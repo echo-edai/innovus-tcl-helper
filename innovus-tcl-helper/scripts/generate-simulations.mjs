@@ -254,6 +254,25 @@ async function processLang(lang) {
     let idx = 0;
     let saveTimer = null;
 
+    // 进度条
+    const BAR_WIDTH = 30;
+    function progressBar(current, max) {
+        const pct = (current / max * 100).toFixed(1);
+        const filled = Math.round(current / max * BAR_WIDTH);
+        const bar = '█'.repeat(filled) + '░'.repeat(BAR_WIDTH - filled);
+        const el = ((Date.now() - t0) / 1000).toFixed(0);
+        return `[${bar}] ${pct}% (${current}/${max}) ${el}s`;
+    }
+
+    // 定期刷新进度（每 5 秒）
+    let progressTimer = setInterval(() => {
+        const current = completed + skipped + failed;
+        if (current > 0 && current < total) {
+            const line = progressBar(current, total);
+            process.stdout.write(`\r${line}`);
+        }
+    }, 5000);
+
     // 定期保存断点（每 30 秒）
     function scheduleSave() {
         if (saveTimer) clearTimeout(saveTimer);
@@ -332,11 +351,16 @@ async function processLang(lang) {
                 doneSet.add(cmdName);
                 completed++;
 
-                // 每 100 条打印一次进度到主日志
-                if (completed % 100 === 0) {
-                    const pct = ((completed + skipped + failed) / total * 100).toFixed(1);
-                    const el = ((Date.now() - t0) / 1000).toFixed(0);
-                    mainLog.log(`[${lang}] 进度: ${completed}/${total} (${pct}%), ${el}s`);
+                // 成功详情写入 worker log（每 20 条写一次避免刷屏）
+                if (completed % 20 === 0) {
+                    wl.log(`✅ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 已完成`);
+                }
+
+                // 每 50 条输出进度（含进度条）+ 最近完成信息
+                if (completed % 50 === 0) {
+                    const line = progressBar(completed + skipped + failed, total);
+                    process.stdout.write(`\r${line}`);
+                    mainLog.log(`[${lang}] ${line} 最近: ${cmdName}`);
                 }
 
                 scheduleSave();
@@ -354,14 +378,16 @@ async function processLang(lang) {
     await Promise.all(Array(workerCount).fill(null).map((_, i) => worker(i)));
 
     // 最终保存
+    if (progressTimer) clearInterval(progressTimer);
+    process.stdout.write(`\r${progressBar(total, total)}\n`);
     checkpoint.save(doneSet);
     mainLog.flush();
     for (const wl of workerLogs) wl.flush();
 
     const el = ((Date.now() - t0) / 1000).toFixed(0);
-    mainLog.log(`[${lang}] 完成: ✅${completed} ⏭${skipped} ❌${failed} (${el}s)`);
+    mainLog.log(`[${lang}] ✅${completed} ⏭${skipped} ❌${failed} (${el}s)`);
     if (failed > 0) {
-        mainLog.log(`[${lang}] 💡 失败命令详见 worker-*.log，下次运行自动重试`);
+        mainLog.log(`[${lang}] 💡 ${failed} 个失败详见 worker-*.log，下次运行自动重试`);
     }
 }
 
