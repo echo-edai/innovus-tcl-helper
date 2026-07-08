@@ -176,7 +176,7 @@ export class TclRunner {
         }
     }
 
-    /** 按 .f 文件顺序运行整个项目 */
+    /** 按 .f 文件顺序运行整个项目（所有文件拼接为一个脚本，保证 proc 跨文件可用） */
     async runProject(
         fFilePath: string, workspaceRoot: string, extensionPath: string,
         configTclshPath?: string, outputConfig?: RunOutputConfig
@@ -196,55 +196,63 @@ export class TclRunner {
 
         // 预扫描所有 Innovus 命令
         const allCmds = new Set<string>();
+        const fileContents: Array<{ path: string; content: string }> = [];
         for (const u of cr.units) {
             try {
                 const c = fs.readFileSync(u.filePath, 'utf-8');
+                fileContents.push({ path: u.relativePath, content: c });
                 for (const cmd of this.detectInnovusCommands(c, extensionPath)) { allCmds.add(cmd.command); }
-            } catch { /* skip */ }
+            } catch {
+                fileContents.push({ path: u.relativePath, content: '' });
+            }
         }
+
         const db = getDB(extensionPath);
         const cmdList: CmdInfo[] = [];
         for (const n of allCmds) { const info = db.get(n); if (info) { cmdList.push(info); } }
         const preamble = this.generatePreamble(cmdList, extensionPath);
 
+        // 拼接所有文件为一个脚本（用分隔注释标识文件边界）
+        let combinedScript = preamble + '\n';
+        for (const fc of fileContents) {
+            if (!fc.content) continue;
+            combinedScript += `\n# ===== FILE: ${fc.path} =====\n`;
+            combinedScript += fc.content + '\n';
+        }
+
         const results: ProjectRunResult['results'] = [];
         let errors = 0;
+        let execResult: { success: boolean; stdout: string; stderr: string; exitCode: number } | null = null;
 
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-proj-'));
+        const tmpFile = path.join(tmpDir, 'combined.tcl');
         try {
-            for (const u of cr.units) {
-                const ft0 = Date.now();
-                let fc: string;
-                try { fc = fs.readFileSync(u.filePath, 'utf-8'); } catch {
-                    results.push({ filePath: u.relativePath, success: false, stdout: '', stderr: '无法读取', innovusCommands: [], duration: 0 });
-                    errors++; continue;
-                }
-                const script = preamble + '\n' + fc;
-                const tf = path.join(tmpDir, `${u.order}_${path.basename(u.filePath)}`);
-                fs.writeFileSync(tf, script, 'utf-8');
-                const r = await this.executeTclsh(tclsh, tf, path.dirname(u.filePath));
-                const fcmds = this.detectInnovusCommands(fc, extensionPath).map(c => c.command);
+            fs.writeFileSync(tmpFile, combinedScript, 'utf-8');
+            const workDir = cr.units.length > 0
+                ? path.dirname(cr.units[0].filePath)
+                : workspaceRoot;
+            execResult = await this.executeTclsh(tclsh, tmpFile, workDir);
+
+            // 为每个文件创建结果条目
+            for (const fc of fileContents) {
+                const fcmds = this.detectInnovusCommands(fc.content, extensionPath).map(c => c.command);
+                const hasError = !fc.content || (execResult?.stderr && execResult.stderr.includes(fc.path));
                 const item: ProjectRunResult['results'][0] = {
-                    filePath: u.relativePath,
-                    success: r.success, stdout: r.stdout, stderr: r.stderr,
-                    innovusCommands: fcmds, duration: Date.now() - ft0
+                    filePath: fc.path,
+                    success: !hasError && (execResult?.success ?? false),
+                    stdout: execResult?.stdout || '',
+                    stderr: hasError ? (execResult?.stderr || '') : '',
+                    innovusCommands: fcmds,
+                    duration: 0
                 };
-                // 保存输出到文件
-                if (outputConfig?.enabled && outputConfig.dir) {
-                    const safeName = path.basename(u.filePath).replace(/\.tcl$/i, '');
-                    item.outputFile = this.saveOutputFile(
-                        outputConfig.dir, `${u.order}_${safeName}`,
-                        r.stdout, r.stderr, fcmds
-                    );
-                }
+                if (hasError || !execResult?.success) { errors++; }
                 results.push(item);
-                if (!r.success) { errors++; }
             }
         } finally {
             try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch { /* ignore */ }
         }
 
-        return { success: errors === 0, results, totalDuration: Date.now() - t0, fileCount: cr.units.length, errorCount: errors };
+        return { success: errors === 0 && (execResult?.success ?? false), results, totalDuration: Date.now() - t0, fileCount: cr.units.length, errorCount: errors };
     }
 
     private detectInnovusCommands(content: string, extensionPath: string): CmdInfo[] {
