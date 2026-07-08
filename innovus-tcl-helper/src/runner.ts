@@ -2,13 +2,10 @@
  * TCL Script Runner — 基于 tclsh 的 TCL 代码执行引擎
  *
  * 核心功能:
- *   1. 通过 tclsh 执行标准 TCL 代码
+ *   1. 通过 tclsh 执行标准 TCL 代码（内置 tclsh9.0，无需用户安装）
  *   2. 自动拦截 Innovus 专有命令，输出文档说明代替执行
- *   3. 支持脚本级和片段级执行
- *   4. 输出 stdout / stderr 分离
- *
- * 执行流程:
- *   源码 → 分词识别 Innovus 命令 → 注入 proc 包装器 → tclsh 执行 → 捕获输出
+ *   3. 支持单文件运行 + .f 文件项目运行
+ *   4. 支持自定义 tclsh 路径（innovus-tcl.tclshPath）
  */
 
 import * as cp from 'child_process';
@@ -17,27 +14,41 @@ import * as path from 'path';
 import * as os from 'os';
 import { getDB, CmdInfo } from './commands';
 import { tokenize, TokenType } from './tcl-ast';
+import { TclCompiler } from './compiler';
 
 // ════════════════════════════════════════════════════════════
-//  类型定义
+//  类型
 // ════════════════════════════════════════════════════════════
 
-/** 单次运行结果 */
 export interface RunResult {
-    success: boolean;           // tclsh 是否成功执行
-    stdout: string;             // 标准输出
-    stderr: string;             // 标准错误
+    success: boolean;
+    stdout: string;
+    stderr: string;
     exitCode: number;
-    innovusCommands: string[];  // 被拦截的 Innovus 命令列表
-    duration: number;           // 执行耗时 (ms)
+    innovusCommands: string[];
+    duration: number;
+}
+
+export interface ProjectRunResult {
+    success: boolean;
+    results: Array<{
+        filePath: string;
+        success: boolean;
+        stdout: string;
+        stderr: string;
+        innovusCommands: string[];
+        duration: number;
+    }>;
+    totalDuration: number;
+    fileCount: number;
+    errorCount: number;
 }
 
 // ════════════════════════════════════════════════════════════
-//  配置
+//  常量
 // ════════════════════════════════════════════════════════════
 
-/** tclsh 可执行文件优先级 */
-const TCLSH_CANDIDATES = [
+const SYSTEM_TCLSH_CANDIDATES = [
     '/opt/homebrew/bin/tclsh9.0',
     '/usr/local/bin/tclsh9.0',
     '/usr/bin/tclsh',
@@ -45,7 +56,6 @@ const TCLSH_CANDIDATES = [
     'tclsh9.0',
 ];
 
-/** 执行超时 (ms) */
 const RUN_TIMEOUT = 30000;
 
 // ════════════════════════════════════════════════════════════
@@ -53,260 +63,203 @@ const RUN_TIMEOUT = 30000;
 // ════════════════════════════════════════════════════════════
 
 export class TclRunner {
-    private tclshPath: string | null = null;
-    private initialized: boolean = false;
+    private tclshPathCache: string | null = null;
 
-    /**
-     * 查找系统中可用的 tclsh。
-     */
-    findTclsh(): string | null {
-        if (this.tclshPath) { return this.tclshPath; }
-
-        for (const candidate of TCLSH_CANDIDATES) {
-            try {
-                const result = cp.spawnSync(candidate, ['-h'], {
-                    timeout: 3000,
-                    stdio: 'pipe'
-                });
-                if (result.status !== null || result.error === undefined) {
-                    // 进一步验证：执行版本检查
-                    const verResult = cp.spawnSync(candidate, [], {
-                        input: 'puts [info patchlevel]',
-                        timeout: 3000,
-                        stdio: 'pipe'
-                    });
-                    const version = verResult.stdout.toString().trim();
-                    if (version && /^\d+\.\d+/.test(version)) {
-                        this.tclshPath = candidate;
-                        console.log(`[TCL Runner] 找到 tclsh: ${candidate} (v${version})`);
-                        return candidate;
-                    }
-                }
-            } catch {
-                // 继续尝试下一个
-            }
+    /** 查找 tclsh: 内置 > 用户配置 > 系统搜索 */
+    findTclsh(extensionPath: string, configTclshPath?: string): string | null {
+        if (this.tclshPathCache && fs.existsSync(this.tclshPathCache)) {
+            return this.tclshPathCache;
         }
-        console.log('[TCL Runner] 未找到 tclsh，请安装: brew install tcl-tk');
+        this.tclshPathCache = null;
+
+        // 1. 扩展内置 tclsh9.0
+        const bundled = path.join(extensionPath, 'bin', 'tclsh9.0');
+        if (fs.existsSync(bundled)) {
+            const v = this.verifyTclsh(bundled);
+            if (v) { this.tclshPathCache = v; return v; }
+        }
+
+        // 2. 用户配置
+        if (configTclshPath && fs.existsSync(configTclshPath)) {
+            const v = this.verifyTclsh(configTclshPath);
+            if (v) { this.tclshPathCache = v; return v; }
+        }
+
+        // 3. 系统搜索
+        for (const c of SYSTEM_TCLSH_CANDIDATES) {
+            const v = this.verifyTclsh(c);
+            if (v) { this.tclshPathCache = v; return v; }
+        }
+
         return null;
     }
 
-    /**
-     * 运行 TCL 脚本内容。
-     * @param content - TCL 脚本源代码
-     * @param workDir - 工作目录（用于 source 命令的相对路径解析）
-     * @param extensionPath - 扩展安装路径（用于读取 Innovus 命令文档）
-     * @returns 运行结果
-     */
-    async runScript(
-        content: string,
-        workDir: string,
-        extensionPath: string
-    ): Promise<RunResult> {
-        const startTime = Date.now();
+    private verifyTclsh(p: string): string | null {
+        try {
+            const r = cp.spawnSync(p, [], {
+                input: 'puts [info patchlevel]', timeout: 3000, stdio: 'pipe'
+            });
+            const ver = r.stdout.toString().trim();
+            if (ver && /^\d+\.\d+/.test(ver)) { return p; }
+        } catch { /* ignore */ }
+        return null;
+    }
 
-        // 查找 tclsh
-        const tclsh = this.findTclsh();
+    /** 运行单个 TCL 脚本 */
+    async runScript(content: string, workDir: string, extensionPath: string, configTclshPath?: string): Promise<RunResult> {
+        const t0 = Date.now();
+        const tclsh = this.findTclsh(extensionPath, configTclshPath);
         if (!tclsh) {
-            return {
-                success: false,
-                stdout: '',
-                stderr: '未找到 tclsh 解释器。请执行: brew install tcl-tk',
-                exitCode: -1,
-                innovusCommands: [],
-                duration: Date.now() - startTime
-            };
+            return { success: false, stdout: '', stderr: '未找到 tclsh', exitCode: -1, innovusCommands: [], duration: 0 };
         }
 
-        // 1. 识别脚本中使用的 Innovus 命令
-        const innovusCmds = this.detectInnovusCommands(content, extensionPath);
-        const innovusCommandNames = innovusCmds.map(c => c.command);
+        const cmds = this.detectInnovusCommands(content, extensionPath);
+        const preamble = this.generatePreamble(cmds);
+        const script = preamble + '\n' + content;
 
-        // 2. 生成 Innovus 命令的 proc 包装器
-        const preamble = this.generatePreamble(innovusCmds, extensionPath);
-
-        // 3. 拼接完整脚本
-        const fullScript = preamble + '\n' + content;
-
-        // 4. 写入临时文件并执行
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-run-'));
         const tmpFile = path.join(tmpDir, 'run.tcl');
-
         try {
-            fs.writeFileSync(tmpFile, fullScript, 'utf-8');
-
-            // 5. 通过 tclsh 执行
-            const result = await this.executeTclsh(tclsh, tmpFile, workDir);
-
-            return {
-                ...result,
-                innovusCommands: innovusCommandNames,
-                duration: Date.now() - startTime
-            };
+            fs.writeFileSync(tmpFile, script, 'utf-8');
+            const r = await this.executeTclsh(tclsh, tmpFile, workDir);
+            return { ...r, innovusCommands: cmds.map(c => c.command), duration: Date.now() - t0 };
         } catch (e: any) {
-            return {
-                success: false,
-                stdout: '',
-                stderr: `执行异常: ${e.message}`,
-                exitCode: -1,
-                innovusCommands: innovusCommandNames,
-                duration: Date.now() - startTime
-            };
+            return { success: false, stdout: '', stderr: `异常: ${e.message}`, exitCode: -1, innovusCommands: cmds.map(c => c.command), duration: Date.now() - t0 };
         } finally {
-            // 清理临时文件
             try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch { /* ignore */ }
         }
     }
 
-    /**
-     * 检测 TCL 源码中使用的 Innovus 专有命令。
-     */
+    /** 按 .f 文件顺序运行整个项目 */
+    async runProject(fFilePath: string, workspaceRoot: string, extensionPath: string, configTclshPath?: string): Promise<ProjectRunResult> {
+        const t0 = Date.now();
+        const tclsh = this.findTclsh(extensionPath, configTclshPath);
+        if (!tclsh) {
+            return { success: false, results: [], totalDuration: Date.now() - t0, fileCount: 0, errorCount: 1 };
+        }
+
+        const compiler = new TclCompiler();
+        const fRel = path.relative(workspaceRoot, fFilePath);
+        const cr = compiler.compile(workspaceRoot, fRel);
+        if (cr.units.length === 0) {
+            return { success: false, results: [], totalDuration: Date.now() - t0, fileCount: 0, errorCount: 1 };
+        }
+
+        // 预扫描所有 Innovus 命令
+        const allCmds = new Set<string>();
+        for (const u of cr.units) {
+            try {
+                const c = fs.readFileSync(u.filePath, 'utf-8');
+                for (const cmd of this.detectInnovusCommands(c, extensionPath)) { allCmds.add(cmd.command); }
+            } catch { /* skip */ }
+        }
+        const db = getDB(extensionPath);
+        const cmdList: CmdInfo[] = [];
+        for (const n of allCmds) { const info = db.get(n); if (info) { cmdList.push(info); } }
+        const preamble = this.generatePreamble(cmdList);
+
+        const results: ProjectRunResult['results'] = [];
+        let errors = 0;
+
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-proj-'));
+        try {
+            for (const u of cr.units) {
+                const ft0 = Date.now();
+                let fc: string;
+                try { fc = fs.readFileSync(u.filePath, 'utf-8'); } catch {
+                    results.push({ filePath: u.relativePath, success: false, stdout: '', stderr: '无法读取', innovusCommands: [], duration: 0 });
+                    errors++; continue;
+                }
+                const script = preamble + '\n' + fc;
+                const tf = path.join(tmpDir, `${u.order}_${path.basename(u.filePath)}`);
+                fs.writeFileSync(tf, script, 'utf-8');
+                const r = await this.executeTclsh(tclsh, tf, path.dirname(u.filePath));
+                const fcmds = this.detectInnovusCommands(fc, extensionPath).map(c => c.command);
+                results.push({
+                    filePath: u.relativePath,
+                    success: r.success, stdout: r.stdout, stderr: r.stderr,
+                    innovusCommands: fcmds, duration: Date.now() - ft0
+                });
+                if (!r.success) { errors++; }
+            }
+        } finally {
+            try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch { /* ignore */ }
+        }
+
+        return { success: errors === 0, results, totalDuration: Date.now() - t0, fileCount: cr.units.length, errorCount: errors };
+    }
+
     private detectInnovusCommands(content: string, extensionPath: string): CmdInfo[] {
         const db = getDB(extensionPath);
         const tokens = tokenize(content);
         const found = new Set<string>();
-
-        // 遍历 token，找到 COMMAND token（命令名）
         for (let i = 0; i < tokens.length; i++) {
             if (tokens[i].type === TokenType.COMMAND) {
-                const cmdName = tokens[i].value;
-                const cmdInfo = db.get(cmdName);
-                if (cmdInfo) {
-                    found.add(cmdName);
-                }
+                const info = db.get(tokens[i].value);
+                if (info) { found.add(tokens[i].value); }
             }
         }
-
-        const results: CmdInfo[] = [];
-        for (const name of found) {
-            const info = db.get(name);
-            if (info) { results.push(info); }
-        }
-        return results;
+        const r: CmdInfo[] = [];
+        for (const n of found) { const info = db.get(n); if (info) { r.push(info); } }
+        return r;
     }
 
-    /**
-     * 生成 Innovus 命令 proc 包装器前导代码。
-     * 为每个 Innovus 命令生成一个 proc，打印命令文档并返回。
-     */
-    private generatePreamble(innovusCmds: CmdInfo[], extensionPath: string): string {
-        if (innovusCmds.length === 0) { return ''; }
-
-        const db = getDB(extensionPath);
-        const lang = db.getLanguage();
-        const isZh = lang === 'zh';
-
-        let preamble = '';
-        preamble += '# ==========================================\n';
-        preamble += isZh
-            ? '# Innovus 命令文档包装器（自动生成）\n'
-            : '# Innovus Command Doc Wrappers (Auto-generated)\n';
-        preamble += '# ==========================================\n\n';
-
-        for (const cmd of innovusCmds) {
-            const cmdName = cmd.command;
-            const summary = cmd.summary || '';
-            const usage = cmd.usage || '';
-
-            // 生成 proc 包装器
-            preamble += `# ${summary}\n`;
-            preamble += `proc ${cmdName} {args} {\n`;
-
-            // 打印命令头（TCL 中需转义 [] 为 \[\]）
-            preamble += `    puts "\\n═══════════════════════════════════════"\n`;
-            preamble += `    puts "\\[Innovus\\] ${cmdName}"\n`;
-            preamble += `    puts "═══════════════════════════════════════"\n`;
-            preamble += `    puts "  ${summary}"\n`;
-            preamble += `    puts ""\n`;
-            preamble += `    puts "  调用参数: $args"\n`;
-
-            // 打印必选参数
+    private generatePreamble(cmds: CmdInfo[]): string {
+        if (cmds.length === 0) { return ''; }
+        let p = '# ===== Innovus Command Wrappers (Auto-generated) =====\n\n';
+        for (const cmd of cmds) {
+            const n = cmd.command;
+            const s = cmd.summary || '';
+            p += `# ${s}\nproc ${n} {args} {\n`;
+            p += `    puts "\\n═══════════════════════════════════════"\n`;
+            p += `    puts "\\[Innovus\\] ${n}"\n`;
+            p += `    puts "═══════════════════════════════════════"\n`;
+            p += `    puts "  ${s}"\n    puts ""\n`;
+            p += `    puts "  调用参数: $args"\n`;
             if (cmd.options && cmd.options.length > 0) {
-                const required = cmd.options.filter(o => o.required);
-                const optional = cmd.options.filter(o => !o.required);
-                if (required.length > 0) {
-                    preamble += `    puts "  必选参数:"\n`;
-                    for (const opt of required) {
-                        preamble += `    puts "    ${opt.name}  ${opt.description.replace(/"/g, '\\"')}"\n`;
+                const req = cmd.options.filter(o => o.required);
+                const opt = cmd.options.filter(o => !o.required);
+                if (req.length > 0) {
+                    p += `    puts "  必选参数:"\n`;
+                    for (const o of req) {
+                        p += `    puts "    ${o.name}  ${o.description.replace(/"/g, '\\"')}"\n`;
                     }
                 }
-                // 只打印前 10 个可选参数
-                if (optional.length > 0) {
-                    preamble += `    puts "  可选参数 (${optional.length}个):"\n`;
-                    for (const opt of optional.slice(0, 10)) {
-                        const desc = (opt.description || '').replace(/"/g, '\\"');
-                        preamble += `    puts "    ${opt.name}  ${desc}"\n`;
+                if (opt.length > 0) {
+                    p += `    puts "  可选参数 (${opt.length}个):"\n`;
+                    for (const o of opt.slice(0, 10)) {
+                        const desc = (o.description || '').replace(/"/g, '\\"');
+                        p += `    puts "    ${o.name}  ${desc}"\n`;
                     }
-                    if (optional.length > 10) {
-                        preamble += `    puts "    ... 还有 ${optional.length - 10} 个参数"\n`;
+                    if (opt.length > 10) {
+                        p += `    puts "    ... 还有 ${opt.length - 10} 个参数"\n`;
                     }
                 }
             }
-
-            preamble += `    puts ""\n`;
-            preamble += `    return ""\n`;
-            preamble += `}\n\n`;
+            p += `    puts ""\n    return ""\n}\n\n`;
         }
-
-        return preamble;
+        return p;
     }
 
-    /**
-     * 通过 child_process 执行 tclsh。
-     */
     private executeTclsh(
-        tclshPath: string,
-        scriptFile: string,
-        workDir: string
+        tclshPath: string, scriptFile: string, workDir: string
     ): Promise<{ success: boolean; stdout: string; stderr: string; exitCode: number }> {
         return new Promise((resolve) => {
             const proc = cp.spawn(tclshPath, [scriptFile], {
-                cwd: workDir,
-                timeout: RUN_TIMEOUT,
-                stdio: ['pipe', 'pipe', 'pipe'],
-                env: { ...process.env }
+                cwd: workDir, timeout: RUN_TIMEOUT, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env }
             });
-
-            let stdout = '';
-            let stderr = '';
+            let stdout = '', stderr = '';
             let settled = false;
-
-            const finish = (success: boolean, exitCode: number) => {
+            const done = (ok: boolean, code: number) => {
                 if (settled) { return; }
                 settled = true;
-                resolve({ success, stdout, stderr, exitCode });
+                resolve({ success: ok, stdout, stderr, exitCode: code });
             };
-
-            proc.stdout?.on('data', (data: Buffer) => {
-                stdout += data.toString();
-            });
-
-            proc.stderr?.on('data', (data: Buffer) => {
-                stderr += data.toString();
-            });
-
-            proc.on('close', (code: number | null) => {
-                const exitCode = code ?? -1;
-                if (stderr.trim() && !stdout.trim()) {
-                    // TCL 错误可能输出到 stdout
-                    finish(false, exitCode);
-                } else {
-                    finish(exitCode === 0 || stdout.trim().length > 0, exitCode);
-                }
-            });
-
-            proc.on('error', (err: Error) => {
-                stderr += `进程错误: ${err.message}`;
-                finish(false, -1);
-            });
-
-            // 超时处理
-            setTimeout(() => {
-                if (!settled) {
-                    proc.kill();
-                    stderr += '\n⏱ 执行超时 (30s)';
-                    finish(false, -1);
-                }
-            }, RUN_TIMEOUT);
+            proc.stdout?.on('data', (d: Buffer) => { stdout += d.toString(); });
+            proc.stderr?.on('data', (d: Buffer) => { stderr += d.toString(); });
+            proc.on('close', (code: number | null) => { done(code === 0 && !stderr.trim(), code ?? -1); });
+            proc.on('error', (e: Error) => { stderr += `进程错误: ${e.message}`; done(false, -1); });
+            setTimeout(() => { if (!settled) { proc.kill(); stderr += '\n⏱ 超时'; done(false, -1); } }, RUN_TIMEOUT);
         });
     }
 }
@@ -318,8 +271,6 @@ export class TclRunner {
 let runnerInstance: TclRunner | null = null;
 
 export function getRunner(): TclRunner {
-    if (!runnerInstance) {
-        runnerInstance = new TclRunner();
-    }
+    if (!runnerInstance) { runnerInstance = new TclRunner(); }
     return runnerInstance;
 }

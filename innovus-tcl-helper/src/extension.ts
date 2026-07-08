@@ -875,7 +875,9 @@ export function activate(context: vscode.ExtensionContext) {
 
         // 查找 tclsh 并执行
         const runner = getRunner();
-        const tclsh = runner.findTclsh();
+        const configTclshPath = vscode.workspace.getConfiguration('innovus-tcl')
+            .get<string>('tclshPath', '');
+        const tclsh = runner.findTclsh(context.extensionPath, configTclshPath);
 
         if (!tclsh) {
             runChannel.appendLine(isZh
@@ -932,6 +934,76 @@ export function activate(context: vscode.ExtensionContext) {
             runChannel.appendLine(isZh
                 ? `❌ 执行异常: ${e.message}`
                 : `❌ Execution error: ${e.message}`);
+        }
+    }));
+
+    // 注册命令：运行整个 .f 项目
+    subs.push(vscode.commands.registerCommand('innovus-tcl.runProject', async () => {
+        const isZh = db.getLanguage() === 'zh';
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showWarningMessage(
+                isZh ? '请先打开一个工作区。' : 'Please open a workspace first.'
+            );
+            return;
+        }
+
+        const wsRoot = workspaceFolders[0].uri.fsPath;
+        const fFile = vscode.workspace.getConfiguration('innovus-tcl')
+            .get<string>('fFile', 'tcl.f');
+        const fFilePath = path.join(wsRoot, fFile);
+
+        if (!fs.existsSync(fFilePath)) {
+            vscode.window.showErrorMessage(
+                isZh ? `.f 文件不存在: ${fFile}` : `.f file not found: ${fFile}`
+            );
+            return;
+        }
+
+        runChannel.clear();
+        runChannel.show(true);
+        runChannel.appendLine('═══════════════════════════════════════');
+        runChannel.appendLine(isZh ? '  Innovus TCL 项目运行' : '  Innovus TCL Project Run');
+        runChannel.appendLine('═══════════════════════════════════════');
+        runChannel.appendLine(isZh ? `  .f 文件: ${fFile}` : `  .f File: ${fFile}`);
+        runChannel.appendLine('');
+
+        const runner = getRunner();
+        const configTclshPath2 = vscode.workspace.getConfiguration('innovus-tcl')
+            .get<string>('tclshPath', '');
+        const tclsh2 = runner.findTclsh(context.extensionPath, configTclshPath2);
+        if (!tclsh2) {
+            runChannel.appendLine(isZh ? '❌ 未找到 tclsh' : '❌ tclsh not found');
+            return;
+        }
+
+        runChannel.appendLine(isZh ? `🔧 ${tclsh2}` : `🔧 ${tclsh2}`);
+        runChannel.appendLine(isZh ? '⚡ 执行中...' : '⚡ Executing...');
+        runChannel.appendLine('');
+
+        try {
+            const result = await runner.runProject(fFilePath, wsRoot, context.extensionPath, configTclshPath2);
+
+            for (const r of result.results) {
+                const status = r.success ? '✅' : '❌';
+                const cmdInfo = r.innovusCommands.length > 0
+                    ? ` (${r.innovusCommands.length} Innovus cmds)` : '';
+                runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}`);
+                if (r.stderr.trim()) {
+                    runChannel.appendLine(`   ⚠ ${r.stderr.trim().split('\n')[0]}`);
+                }
+            }
+
+            runChannel.appendLine('');
+            runChannel.appendLine('───────────────────────────────────────');
+            runChannel.appendLine(isZh
+                ? `📊 ${result.fileCount} 个文件, ${result.errorCount} 个错误, ${result.totalDuration}ms`
+                : `📊 ${result.fileCount} files, ${result.errorCount} errors, ${result.totalDuration}ms`);
+            if (result.success) {
+                runChannel.appendLine(isZh ? '✅ 全部通过' : '✅ All passed');
+            }
+        } catch (e: any) {
+            runChannel.appendLine(isZh ? `❌ ${e.message}` : `❌ ${e.message}`);
         }
     }));
 
