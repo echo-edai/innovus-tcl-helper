@@ -236,8 +236,9 @@ export class TclRunner {
             // 为每个文件创建结果条目
             for (const fc of fileContents) {
                 const fcmds = this.detectInnovusCommands(fc.content || '', extensionPath).map(c => c.command);
-                // 所有文件共享同一个 execResult
-                const fileSuccess = execResult?.success ?? false;
+                // stdout 有输出 = 脚本至少部分执行成功
+                const hasOutput = (execResult?.stdout?.length || 0) > 0;
+                const fileSuccess = hasOutput || (execResult?.success ?? false);
                 const item: ProjectRunResult['results'][0] = {
                     filePath: fc.path,
                     success: fileSuccess,
