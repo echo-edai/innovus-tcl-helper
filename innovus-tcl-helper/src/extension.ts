@@ -1009,29 +1009,30 @@ export function activate(context: vscode.ExtensionContext) {
                 configTclshPath2, outputConfig2
             );
 
-            // 显示完整的运行输出
-            const firstResult = result.results[0];
-            if (firstResult?.stdout?.trim()) {
+            // 显示完整的运行输出（去标记行）
+            const firstR = result.results[0];
+            const cleanOutput = firstR?.stdout
+                ?.split('\n')
+                .filter((l: string) => !l.startsWith('_FILE_') && !l.startsWith('_ERROR_MSG_'))
+                .join('\n')
+                .trim() || '';
+            if (cleanOutput) {
                 runChannel.appendLine('── 运行输出 ──');
-                runChannel.appendLine(firstResult.stdout);
-            }
-            if (firstResult?.stderr?.trim()) {
-                runChannel.appendLine('── 错误 ──');
-                // 只显示第一行错误（避免重复）
-                const errLine = firstResult.stderr.trim().split('\n')[0];
-                runChannel.appendLine(`   ${errLine}`);
+                runChannel.appendLine(cleanOutput);
             }
 
-            // 逐文件状态（简化）
+            // 逐文件状态
             runChannel.appendLine('');
             runChannel.appendLine('── 文件状态 ──');
-            const allOk = result.success;
             for (const r of result.results) {
-                const status = allOk ? '✅' : (r.stderr.trim() ? '❌' : '✅');
+                const status = r.success ? '✅' : '❌';
                 const cmdInfo = r.innovusCommands.length > 0
                     ? ` (${r.innovusCommands.length} cmds)` : '';
                 const fileInfo = r.outputFile ? ` → ${r.outputFile}` : '';
                 runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}${fileInfo}`);
+                if (!r.success && r.stderr && r.stderr !== '前置文件执行失败，未运行到此文件') {
+                    runChannel.appendLine(`   ⚠ ${r.stderr}`);
+                }
             }
 
             runChannel.appendLine('');

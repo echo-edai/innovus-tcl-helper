@@ -176,7 +176,7 @@ export class TclRunner {
         }
     }
 
-    /** 按 .f 文件顺序运行整个项目（所有文件拼接为一个脚本，保证 proc 跨文件可用） */
+    /** 按 .f 文件顺序运行整个项目（source + catch 保证：遇错即停，逐文件追踪状态） */
     async runProject(
         fFilePath: string, workspaceRoot: string, extensionPath: string,
         configTclshPath?: string, outputConfig?: RunOutputConfig
@@ -196,14 +196,15 @@ export class TclRunner {
 
         // 预扫描所有 Innovus 命令
         const allCmds = new Set<string>();
-        const fileContents: Array<{ path: string; content: string }> = [];
+        const fileMetas: Array<{ relPath: string; absPath: string; cmds: string[] }> = [];
         for (const u of cr.units) {
             try {
                 const c = fs.readFileSync(u.filePath, 'utf-8');
-                fileContents.push({ path: u.relativePath, content: c });
-                for (const cmd of this.detectInnovusCommands(c, extensionPath)) { allCmds.add(cmd.command); }
+                const fcmds = this.detectInnovusCommands(c, extensionPath).map(cmd => cmd.command);
+                fileMetas.push({ relPath: u.relativePath, absPath: u.filePath, cmds: fcmds });
+                for (const cmd of fcmds) { allCmds.add(cmd); }
             } catch {
-                fileContents.push({ path: u.relativePath, content: '' });
+                fileMetas.push({ relPath: u.relativePath, absPath: u.filePath, cmds: [] });
             }
         }
 
@@ -212,49 +213,79 @@ export class TclRunner {
         for (const n of allCmds) { const info = db.get(n); if (info) { cmdList.push(info); } }
         const preamble = this.generatePreamble(cmdList, extensionPath);
 
-        // 拼接所有文件为一个脚本（用分隔注释标识文件边界）
+        // 构建脚本：每个文件用 catch {source} 包装，遇错即停
         let combinedScript = preamble + '\n';
-        for (const fc of fileContents) {
-            if (!fc.content) continue;
-            combinedScript += `\n# ===== FILE: ${fc.path} =====\n`;
-            combinedScript += fc.content + '\n';
+        combinedScript += '\n# ===== Innovus 内置命令兼容层 =====\n';
+        combinedScript += 'proc echo {args} { puts [join $args " "] }\n';
+        combinedScript += '# 兜底：未在 help 数据库中的 Innovus 命令当作仿真命令处理\n';
+        combinedScript += 'rename unknown _tcl_unknown\n';
+        combinedScript += 'proc unknown {args} {\n';
+        combinedScript += '    set _cmd [lindex $args 0]\n';
+        combinedScript += '    # 未注册的未知命令当作 Innovus 命令，打印参数并返回空值\n';
+        combinedScript += '    puts "\\[Unknown\\] $_cmd: [lrange $args 1 end]"\n';
+        combinedScript += '    return ""\n';
+        combinedScript += '}\n';
+        combinedScript += '\n# ===== 顺序执行 TCL 文件 =====\n';
+        combinedScript += 'set _project_ok 1\n';
+        for (const fm of fileMetas) {
+            const escapedPath = fm.absPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            combinedScript += `\nputs "_FILE_BEGIN_ ${fm.relPath}"\n`;
+            combinedScript += `if {[catch {source "${escapedPath}"} _err]} {\n`;
+            combinedScript += `    puts "_FILE_ERROR_ ${fm.relPath}"\n`;
+            combinedScript += `    puts "_ERROR_MSG_ $_err"\n`;
+            combinedScript += `    set _project_ok 0\n`;
+            combinedScript += `    exit 1\n`;
+            combinedScript += `}\n`;
+            combinedScript += `puts "_FILE_END_ ${fm.relPath}"\n`;
         }
-
-        const results: ProjectRunResult['results'] = [];
-        let errors = 0;
-        let execResult: { success: boolean; stdout: string; stderr: string; exitCode: number } | null = null;
 
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-proj-'));
         const tmpFile = path.join(tmpDir, 'combined.tcl');
         try {
             fs.writeFileSync(tmpFile, combinedScript, 'utf-8');
-            const workDir = cr.units.length > 0
-                ? path.dirname(cr.units[0].filePath)
+            const workDir = fileMetas.length > 0
+                ? path.dirname(fileMetas[0].absPath)
                 : workspaceRoot;
-            execResult = await this.executeTclsh(tclsh, tmpFile, workDir);
+            const execResult = await this.executeTclsh(tclsh, tmpFile, workDir);
 
-            // 为每个文件创建结果条目
-            for (const fc of fileContents) {
-                const fcmds = this.detectInnovusCommands(fc.content || '', extensionPath).map(c => c.command);
-                // stdout 有输出 = 脚本至少部分执行成功
-                const hasOutput = (execResult?.stdout?.length || 0) > 0;
-                const fileSuccess = hasOutput || (execResult?.success ?? false);
-                const item: ProjectRunResult['results'][0] = {
-                    filePath: fc.path,
-                    success: fileSuccess,
-                    stdout: execResult?.stdout || '',
-                    stderr: execResult?.stderr || '',
-                    innovusCommands: fcmds,
-                    duration: 0
-                };
-                if (!fileSuccess) { errors++; }
-                results.push(item);
+            // 解析标记，逐文件判定状态
+            const results: ProjectRunResult['results'] = [];
+            const allOutput = execResult.stdout;
+            let errors = 0;
+            for (const fm of fileMetas) {
+                const okMarker = `_FILE_END_ ${fm.relPath}`;
+                const errMarker = `_FILE_ERROR_ ${fm.relPath}`;
+                if (allOutput.includes(okMarker)) {
+                    results.push({ filePath: fm.relPath, success: true, stdout: allOutput, stderr: '', innovusCommands: fm.cmds, duration: 0 });
+                } else if (allOutput.includes(errMarker)) {
+                    // 提取该文件的错误信息
+                    const errIdx = allOutput.indexOf(errMarker);
+                    const errMsgIdx = allOutput.indexOf('_ERROR_MSG_', errIdx);
+                    const errMsg = errMsgIdx >= 0
+                        ? allOutput.substring(errMsgIdx + '_ERROR_MSG_ '.length, allOutput.indexOf('\n', errMsgIdx)).trim()
+                        : execResult.stderr.trim().split('\n')[0] || 'Unknown error';
+                    results.push({ filePath: fm.relPath, success: false, stdout: allOutput, stderr: errMsg, innovusCommands: fm.cmds, duration: 0 });
+                    errors++;
+                    // 后续文件未被执行
+                    break;
+                } else {
+                    // 未被执行到（前面的文件出错了）
+                    results.push({ filePath: fm.relPath, success: false, stdout: '', stderr: '前置文件执行失败，未运行到此文件', innovusCommands: fm.cmds, duration: 0 });
+                    errors++;
+                }
             }
+
+            // 如果有文件成功执行但没错误，补上剩余的未执行文件
+            for (let i = results.length; i < fileMetas.length; i++) {
+                const fm = fileMetas[i];
+                results.push({ filePath: fm.relPath, success: false, stdout: '', stderr: '前置文件执行失败，未运行到此文件', innovusCommands: fm.cmds, duration: 0 });
+                errors++;
+            }
+
+            return { success: errors === 0, results, totalDuration: Date.now() - t0, fileCount: fileMetas.length, errorCount: errors };
         } finally {
             try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch { /* ignore */ }
         }
-
-        return { success: errors === 0 && (execResult?.success ?? false), results, totalDuration: Date.now() - t0, fileCount: cr.units.length, errorCount: errors };
     }
 
     private detectInnovusCommands(content: string, extensionPath: string): CmdInfo[] {
