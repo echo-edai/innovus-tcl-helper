@@ -10,7 +10,8 @@
  *   - 增量生成：已有仿真数据自动跳过
  *
  * 用法:
- *   node scripts/generate-simulations.mjs [--lang cn|en] [--limit N] [--dry-run]
+ *   node scripts/generate-simulations.mjs [--lang cn|en] [--limit N] [--concurrency N] [--dry-run]
+ *   默认并发 30（deepseek-v4-flash 上限 2500）
  *
  * 环境变量:
  *   DEEPSEEK_API_KEY
@@ -27,18 +28,20 @@ const ROOT = path.resolve(__dirname, '..');
 //  配置
 // ════════════════════════════════════════════════════════════
 
-const API = 'https://api.deepseek.com/chat/completions';
-const MODEL = 'deepseek-v4-flash';
-const CONCURRENCY = 3;
-const MAX_TOKENS = 2048;
-const RETRY_DELAY = 2000;
-const MAX_RETRIES = 3;
-const MAX_LOG_LINES = 500;          // 单个日志文件最大行数
-
 const args = process.argv.slice(2);
 const LANGS = args.includes('--lang') ? [args[args.indexOf('--lang') + 1]] : ['cn', 'en'];
 const LIMIT = args.includes('--limit') ? parseInt(args[args.indexOf('--limit') + 1]) : 0;
 const DRY_RUN = args.includes('--dry-run');
+
+const API = 'https://api.deepseek.com/chat/completions';
+const MODEL = 'deepseek-v4-flash';
+const CONCURRENCY = args.includes('--concurrency')
+    ? parseInt(args[args.indexOf('--concurrency') + 1])
+    : 30;  // deepseek-v4-flash 并发上限 2500，30 安全快速
+const MAX_TOKENS = 2048;
+const RETRY_DELAY = 2000;
+const MAX_RETRIES = 3;
+const MAX_LOG_LINES = 500;
 
 // ════════════════════════════════════════════════════════════
 //  日志系统
@@ -222,10 +225,10 @@ async function processLang(lang) {
     const files = fs.readdirSync(helpDir).filter(f => f.endsWith('.json')).sort();
     const total = LIMIT > 0 ? Math.min(LIMIT, files.length) : files.length;
 
-    const TCL_BUILTINS = new Set(['Puts','set','if','while','for','foreach','proc','return','expr',
-        'source','catch','error','list','concat','lindex','llength','lappend','split','join',
-        'regexp','regsub','open','close','gets','read','file','glob','cd','pwd','exec','eval',
-        'uplevel','upvar','namespace','variable','array','string','format','scan','clock','info']);
+    const TCL_BUILTINS = new Set(['Puts', 'set', 'if', 'while', 'for', 'foreach', 'proc', 'return', 'expr',
+        'source', 'catch', 'error', 'list', 'concat', 'lindex', 'llength', 'lappend', 'split', 'join',
+        'regexp', 'regsub', 'open', 'close', 'gets', 'read', 'file', 'glob', 'cd', 'pwd', 'exec', 'eval',
+        'uplevel', 'upvar', 'namespace', 'variable', 'array', 'string', 'format', 'scan', 'clock', 'info']);
 
     // 加载断点
     const checkpoint = new Checkpoint(lang);
