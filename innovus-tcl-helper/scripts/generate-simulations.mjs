@@ -59,10 +59,9 @@ class Logger {
     }
     log(msg) {
         const line = `[${new Date().toISOString().substring(11, 19)}] ${msg}`;
-        console.log(msg);
         this.buffer.push(line);
         this.count++;
-        if (this.buffer.length >= 50) { this.flush(); }
+        if (this.buffer.length >= 20) { this.flush(); }
     }
     flush() {
         if (this.buffer.length === 0) return;
@@ -256,6 +255,7 @@ async function processLang(lang) {
 
     // 进度条
     const BAR_WIDTH = 30;
+    let lastProgressLine = '';
     function progressBar(current, max) {
         const pct = (current / max * 100).toFixed(1);
         const filled = Math.round(current / max * BAR_WIDTH);
@@ -264,14 +264,37 @@ async function processLang(lang) {
         return `[${bar}] ${pct}% (${current}/${max}) ${el}s`;
     }
 
-    // 定期刷新进度（每 5 秒）
+    function drawProgress(current, max) {
+        const line = progressBar(current, max);
+        // 清除上一行并重绘（\r 回到行首，空格清除残留字符）
+        if (lastProgressLine) {
+            process.stdout.write('\r' + ' '.repeat(lastProgressLine.length) + '\r');
+        }
+        process.stdout.write(line);
+        lastProgressLine = line;
+    }
+
+    // 定期刷新进度（每 3 秒）
     let progressTimer = setInterval(() => {
         const current = completed + skipped + failed;
         if (current > 0 && current < total) {
-            const line = progressBar(current, total);
-            process.stdout.write(`\r${line}`);
+            drawProgress(current, total);
         }
-    }, 5000);
+    }, 3000);
+
+    // 任何 worker 输出到控制台时，先换行再输出，然后重绘进度
+    function consoleLog(msg) {
+        // 清除当前进度行
+        if (lastProgressLine) {
+            process.stdout.write('\r' + ' '.repeat(lastProgressLine.length) + '\r');
+        }
+        console.log(msg);
+        // 重绘进度
+        const current = completed + skipped + failed;
+        if (current > 0 && current < total) {
+            drawProgress(current, total);
+        }
+    }
 
     // 定期保存断点（每 30 秒）
     function scheduleSave() {
@@ -320,7 +343,8 @@ async function processLang(lang) {
 
                 // 如果无 proc 或括号不匹配，用更高 max_tokens 重试
                 if (!tcl.includes('proc ')) {
-                    wl.log(`🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) 无proc → ${MAX_TOKENS_RETRY}tokens重试`);
+                    const msg = `🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) 无proc → ${MAX_TOKENS_RETRY}tokens重试`;
+                    wl.log(msg); consoleLog(msg);
                     tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
                     retried = true;
                 }
@@ -329,7 +353,8 @@ async function processLang(lang) {
                     const openB = (tcl.match(/\{/g) || []).length;
                     const closeB = (tcl.match(/\}/g) || []).length;
                     if (openB !== closeB) {
-                        wl.log(`🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) {${openB}/}${closeB} → ${MAX_TOKENS_RETRY}tokens重试`);
+                        const msg = `🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) {${openB}/}${closeB} → ${MAX_TOKENS_RETRY}tokens重试`;
+                        wl.log(msg); consoleLog(msg);
                         tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
                         retried = true;
                     }
@@ -337,7 +362,8 @@ async function processLang(lang) {
 
                 // 最终验证
                 if (!tcl.includes('proc ')) {
-                    wl.log(`⚠ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 重试${retried ? '后' : ''}仍无proc`);
+                    const msg = `⚠ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 重试${retried ? '后' : ''}仍无proc`;
+                    wl.log(msg); consoleLog(msg);
                     failed++;
                     continue;
                 }
@@ -345,7 +371,8 @@ async function processLang(lang) {
                 const openBraces = (tcl.match(/\{/g) || []).length;
                 const closeBraces = (tcl.match(/\}/g) || []).length;
                 if (openBraces !== closeBraces) {
-                    wl.log(`⚠ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 重试${retried ? '后' : ''}括号{${openBraces}/}${closeBraces}`);
+                    const msg = `⚠ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 重试${retried ? '后' : ''}括号{${openBraces}/}${closeBraces}`;
+                    wl.log(msg); consoleLog(msg);
                     failed++;
                     continue;
                 }
@@ -358,22 +385,22 @@ async function processLang(lang) {
                 doneSet.add(cmdName);
                 completed++;
 
-                // 成功详情写入 worker log（每 20 条写一次避免刷屏）
-                if (completed % 20 === 0) {
+                // 成功详情写入 worker log（每 50 条写一次）
+                if (completed % 50 === 0) {
                     wl.log(`✅ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 已完成`);
                 }
 
-                // 每 50 条输出进度（含进度条）+ 最近完成信息
+                // 每 50 条更新进度条
                 if (completed % 50 === 0) {
-                    const line = progressBar(completed + skipped + failed, total);
-                    process.stdout.write(`\r${line}`);
-                    mainLog.log(`[${lang}] ${line} 最近: ${cmdName}`);
+                    drawProgress(completed + skipped + failed, total);
+                    mainLog.log(`[${lang}] ${progressBar(completed + skipped + failed, total)} 最近: ${cmdName}`);
                 }
 
                 scheduleSave();
 
             } catch (e) {
-                wl.log(`❌ [${lang}] ${cmdName} 异常: ${e.message.substring(0, 100)}`);
+                const msg = `❌ [${lang}] ${cmdName} 异常: ${e.message.substring(0, 100)}`;
+                wl.log(msg); consoleLog(msg);
                 failed++;
             }
         }
@@ -386,7 +413,11 @@ async function processLang(lang) {
 
     // 最终保存
     if (progressTimer) clearInterval(progressTimer);
-    process.stdout.write(`\r${progressBar(total, total)}\n`);
+    // 清除进度行并打印完成行
+    if (lastProgressLine) {
+        process.stdout.write('\r' + ' '.repeat(lastProgressLine.length) + '\r');
+    }
+    console.log(progressBar(total, total));
     checkpoint.save(doneSet);
     mainLog.flush();
     for (const wl of workerLogs) wl.flush();
