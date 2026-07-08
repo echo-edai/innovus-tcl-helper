@@ -148,7 +148,7 @@ export class TclRunner {
         }
 
         const cmds = this.detectInnovusCommands(content, extensionPath);
-        const preamble = this.generatePreamble(cmds);
+        const preamble = this.generatePreamble(cmds, extensionPath);
         const script = preamble + '\n' + content;
 
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-run-'));
@@ -205,7 +205,7 @@ export class TclRunner {
         const db = getDB(extensionPath);
         const cmdList: CmdInfo[] = [];
         for (const n of allCmds) { const info = db.get(n); if (info) { cmdList.push(info); } }
-        const preamble = this.generatePreamble(cmdList);
+        const preamble = this.generatePreamble(cmdList, extensionPath);
 
         const results: ProjectRunResult['results'] = [];
         let errors = 0;
@@ -292,41 +292,80 @@ export class TclRunner {
         return filePath;
     }
 
-    private generatePreamble(cmds: CmdInfo[]): string {
+    /**
+     * 生成 Innovus 命令 proc 包装器。
+     * 优先使用 AI 生成的仿真数据，否则显示命令文档。
+     */
+    private generatePreamble(cmds: CmdInfo[], extensionPath: string): string {
         if (cmds.length === 0) { return ''; }
-        let p = '# ===== Innovus Command Wrappers (Auto-generated) =====\n\n';
+
+        let preamble = '';
+        preamble += '# ===== Innovus Command Wrappers (Auto-generated) =====\n\n';
+
         for (const cmd of cmds) {
-            const n = cmd.command;
-            const s = cmd.summary || '';
-            p += `# ${s}\nproc ${n} {args} {\n`;
-            p += `    puts "\\n═══════════════════════════════════════"\n`;
-            p += `    puts "\\[Innovus\\] ${n}"\n`;
-            p += `    puts "═══════════════════════════════════════"\n`;
-            p += `    puts "  ${s}"\n    puts ""\n`;
-            p += `    puts "  调用参数: $args"\n`;
+            const cmdName = cmd.command;
+
+            // 1. 尝试加载 AI 仿真数据
+            const simCode = this.loadSimulation(cmdName, extensionPath);
+            if (simCode) {
+                preamble += simCode + '\n';
+                continue;
+            }
+
+            // 2. 无仿真数据：生成文档输出包装器
+            const summary = cmd.summary || '';
+            preamble += `# ${summary}\n`;
+            preamble += `proc ${cmdName} {args} {\n`;
+            preamble += `    puts "\\n═══════════════════════════════════════"\n`;
+            preamble += `    puts "\\[Innovus\\] ${cmdName}"\n`;
+            preamble += `    puts "═══════════════════════════════════════"\n`;
+            preamble += `    puts "  ${summary}"\n    puts ""\n`;
+            preamble += `    puts "  调用参数: $args"\n`;
+
             if (cmd.options && cmd.options.length > 0) {
                 const req = cmd.options.filter(o => o.required);
                 const opt = cmd.options.filter(o => !o.required);
                 if (req.length > 0) {
-                    p += `    puts "  必选参数:"\n`;
+                    preamble += `    puts "  必选参数:"\n`;
                     for (const o of req) {
-                        p += `    puts "    ${o.name}  ${o.description.replace(/"/g, '\\"')}"\n`;
+                        preamble += `    puts "    ${o.name}  ${o.description.replace(/"/g, '\\"')}"\n`;
                     }
                 }
                 if (opt.length > 0) {
-                    p += `    puts "  可选参数 (${opt.length}个):"\n`;
+                    preamble += `    puts "  可选参数 (${opt.length}个):"\n`;
                     for (const o of opt.slice(0, 10)) {
                         const desc = (o.description || '').replace(/"/g, '\\"');
-                        p += `    puts "    ${o.name}  ${desc}"\n`;
+                        preamble += `    puts "    ${o.name}  ${desc}"\n`;
                     }
                     if (opt.length > 10) {
-                        p += `    puts "    ... 还有 ${opt.length - 10} 个参数"\n`;
+                        preamble += `    puts "    ... 还有 ${opt.length - 10} 个参数"\n`;
                     }
                 }
             }
-            p += `    puts ""\n    return ""\n}\n\n`;
+            preamble += `    puts ""\n    return ""\n}\n\n`;
         }
-        return p;
+
+        return preamble;
+    }
+
+    /**
+     * 加载 AI 预生成的仿真数据。
+     */
+    private loadSimulation(cmdName: string, extensionPath: string): string | null {
+        // 查找仿真数据文件：data/simulations/<lang>/<cmdName>.json
+        const languages = ['cn', 'en'];
+        for (const lang of languages) {
+            const simFile = path.join(extensionPath, 'data', 'simulations', lang, `${cmdName}.json`);
+            if (fs.existsSync(simFile)) {
+                try {
+                    const data = JSON.parse(fs.readFileSync(simFile, 'utf-8'));
+                    if (data.tcl && data.tcl.includes('proc ')) {
+                        return data.tcl;
+                    }
+                } catch { /* ignore */ }
+            }
+        }
+        return null;
     }
 
     private executeTclsh(

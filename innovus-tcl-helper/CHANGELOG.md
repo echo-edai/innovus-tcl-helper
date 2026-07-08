@@ -1,5 +1,18 @@
 # 更新日志
 
+## 0.6.0 (2026-07-08)
+
+### 新增 — AI 驱动的 Innovus 命令仿真器
+- **DeepSeek Flash 数据生成脚本**：`scripts/generate-simulations.mjs`
+  - 遍历 2175 个 Innovus 命令，调用 AI 生成仿真输出
+  - 并发控制（3 并发）+ 限流重试 + 增量生成
+  - 支持 `--lang cn|en`、`--limit N`、`--dry-run`
+- **仿真数据格式**：`data/simulations/<lang>/<cmdName>.json`
+- **Runner 自动加载仿真**：有数据用仿真，无数据回退文档输出
+
+### 待完成
+- 执行 `node scripts/generate-simulations.mjs --lang cn` 批量生成
+
 ## 0.5.2 (2026-07-08)
 
 ### 改进 — 编辑器按钮优化
