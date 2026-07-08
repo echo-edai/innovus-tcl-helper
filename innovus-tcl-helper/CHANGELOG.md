@@ -1,5 +1,37 @@
 # 更新日志
 
+## 0.5.1 (2026-07-08)
+
+### 新增 — 跨平台 tclsh 支持
+- **平台子目录结构**：`bin/<platform>/tclsh9.0`，自动检测 `os.platform() + os.arch()`
+- **已支持平台**：darwin-arm64（已编译 macOS Apple Silicon）
+- **待编译平台**：darwin-x64 / linux-x64 / linux-arm64 / win32-x64
+- **查找优先级**：内置（平台子目录）> 用户配置（`innovus-tcl.tclshPath`）> 系统搜索
+- **各平台候选路径**：macOS（Homebrew）、Linux（/usr/bin）、Windows（PATH）
+
+### 新增 — 运行输出文件保存
+- **配置项 `innovus-tcl.runSaveOutput`**：是否保存运行输出到文件（默认 `false`）
+- **配置项 `innovus-tcl.runOutputDir`**：输出目录（默认工作区 `.innovus-run/`）
+- **日志格式**：时间戳文件名，含 stdout、stderr、Innovus 命令列表
+- **自动创建目录**：输出目录不存在时自动递归创建
+- **输出通道文件提示**：运行时显示 `📄 Output: /path/to/file.log`
+
+### 新增 — .f 项目运行 + 编辑器按钮
+- **新命令 `innovus-tcl.runProject`**：按 .f 文件顺序运行整个项目
+- **统一包装器**：预扫描所有文件中的 Innovus 命令，生成共享 proc 包装器
+- **逐文件运行**：按编译顺序执行，每个文件使用其所在目录作为工作目录
+- **编辑器右上角按钮**：`editor/title/run` 贡献点，仅在 TCL 文件中显示
+  - ▶️ 运行当前文件
+  - 📦 运行 .f 项目
+- **汇总报告**：文件数、错误数、总耗时、逐文件状态
+
+### 改进
+- `runner.ts`：完全重写，`findTclsh` 支持 `extensionPath` + `configTclshPath`
+- `runner.ts`：新增 `RunOutputConfig` 接口 + `saveOutputFile` 方法
+- `runner.ts`：移除对 `vscode` 模块的直接依赖，支持独立测试
+- `extension.ts`：新增 `runProject` 命令 + 输出文件配置读取
+- `package.json`：新增 5 个命令/配置项 + `menus.editor/title/run`
+
 ## 0.5.0 (2026-07-08)
 
 ### 新增 — TCL 脚本运行引擎

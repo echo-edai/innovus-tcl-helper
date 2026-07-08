@@ -10,6 +10,8 @@
 
 这个难度可能较大，你要一步步分析，每次有一个进展就要存一下git。要求完成一个完整的可用的无bug的lint工具，并且暴露lint接口给ai的mcp使用
 
+0.5.1 ✅ 跨平台 tclsh 支持（bin/<platform>/tclsh9.0 目录结构，运行时自动检测 os.platform()+os.arch()，darwin-arm64 已编译）。运行输出文件保存（runSaveOutput + runOutputDir 配置，时间戳 .log 文件含 stdout/stderr/Innovus 命令列表，自动创建输出目录）。.f 项目运行命令（runProject，预扫描统一包装器，逐文件编译顺序执行）。编辑器右上角运行按钮（▶️ 当前文件 + 📦 .f 项目）。
+
 0.5 ✅ TCL 脚本运行引擎（基于 tclsh9.0，child_process 执行）。Innovus 命令智能拦截（自动检测 + 注入 proc 文档包装器，输出语法/参数说明而不报错）。标准 TCL 正常执行（set/puts/proc/expr 等）。专门输出通道 `Innovus TCL: Run`。自动查找 tclsh（Homebrew → 系统）。TCL 运行时错误捕获显示。新增 VS Code 命令 `innovus-tcl.runScript`。
 
 0.4.3 ✅ 递归 .f 文件解析（-F / -f 指令，支持切换/保持目录、任意层级递归、循环引用检测）。动态设置 .f 文件路径命令（交互输入、路径校验、自动重编译、工作区级别持久化、支持子目录路径 temp/a.f）。
