@@ -298,6 +298,13 @@ async function processLang(lang) {
             }
 
             try {
+                // 跳过变体条目（cmdName 含空格+数字后缀，如 "readSdpFile 2"）
+                if (/\s+\d+$/.test(cmdName)) {
+                    doneSet.add(cmdName);
+                    skipped++;
+                    continue;
+                }
+
                 const info = JSON.parse(fs.readFileSync(path.join(helpDir, file), 'utf-8'));
                 if (!info.is_cmd || TCL_BUILTINS.has(info.command)) {
                     doneSet.add(cmdName);
