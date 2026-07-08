@@ -168,9 +168,12 @@ proc ${command} {args} {
 //  API 调用
 // ════════════════════════════════════════════════════════════
 
-async function callAPI(systemPrompt, userPrompt, retries = 0) {
+async function callAPI(systemPrompt, userPrompt, opts = {}) {
     const key = process.env.DEEPSEEK_API_KEY;
     if (!key) throw new Error('DEEPSEEK_API_KEY not set');
+    const maxTokens = opts.maxTokens || MAX_TOKENS;
+    const retries = opts.retries || 0;
+    const maxRetries = opts.maxRetries || MAX_RETRIES;
 
     try {
         const resp = await fetch(API, {
@@ -179,14 +182,14 @@ async function callAPI(systemPrompt, userPrompt, retries = 0) {
             body: JSON.stringify({
                 model: MODEL,
                 messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }],
-                temperature: 0.3, max_tokens: MAX_TOKENS, stream: false
+                temperature: opts.temperature || 0.3, max_tokens: maxTokens, stream: false
             }),
             signal: AbortSignal.timeout(60000)
         });
 
-        if (resp.status === 429 && retries < MAX_RETRIES) {
+        if (resp.status === 429 && retries < maxRetries) {
             await sleep(RETRY_DELAY * (retries + 1));
-            return callAPI(systemPrompt, userPrompt, retries + 1);
+            return callAPI(systemPrompt, userPrompt, { ...opts, retries: retries + 1 });
         }
         if (!resp.ok) {
             const t = await resp.text();
@@ -196,11 +199,14 @@ async function callAPI(systemPrompt, userPrompt, retries = 0) {
         return extractProc(data.choices?.[0]?.message?.content || '');
 
     } catch (e) {
-        if (retries < MAX_RETRIES && e.name !== 'AbortError') {
+        if (retries < maxRetries && e.name !== 'AbortError') {
             await sleep(RETRY_DELAY);
-            return callAPI(systemPrompt, userPrompt, retries + 1);
+            return callAPI(systemPrompt, userPrompt, { ...opts, retries: retries + 1 });
         }
         throw e;
+    }
+}
+throw e;
     }
 }
 
@@ -283,19 +289,36 @@ async function processLang(lang) {
                 }
 
                 const { system, user } = buildPrompt(info, lang);
-                const tcl = await callAPI(system, user);
 
+                // 第一次尝试
+                let tcl = await callAPI(system, user);
+
+                // 如果无 proc 或括号不匹配，用更高 max_tokens 重试
                 if (!tcl.includes('proc ')) {
-                    wl.log(`⚠ [${lang}] ${cmdName}: 无 proc → 跳过`);
+                    wl.log(`🔁 [${lang}] ${cmdName}: 无 proc → 重试(4096 tokens)...`);
+                    tcl = await callAPI(system, user, { maxTokens: 4096, temperature: 0.1, maxRetries: 1 });
+                }
+
+                if (tcl.includes('proc ')) {
+                    const openB = (tcl.match(/\{/g) || []).length;
+                    const closeB = (tcl.match(/\}/g) || []).length;
+                    if (openB !== closeB) {
+                        wl.log(`🔁 [${lang}] ${cmdName}: 括号不匹配 {${openB}/}${closeB} → 重试(4096 tokens)...`);
+                        tcl = await callAPI(system, user, { maxTokens: 4096, temperature: 0.1, maxRetries: 1 });
+                    }
+                }
+
+                // 最终验证
+                if (!tcl.includes('proc ')) {
+                    wl.log(`⚠ [${lang}] ${cmdName}: 重试后仍无 proc → 跳过`);
                     failed++;
                     continue;
                 }
 
-                // 验证 TCL 语法：括号匹配
                 const openBraces = (tcl.match(/\{/g) || []).length;
                 const closeBraces = (tcl.match(/\}/g) || []).length;
                 if (openBraces !== closeBraces) {
-                    wl.log(`⚠ [${lang}] ${cmdName}: 括号不匹配 {${openBraces}/}${closeBraces} → 跳过`);
+                    wl.log(`⚠ [${lang}] ${cmdName}: 重试后括号仍不匹配 {${openBraces}/}${closeBraces} → 跳过`);
                     failed++;
                     continue;
                 }
