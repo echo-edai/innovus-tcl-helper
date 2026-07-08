@@ -1,5 +1,27 @@
 # 更新日志
 
+## 0.5.0 (2026-07-08)
+
+### 新增 — TCL 脚本运行引擎
+- **基于 tclsh9.0 的执行引擎**：通过 child_process 调用系统 tclsh 执行 TCL 代码
+- **Innovus 命令智能拦截**：自动检测脚本中的 Innovus 专有命令，注入文档包装器
+- **文档输出代替执行**：Innovus 命令（如 `addRing`、`routeDesign`）不报错，而是输出命令文档（语法、参数说明）
+- **标准 TCL 正常执行**：`set`、`puts`、`if`、`proc`、`expr` 等标准命令正常执行
+- **输出通道**：专门的 `Innovus TCL: Run` 输出面板，实时显示运行结果
+- **自动查找 tclsh**：按优先级搜索 Homebrew tclsh9.0 → 系统 tclsh
+- **错误捕获**：TCL 运行时错误（未定义变量、语法错误等）正确捕获并显示
+
+### 新增 — VS Code 命令
+- **`Innovus TCL: ▶️ 运行当前 TCL 脚本`**（`innovus-tcl.runScript`）
+  - 运行当前编辑器中的完整 TCL 脚本
+  - 工作目录自动设为脚本文件所在目录
+  - 支持 `source` 命令的相对路径解析
+
+### 内部改进
+- `src/runner.ts`：新增 `TclRunner` 类，含 tclsh 查找、Innovus 命令检测、proc 包装器生成、进程管理
+- `src/extension.ts`：新增输出通道 + `runScript` 命令注册
+- `package.json`：新增 `innovus-tcl.runScript` 命令 + 版本提升至 0.5.0
+
 ## 0.4.3 (2026-07-08)
 
 ### 新增 — 递归 .f 文件解析（-F / -f 指令）

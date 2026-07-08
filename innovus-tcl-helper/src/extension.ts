@@ -24,6 +24,7 @@ import { TclLintProvider } from './lint';
 import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, TclVariableDefinitionProvider, showHelp } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 import { registerAllTools, buildScriptContextForCommand } from './tools';
+import { getRunner, TclRunner } from './runner';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
 let lintProvider: TclLintProvider | undefined;
@@ -89,6 +90,10 @@ function resolveLanguage(configLang: string): Language {
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('[Innovus TCL] 插件已激活');
+
+    // ── TCL 运行输出通道 ──
+    const runChannel = vscode.window.createOutputChannel('Innovus TCL: Run', { log: true });
+    context.subscriptions.push(runChannel);
 
     // ── 自动安装 Agent Skills 到工作区 .vscode/skills/ ──
     installAgentSkills(context.extensionPath);
@@ -828,6 +833,105 @@ export function activate(context: vscode.ExtensionContext) {
                     ? `❌ 设置失败: ${e.message}`
                     : `❌ Failed to set: ${e.message}`
             );
+        }
+    }));
+
+    // 注册命令：运行 TCL 脚本
+    subs.push(vscode.commands.registerCommand('innovus-tcl.runScript', async () => {
+        const isZh = db.getLanguage() === 'zh';
+        const editor = vscode.window.activeTextEditor;
+
+        if (!editor || editor.document.languageId !== 'tcl') {
+            vscode.window.showWarningMessage(
+                isZh ? '请先打开一个 TCL 文件。' : 'Please open a TCL file first.'
+            );
+            return;
+        }
+
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showWarningMessage(
+                isZh ? '请先打开一个工作区。' : 'Please open a workspace first.'
+            );
+            return;
+        }
+
+        const document = editor.document;
+        const content = document.getText();
+        const workDir = path.dirname(document.uri.fsPath);
+
+        // 显示输出通道
+        runChannel.clear();
+        runChannel.show(true);
+
+        runChannel.appendLine('═══════════════════════════════════════');
+        runChannel.appendLine(isZh ? '  Innovus TCL 脚本运行' : '  Innovus TCL Script Run');
+        runChannel.appendLine('═══════════════════════════════════════');
+        runChannel.appendLine(isZh
+            ? `  文件: ${path.basename(document.fileName)}`
+            : `  File: ${path.basename(document.fileName)}`);
+        runChannel.appendLine(`  工作目录: ${workDir}`);
+        runChannel.appendLine('');
+
+        // 查找 tclsh 并执行
+        const runner = getRunner();
+        const tclsh = runner.findTclsh();
+
+        if (!tclsh) {
+            runChannel.appendLine(isZh
+                ? '❌ 未找到 tclsh 解释器。请执行: brew install tcl-tk'
+                : '❌ tclsh not found. Run: brew install tcl-tk');
+            return;
+        }
+
+        runChannel.appendLine(isZh
+            ? `🔧 使用解释器: ${tclsh}`
+            : `🔧 Using interpreter: ${tclsh}`);
+        runChannel.appendLine(isZh ? '⚡ 执行中...' : '⚡ Executing...');
+        runChannel.appendLine('');
+
+        try {
+            const result = await runner.runScript(content, workDir, context.extensionPath);
+
+            // 打印被拦截的 Innovus 命令
+            if (result.innovusCommands.length > 0) {
+                runChannel.appendLine(isZh
+                    ? `📋 检测到 ${result.innovusCommands.length} 个 Innovus 专有命令（以文档输出代替执行）:`
+                    : `📋 ${result.innovusCommands.length} Innovus commands detected (doc output instead of execution):`);
+                runChannel.appendLine(`   ${result.innovusCommands.join(', ')}`);
+                runChannel.appendLine('');
+            }
+
+            // 打印 stdout
+            if (result.stdout.trim()) {
+                runChannel.appendLine('── 运行输出 ──');
+                runChannel.appendLine(result.stdout);
+            }
+
+            // 打印 stderr
+            if (result.stderr.trim()) {
+                runChannel.appendLine('── 错误输出 ──');
+                runChannel.appendLine(result.stderr);
+            }
+
+            // 打印结果摘要
+            runChannel.appendLine('');
+            runChannel.appendLine('───────────────────────────────────────');
+            if (result.success) {
+                runChannel.appendLine(isZh
+                    ? `✅ 执行成功 (${result.duration}ms)`
+                    : `✅ Success (${result.duration}ms)`);
+            } else {
+                runChannel.appendLine(isZh
+                    ? `⚠️ 执行完成（有错误） (${result.duration}ms)`
+                    : `⚠️ Completed with errors (${result.duration}ms)`);
+            }
+            runChannel.appendLine(`   退出码: ${result.exitCode}`);
+
+        } catch (e: any) {
+            runChannel.appendLine(isZh
+                ? `❌ 执行异常: ${e.message}`
+                : `❌ Execution error: ${e.message}`);
         }
     }));
 
