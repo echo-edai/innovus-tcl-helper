@@ -207,9 +207,6 @@ async function callAPI(systemPrompt, userPrompt, opts = {}) {
         throw e;
     }
 }
-throw e;
-    }
-}
 
 function extractProc(text) {
     let code = text.replace(/```tcl\n?/gi, '').replace(/```\n?/g, '').trim();
@@ -293,25 +290,28 @@ async function processLang(lang) {
 
                 // 第一次尝试
                 let tcl = await callAPI(system, user);
+                let retried = false;
 
                 // 如果无 proc 或括号不匹配，用更高 max_tokens 重试
                 if (!tcl.includes('proc ')) {
-                    wl.log(`🔁 [${lang}] ${cmdName}: 无 proc → 重试(${MAX_TOKENS_RETRY} tokens)...`);
+                    wl.log(`🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) 无proc → ${MAX_TOKENS_RETRY}tokens重试`);
                     tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
+                    retried = true;
                 }
 
                 if (tcl.includes('proc ')) {
                     const openB = (tcl.match(/\{/g) || []).length;
                     const closeB = (tcl.match(/\}/g) || []).length;
                     if (openB !== closeB) {
-                        wl.log(`🔁 [${lang}] ${cmdName}: 括号不匹配 {${openB}/}${closeB} → 重试(${MAX_TOKENS_RETRY} tokens)...`);
+                        wl.log(`🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) {${openB}/}${closeB} → ${MAX_TOKENS_RETRY}tokens重试`);
                         tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
+                        retried = true;
                     }
                 }
 
                 // 最终验证
                 if (!tcl.includes('proc ')) {
-                    wl.log(`⚠ [${lang}] ${cmdName}: 重试后仍无 proc → 跳过`);
+                    wl.log(`⚠ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 重试${retried ? '后' : ''}仍无proc`);
                     failed++;
                     continue;
                 }
@@ -319,7 +319,7 @@ async function processLang(lang) {
                 const openBraces = (tcl.match(/\{/g) || []).length;
                 const closeBraces = (tcl.match(/\}/g) || []).length;
                 if (openBraces !== closeBraces) {
-                    wl.log(`⚠ [${lang}] ${cmdName}: 重试后括号仍不匹配 {${openBraces}/}${closeBraces} → 跳过`);
+                    wl.log(`⚠ [${lang}] ${cmdName}(${info.summary?.substring(0, 40)}) 重试${retried ? '后' : ''}括号{${openBraces}/}${closeBraces}`);
                     failed++;
                     continue;
                 }
@@ -332,14 +332,17 @@ async function processLang(lang) {
                 doneSet.add(cmdName);
                 completed++;
 
-                const pct = ((completed + skipped + failed) / total * 100).toFixed(1);
-                const el = ((Date.now() - t0) / 1000).toFixed(0);
-                wl.log(`✅ [${lang}] ${cmdName} [${completed}/${total}] ${pct}% (${el}s)`);
+                // 每 100 条打印一次进度到主日志
+                if (completed % 100 === 0) {
+                    const pct = ((completed + skipped + failed) / total * 100).toFixed(1);
+                    const el = ((Date.now() - t0) / 1000).toFixed(0);
+                    mainLog.log(`[${lang}] 进度: ${completed}/${total} (${pct}%), ${el}s`);
+                }
 
                 scheduleSave();
 
             } catch (e) {
-                wl.log(`❌ [${lang}] ${cmdName}: ${e.message}`);
+                wl.log(`❌ [${lang}] ${cmdName} 异常: ${e.message.substring(0, 100)}`);
                 failed++;
             }
         }
@@ -357,6 +360,9 @@ async function processLang(lang) {
 
     const el = ((Date.now() - t0) / 1000).toFixed(0);
     mainLog.log(`[${lang}] 完成: ✅${completed} ⏭${skipped} ❌${failed} (${el}s)`);
+    if (failed > 0) {
+        mainLog.log(`[${lang}] 💡 失败命令详见 worker-*.log，下次运行自动重试`);
+    }
 }
 
 
