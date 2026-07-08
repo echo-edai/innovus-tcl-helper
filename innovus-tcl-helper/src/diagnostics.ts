@@ -15,19 +15,78 @@ type DiagnosticLevel = 'basic' | 'standard' | 'strict';
 export class TclDiagnosticsProvider {
     private diagnosticCollection: vscode.DiagnosticCollection;
 
-    // TCL 内置命令集合
+    // TCL 9.0 内置命令全集（按功能分类）
+    // 用于跳过 Innovus 命令校验，避免将标准 TCL 命令误报为"未知命令"
     private static readonly TCL_BUILTINS = new Set([
-        'set', 'puts', 'if', 'else', 'elseif', 'for', 'foreach', 'while',
-        'proc', 'return', 'source', 'eval', 'expr', 'switch', 'catch',
-        'error', 'uplevel', 'upvar', 'global', 'variable', 'namespace',
-        'package', 'array', 'list', 'lindex', 'llength', 'lappend',
-        'concat', 'split', 'join', 'string', 'regexp', 'regsub',
-        'open', 'close', 'read', 'write', 'gets', 'file', 'cd', 'pwd',
-        'exec', 'after', 'vwait', 'bind', 'trace', 'rename', 'interp',
-        'clock', 'info', 'scan', 'format', 'binary', 'encoding',
-        'fconfigure', 'socket', 'incr', 'append', 'lrange', 'lsearch',
-        'lsort', 'break', 'continue', 'dict', 'lassign', 'lset',
-        'subst', 'unset'
+        // ── 核心：变量与赋值 ──
+        'set', 'unset', 'incr', 'append', 'lappend', 'subst',
+        'global', 'variable', 'upvar', 'uplevel',
+        'namespace', 'rename',
+        // ── 核心：过程与作用域 ──
+        'proc', 'return', 'apply', 'tailcall', 'yield', 'yieldto',
+        'coroutine', 'coroinject', 'coroprobe',
+        // ── 核心：求值与源文件 ──
+        'eval', 'expr', 'source',
+        // ── 控制流 ──
+        'if', 'else', 'elseif', 'switch', 'for', 'foreach', 'while',
+        'break', 'continue', 'try', 'throw', 'catch', 'error',
+        // ── 列表操作 ──
+        'list', 'concat', 'join', 'split', 'lindex', 'llength',
+        'lsearch', 'lsort', 'lrange', 'lreplace', 'linsert', 'lset',
+        'lassign', 'lrepeat', 'lreverse', 'lmap', 'lpop', 'lremove', 'ledit',
+        'lseq',
+        // ── 字典操作 ──
+        'dict',
+        // ── 数组操作 ──
+        'array', 'parray',
+        // ── 字符串操作 ──
+        'string', 'format', 'scan', 'regexp', 'regsub',
+        // ── 文件 I/O ──
+        'open', 'close', 'read', 'write', 'gets', 'puts', 'seek', 'tell',
+        'eof', 'flush', 'fconfigure', 'fcopy', 'fblocked', 'fileevent',
+        'readFile', 'writeFile',
+        // ── 文件系统 ──
+        'file', 'glob', 'cd', 'pwd', 'filename',
+        // ── 进程与系统 ──
+        'exec', 'pid', 'exit', 'socket', 'chan', 'transchan', 'refchan',
+        // ── 时间与事件 ──
+        'after', 'clock', 'time', 'timerate', 'vwait', 'update',
+        // ── 包管理 ──
+        'package', 'load', 'unload', 'pkg_mkIndex', 'pkg::create',
+        // ── 信息与内省 ──
+        'info', 'encoding', 'binary',
+        // ── 环境与配置 ──
+        'env', 'configure',
+        // ── 跟踪与调试 ──
+        'trace', 'interp', 'history', 'memory',
+        // ── 错误处理 ──
+        'bgerror', 'errorCode', 'errorInfo',
+        // ── Tcl 平台变量 ──
+        'tcl_version', 'tcl_patchLevel', 'tcl_pkgPath', 'tcl_platform',
+        'tcl_library', 'tcl_interactive', 'tcl_rcFileName',
+        'tcl_nonwordchars', 'tcl_wordchars',
+        'tcl_startOfNextWord', 'tcl_startOfPreviousWord',
+        'tcl_endOfWord', 'tcl_wordBreakAfter', 'tcl_wordBreakBefore',
+        'tcl_traceCompile', 'tcl_traceExec', 'tcl_findLibrary',
+        // ── 全局变量 ──
+        'env', 'argc', 'argv', 'argv0', 'auto_path',
+        'auto_execok', 'auto_import', 'auto_load',
+        'auto_mkindex', 'auto_qualify', 'auto_reset',
+        // ── OOP (TclOO) ──
+        'oo::class', 'oo::define', 'oo::objdefine', 'oo::object',
+        'oo::abstract', 'oo::singleton', 'oo::configurable',
+        'oo::copy', 'oo::Slot',
+        'my', 'myclass', 'mymethod', 'self', 'next', 'nextto',
+        'classvariable', 'const', 'property',
+        // ── 压缩 ──
+        'zipfs', 'zlib',
+        // ── 杂项 ──
+        'unknown', 're_syntax', 'callback', 'safe', 'tcltest',
+        'tm', 'platform', 'platform::shell', 'link', 'dde',
+        'registry', 'http', 'cookiejar', 'msgcat',
+        'tcl::idna', 'tcl::prefix', 'tcl::process',
+        'Tcl', 'buildinfo',
+        'fpclassify', 'mathfunc', 'mathop', 'tcl::mathop',
     ]);
 
     constructor() {
@@ -195,11 +254,25 @@ export class TclDiagnosticsProvider {
         db: ReturnType<typeof getDB>,
         level: DiagnosticLevel
     ): void {
-        const lines = text.split('\n');
+        const rawLines = text.split('\n');
         const allCommandNames = db.getCommandNames();
 
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
+        // ── 预处理：合并 TCL 反斜杠续行（行尾 \ 表示下一行是续行） ──
+        const lines: { text: string; startLine: number }[] = [];
+        for (let i = 0; i < rawLines.length; i++) {
+            let current = rawLines[i];
+            let startLine = i;
+            // 如果行尾是 \（可能后有空白），则合并下一行
+            while (i < rawLines.length && /\\\s*$/.test(current)) {
+                current = current.replace(/\\\s*$/, '') + ' ' + (rawLines[i + 1] || '');
+                i++;
+            }
+            lines.push({ text: current.trim(), startLine });
+        }
+
+        for (let li = 0; li < lines.length; li++) {
+            const line = lines[li].text;
+            const lineIdx = lines[li].startLine;
             if (!line || line.startsWith('#')) { continue; }
 
             // 跳过 TCL 内置命令
@@ -219,7 +292,7 @@ export class TclDiagnosticsProvider {
             if (db.isCommand(cmdName)) {
                 const cmdInfo = db.get(cmdName);
                 if (cmdInfo && cmdInfo.options) {
-                    const parsedArgs = this.parseArguments(line);
+                    const parsedArgs = this.parseArguments(line, cmdInfo.options);
 
                     // 检查重复参数（strict 级别）
                     if (level === 'strict') {
@@ -231,7 +304,7 @@ export class TclDiagnosticsProvider {
                             if (count > 1) {
                                 const flagIdx = line.lastIndexOf(flag);
                                 diagnostics.push(this.createDiagnostic(
-                                    document, i, flagIdx, flagIdx + flag.length,
+                                    document, lineIdx, flagIdx, flagIdx + flag.length,
                                     `参数 ${flag} 重复指定了 ${count} 次`,
                                     vscode.DiagnosticSeverity.Warning
                                 ));
@@ -240,12 +313,57 @@ export class TclDiagnosticsProvider {
                     }
 
                     // 检查必需参数
+                    // 先解析 usage 中的互斥参数组
+                    const altGroups = cmdInfo.usage
+                        ? this.parseAlternativeGroups(cmdInfo.usage)
+                        : { mandatory: [] as Set<string>[], optional: [] as Set<string>[] };
+                    const allAltGroups = [...altGroups.mandatory, ...altGroups.optional];
+
                     for (const opt of cmdInfo.options) {
                         if (!opt.required) { continue; }
 
+                        // 跳过已满足的互斥参数组成员（同一组中只要有一个存在即可）
+                        if (parsedArgs.has(opt.name)) { continue; }
+                        const inSatisfiedGroup = allAltGroups.some(group =>
+                            group.has(opt.name) &&
+                            [...group].some(member => parsedArgs.has(member))
+                        );
+                        if (inSatisfiedGroup) { continue; }
+
+                        // 如果属于 optional 互斥组且整组缺失 → 不报错（可选组允许全缺）
+                        const inOptionalGroup = altGroups.optional.some(group =>
+                            group.has(opt.name)
+                        );
+                        if (inOptionalGroup) { continue; }
+
+                        // 检查是否为 mandatory 互斥组中唯一缺失的（整组都缺失）
+                        const inMandatoryGroup = altGroups.mandatory.some(group =>
+                            group.has(opt.name)
+                        );
+                        if (inMandatoryGroup) {
+                            // 找到所属的互斥组，只报告一次（报告组中第一个参数作为代表）
+                            for (const group of altGroups.mandatory) {
+                                if (group.has(opt.name)) {
+                                    const members = [...group];
+                                    if (members[0] === opt.name) {
+                                        const memberList = members.join(' | ');
+                                        diagnostics.push(this.createDiagnostic(
+                                            document, lineIdx,
+                                            cmdStartIdx, cmdStartIdx + cmdName.length,
+                                            `缺少必需参数: {${memberList}} — 必须指定其中之一`,
+                                            vscode.DiagnosticSeverity.Warning
+                                        ));
+                                    }
+                                    break;
+                                }
+                            }
+                            continue;
+                        }
+
+                        // 普通必需参数检查
                         if (!parsedArgs.has(opt.name)) {
                             diagnostics.push(this.createDiagnostic(
-                                document, i,
+                                document, lineIdx,
                                 cmdStartIdx, cmdStartIdx + cmdName.length,
                                 `缺少必需参数: ${opt.name} — ${opt.description}`,
                                 vscode.DiagnosticSeverity.Warning
@@ -253,7 +371,7 @@ export class TclDiagnosticsProvider {
                         } else if (opt.type !== 'flag' && !parsedArgs.get(opt.name)) {
                             const flagIdx = line.indexOf(opt.name);
                             diagnostics.push(this.createDiagnostic(
-                                document, i,
+                                document, lineIdx,
                                 flagIdx, flagIdx + opt.name.length,
                                 `参数 ${opt.name} 需要值 (类型: ${opt.type})`,
                                 vscode.DiagnosticSeverity.Warning
@@ -263,7 +381,7 @@ export class TclDiagnosticsProvider {
 
                     // strict 级别：参数值类型检查
                     if (level === 'strict') {
-                        this.checkParamTypes(document, i, line, cmdInfo.options, parsedArgs, diagnostics);
+                        this.checkParamTypes(document, lineIdx, line, cmdInfo.options, parsedArgs, diagnostics);
                     }
                 }
                 continue;
@@ -280,7 +398,7 @@ export class TclDiagnosticsProvider {
                 if (similar.length > 0) {
                     const suggestions = similar.map(s => `\`${s}\``).join(', ');
                     diagnostics.push(this.createDiagnostic(
-                        document, i,
+                        document, lineIdx,
                         cmdStartIdx, cmdStartIdx + cmdName.length,
                         `未知命令 "${cmdName}"。你是否想写: ${suggestions}？`,
                         vscode.DiagnosticSeverity.Information
@@ -346,33 +464,160 @@ export class TclDiagnosticsProvider {
     }
 
     /**
-     * 解析命令行参数，返回 Map<flagName, value | null>
-     * flag 类型值为 null（表示存在），非 flag 类型值为跟随的字符串或 null（缺失值）
+     * 解析命令行参数，返回 Map<paramName, value | null>。
+     * 支持两类参数:
+     *   -flag 参数: 名称为 -xxx 形式，值可选跟随（flag 类型值为 null）
+     *   <positional> 参数: 名称为 <xxx> 形式，按 options 顺序匹配剩余非 flag token
+     *
+     * @param line     - 命令行文本
+     * @param options  - 命令参数定义（用于识别位置参数及其顺序）
      */
-    private parseArguments(line: string): Map<string, string | null> {
+    private parseArguments(line: string, options?: import('./commands').CmdOption[]): Map<string, string | null> {
         const args = new Map<string, string | null>();
-        const tokens = line.split(/\s+/);
-        // 跳过第一个 token（命令名）
+        const tokens = this.splitTclArgs(line);
+        const consumed = new Set<number>(); // 已被消费的 token 索引
+
+        // ── 第一遍：解析 -flag 参数 ──
+        // 构建 option 查找表（用于判断 flag 类型）
+        const optionMap = new Map<string, import('./commands').CmdOption>();
+        if (options) {
+            for (const opt of options) {
+                optionMap.set(opt.name, opt);
+            }
+        }
+
         for (let idx = 1; idx < tokens.length; idx++) {
+            if (consumed.has(idx)) { continue; }
             const token = tokens[idx];
             if (token.startsWith('-')) {
-                // 去掉可能的尾随逗号/分号
                 const cleanFlag = token.replace(/[,;]$/, '');
-                // 查看下一个 token 是否为值（非 - 开头）
-                if (idx + 1 < tokens.length && !tokens[idx + 1].startsWith('-')) {
+                consumed.add(idx);
+                // 查找该 flag 的定义，判断是否为纯 flag（不取值）
+                const optDef = optionMap.get(cleanFlag);
+                const isPureFlag = optDef?.type === 'flag';
+                if (!isPureFlag && idx + 1 < tokens.length && !tokens[idx + 1].startsWith('-')) {
+                    // 非纯 flag：下一个 token 作为值
                     let nextToken = tokens[idx + 1];
-                    // 去掉尾随标点
                     nextToken = nextToken.replace(/[,;]$/, '');
-                    // 去掉首尾花括号/引号（TCL 列表语法）
                     nextToken = nextToken.replace(/^\{/, '').replace(/\}$/, '');
                     args.set(cleanFlag, nextToken);
-                    idx++; // 跳过值 token
+                    consumed.add(idx + 1);
+                    idx++;
                 } else {
+                    // 纯 flag（或已到末尾）：值为 null 表示存在
                     args.set(cleanFlag, null);
                 }
             }
         }
+
+        // ── 第二遍：匹配位置参数（名称以 < 开头的非 flag 选项） ──
+        if (options && options.length > 0) {
+            const positionalOpts = options.filter(
+                o => o.name.startsWith('<') && !o.name.startsWith('-')
+            );
+            if (positionalOpts.length > 0) {
+                let posIdx = 0;
+                for (let idx = 1; idx < tokens.length; idx++) {
+                    if (consumed.has(idx)) { continue; }
+                    if (posIdx >= positionalOpts.length) { break; }
+                    const token = tokens[idx];
+                    // 跳过 flag 值（已被上一遍标记）和看起来像 flag 的 token
+                    if (token.startsWith('-')) { continue; }
+                    const cleanToken = token.replace(/[,;]$/, '');
+                    args.set(positionalOpts[posIdx].name, cleanToken);
+                    consumed.add(idx);
+                    posIdx++;
+                }
+                // 剩余未匹配的位置参数标记为缺失（null）
+                for (let pi = posIdx; pi < positionalOpts.length; pi++) {
+                    if (!args.has(positionalOpts[pi].name)) {
+                        args.set(positionalOpts[pi].name, null);
+                    }
+                }
+            }
+        }
+
         return args;
+    }
+
+    /**
+     * 按 TCL 语法分割命令行参数，尊重 [...] 和 {...} 的原子性。
+     * 例如 "[list $A $B]" 作为一个整体 token，不会被空格拆分。
+     */
+    private splitTclArgs(line: string): string[] {
+        const result: string[] = [];
+        let current = '';
+        let bracketDepth = 0;
+        let braceDepth = 0;
+        let inString = false;
+
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            const prevCh = i > 0 ? line[i - 1] : '';
+
+            // 双引号字符串
+            if (ch === '"' && prevCh !== '\\' && braceDepth === 0 && bracketDepth === 0) {
+                inString = !inString;
+                current += ch;
+                continue;
+            }
+
+            // 在引号内，直接追加
+            if (inString) {
+                current += ch;
+                continue;
+            }
+
+            // 花括号
+            if (ch === '{') {
+                braceDepth++;
+                current += ch;
+                continue;
+            }
+            if (ch === '}') {
+                braceDepth = Math.max(0, braceDepth - 1);
+                current += ch;
+                continue;
+            }
+
+            // 方括号
+            if (ch === '[') {
+                bracketDepth++;
+                current += ch;
+                continue;
+            }
+            if (ch === ']') {
+                bracketDepth = Math.max(0, bracketDepth - 1);
+                current += ch;
+                continue;
+            }
+
+            // 反斜杠转义（跳过下一个字符）
+            if (ch === '\\' && i + 1 < line.length) {
+                current += ch;
+                i++;
+                current += line[i];
+                continue;
+            }
+
+            // 空格：在嵌套外部时分割
+            if (/\s/.test(ch) && braceDepth === 0 && bracketDepth === 0) {
+                if (current.length > 0) {
+                    result.push(current);
+                    current = '';
+                }
+                continue;
+            }
+
+            current += ch;
+        }
+
+        // 最后一个 token
+        if (current.length > 0) {
+            result.push(current);
+        }
+
+        return result;
     }
 
     /** 使用编辑距离查找相似命令 */
@@ -410,6 +655,100 @@ export class TclDiagnosticsProvider {
         }
 
         return scored.sort((a, b) => a.score - b.score).slice(0, 3).map(s => s.name);
+    }
+
+    /**
+     * 从 usage 字符串中解析互斥参数组。
+     * 支持三种格式:
+     *   {-opt1 | -opt2}     — 花括号互斥组（至少选一个）
+     *   [-opt1 | -opt2]     — 方括号互斥组（可选，不超过一个）
+     *   -opt1 | -opt2       — 末尾裸互斥组（至少选一个）
+     *
+     * @returns { mandatory, optional } — mandatory 组至少需要一个成员；
+     *          optional 组成员全部缺失也不报错
+     */
+    private parseAlternativeGroups(usage: string): { mandatory: Set<string>[]; optional: Set<string>[] } {
+        const mandatory: Set<string>[] = [];
+        const optional: Set<string>[] = [];
+
+        // ── 格式 1: {xxx | yyy | zzz} → mandatory ──
+        // 使用深度追踪匹配嵌套花括号（如 {-layer {layer | {top ...}}}）
+        const braceGroups = this.extractNestedBraces(usage);
+        for (const content of braceGroups) {
+            if (!content.includes('|')) { continue; }
+            const members = content.split('|').map(s => s.trim().split(/\s+/)[0]).filter(s => s.length > 0);
+            if (members.length >= 2) {
+                mandatory.push(new Set(members));
+            }
+        }
+
+        // ── 格式 2: [...|...] → optional ──
+        let match: RegExpExecArray | null;
+        const bracketRegex = /\[([^\]]*\|[^\]]*)\]/g;
+        while ((match = bracketRegex.exec(usage)) !== null) {
+            const content = match[1];
+            if (!content.includes('|')) { continue; }
+            const members = content.split('|').map(s => s.trim().split(/\s+/)[0]).filter(s => s.length > 0);
+            if (members.length >= 2) {
+                optional.push(new Set(members));
+            }
+        }
+
+        // ── 格式 3: 末尾无括号的 -opt1 | -opt2 → mandatory ──
+        const unbracketedRegex = /(?:^|\s)(-[a-zA-Z_][a-zA-Z0-9_]*\s*\|\s*-[a-zA-Z_][a-zA-Z0-9_]*(?:\s*\|\s*-[a-zA-Z_][a-zA-Z0-9_]*)*)\s*$/;
+        const ubMatch = usage.match(unbracketedRegex);
+        if (ubMatch) {
+            const content = ubMatch[1].trim();
+            // 确保不在花括号或方括号内
+            const openBrace = usage.lastIndexOf('{', ubMatch.index!);
+            const closeBrace = usage.lastIndexOf('}', ubMatch.index!);
+            const openBracket = usage.lastIndexOf('[', ubMatch.index!);
+            const closeBracket = usage.lastIndexOf(']', ubMatch.index!);
+            const inBrace = openBrace >= 0 && openBrace > closeBrace;
+            const inBracket = openBracket >= 0 && openBracket > closeBracket;
+            if (!inBrace && !inBracket) {
+                const members = content.split('|').map(s => s.trim().split(/\s+/)[0]).filter(s => s.length > 0);
+                if (members.length >= 2) {
+                    const memberSet = new Set(members);
+                    const isDuplicate = [...mandatory, ...optional].some(g =>
+                        g.size === memberSet.size && [...g].every(m => memberSet.has(m))
+                    );
+                    if (!isDuplicate) {
+                        mandatory.push(memberSet);
+                    }
+                }
+            }
+        }
+
+        return { mandatory, optional };
+    }
+
+    /**
+     * 从字符串中提取所有顶层花括号 {...} 组的内容。
+     * 正确处理嵌套花括号（深度追踪，不提前截断）。
+     */
+    private extractNestedBraces(text: string): string[] {
+        const results: string[] = [];
+        let i = 0;
+        while (i < text.length) {
+            if (text[i] === '{') {
+                let depth = 1;
+                let j = i + 1;
+                while (j < text.length && depth > 0) {
+                    if (text[j] === '{') { depth++; }
+                    else if (text[j] === '}') { depth--; }
+                    j++;
+                }
+                if (depth === 0) {
+                    // 提取 {...} 内部内容（不含外层花括号）
+                    results.push(text.substring(i + 1, j - 1));
+                }
+                i = j;
+            } else {
+                i++;
+            }
+        }
+        return results;
     }
 
     private createDiagnostic(

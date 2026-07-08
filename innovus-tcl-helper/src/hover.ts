@@ -1,15 +1,60 @@
 /**
- * Hover Provider - 鼠标悬浮时显示 Innovus 命令/变量的帮助
+ * Hover Provider - 鼠标悬浮时显示 Innovus 命令/变量/TCL 关键字的帮助
  *
  * 支持:
  *   1. Innovus 命令文档（来自命令数据库）
  *   2. TCL 变量值（来自跨文件编译分析）
  *   3. $varName 变量引用值
+ *   4. TCL 内建关键字文档（来自 data/tcl-builtins/）
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import { getDB, CmdInfo, CmdOption } from './commands';
 import { TclLintProvider } from './lint';
+
+// ════════════════════════════════════════════════════════════
+//  TCL 内建关键字文件加载
+// ════════════════════════════════════════════════════════════
+
+interface TclBuiltinDoc {
+    command: string;
+    category: string;
+    summary: string;
+    usage: string;
+    description: string;
+    note?: string;
+}
+
+/** 缓存已加载的文档 */
+const builtinCache: Map<string, TclBuiltinDoc> = new Map();
+let builtinsDataRoot: string = '';
+
+/** 设置 TCL 内建文档数据根目录 */
+export function setBuiltinsDataRoot(extensionPath: string): void {
+    builtinsDataRoot = path.join(extensionPath, 'data', 'tcl-builtins');
+}
+
+/** 加载 TCL 内建关键字文档 */
+function loadBuiltinDoc(cmdName: string, lang: string): TclBuiltinDoc | null {
+    const cacheKey = `${lang}:${cmdName}`;
+    const cached = builtinCache.get(cacheKey);
+    if (cached) { return cached; }
+
+    if (!builtinsDataRoot) { return null; }
+
+    try {
+        const filePath = path.join(builtinsDataRoot, lang, `${cmdName}.json`);
+        if (!fs.existsSync(filePath)) { return null; }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const doc: TclBuiltinDoc = JSON.parse(content);
+        builtinCache.set(cacheKey, doc);
+        return doc;
+    } catch {
+        return null;
+    }
+}
 
 export class InnovusHoverProvider implements vscode.HoverProvider {
     private lintProvider: TclLintProvider | null = null;
@@ -43,8 +88,22 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
 
         // ── 检查是否为 Innovus 命令 ──
         const cmdInfo = db.get(word);
-        if (!cmdInfo) { return null; }
+        if (cmdInfo) {
+            return this.buildInnovusHover(cmdInfo, wordRange);
+        }
 
+        // ── 检查是否为 TCL 内建关键字（非 Innovus 命令时） ──
+        const builtinHover = this.checkTclBuiltin(word, wordRange);
+        if (builtinHover) { return builtinHover; }
+
+        return null;
+    }
+
+    /**
+     * 构建 Innovus 命令的 Hover 内容。
+     */
+    private buildInnovusHover(cmdInfo: CmdInfo, wordRange: vscode.Range): vscode.Hover {
+        const db = getDB();
         const isZh = db.getLanguage() === 'zh';
 
         const markdown = new vscode.MarkdownString();
@@ -122,7 +181,7 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
         const col = position.character;
 
         // 匹配 $varName 或 ${varName}
-        const dollarRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_:]*)\}?/g;
+        const dollarRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z0-9_]*)*)\}?/g;
         let match: RegExpExecArray | null;
 
         while ((match = dollarRegex.exec(line)) !== null) {
@@ -263,6 +322,44 @@ export class InnovusHoverProvider implements vscode.HoverProvider {
                     : def.value || (isZh ? '(空)' : '(empty)');
                 markdown.appendMarkdown(`| \`${escapeCode(dVal)}\` | \`${def.relativePath}\` | ${def.line} |\n`);
             }
+        }
+
+        return new vscode.Hover(markdown, wordRange);
+    }
+
+    /**
+     * 检查是否为 TCL 内建关键字，从 data/tcl-builtins/ 加载文档显示。
+     * 只在非 Innovus 命令时触发（避免覆盖已有的详细帮助）。
+     */
+    private checkTclBuiltin(word: string, wordRange: vscode.Range): vscode.Hover | null {
+        const db = getDB();
+        const lang = db.getLanguage();
+        const doc = loadBuiltinDoc(word, lang);
+        if (!doc) { return null; }
+
+        const isZh = lang === 'zh';
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+        markdown.supportHtml = true;
+
+        // 标题 + 分类标签
+        markdown.appendMarkdown(`## \`${escapeCode(doc.command)}\` \`TCL ${doc.category}\`\n\n`);
+
+        // 语法
+        if (doc.usage) {
+            markdown.appendMarkdown(`### ${isZh ? '语法' : 'Syntax'}\n\n`);
+            markdown.appendCodeblock(doc.usage, 'tcl');
+            markdown.appendMarkdown('\n');
+        }
+
+        // 摘要 + 说明
+        markdown.appendMarkdown(`**${escapeMd(doc.summary)}**\n\n`);
+        markdown.appendMarkdown(escapeMd(doc.description) + '\n\n');
+
+        // 备注
+        if (doc.note) {
+            markdown.appendMarkdown(`---\n\n`);
+            markdown.appendMarkdown(`> 💡 ${escapeMd(doc.note)}\n\n`);
         }
 
         return new vscode.Hover(markdown, wordRange);

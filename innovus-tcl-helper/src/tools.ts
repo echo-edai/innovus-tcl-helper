@@ -669,7 +669,7 @@ class LintTclScriptTool implements vscode.LanguageModelTool<{
                 }
 
                 // Variable references
-                const refRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_:]*)\}?/g;
+                const refRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z0-9_]*)*)\}?/g;
                 let match: RegExpExecArray | null;
                 while ((match = refRegex.exec(trimmed)) !== null) {
                     const varName = match[2];

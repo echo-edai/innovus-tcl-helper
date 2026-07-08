@@ -28,6 +28,8 @@ function main() {
     ensureDir(path.join(ROOT, 'data', 'example', 'innovus'));
     ensureDir(path.join(ROOT, 'data', 'cache', 'cn'));
     ensureDir(path.join(ROOT, 'data', 'cache', 'en'));
+    ensureDir(path.join(ROOT, 'data', 'tcl-builtins', 'zh'));
+    ensureDir(path.join(ROOT, 'data', 'tcl-builtins', 'en'));
 
     console.log('✅ data/ 目录结构就绪');
 }

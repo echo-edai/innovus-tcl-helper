@@ -17,16 +17,17 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getDB, Language } from './commands';
-import { InnovusHoverProvider } from './hover';
+import { InnovusHoverProvider, setBuiltinsDataRoot } from './hover';
 import { InnovusCompletionProvider } from './completion';
 import { TclDiagnosticsProvider } from './diagnostics';
 import { TclLintProvider } from './lint';
-import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, showHelp } from './definition';
+import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, TclVariableDefinitionProvider, showHelp } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 import { registerAllTools, buildScriptContextForCommand } from './tools';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
 let lintProvider: TclLintProvider | undefined;
+let variableDefProvider: TclVariableDefinitionProvider | undefined;
 
 /**
  * 根据配置值解析实际语言。
@@ -43,6 +44,9 @@ function resolveLanguage(configLang: string): Language {
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('[Innovus TCL] 插件已激活');
+
+    // 初始化 TCL 内建关键字文档路径
+    setBuiltinsDataRoot(context.extensionPath);
 
     const config = vscode.workspace.getConfiguration('innovus-tcl');
 
@@ -70,6 +74,9 @@ export function activate(context: vscode.ExtensionContext) {
             hoverProvider
         ));
     }
+
+    // 提前创建 Variable Definition Provider（后续 setLintProvider 需要引用）
+    variableDefProvider = new TclVariableDefinitionProvider();
 
     // 2. Completion Provider - 命令/参数自动补全
     if (config.get<boolean>('enableCompletion', true)) {
@@ -107,6 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (config.get<boolean>('enableCompilation', true)) {
         lintProvider = new TclLintProvider();
         hoverProvider.setLintProvider(lintProvider);
+        variableDefProvider!.setLintProvider(lintProvider);
 
         // 初始运行 lint
         if (vscode.window.activeTextEditor?.document.languageId === 'tcl') {
@@ -152,13 +160,19 @@ export function activate(context: vscode.ExtensionContext) {
         new InnovusDefinitionProvider()
     ));
 
-    // 4b. Document Link Provider — Ctrl+Click 入口（始终生效，模式在回调中判断）
+    // 4b. Variable Definition Provider — F12/Ctrl+Click 跳转到 $varName 定义位置
+    subs.push(vscode.languages.registerDefinitionProvider(
+        { language: 'tcl' },
+        variableDefProvider
+    ));
+
+    // 4c. Document Link Provider — Ctrl+Click 入口（始终生效，模式在回调中判断）
     subs.push(vscode.languages.registerDocumentLinkProvider(
         { language: 'tcl' },
         new InnovusDocumentLinkProvider()
     ));
 
-    // 4c. Ctrl+Click 回调命令 — 根据当前模式打开 Webview 或虚拟文档
+    // 4d. Ctrl+Click 回调命令 — 根据当前模式打开 Webview 或虚拟文档
     subs.push(vscode.commands.registerCommand('innovus-tcl._showHelp', (cmdName: string) => {
         showHelp(context, cmdName);
     }));

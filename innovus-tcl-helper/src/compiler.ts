@@ -28,6 +28,7 @@ import * as path from 'path';
 import {
     parse, ParseResult, AstNode,
     SetNode, VarRefNode, SourceNode, ProcNode,
+    CommandNode, TokenType,
     resolveSimpleValue, containsVarRef
 } from './tcl-ast';
 
@@ -95,6 +96,261 @@ export interface CompileWarning {
     filePath: string;
     line: number;
     column: number;
+}
+
+// ════════════════════════════════════════════════════════════
+//  命令变量提取 — TCL 命令隐式定义的变量
+// ════════════════════════════════════════════════════════════
+
+/**
+ * 从 TCL 命令中提取隐式定义的变量名（foreach、lassign、gets、catch、scan 等），
+ * 并将其添加到符号表。
+ *
+ * @param cmd       - 解析后的命令节点
+ * @param unit      - 当前编译单元
+ * @param line      - 命令所在行号（已偏移处理）
+ * @param column    - 命令所在列号
+ * @param variables - 符号表（原地修改）
+ */
+function addCmdDefinedVars(
+    cmd: CommandNode,
+    unit: CompilationUnit,
+    line: number,
+    column: number,
+    variables: Map<string, VariableInfo[]>
+): void {
+    const cmdName = cmd.commandName;
+    const args = cmd.args;
+
+    /** 添加一个变量定义的便捷方法 */
+    const addVar = (varName: string, source: string): void => {
+        if (!varName || varName.startsWith('-')) { return; }
+        const info: VariableInfo = {
+            name: varName,
+            value: `<${source}>`,
+            rawValue: `<${source}>`,
+            filePath: unit.filePath,
+            relativePath: unit.relativePath,
+            line,
+            column,
+            order: unit.order,
+            isResolved: true,
+            rawText: cmd.rawText
+        };
+        const existing = variables.get(varName);
+        if (existing) {
+            existing.push(info);
+        } else {
+            variables.set(varName, [info]);
+        }
+    };
+
+    // ── foreach varname list body ──
+    // ── foreach {v1 v2 ...} list body ──
+    if (cmdName === 'foreach' && args.length >= 3) {
+        const varArg = args[0];
+        const varNames: string[] = [];
+        if (varArg.type === TokenType.BRACED) {
+            varNames.push(...varArg.value.trim().split(/\s+/).filter(a => a.length > 0));
+        } else if (varArg.type === TokenType.WORD) {
+            varNames.push(varArg.value);
+        }
+        for (const vn of varNames) { addVar(vn, 'foreach'); }
+        return;
+    }
+
+    // ── lassign list var1 var2 ... ──
+    if (cmdName === 'lassign' && args.length >= 2) {
+        for (let ai = 1; ai < args.length; ai++) {
+            if (args[ai].type === TokenType.WORD) {
+                addVar(args[ai].value, 'lassign');
+            }
+        }
+        return;
+    }
+
+    // ── gets channelId ?varname? ──
+    // 如果提供第二个参数，该变量接收读取的一行数据
+    if (cmdName === 'gets' && args.length >= 2) {
+        const varArg = args[1];
+        if (varArg.type === TokenType.WORD) {
+            addVar(varArg.value, 'gets');
+        }
+        return;
+    }
+
+    // ── catch script ?resultVar? ?optionsVar? ──
+    // 从第 2 个参数开始是变量名（先跳过花括号的 script body）
+    if (cmdName === 'catch' && args.length >= 2) {
+        // 跳过第一个参数（script），后续参数为变量名
+        for (let ai = 1; ai < args.length; ai++) {
+            if (args[ai].type === TokenType.WORD) {
+                addVar(args[ai].value, 'catch');
+            }
+        }
+        return;
+    }
+
+    // ── scan string format var1 var2 ... ──
+    // 前两个参数是字符串和格式，后续为接收扫描结果的变量
+    if (cmdName === 'scan' && args.length >= 3) {
+        for (let ai = 2; ai < args.length; ai++) {
+            if (args[ai].type === TokenType.WORD) {
+                addVar(args[ai].value, 'scan');
+            }
+        }
+        return;
+    }
+}
+
+/**
+ * 获取控制流命令的 body 花括号 token 索引列表。
+ * 用于递归解析嵌套的代码块（if/while/for/foreach/switch 体及其 init/incr 块）。
+ *
+ * @returns 参数数组中属于可执行代码花括号的索引
+ */
+function getControlFlowBodyIndices(cmdName: string, args: CommandNode['args']): number[] {
+    const indices: number[] = [];
+
+    switch (cmdName) {
+        case 'foreach':
+            // foreach varname list body → args[2] 是 body
+            if (args.length >= 3 && args[2].type === TokenType.BRACED) {
+                indices.push(2);
+            }
+            break;
+
+        case 'while':
+            // while cond body → args[1] 是 body
+            if (args.length >= 2 && args[1].type === TokenType.BRACED) {
+                indices.push(1);
+            }
+            break;
+
+        case 'for':
+            // for init cond incr body
+            // args[0]=init（可含 set）, args[2]=incr（可含 set）, args[3]=body
+            if (args.length >= 1 && args[0].type === TokenType.BRACED) {
+                indices.push(0);  // init 块
+            }
+            if (args.length >= 3 && args[2].type === TokenType.BRACED) {
+                indices.push(2);  // incr 块
+            }
+            if (args.length >= 4 && args[3].type === TokenType.BRACED) {
+                indices.push(3);  // body 块
+            }
+            break;
+
+        case 'if':
+            // if cond body → args[1] 是 body
+            if (args.length >= 2 && args[1].type === TokenType.BRACED) {
+                indices.push(1);
+            }
+            // if cond body else {elseBody} → args[3] 是 else body
+            // if cond body elseif {cond2} {body2} → args[3], args[4] ...
+            // 扫描后续的 BRACED args（跳过中间的 WORD 如 "else"/"elseif"）
+            for (let i = 2; i < args.length; i++) {
+                if (args[i].type === TokenType.BRACED) {
+                    indices.push(i);
+                }
+            }
+            break;
+
+        case 'elseif':
+            // elseif cond body → args[1] 是 body
+            if (args.length >= 2 && args[1].type === TokenType.BRACED) {
+                indices.push(1);
+            }
+            break;
+
+        case 'else':
+            // else body → args[0] 是 body（else 可能被解析为命令名，body 是 args[0]）
+            if (args.length >= 1 && args[0].type === TokenType.BRACED) {
+                indices.push(0);
+            }
+            break;
+
+        case 'switch':
+            // switch ?opts? val body1 body2 ... → 所有 trailing BRACED args
+            // 跳过前 1-2 个非 BRACED args（opts 和 val）
+            for (let i = 0; i < args.length; i++) {
+                if (args[i].type === TokenType.BRACED) {
+                    indices.push(i);
+                }
+            }
+            break;
+
+        case 'try':
+            // try body ?on? ?trap? ?finally?
+            // 所有 BRACED args 都是代码块
+            for (let i = 0; i < args.length; i++) {
+                if (args[i].type === TokenType.BRACED) {
+                    indices.push(i);
+                }
+            }
+            break;
+    }
+
+    return indices;
+}
+
+/**
+ * 递归从解析结果中提取所有变量定义（包括嵌套的控制流体）。
+ *
+ * @param parseResult  - 解析结果
+ * @param unit         - 编译单元
+ * @param lineOffset   - 行号偏移（parse 内行号 + offset = 文件实际行号）
+ * @param variables    - 符号表（原地修改）
+ * @param depth        - 当前递归深度（限制最大 4 层）
+ */
+function extractVarsDeep(
+    parseResult: ParseResult,
+    unit: CompilationUnit,
+    lineOffset: number,
+    variables: Map<string, VariableInfo[]>,
+    depth: number = 0
+): void {
+    if (depth > 4) { return; } // 防止无限递归
+
+    // 1. 提取 set 定义
+    for (const setNode of parseResult.sets) {
+        const info: VariableInfo = {
+            name: setNode.varName,
+            value: resolveSimpleValue(setNode.valueText),
+            rawValue: setNode.valueText,
+            filePath: unit.filePath,
+            relativePath: unit.relativePath,
+            line: setNode.line + lineOffset,
+            column: setNode.column,
+            order: unit.order,
+            isResolved: !containsVarRef(setNode.valueText),
+            rawText: setNode.rawText
+        };
+        const existing = variables.get(setNode.varName);
+        if (existing) {
+            existing.push(info);
+        } else {
+            variables.set(setNode.varName, [info]);
+        }
+    }
+
+    // 2. 提取命令隐式定义的变量（foreach, lassign, gets, catch, scan）
+    for (const cmd of parseResult.commands) {
+        addCmdDefinedVars(cmd, unit, cmd.line + lineOffset, cmd.column, variables);
+
+        // 3. 递归解析控制流体的 body 花括号
+        const bodyIndices = getControlFlowBodyIndices(cmd.commandName, cmd.args);
+        for (const bi of bodyIndices) {
+            const bodyToken = cmd.args[bi];
+            // bodyToken.value 是花括号内的文本（不含外层 {}）
+            const bodyText = bodyToken.value;
+            if (!bodyText || bodyText.trim().length === 0) { continue; }
+            const bodyParseResult = parse(unit.filePath, bodyText);
+            // bodyToken.line 是 { 所在行，body 内的代码从下一行开始
+            const bodyLineOffset = bodyToken.line - 1;
+            extractVarsDeep(bodyParseResult, unit, bodyLineOffset, variables, depth + 1);
+        }
+    }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -264,15 +520,28 @@ export class TclCompiler {
         currentFilePath: string,
         currentOrder: number,
         fileList: string[],
-        errors: CompileError[]
+        errors: CompileError[],
+        variables?: Map<string, VariableInfo[]>
     ): void {
         const currentDir = path.dirname(currentFilePath);
         for (const srcNode of parseResult.sources) {
+            let rawPath = srcNode.filePath;
+
+            // 如果路径包含变量引用，尝试从符号表解析
+            if (rawPath.includes('$')) {
+                const resolved = this.resolveVarPath(rawPath, variables);
+                if (!resolved) {
+                    // 变量未定义，无法静态确定路径 — 跳过检查
+                    continue;
+                }
+                rawPath = resolved;
+            }
+
             let absPath: string;
-            if (path.isAbsolute(srcNode.filePath)) {
-                absPath = srcNode.filePath;
+            if (path.isAbsolute(rawPath)) {
+                absPath = rawPath;
             } else {
-                absPath = path.resolve(currentDir, srcNode.filePath);
+                absPath = path.resolve(currentDir, rawPath);
             }
 
             // 防止循环引用
@@ -297,6 +566,30 @@ export class TclCompiler {
             }
             this.processedSourceFiles.add(absPath);
         }
+    }
+
+    /**
+     * 解析路径中的 $varName 变量引用。
+     * @returns 解析后的路径，若变量未定义则返回 null
+     */
+    private resolveVarPath(rawPath: string, variables?: Map<string, VariableInfo[]>): string | null {
+        if (!variables) { return null; }
+
+        let resolved = rawPath;
+        const varRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z0-9_]*)*)\}?/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = varRegex.exec(rawPath)) !== null) {
+            const varName = match[2];
+            const defs = variables.get(varName);
+            if (!defs || defs.length === 0) { return null; }
+            // 使用最近的定义值
+            const lastDef = defs[defs.length - 1];
+            if (!lastDef.isResolved) { return null; }
+            resolved = resolved.replace(match[0], lastDef.value);
+        }
+
+        return resolved;
     }
 
     /**
@@ -351,6 +644,34 @@ export class TclCompiler {
                 } else {
                     variables.set(setNode.varName, [info]);
                 }
+            }
+        }
+
+        // 处理 foreach / lassign / gets / catch / scan 等隐式变量定义
+        for (const unit of units) {
+            for (const cmd of unit.parseResult.commands) {
+                addCmdDefinedVars(cmd, unit, cmd.line, cmd.column, variables);
+
+                // 递归解析顶层控制流命令的代码块（for init/incr/body, if body 等）
+                const bodyIndices = getControlFlowBodyIndices(cmd.commandName, cmd.args);
+                for (const bi of bodyIndices) {
+                    const bodyToken = cmd.args[bi];
+                    const bodyText = bodyToken.value;
+                    if (!bodyText || bodyText.trim().length === 0) { continue; }
+                    const bodyResult = parse(unit.filePath, bodyText);
+                    const bodyLineOffset = bodyToken.line - 1;
+                    extractVarsDeep(bodyResult, unit, bodyLineOffset, variables);
+                }
+            }
+
+            // 处理 proc 体内的所有变量定义（递归解析嵌套控制流体）
+            for (const proc of unit.procs) {
+                if (!proc.bodyText) { continue; }
+                const bodyResult = parse(unit.filePath, proc.bodyText);
+                const lineOffset = proc.bodyStartLine - 1;
+
+                // 递归提取 proc 体内所有变量（包括 if/while/for/foreach/switch 嵌套体）
+                extractVarsDeep(bodyResult, unit, lineOffset, variables);
             }
         }
 

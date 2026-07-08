@@ -1,13 +1,19 @@
 /**
- * Definition Provider — F12/Ctrl+Click 跳转到命令帮助
+ * Definition Provider — F12/Ctrl+Click 跳转到命令帮助 / 变量定义
  *
- * 支持两种显示风格（通过 innovus-tcl.helpStyle 配置）:
+ * 支持两种跳转目标:
+ *   - Innovus 命令名 → 命令帮助文档（Webview 或纯文本）
+ *   - $varName 变量引用 → 变量定义位置（set / foreach / proc 参数）
+ *
+ * 帮助显示风格（通过 innovus-tcl.helpStyle 配置）:
  *   "webview" — Webview 富文本面板（教育化排版）
  *   "plain"   — 虚拟纯文本文档（类 man page）
  */
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { getDB, CmdInfo, CmdOption } from './commands';
+import { TclLintProvider } from './lint';
 
 const HELP_SCHEME = 'innovus-tcl-help';
 
@@ -408,6 +414,103 @@ export class InnovusDefinitionProvider implements vscode.DefinitionProvider {
 
         const uri = vscode.Uri.parse(`${HELP_SCHEME}://help/${word}`);
         return new vscode.Location(uri, new vscode.Position(0, 0));
+    }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  Variable Definition Provider — F12/Ctrl+Click 跳转到 $varName 定义位置
+// ════════════════════════════════════════════════════════════════
+
+export class TclVariableDefinitionProvider implements vscode.DefinitionProvider {
+    private lintProvider: TclLintProvider | null = null;
+
+    /** 设置 Lint Provider 引用（由 extension.ts 注入） */
+    setLintProvider(provider: TclLintProvider): void {
+        this.lintProvider = provider;
+    }
+
+    provideDefinition(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        _token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.Definition | vscode.LocationLink[]> {
+        if (!this.lintProvider) { return null; }
+        const result = this.lintProvider.getLastResult();
+        if (!result) { return null; }
+
+        const line = document.lineAt(position.line).text;
+        const col = position.character;
+
+        // ── 检测 $varName 或 ${varName} ──
+        const dollarRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z0-9_]*)*)\}?/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = dollarRegex.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+
+            if (col >= start && col <= end) {
+                const varName = match[2];
+
+                // 查询变量定义
+                const { allDefs } = this.lintProvider.getCompiler().queryVariable(
+                    varName, result, document.uri.fsPath, position.line + 1
+                );
+
+                if (allDefs.length === 0) { return null; }
+
+                // 返回所有定义位置（VS Code 会显示选择器或直接跳转）
+                const locations: vscode.Location[] = [];
+                for (const def of allDefs) {
+                    const defUri = vscode.Uri.file(def.filePath);
+                    const defPos = new vscode.Position(
+                        Math.max(0, def.line - 1),
+                        Math.max(0, def.column - 1)
+                    );
+                    locations.push(new vscode.Location(defUri, defPos));
+                }
+
+                // 如果只有一个定义，直接返回单个 Location
+                if (locations.length === 1) {
+                    return locations[0];
+                }
+                return locations;
+            }
+        }
+
+        // ── 检测 set 命令中的变量名（光标在 set 的变量上时，跳转到该变量的引用） ──
+        const setRegex = /\bset\s+([a-zA-Z_][a-zA-Z0-9_:]*)/g;
+        while ((match = setRegex.exec(line)) !== null) {
+            const varName = match[1];
+            const start = match.index + 4; // 'set ' 之后
+            const end = start + varName.length;
+
+            if (col >= start && col <= end) {
+                // 光标在 set 的变量名上，跳转到所有 $varName 引用
+                const refs = result.variableRefs.filter(
+                    r => r.name === varName
+                );
+
+                if (refs.length === 0) { return null; }
+
+                const locations: vscode.Location[] = [];
+                for (const ref of refs) {
+                    const refUri = vscode.Uri.file(ref.filePath);
+                    const refPos = new vscode.Position(
+                        Math.max(0, ref.line - 1),
+                        Math.max(0, ref.column - 1)
+                    );
+                    locations.push(new vscode.Location(refUri, refPos));
+                }
+
+                if (locations.length === 1) {
+                    return locations[0];
+                }
+                return locations;
+            }
+        }
+
+        return null;
     }
 }
 
