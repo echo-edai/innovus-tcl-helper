@@ -358,10 +358,9 @@ export class TclRunner {
     }
 
     /**
-     * 加载 AI 预生成的仿真数据。
+     * 加载 AI 预生成的仿真数据（含括号匹配验证）。
      */
     private loadSimulation(cmdName: string, extensionPath: string): string | null {
-        // 查找仿真数据文件：data/simulations/<lang>/<cmdName>.json
         const languages = ['cn', 'en'];
         for (const lang of languages) {
             const simFile = path.join(extensionPath, 'data', 'simulations', lang, `${cmdName}.json`);
@@ -369,7 +368,13 @@ export class TclRunner {
                 try {
                     const data = JSON.parse(fs.readFileSync(simFile, 'utf-8'));
                     if (data.tcl && data.tcl.includes('proc ')) {
-                        return data.tcl;
+                        // 验证括号匹配
+                        const openB = (data.tcl.match(/\{/g) || []).length;
+                        const closeB = (data.tcl.match(/\}/g) || []).length;
+                        if (openB === closeB) {
+                            return data.tcl;
+                        }
+                        console.log(`[TCL Runner] 跳过 ${cmdName}: 括号不匹配 {${openB}/}${closeB}`);
                     }
                 } catch { /* ignore */ }
             }
