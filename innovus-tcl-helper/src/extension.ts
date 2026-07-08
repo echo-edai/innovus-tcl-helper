@@ -1009,6 +1009,20 @@ export function activate(context: vscode.ExtensionContext) {
                 configTclshPath2, outputConfig2
             );
 
+            // 显示完整的运行输出
+            const firstResult = result.results[0];
+            if (firstResult?.stdout?.trim()) {
+                runChannel.appendLine('── 运行输出 ──');
+                runChannel.appendLine(firstResult.stdout);
+            }
+            if (firstResult?.stderr?.trim()) {
+                runChannel.appendLine('── 错误输出 ──');
+                runChannel.appendLine(firstResult.stderr);
+            }
+
+            // 逐文件状态
+            runChannel.appendLine('');
+            runChannel.appendLine('── 文件状态 ──');
             for (const r of result.results) {
                 const status = r.success ? '✅' : '❌';
                 const cmdInfo = r.innovusCommands.length > 0

@@ -235,17 +235,18 @@ export class TclRunner {
 
             // 为每个文件创建结果条目
             for (const fc of fileContents) {
-                const fcmds = this.detectInnovusCommands(fc.content, extensionPath).map(c => c.command);
-                const hasError = !fc.content || (execResult?.stderr && execResult.stderr.includes(fc.path));
+                const fcmds = this.detectInnovusCommands(fc.content || '', extensionPath).map(c => c.command);
+                // 所有文件共享同一个 execResult
+                const fileSuccess = execResult?.success ?? false;
                 const item: ProjectRunResult['results'][0] = {
                     filePath: fc.path,
-                    success: !hasError && (execResult?.success ?? false),
+                    success: fileSuccess,
                     stdout: execResult?.stdout || '',
-                    stderr: hasError ? (execResult?.stderr || '') : '',
+                    stderr: execResult?.stderr || '',
                     innovusCommands: fcmds,
                     duration: 0
                 };
-                if (hasError || !execResult?.success) { errors++; }
+                if (!fileSuccess) { errors++; }
                 results.push(item);
             }
         } finally {
