@@ -1016,22 +1016,22 @@ export function activate(context: vscode.ExtensionContext) {
                 runChannel.appendLine(firstResult.stdout);
             }
             if (firstResult?.stderr?.trim()) {
-                runChannel.appendLine('── 错误输出 ──');
-                runChannel.appendLine(firstResult.stderr);
+                runChannel.appendLine('── 错误 ──');
+                // 只显示第一行错误（避免重复）
+                const errLine = firstResult.stderr.trim().split('\n')[0];
+                runChannel.appendLine(`   ${errLine}`);
             }
 
-            // 逐文件状态
+            // 逐文件状态（简化）
             runChannel.appendLine('');
             runChannel.appendLine('── 文件状态 ──');
+            const allOk = result.success;
             for (const r of result.results) {
-                const status = r.success ? '✅' : '❌';
+                const status = allOk ? '✅' : (r.stderr.trim() ? '❌' : '✅');
                 const cmdInfo = r.innovusCommands.length > 0
-                    ? ` (${r.innovusCommands.length} Innovus cmds)` : '';
+                    ? ` (${r.innovusCommands.length} cmds)` : '';
                 const fileInfo = r.outputFile ? ` → ${r.outputFile}` : '';
                 runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}${fileInfo}`);
-                if (r.stderr.trim()) {
-                    runChannel.appendLine(`   ⚠ ${r.stderr.trim().split('\n')[0]}`);
-                }
             }
 
             runChannel.appendLine('');
