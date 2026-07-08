@@ -767,6 +767,70 @@ export function activate(context: vscode.ExtensionContext) {
         await vscode.window.showTextDocument(doc);
     }));
 
+    // 注册命令：设置 .f 文件路径
+    subs.push(vscode.commands.registerCommand('innovus-tcl.setFFile', async () => {
+        const isZh = db.getLanguage() === 'zh';
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showWarningMessage(
+                isZh ? '请先打开一个工作区。' : 'Please open a workspace first.'
+            );
+            return;
+        }
+
+        const currentFfile = vscode.workspace.getConfiguration('innovus-tcl')
+            .get<string>('fFile', 'tcl.f');
+
+        const newFfile = await vscode.window.showInputBox({
+            prompt: isZh
+                ? '输入 .f 文件路径（相对于工作区根目录）'
+                : 'Enter .f file path (relative to workspace root)',
+            value: currentFfile,
+            placeHolder: '例如: a.f, temp/a.f, subdir/proj.f',
+            validateInput: (value) => {
+                if (!value || !value.trim()) {
+                    return isZh ? '路径不能为空' : 'Path cannot be empty';
+                }
+                if (!value.endsWith('.f')) {
+                    return isZh ? '文件应以 .f 结尾' : 'File should end with .f';
+                }
+                return null; // 通过
+            }
+        });
+
+        if (newFfile === undefined) { return; } // 用户取消
+
+        const trimmed = newFfile.trim();
+
+        // 写入配置（Workspace 级别）
+        const config = vscode.workspace.getConfiguration('innovus-tcl');
+        try {
+            await config.update('fFile', trimmed, vscode.ConfigurationTarget.Workspace);
+            vscode.window.showInformationMessage(
+                isZh
+                    ? `✅ .f 文件路径已更新为: ${trimmed}`
+                    : `✅ .f file path updated to: ${trimmed}`
+            );
+
+            // 自动重新运行 Lint
+            if (lintProvider) {
+                lintProvider.runLint();
+                const unitCount = lintProvider.getLastResult()?.units.length || 0;
+                vscode.window.showInformationMessage(
+                    isZh
+                        ? `🔄 已使用新 .f 文件重新编译 (${unitCount} 个文件)`
+                        : `🔄 Recompiled with new .f file (${unitCount} files)`
+                );
+            }
+        } catch (e: any) {
+            vscode.window.showErrorMessage(
+                isZh
+                    ? `❌ 设置失败: ${e.message}`
+                    : `❌ Failed to set: ${e.message}`
+            );
+        }
+    }));
+
     // 注册命令：编辑 AI 提示词
     subs.push(vscode.commands.registerCommand('innovus-tcl.editPrompt', async () => {
         const isZh = db.getLanguage() === 'zh';

@@ -456,7 +456,10 @@ export class TclCompiler {
 
     /**
      * 解析 .f 文件获取文件列表（按行顺序）。
-     * .f 文件格式：每行一个文件路径（相对于 .f 文件所在目录），忽略 # 注释行和空行。
+     * 支持递归 -F / -f 指令：
+     *   -F xxx.f：从当前 .f 所在目录找到 xxx.f，切换到 xxx.f 所在目录继续解析
+     *   -f xxx.f：从当前 .f 所在目录找到 xxx.f，但其内部相对路径仍相对于调用者 .f 目录
+     * 每行一个文件路径（相对于 .f 文件所在目录），忽略 # 注释行和空行。
      */
     private parseFFile(
         fFilePath: string,
@@ -464,9 +467,47 @@ export class TclCompiler {
         errors: CompileError[]
     ): string[] {
         const result: string[] = [];
+        const visited = new Set<string>();
+
+        this.parseFFileRecursive(fFilePath, path.dirname(fFilePath), workspaceRoot, errors, result, visited);
+        this.compileOrder = [...result];
+        return result;
+    }
+
+    /**
+     * 递归解析 .f 文件。
+     * @param fFilePath - 当前 .f 文件的绝对路径
+     * @param baseDir - 当前行路径解析的基准目录（-f 模式下为调用者目录，-F 模式下为当前 .f 目录）
+     * @param workspaceRoot - 工作区根目录
+     * @param errors - 错误收集
+     * @param result - 结果收集（追加）
+     * @param visited - 已访问的 .f 文件集合（防循环）
+     */
+    private parseFFileRecursive(
+        fFilePath: string,
+        baseDir: string,
+        workspaceRoot: string,
+        errors: CompileError[],
+        result: string[],
+        visited: Set<string>
+    ): void {
+        // 规范化路径防重复
+        const normalized = path.resolve(fFilePath);
+
+        // 防循环：已访问过的 .f 文件不再处理
+        if (visited.has(normalized)) {
+            return;
+        }
+        visited.add(normalized);
 
         if (!fs.existsSync(fFilePath)) {
-            return result;
+            errors.push({
+                message: `.f 文件不存在: ${path.relative(workspaceRoot, fFilePath)}`,
+                filePath: fFilePath,
+                line: 1,
+                column: 1
+            });
+            return;
         }
 
         try {
@@ -489,12 +530,55 @@ export class TclCompiler {
 
                 if (!cleanLine) { continue; }
 
-                // 解析为路径（相对 .f 文件目录或绝对路径）
+                // ── 处理 -F 指令：切换目录的递归 ──
+                if (cleanLine.startsWith('-F') && (cleanLine.length === 2 || cleanLine[2] === ' ' || cleanLine[2] === '\t')) {
+                    const subFPath = cleanLine.substring(2).trim();
+                    if (!subFPath) {
+                        errors.push({
+                            message: `-F 指令缺少文件路径`,
+                            filePath: fFilePath,
+                            line: i + 1,
+                            column: 1
+                        });
+                        continue;
+                    }
+                    // 解析 sub .f 路径（相对于当前 .f 所在目录）
+                    const subFAbs = path.isAbsolute(subFPath)
+                        ? subFPath
+                        : path.resolve(fDir, subFPath);
+                    // -F: 切换到 sub .f 所在目录作为新 baseDir
+                    const subFDir = path.dirname(subFAbs);
+                    this.parseFFileRecursive(subFAbs, subFDir, workspaceRoot, errors, result, visited);
+                    continue;
+                }
+
+                // ── 处理 -f 指令：不切换目录的递归 ──
+                if (cleanLine.startsWith('-f') && (cleanLine.length === 2 || cleanLine[2] === ' ' || cleanLine[2] === '\t')) {
+                    const subFPath = cleanLine.substring(2).trim();
+                    if (!subFPath) {
+                        errors.push({
+                            message: `-f 指令缺少文件路径`,
+                            filePath: fFilePath,
+                            line: i + 1,
+                            column: 1
+                        });
+                        continue;
+                    }
+                    // 解析 sub .f 路径（相对于当前 .f 所在目录）
+                    const subFAbs = path.isAbsolute(subFPath)
+                        ? subFPath
+                        : path.resolve(fDir, subFPath);
+                    // -f: 保持当前 baseDir 不变（不切换到 sub .f 所在目录）
+                    this.parseFFileRecursive(subFAbs, baseDir, workspaceRoot, errors, result, visited);
+                    continue;
+                }
+
+                // ── 普通行：TCL 文件路径（相对于 baseDir 或绝对路径） ──
                 let absPath: string;
                 if (path.isAbsolute(cleanLine)) {
                     absPath = cleanLine;
                 } else {
-                    absPath = path.resolve(fDir, cleanLine);
+                    absPath = path.resolve(baseDir, cleanLine);
                 }
 
                 result.push(absPath);
@@ -507,9 +591,6 @@ export class TclCompiler {
                 column: 1
             });
         }
-
-        this.compileOrder = [...result];
-        return result;
     }
 
     /**

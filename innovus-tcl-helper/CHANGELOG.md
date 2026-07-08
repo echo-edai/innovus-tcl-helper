@@ -1,5 +1,27 @@
 # 更新日志
 
+## 0.4.3 (2026-07-08)
+
+### 新增 — 递归 .f 文件解析（-F / -f 指令）
+- **-F xxx.f**：递归解析 `xxx.f`，并**切换基准目录**到 `xxx.f` 所在目录
+  - 例：`-F dir1/b.f` → `b.f` 中的 `b.v` 解析为 `proj/dir1/b.v`
+- **-f xxx.f**：递归解析 `xxx.f`，但**保持调用者目录**作为基准
+  - 例：`-f dir2/c.f` → `c.f` 中的 `c.v` 解析为 `proj/c.v`（不切换到 `dir2/`）
+- **任意层级递归**：支持嵌套 `-F`/`-f` 指令任意深度
+- **循环引用检测**：已访问的 `.f` 文件不会被重复解析
+
+### 新增 — 动态设置 .f 文件路径命令
+- **新命令**：`Innovus TCL: 📝 设置 .f 编译文件路径`
+- **交互式输入**：输入框带当前值预览、路径校验（非空、.f 结尾）
+- **自动重编译**：设置后自动重新运行 Lint 分析
+- **工作区级别持久化**：配置写入 `.vscode/settings.json`
+- **支持子目录路径**：`temp/a.f`、`subdir/proj.f` 等任意相对路径
+
+### 内部改进
+- `compiler.ts`：`parseFFile` 重构为 `parseFFileRecursive` 递归引擎
+- `extension.ts`：新增 `setFFile` 命令注册
+- `package.json`：新增 `innovus-tcl.setFFile` 命令声明
+
 ## 0.4.2 (2026-07-08)
 
 ### 新增 — Agent Skills 系统
