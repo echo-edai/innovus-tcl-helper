@@ -27,6 +27,8 @@ export interface RunResult {
     exitCode: number;
     innovusCommands: string[];
     duration: number;
+    /** 输出文件路径（如果配置了保存） */
+    outputFile?: string;
 }
 
 export interface ProjectRunResult {
@@ -38,42 +40,69 @@ export interface ProjectRunResult {
         stderr: string;
         innovusCommands: string[];
         duration: number;
+        outputFile?: string;
     }>;
     totalDuration: number;
     fileCount: number;
     errorCount: number;
 }
 
+/** 运行输出保存配置 */
+export interface RunOutputConfig {
+    /** 是否保存输出到文件 */
+    enabled: boolean;
+    /** 输出目录（绝对路径，不存在则自动创建） */
+    dir: string;
+}
+
 // ════════════════════════════════════════════════════════════
 //  常量
 // ════════════════════════════════════════════════════════════
 
-const SYSTEM_TCLSH_CANDIDATES = [
-    '/opt/homebrew/bin/tclsh9.0',
-    '/usr/local/bin/tclsh9.0',
-    '/usr/bin/tclsh',
-    'tclsh',
-    'tclsh9.0',
-];
-
 const RUN_TIMEOUT = 30000;
 
 // ════════════════════════════════════════════════════════════
-//  TCL Runner
+//  平台检测
 // ════════════════════════════════════════════════════════════
+
+/** 获取当前平台 triplet，如 darwin-arm64, linux-x64, win32-x64 */
+function getPlatformTriplet(): string {
+    const plat = os.platform();    // 'darwin' | 'linux' | 'win32'
+    const arch = os.arch();        // 'arm64' | 'x64' | 'ia32'
+    // 标准化: macOS 统一用 darwin
+    return `${plat}-${arch}`;
+}
+
+/** 各平台 tclsh 二进制名称 */
+function getTclshBinaryName(): string {
+    return os.platform() === 'win32' ? 'tclsh9.0.exe' : 'tclsh9.0';
+}
+
+/** 各平台系统 tclsh 候选路径 */
+const SYSTEM_TCLSH_CANDIDATES: Record<string, string[]> = {
+    'darwin-arm64': ['/opt/homebrew/bin/tclsh9.0', '/usr/local/bin/tclsh9.0', '/usr/bin/tclsh', 'tclsh', 'tclsh9.0'],
+    'darwin-x64': ['/usr/local/bin/tclsh9.0', '/usr/bin/tclsh', 'tclsh', 'tclsh9.0'],
+    'linux-x64': ['/usr/bin/tclsh9.0', '/usr/bin/tclsh', '/usr/local/bin/tclsh9.0', 'tclsh', 'tclsh9.0'],
+    'linux-arm64': ['/usr/bin/tclsh9.0', '/usr/bin/tclsh', 'tclsh', 'tclsh9.0'],
+    'win32-x64': ['tclsh9.0.exe', 'tclsh.exe'],
+    'win32-ia32': ['tclsh9.0.exe', 'tclsh.exe'],
+};
 
 export class TclRunner {
     private tclshPathCache: string | null = null;
 
-    /** 查找 tclsh: 内置 > 用户配置 > 系统搜索 */
+    /** 查找 tclsh: 内置(平台子目录) > 用户配置 > 系统搜索 */
     findTclsh(extensionPath: string, configTclshPath?: string): string | null {
         if (this.tclshPathCache && fs.existsSync(this.tclshPathCache)) {
             return this.tclshPathCache;
         }
         this.tclshPathCache = null;
 
-        // 1. 扩展内置 tclsh9.0
-        const bundled = path.join(extensionPath, 'bin', 'tclsh9.0');
+        const triplet = getPlatformTriplet();
+        const binName = getTclshBinaryName();
+
+        // 1. 扩展内置 tclsh9.0 (bin/<platform>/tclsh9.0)
+        const bundled = path.join(extensionPath, 'bin', triplet, binName);
         if (fs.existsSync(bundled)) {
             const v = this.verifyTclsh(bundled);
             if (v) { this.tclshPathCache = v; return v; }
@@ -85,8 +114,10 @@ export class TclRunner {
             if (v) { this.tclshPathCache = v; return v; }
         }
 
-        // 3. 系统搜索
-        for (const c of SYSTEM_TCLSH_CANDIDATES) {
+        // 3. 系统搜索（按平台候选路径）
+        const candidates = SYSTEM_TCLSH_CANDIDATES[triplet] ||
+            ['tclsh', 'tclsh9.0', 'tclsh9.0.exe'];
+        for (const c of candidates) {
             const v = this.verifyTclsh(c);
             if (v) { this.tclshPathCache = v; return v; }
         }
@@ -106,7 +137,10 @@ export class TclRunner {
     }
 
     /** 运行单个 TCL 脚本 */
-    async runScript(content: string, workDir: string, extensionPath: string, configTclshPath?: string): Promise<RunResult> {
+    async runScript(
+        content: string, workDir: string, extensionPath: string,
+        configTclshPath?: string, outputConfig?: RunOutputConfig
+    ): Promise<RunResult> {
         const t0 = Date.now();
         const tclsh = this.findTclsh(extensionPath, configTclshPath);
         if (!tclsh) {
@@ -122,7 +156,19 @@ export class TclRunner {
         try {
             fs.writeFileSync(tmpFile, script, 'utf-8');
             const r = await this.executeTclsh(tclsh, tmpFile, workDir);
-            return { ...r, innovusCommands: cmds.map(c => c.command), duration: Date.now() - t0 };
+            const result: RunResult = {
+                ...r, innovusCommands: cmds.map(c => c.command), duration: Date.now() - t0
+            };
+
+            // 保存输出到文件
+            if (outputConfig?.enabled && outputConfig.dir) {
+                result.outputFile = this.saveOutputFile(
+                    outputConfig.dir, `run_${Date.now()}`,
+                    r.stdout, r.stderr, result.innovusCommands
+                );
+            }
+
+            return result;
         } catch (e: any) {
             return { success: false, stdout: '', stderr: `异常: ${e.message}`, exitCode: -1, innovusCommands: cmds.map(c => c.command), duration: Date.now() - t0 };
         } finally {
@@ -131,7 +177,10 @@ export class TclRunner {
     }
 
     /** 按 .f 文件顺序运行整个项目 */
-    async runProject(fFilePath: string, workspaceRoot: string, extensionPath: string, configTclshPath?: string): Promise<ProjectRunResult> {
+    async runProject(
+        fFilePath: string, workspaceRoot: string, extensionPath: string,
+        configTclshPath?: string, outputConfig?: RunOutputConfig
+    ): Promise<ProjectRunResult> {
         const t0 = Date.now();
         const tclsh = this.findTclsh(extensionPath, configTclshPath);
         if (!tclsh) {
@@ -175,11 +224,20 @@ export class TclRunner {
                 fs.writeFileSync(tf, script, 'utf-8');
                 const r = await this.executeTclsh(tclsh, tf, path.dirname(u.filePath));
                 const fcmds = this.detectInnovusCommands(fc, extensionPath).map(c => c.command);
-                results.push({
+                const item: ProjectRunResult['results'][0] = {
                     filePath: u.relativePath,
                     success: r.success, stdout: r.stdout, stderr: r.stderr,
                     innovusCommands: fcmds, duration: Date.now() - ft0
-                });
+                };
+                // 保存输出到文件
+                if (outputConfig?.enabled && outputConfig.dir) {
+                    const safeName = path.basename(u.filePath).replace(/\.tcl$/i, '');
+                    item.outputFile = this.saveOutputFile(
+                        outputConfig.dir, `${u.order}_${safeName}`,
+                        r.stdout, r.stderr, fcmds
+                    );
+                }
+                results.push(item);
                 if (!r.success) { errors++; }
             }
         } finally {
@@ -202,6 +260,36 @@ export class TclRunner {
         const r: CmdInfo[] = [];
         for (const n of found) { const info = db.get(n); if (info) { r.push(info); } }
         return r;
+    }
+
+    /**
+     * 保存运行输出到文件。
+     * @returns 输出文件的绝对路径
+     */
+    private saveOutputFile(
+        outDir: string, baseName: string,
+        stdout: string, stderr: string, innovusCmds: string[]
+    ): string {
+        const ts = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `${baseName}_${ts}.log`;
+        if (!fs.existsSync(outDir)) {
+            fs.mkdirSync(outDir, { recursive: true });
+        }
+        const filePath = path.join(outDir, filename);
+        let content = '';
+        content += `# Innovus TCL Run Log\n`;
+        content += `# Time: ${new Date().toISOString()}\n`;
+        content += `# Innovus Commands: ${innovusCmds.join(', ') || '(none)'}\n`;
+        content += `# ========================================\n\n`;
+        if (stdout.trim()) {
+            content += `── STDOUT ──\n${stdout}\n`;
+        }
+        if (stderr.trim()) {
+            content += `── STDERR ──\n${stderr}\n`;
+        }
+        fs.writeFileSync(filePath, content, 'utf-8');
+        console.log(`[TCL Runner] 输出已保存: ${filePath}`);
+        return filePath;
     }
 
     private generatePreamble(cmds: CmdInfo[]): string {

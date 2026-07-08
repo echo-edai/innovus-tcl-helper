@@ -893,7 +893,17 @@ export function activate(context: vscode.ExtensionContext) {
         runChannel.appendLine('');
 
         try {
-            const result = await runner.runScript(content, workDir, context.extensionPath);
+            const saveOutput = vscode.workspace.getConfiguration('innovus-tcl')
+                .get<boolean>('runSaveOutput', false);
+            const outDir = vscode.workspace.getConfiguration('innovus-tcl')
+                .get<string>('runOutputDir', '') ||
+                path.join(workspaceFolders[0].uri.fsPath, '.innovus-run');
+            const outputConfig = saveOutput ? { enabled: true, dir: outDir } : undefined;
+
+            const result = await runner.runScript(
+                content, workDir, context.extensionPath,
+                configTclshPath, outputConfig
+            );
 
             // 打印被拦截的 Innovus 命令
             if (result.innovusCommands.length > 0) {
@@ -929,6 +939,11 @@ export function activate(context: vscode.ExtensionContext) {
                     : `⚠️ Completed with errors (${result.duration}ms)`);
             }
             runChannel.appendLine(`   退出码: ${result.exitCode}`);
+            if (result.outputFile) {
+                runChannel.appendLine(isZh
+                    ? `   📄 输出文件: ${result.outputFile}`
+                    : `   📄 Output: ${result.outputFile}`);
+            }
 
         } catch (e: any) {
             runChannel.appendLine(isZh
@@ -982,13 +997,24 @@ export function activate(context: vscode.ExtensionContext) {
         runChannel.appendLine('');
 
         try {
-            const result = await runner.runProject(fFilePath, wsRoot, context.extensionPath, configTclshPath2);
+            const saveOutput2 = vscode.workspace.getConfiguration('innovus-tcl')
+                .get<boolean>('runSaveOutput', false);
+            const outDir2 = vscode.workspace.getConfiguration('innovus-tcl')
+                .get<string>('runOutputDir', '') ||
+                path.join(wsRoot, '.innovus-run');
+            const outputConfig2 = saveOutput2 ? { enabled: true, dir: outDir2 } : undefined;
+
+            const result = await runner.runProject(
+                fFilePath, wsRoot, context.extensionPath,
+                configTclshPath2, outputConfig2
+            );
 
             for (const r of result.results) {
                 const status = r.success ? '✅' : '❌';
                 const cmdInfo = r.innovusCommands.length > 0
                     ? ` (${r.innovusCommands.length} Innovus cmds)` : '';
-                runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}`);
+                const fileInfo = r.outputFile ? ` → ${r.outputFile}` : '';
+                runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}${fileInfo}`);
                 if (r.stderr.trim()) {
                     runChannel.appendLine(`   ⚠ ${r.stderr.trim().split('\n')[0]}`);
                 }
