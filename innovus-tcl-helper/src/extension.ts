@@ -30,6 +30,51 @@ let lintProvider: TclLintProvider | undefined;
 let variableDefProvider: TclVariableDefinitionProvider | undefined;
 
 /**
+ * 自动安装 Agent Skills 到工作区 .agents/skills/&lt;name&gt;/SKILL.md。
+ * VS Code Copilot 自动发现 .agents/skills 下的 SKILL.md 文件。
+ * 扩展激活时调用，每个 skill 独立子目录，名称为小写连字符格式。
+ */
+function installAgentSkills(extensionPath: string): void {
+    const skillName = 'innovus-tcl-helper';
+    const srcDir = path.join(extensionPath, '.agents', 'skills', skillName);
+    if (!fs.existsSync(srcDir)) { return; }
+
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) { return; }
+
+    for (const ws of workspaceFolders) {
+        try {
+            const targetDir = path.join(ws.uri.fsPath, '.agents', 'skills', skillName);
+            if (!fs.existsSync(targetDir)) { fs.mkdirSync(targetDir, { recursive: true }); }
+
+            // 递归复制源目录下所有文件
+            const copyDir = (src: string, dest: string) => {
+                for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+                    const s = path.join(src, entry.name);
+                    const d = path.join(dest, entry.name);
+                    if (entry.isDirectory()) {
+                        if (!fs.existsSync(d)) { fs.mkdirSync(d, { recursive: true }); }
+                        copyDir(s, d);
+                    } else {
+                        let shouldCopy = !fs.existsSync(d);
+                        if (!shouldCopy) {
+                            shouldCopy = fs.statSync(s).mtimeMs > fs.statSync(d).mtimeMs;
+                        }
+                        if (shouldCopy) {
+                            fs.copyFileSync(s, d);
+                            console.log(`[Innovus TCL] Skill installed: ${d}`);
+                        }
+                    }
+                }
+            };
+            copyDir(srcDir, targetDir);
+        } catch (e: any) {
+            console.log(`[Innovus TCL] Skill install skipped: ${e.message}`);
+        }
+    }
+}
+
+/**
  * 根据配置值解析实际语言。
  * "auto" → 跟随 VS Code 界面语言（中文 → zh，其他 → en）
  */
@@ -44,6 +89,9 @@ function resolveLanguage(configLang: string): Language {
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('[Innovus TCL] 插件已激活');
+
+    // ── 自动安装 Agent Skills 到工作区 .vscode/skills/ ──
+    installAgentSkills(context.extensionPath);
 
     // 初始化 TCL 内建关键字文档路径
     setBuiltinsDataRoot(context.extensionPath);
@@ -597,6 +645,32 @@ export function activate(context: vscode.ExtensionContext) {
         if (result === reloadAction) {
             await vscode.commands.executeCommand('workbench.action.reloadWindow');
         }
+    }));
+
+    // 注册命令：安装 Agent Skills
+    subs.push(vscode.commands.registerCommand('innovus-tcl.installSkills', async () => {
+        const isZh = db.getLanguage() === 'zh';
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showErrorMessage(
+                isZh ? '请先打开一个工作区文件夹。' : 'Please open a workspace folder first.'
+            );
+            return;
+        }
+
+        installAgentSkills(context.extensionPath);
+
+        const msg = [
+            isZh ? '✅ Agent Skill 已安装' : '✅ Agent Skill Installed',
+            '',
+            '`.agents/skills/innovus-tcl-helper/SKILL.md`',
+            '',
+            isZh
+                ? '💡 使用 `/skills` 查看已安装的 skill。在 Copilot Chat 中输入 Innovus TCL 问题自动激活。'
+                : '💡 Use `/skills` to verify. Ask Innovus TCL questions in Copilot Chat.',
+        ].join('\n');
+
+        vscode.window.showInformationMessage(msg, { modal: true });
     }));
 
     // 注册命令：运行跨文件编译 Lint

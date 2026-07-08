@@ -16,7 +16,11 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import { getDB, CmdInfo } from './commands';
+import { TclCompiler } from './compiler';
 
 // ════════════════════════════════════════════════════════════════
 //  通用工具函数
@@ -601,15 +605,64 @@ function buildScriptContext(
 }
 
 // ════════════════════════════════════════════════════════════════
-//  Tool 4: innovus_lint_tcl_script — 跨文件 Lint 检查
+//  通用 Lint 编译辅助方法
 // ════════════════════════════════════════════════════════════════
 
-class LintTclScriptTool implements vscode.LanguageModelTool<{
-    scripts: Array<{ file: string; content: string }>;
+/** 从文件路径运行编译器 */
+function compileFromPaths(fFilePath: string | null, tclFiles: string[] | null): {
+    result: import('./compiler').CompileResult | null;
+    error: string | null;
+} {
+    // 确定 .f 文件路径和工作目录
+    let workDir: string;
+    let fFile: string;
+
+    if (fFilePath && fs.existsSync(fFilePath)) {
+        workDir = path.dirname(path.resolve(fFilePath));
+        fFile = path.basename(fFilePath);
+    } else if (tclFiles && tclFiles.length > 0) {
+        // 使用临时目录 + 生成 .f 文件
+        workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-lint-'));
+        fFile = 'tcl.f';
+        const fLines = tclFiles.map(f => path.basename(f));
+        fs.writeFileSync(path.join(workDir, fFile), fLines.join('\n'), 'utf-8');
+        // 复制或链接 tcl 文件到临时目录
+        for (const tf of tclFiles) {
+            if (fs.existsSync(tf)) {
+                const dest = path.join(workDir, path.basename(tf));
+                fs.copyFileSync(tf, dest);
+            }
+        }
+    } else {
+        return { result: null, error: '请提供 .f 文件路径或 .tcl 文件路径列表' };
+    }
+
+    try {
+        const compiler = new TclCompiler();
+        const result = compiler.compile(workDir, fFile);
+        return { result, error: null };
+    } catch (e: any) {
+        return { result: null, error: `编译失败: ${e.message}` };
+    } finally {
+        // 清理临时目录（仅当使用临时目录时）
+        if (!fFilePath && tclFiles && tclFiles.length > 0) {
+            try { fs.rmSync(workDir, { recursive: true, force: true }); } catch { /* ignore */ }
+        }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  Tool 4: innovus_lint_tcl — 快速 Lint 摘要
+// ════════════════════════════════════════════════════════════════
+
+class LintTclSummaryTool implements vscode.LanguageModelTool<{
+    f_file_path?: string;
+    tcl_files?: string[];
 }> {
     async invoke(
         options: vscode.LanguageModelToolInvocationOptions<{
-            scripts: Array<{ file: string; content: string }>;
+            f_file_path?: string;
+            tcl_files?: string[];
         }>,
         _token: vscode.CancellationToken
     ): Promise<vscode.LanguageModelToolResult> {
@@ -617,100 +670,121 @@ class LintTclScriptTool implements vscode.LanguageModelTool<{
         const isZh = db.getLanguage() === 'zh';
         const input = options.input;
 
-        if (!input.scripts || !Array.isArray(input.scripts) || input.scripts.length === 0) {
-            return new vscode.LanguageModelToolResult([
-                new vscode.LanguageModelTextPart(
-                    isZh ? '错误：请提供 scripts 数组（至少一个脚本）。' : 'Error: Please provide scripts array (at least one script).'
-                )
-            ]);
+        const { result, error } = compileFromPaths(input.f_file_path || null, input.tcl_files || null);
+        if (error) {
+            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(error)]);
+        }
+        if (!result) {
+            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(
+                isZh ? '请提供 f_file_path 或 tcl_files' : 'Provide f_file_path or tcl_files'
+            )]);
         }
 
-        const result = this.lintScripts(input.scripts, isZh);
-        return new vscode.LanguageModelToolResult([
-            new vscode.LanguageModelTextPart(result)
-        ]);
+        const { units, variables, errors, warnings } = result;
+        let report = '';
+        report += isZh ? '# 🔍 Lint 摘要\n\n' : '# 🔍 Lint Summary\n\n';
+        report += isZh
+            ? `**文件数:** ${units.length} | **变量:** ${variables.size} | **错误:** ${errors.length} | **警告:** ${warnings.length}\n\n`
+            : `**Files:** ${units.length} | **Vars:** ${variables.size} | **Errors:** ${errors.length} | **Warnings:** ${warnings.length}\n\n`;
+
+        if (errors.length === 0 && warnings.length === 0) {
+            report += isZh ? '✅ 无问题。' : '✅ No issues.';
+        } else {
+            // 只列出错误和警告计数，不展开详情
+            if (errors.length > 0) {
+                const errByFile = new Map<string, number>();
+                for (const e of errors) {
+                    const f = path.basename(e.filePath);
+                    errByFile.set(f, (errByFile.get(f) || 0) + 1);
+                }
+                report += isZh ? '### 错误分布\n' : '### Error Distribution\n';
+                for (const [f, c] of errByFile) {
+                    report += `- \`${f}\`: ${c}\n`;
+                }
+                report += '\n';
+            }
+            if (warnings.length > 0) {
+                const warnByFile = new Map<string, number>();
+                for (const w of warnings) {
+                    const f = path.basename(w.filePath);
+                    warnByFile.set(f, (warnByFile.get(f) || 0) + 1);
+                }
+                report += isZh ? '### 警告分布\n' : '### Warning Distribution\n';
+                for (const [f, c] of warnByFile) {
+                    report += `- \`${f}\`: ${c}\n`;
+                }
+            }
+            report += isZh
+                ? '\n> 💡 使用 **innovus_lint_tcl_detailed** 获取完整错误详情和变量表。'
+                : '\n> 💡 Use **innovus_lint_tcl_detailed** for full error details and variable table.';
+        }
+
+        return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(report)]);
+    }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  Tool 5: innovus_lint_tcl_detailed — 详细 Lint 报告
+// ════════════════════════════════════════════════════════════════
+
+class LintTclDetailedTool implements vscode.LanguageModelTool<{
+    f_file_path?: string;
+    tcl_files?: string[];
+}> {
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<{
+            f_file_path?: string;
+            tcl_files?: string[];
+        }>,
+        _token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        const db = getDB();
+        const isZh = db.getLanguage() === 'zh';
+        const input = options.input;
+
+        const { result, error } = compileFromPaths(input.f_file_path || null, input.tcl_files || null);
+        if (error) {
+            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(error)]);
+        }
+        if (!result) {
+            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(
+                isZh ? '请提供 f_file_path 或 tcl_files' : 'Provide f_file_path or tcl_files'
+            )]);
+        }
+
+        const report = this.formatDetailedReport(result, isZh);
+        return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(report)]);
     }
 
-    private lintScripts(
-        scripts: Array<{ file: string; content: string }>,
-        isZh: boolean
-    ): string {
-        const errors: string[] = [];
-        const warnings: string[] = [];
-        const variables: Record<string, Array<{ value: string; file: string; line: number; order: number }>> = {};
-        const usedVarNames = new Set<string>();
-        let totalSets = 0;
-        let totalRefs = 0;
+    private formatDetailedReport(result: import('./compiler').CompileResult, isZh: boolean): string {
+        const { units, variables, variableRefs, errors, warnings } = result;
 
-        for (let order = 0; order < scripts.length; order++) {
-            const { file, content } = scripts[order];
-            const fileName = file || `script_${order + 1}.tcl`;
-            const lines = content.split('\n');
-
-            for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-                const line = lines[lineIdx];
-                const trimmed = line.trim();
-                const lineNum = lineIdx + 1;
-                if (!trimmed || trimmed.startsWith('#')) { continue; }
-
-                // set command
-                const setMatch = trimmed.match(/^set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+(.+)$/);
-                if (setMatch) {
-                    const varName = setMatch[1];
-                    let value = setMatch[2].trim();
-                    if ((value.startsWith('"') && value.endsWith('"')) ||
-                        (value.startsWith('{') && value.endsWith('}'))) {
-                        value = value.slice(1, -1);
-                    }
-                    if (!variables[varName]) { variables[varName] = []; }
-                    variables[varName].push({ value, file: fileName, line: lineNum, order });
-                    totalSets++;
-                    continue;
-                }
-
-                // Variable references
-                const refRegex = /\$(\{?)([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z0-9_]*)*)\}?/g;
-                let match: RegExpExecArray | null;
-                while ((match = refRegex.exec(trimmed)) !== null) {
-                    const varName = match[2];
-                    usedVarNames.add(varName);
-                    totalRefs++;
-                    if (!variables[varName] || variables[varName].length === 0) {
-                        errors.push(isZh
-                            ? `[${fileName}:${lineNum}] 未定义的变量 "\$${varName}"`
-                            : `[${fileName}:${lineNum}] Undefined variable "\$${varName}"`);
-                    }
-                }
-            }
-        }
-
-        // Check for unused variables
-        for (const varName of Object.keys(variables)) {
-            if (!usedVarNames.has(varName)) {
-                const lastDef = variables[varName][variables[varName].length - 1];
-                warnings.push(isZh
-                    ? `[${lastDef.file}:${lastDef.line}] 变量 "${varName}" 已定义但从未使用`
-                    : `[${lastDef.file}:${lastDef.line}] Variable "${varName}" is defined but never used`);
-            }
-        }
-
-        // Build report
         let report = '';
-        report += isZh ? '# 🔍 TCL Lint 报告\n\n' : '# 🔍 TCL Lint Report\n\n';
-        report += isZh
-            ? `**脚本数:** ${scripts.length} | **变量定义:** ${totalSets} | **变量引用:** ${totalRefs}\n\n`
-            : `**Scripts:** ${scripts.length} | **Variable defs:** ${totalSets} | **Variable refs:** ${totalRefs}\n\n`;
+        report += isZh ? '# 🔍 TCL Lint 详细报告\n\n' : '# 🔍 TCL Lint Detailed Report\n\n';
 
-        // Variable table
-        if (Object.keys(variables).length > 0) {
+        report += isZh
+            ? `**文件数:** ${units.length} | **变量定义:** ${variables.size} | **变量引用:** ${variableRefs.length} | **错误:** ${errors.length} | **警告:** ${warnings.length}\n\n`
+            : `**Files:** ${units.length} | **Variables:** ${variables.size} | **Refs:** ${variableRefs.length} | **Errors:** ${errors.length} | **Warnings:** ${warnings.length}\n\n`;
+
+        if (units.length > 0) {
+            report += isZh ? '## 📁 编译文件\n\n' : '## 📁 Compiled Files\n\n';
+            for (const u of units) {
+                report += `- \`${u.relativePath}\`\n`;
+            }
+            report += '\n';
+        }
+
+        if (variables.size > 0) {
             report += isZh ? '## 📊 变量表\n\n' : '## 📊 Variable Table\n\n';
             report += isZh
                 ? '| 变量 | 值 | 文件 | 行 |\n|------|-----|------|----|\n'
                 : '| Variable | Value | File | Line |\n|----------|-------|------|------|\n';
-            for (const [varName, defs] of Object.entries(variables)) {
+            for (const [varName, defs] of variables) {
                 for (const def of defs) {
-                    const displayVal = def.value.length > 50 ? def.value.substring(0, 47) + '...' : def.value || '(empty)';
-                    report += `| \`${varName}\` | ${displayVal} | ${def.file} | ${def.line} |\n`;
+                    const displayVal = def.value.length > 60
+                        ? def.value.substring(0, 57) + '...'
+                        : def.value || '(empty)';
+                    report += `| \`${varName}\` | \`${displayVal}\` | ${def.relativePath} | ${def.line} |\n`;
                 }
             }
             report += '\n';
@@ -718,14 +792,42 @@ class LintTclScriptTool implements vscode.LanguageModelTool<{
 
         if (errors.length > 0) {
             report += isZh ? `## ❌ 错误 (${errors.length})\n\n` : `## ❌ Errors (${errors.length})\n\n`;
-            errors.forEach(e => report += `- ${e}\n`);
+            for (const e of errors) {
+                const fileLabel = path.basename(e.filePath);
+                report += `- [\`${fileLabel}:${e.line}\`] ${e.message}\n`;
+            }
             report += '\n';
         }
+
         if (warnings.length > 0) {
             report += isZh ? `## ⚠️ 警告 (${warnings.length})\n\n` : `## ⚠️ Warnings (${warnings.length})\n\n`;
-            warnings.forEach(w => report += `- ${w}\n`);
+            for (const w of warnings) {
+                const fileLabel = path.basename(w.filePath);
+                report += `- [\`${fileLabel}:${w.line}\`] ${w.message}\n`;
+            }
             report += '\n';
         }
+
+        if (variableRefs.length > 0) {
+            report += isZh ? '## 🔗 变量引用\n\n' : '## 🔗 Variable References\n\n';
+            report += isZh
+                ? '| 变量 | 引用位置 | 定义位置 |\n|------|---------|----------|\n'
+                : '| Variable | Reference | Definition |\n|----------|-----------|------------|\n';
+            const showRefs = variableRefs.slice(0, 30);
+            for (const ref of showRefs) {
+                const defLoc = ref.definition
+                    ? `${ref.definition.relativePath}:${ref.definition.line}`
+                    : (isZh ? '未定义' : 'undefined');
+                report += `| \`$${ref.name}\` | ${ref.relativePath}:${ref.line} | ${defLoc} |\n`;
+            }
+            if (variableRefs.length > 30) {
+                report += isZh
+                    ? `| ... | 还有 ${variableRefs.length - 30} 条引用 | ... |\n`
+                    : `| ... | ${variableRefs.length - 30} more refs | ... |\n`;
+            }
+            report += '\n';
+        }
+
         if (errors.length === 0 && warnings.length === 0) {
             report += isZh ? '## ✅ 无问题\n\n所有检查通过。\n' : '## ✅ No Issues\n\nAll checks passed.\n';
         }
@@ -775,26 +877,41 @@ export const TOOL_DEFINITIONS = {
         } as object,
         tags: ['innovus', 'tcl', 'eda', 'cadence']
     },
-    lintTclScript: {
-        name: 'innovus_lint_tcl_script',
-        description: '对 TCL 脚本进行跨文件 Lint 检查。支持传入多个脚本（按 .f 文件编译顺序），检测括号/引号匹配、未定义变量、变量使用顺序、未使用变量等问题。返回结构化的错误和警告列表，以及完整的变量表。',
+    lintTclSummary: {
+        name: 'innovus_lint_tcl',
+        description: 'TCL 脚本快速 Lint 摘要。接受 .f 文件路径或 .tcl 文件路径列表，返回错误/警告计数和分布（按文件）。适合快速了解项目整体健康状况。如需完整详情（变量表、错误位置、引用追踪），请使用 innovus_lint_tcl_detailed。',
         inputSchema: {
             type: 'object',
             properties: {
-                scripts: {
+                f_file_path: {
+                    type: 'string',
+                    description: '.f 文件的绝对路径（如 /path/to/tcl.f）。.f 文件每行一个 .tcl 文件路径（相对 .f 所在目录）。优先于 tcl_files。'
+                },
+                tcl_files: {
                     type: 'array',
-                    items: {
-                        type: 'object',
-                        properties: {
-                            file: { type: 'string', description: '文件名（用于报告中的位置标注）' },
-                            content: { type: 'string', description: 'TCL 脚本的完整文本内容' }
-                        },
-                        required: ['file', 'content']
-                    },
-                    description: 'TCL 脚本列表（按 .f 文件编译顺序排列），每个元素包含 file（文件名）和 content（脚本内容）'
+                    items: { type: 'string' },
+                    description: '.tcl 文件的绝对路径列表（如 ["/path/to/0_init.tcl", "/path/to/1_floorplan.tcl"]）。当不提供 f_file_path 时使用。文件顺序决定编译顺序。'
                 }
-            },
-            required: ['scripts']
+            }
+        } as object,
+        tags: ['innovus', 'tcl', 'lint', 'eda']
+    },
+    lintTclDetailed: {
+        name: 'innovus_lint_tcl_detailed',
+        description: 'TCL 脚本详细 Lint 报告。接受 .f 文件路径或 .tcl 文件路径列表，返回完整分析：变量表（名/值/文件/行）、所有错误和警告（含精确位置）、变量引用追踪表。Token 消耗较大，建议先用 innovus_lint_tcl 快速检查，有错误时再用此工具。',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                f_file_path: {
+                    type: 'string',
+                    description: '.f 文件的绝对路径（如 /path/to/tcl.f）。.f 文件每行一个 .tcl 文件路径（相对 .f 所在目录）。优先于 tcl_files。'
+                },
+                tcl_files: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: '.tcl 文件的绝对路径列表（如 ["/path/to/0_init.tcl", "/path/to/1_floorplan.tcl"]）。当不提供 f_file_path 时使用。文件顺序决定编译顺序。'
+                }
+            }
         } as object,
         tags: ['innovus', 'tcl', 'lint', 'eda']
     }
@@ -812,9 +929,12 @@ export function registerAllTools(context: vscode.ExtensionContext): void {
         vscode.lm.registerTool(TOOL_DEFINITIONS.parseTclScript.name, new ParseTclScriptTool())
     );
     context.subscriptions.push(
-        vscode.lm.registerTool(TOOL_DEFINITIONS.lintTclScript.name, new LintTclScriptTool())
+        vscode.lm.registerTool(TOOL_DEFINITIONS.lintTclSummary.name, new LintTclSummaryTool())
     );
-    console.log('[Innovus TCL] 已注册 4 个 Copilot LM Tools');
+    context.subscriptions.push(
+        vscode.lm.registerTool(TOOL_DEFINITIONS.lintTclDetailed.name, new LintTclDetailedTool())
+    );
+    console.log('[Innovus TCL] 已注册 5 个 Copilot LM Tools');
 }
 
 /**

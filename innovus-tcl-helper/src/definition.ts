@@ -482,17 +482,14 @@ export class TclVariableDefinitionProvider implements vscode.DefinitionProvider 
         const setRegex = /\bset\s+([a-zA-Z_][a-zA-Z0-9_:]*)/g;
         while ((match = setRegex.exec(line)) !== null) {
             const varName = match[1];
-            const start = match.index + 4; // 'set ' 之后
+            const start = match.index + 4;
             const end = start + varName.length;
 
             if (col >= start && col <= end) {
-                // 光标在 set 的变量名上，跳转到所有 $varName 引用
                 const refs = result.variableRefs.filter(
                     r => r.name === varName
                 );
-
                 if (refs.length === 0) { return null; }
-
                 const locations: vscode.Location[] = [];
                 for (const ref of refs) {
                     const refUri = vscode.Uri.file(ref.filePath);
@@ -502,11 +499,27 @@ export class TclVariableDefinitionProvider implements vscode.DefinitionProvider 
                     );
                     locations.push(new vscode.Location(refUri, refPos));
                 }
+                return locations.length === 1 ? locations[0] : locations;
+            }
+        }
 
-                if (locations.length === 1) {
-                    return locations[0];
+        // ── 检测 proc 调用（光标在 proc 名上时，跳转到 proc 定义） ──
+        const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z_][a-zA-Z0-9_]*/);
+        if (wordRange) {
+            const word = document.getText(wordRange);
+            // 在所有编译单元中查找匹配的 proc 定义
+            for (const unit of result.units) {
+                for (const proc of unit.procs) {
+                    if (proc.procName === word) {
+                        // 跳转到 proc 定义位置
+                        const defUri = vscode.Uri.file(unit.filePath);
+                        const defPos = new vscode.Position(
+                            Math.max(0, proc.line - 1),
+                            Math.max(0, proc.column - 1)
+                        );
+                        return new vscode.Location(defUri, defPos);
+                    }
                 }
-                return locations;
             }
         }
 

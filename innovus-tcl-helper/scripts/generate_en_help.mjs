@@ -18,87 +18,142 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// 路径配置
 // scripts/ → innovus-tcl-helper/ → vscode-plugins/ → data_base/
 const ROOT = path.join(__dirname, '..', '..');
 const LOG_DIR = path.join(ROOT, 'data_base', 'en', 'ori_logs', 'help_logs');
 const OUT_DIR = path.join(ROOT, 'data_base', 'en', 'help');
 
-// ===================== 摘要生成 =====================
+// ===================== 解析器（与 src/parser.ts 一致） =====================
 
-function generateSummary(cmdName) {
-    const words = cmdName
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/_/g, ' ')
-        .toLowerCase()
-        .split(/\s+/)
-        .filter(w => w.length > 0);
-    if (words.length === 0) { return `Executes the '${cmdName}' command.`; }
+/**
+ * 解析英文 help .log 原始文本为结构化 JSON
+ */
+function parseHelpLog(cmdName, content) {
+    const lines = content.split('\n');
 
-    const first = words[0];
-    const rest = words.slice(1);
-
-    const verbMap = {
-        'add': 'Adds', 'check': 'Checks', 'create': 'Creates', 'delete': 'Deletes',
-        'remove': 'Removes', 'report': 'Reports', 'set': 'Sets', 'get': 'Gets',
-        'reset': 'Resets', 'save': 'Saves', 'load': 'Loads', 'write': 'Writes',
-        'read': 'Reads', 'init': 'Initializes', 'start': 'Starts', 'end': 'Ends',
-        'route': 'Routes', 'place': 'Places', 'verify': 'Verifies',
-        'generate': 'Generates', 'define': 'Defines', 'change': 'Changes',
-        'edit': 'Edits', 'update': 'Updates', 'select': 'Selects',
-        'deselect': 'Deselects', 'assign': 'Assigns', 'unassign': 'Unassigns',
-        'connect': 'Connects', 'disconnect': 'Disconnects', 'highlight': 'Highlights',
-        'dehighlight': 'Dehighlights', 'display': 'Displays', 'dump': 'Dumps',
-        'extract': 'Extracts', 'fix': 'Fixes', 'flatten': 'Flattens',
-        'merge': 'Merges', 'move': 'Moves', 'clone': 'Clones', 'copy': 'Copies',
-        'paste': 'Pastes', 'replace': 'Replaces', 'restore': 'Restores',
-        'run': 'Runs', 'sort': 'Sorts', 'split': 'Splits', 'swap': 'Swaps',
-        'trim': 'Trims', 'undo': 'Undoes', 'redo': 'Redoes', 'zoom': 'Zooms',
-        'cut': 'Cuts', 'attach': 'Attaches', 'detach': 'Detaches',
-        'commit': 'Commits', 'import': 'Imports', 'export': 'Exports',
-        'map': 'Maps', 'query': 'Queries', 'legalize': 'Legalizes',
-        'partition': 'Partitions', 'mark': 'Marks', 'unmark': 'Unmarks',
-        'analyze': 'Analyzes', 'find': 'Finds', 'apply': 'Applies',
-        'assemble': 'Assembles', 'bind': 'Binds', 'calculate': 'Calculates',
-        'clear': 'Clears', 'close': 'Closes', 'colorize': 'Colorizes',
-        'compare': 'Compares', 'compress': 'Compresses', 'convert': 'Converts',
-        'decompress': 'Decompresses', 'derive': 'Derives', 'disable': 'Disables',
-        'enable': 'Enables', 'encrypt': 'Encrypts', 'decrypt': 'Decrypts',
-        'eval': 'Evaluates', 'fill': 'Fills', 'filter': 'Filters',
-        'flip': 'Flips', 'free': 'Frees', 'group': 'Groups',
-        'insert': 'Inserts', 'justify': 'Justifies', 'list': 'Lists',
-        'modify': 'Modifies', 'monitor': 'Monitors', 'open': 'Opens',
-        'pack': 'Packs', 'predict': 'Predicts', 'prepare': 'Prepares',
-        'print': 'Prints', 'propagate': 'Propagates', 'pull': 'Pulls',
-        'push': 'Pushes', 'rechain': 'Rechains', 'reclaim': 'Reclaims',
-        'recreate': 'Recreates', 'redirect': 'Redirects', 'refine': 'Refines',
-        'register': 'Registers', 'reinforce': 'Reinforces', 'relink': 'Relinks',
-        'rename': 'Renames', 'resize': 'Resizes', 'resume': 'Resumes',
-        'scale': 'Scales', 'shift': 'Shifts', 'show': 'Shows', 'skew': 'Skews',
-        'snap': 'Snaps', 'space': 'Spaces', 'specify': 'Specifies',
-        'stagger': 'Staggers', 'stretch': 'Stretches', 'suppress': 'Suppresses',
-        'suspend': 'Suspends', 'synthesize': 'Synthesizes', 'trace': 'Traces',
-        'translate': 'Translates', 'unfix': 'Unfixes', 'unflatten': 'Unflattens',
-        'ungroup': 'Ungroups', 'uniquify': 'Uniquifies', 'unload': 'Unloads',
-        'unlock': 'Unlocks', 'unplace': 'Unplaces', 'unregister': 'Unregisters',
-        'unset': 'Unsets', 'unspecify': 'Unspecifies', 'unsuppress': 'Unsuppresses',
-        'validate': 'Validates', 'view': 'Views', 'summarize': 'Summarizes',
-        'all': 'Returns all', 'db': 'Database',
-        'ccopt': 'Clock concurrent optimization',
-        'eco': 'Engineering change order',
-        'sroute': 'Special route', 'fcroute': 'Flip-chip route',
-        'oa': 'OpenAccess', 'sdc': 'SDC',
-        'ctd': 'Clock tree debug', 'cvd': 'Cell view',
-    };
-
-    if (verbMap[first]) {
-        const verb = verbMap[first];
-        if (rest.length > 0) { return `${verb} ${rest.join(' ')}.`; }
-        return `${verb} the design.`;
+    // 跳过 license/version header lines
+    let startIdx = 0;
+    for (let i = 0; i < lines.length; i++) {
+        const t = lines[i].trim();
+        if (t.startsWith('Usage:') || t.startsWith('Description:') || t.startsWith('-') || t.startsWith('#') || t.startsWith('<')) {
+            startIdx = i;
+            break;
+        }
     }
-    return `Executes the '${cmdName}' command.`;
+
+    // 检查是否为模式变量（非命令）- 以 # 开头而非 Usage
+    const trimmedContent = content.trim();
+    const isCmd = lines.some(l => l.trim().startsWith('Usage:'));
+
+    if (!isCmd) {
+        // 模式变量 / 设置项，不是真正的命令
+        // 提取注释作为描述
+        let description = '';
+        for (const line of lines) {
+            const t = line.trim();
+            if (t.startsWith('#')) {
+                description += t.replace(/^#\s*/, '') + ' ';
+            }
+        }
+        description = description.trim();
+        return {
+            command: cmdName,
+            is_cmd: false,
+            summary: description || `Mode setting: ${cmdName}`,
+            description: description || `Mode setting variable for ${cmdName}.`,
+            usage: null,
+            options: null
+        };
+    }
+
+    // 提取 Usage 行（可能跨多行）
+    let usage = '';
+    let optionLines = [];
+    let inUsage = true;
+    let foundUsage = false;
+
+    for (let i = startIdx; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (inUsage) {
+            // Usage 行或以大量空格缩进开始的续行
+            if (trimmed.startsWith('Usage:') || (foundUsage && line.match(/^\s{10,}[-\[]/))) {
+                usage += (usage ? ' ' : '') + trimmed;
+                foundUsage = true;
+            } else if (trimmed.startsWith('Description:')) {
+                // 跳过 Description 行
+                continue;
+            } else if (trimmed.startsWith('-') || trimmed.startsWith('<')) {
+                // 第一个 option 行
+                inUsage = false;
+                optionLines.push(line);
+            } else if (trimmed === '' && foundUsage) {
+                inUsage = false;
+            }
+        } else {
+            if (trimmed) {
+                optionLines.push(line);
+            }
+        }
+    }
+
+    usage = usage.replace(/^Usage:\s*/, '').trim();
+
+    const options = parseOptions(optionLines);
+
+    // 如果没有解析到 options 但有 usage（比如只有 -help 的命令），
+    // 至少添加 -help 选项
+    if (options.length === 0 && usage) {
+        options.push({
+            name: '-help',
+            description: 'Prints out the command usage',
+            required: false,
+            type: 'flag'
+        });
+    }
+
+    const summary = generateSummary(cmdName);
+    const description = summary;
+
+    return {
+        command: cmdName,
+        is_cmd: true,
+        summary: summary,
+        description: description,
+        usage: usage || `${cmdName} [-help]`,
+        options: options.length > 0 ? options : null
+    };
 }
 
-// ===================== 解析器 =====================
+function parseOptions(lines) {
+    const options = [];
+    let currentOption = null;
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+        // 匹配 -flagName 或 <positionalArg>
+        const optionMatch = trimmed.match(/^(\s*)(-\w+|<\w+>)\b/);
+        if (optionMatch) {
+            if (currentOption) {
+                options.push(buildOption(currentOption.name, currentOption.lines));
+            }
+            currentOption = {
+                name: optionMatch[2],
+                lines: [line]
+            };
+        } else if (currentOption && trimmed) {
+            currentOption.lines.push(line);
+        }
+    }
+
+    if (currentOption) {
+        options.push(buildOption(currentOption.name, currentOption.lines));
+    }
+
+    return options;
+}
 
 function buildOption(name, lines) {
     const cleanedLines = lines.map((line, idx) => {
@@ -122,123 +177,192 @@ function buildOption(name, lines) {
     if (typeMatch) {
         const typeStr = typeMatch[1].toLowerCase();
         description = description.substring(0, description.lastIndexOf('(')).trim();
+
         if (typeStr.includes('string')) { type = 'string'; }
         else if (typeStr.includes('bool')) { type = 'flag'; }
         else if (typeStr.includes('enum')) { type = 'enum'; }
         else if (typeStr.includes('int')) { type = 'int'; }
         else if (typeStr.includes('float')) { type = 'float'; }
         else if (typeStr.includes('point') || typeStr.includes('box')) { type = 'point'; }
+
         required = typeStr.includes('required');
     }
 
     description = description.replace(/\s+/g, ' ').trim();
-    if (lines[0] && lines[0].includes('<') && type === 'flag') { type = 'string'; }
 
-    return { name, description, required, type };
-}
-
-function parseOptions(lines) {
-    const options = [];
-    let cur = null;
-    for (const line of lines) {
-        const trimmed = line.trim();
-        const m = trimmed.match(/^(\s*)(-\w+|<\w+>)/);
-        if (m) {
-            if (cur) { options.push(buildOption(cur.name, cur.lines)); }
-            cur = { name: m[2], lines: [line] };
-        } else if (cur && trimmed) {
-            cur.lines.push(line);
-        }
-    }
-    if (cur) { options.push(buildOption(cur.name, cur.lines)); }
-    return options;
-}
-
-function parseHelpLog(cmdName, content) {
-    const lines = content.split('\n');
-    let startIdx = 0;
-    for (let i = 0; i < lines.length; i++) {
-        const t = lines[i].trim();
-        if (t.startsWith('Usage:') || t.startsWith('Description:') ||
-            t.startsWith('-') || t.startsWith('#') || t.startsWith('<')) {
-            startIdx = i; break;
-        }
+    if (lines[0] && lines[0].includes('<') && type === 'flag') {
+        type = 'string';
     }
 
-    const isCmd = lines.some(l => l.trim().startsWith('Usage:'));
-    if (!isCmd) {
-        let desc = '';
-        for (const line of lines) {
-            const t = line.trim();
-            if (t.startsWith('#')) { desc += t.replace(/^#\s*/, '') + ' '; }
-        }
-        desc = desc.trim() || `Mode setting: ${cmdName}`;
-        return { command: cmdName, is_cmd: false, summary: desc, description: desc, usage: null, options: null };
-    }
-
-    let usage = '';
-    let optionLines = [];
-    let inUsage = true;
-    let foundUsage = false;
-
-    for (let i = startIdx; i < lines.length; i++) {
-        const line = lines[i];
-        const trimmed = line.trim();
-        if (inUsage) {
-            if (trimmed.startsWith('Usage:') || (foundUsage && line.match(/^\s{10,}[-\[]/))) {
-                usage += (usage ? ' ' : '') + trimmed;
-                foundUsage = true;
-            } else if (trimmed.startsWith('Description:')) {
-                continue;
-            } else if (trimmed.startsWith('-') || trimmed.startsWith('<')) {
-                inUsage = false; optionLines.push(line);
-            } else if (trimmed === '' && foundUsage) {
-                inUsage = false;
-            }
-        } else {
-            if (trimmed) { optionLines.push(line); }
-        }
-    }
-
-    usage = usage.replace(/^Usage:\s*/, '').trim();
-    const options = parseOptions(optionLines);
-    if (options.length === 0 && usage) {
-        options.push({ name: '-help', description: 'Prints out the command usage', required: false, type: 'flag' });
-    }
-
-    const summary = generateSummary(cmdName);
     return {
-        command: cmdName, is_cmd: true,
-        summary, description: summary,
-        usage: usage || `${cmdName} [-help]`,
-        options: options.length > 0 ? options : null
+        name: name,
+        description: description,
+        required: required,
+        type: type
     };
+}
+
+// ===================== 摘要生成 =====================
+
+/**
+ * 根据命令名生成合理的英文摘要
+ * e.g. "addInst" → "Adds an instance to the design."
+ *      "checkDesign" → "Checks the design."
+ *      "report_timing" → "Reports timing analysis."
+ *      "setPlaceMode" → "Sets placement mode options."
+ */
+function generateSummary(cmdName) {
+    // 分离 camelCase 和 snake_case
+    const words = cmdName
+        .replace(/([a-z])([A-Z])/g, '$1 $2')     // camelCase → words
+        .replace(/_/g, ' ')                        // snake_case → words
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(w => w.length > 0);
+
+    if (words.length === 0) { return `Executes the ${cmdName} command.`; }
+
+    const first = words[0];
+    const rest = words.slice(1).join(' ');
+
+    // 动词映射
+    const verbMap = {
+        'add': ['Adds', ''],
+        'check': ['Checks', ''],
+        'create': ['Creates', ''],
+        'delete': ['Deletes', ''],
+        'remove': ['Removes', ''],
+        'report': ['Reports', ''],
+        'set': ['Sets', 'options'],
+        'get': ['Gets', 'information'],
+        'reset': ['Resets', ''],
+        'save': ['Saves', ''],
+        'load': ['Loads', ''],
+        'write': ['Writes', ''],
+        'read': ['Reads', ''],
+        'init': ['Initializes', ''],
+        'start': ['Starts', ''],
+        'end': ['Ends', ''],
+        'route': ['Routes', ''],
+        'place': ['Places', ''],
+        'verify': ['Verifies', ''],
+        'generate': ['Generates', ''],
+        'define': ['Defines', ''],
+        'change': ['Changes', ''],
+        'edit': ['Edits', ''],
+        'update': ['Updates', ''],
+        'select': ['Selects', ''],
+        'deselect': ['Deselects', ''],
+        'assign': ['Assigns', ''],
+        'unassign': ['Unassigns', ''],
+        'connect': ['Connects', ''],
+        'disconnect': ['Disconnects', ''],
+        'highlight': ['Highlights', ''],
+        'dehighlight': ['Dehighlights', ''],
+        'display': ['Displays', ''],
+        'dump': ['Dumps', ''],
+        'extract': ['Extracts', ''],
+        'fix': ['Fixes', ''],
+        'flatten': ['Flattens', ''],
+        'merge': ['Merges', ''],
+        'move': ['Moves', ''],
+        'clone': ['Clones', ''],
+        'copy': ['Copies', ''],
+        'paste': ['Pastes', ''],
+        'replace': ['Replaces', ''],
+        'restore': ['Restores', ''],
+        'run': ['Runs', ''],
+        'sort': ['Sorts', ''],
+        'split': ['Splits', ''],
+        'swap': ['Swaps', ''],
+        'trim': ['Trims', ''],
+        'undo': ['Undoes', ''],
+        'redo': ['Redoes', ''],
+        'zoom': ['Zooms', ''],
+        'cut': ['Cuts', ''],
+        'attach': ['Attaches', ''],
+        'detach': ['Detaches', ''],
+        'commit': ['Commits', ''],
+        'import': ['Imports', ''],
+        'export': ['Exports', ''],
+        'map': ['Maps', ''],
+        'query': ['Queries', ''],
+        'legalize': ['Legalizes', ''],
+        'optimize': ['Optimizes', ''],
+        'partition': ['Partitions', ''],
+        'mark': ['Marks', ''],
+        'unmark': ['Unmarks', ''],
+        'analyze': ['Analyzes', ''],
+        'find': ['Finds', ''],
+    };
+
+    if (verbMap[first]) {
+        const [verb, suffix] = verbMap[first];
+        const obj = rest || suffix || 'the design';
+        return `${verb} ${obj}.`;
+    }
+
+    // 默认
+    return `Executes the '${cmdName}' command.`;
 }
 
 // ===================== 主流程 =====================
 
 function main() {
-    if (!fs.existsSync(LOG_DIR)) { console.error(`❌ 源目录不存在: ${LOG_DIR}`); process.exit(1); }
+    if (!fs.existsSync(LOG_DIR)) {
+        console.error(`❌ 源目录不存在: ${LOG_DIR}`);
+        process.exit(1);
+    }
+
+    // 确保输出目录存在
     fs.mkdirSync(OUT_DIR, { recursive: true });
+
     const logFiles = fs.readdirSync(LOG_DIR).filter(f => f.endsWith('.log'));
     console.log(`📂 找到 ${logFiles.length} 个 .log 文件`);
-    let success = 0, failed = 0;
+
+    let success = 0;
+    let failed = 0;
+    let skipped = 0;
+
     for (const file of logFiles) {
         const cmdName = file.replace(/^help_/, '').replace(/\.log$/, '');
-        if (!cmdName) { continue; }
+        if (!cmdName) {
+            skipped++;
+            continue;
+        }
+
         const outFile = path.join(OUT_DIR, file.replace(/\.log$/, '.json'));
+
+        // 如果 JSON 已存在且比 .log 新，跳过
+        const logStat = fs.statSync(path.join(LOG_DIR, file));
+        if (fs.existsSync(outFile)) {
+            const jsonStat = fs.statSync(outFile);
+            if (jsonStat.mtimeMs >= logStat.mtimeMs) {
+                skipped++;
+                continue;
+            }
+        }
+
         try {
             const content = fs.readFileSync(path.join(LOG_DIR, file), 'utf-8');
             const info = parseHelpLog(cmdName, content);
-            if (!info.command) { throw new Error('no command'); }
+
+            // 验证基本结构
+            if (!info.command) {
+                throw new Error('解析结果无命令名');
+            }
+
             fs.writeFileSync(outFile, JSON.stringify(info, null, 2), 'utf-8');
             success++;
         } catch (err) {
             failed++;
-            if (failed <= 3) { console.error(`  ⚠️  ${cmdName}: ${err.message}`); }
+            if (failed <= 5) {
+                console.error(`  ⚠️  ${cmdName}: ${err.message}`);
+            }
         }
     }
-    console.log(`\n✅ 完成: ${success} 成功, ${failed} 失败`);
+
+    console.log(`\n✅ 完成: ${success} 成功, ${failed} 失败, ${skipped} 跳过`);
     console.log(`📁 输出目录: ${OUT_DIR}`);
 }
 

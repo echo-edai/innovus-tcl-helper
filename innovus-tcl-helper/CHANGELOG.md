@@ -1,5 +1,50 @@
 # 更新日志
 
+## 0.4.2 (2026-07-08)
+
+### 新增 — Agent Skills 系统
+- **自动安装 Agent Skill**：扩展激活时将 `.agents/skills/innovus-tcl-helper/` 同步到工作区
+- **5 个 Skill 文件**：
+  - `SKILL.md` — 入口 + 核心规则（防幻觉/MCP/Log/Lint）
+  - `flow-guide.md` — 9 阶段 Innovus 设计流程参考（真实项目模式）
+  - `tcl-basics.md` — TCL 编码规范 + **Log 文件输出规范**
+  - `mcp-tools.md` — MCP 5 工具指南 + **强制防幻觉工作流**
+  - `analysis-guide.md` — 脚本分析方法论
+- **新命令**：`Innovus TCL: 🤖 安装 Agent Skill`（手动安装/更新 skill 文件）
+
+### 新增 — Proc 跨文件定义跳转
+- **F12 跳转到 proc 定义**：光标在 proc 调用名上按 F12，跳转到任意文件中该 proc 的定义位置
+
+### 新增 — MCP 防幻觉强化
+- **强制 MCP 查询工作流**：写任何 Innovus 命令前必须用 `innovus_get_command_help` 确认语法参数
+- **Lint-before-deliver 规则**：写完脚本立即调用 `innovus_lint_tcl` 验证
+
+### 新增 — Log 输出规范
+- **文件输出优先**：所有运行结果、报告、错误信息必须输出到文件，禁止仅 puts 到终端
+- **目录结构约定**：`$REPORT_DIR/stage_name/xxx.rpt`，自动检测并创建目录
+
+### 改进 — MCP Server（v0.4.1 → v0.4.2）
+- **Lint 工具拆分**：`innovus_lint_tcl`（快速摘要）+ `innovus_lint_tcl_detailed`（详细报告）
+- **传文件路径省 token**：接受 `f_file_path` 或 `tcl_files[]`（文件绝对路径，非文件内容）
+- **动态导入编译器**：使用 `import()` 动态加载 `out/compiler.js`，fallback 到内置 linter
+
+### 改进 — LM Tools
+- **Lint 工具重构**：`compileFromPaths()` 通用编译方法，支持 `.f` 文件路径和 `.tcl` 文件数组
+- **临时目录编译**：仅提供 `.tcl` 文件时自动生成 `.f` 文件到临时目录
+
+### 新增 — AI 提示词
+- `prompts/cn/innovus-flow-guide.md` — Innovus 流程指引（中文）
+- `prompts/cn/innovus-tcl-analysis.md` — TCL 脚本分析指引（中文）
+- `prompts/cn/innovus-tcl-dev.md` — TCL 开发指引（中文）
+- `prompts/en/innovus-tcl-dev.md` — TCL Development Guide（English）
+
+### 内部改进
+- `definition.ts`：重构 set 变量跳转逻辑 + 新增 proc 定义跳转
+- `extension.ts`：新增 `installAgentSkills()` + `installSkills` 命令
+- `tools.ts`：重构 Lint 工具，新增 `compileFromPaths()` 通用方法
+- `scripts/mcp-server.mjs`：重写 Lint 工具输入输出流，版本提升至 v0.4.2
+- 删除冗余 `scripts/generate_en_help 2.mjs`
+
 ## 0.4.0 (2026-07-07)
 
 ### 新增 — 跨文件 TCL 编译分析
