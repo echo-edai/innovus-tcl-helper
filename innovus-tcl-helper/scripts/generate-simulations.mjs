@@ -2,8 +2,18 @@
 /**
  * Innovus 命令仿真数据生成器 — DeepSeek Flash API
  *
- * 用法: node scripts/generate-simulations.mjs [--lang cn|en] [--limit N] [--dry-run]
- * 需要: export DEEPSEEK_API_KEY=xxx
+ * 功能:
+ *   - 遍历命令 help JSON，调用 AI 生成 TCL proc 仿真包装器
+ *   - 支持 cn/en 双语生成
+ *   - 并发控制 + 限流重试 + 断点续传
+ *   - 主日志 + 按 worker 分日志（最大 500 行滚动）
+ *   - 增量生成：已有仿真数据自动跳过
+ *
+ * 用法:
+ *   node scripts/generate-simulations.mjs [--lang cn|en] [--limit N] [--dry-run]
+ *
+ * 环境变量:
+ *   DEEPSEEK_API_KEY
  */
 
 import * as fs from 'fs';
@@ -13,17 +23,84 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 
+// ════════════════════════════════════════════════════════════
+//  配置
+// ════════════════════════════════════════════════════════════
+
 const API = 'https://api.deepseek.com/chat/completions';
 const MODEL = 'deepseek-v4-flash';
 const CONCURRENCY = 3;
 const MAX_TOKENS = 2048;
 const RETRY_DELAY = 2000;
 const MAX_RETRIES = 3;
+const MAX_LOG_LINES = 500;          // 单个日志文件最大行数
 
 const args = process.argv.slice(2);
 const LANGS = args.includes('--lang') ? [args[args.indexOf('--lang') + 1]] : ['cn', 'en'];
 const LIMIT = args.includes('--limit') ? parseInt(args[args.indexOf('--limit') + 1]) : 0;
 const DRY_RUN = args.includes('--dry-run');
+
+// ════════════════════════════════════════════════════════════
+//  日志系统
+// ════════════════════════════════════════════════════════════
+
+const LOG_DIR = path.join(ROOT, 'data', 'simulations', 'logs');
+fs.mkdirSync(LOG_DIR, { recursive: true });
+
+class Logger {
+    constructor(filePath) {
+        this.filePath = filePath;
+        this.buffer = [];
+        this.count = 0;
+    }
+    log(msg) {
+        const line = `[${new Date().toISOString().substring(11, 19)}] ${msg}`;
+        console.log(msg);
+        this.buffer.push(line);
+        this.count++;
+        if (this.buffer.length >= 50) { this.flush(); }
+    }
+    flush() {
+        if (this.buffer.length === 0) return;
+        let content = fs.existsSync(this.filePath)
+            ? fs.readFileSync(this.filePath, 'utf-8') : '';
+        let lines = content.split('\n').filter(l => l.trim());
+        lines.push(...this.buffer);
+        // 滚动：保持最近 MAX_LOG_LINES 行
+        if (lines.length > MAX_LOG_LINES) {
+            lines = lines.slice(lines.length - MAX_LOG_LINES);
+        }
+        fs.writeFileSync(this.filePath, lines.join('\n') + '\n', 'utf-8');
+        this.buffer = [];
+    }
+}
+
+const mainLog = new Logger(path.join(LOG_DIR, 'generation.log'));
+const workerLogs = [];
+for (let i = 0; i < CONCURRENCY; i++) {
+    workerLogs.push(new Logger(path.join(LOG_DIR, `worker-${i}.log`)));
+}
+
+// ════════════════════════════════════════════════════════════
+//  断点管理
+// ════════════════════════════════════════════════════════════
+
+class Checkpoint {
+    constructor(lang) {
+        this.file = path.join(ROOT, 'data', 'simulations', `.checkpoint-${lang}.json`);
+    }
+    load() {
+        try { return new Set(JSON.parse(fs.readFileSync(this.file, 'utf-8'))); }
+        catch { return new Set(); }
+    }
+    save(doneSet) {
+        fs.writeFileSync(this.file, JSON.stringify([...doneSet]), 'utf-8');
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+//  Prompt 模板
+// ════════════════════════════════════════════════════════════
 
 function buildPrompt(cmdInfo, lang) {
     const { command, summary, description, usage, options } = cmdInfo;
@@ -44,26 +121,23 @@ function buildPrompt(cmdInfo, lang) {
 ${optLines || '  (无)'}
 
 ## 关键要求
-1. proc 必须解析 args 中的关键参数，根据用户传入的实际值生成对应的中文 puts 输出
-2. 输出描述要让工程师一眼看懂命令做了什么操作、用了什么参数
-3. 例如：用户传入 -width 10 -spacing 5，输出 "宽度设为 10, 间距设为 5"
-4. 如果是创建类命令（add/create），输出创建了什么对象
-5. 如果是设置类命令（set），输出设置了什么值
-6. 如果是报告类命令（report），输出关键指标
-7. 不认识的参数忽略，不要报错
-8. 返回空字符串 ""
+1. 解析 args 中的关键参数，根据用户传入的实际值生成中文 puts 输出
+2. 让工程师一眼看懂命令做了什么操作、用了什么参数
+3. 创建类命令输出创建了什么对象；设置类命令输出设置了什么值
+4. 不认识的参数忽略，不要报错；返回空字符串 ""
+5. 只输出 TCL 代码，不要解释
 
-## 输出格式（只输出代码，不要解释）
+## 输出格式
 proc ${command} {args} {
     # 解析关键参数...
     # 根据参数值 puts 中文描述...
     return ""
 }`
         };
-    } else {
-        return {
-            system: 'You are an Innovus EDA simulation expert. Output only TCL proc code.',
-            user: `Generate a TCL proc wrapper for Innovus command "${command}".
+    }
+    return {
+        system: 'You are an Innovus EDA simulation expert. Output only TCL proc code.',
+        user: `Generate a TCL proc wrapper for Innovus command "${command}".
 
 ## Command Info
 - Summary: ${summary}
@@ -73,24 +147,23 @@ proc ${command} {args} {
 ${optLines || '  (none)'}
 
 ## Key Requirements
-1. Parse key args and generate English puts output based on actual values
+1. Parse key args, generate English puts output based on actual values
 2. Describe what the command did with which parameters
-3. Example: -width 10 -spacing 5 → output "Width set to 10, spacing set to 5"
-4. For create commands, describe what was created
-5. For set commands, describe what was set
-6. For report commands, output key metrics
-7. Unknown params silently ignored
-8. Return empty string
+3. Unknown params silently ignored; return empty string
+4. Output TCL code only
 
-## Output Format (code only)
+## Format
 proc ${command} {args} {
     # Parse key args...
     # Generate descriptive puts output...
     return ""
 }`
-        };
-    }
+    };
 }
+
+// ════════════════════════════════════════════════════════════
+//  API 调用
+// ════════════════════════════════════════════════════════════
 
 async function callAPI(systemPrompt, userPrompt, retries = 0) {
     const key = process.env.DEEPSEEK_API_KEY;
@@ -117,8 +190,7 @@ async function callAPI(systemPrompt, userPrompt, retries = 0) {
             throw new Error(`API ${resp.status}: ${t.substring(0, 200)}`);
         }
         const data = await resp.json();
-        const content = data.choices?.[0]?.message?.content || '';
-        return extractProc(content);
+        return extractProc(data.choices?.[0]?.message?.content || '');
 
     } catch (e) {
         if (retries < MAX_RETRIES && e.name !== 'AbortError') {
@@ -138,6 +210,10 @@ function extractProc(text) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+// ════════════════════════════════════════════════════════════
+//  主流程
+// ════════════════════════════════════════════════════════════
+
 async function processLang(lang) {
     const helpDir = path.join(ROOT, 'data', 'cmds', 'innovus', '25.1', lang, 'help');
     const simDir = path.join(ROOT, 'data', 'simulations', lang);
@@ -146,75 +222,134 @@ async function processLang(lang) {
     const files = fs.readdirSync(helpDir).filter(f => f.endsWith('.json')).sort();
     const total = LIMIT > 0 ? Math.min(LIMIT, files.length) : files.length;
 
-    const TCL_BUILTINS = new Set(['Puts', 'set', 'if', 'while', 'for', 'foreach', 'proc', 'return', 'expr', 'source', 'catch', 'error', 'list', 'concat', 'lindex', 'llength', 'lappend', 'split', 'join', 'regexp', 'regsub', 'open', 'close', 'gets', 'read', 'file', 'glob', 'cd', 'pwd', 'exec', 'eval', 'uplevel', 'upvar', 'namespace', 'variable', 'array', 'string', 'format', 'scan', 'clock', 'info', 'rename', 'interp', 'trace', 'unset', 'append', 'incr', 'switch', 'after', 'vwait', 'update']);
+    const TCL_BUILTINS = new Set(['Puts','set','if','while','for','foreach','proc','return','expr',
+        'source','catch','error','list','concat','lindex','llength','lappend','split','join',
+        'regexp','regsub','open','close','gets','read','file','glob','cd','pwd','exec','eval',
+        'uplevel','upvar','namespace','variable','array','string','format','scan','clock','info']);
 
-    console.log(`\n📊 [${lang}] 总计 ${files.length} 个命令，处理 ${total} 个 (并发=${CONCURRENCY})`);
+    // 加载断点
+    const checkpoint = new Checkpoint(lang);
+    const doneSet = checkpoint.load();
+
+    mainLog.log(`[${lang}] 总计 ${files.length} 命令, 处理 ${total}, 已完成 ${doneSet.size}, 并发=${CONCURRENCY}`);
 
     if (DRY_RUN) {
         const info = JSON.parse(fs.readFileSync(path.join(helpDir, files[0]), 'utf-8'));
         const p = buildPrompt(info, lang);
-        console.log('System:', p.system.substring(0, 80));
-        console.log('User:', p.user.substring(0, 500));
-        return { completed: 0, skipped: 0, failed: 0 };
+        mainLog.log(`[DRY RUN] System: ${p.system.substring(0, 80)}`);
+        mainLog.log(`[DRY RUN] User: ${p.user.substring(0, 500)}`);
+        return;
     }
 
     let completed = 0, skipped = 0, failed = 0;
     const t0 = Date.now();
     const queue = files.slice(0, total);
     let idx = 0;
+    let saveTimer = null;
 
-    async function worker() {
+    // 定期保存断点（每 30 秒）
+    function scheduleSave() {
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+            checkpoint.save(doneSet);
+            mainLog.log(`[${lang}] 💾 断点已保存 (${doneSet.size} 条)`);
+            for (const wl of workerLogs) wl.flush();
+        }, 30000);
+    }
+
+    async function worker(workerId) {
+        const wl = workerLogs[workerId];
         while (idx < queue.length) {
             const file = queue[idx++];
             const cmdName = file.replace('help_', '').replace('.json', '');
             const simFile = path.join(simDir, `${cmdName}.json`);
 
-            if (fs.existsSync(simFile)) { skipped++; continue; }
+            // 跳过已完成
+            if (doneSet.has(cmdName) || fs.existsSync(simFile)) {
+                doneSet.add(cmdName);
+                skipped++;
+                continue;
+            }
 
             try {
                 const info = JSON.parse(fs.readFileSync(path.join(helpDir, file), 'utf-8'));
-                if (!info.is_cmd || TCL_BUILTINS.has(info.command)) { skipped++; continue; }
+                if (!info.is_cmd || TCL_BUILTINS.has(info.command)) {
+                    doneSet.add(cmdName);
+                    skipped++;
+                    continue;
+                }
 
                 const { system, user } = buildPrompt(info, lang);
                 const tcl = await callAPI(system, user);
 
                 if (!tcl.includes('proc ')) {
-                    console.log(`  ⚠ [${lang}] ${cmdName}: 无 proc → 跳过`);
-                    failed++; continue;
+                    wl.log(`⚠ [${lang}] ${cmdName}: 无 proc → 跳过`);
+                    failed++;
+                    continue;
+                }
+
+                // 验证 TCL 语法：括号匹配
+                const openBraces = (tcl.match(/\{/g) || []).length;
+                const closeBraces = (tcl.match(/\}/g) || []).length;
+                if (openBraces !== closeBraces) {
+                    wl.log(`⚠ [${lang}] ${cmdName}: 括号不匹配 {${openBraces}/}${closeBraces} → 跳过`);
+                    failed++;
+                    continue;
                 }
 
                 fs.writeFileSync(simFile, JSON.stringify({
                     command: cmdName, tcl,
                     generated: new Date().toISOString(), model: MODEL
                 }, null, 2), 'utf-8');
+
+                doneSet.add(cmdName);
                 completed++;
 
                 const pct = ((completed + skipped + failed) / total * 100).toFixed(1);
                 const el = ((Date.now() - t0) / 1000).toFixed(0);
-                console.log(`  ✅ [${lang}] ${cmdName} [${completed}/${total}] ${pct}% (${el}s)`);
+                wl.log(`✅ [${lang}] ${cmdName} [${completed}/${total}] ${pct}% (${el}s)`);
+
+                scheduleSave();
 
             } catch (e) {
-                console.error(`  ❌ [${lang}] ${cmdName}: ${e.message}`);
+                wl.log(`❌ [${lang}] ${cmdName}: ${e.message}`);
                 failed++;
             }
         }
+        wl.flush();
     }
 
-    await Promise.all(Array(Math.min(CONCURRENCY, queue.length)).fill(null).map(() => worker()));
+    // 并发执行
+    const workerCount = Math.min(CONCURRENCY, queue.length);
+    await Promise.all(Array(workerCount).fill(null).map((_, i) => worker(i)));
+
+    // 最终保存
+    checkpoint.save(doneSet);
+    mainLog.flush();
+    for (const wl of workerLogs) wl.flush();
 
     const el = ((Date.now() - t0) / 1000).toFixed(0);
-    console.log(`\n[${lang}] ✅${completed} ⏭${skipped} ❌${failed} (${el}s)`);
-    return { completed, skipped, failed };
+    mainLog.log(`[${lang}] 完成: ✅${completed} ⏭${skipped} ❌${failed} (${el}s)`);
 }
+
 
 async function main() {
-    let totalComp = 0, totalSkip = 0, totalFail = 0;
+    mainLog.log('═══════════════════════════════════════');
+    mainLog.log(`启动: 语言=${LANGS.join(',')} 并发=${CONCURRENCY} 限制=${LIMIT || '无'}`);
+    mainLog.log(`日志: ${LOG_DIR}`);
+    mainLog.log(`断点: data/simulations/.checkpoint-<lang>.json`);
+
     for (const lang of LANGS) {
-        const r = await processLang(lang);
-        totalComp += r.completed; totalSkip += r.skipped; totalFail += r.failed;
+        await processLang(lang);
     }
-    console.log(`\n═══════════════════════════════════════`);
-    console.log(`全部: ✅${totalComp} ⏭${totalSkip} ❌${totalFail}`);
+
+    mainLog.log('═══════════════════════════════════════');
+    mainLog.log('全部完成');
+    mainLog.flush();
 }
 
-main().catch(e => { console.error('Fatal:', e.message); process.exit(1); });
+main().catch(e => {
+    mainLog.log(`❌ 致命错误: ${e.message}`);
+    mainLog.flush();
+    process.exit(1);
+});
