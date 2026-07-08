@@ -1,5 +1,13 @@
 # 更新日志
 
+## 0.5.2 (2026-07-08)
+
+### 改进 — 编辑器按钮优化
+- **纯图标按钮**：`editor/title` + `navigation`，仅显示 Codicon 图标无文字
+- **区分图标**：`$(play)` 运行文件 + `$(run-all)` 运行项目
+- **鼠标悬停提示**：command title 自动作为 tooltip 显示
+- **tsconfig 修复**：添加 `types: ["node"]` 解决 fs/path 类型错误
+
 ## 0.5.1 (2026-07-08)
 
 ### 新增 — 跨平台 tclsh 支持

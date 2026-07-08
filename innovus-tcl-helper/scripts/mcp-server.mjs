@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Innovus TCL MCP Server v0.5.1
+ * Innovus TCL MCP Server v0.5.2
  *
  * Model Context Protocol server providing 5 tools:
  *   1. innovus_list_commands      — 列出/搜索 Innovus TCL 命令
