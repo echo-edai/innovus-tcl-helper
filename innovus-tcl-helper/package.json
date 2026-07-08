@@ -212,30 +212,32 @@
                 {
                     "command": "innovus-tcl.runScript",
                     "when": "editorLangId == tcl",
+                    "group": "navigation",
                     "icon": "$(play)"
                 },
                 {
                     "command": "innovus-tcl.runProject",
                     "when": "editorLangId == tcl",
+                    "group": "navigation",
                     "icon": "$(run-all)"
                 }
-        ]
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "node scripts/prepublish.mjs && npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "prepublish": "node scripts/prepublish.mjs",
+        "package": "node scripts/prepublish.mjs && npm run compile && mkdir -p publish && vsce package --allow-missing-repository --out publish/",
+        "publish": "node scripts/prepublish.mjs && npm run compile && vsce publish --allow-missing-repository",
+        "publish:check": "echo 'VSCE_PAT 状态:' && [ -n \"$VSCE_PAT\" ] && echo '✅ 已设置' || echo '❌ 未设置 - 需要: export VSCE_PAT=<your-pat>'",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.0",
+        "@types/vscode": "^1.90.0",
+        "@vscode/vsce": "^3.9.2",
+        "typescript": "^5.3.3"
     }
-},
-"scripts": {
-    "vscode:prepublish": "node scripts/prepublish.mjs && npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "prepublish": "node scripts/prepublish.mjs",
-    "package": "node scripts/prepublish.mjs && npm run compile && mkdir -p publish && vsce package --allow-missing-repository --out publish/",
-    "publish": "node scripts/prepublish.mjs && npm run compile && vsce publish --allow-missing-repository",
-    "publish:check": "echo 'VSCE_PAT 状态:' && [ -n \"$VSCE_PAT\" ] && echo '✅ 已设置' || echo '❌ 未设置 - 需要: export VSCE_PAT=<your-pat>'",
-    "lint": "eslint src --ext ts"
-},
-"devDependencies": {
-    "@types/node": "^20.11.0",
-    "@types/vscode": "^1.90.0",
-    "@vscode/vsce": "^3.9.2",
-    "typescript": "^5.3.3"
-}
 }
