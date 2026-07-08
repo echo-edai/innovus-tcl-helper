@@ -38,7 +38,8 @@ const MODEL = 'deepseek-v4-flash';
 const CONCURRENCY = args.includes('--concurrency')
     ? parseInt(args[args.indexOf('--concurrency') + 1])
     : 30;  // deepseek-v4-flash 并发上限 2500，30 安全快速
-const MAX_TOKENS = 2048;
+const MAX_TOKENS = 8192;   // 默认输出长度（1M 上下文，384K 最大输出）
+const MAX_TOKENS_RETRY = 16384; // 重试时的输出长度
 const RETRY_DELAY = 2000;
 const MAX_RETRIES = 3;
 const MAX_LOG_LINES = 500;
@@ -295,16 +296,16 @@ async function processLang(lang) {
 
                 // 如果无 proc 或括号不匹配，用更高 max_tokens 重试
                 if (!tcl.includes('proc ')) {
-                    wl.log(`🔁 [${lang}] ${cmdName}: 无 proc → 重试(4096 tokens)...`);
-                    tcl = await callAPI(system, user, { maxTokens: 4096, temperature: 0.1, maxRetries: 1 });
+                    wl.log(`🔁 [${lang}] ${cmdName}: 无 proc → 重试(${MAX_TOKENS_RETRY} tokens)...`);
+                    tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
                 }
 
                 if (tcl.includes('proc ')) {
                     const openB = (tcl.match(/\{/g) || []).length;
                     const closeB = (tcl.match(/\}/g) || []).length;
                     if (openB !== closeB) {
-                        wl.log(`🔁 [${lang}] ${cmdName}: 括号不匹配 {${openB}/}${closeB} → 重试(4096 tokens)...`);
-                        tcl = await callAPI(system, user, { maxTokens: 4096, temperature: 0.1, maxRetries: 1 });
+                        wl.log(`🔁 [${lang}] ${cmdName}: 括号不匹配 {${openB}/}${closeB} → 重试(${MAX_TOKENS_RETRY} tokens)...`);
+                        tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
                     }
                 }
 
