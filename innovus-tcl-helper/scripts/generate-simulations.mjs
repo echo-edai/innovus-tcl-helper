@@ -102,7 +102,27 @@ function buildPrompt(cmdInfo, lang) {
         }
         return {
             system: 'You are an Innovus EDA simulation expert. Output only TCL proc code.',
-            user: `Generate TCL proc for variable "${command}". Summary: ${summary}. Set via: set ${command} <value>. Output TCL only.`
+            user: `Generate TCL proc for Innovus global variable "${command}".
+
+Variable description: ${summary}. ${description || ''}
+Usage: set ${command} <value>
+
+Requirements:
+1. Parse first positional arg as the value; if no args, just describe the variable
+2. puts a short English description of what this variable controls and what value was set
+3. proc signature: proc ${command} {args} { ... }
+4. Return "", output TCL code only
+
+Example:
+proc example_var {args} {
+    if {[llength $args] > 0} {
+        set val [lindex $args 0]
+        puts "Variable set: example_var = $val"
+    } else {
+        puts "Variable: example_var (controls XYZ behavior)"
+    }
+    return ""
+}`
         };
     }
 
