@@ -173,8 +173,9 @@ ${optLines || '  (无)'}
 1. 解析 args 中的关键参数，根据用户传入的实际值生成中文 puts 输出
 2. 让工程师一眼看懂命令做了什么操作、用了什么参数
 3. 创建类命令输出创建了什么对象；设置类命令输出设置了什么值
-4. 不认识的参数忽略，不要报错；返回空字符串 ""
-5. 只输出 TCL 代码，不要解释
+4. **重要**: 如果无法识别任何参数，也要输出命令名和原始参数，格式为: puts "命令名: [join $args { }]"
+5. 不认识的参数忽略，不要报错；返回空字符串 ""
+6. 只输出 TCL 代码，不要解释
 
 ## 输出格式
 proc ${command} {args} {
@@ -198,8 +199,9 @@ ${optLines || '  (none)'}
 ## Key Requirements
 1. Parse key args, generate English puts output based on actual values
 2. Describe what the command did with which parameters
-3. Unknown params silently ignored; return empty string
-4. Output TCL code only
+3. **IMPORTANT**: If no args can be recognized, still output command name and raw args: puts "command_name: [join $args { }]"
+4. Unknown params silently ignored; return empty string
+5. Output TCL code only
 
 ## Format
 proc ${command} {args} {

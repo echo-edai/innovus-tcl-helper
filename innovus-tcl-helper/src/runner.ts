@@ -164,7 +164,7 @@ export class TclRunner {
             // 保存输出到文件
             if (outputConfig?.enabled && outputConfig.dir) {
                 result.outputFile = this.saveOutputFile(
-                    outputConfig.dir, `run_${Date.now()}`,
+                    outputConfig.dir, 'run',
                     r.stdout, r.stderr, result.innovusCommands
                 );
             }
@@ -301,7 +301,21 @@ export class TclRunner {
                 errors++;
             }
 
-            return { success: errors === 0, results, totalDuration: Date.now() - t0, fileCount: fileMetas.length, errorCount: errors };
+            // 保存输出到文件
+            let outputFile: string | undefined;
+            if (outputConfig?.enabled && outputConfig.dir) {
+                outputFile = this.saveOutputFile(
+                    outputConfig.dir, 'project_run',
+                    execResult.stdout, execResult.stderr,
+                    [...allCmds]
+                );
+            }
+
+            return {
+                success: errors === 0, results,
+                totalDuration: Date.now() - t0, fileCount: fileMetas.length,
+                errorCount: errors
+            };
         } finally {
             try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch { /* ignore */ }
         }
@@ -481,9 +495,16 @@ export class TclRunner {
         // 未知命令处理 + -file 参数检测
         code += '\n# 兜底：未注册命令 + 文件检测\n';
         code += 'rename unknown _tcl_unknown\n';
+        // TCL 内置命令集合（用于 unknown 检测）
+        code += 'set ::_tcl_builtins {set puts proc if while for foreach switch return break continue catch error eval expr source incr append lappend llength lindex lrange lsort split join regexp regsub string scan format open close gets read file glob cd pwd exit rename info array dict upvar uplevel namespace variable global after vwait update clock encoding fconfigure socket package require apply coroutine tailcall try throw}\n';
         code += 'proc unknown {args} {\n';
         code += '    set _cmd [lindex $args 0]\n';
-        code += '    puts "\\[Sim\\] $_cmd [lrange $args 1 end]"\n';
+        code += '    set _is_tcl [lsearch -exact $::_tcl_builtins $_cmd]\n';
+        code += '    if {$_is_tcl >= 0} {\n';
+        code += '        # TCL 内置命令，执行原生行为\n';
+        code += '        return [uplevel ::_tcl_unknown {*}$args]\n';
+        code += '    }\n';
+        code += '    puts "\\[⚠ Unknown\\] $_cmd: [lrange $args 1 end]"\n';
         code += '    set _rest [lrange $args 1 end]\n';
         code += '    # 判断命令类型：输入命令 vs 输出命令\n';
         code += '    set _is_input [regexp {^(read_|load_|source$|defIn$|init_)} $_cmd]\n';
