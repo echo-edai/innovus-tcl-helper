@@ -88,6 +88,28 @@ const SYSTEM_TCLSH_CANDIDATES: Record<string, string[]> = {
     'win32-ia32': ['tclsh9.0.exe', 'tclsh.exe'],
 };
 
+/** 获取 tclsh 未找到时的平台特定安装指引 */
+export function getTclshInstallGuide(isZh: boolean): string {
+    const plat = os.platform();
+    const isWindows = plat === 'win32';
+    const isMac = plat === 'darwin';
+
+    if (isMac) {
+        return isZh
+            ? '请安装 tcl-tk: brew install tcl-tk\n或在设置中配置 innovus-tcl.tclshPath 指向 tclsh 路径'
+            : 'Install tcl-tk: brew install tcl-tk\nOr set innovus-tcl.tclshPath to your tclsh path';
+    }
+    if (isWindows) {
+        return isZh
+            ? '请安装 ActiveTcl (https://www.activestate.com/products/tcl/)\n或在设置中配置 innovus-tcl.tclshPath 指向 tclsh.exe 路径'
+            : 'Install ActiveTcl from https://www.activestate.com/products/tcl/\nOr set innovus-tcl.tclshPath to your tclsh.exe path';
+    }
+    // Linux
+    return isZh
+        ? '请安装 tcl: sudo apt install tcl 或 sudo dnf install tcl\n或在设置中配置 innovus-tcl.tclshPath 指向 tclsh 路径'
+        : 'Install tcl: sudo apt install tcl or sudo dnf install tcl\nOr set innovus-tcl.tclshPath to your tclsh path';
+}
+
 export class TclRunner {
     private tclshPathCache: string | null = null;
     /** 仿真语言: 'zh' 优先加载中文 proc, 'en' 优先加载英文 proc */

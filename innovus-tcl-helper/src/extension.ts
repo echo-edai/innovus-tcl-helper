@@ -24,7 +24,7 @@ import { TclLintProvider } from './lint';
 import { InnovusDefinitionProvider, InnovusPlainHelpProvider, InnovusDocumentLinkProvider, TclVariableDefinitionProvider, showHelp } from './definition';
 import { InnovusSemanticTokensProvider } from './semantic';
 import { registerAllTools, buildScriptContextForCommand } from './tools';
-import { getRunner, TclRunner } from './runner';
+import { getRunner, TclRunner, getTclshInstallGuide } from './runner';
 
 let diagnosticsProvider: TclDiagnosticsProvider | undefined;
 let lintProvider: TclLintProvider | undefined;
@@ -116,6 +116,36 @@ export function activate(context: vscode.ExtensionContext) {
     db.setVersion(version);
 
     db.load();
+
+    // ── 非 macOS 平台：检查 tclsh 是否可用 ──
+    const tclshCheckRunner = getRunner();
+    const configTclshPath = config.get<string>('tclshPath', '');
+    const tclshFound = tclshCheckRunner.findTclsh(context.extensionPath, configTclshPath);
+    if (!tclshFound) {
+        const isMac = process.platform === 'darwin';
+        const guide = getTclshInstallGuide(lang === 'zh');
+        if (isMac) {
+            console.log('[Innovus TCL] ⚠️ tclsh 未找到，请安装 tcl-tk 或设置 innovus-tcl.tclshPath');
+        } else {
+            // Linux / Windows: 主动弹窗提示
+            const onceKey = 'innovus-tcl.tclshWarningShown';
+            const hasShown = context.globalState.get<boolean>(onceKey);
+            if (!hasShown) {
+                vscode.window.showWarningMessage(
+                    lang === 'zh'
+                        ? `⚠️ 未找到 tclsh 解释器，运行 TCL 脚本功能不可用。\n\n${guide}\n\n配置后可通过 ▶️ 按钮或命令面板运行脚本。`
+                        : `⚠️ tclsh interpreter not found. TCL script execution is unavailable.\n\n${guide}\n\nAfter configuration, use the ▶️ button or command palette to run scripts.`,
+                    { modal: true },
+                    lang === 'zh' ? '打开设置' : 'Open Settings'
+                ).then(choice => {
+                    if (choice) {
+                        vscode.commands.executeCommand('workbench.action.openSettings', 'innovus-tcl.tclshPath');
+                    }
+                });
+                context.globalState.update(onceKey, true);
+            }
+        }
+    }
 
     const subs: vscode.Disposable[] = [];
 
@@ -881,9 +911,12 @@ export function activate(context: vscode.ExtensionContext) {
         const tclsh = runner.findTclsh(context.extensionPath, configTclshPath);
 
         if (!tclsh) {
+            const guide = getTclshInstallGuide(isZh);
+            runChannel.appendLine(isZh ? '❌ 未找到 tclsh 解释器' : '❌ tclsh interpreter not found');
+            runChannel.appendLine(guide);
             runChannel.appendLine(isZh
-                ? '❌ 未找到 tclsh 解释器。请执行: brew install tcl-tk'
-                : '❌ tclsh not found. Run: brew install tcl-tk');
+                ? '\n💡 提示: 在 VS Code 设置中搜索 innovus-tcl.tclshPath 配置自定义路径'
+                : '\n💡 Tip: Search innovus-tcl.tclshPath in VS Code settings to configure a custom path');
             return;
         }
 
@@ -992,7 +1025,12 @@ export function activate(context: vscode.ExtensionContext) {
             .get<string>('tclshPath', '');
         const tclsh2 = runner.findTclsh(context.extensionPath, configTclshPath2);
         if (!tclsh2) {
-            runChannel.appendLine(isZh ? '❌ 未找到 tclsh' : '❌ tclsh not found');
+            const guide = getTclshInstallGuide(isZh);
+            runChannel.appendLine(isZh ? '❌ 未找到 tclsh 解释器' : '❌ tclsh interpreter not found');
+            runChannel.appendLine(guide);
+            runChannel.appendLine(isZh
+                ? '\n💡 提示: 在 VS Code 设置中搜索 innovus-tcl.tclshPath 配置自定义路径'
+                : '\n💡 Tip: Search innovus-tcl.tclshPath in VS Code settings to configure a custom path');
             return;
         }
 

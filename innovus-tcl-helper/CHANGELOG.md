@@ -1,5 +1,14 @@
 # 更新日志
 
+## 0.6.4 (2026-07-10)
+
+### 改进 — 跨平台 tclsh 体验优化
+- **平台感知安装指引**：`getTclshInstallGuide()` 按平台返回不同安装命令（macOS→brew、Linux→apt/dnf、Windows→ActiveTcl）
+- **激活时检测**：非 macOS 平台首次激活时弹窗提示安装 tclsh + 一键跳转设置 `tclshPath`
+- **仅提示一次**：弹窗通过 `globalState` 记录，配置后不再打扰
+- **运行命令错误增强**：`runScript` / `runProject` 的 tclsh 缺失错误现在包含平台特定安装指引
+- **`package.json`**：`tclshPath` 描述更新，明确 macOS 内置/Linux&Windows 需手动配置
+
 ## 0.6.3 (2026-07-10)
 
 ### 修复 — 中英文双语隔离
