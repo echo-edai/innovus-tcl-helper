@@ -1,5 +1,14 @@
 # 更新日志
 
+## 0.6.3 (2026-07-10)
+
+### 修复 — 中英文双语隔离
+- **`diagnostics.ts`**：所有诊断消息（括号匹配、引号匹配、参数缺失、重复参数、类型校验、未知命令建议）从硬编码中文改为中英双语，跟随 `innovus-tcl.language` 设置
+- **`lint.ts`**：修复 `generateTextReport()` 中 `isZh` 硬编码为 `true` 的 bug；未使用变量/proc 诊断消息双语化；Lint 报告标题/标签全部双语化
+- **`compiler.ts`**：编译错误消息改为英文规范形式（`-F 指令缺少文件路径` → `-F directive missing file path`）
+- **`runner.ts`**：`runScript` / `runProject` 中的错误消息双语化，跟随 `TclRunner.language` 属性
+- **`completion.ts`**：补全项的 detail、类型标签（字符串/整数等）、必需/可选标记全部双语化
+
 ## 0.6.0 (2026-07-08)
 
 ### 新增 — AI 驱动的 Innovus 命令仿真器

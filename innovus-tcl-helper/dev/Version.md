@@ -18,4 +18,6 @@
 
 TCL运行仿真器，可以运行tcl命令，将innovus的命令包装为输出文本。根据数据库simulation的配置，将根据参数输出相关的文本结果
 
+0.6.3 ✅ 中英文双语隔离修复：diagnostics/lint/compiler/runner/completion 全部模块的诊断消息从硬编码中文改为中英双语，跟随语言设置自动切换。
+
 TCL 脚本拼接后 AI 解析，生成上下文更加相关的 TCL 脚本描述。

@@ -261,12 +261,13 @@ export class TclRunner {
                     const errInfoIdx = allOutput.indexOf('_ERROR_INFO_', errIdx);
                     const errMsgIdx = allOutput.indexOf('_ERROR_MSG_', errIdx);
                     const parts: string[] = [];
+                    const isZh = this.language === 'zh';
 
                     // 1. 简短错误消息
                     if (errMsgIdx >= 0) {
                         const msgEnd = allOutput.indexOf('\n', errMsgIdx);
                         const msg = allOutput.substring(errMsgIdx + '_ERROR_MSG_ '.length, msgEnd >= 0 ? msgEnd : allOutput.length).trim();
-                        if (msg) { parts.push(`错误: ${msg}`); }
+                        if (msg) { parts.push(isZh ? `错误: ${msg}` : `Error: ${msg}`); }
                     }
 
                     // 2. 堆栈跟踪（含 proc 名、行号）
@@ -285,8 +286,8 @@ export class TclRunner {
                     }
 
                     // 4. 出问题文件
-                    parts.push(`文件: ${fm.relPath}`);
-                    parts.push(`路径: ${fm.absPath}`);
+                    parts.push(isZh ? `文件: ${fm.relPath}` : `File: ${fm.relPath}`);
+                    parts.push(isZh ? `路径: ${fm.absPath}` : `Path: ${fm.absPath}`);
 
                     const errMsg = parts.join('\n');
                     results.push({ filePath: fm.relPath, success: false, stdout: allOutput, stderr: errMsg, innovusCommands: fm.cmds, duration: 0 });
@@ -294,7 +295,8 @@ export class TclRunner {
                     break;
                 } else {
                     // 未被执行到（前面的文件出错了）
-                    results.push({ filePath: fm.relPath, success: false, stdout: '', stderr: '前置文件执行失败，未运行到此文件', innovusCommands: fm.cmds, duration: 0 });
+                    const notRunMsg = this.language === 'zh' ? '前置文件执行失败，未运行到此文件' : 'Previous file failed, skipped';
+                    results.push({ filePath: fm.relPath, success: false, stdout: '', stderr: notRunMsg, innovusCommands: fm.cmds, duration: 0 });
                     errors++;
                 }
             }
@@ -302,7 +304,8 @@ export class TclRunner {
             // 如果有文件成功执行但没错误，补上剩余的未执行文件
             for (let i = results.length; i < fileMetas.length; i++) {
                 const fm = fileMetas[i];
-                results.push({ filePath: fm.relPath, success: false, stdout: '', stderr: '前置文件执行失败，未运行到此文件', innovusCommands: fm.cmds, duration: 0 });
+                const notRunMsg = this.language === 'zh' ? '前置文件执行失败，未运行到此文件' : 'Previous file failed, skipped';
+                results.push({ filePath: fm.relPath, success: false, stdout: '', stderr: notRunMsg, innovusCommands: fm.cmds, duration: 0 });
                 errors++;
             }
 

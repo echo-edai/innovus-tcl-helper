@@ -5,6 +5,17 @@
 import * as vscode from 'vscode';
 import { getDB, CmdInfo } from './commands';
 
+/** 解析当前语言设置 */
+function resolveCompletionLanguage(): 'zh' | 'en' {
+    const configLang = vscode.workspace.getConfiguration('innovus-tcl')
+        .get<string>('language', 'auto');
+    if (configLang === 'auto') {
+        const vsLang = vscode.env.language.toLowerCase();
+        return vsLang.startsWith('zh') ? 'zh' : 'en';
+    }
+    return configLang === 'zh' ? 'zh' : 'en';
+}
+
 export class InnovusCompletionProvider implements vscode.CompletionItemProvider {
 
     provideCompletionItems(
@@ -15,6 +26,7 @@ export class InnovusCompletionProvider implements vscode.CompletionItemProvider 
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
 
         const db = getDB();
+        const isZh = resolveCompletionLanguage() === 'zh';
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
         // 判断是否在输入命令名（行首或空白后，不在参数区）
@@ -31,9 +43,11 @@ export class InnovusCompletionProvider implements vscode.CompletionItemProvider 
                     name,
                     isCmd ? vscode.CompletionItemKind.Function : vscode.CompletionItemKind.Variable
                 );
-                item.detail = isCmd ? 'Innovus Command' : 'Mode/Variable Setting';
+                item.detail = isCmd
+                    ? (isZh ? 'Innovus 命令' : 'Innovus Command')
+                    : (isZh ? '模式/变量设置' : 'Mode/Variable Setting');
                 item.documentation = new vscode.MarkdownString(
-                    info ? `**${info.summary}**\n\n${info.description || ''}` : 'Innovus 条目'
+                    info ? `**${info.summary}**\n\n${info.description || ''}` : (isZh ? 'Innovus 条目' : 'Innovus entry')
                 );
                 // 排序：命令在前，变量在后
                 item.sortText = isCmd ? ('0' + name) : ('1' + name);
@@ -75,18 +89,20 @@ export class InnovusCompletionProvider implements vscode.CompletionItemProvider 
             // 文档说明
             const typeLabel = (() => {
                 switch (opt.type) {
-                    case 'string': return '字符串';
-                    case 'int': return '整数';
-                    case 'float': return '浮点数';
-                    case 'flag': return '开关';
-                    case 'enum': return '枚举';
-                    case 'point': return '坐标';
+                    case 'string': return isZh ? '字符串' : 'string';
+                    case 'int': return isZh ? '整数' : 'integer';
+                    case 'float': return isZh ? '浮点数' : 'float';
+                    case 'flag': return isZh ? '开关' : 'flag';
+                    case 'enum': return isZh ? '枚举' : 'enum';
+                    case 'point': return isZh ? '坐标' : 'point';
                     default: return opt.type;
                 }
             })();
-            const reqLabel = opt.required ? '⚠️ 必需' : '可选';
+            const reqLabel = isZh ? (opt.required ? '⚠️ 必需' : '可选') : (opt.required ? '⚠️ Required' : 'Optional');
             item.documentation = new vscode.MarkdownString(
-                `**${opt.name}**  \n\n${opt.description}  \n\n*类型: \`${opt.type}\` (${typeLabel}) | ${reqLabel}*`
+                isZh
+                    ? `**${opt.name}**  \n\n${opt.description}  \n\n*类型: \`${opt.type}\` (${typeLabel}) | ${reqLabel}*`
+                    : `**${opt.name}**  \n\n${opt.description}  \n\n*Type: \`${opt.type}\` (${typeLabel}) | ${reqLabel}*`
             );
 
             // 非 flag 类型：插入参数名 + 占位符
@@ -99,7 +115,9 @@ export class InnovusCompletionProvider implements vscode.CompletionItemProvider 
                     const enumValues = enumMatch[1].split(/[,|/]/).map(s => s.trim()).filter(Boolean);
                     item.insertText = new vscode.SnippetString(opt.name + ' ${1|' + enumValues.join(',') + '|} ');
                     item.documentation = new vscode.MarkdownString(
-                        `**${opt.name}**  \n\n${opt.description}  \n\n*可选值: ${enumValues.join(', ')}*  \n*类型: \`enum\` | ${reqLabel}*`
+                        isZh
+                            ? `**${opt.name}**  \n\n${opt.description}  \n\n*可选值: ${enumValues.join(', ')}*  \n*类型: \`enum\` | ${reqLabel}*`
+                            : `**${opt.name}**  \n\n${opt.description}  \n\n*Choices: ${enumValues.join(', ')}*  \n*Type: \`enum\` | ${reqLabel}*`
                     );
                 } else {
                     item.insertText = new vscode.SnippetString(opt.name + ' ${1:<value>} ');
