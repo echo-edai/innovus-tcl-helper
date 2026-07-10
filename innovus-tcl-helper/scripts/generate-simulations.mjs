@@ -282,7 +282,7 @@ async function processLang(lang) {
     // 通过文件系统对比：已有仿真文件自动跳过
     const existingCount = files.filter(f => {
         const name = f.replace('help_', '').replace('.json', '');
-        return fs.existsSync(path.join(simDir, `${name}.json`));
+        return fs.existsSync(path.join(simDir, `${name}.tcl`));
     }).length;
     const pendingCount = total - existingCount;
 
@@ -349,7 +349,7 @@ async function processLang(lang) {
         while (idx < queue.length) {
             const file = queue[idx++];
             const cmdName = file.replace('help_', '').replace('.json', '');
-            const simFile = path.join(simDir, `${cmdName}.json`);
+            const simFile = path.join(simDir, `${cmdName}.tcl`);
 
             // 跳过已有仿真文件（直接比对文件系统）
             if (fs.existsSync(simFile)) {
@@ -414,10 +414,7 @@ async function processLang(lang) {
                     continue;
                 }
 
-                fs.writeFileSync(simFile, JSON.stringify({
-                    command: cmdName, tcl,
-                    generated: new Date().toISOString(), model: MODEL
-                }, null, 2), 'utf-8');
+                fs.writeFileSync(simFile, tcl.trim() + '\n', 'utf-8');
 
                 completed++;
 

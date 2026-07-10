@@ -64,7 +64,7 @@ function fixCommonErrors(tcl) {
 
 async function main() {
     const simDir = path.join(ROOT, 'data', 'simulations', LANG);
-    const files = fs.readdirSync(simDir).filter(f => f.endsWith('.json')).sort();
+    const files = fs.readdirSync(simDir).filter(f => f.endsWith('.tcl')).sort();
 
     const tclsh = findTclsh();
     if (!tclsh) {
@@ -80,12 +80,11 @@ async function main() {
     const errors = [];
 
     for (const f of files) {
-        const cmdName = f.replace('.json', '');
+        const cmdName = f.replace('.tcl', '');
         const filePath = path.join(simDir, f);
 
         try {
-            const d = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-            let tcl = d.tcl || '';
+            let tcl = fs.readFileSync(filePath, 'utf-8').trim();
 
             if (!tcl.includes('proc ')) {
                 console.log(`⚠ ${cmdName}: 无 proc 定义`);
@@ -122,8 +121,7 @@ async function main() {
                 if (FIX) {
                     const fixedTcl = fixCommonErrors(tcl);
                     if (fixedTcl !== tcl) {
-                        d.tcl = fixedTcl;
-                        fs.writeFileSync(filePath, JSON.stringify(d, null, 2), 'utf-8');
+                        fs.writeFileSync(filePath, fixedTcl.trim() + '\n', 'utf-8');
                         fixed++;
                         console.log(`\n🔧 ${cmdName}: 已自动修复`);
                         // 重试（临时文件方式）
