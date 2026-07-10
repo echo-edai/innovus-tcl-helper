@@ -147,12 +147,28 @@ class CommandDB {
         return path.join(this.dataRoot, ver, langDir, 'help');
     }
 
-    /** 加载命令数据 */
+    /** 加载命令数据 — 优先读 .db.json 单文件 */
     load(): void {
         if (this.loaded) { return; }
 
         try {
             const dataDir = this.getDataSourceDir();
+            const parentDir = path.dirname(dataDir);
+            const dbFile = path.join(parentDir, 'help.db.json');
+
+            // 1. 尝试单文件 DB
+            if (fs.existsSync(dbFile)) {
+                const db = JSON.parse(fs.readFileSync(dbFile, 'utf-8'));
+                const cmds = db.commands || {};
+                for (const [name, info] of Object.entries(cmds)) {
+                    this.commands.set(name, info as CmdInfo);
+                }
+                this.loaded = true;
+                console.log(`[Innovus TCL] 已加载 ${this.commands.size} 个命令 (版本: ${this.version || '25.1'}, 语言: ${this.language}, DB模式)`);
+                return;
+            }
+
+            // 2. 回退到独立 .json 文件
             if (!fs.existsSync(dataDir)) {
                 console.warn(`[Innovus TCL] 数据目录不存在: ${dataDir}`);
                 this.loaded = true;
