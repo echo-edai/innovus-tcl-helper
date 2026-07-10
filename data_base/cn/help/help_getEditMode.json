@@ -1,0 +1,747 @@
+{
+  "command": "getEditMode",
+  "is_cmd": true,
+  "summary": "获取编辑模式设置",
+  "description": "获取当前的编辑模式设置，用于控制连线、过孔等编辑操作的行为。",
+  "usage": "getEditMode [-help] [-align] [-allow_45_degree] [-arrow_increment] [-assign_multi_pattern_color] [-auto_assign_net] [-auto_distribute_bus] [-auto_split_bus] [-bus_honor_start_params] [-bus_honor_width_setting] [-bus_total_width_horizontal] [-bus_total_width_vertical] [-change_order_at_turn] [-check_design_boundary] [-circle_NDR_vias_only] [-close_polygons] [-color_align_with_track] [-connect_pin] [-connect_with_specified_layer] [-create_crossover_vias] [-create_is_edit_flag] [-create_via_on_pin] [-cut_class] [-cut_wire_overlap] [-debug_file] [-delete_pin_with_wire] [-delete_tsv] [-delete_wire_via_deep_through] [-display_wire_length_with_cursor] [-draw_shield] [-draw_with_group_centerline] [-drawing_wire] [-drc_aware_cross_metal] [-drc_on] [-drc_use_non_default_spacing] [-extend_wires] [-final_check_with_verify] [-ignore_drc] [-jog_connect_layer] [-keep_floating_via] [-keep_status] [-keep_via] [-lateral_movement_range] [-layer] [-layer_horizontal] [-layer_maximum] [-layer_minimum] [-layer_vertical] [-look_down_layers] [-look_up_layers] [-max_pointer_number] [-mirror_bus_route] [-nets] [-no_merge_special_wire] [-only_show_edit_layer] [-orthogonal_connection_only] [-outer_shield_spacing] [-outer_shield_width] [-override] [-partial_overlap_threshold] [-pull_back_distance] [-reshape] [-return_object_pointer] [-rule] [-shape] [-shield] [-shield_look_down_layers] [-shield_look_up_layers] [-shield_shape] [-shielding_nets] [-show_drc_info_for_edit_shape] [-sibling_look_down_layers] [-sibling_look_up_layers] [-snap] [-snap_align_to] [-snap_bus_to_pin] [-snap_end_to] [-snap_objects_to_track] [-snap_to] [-snap_to_track_honor_color] [-snap_trim_metal_to_trim_grid] [-spacing] [-spacing_horizontal] [-spacing_vertical] [-status] [-stop_at_drc] [-stretch_end] [-stretch_with_intersect] [-subclass] [-turn_at] [-type] [-unrestricted_regular_wire_width] [-update_shield_net] [-use_fixVia] [-use_interleaving_wire_group] [-use_wire_group] [-use_wire_group_bits] [-use_wire_group_reinforcement] [-use_wire_group_reinforcement_group_via] [-use_wire_group_reinforcement_spacing] [-use_wire_group_reinforcement_width] [-verbose] [-via_allow_geom_drc] [-via_auto_replace] [-via_auto_snap] [-via_cell_name] [-via_columns] [-via_create_by] [-via_cut_layer] [-via_exclude_spec] [-via_override_spec] [-via_rows] [-via_scale_height] [-via_scale_width] [-via_snap_honor_color] [-via_snap_to_intersection] [-via_type] [-width] [-width_horizontal] [-width_vertical] [-wire_override_spec] [-quiet] [-nonDefault]",
+  "options": [
+    {
+      "name": "-help",
+      "description": "打印命令用法",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-align",
+      "description": "指定是否支持对齐对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-allow_45_degree",
+      "description": "指定是否允许创建45度连线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-arrow_increment",
+      "description": "指定使用箭头键移动连线时的步进增量（微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-assign_multi_pattern_color",
+      "description": "指定如何为将要创建的线段上的DPT层分配掩模颜色。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-auto_assign_net",
+      "description": "从触碰到编辑连线/过孔的对象自动分配网络。仅为指定的编辑功能启用此行为。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-auto_distribute_bus",
+      "description": "自动分配一组连线，并基于选项 -bus_total_width_vertical 或 -bus_total_width_horizontal 设置相同间距。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-auto_split_bus",
+      "description": "自动拆分总线以避免DRC违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bus_honor_start_params",
+      "description": "指定在绘制总线路径时应尊重起点（引脚）的连线宽度和间距。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bus_honor_width_setting",
+      "description": "指定当总线连线吸附到引脚时，工具是否调整连线宽度。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-bus_total_width_horizontal",
+      "description": "此选项可指定水平总线的总宽度。因此当工具绘制总线时，工具自动设置间距为：连线间距 = (<总线总宽> - <连线总宽>)/ (<连线数量> - 1)。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-bus_total_width_vertical",
+      "description": "此选项可指定垂直总线的总宽度。因此当工具绘制总线时，工具自动设置间距为：连线间距 = (<总线总宽> - <连线总宽>)/ (<连线数量> - 1)。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-change_order_at_turn",
+      "description": "指定当连线进行90度转弯时，连线的顺序是改变还是保持不变。（反转顺序 | 保持顺序）",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-check_design_boundary",
+      "description": "指定是否阻止用户将连线拉伸到由 -pull_back_distance 定义的禁止区域内。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-circle_NDR_vias_only",
+      "description": "指定当使用 Shift+N/P 快捷键时，工具应仅循环遍历NDR过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-close_polygons",
+      "description": "指定是否闭合朝向自身的特殊布线结构。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-color_align_with_track",
+      "description": "指定在移动或复制操作期间，连线颜色是否更改为匹配轨道颜色。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-connect_pin",
+      "description": "指定是否为指定的引脚类型在引脚上生成过孔。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-connect_with_specified_layer",
+      "description": "指定移动连线时，连接线的层是否应根据 -layer_horizontal 或 -layer_vertical 设置进行更改。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-create_crossover_vias",
+      "description": "指定当您绘制穿过同网络但不同层上的连线或引脚的连线时，软件是否创建过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-create_is_edit_flag",
+      "description": "指定是否为连线编辑创建 isEdit 标志。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-create_via_on_pin",
+      "description": "指定软件是否在引脚处创建过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-cut_class",
+      "description": "指定编辑连线时生成过孔的切割层类名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-cut_wire_overlap",
+      "description": "指定在切割指定类型的连线时是否创建重叠。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-debug_file",
+      "description": "指定报告文件名。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-delete_pin_with_wire",
+      "description": "删除连线时同时删除引脚。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delete_tsv",
+      "description": "指定是否删除TSV层上的项目。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-delete_wire_via_deep_through",
+      "description": "在深度穿透模式下删除连线过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-display_wire_length_with_cursor",
+      "description": "指定编辑连线时是否随鼠标显示当前/总连线长度。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-draw_shield",
+      "description": "指定是否仅绘制屏蔽网络。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-draw_with_group_centerline",
+      "description": "启用此选项，工具应沿着整个连线的中心线绘制总线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drawing_wire",
+      "description": "指定在添加连线阵列时，与 -nets 参数配合使用，对应于鼠标指针位置的网络。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-drc_aware_cross_metal",
+      "description": "指定在遇到交叉金属违规之前，是否将连线拉伸或移回最近的可用位置。此选项仅在 setEditMode -stop_at_drc 设为1时生效。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drc_on",
+      "description": "指定在连线编辑期间是否检查DRC规则。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-drc_use_non_default_spacing",
+      "description": "指定编辑网络的非默认规则中定义的非默认间距是否应用于连线编辑期间的间距检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-extend_wires",
+      "description": "指定在完成信号或电源布线后，线段指定边界是否延伸并连接到第一个逻辑目标。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-final_check_with_verify",
+      "description": "指定是否使用验证进行最终检查。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-ignore_drc",
+      "description": "指定在连线编辑期间应忽略哪些违规类型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-jog_connect_layer",
+      "description": "指定在移动连线的层上方连接连线的层数。如果设置了 setEditMode -connect_with_specified_layer 为1，则禁用此选项。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-keep_floating_via",
+      "description": "当用户删除连线时保留浮空的过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_status",
+      "description": "指定编辑期间是否保持对象状态。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-keep_via",
+      "description": "指定在移动连线或更改宽度时是否保留原始过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-lateral_movement_range",
+      "description": "指定添加连线时避免DRC的最大侧向移动距离。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-layer",
+      "description": "指定修补连线或多边形连线的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_horizontal",
+      "description": "指定水平连线的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_maximum",
+      "description": "指定布线的最大层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_minimum",
+      "description": "指定布线的最小层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-layer_vertical",
+      "description": "指定垂直连线的层。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-look_down_layers",
+      "description": "指定在当前层下方添加的连线通过过孔连接的层数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-look_up_layers",
+      "description": "指定在当前层上方添加的连线通过过孔连接的层数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-max_pointer_number",
+      "description": "指定连线编辑命令返回的最大指针数量。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-mirror_bus_route",
+      "description": "指定是否反转总线布线的网络顺序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nets",
+      "description": "指定一个或多个要编辑的网络。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-no_merge_special_wire",
+      "description": "指定是否自动合并添加的特殊连线与任何现有的特殊连线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-only_show_edit_layer",
+      "description": "启用此选项后，当用户编辑任何连线/过孔时，仅显示编辑对象的层，并调暗其他对象。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-orthogonal_connection_only",
+      "description": "指定是否仅考虑方向相同的连线和引脚作为连接目标。仅支持特殊连线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-outer_shield_spacing",
+      "description": "指定用于 -shield low 和 -shield high 参数的间距值（微米）。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-outer_shield_width",
+      "description": "指定用于外层屏蔽线的宽度值（微米），取决于 -shield low 或 -shield high 参数的值。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-override",
+      "description": "指定是否使用覆盖规格。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-partial_overlap_threshold",
+      "description": "指定在部分重叠连线上创建特殊过孔的比率阈值。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-pull_back_distance",
+      "description": "指定禁止距离的值。默认为 Auto，表示使用该层最大的最小间距。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-reshape",
+      "description": "指定当您添加新连线时，自动移除布线区域内现有的冗余连线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-return_object_pointer",
+      "description": "指定连线编辑操作后是否返回指针。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-rule",
+      "description": "使用指定的LEF规则用于常规连线。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-shape",
+      "description": "指定所画连线关联的形状。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-shield",
+      "description": "指定是否为指定侧添加最小宽度的屏蔽连线。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-shield_look_down_layers",
+      "description": "指定在当前层下方添加的屏蔽连线可以通过过孔连接的层数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-shield_look_up_layers",
+      "description": "指定在当前层上方添加的屏蔽连线可以通过过孔连接的层数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-shield_shape",
+      "description": "指定所画屏蔽连线关联的形状。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-shielding_nets",
+      "description": "指定屏蔽连线的网络名称，通常为电源或地名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-show_drc_info_for_edit_shape",
+      "description": "启用此选项后，当用户编辑任何连线/过孔并产生违规时，工具可以在标记附近显示详细信息。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-sibling_look_down_layers",
+      "description": "指定在兄弟层下方添加的屏蔽连线可以通过过孔连接的层数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-sibling_look_up_layers",
+      "description": "指定在兄弟层上方添加的屏蔽连线可以通过过孔连接的层数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-snap",
+      "description": "指定是否启用连线和过孔吸附。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snap_align_to",
+      "description": "指定在结束布线时如何与引脚对齐。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-snap_bus_to_pin",
+      "description": "指定是否根据连接的引脚更改连线宽度、间距和顺序。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snap_end_to",
+      "description": "指定是否将连线末端吸附到指定对象。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-snap_objects_to_track",
+      "description": "指定是否将添加或移动的指定连线自动吸附到层首选方向最近的布线轨道上。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-snap_to",
+      "description": "指定是否将添加或移动的连线吸附到指定对象。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-snap_to_track_honor_color",
+      "description": "指定是否自动将连线吸附到具有相同颜色的轨道上。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-snap_trim_metal_to_trim_grid",
+      "description": "指定在修剪金属编辑期间是否将修剪金属吸附到最近的修剪网格上。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-spacing",
+      "description": "指定连线之间的距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spacing_horizontal",
+      "description": "指定水平连线之间的距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-spacing_vertical",
+      "description": "指定垂直连线之间的距离。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-status",
+      "description": "指定所画连线关联的状态。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stop_at_drc",
+      "description": "指定软件是否允许通过移动或拉伸连线导致DRC违规。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-stretch_end",
+      "description": "指定拉伸或缩短连线的方向。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-stretch_with_intersect",
+      "description": "启用包含交叉点的连线轻松拉伸。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-subclass",
+      "description": "指定连线和过孔的子类名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-turn_at",
+      "description": "指定进行转弯时新连线的起始位置。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-type",
+      "description": "指定创建连线的类型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-unrestricted_regular_wire_width",
+      "description": "指定在编辑中常规连线宽度是否不受限制。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-update_shield_net",
+      "description": "指定是否自动更新信号网络上的屏蔽网络属性。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_fixVia",
+      "description": "指定是否使用 fixVia 处理具有 minStep DRC 违规的特殊过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_interleaving_wire_group",
+      "description": "交替指定连线组中的连线。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_wire_group",
+      "description": "将来自同一网络的多条连线分组。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_wire_group_bits",
+      "description": "指定在连线组中复制连线的次数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-use_wire_group_reinforcement",
+      "description": "通过创建连接连线组中连线但与其正交的连线，在连线组中创建槽。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_wire_group_reinforcement_group_via",
+      "description": "指定连线组使用组过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-use_wire_group_reinforcement_spacing",
+      "description": "指定连线组中正交连线的间距。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-use_wire_group_reinforcement_width",
+      "description": "指定连线组中正交连线的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-verbose",
+      "description": "",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-via_allow_geom_drc",
+      "description": "检查几何形状DRC",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-via_auto_replace",
+      "description": "控制是否替换现有过孔。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-via_auto_snap",
+      "description": "控制是否将过孔吸附到同网络连线的交叉点或制造网格上。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-via_cell_name",
+      "description": "指定来自LEF或DEF文件的过孔单元名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_columns",
+      "description": "指定过孔切割的行数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_create_by",
+      "description": "控制是基于 -via_cell_name 参数创建过孔，还是基于其他参数创建过孔。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-via_cut_layer",
+      "description": "指定要创建或修改的过孔的过孔层名称。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_exclude_spec",
+      "description": "指定要由连线编辑器忽略的过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_override_spec",
+      "description": "指定要由连线编辑器使用的默认过孔。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-via_rows",
+      "description": "指定过孔切割的列数。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_scale_height",
+      "description": "指定过孔高度缩放比例。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_scale_width",
+      "description": "指定过孔宽度缩放比例。",
+      "required": false,
+      "type": "int"
+    },
+    {
+      "name": "-via_snap_honor_color",
+      "description": "指定是否自动吸附到相同掩模。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-via_snap_to_intersection",
+      "description": "指定是否将过孔吸附到连线的交叉点。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-via_type",
+      "description": "指定创建过孔的类型。",
+      "required": false,
+      "type": "enum"
+    },
+    {
+      "name": "-width",
+      "description": "指定修补连线的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-width_horizontal",
+      "description": "指定水平连线的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-width_vertical",
+      "description": "指定垂直连线的宽度。",
+      "required": false,
+      "type": "float"
+    },
+    {
+      "name": "-wire_override_spec",
+      "description": "包含覆盖规格的详细信息。",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "-quiet",
+      "description": "仅以Tcl列表格式显示当前设置。",
+      "required": false,
+      "type": "flag"
+    },
+    {
+      "name": "-nonDefault",
+      "description": "显示非默认设置的当前设置。",
+      "required": false,
+      "type": "flag"
+    }
+  ]
+}

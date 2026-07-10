@@ -1,13 +1,2 @@
-/path/to/project/example/innovus/0_setenv.tcl
-/path/to/project/example/innovus/0_cmd.tcl
-/path/to/project/example/innovus/0_eco.tcl
-/path/to/project/example/innovus/1_init.tcl
-/path/to/project/example/innovus/2_floorplan.tcl
-/path/to/project/example/innovus/3_powerplan.tcl
-/path/to/project/example/innovus/4_placement.tcl
-/path/to/project/example/innovus/5_opt.tcl
-/path/to/project/example/innovus/6_CTS.tcl
-/path/to/project/example/innovus/7_route.tcl
-/path/to/project/example/innovus/8_verify.tcl
-/path/to/project/example/innovus/9_report.tcl
-/path/to/project/example/innovus/10_outfiles.tcl
+// -F example/tcl.f
+-f innovus/tcl.f

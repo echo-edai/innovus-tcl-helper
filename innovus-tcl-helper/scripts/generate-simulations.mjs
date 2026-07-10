@@ -85,28 +85,74 @@ for (let i = 0; i < CONCURRENCY; i++) {
 }
 
 // ════════════════════════════════════════════════════════════
-//  断点管理
-// ════════════════════════════════════════════════════════════
-
-class Checkpoint {
-    constructor(lang) {
-        this.file = path.join(ROOT, 'data', 'simulations', `.checkpoint-${lang}.json`);
-    }
-    load() {
-        try { return new Set(JSON.parse(fs.readFileSync(this.file, 'utf-8'))); }
-        catch { return new Set(); }
-    }
-    save(doneSet) {
-        fs.writeFileSync(this.file, JSON.stringify([...doneSet]), 'utf-8');
-    }
-}
-
-// ════════════════════════════════════════════════════════════
 //  Prompt 模板
 // ════════════════════════════════════════════════════════════
 
 function buildPrompt(cmdInfo, lang) {
-    const { command, summary, description, usage, options } = cmdInfo;
+    const { command, summary, description, usage, options, is_cmd } = cmdInfo;
+    const isVariable = !is_cmd;
+
+    if (isVariable) {
+        // 变量：通过 set <var_name> <value> 设置
+        if (lang === 'cn') {
+            return {
+                system: '你是 Innovus EDA 仿真专家。只输出 TCL proc 代码，不输出解释。',
+                user: `为 Innovus 配置变量 "${command}" 生成一个 TCL proc 仿真包装器。
+
+## 变量说明
+- 名称: ${command}
+- 摘要: ${summary}
+- 描述: ${description || '无详细描述'}
+- 设置方式: set ${command} <value>
+
+## 关键要求
+1. 读取第一个参数作为设置值（args 第一个元素），描述该变量的作用和设置的值
+2. 如果没有参数，只描述该变量的功能作用
+3. 中文 puts 输出，让工程师一眼看懂这个变量是干什么的、设了什么值
+4. 只输出 TCL 代码，不要解释，返回空字符串 ""
+
+## 输出格式
+proc ${command} {args} {
+    set val [lindex $args 0]
+    if {$val ne ""} {
+        puts "设置 ${command} = $val — ${summary}"
+    } else {
+        puts "${command}: ${summary}。${(description || '').substring(0, 100)}"
+    }
+    return ""
+}`
+            };
+        }
+        return {
+            system: 'You are an Innovus EDA simulation expert. Output only TCL proc code.',
+            user: `Generate a TCL proc wrapper for Innovus variable "${command}".
+
+## Variable Info
+- Name: ${command}
+- Summary: ${summary}
+- Description: ${description || 'No detailed description'}
+- Set via: set ${command} <value>
+
+## Key Requirements
+1. Read first arg as value, describe what this variable does and what value was set
+2. If no args, describe the variable's purpose
+3. English puts output, concise and informative
+4. Output TCL code only, return empty string
+
+## Format
+proc ${command} {args} {
+    set val [lindex $args 0]
+    if {$val ne ""} {
+        puts "Set ${command} = $val — ${summary}"
+    } else {
+        puts "${command}: ${summary}"
+    }
+    return ""
+}`
+        };
+    }
+
+    // 命令：标准参数解析
     const optLines = (options || []).map(o =>
         `  ${o.name} (${o.required ? 'required' : 'optional'}, ${o.type}): ${o.description}`
     ).join('\n');
@@ -233,11 +279,14 @@ async function processLang(lang) {
         'regexp', 'regsub', 'open', 'close', 'gets', 'read', 'file', 'glob', 'cd', 'pwd', 'exec', 'eval',
         'uplevel', 'upvar', 'namespace', 'variable', 'array', 'string', 'format', 'scan', 'clock', 'info']);
 
-    // 加载断点
-    const checkpoint = new Checkpoint(lang);
-    const doneSet = checkpoint.load();
+    // 通过文件系统对比：已有仿真文件自动跳过
+    const existingCount = files.filter(f => {
+        const name = f.replace('help_', '').replace('.json', '');
+        return fs.existsSync(path.join(simDir, `${name}.json`));
+    }).length;
+    const pendingCount = total - existingCount;
 
-    mainLog.log(`[${lang}] 总计 ${files.length} 命令, 处理 ${total}, 已完成 ${doneSet.size}, 并发=${CONCURRENCY}`);
+    mainLog.log(`[${lang}] 总计 ${files.length} 命令, 处理 ${total}, 已有 ${existingCount}, 待生成 ${pendingCount}, 并发=${CONCURRENCY}`);
 
     if (DRY_RUN) {
         const info = JSON.parse(fs.readFileSync(path.join(helpDir, files[0]), 'utf-8'));
@@ -251,7 +300,6 @@ async function processLang(lang) {
     const t0 = Date.now();
     const queue = files.slice(0, total);
     let idx = 0;
-    let saveTimer = null;
 
     // 进度条
     const BAR_WIDTH = 30;
@@ -296,16 +344,6 @@ async function processLang(lang) {
         }
     }
 
-    // 定期保存断点（每 30 秒）
-    function scheduleSave() {
-        if (saveTimer) clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-            checkpoint.save(doneSet);
-            mainLog.log(`[${lang}] 💾 断点已保存 (${doneSet.size} 条)`);
-            for (const wl of workerLogs) wl.flush();
-        }, 30000);
-    }
-
     async function worker(workerId) {
         const wl = workerLogs[workerId];
         while (idx < queue.length) {
@@ -313,9 +351,8 @@ async function processLang(lang) {
             const cmdName = file.replace('help_', '').replace('.json', '');
             const simFile = path.join(simDir, `${cmdName}.json`);
 
-            // 跳过已完成
-            if (doneSet.has(cmdName) || fs.existsSync(simFile)) {
-                doneSet.add(cmdName);
+            // 跳过已有仿真文件（直接比对文件系统）
+            if (fs.existsSync(simFile)) {
                 skipped++;
                 continue;
             }
@@ -323,14 +360,14 @@ async function processLang(lang) {
             try {
                 // 跳过变体条目（cmdName 含空格+数字后缀，如 "readSdpFile 2"）
                 if (/\s+\d+$/.test(cmdName)) {
-                    doneSet.add(cmdName);
                     skipped++;
                     continue;
                 }
 
                 const info = JSON.parse(fs.readFileSync(path.join(helpDir, file), 'utf-8'));
-                if (!info.is_cmd || TCL_BUILTINS.has(info.command)) {
-                    doneSet.add(cmdName);
+
+                // TCL 纯内置命令（非 Innovus 特有）直接跳过
+                if (TCL_BUILTINS.has(info.command) && info.is_cmd === false) {
                     skipped++;
                     continue;
                 }
@@ -382,7 +419,6 @@ async function processLang(lang) {
                     generated: new Date().toISOString(), model: MODEL
                 }, null, 2), 'utf-8');
 
-                doneSet.add(cmdName);
                 completed++;
 
                 // 成功详情写入 worker log（每 50 条写一次）
@@ -395,8 +431,6 @@ async function processLang(lang) {
                     drawProgress(completed + skipped + failed, total);
                     mainLog.log(`[${lang}] ${progressBar(completed + skipped + failed, total)} 最近: ${cmdName}`);
                 }
-
-                scheduleSave();
 
             } catch (e) {
                 const msg = `❌ [${lang}] ${cmdName} 异常: ${e.message.substring(0, 100)}`;
@@ -418,7 +452,6 @@ async function processLang(lang) {
         process.stdout.write('\r' + ' '.repeat(lastProgressLine.length) + '\r');
     }
     console.log(progressBar(total, total));
-    checkpoint.save(doneSet);
     mainLog.flush();
     for (const wl of workerLogs) wl.flush();
 
@@ -434,7 +467,7 @@ async function main() {
     mainLog.log('═══════════════════════════════════════');
     mainLog.log(`启动: 语言=${LANGS.join(',')} 并发=${CONCURRENCY} 限制=${LIMIT || '无'}`);
     mainLog.log(`日志: ${LOG_DIR}`);
-    mainLog.log(`断点: data/simulations/.checkpoint-<lang>.json`);
+    mainLog.log(`模式: 文件系统对比（已有仿真自动跳过）`);
 
     for (const lang of LANGS) {
         await processLang(lang);

@@ -1013,7 +1013,7 @@ export function activate(context: vscode.ExtensionContext) {
             const firstR = result.results[0];
             const cleanOutput = firstR?.stdout
                 ?.split('\n')
-                .filter((l: string) => !l.startsWith('_FILE_') && !l.startsWith('_ERROR_MSG_'))
+                .filter((l: string) => !l.startsWith('_FILE_') && !l.startsWith('_ERROR_MSG_') && !l.startsWith('_ERROR_INFO_'))
                 .join('\n')
                 .trim() || '';
             if (cleanOutput) {
@@ -1024,14 +1024,22 @@ export function activate(context: vscode.ExtensionContext) {
             // 逐文件状态
             runChannel.appendLine('');
             runChannel.appendLine('── 文件状态 ──');
+            const SKIP_MSG = isZh ? '前置文件执行失败，未运行到此文件' : 'Skipped due to prior file error';
             for (const r of result.results) {
-                const status = r.success ? '✅' : '❌';
+                const isSkipped = !r.success && r.stderr === SKIP_MSG;
+                const status = r.success ? '✅' : (isSkipped ? '⏭' : '❌');
                 const cmdInfo = r.innovusCommands.length > 0
                     ? ` (${r.innovusCommands.length} cmds)` : '';
                 const fileInfo = r.outputFile ? ` → ${r.outputFile}` : '';
                 runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}${fileInfo}`);
-                if (!r.success && r.stderr && r.stderr !== '前置文件执行失败，未运行到此文件') {
-                    runChannel.appendLine(`   ⚠ ${r.stderr}`);
+                if (!r.success && r.stderr && !isSkipped) {
+                    // 多行错误逐行显示，每行加缩进
+                    const errLines = r.stderr.split('\n');
+                    for (const line of errLines) {
+                        runChannel.appendLine(`   ⚠ ${line}`);
+                    }
+                } else if (isSkipped) {
+                    runChannel.appendLine(`   └─ ${SKIP_MSG}`);
                 }
             }
 

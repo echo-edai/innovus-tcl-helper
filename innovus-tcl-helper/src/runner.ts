@@ -215,14 +215,14 @@ export class TclRunner {
 
         // 构建脚本：每个文件用 catch {source} 包装，遇错即停
         let combinedScript = preamble + '\n';
-        combinedScript += '\n# ===== Innovus 内置命令兼容层 =====\n';
-        combinedScript += 'proc echo {args} { puts [join $args " "] }\n';
-        combinedScript += '# 兜底：未在 help 数据库中的 Innovus 命令当作仿真命令处理\n';
+        combinedScript += '\n# ===== TCL 兼容层 =====\n';
+        combinedScript += '# 确保 echo 可用\n';
+        combinedScript += 'if {[info commands echo] eq ""} { proc echo {args} { puts [join $args " "] } }\n';
+        combinedScript += '# 兜底：未注册命令当作仿真命令处理\n';
         combinedScript += 'rename unknown _tcl_unknown\n';
         combinedScript += 'proc unknown {args} {\n';
         combinedScript += '    set _cmd [lindex $args 0]\n';
-        combinedScript += '    # 未注册的未知命令当作 Innovus 命令，打印参数并返回空值\n';
-        combinedScript += '    puts "\\[Unknown\\] $_cmd: [lrange $args 1 end]"\n';
+        combinedScript += '    puts "\\[Sim\\] $_cmd [lrange $args 1 end]"\n';
         combinedScript += '    return ""\n';
         combinedScript += '}\n';
         combinedScript += '\n# ===== 顺序执行 TCL 文件 =====\n';
@@ -233,6 +233,7 @@ export class TclRunner {
             combinedScript += `if {[catch {source "${escapedPath}"} _err]} {\n`;
             combinedScript += `    puts "_FILE_ERROR_ ${fm.relPath}"\n`;
             combinedScript += `    puts "_ERROR_MSG_ $_err"\n`;
+            combinedScript += `    puts "_ERROR_INFO_ $::errorInfo"\n`;
             combinedScript += `    set _project_ok 0\n`;
             combinedScript += `    exit 1\n`;
             combinedScript += `}\n`;
@@ -258,15 +259,41 @@ export class TclRunner {
                 if (allOutput.includes(okMarker)) {
                     results.push({ filePath: fm.relPath, success: true, stdout: allOutput, stderr: '', innovusCommands: fm.cmds, duration: 0 });
                 } else if (allOutput.includes(errMarker)) {
-                    // 提取该文件的错误信息
+                    // 合并 stdout + stderr 构建完整错误信息
                     const errIdx = allOutput.indexOf(errMarker);
+                    const errInfoIdx = allOutput.indexOf('_ERROR_INFO_', errIdx);
                     const errMsgIdx = allOutput.indexOf('_ERROR_MSG_', errIdx);
-                    const errMsg = errMsgIdx >= 0
-                        ? allOutput.substring(errMsgIdx + '_ERROR_MSG_ '.length, allOutput.indexOf('\n', errMsgIdx)).trim()
-                        : execResult.stderr.trim().split('\n')[0] || 'Unknown error';
+                    const parts: string[] = [];
+
+                    // 1. 简短错误消息
+                    if (errMsgIdx >= 0) {
+                        const msgEnd = allOutput.indexOf('\n', errMsgIdx);
+                        const msg = allOutput.substring(errMsgIdx + '_ERROR_MSG_ '.length, msgEnd >= 0 ? msgEnd : allOutput.length).trim();
+                        if (msg) { parts.push(`错误: ${msg}`); }
+                    }
+
+                    // 2. 堆栈跟踪（含 proc 名、行号）
+                    if (errInfoIdx >= 0) {
+                        const infoStart = errInfoIdx + '_ERROR_INFO_ '.length;
+                        const nextMarker = allOutput.indexOf('_FILE_', infoStart);
+                        const infoEnd = nextMarker >= 0 ? nextMarker : allOutput.length;
+                        const info = allOutput.substring(infoStart, infoEnd).trim();
+                        if (info) { parts.push(info); }
+                    }
+
+                    // 3. stderr（tclsh 编译错误在此）
+                    const stderrText = execResult.stderr.trim();
+                    if (stderrText && !parts.some(p => p.includes(stderrText.substring(0, 30)))) {
+                        parts.push(`[stderr] ${stderrText}`);
+                    }
+
+                    // 4. 出问题文件
+                    parts.push(`文件: ${fm.relPath}`);
+                    parts.push(`路径: ${fm.absPath}`);
+
+                    const errMsg = parts.join('\n');
                     results.push({ filePath: fm.relPath, success: false, stdout: allOutput, stderr: errMsg, innovusCommands: fm.cmds, duration: 0 });
                     errors++;
-                    // 后续文件未被执行
                     break;
                 } else {
                     // 未被执行到（前面的文件出错了）
@@ -333,6 +360,11 @@ export class TclRunner {
         return filePath;
     }
 
+    /** TCL 内置命令集合 — 不能被 proc 包装覆盖，否则会破坏执行流 */
+    private static readonly TCL_BUILTINS = new Set([
+        'source',   // TCL 原生文件加载，被覆盖会导致 .tcl 文件无法加载
+    ]);
+
     /**
      * 生成 Innovus 命令 proc 包装器。
      * 优先使用 AI 生成的仿真数据，否则显示命令文档。
@@ -345,6 +377,11 @@ export class TclRunner {
 
         for (const cmd of cmds) {
             const cmdName = cmd.command;
+
+            // 跳过 TCL 内置命令，保持原生行为
+            if (TclRunner.TCL_BUILTINS.has(cmdName)) {
+                continue;
+            }
 
             // 1. 尝试加载 AI 仿真数据
             const simCode = this.loadSimulation(cmdName, extensionPath);
@@ -391,8 +428,10 @@ export class TclRunner {
 
     /**
      * 加载 AI 预生成的仿真数据（含括号匹配验证）。
+     * cn 优先：中文仿真数据覆盖更全（1731 vs 316 个命令），确保中文用户最佳体验。
      */
     private loadSimulation(cmdName: string, extensionPath: string): string | null {
+        // cn 优先加载
         const languages = ['cn', 'en'];
         for (const lang of languages) {
             const simFile = path.join(extensionPath, 'data', 'simulations', lang, `${cmdName}.json`);

@@ -10,7 +10,7 @@ if { $read_io_file == 0 } {
 }
 
 # Power and GND connection verification
-verify_connectivity -type all > $REPORT_DIR/verify/verify_connectivity.rpt
+# verify_connectivity -type all > $REPORT_DIR/verify/verify_connectivity.rpt
 
 # DRC (Design Rule Check)
 verify_drc > $REPORT_DIR/verify/verify_drc
