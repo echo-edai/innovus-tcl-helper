@@ -440,29 +440,66 @@ export class TclRunner {
         return preamble;
     }
 
+    /** 仿真 DB 缓存: lang → (cmdName → procCode) */
+    private simDbCache: Map<string, Map<string, string>> = new Map();
+
     /**
-     * 加载 AI 预生成的仿真数据（纯 .tcl 文件，含括号匹配验证）。
+     * 加载 AI 预生成的仿真数据。
+     * 优先从 .db.tcl 单文件读取（减少文件系统开销），回退到独立 .tcl 文件。
      * 按 language 优先级加载：zh 优先 cn → en，en 优先 en → cn。
      */
     private loadSimulation(cmdName: string, extensionPath: string): string | null {
         const languages = this.language === 'zh' ? ['cn', 'en'] : ['en', 'cn'];
         for (const lang of languages) {
+            // 1. 尝试单文件 DB
+            const dbFile = path.join(extensionPath, 'data', 'simulations', `${lang}.db.tcl`);
+            if (fs.existsSync(dbFile)) {
+                const entry = this.loadFromDb(dbFile, lang, cmdName);
+                if (entry) { return entry; }
+                continue; // DB 存在但没有此命令，尝试下一个语言
+            }
+            // 2. 回退到独立 .tcl 文件
             const simFile = path.join(extensionPath, 'data', 'simulations', lang, `${cmdName}.tcl`);
             if (fs.existsSync(simFile)) {
                 try {
                     const tcl = fs.readFileSync(simFile, 'utf-8').trim();
-                    if (tcl.includes('proc ')) {
-                        const openB = (tcl.match(/\{/g) || []).length;
-                        const closeB = (tcl.match(/\}/g) || []).length;
-                        if (openB === closeB) {
-                            return tcl;
-                        }
-                        console.log(`[TCL Runner] 跳过 ${cmdName}: 括号不匹配 {${openB}/}${closeB}`);
+                    if (tcl.includes('proc ') && this.bracesMatch(tcl)) {
+                        return tcl;
                     }
                 } catch { /* ignore */ }
             }
         }
         return null;
+    }
+
+    /** 从单文件 DB 中按需提取 proc */
+    private loadFromDb(dbFile: string, lang: string, cmdName: string): string | null {
+        if (!this.simDbCache.has(lang)) {
+            // 首次加载：解析整个 DB 文件
+            try {
+                const content = fs.readFileSync(dbFile, 'utf-8');
+                const map = new Map<string, string>();
+                const re = /# === BEGIN (\S+) ===\n([\s\S]*?)\n# === END \1 ===/g;
+                let m: RegExpExecArray | null;
+                while ((m = re.exec(content)) !== null) {
+                    const code = m[2].trim();
+                    if (code.includes('proc ') && this.bracesMatch(code)) {
+                        map.set(m[1], code);
+                    }
+                }
+                this.simDbCache.set(lang, map);
+            } catch {
+                return null;
+            }
+        }
+        return this.simDbCache.get(lang)?.get(cmdName) || null;
+    }
+
+    /** 检查 TCL 代码括号是否匹配 */
+    private bracesMatch(tcl: string): boolean {
+        const openB = (tcl.match(/\{/g) || []).length;
+        const closeB = (tcl.match(/\}/g) || []).length;
+        return openB === closeB;
     }
 
     /**

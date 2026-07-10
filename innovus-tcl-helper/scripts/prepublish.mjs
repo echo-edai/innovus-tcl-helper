@@ -30,8 +30,20 @@ function main() {
     ensureDir(path.join(ROOT, 'data', 'cache', 'en'));
     ensureDir(path.join(ROOT, 'data', 'tcl-builtins', 'zh'));
     ensureDir(path.join(ROOT, 'data', 'tcl-builtins', 'en'));
+    ensureDir(path.join(ROOT, 'data', 'simulations', 'cn'));
+    ensureDir(path.join(ROOT, 'data', 'simulations', 'en'));
 
     console.log('✅ data/ 目录结构就绪');
+
+    // 构建仿真数据库（合并小文件为单文件，减少发布体积）
+    console.log('');
+    console.log('📦 构建仿真数据库 ...');
+    try {
+        const { execSync } = await import('child_process');
+        execSync('node scripts/build-sim-db.mjs', { cwd: ROOT, stdio: 'inherit' });
+    } catch (e) {
+        console.log('  ⚠ 仿真数据库构建失败（发布可继续）:', e.message);
+    }
 }
 
 main();
