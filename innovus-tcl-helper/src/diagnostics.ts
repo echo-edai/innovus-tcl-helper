@@ -424,7 +424,10 @@ export class TclDiagnosticsProvider {
             // 检查类型匹配
             switch (opt.type) {
                 case 'int':
-                    if (!/^-?\d+$/.test(value)) {
+                    // 接受整数、[expr ...]、$var、${var}
+                    if (!/^-?\d+$/.test(value) &&
+                        !/^\s*\[/.test(value) &&
+                        !/^\s*\$\w/.test(value)) {
                         const idx = line.indexOf(value);
                         if (idx >= 0) {
                             diagnostics.push(this.createDiagnostic(
@@ -436,7 +439,10 @@ export class TclDiagnosticsProvider {
                     }
                     break;
                 case 'float':
-                    if (!/^-?\d+\.?\d*$/.test(value)) {
+                    // 接受浮点数、[expr ...]、$var、${var}
+                    if (!/^-?\d+\.?\d*$/.test(value) &&
+                        !/^\s*\[/.test(value) &&
+                        !/^\s*\$\w/.test(value)) {
                         const idx = line.indexOf(value);
                         if (idx >= 0) {
                             diagnostics.push(this.createDiagnostic(
@@ -448,7 +454,10 @@ export class TclDiagnosticsProvider {
                     }
                     break;
                 case 'point':
-                    if (!/^\{?\s*-?\d+\.?\d*\s+-?\d+\.?\d*\s*\}?$/.test(value)) {
+                    // 接受坐标、[expr ...]、$var
+                    if (!/^\{?\s*-?\d+\.?\d*\s+-?\d+\.?\d*\s*\}?$/.test(value) &&
+                        !/^\s*\[/.test(value) &&
+                        !/^\s*\$\w/.test(value)) {
                         const idx = line.indexOf(value);
                         if (idx >= 0) {
                             diagnostics.push(this.createDiagnostic(

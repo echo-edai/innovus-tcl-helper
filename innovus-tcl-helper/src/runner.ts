@@ -222,6 +222,8 @@ export class TclRunner {
         for (const fm of fileMetas) {
             const escapedPath = fm.absPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
             combinedScript += `\nputs "_FILE_BEGIN_ ${fm.relPath}"\n`;
+            // 可见分隔线（不会被过滤）
+            combinedScript += `puts "\\n─── 📄 ${fm.relPath} ───\\n"\n`;
             combinedScript += `if {[catch {source "${escapedPath}"} _err]} {\n`;
             combinedScript += `    puts "_FILE_ERROR_ ${fm.relPath}"\n`;
             combinedScript += `    puts "_ERROR_MSG_ $_err"\n`;

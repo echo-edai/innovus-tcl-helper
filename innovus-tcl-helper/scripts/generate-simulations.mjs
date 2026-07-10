@@ -32,14 +32,15 @@ const args = process.argv.slice(2);
 const LANGS = args.includes('--lang') ? [args[args.indexOf('--lang') + 1]] : ['cn', 'en'];
 const LIMIT = args.includes('--limit') ? parseInt(args[args.indexOf('--limit') + 1]) : 0;
 const DRY_RUN = args.includes('--dry-run');
+const TARGET_CMDS = args.includes('--cmds')
+    ? new Set(args[args.indexOf('--cmds') + 1].split(',').map(s => s.trim()))
+    : null;
 
 const API = 'https://api.deepseek.com/chat/completions';
 const MODEL = 'deepseek-v4-flash';
 const CONCURRENCY = args.includes('--concurrency')
     ? parseInt(args[args.indexOf('--concurrency') + 1])
     : 30;  // deepseek-v4-flash 并发上限 2500，30 安全快速
-const MAX_TOKENS = 8192;   // 默认输出长度（1M 上下文，384K 最大输出）
-const MAX_TOKENS_RETRY = 16384; // 重试时的输出长度
 const RETRY_DELAY = 2000;
 const MAX_RETRIES = 3;
 const MAX_LOG_LINES = 500;
@@ -90,123 +91,79 @@ for (let i = 0; i < CONCURRENCY; i++) {
 
 function buildPrompt(cmdInfo, lang) {
     const { command, summary, description, usage, options, is_cmd } = cmdInfo;
-    const isVariable = !is_cmd;
+    const isVariable = (is_cmd === false);
 
     if (isVariable) {
-        // 变量：通过 set <var_name> <value> 设置
         if (lang === 'cn') {
             return {
                 system: '你是 Innovus EDA 仿真专家。只输出 TCL proc 代码，不输出解释。',
-                user: `为 Innovus 配置变量 "${command}" 生成一个 TCL proc 仿真包装器。
-
-## 变量说明
-- 名称: ${command}
-- 摘要: ${summary}
-- 描述: ${description || '无详细描述'}
-- 设置方式: set ${command} <value>
-
-## 关键要求
-1. 读取第一个参数作为设置值（args 第一个元素），描述该变量的作用和设置的值
-2. 如果没有参数，只描述该变量的功能作用
-3. 中文 puts 输出，让工程师一眼看懂这个变量是干什么的、设了什么值
-4. 只输出 TCL 代码，不要解释，返回空字符串 ""
-
-## 输出格式
-proc ${command} {args} {
-    set val [lindex $args 0]
-    if {$val ne ""} {
-        puts "设置 ${command} = $val — ${summary}"
-    } else {
-        puts "${command}: ${summary}。${(description || '').substring(0, 100)}"
-    }
-    return ""
-}`
+                user: `为 Innovus 配置变量 "${command}" 生成 TCL proc。\n\n变量说明: ${summary}。${description || ''}\n设置方式: set ${command} <value>\n\n要求: 读取第一个参数作为值，puts 中文描述；无参数则只描述功能。只输出 TCL 代码。`
             };
         }
         return {
             system: 'You are an Innovus EDA simulation expert. Output only TCL proc code.',
-            user: `Generate a TCL proc wrapper for Innovus variable "${command}".
-
-## Variable Info
-- Name: ${command}
-- Summary: ${summary}
-- Description: ${description || 'No detailed description'}
-- Set via: set ${command} <value>
-
-## Key Requirements
-1. Read first arg as value, describe what this variable does and what value was set
-2. If no args, describe the variable's purpose
-3. English puts output, concise and informative
-4. Output TCL code only, return empty string
-
-## Format
-proc ${command} {args} {
-    set val [lindex $args 0]
-    if {$val ne ""} {
-        puts "Set ${command} = $val — ${summary}"
-    } else {
-        puts "${command}: ${summary}"
-    }
-    return ""
-}`
+            user: `Generate TCL proc for variable "${command}". Summary: ${summary}. Set via: set ${command} <value>. Output TCL only.`
         };
     }
 
-    // 命令：标准参数解析
-    const optLines = (options || []).map(o =>
-        `  ${o.name} (${o.required ? 'required' : 'optional'}, ${o.type}): ${o.description}`
+    // 命令：格式化参数列表
+    const optList = (options || []).map(o =>
+        `  ${o.name} | ${o.type} | ${o.description || ''}`
     ).join('\n');
 
     if (lang === 'cn') {
-        return {
-            system: '你是 Innovus EDA 仿真专家。只输出 TCL proc 代码，不输出解释。',
-            user: `为 Innovus 命令 "${command}" 生成一个 TCL proc 仿真包装器。
+        // 读取 MD 文件作为 system prompt（完整规则）
+        const promptFile = path.join(ROOT, 'prompts', 'cn', 'simulation-prompt.md');
+        let systemPrompt = '';
+        if (fs.existsSync(promptFile)) {
+            systemPrompt = fs.readFileSync(promptFile, 'utf-8');
+        }
+        if (!systemPrompt) {
+            systemPrompt = '你是 Innovus EDA 仿真专家。只输出 TCL proc 代码，不输出解释。';
+        }
 
-## 命令文档
+        // User prompt: 命令数据
+        const userPrompt = `为命令 "${command}" 生成仿真 proc。
+
+## 命令基本信息
 - 摘要: ${summary}
-- 描述: ${description}
-- 用法: ${usage}
-- 参数:
-${optLines || '  (无)'}
+- 描述: ${description || '无'}
+- 用法: ${usage || '无'}
 
-## 关键要求
-1. 解析 args 中的关键参数，根据用户传入的实际值生成中文 puts 输出
-2. 让工程师一眼看懂命令做了什么操作、用了什么参数
-3. 创建类命令输出创建了什么对象；设置类命令输出设置了什么值
-4. **重要**: 如果无法识别任何参数，也要输出命令名和原始参数，格式为: puts "命令名: [join $args { }]"
-5. 不认识的参数忽略，不要报错；返回空字符串 ""
-6. 只输出 TCL 代码，不要解释
+## 参数列表（名称 | 类型 | 描述）
+${optList || '  (无参数)'}
 
-## 输出格式
-proc ${command} {args} {
-    # 解析关键参数...
-    # 根据参数值 puts 中文描述...
-    return ""
-}`
-        };
+请根据 system prompt 中的规则生成 TCL proc 代码。`;
+
+        return { system: systemPrompt, user: userPrompt };
     }
+
+    // English prompt
     return {
-        system: 'You are an Innovus EDA simulation expert. Output only TCL proc code.',
-        user: `Generate a TCL proc wrapper for Innovus command "${command}".
+        system: 'You are an Innovus EDA simulation expert. Output only TCL proc code. NO desc_map, NO array set — just parse args and puts directly.',
+        user: `Generate TCL proc for Innovus command "${command}".
 
-## Command Info
-- Summary: ${summary}
-- Description: ${description}
-- Usage: ${usage}
-- Options:
-${optLines || '  (none)'}
+Summary: ${summary}
+Options (name | type | description):
+${optList || '  (none)'}
 
-## Key Requirements
-1. Parse key args, generate English puts output based on actual values
-2. Describe what the command did with which parameters
-3. **IMPORTANT**: If no args can be recognized, still output command name and raw args: puts "command_name: [join $args { }]"
-4. Unknown params silently ignored; return empty string
-5. Output TCL code only
+## Requirements
+1. proc signature: proc ${command} {args} { ... }
+2. Use while loop to iterate args; skip unknown params silently
+3. For each recognized param, puts a short English description with the value
+4. For flags (type=flag), puts "Enabled: <description>"
+5. NO desc_map, NO array set, NO uplevel, NO eval
+6. Return "", output TCL code only
 
 ## Format
 proc ${command} {args} {
-    # Parse key args...
-    # Generate descriptive puts output...
+    set i 0
+    while {$i < [llength $args]} {
+        set opt [lindex $args $i]
+        if {$opt eq "-someFlag"} { puts "Some flag enabled"; incr i; continue }
+        if {$opt eq "-someParam"} { incr i; set val [lindex $args $i]; puts "Some param: $val"; incr i; continue }
+        incr i
+    }
     return ""
 }`
     };
@@ -219,7 +176,6 @@ proc ${command} {args} {
 async function callAPI(systemPrompt, userPrompt, opts = {}) {
     const key = process.env.DEEPSEEK_API_KEY;
     if (!key) throw new Error('DEEPSEEK_API_KEY not set');
-    const maxTokens = opts.maxTokens || MAX_TOKENS;
     const retries = opts.retries || 0;
     const maxRetries = opts.maxRetries || MAX_RETRIES;
 
@@ -230,7 +186,7 @@ async function callAPI(systemPrompt, userPrompt, opts = {}) {
             body: JSON.stringify({
                 model: MODEL,
                 messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }],
-                temperature: opts.temperature || 0.3, max_tokens: maxTokens, stream: false
+                temperature: opts.temperature || 0.3, stream: false
             }),
             signal: AbortSignal.timeout(60000)
         });
@@ -274,7 +230,14 @@ async function processLang(lang) {
     fs.mkdirSync(simDir, { recursive: true });
 
     const files = fs.readdirSync(helpDir).filter(f => f.endsWith('.json')).sort();
-    const total = LIMIT > 0 ? Math.min(LIMIT, files.length) : files.length;
+    // 如果指定了 --cmds，只处理这些命令
+    const filteredFiles = TARGET_CMDS
+        ? files.filter(f => TARGET_CMDS.has(f.replace('help_', '').replace('.json', '')))
+        : files;
+    if (TARGET_CMDS) {
+        mainLog.log(`[${lang}] 目标命令: ${TARGET_CMDS.size} 个, 匹配到 ${filteredFiles.length} 个`);
+    }
+    const total = LIMIT > 0 ? Math.min(LIMIT, filteredFiles.length) : filteredFiles.length;
 
     const TCL_BUILTINS = new Set(['Puts', 'set', 'if', 'while', 'for', 'foreach', 'proc', 'return', 'expr',
         'source', 'catch', 'error', 'list', 'concat', 'lindex', 'llength', 'lappend', 'split', 'join',
@@ -300,8 +263,19 @@ async function processLang(lang) {
 
     let completed = 0, skipped = 0, failed = 0;
     const t0 = Date.now();
-    const queue = files.slice(0, total);
+    const queue = filteredFiles.slice(0, total);
     let idx = 0;
+
+    // 预先统计跳过的文件数
+    let preSkipped = 0;
+    for (const f of queue) {
+        const name = f.replace('help_', '').replace('.json', '');
+        if (fs.existsSync(path.join(simDir, `${name}.tcl`))) preSkipped++;
+    }
+    if (preSkipped > 0) {
+        console.log(`[${lang}] 📦 已有 ${preSkipped} 个文件, 跳过不重复生成`);
+        console.log(`[${lang}] 🔧 需生成 ${total - preSkipped} 个 (共 ${total})`);
+    }
 
     // 进度条
     const BAR_WIDTH = 30;
@@ -311,7 +285,7 @@ async function processLang(lang) {
         const filled = Math.round(current / max * BAR_WIDTH);
         const bar = '█'.repeat(filled) + '░'.repeat(BAR_WIDTH - filled);
         const el = ((Date.now() - t0) / 1000).toFixed(0);
-        return `[${bar}] ${pct}% (${current}/${max}) ${el}s`;
+        return `[${bar}] ${pct}% 跳过${skipped} 生成${completed} 失败${failed} ${el}s`;
     }
 
     function drawProgress(current, max) {
@@ -380,11 +354,11 @@ async function processLang(lang) {
                 let tcl = await callAPI(system, user);
                 let retried = false;
 
-                // 如果无 proc 或括号不匹配，用更高 max_tokens 重试
+                // 如果无 proc 或括号不匹配，重试
                 if (!tcl.includes('proc ')) {
-                    const msg = `🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) 无proc → ${MAX_TOKENS_RETRY}tokens重试`;
+                    const msg = `🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) 无proc → 重试`;
                     wl.log(msg); consoleLog(msg);
-                    tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
+                    tcl = await callAPI(system, user, { temperature: 0.1, maxRetries: 1 });
                     retried = true;
                 }
 
@@ -392,9 +366,9 @@ async function processLang(lang) {
                     const openB = (tcl.match(/\{/g) || []).length;
                     const closeB = (tcl.match(/\}/g) || []).length;
                     if (openB !== closeB) {
-                        const msg = `🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) {${openB}/}${closeB} → ${MAX_TOKENS_RETRY}tokens重试`;
+                        const msg = `🔁 [${lang}] ${cmdName}(${info.summary?.substring(0, 30)}) {${openB}/}${closeB} → 重试`;
                         wl.log(msg); consoleLog(msg);
-                        tcl = await callAPI(system, user, { maxTokens: MAX_TOKENS_RETRY, temperature: 0.1, maxRetries: 1 });
+                        tcl = await callAPI(system, user, { temperature: 0.1, maxRetries: 1 });
                         retried = true;
                     }
                 }

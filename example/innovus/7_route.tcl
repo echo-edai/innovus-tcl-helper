@@ -2,7 +2,7 @@
 # setPGPinUseSignalRoute crc5_r_u0/token0_reg_4 :ExtVDD_PINVX1:ExtVDD_LSLH_ISONL_X1_TO_ON:ExtVDD_SRDFF*:ExtVDD
 if {![file exist ${REPORT_DIR}/route]} {
     exec mkdir -p ${REPORT_DIR}/route
-    echo "Creating ${REPORT_DIR}/route !!!"
+    puts "Creating ${REPORT_DIR}/route !!!"
 }
 
 setPGPinUseSignalRoute -all
