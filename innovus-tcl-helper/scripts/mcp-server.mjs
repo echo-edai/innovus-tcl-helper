@@ -23,7 +23,7 @@ import { createInterface } from 'readline';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let DATA_ROOT = '';
 let LANGUAGE = 'zh';
-const VERSION = '0.4.1';
+const VERSION = '0.6.2';
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i] === '--data-root' && i + 1 < process.argv.length) DATA_ROOT = process.argv[++i];
   else if (process.argv[i] === '--lang' && i + 1 < process.argv.length) LANGUAGE = process.argv[++i];
@@ -93,6 +93,65 @@ function lintBuiltin(fFilePath, tclFiles) {
   return { result: { units: scrs.map(s => ({ relativePath: s.file })), variables: new Map(Object.entries(vars)), variableRefs: refs, errors: errs, warnings: warns }, error: null };
 }
 
+// ── TclRunner-based Run tools ──
+const EXT_ROOT = path.join(__dirname, '..');
+
+async function toolRunProject({ f_file_path, sim_output_mode }) {
+  const isZh = LANGUAGE === 'zh';
+  if (!f_file_path || !fs.existsSync(f_file_path)) {
+    return { error: isZh ? `找不到 .f 文件: ${f_file_path}` : `.f file not found: ${f_file_path}` };
+  }
+  try {
+    const { TclRunner } = await import(path.join(EXT_ROOT, 'out', 'runner.js'));
+    const runner = new TclRunner();
+    const tclsh = runner.findTclsh(EXT_ROOT);
+    if (!tclsh) return { error: isZh ? '找不到 tclsh' : 'tclsh not found' };
+    const mode = sim_output_mode || 'dry-run';
+    const result = await runner.runProject(EXT_ROOT, f_file_path, tclsh, mode);
+    return {
+      success: result.success,
+      fileCount: result.fileCount,
+      errorCount: result.errorCount,
+      totalDuration: result.totalDuration,
+      files: result.results.map(r => ({
+        file: r.filePath,
+        ok: r.success,
+        innovusCommands: r.innovusCommands,
+        duration: r.duration,
+        output: r.stdout?.slice(-2000),   // last 2000 chars
+        stderr: r.stderr?.slice(-1000)
+      }))
+    };
+  } catch (e) {
+    return { error: `Runner failed: ${e.message}` };
+  }
+}
+
+async function toolRunScript({ script_path, sim_output_mode }) {
+  const isZh = LANGUAGE === 'zh';
+  if (!script_path || !fs.existsSync(script_path)) {
+    return { error: isZh ? `找不到脚本: ${script_path}` : `Script not found: ${script_path}` };
+  }
+  try {
+    const { TclRunner } = await import(path.join(EXT_ROOT, 'out', 'runner.js'));
+    const runner = new TclRunner();
+    const tclsh = runner.findTclsh(EXT_ROOT);
+    if (!tclsh) return { error: isZh ? '找不到 tclsh' : 'tclsh not found' };
+    const content = fs.readFileSync(script_path, 'utf-8');
+    const mode = sim_output_mode || 'dry-run';
+    const result = await runner.runScript(EXT_ROOT, content, tclsh, path.basename(script_path), mode);
+    return {
+      success: result.success,
+      duration: result.duration,
+      innovusCommands: result.innovusCommands,
+      output: result.stdout?.slice(-3000),
+      stderr: result.stderr?.slice(-1000)
+    };
+  } catch (e) {
+    return { error: `Runner failed: ${e.message}` };
+  }
+}
+
 // ── Tools ──
 function toolParse({ script_content, script_path }) {
   loadDB(); const isZh = LANGUAGE === 'zh'; let c = script_content;
@@ -138,7 +197,9 @@ function getToolDefs() {
     { name: 'innovus_get_command_help', description: z ? '获取 Innovus 命令完整文档（语法/参数/说明）。' : 'Get full Innovus command docs.', inputSchema: { type: 'object', properties: { command: { type: 'string' } }, required: ['command'] } },
     { name: 'innovus_parse_tcl_script', description: z ? '解析 TCL 脚本（支持 script_content 或 script_path 文件路径）。' : 'Parse TCL script (content or path).', inputSchema: { type: 'object', properties: { script_content: { type: 'string' }, script_path: { type: 'string' } } } },
     { name: 'innovus_lint_tcl', description: z ? '快速 Lint 摘要。传 .f 文件路径或 .tcl 路径列表。极省 token。' : 'Quick lint summary by file paths. Minimal token usage.', inputSchema: { type: 'object', properties: { f_file_path: { type: 'string' }, tcl_files: { type: 'array', items: { type: 'string' } } } } },
-    { name: 'innovus_lint_tcl_detailed', description: z ? '详细 Lint 报告。传 .f 文件路径或 .tcl 路径列表。返回变量表/错误/警告/引用追踪。' : 'Detailed lint report by file paths.', inputSchema: { type: 'object', properties: { f_file_path: { type: 'string' }, tcl_files: { type: 'array', items: { type: 'string' } } } } }
+    { name: 'innovus_lint_tcl_detailed', description: z ? '详细 Lint 报告。传 .f 文件路径或 .tcl 路径列表。返回变量表/错误/警告/引用追踪。' : 'Detailed lint report by file paths.', inputSchema: { type: 'object', properties: { f_file_path: { type: 'string' }, tcl_files: { type: 'array', items: { type: 'string' } } } } },
+    { name: 'innovus_run_project', description: z ? '运行 Innovus TCL 项目（.f 文件），所有 Innovus 命令通过仿真 proc 输出模拟结果。' : 'Run Innovus TCL project (.f file), all Innovus commands simulated.', inputSchema: { type: 'object', properties: { f_file_path: { type: 'string', description: z ? '.f 文件绝对路径' : 'Absolute path to .f file' }, sim_output_mode: { type: 'string', enum: ['dry-run', 'mkdir'], description: z ? 'dry-run=仅打印, mkdir=创建输出目录和文件' : 'dry-run=print only, mkdir=create output dirs and files' } }, required: ['f_file_path'] } },
+    { name: 'innovus_run_script', description: z ? '运行单个 TCL 脚本，所有 Innovus 命令通过仿真 proc 模拟。' : 'Run single TCL script, all Innovus commands simulated.', inputSchema: { type: 'object', properties: { script_path: { type: 'string', description: z ? '.tcl 文件绝对路径' : 'Absolute path to .tcl file' }, sim_output_mode: { type: 'string', enum: ['dry-run', 'mkdir'] } }, required: ['script_path'] } }
   ];
 }
 
@@ -158,6 +219,8 @@ async function handleRequest(msg) {
           case 'innovus_parse_tcl_script': r = toolParse(args); break;
           case 'innovus_lint_tcl': r = await toolLintSummary(args); break;
           case 'innovus_lint_tcl_detailed': r = await toolLintDetailed(args); break;
+          case 'innovus_run_project': r = await toolRunProject(args); break;
+          case 'innovus_run_script': r = await toolRunScript(args); break;
           default: sendError(id, -32601, `Unknown tool: ${tn}`); return;
         }
         sendResponse(id, { content: [{ type: 'text', text: JSON.stringify(r, null, 2) }] }); break;

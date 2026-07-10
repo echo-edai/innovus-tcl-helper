@@ -138,35 +138,22 @@ ${optList || '  (无参数)'}
         return { system: systemPrompt, user: userPrompt };
     }
 
-    // English prompt
-    return {
-        system: 'You are an Innovus EDA simulation expert. Output only TCL proc code. NO desc_map, NO array set — just parse args and puts directly.',
-        user: `Generate TCL proc for Innovus command "${command}".
+    // English prompt — also load from MD file
+    const enPromptFile = path.join(ROOT, 'prompts', 'en', 'simulation-prompt.md');
+    let enSystem = 'You are an Innovus EDA simulation expert. Output only TCL proc code. NO desc_map, NO array set.';
+    if (fs.existsSync(enPromptFile)) {
+        enSystem = fs.readFileSync(enPromptFile, 'utf-8');
+    }
+
+    const enUserPrompt = `Generate TCL proc for Innovus command "${command}".
 
 Summary: ${summary}
 Options (name | type | description):
 ${optList || '  (none)'}
 
-## Requirements
-1. proc signature: proc ${command} {args} { ... }
-2. Use while loop to iterate args; skip unknown params silently
-3. For each recognized param, puts a short English description with the value
-4. For flags (type=flag), puts "Enabled: <description>"
-5. NO desc_map, NO array set, NO uplevel, NO eval
-6. Return "", output TCL code only
+Follow the rules in the system prompt exactly.`;
 
-## Format
-proc ${command} {args} {
-    set i 0
-    while {$i < [llength $args]} {
-        set opt [lindex $args $i]
-        if {$opt eq "-someFlag"} { puts "Some flag enabled"; incr i; continue }
-        if {$opt eq "-someParam"} { incr i; set val [lindex $args $i]; puts "Some param: $val"; incr i; continue }
-        incr i
-    }
-    return ""
-}`
-    };
+    return { system: enSystem, user: enUserPrompt };
 }
 
 // ════════════════════════════════════════════════════════════
