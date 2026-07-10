@@ -44,5 +44,5 @@ for (const lang of LANGS) {
 
     const srcSize = files.reduce((s, f) => s + fs.statSync(path.join(srcDir, f)).size, 0);
     const dbSize = fs.statSync(dbFile).size;
-    console.log(`  ✅ ${lang}: ${files.length} 文件, ${(srcSize/1024).toFixed(0)}KB → ${(dbSize/1024).toFixed(0)}KB (${(dbSize/srcSize*100).toFixed(1)}%)`);
+    console.log(`  ✅ ${lang}: ${files.length} 文件, ${(srcSize / 1024).toFixed(0)}KB → ${(dbSize / 1024).toFixed(0)}KB (${(dbSize / srcSize * 100).toFixed(1)}%)`);
 }
