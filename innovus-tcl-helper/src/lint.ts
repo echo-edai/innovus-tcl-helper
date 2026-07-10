@@ -27,6 +27,17 @@ const DIAGNOSTIC_SOURCE = 'innovus-tcl-lint';
 /** Lint 严格程度 */
 export type LintLevel = 'basic' | 'standard' | 'strict';
 
+/** 解析当前语言设置 */
+function resolveLintLanguage(): 'zh' | 'en' {
+    const configLang = vscode.workspace.getConfiguration('innovus-tcl')
+        .get<string>('language', 'auto');
+    if (configLang === 'auto') {
+        const vsLang = vscode.env.language.toLowerCase();
+        return vsLang.startsWith('zh') ? 'zh' : 'en';
+    }
+    return configLang === 'zh' ? 'zh' : 'en';
+}
+
 // ════════════════════════════════════════════════════════════
 //  Lint Provider
 // ════════════════════════════════════════════════════════════
@@ -210,6 +221,7 @@ export class TclLintProvider {
     /** 检查未使用的变量 */
     private checkUnusedVariables(diagnosticsMap: Map<string, vscode.Diagnostic[]>): void {
         if (!this.lastResult) { return; }
+        const isZh = resolveLintLanguage() === 'zh';
 
         for (const [varName, defs] of this.lastResult.variables) {
             // 检查每个定义是否有对应的引用
@@ -219,7 +231,9 @@ export class TclLintProvider {
                 const diag = new vscode.Diagnostic(
                     new vscode.Range(lastDef.line - 1, lastDef.column - 1,
                         lastDef.line - 1, lastDef.column + lastDef.name.length),
-                    `变量 "${varName}" 已定义但从未使用`,
+                    isZh
+                        ? `变量 "${varName}" 已定义但从未使用`
+                        : `Variable "${varName}" is defined but never used`,
                     vscode.DiagnosticSeverity.Information
                 );
                 diag.source = DIAGNOSTIC_SOURCE;
@@ -231,6 +245,7 @@ export class TclLintProvider {
     /** 检查未使用的 proc */
     private checkUnusedProcs(diagnosticsMap: Map<string, vscode.Diagnostic[]>): void {
         if (!this.lastResult) { return; }
+        const isZh = resolveLintLanguage() === 'zh';
 
         const allCommandNames = new Set<string>();
         for (const unit of this.lastResult.units) {
@@ -245,7 +260,9 @@ export class TclLintProvider {
                     const diag = new vscode.Diagnostic(
                         new vscode.Range(proc.line - 1, proc.column - 1,
                             proc.line - 1, proc.column + proc.procName.length + 4),
-                        `过程 "${proc.procName}" 已定义但从未被调用`,
+                        isZh
+                            ? `过程 "${proc.procName}" 已定义但从未被调用`
+                            : `Procedure "${proc.procName}" is defined but never called`,
                         vscode.DiagnosticSeverity.Information
                     );
                     diag.source = DIAGNOSTIC_SOURCE;
@@ -265,7 +282,10 @@ export class TclLintProvider {
      */
     generateLintReport(format: 'text' | 'json' = 'text'): string {
         if (!this.lastResult) {
-            return JSON.stringify({ error: '没有编译结果。请先运行 Lint 分析。' });
+            const isZh = resolveLintLanguage() === 'zh';
+            return JSON.stringify({
+                error: isZh ? '没有编译结果。请先运行 Lint 分析。' : 'No compilation result. Run Lint analysis first.'
+            });
         }
 
         if (format === 'json') {
@@ -276,41 +296,47 @@ export class TclLintProvider {
 
     private generateTextReport(): string {
         const r = this.lastResult!;
-        const isZh = true;
+        const isZh = resolveLintLanguage() === 'zh';
         const lines: string[] = [];
 
-        lines.push(`# Innovus TCL Lint 报告`);
+        lines.push(isZh ? `# Innovus TCL Lint 报告` : `# Innovus TCL Lint Report`);
         lines.push(``);
-        lines.push(`**工作区**: ${r.workspaceRoot}`);
-        lines.push(`**编译文件**: ${r.fFilePath}`);
-        lines.push(`**文件数量**: ${r.units.length}`);
-        lines.push(`**变量定义数**: ${Array.from(r.variables.values()).reduce((s, v) => s + v.length, 0)}`);
-        lines.push(`**变量引用数**: ${r.variableRefs.length}`);
-        lines.push(`**错误数**: ${r.errors.length}`);
-        lines.push(`**警告数**: ${r.warnings.length}`);
+        lines.push(isZh ? `**工作区**: ${r.workspaceRoot}` : `**Workspace**: ${r.workspaceRoot}`);
+        lines.push(isZh ? `**编译文件**: ${r.fFilePath}` : `**Compilation file**: ${r.fFilePath}`);
+        lines.push(isZh ? `**文件数量**: ${r.units.length}` : `**Files**: ${r.units.length}`);
+        lines.push(isZh
+            ? `**变量定义数**: ${Array.from(r.variables.values()).reduce((s, v) => s + v.length, 0)}`
+            : `**Variable defs**: ${Array.from(r.variables.values()).reduce((s, v) => s + v.length, 0)}`);
+        lines.push(isZh
+            ? `**变量引用数**: ${r.variableRefs.length}`
+            : `**Variable refs**: ${r.variableRefs.length}`);
+        lines.push(isZh ? `**错误数**: ${r.errors.length}` : `**Errors**: ${r.errors.length}`);
+        lines.push(isZh ? `**警告数**: ${r.warnings.length}` : `**Warnings**: ${r.warnings.length}`);
         lines.push(``);
 
         // 编译顺序
-        lines.push(`## 📋 编译文件列表`);
+        lines.push(isZh ? `## 📋 编译文件列表` : `## 📋 Compilation File List`);
         lines.push(``);
         for (const unit of r.units) {
-            lines.push(`- \`${unit.relativePath}\` (${unit.sets.length} 个变量定义)`);
+            lines.push(`- \`${unit.relativePath}\` (${unit.sets.length} ${isZh ? '个变量定义' : 'variable defs'})`);
         }
         lines.push(``);
 
         // 变量表
-        lines.push(`## 📊 全局变量表`);
+        lines.push(isZh ? `## 📊 全局变量表` : `## 📊 Global Variable Table`);
         lines.push(``);
         if (r.variables.size === 0) {
-            lines.push(`*(无变量定义)*`);
+            lines.push(isZh ? `*(无变量定义)*` : `*(no variable definitions)*`);
         } else {
-            lines.push(`| 变量名 | 值 | 定义位置 |`);
+            lines.push(isZh
+                ? `| 变量名 | 值 | 定义位置 |`
+                : `| Variable | Value | Defined at |`);
             lines.push(`|--------|-----|---------|`);
             for (const [varName, defs] of r.variables) {
                 for (const def of defs) {
                     const val = def.value.length > 40
                         ? def.value.substring(0, 37) + '...'
-                        : def.value || '*(空)*';
+                        : def.value || (isZh ? '*(空)*' : '*(empty)*');
                     lines.push(`| \`${varName}\` | ${val} | ${def.relativePath}:${def.line} |`);
                 }
             }
@@ -319,7 +345,7 @@ export class TclLintProvider {
 
         // 错误
         if (r.errors.length > 0) {
-            lines.push(`## ❌ 错误 (${r.errors.length})`);
+            lines.push(isZh ? `## ❌ 错误 (${r.errors.length})` : `## ❌ Errors (${r.errors.length})`);
             lines.push(``);
             for (const err of r.errors) {
                 const relPath = path.relative(r.workspaceRoot, err.filePath);
@@ -330,7 +356,7 @@ export class TclLintProvider {
 
         // 警告
         if (r.warnings.length > 0) {
-            lines.push(`## ⚠️ 警告 (${r.warnings.length})`);
+            lines.push(isZh ? `## ⚠️ 警告 (${r.warnings.length})` : `## ⚠️ Warnings (${r.warnings.length})`);
             lines.push(``);
             for (const warn of r.warnings) {
                 const relPath = path.relative(r.workspaceRoot, warn.filePath);
@@ -340,9 +366,11 @@ export class TclLintProvider {
         }
 
         if (r.errors.length === 0 && r.warnings.length === 0) {
-            lines.push(`## ✅ 无问题`);
+            lines.push(isZh ? `## ✅ 无问题` : `## ✅ No Issues`);
             lines.push(``);
-            lines.push(`所有文件编译通过，未发现语法错误或未定义变量。`);
+            lines.push(isZh
+                ? `所有文件编译通过，未发现语法错误或未定义变量。`
+                : `All files compiled successfully. No syntax errors or undefined variables found.`);
         }
 
         return lines.join('\n');

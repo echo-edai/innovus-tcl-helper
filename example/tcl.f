@@ -1,2 +1,2 @@
 // -F example/tcl.f
--f innovus/tcl.f
+-F innovus/tcl.f

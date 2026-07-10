@@ -147,7 +147,8 @@ export class TclRunner {
         const t0 = Date.now();
         const tclsh = this.findTclsh(extensionPath, configTclshPath);
         if (!tclsh) {
-            return { success: false, stdout: '', stderr: '未找到 tclsh', exitCode: -1, innovusCommands: [], duration: 0 };
+            const msg = this.language === 'zh' ? '未找到 tclsh' : 'tclsh not found';
+            return { success: false, stdout: '', stderr: msg, exitCode: -1, innovusCommands: [], duration: 0 };
         }
 
         const cmds = this.detectInnovusCommands(content, extensionPath);

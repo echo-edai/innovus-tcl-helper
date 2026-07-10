@@ -535,7 +535,7 @@ export class TclCompiler {
                     const subFPath = cleanLine.substring(2).trim();
                     if (!subFPath) {
                         errors.push({
-                            message: `-F 指令缺少文件路径`,
+                            message: `-F directive missing file path`,
                             filePath: fFilePath,
                             line: i + 1,
                             column: 1
@@ -557,7 +557,7 @@ export class TclCompiler {
                     const subFPath = cleanLine.substring(2).trim();
                     if (!subFPath) {
                         errors.push({
-                            message: `-f 指令缺少文件路径`,
+                            message: `-f directive missing file path`,
                             filePath: fFilePath,
                             line: i + 1,
                             column: 1
@@ -585,7 +585,7 @@ export class TclCompiler {
             }
         } catch (e: any) {
             errors.push({
-                message: `读取 .f 文件失败: ${e.message}`,
+                message: `Failed to read .f file: ${e.message}`,
                 filePath: fFilePath,
                 line: 1,
                 column: 1

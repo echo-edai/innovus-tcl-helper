@@ -12,6 +12,17 @@ import { getDB } from './commands';
 
 type DiagnosticLevel = 'basic' | 'standard' | 'strict';
 
+/** 解析当前语言设置（与 extension.ts 中 resolveLanguage 一致） */
+function resolveDiagnosticLanguage(): 'zh' | 'en' {
+    const configLang = vscode.workspace.getConfiguration('innovus-tcl')
+        .get<string>('language', 'auto');
+    if (configLang === 'auto') {
+        const vsLang = vscode.env.language.toLowerCase();
+        return vsLang.startsWith('zh') ? 'zh' : 'en';
+    }
+    return configLang === 'zh' ? 'zh' : 'en';
+}
+
 export class TclDiagnosticsProvider {
     private diagnosticCollection: vscode.DiagnosticCollection;
 
@@ -128,6 +139,7 @@ export class TclDiagnosticsProvider {
         text: string,
         diagnostics: vscode.Diagnostic[]
     ): void {
+        const isZh = resolveDiagnosticLanguage() === 'zh';
         const lines = text.split('\n');
         let braceDepth = 0;
         let bracketDepth = 0;
@@ -170,7 +182,9 @@ export class TclDiagnosticsProvider {
                 if (bracketDepth < 0) {
                     diagnostics.push(this.createDiagnostic(
                         document, i, j, j + 1,
-                        '多余的右方括号 "]" — 没有匹配的左方括号',
+                        isZh
+                            ? '多余的右方括号 "]" — 没有匹配的左方括号'
+                            : 'Extra "]" — no matching "[" found',
                         vscode.DiagnosticSeverity.Error
                     ));
                     bracketDepth = 0;
@@ -178,7 +192,9 @@ export class TclDiagnosticsProvider {
                 if (braceDepth < 0) {
                     diagnostics.push(this.createDiagnostic(
                         document, i, j, j + 1,
-                        '多余的右花括号 "}" — 没有匹配的左花括号',
+                        isZh
+                            ? '多余的右花括号 "}" — 没有匹配的左花括号'
+                            : 'Extra "}" — no matching "{" found',
                         vscode.DiagnosticSeverity.Error
                     ));
                     braceDepth = 0;
@@ -190,7 +206,9 @@ export class TclDiagnosticsProvider {
             const lastLine = lines.length - 1;
             diagnostics.push(this.createDiagnostic(
                 document, lastLine, 0, 1,
-                `缺少 ${bracketDepth} 个右方括号 "]" — 文件末尾仍有未闭合的方括号`,
+                isZh
+                    ? `缺少 ${bracketDepth} 个右方括号 "]" — 文件末尾仍有未闭合的方括号`
+                    : `Missing ${bracketDepth} closing "]" — unclosed bracket(s) at end of file`,
                 vscode.DiagnosticSeverity.Error
             ));
         }
@@ -198,7 +216,9 @@ export class TclDiagnosticsProvider {
             const lastLine = lines.length - 1;
             diagnostics.push(this.createDiagnostic(
                 document, lastLine, 0, 1,
-                `缺少 ${braceDepth} 个右花括号 "}" — 文件末尾仍有未闭合的花括号`,
+                isZh
+                    ? `缺少 ${braceDepth} 个右花括号 "}" — 文件末尾仍有未闭合的花括号`
+                    : `Missing ${braceDepth} closing "}" — unclosed brace(s) at end of file`,
                 vscode.DiagnosticSeverity.Error
             ));
         }
@@ -210,6 +230,7 @@ export class TclDiagnosticsProvider {
         text: string,
         diagnostics: vscode.Diagnostic[]
     ): void {
+        const isZh = resolveDiagnosticLanguage() === 'zh';
         const lines = text.split('\n');
 
         for (let i = 0; i < lines.length; i++) {
@@ -239,7 +260,9 @@ export class TclDiagnosticsProvider {
             if (inString) {
                 diagnostics.push(this.createDiagnostic(
                     document, i, stringStart, stringStart + 1,
-                    '未闭合的双引号 — 字符串从该位置开始到行尾未找到闭合引号',
+                    isZh
+                        ? '未闭合的双引号 — 字符串从该位置开始到行尾未找到闭合引号'
+                        : 'Unclosed double quote — missing closing "\"" before end of line',
                     vscode.DiagnosticSeverity.Error
                 ));
             }
@@ -254,6 +277,7 @@ export class TclDiagnosticsProvider {
         db: ReturnType<typeof getDB>,
         level: DiagnosticLevel
     ): void {
+        const isZh = resolveDiagnosticLanguage() === 'zh';
         const rawLines = text.split('\n');
         const allCommandNames = db.getCommandNames();
 
@@ -305,7 +329,9 @@ export class TclDiagnosticsProvider {
                                 const flagIdx = line.lastIndexOf(flag);
                                 diagnostics.push(this.createDiagnostic(
                                     document, lineIdx, flagIdx, flagIdx + flag.length,
-                                    `参数 ${flag} 重复指定了 ${count} 次`,
+                                    isZh
+                                        ? `参数 ${flag} 重复指定了 ${count} 次`
+                                        : `Option ${flag} specified ${count} times (duplicate)`,
                                     vscode.DiagnosticSeverity.Warning
                                 ));
                             }
@@ -350,7 +376,9 @@ export class TclDiagnosticsProvider {
                                         diagnostics.push(this.createDiagnostic(
                                             document, lineIdx,
                                             cmdStartIdx, cmdStartIdx + cmdName.length,
-                                            `缺少必需参数: {${memberList}} — 必须指定其中之一`,
+                                            isZh
+                                                ? `缺少必需参数: {${memberList}} — 必须指定其中之一`
+                                                : `Missing required option: {${memberList}} — one must be specified`,
                                             vscode.DiagnosticSeverity.Warning
                                         ));
                                     }
@@ -365,7 +393,9 @@ export class TclDiagnosticsProvider {
                             diagnostics.push(this.createDiagnostic(
                                 document, lineIdx,
                                 cmdStartIdx, cmdStartIdx + cmdName.length,
-                                `缺少必需参数: ${opt.name} — ${opt.description}`,
+                                isZh
+                                    ? `缺少必需参数: ${opt.name} — ${opt.description}`
+                                    : `Missing required option: ${opt.name} — ${opt.description}`,
                                 vscode.DiagnosticSeverity.Warning
                             ));
                         } else if (opt.type !== 'flag' && !parsedArgs.get(opt.name)) {
@@ -373,7 +403,9 @@ export class TclDiagnosticsProvider {
                             diagnostics.push(this.createDiagnostic(
                                 document, lineIdx,
                                 flagIdx, flagIdx + opt.name.length,
-                                `参数 ${opt.name} 需要值 (类型: ${opt.type})`,
+                                isZh
+                                    ? `参数 ${opt.name} 需要值 (类型: ${opt.type})`
+                                    : `Option ${opt.name} requires a value (type: ${opt.type})`,
                                 vscode.DiagnosticSeverity.Warning
                             ));
                         }
@@ -400,7 +432,9 @@ export class TclDiagnosticsProvider {
                     diagnostics.push(this.createDiagnostic(
                         document, lineIdx,
                         cmdStartIdx, cmdStartIdx + cmdName.length,
-                        `未知命令 "${cmdName}"。你是否想写: ${suggestions}？`,
+                        isZh
+                            ? `未知命令 "${cmdName}"。你是否想写: ${suggestions}？`
+                            : `Unknown command "${cmdName}". Did you mean: ${suggestions}?`,
                         vscode.DiagnosticSeverity.Information
                     ));
                 }
@@ -417,6 +451,7 @@ export class TclDiagnosticsProvider {
         parsedArgs: Map<string, string | null>,
         diagnostics: vscode.Diagnostic[]
     ): void {
+        const isZh = resolveDiagnosticLanguage() === 'zh';
         for (const opt of options) {
             const value = parsedArgs.get(opt.name);
             if (value === null || value === undefined) { continue; }
@@ -432,7 +467,9 @@ export class TclDiagnosticsProvider {
                         if (idx >= 0) {
                             diagnostics.push(this.createDiagnostic(
                                 document, lineIdx, idx, idx + value.length,
-                                `${opt.name} 期望整数类型，但得到 "${value}"`,
+                                isZh
+                                    ? `${opt.name} 期望整数类型，但得到 "${value}"`
+                                    : `${opt.name} expects an integer, got "${value}"`,
                                 vscode.DiagnosticSeverity.Warning
                             ));
                         }
@@ -447,7 +484,9 @@ export class TclDiagnosticsProvider {
                         if (idx >= 0) {
                             diagnostics.push(this.createDiagnostic(
                                 document, lineIdx, idx, idx + value.length,
-                                `${opt.name} 期望浮点数类型，但得到 "${value}"`,
+                                isZh
+                                    ? `${opt.name} 期望浮点数类型，但得到 "${value}"`
+                                    : `${opt.name} expects a float, got "${value}"`,
                                 vscode.DiagnosticSeverity.Warning
                             ));
                         }
@@ -462,7 +501,9 @@ export class TclDiagnosticsProvider {
                         if (idx >= 0) {
                             diagnostics.push(this.createDiagnostic(
                                 document, lineIdx, idx, idx + value.length,
-                                `${opt.name} 期望坐标类型 (如 "{x y}")，但得到 "${value}"`,
+                                isZh
+                                    ? `${opt.name} 期望坐标类型 (如 "{x y}")，但得到 "${value}"`
+                                    : `${opt.name} expects coordinates (e.g. "{x y}"), got "${value}"`,
                                 vscode.DiagnosticSeverity.Information
                             ));
                         }

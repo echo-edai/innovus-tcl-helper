@@ -36,7 +36,8 @@ setPreference EnableRectilinearDesign 1
 init_design
 
 # 设置全局报告格式（用于时序分析）
-set_global report_timing_format {instance arc transition capacitance cell fanout load slew delay incr_delay arrival}
+# set_global report_timing_format {instance arc transition capacitance cell fanout load slew delay incr_delay arrival}
+set_global {report_timing_format {instance arc transition capacitance cell fanout load slew delay incr_delay arrival}}
 
 # 设置表格样式（报告格式）
 set_table_style -no_frame_fix_width -nosplit -name report_timing
