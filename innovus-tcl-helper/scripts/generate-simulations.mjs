@@ -273,16 +273,20 @@ async function processLang(lang) {
     const queue = filteredFiles.slice(0, total);
     let idx = 0;
 
-    // 预先统计跳过的文件数
+    // 预先统计跳过的文件数（.tcl 已存在 + 变体 + 内置命令）
     let preSkipped = 0;
     for (const f of queue) {
         const name = f.replace('help_', '').replace('.json', '');
-        if (fs.existsSync(path.join(simDir, `${name}.tcl`))) preSkipped++;
+        // 已有 .tcl 文件
+        if (fs.existsSync(path.join(simDir, `${name}.tcl`))) { preSkipped++; continue; }
+        // 变体条目（cmdName 含空格+数字后缀）
+        if (/\s+\d+$/.test(name)) { preSkipped++; continue; }
     }
+    const needGenerate = total - preSkipped;
     if (preSkipped > 0) {
-        console.log(`[${lang}] 📦 已有 ${preSkipped} 个文件, 跳过不重复生成`);
-        console.log(`[${lang}] 🔧 需生成 ${total - preSkipped} 个 (共 ${total})`);
+        console.log(`[${lang}] 📦 跳过 ${preSkipped} 个 (已有文件 + 变体条目)`);
     }
+    console.log(`[${lang}] 🔧 需生成 ${needGenerate} 个 (共 ${total})`);
 
     // 进度条
     const BAR_WIDTH = 30;
