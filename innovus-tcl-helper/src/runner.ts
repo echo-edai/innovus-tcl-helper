@@ -139,7 +139,8 @@ export class TclRunner {
     /** 运行单个 TCL 脚本 */
     async runScript(
         content: string, workDir: string, extensionPath: string,
-        configTclshPath?: string, outputConfig?: RunOutputConfig
+        configTclshPath?: string, outputConfig?: RunOutputConfig,
+        simOutputMode: 'dry-run' | 'mkdir' = 'dry-run'
     ): Promise<RunResult> {
         const t0 = Date.now();
         const tclsh = this.findTclsh(extensionPath, configTclshPath);
@@ -149,7 +150,7 @@ export class TclRunner {
 
         const cmds = this.detectInnovusCommands(content, extensionPath);
         const preamble = this.generatePreamble(cmds, extensionPath);
-        const script = preamble + '\n' + content;
+        const script = preamble + '\n' + this.buildCompatLayer(simOutputMode) + '\n' + content;
 
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'innovus-run-'));
         const tmpFile = path.join(tmpDir, 'run.tcl');
@@ -179,7 +180,8 @@ export class TclRunner {
     /** 按 .f 文件顺序运行整个项目（source + catch 保证：遇错即停，逐文件追踪状态） */
     async runProject(
         fFilePath: string, workspaceRoot: string, extensionPath: string,
-        configTclshPath?: string, outputConfig?: RunOutputConfig
+        configTclshPath?: string, outputConfig?: RunOutputConfig,
+        simOutputMode: 'dry-run' | 'mkdir' = 'dry-run'
     ): Promise<ProjectRunResult> {
         const t0 = Date.now();
         const tclsh = this.findTclsh(extensionPath, configTclshPath);
@@ -214,17 +216,7 @@ export class TclRunner {
         const preamble = this.generatePreamble(cmdList, extensionPath);
 
         // 构建脚本：每个文件用 catch {source} 包装，遇错即停
-        let combinedScript = preamble + '\n';
-        combinedScript += '\n# ===== TCL 兼容层 =====\n';
-        combinedScript += '# 确保 echo 可用\n';
-        combinedScript += 'if {[info commands echo] eq ""} { proc echo {args} { puts [join $args " "] } }\n';
-        combinedScript += '# 兜底：未注册命令当作仿真命令处理\n';
-        combinedScript += 'rename unknown _tcl_unknown\n';
-        combinedScript += 'proc unknown {args} {\n';
-        combinedScript += '    set _cmd [lindex $args 0]\n';
-        combinedScript += '    puts "\\[Sim\\] $_cmd [lrange $args 1 end]"\n';
-        combinedScript += '    return ""\n';
-        combinedScript += '}\n';
+        let combinedScript = preamble + '\n' + this.buildCompatLayer(simOutputMode);
         combinedScript += '\n# ===== 顺序执行 TCL 文件 =====\n';
         combinedScript += 'set _project_ok 1\n';
         for (const fm of fileMetas) {
@@ -449,6 +441,71 @@ export class TclRunner {
             }
         }
         return null;
+    }
+
+    /**
+     * 构建 TCL 兼容层：echo + 文件辅助 proc + 增强 unknown handler
+     */
+    private buildCompatLayer(simOutputMode: 'dry-run' | 'mkdir'): string {
+        let code = '\n# ===== TCL 兼容层 =====\n';
+        code += 'if {[info commands echo] eq ""} { proc echo {args} { puts [join $args " "] } }\n';
+
+        // 文件操作辅助
+        code += '\n# ===== 文件操作辅助 =====\n';
+        code += `set ::_sim_file_mode "${simOutputMode}"\n`;
+        code += 'proc _check_input_file {filepath} {\n';
+        code += '    if {[file exists $filepath]} {\n';
+        code += '        puts "   📂 输入文件: $filepath"\n';
+        code += '    } else {\n';
+        code += '        puts "   ⚠ 输入文件不存在: $filepath"\n';
+        code += '    }\n';
+        code += '}\n';
+        code += 'proc _handle_output_file {filepath} {\n';
+        code += '    if {$::_sim_file_mode eq "mkdir"} {\n';
+        code += '        set dir [file dirname $filepath]\n';
+        code += '        if {![file exists $dir]} {\n';
+        code += '            file mkdir $dir\n';
+        code += '            puts "   📁 创建目录: $dir"\n';
+        code += '        }\n';
+        code += '        if {![file exists $filepath]} {\n';
+        code += '            set f [open $filepath w]\n';
+        code += '            puts $f "# Innovus TCL Simulator Output"\n';
+        code += '            close $f\n';
+        code += '        }\n';
+        code += '        puts "   📄 生成文件: $filepath"\n';
+        code += '    } else {\n';
+        code += '        puts "   📄 \\[dry-run\\] 将生成文件: $filepath"\n';
+        code += '    }\n';
+        code += '}\n';
+
+        // 未知命令处理 + -file 参数检测
+        code += '\n# 兜底：未注册命令 + 文件检测\n';
+        code += 'rename unknown _tcl_unknown\n';
+        code += 'proc unknown {args} {\n';
+        code += '    set _cmd [lindex $args 0]\n';
+        code += '    puts "\\[Sim\\] $_cmd [lrange $args 1 end]"\n';
+        code += '    set _rest [lrange $args 1 end]\n';
+        code += '    # 判断命令类型：输入命令 vs 输出命令\n';
+        code += '    set _is_input [regexp {^(read_|load_|source$|defIn$|init_)} $_cmd]\n';
+        code += '    set _is_output [regexp {^(report_|write_|save_|defOut$)} $_cmd]\n';
+        code += '    for {set _i 0} {$_i < [llength $_rest]} {incr _i} {\n';
+        code += '        set _arg [lindex $_rest $_i]\n';
+        code += '        if {$_arg eq "-file" || $_arg eq "-outDir"} {\n';
+        code += '            incr _i\n';
+        code += '            if {$_i < [llength $_rest]} {\n';
+        code += '                set _fp [lindex $_rest $_i]\n';
+        code += '                if {$_is_input} {\n';
+        code += '                    _check_input_file $_fp\n';
+        code += '                } else {\n';
+        code += '                    _handle_output_file $_fp\n';
+        code += '                }\n';
+        code += '            }\n';
+        code += '        }\n';
+        code += '    }\n';
+        code += '    return ""\n';
+        code += '}\n';
+
+        return code;
     }
 
     private executeTclsh(

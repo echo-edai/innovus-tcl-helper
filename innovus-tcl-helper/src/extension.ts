@@ -899,10 +899,12 @@ export function activate(context: vscode.ExtensionContext) {
                 .get<string>('runOutputDir', '') ||
                 path.join(workspaceFolders[0].uri.fsPath, '.innovus-run');
             const outputConfig = saveOutput ? { enabled: true, dir: outDir } : undefined;
+            const simOutputMode = vscode.workspace.getConfiguration('innovus-tcl')
+                .get<string>('simOutputMode', 'dry-run') as 'dry-run' | 'mkdir';
 
             const result = await runner.runScript(
                 content, workDir, context.extensionPath,
-                configTclshPath, outputConfig
+                configTclshPath, outputConfig, simOutputMode
             );
 
             // 打印被拦截的 Innovus 命令
@@ -1003,10 +1005,12 @@ export function activate(context: vscode.ExtensionContext) {
                 .get<string>('runOutputDir', '') ||
                 path.join(wsRoot, '.innovus-run');
             const outputConfig2 = saveOutput2 ? { enabled: true, dir: outDir2 } : undefined;
+            const simOutputMode = vscode.workspace.getConfiguration('innovus-tcl')
+                .get<string>('simOutputMode', 'dry-run') as 'dry-run' | 'mkdir';
 
             const result = await runner.runProject(
                 fFilePath, wsRoot, context.extensionPath,
-                configTclshPath2, outputConfig2
+                configTclshPath2, outputConfig2, simOutputMode
             );
 
             // 显示完整的运行输出（去标记行）
@@ -1033,10 +1037,18 @@ export function activate(context: vscode.ExtensionContext) {
                 const fileInfo = r.outputFile ? ` → ${r.outputFile}` : '';
                 runChannel.appendLine(`${status} ${r.filePath} [${r.duration}ms]${cmdInfo}${fileInfo}`);
                 if (!r.success && r.stderr && !isSkipped) {
-                    // 多行错误逐行显示，每行加缩进
+                    // 多行错误逐行显示
                     const errLines = r.stderr.split('\n');
                     for (const line of errLines) {
                         runChannel.appendLine(`   ⚠ ${line}`);
+                    }
+                    // 提取行号，生成可点击的文件:行号 链接
+                    const lineMatch = r.stderr.match(/\(file\s+"([^"]+)"\s+line\s+(\d+)\)/);
+                    if (lineMatch) {
+                        const linkedFile = lineMatch[1];
+                        const lineNum = lineMatch[2];
+                        // VS Code Output Channel (log:true) 自动识别 file:line 格式
+                        runChannel.appendLine(`   🔗 ${linkedFile}:${lineNum}`);
                     }
                 } else if (isSkipped) {
                     runChannel.appendLine(`   └─ ${SKIP_MSG}`);
