@@ -104,10 +104,13 @@ async function toolRunProject({ f_file_path, sim_output_mode }) {
   try {
     const { TclRunner } = await import(path.join(EXT_ROOT, 'out', 'runner.js'));
     const runner = new TclRunner();
+    runner.language = LANGUAGE === 'zh' ? 'zh' : 'en';
     const tclsh = runner.findTclsh(EXT_ROOT);
     if (!tclsh) return { error: isZh ? '找不到 tclsh' : 'tclsh not found' };
     const mode = sim_output_mode || 'dry-run';
-    const result = await runner.runProject(EXT_ROOT, f_file_path, tclsh, mode);
+    const wsRoot = path.dirname(f_file_path);
+    // 正确的参数顺序: fFilePath, workspaceRoot, extensionPath, configTclshPath?, outputConfig?, simOutputMode
+    const result = await runner.runProject(f_file_path, wsRoot, EXT_ROOT, undefined, undefined, mode);
     return {
       success: result.success,
       fileCount: result.fileCount,
@@ -118,12 +121,12 @@ async function toolRunProject({ f_file_path, sim_output_mode }) {
         ok: r.success,
         innovusCommands: r.innovusCommands,
         duration: r.duration,
-        output: r.stdout?.slice(-2000),   // last 2000 chars
-        stderr: r.stderr?.slice(-1000)
+        output: r.stdout?.slice(-3000),
+        stderr: r.stderr?.slice(-2000)
       }))
     };
   } catch (e) {
-    return { error: `Runner failed: ${e.message}` };
+    return { error: `Runner exception: ${e.message}`, stack: e.stack?.split('\n').slice(0, 3).join('\n') };
   }
 }
 
@@ -135,20 +138,23 @@ async function toolRunScript({ script_path, sim_output_mode }) {
   try {
     const { TclRunner } = await import(path.join(EXT_ROOT, 'out', 'runner.js'));
     const runner = new TclRunner();
+    runner.language = LANGUAGE === 'zh' ? 'zh' : 'en';
     const tclsh = runner.findTclsh(EXT_ROOT);
     if (!tclsh) return { error: isZh ? '找不到 tclsh' : 'tclsh not found' };
     const content = fs.readFileSync(script_path, 'utf-8');
     const mode = sim_output_mode || 'dry-run';
-    const result = await runner.runScript(EXT_ROOT, content, tclsh, path.basename(script_path), mode);
+    // 正确的参数顺序: content, workDir, extensionPath, configTclshPath?, outputConfig?, simOutputMode
+    const result = await runner.runScript(content, path.dirname(script_path), EXT_ROOT, undefined, undefined, mode);
     return {
       success: result.success,
       duration: result.duration,
+      exitCode: result.exitCode,
       innovusCommands: result.innovusCommands,
-      output: result.stdout?.slice(-3000),
-      stderr: result.stderr?.slice(-1000)
+      output: result.stdout?.slice(-5000),
+      stderr: result.stderr?.slice(-3000)
     };
   } catch (e) {
-    return { error: `Runner failed: ${e.message}` };
+    return { error: `Runner exception: ${e.message}`, stack: e.stack?.split('\n').slice(0, 3).join('\n') };
   }
 }
 
