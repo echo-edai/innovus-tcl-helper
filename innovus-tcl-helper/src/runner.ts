@@ -90,6 +90,8 @@ const SYSTEM_TCLSH_CANDIDATES: Record<string, string[]> = {
 
 export class TclRunner {
     private tclshPathCache: string | null = null;
+    /** 仿真语言: 'zh' 优先加载中文 proc, 'en' 优先加载英文 proc */
+    public language: 'zh' | 'en' = 'zh';
 
     /** 查找 tclsh: 内置(平台子目录) > 用户配置 > 系统搜索 */
     findTclsh(extensionPath: string, configTclshPath?: string): string | null {
@@ -436,10 +438,10 @@ export class TclRunner {
 
     /**
      * 加载 AI 预生成的仿真数据（纯 .tcl 文件，含括号匹配验证）。
-     * cn 优先：中文仿真数据覆盖更全。
+     * 按 language 优先级加载：zh 优先 cn → en，en 优先 en → cn。
      */
     private loadSimulation(cmdName: string, extensionPath: string): string | null {
-        const languages = ['cn', 'en'];
+        const languages = this.language === 'zh' ? ['cn', 'en'] : ['en', 'cn'];
         for (const lang of languages) {
             const simFile = path.join(extensionPath, 'data', 'simulations', lang, `${cmdName}.tcl`);
             if (fs.existsSync(simFile)) {

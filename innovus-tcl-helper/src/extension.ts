@@ -875,6 +875,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         // 查找 tclsh 并执行
         const runner = getRunner();
+        runner.language = db.getLanguage() === 'zh' ? 'zh' : 'en';
         const configTclshPath = vscode.workspace.getConfiguration('innovus-tcl')
             .get<string>('tclshPath', '');
         const tclsh = runner.findTclsh(context.extensionPath, configTclshPath);
@@ -986,6 +987,7 @@ export function activate(context: vscode.ExtensionContext) {
         runChannel.appendLine('');
 
         const runner = getRunner();
+        runner.language = db.getLanguage() === 'zh' ? 'zh' : 'en';
         const configTclshPath2 = vscode.workspace.getConfiguration('innovus-tcl')
             .get<string>('tclshPath', '');
         const tclsh2 = runner.findTclsh(context.extensionPath, configTclshPath2);
